@@ -1,8 +1,8 @@
 // frontend/apps/os-shell/src/pages/forge/county-studio/components/CityRollupTable.tsx
 //
-// County → City rollup, rendered at drillLevel === 'county'. Visual language
-// matches SegmentTable (same Th, color scales, stability chip) so the three
-// tables in the drill lattice feel like one family.
+// Reference-only city metadata rollup. It is retained for legacy/admin lookup,
+// while County Studio's primary command path starts from Benton valuation risk
+// surfaces and drills into neighborhood/reval evidence.
 //
 // Clicking a row advances the drill to that city via drillToCity.
 // Filter pills above the table narrow by IAAO ComplianceStatus.

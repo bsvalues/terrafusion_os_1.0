@@ -1,10 +1,8 @@
 // frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx
 //
 // Task C — County-level "is my county healthy?" single-screen answer.
-// Rendered at drillLevel === 'county' above (or in place of) the city
-// rollup. Dense, numbers-first, matches the visual language of SegmentTable
-// / CityRollupTable / NeighborhoodRollupTable so the suite reads as one
-// family.
+// Rendered at drillLevel === 'county' above the Benton risk surfaces. Dense,
+// numbers-first, and aligned with valuation-risk drill paths.
 //
 // Source of truth for the composite-risk formula is the BACKEND
 // (CountyStudyHealthService.ComputeCompositeRisk). This component only
@@ -27,7 +25,7 @@ import type {
   HealthAlertDto,
 } from '../types/countyStudio.types';
 
-// ── Color helpers — reuse the same scale as SegmentTable / CityRollupTable. ──
+// ── Color helpers — reuse the same scale as segment and risk-surface tables. ──
 
 function ratioColor(ratio: number | null): string {
   if (ratio === null) return 'hsl(var(--tf-muted))';
@@ -262,7 +260,7 @@ export function CountyHealthPanel() {
   const {
     activeStudy, healthSummary,
     loadStatus, loadErrors,
-    drillToSegment, drillToCounty, setSegmentSeverityFilter,
+    drillToRiskSurfaceSegment, drillToCounty, setSegmentSeverityFilter,
   } = useCountyStudioStore();
   const { retryHealthSummary } = useStudyData();
   const status = loadStatus.healthSummary;
@@ -382,30 +380,26 @@ export function CountyHealthPanel() {
     <PopulatedPanel
       summary={healthSummary}
       onAlertClick={(a) => {
-        // If the clicked alert belongs to a different neighborhood / city than
-        // the current drill scope, this jumps to it in one step. drillToSegment
-        // takes the city + neighborhood + segment so the state machine never
-        // lands in a neighborhood-without-city configuration.
-        drillToSegment(
-          a.city ?? 'Unincorporated',
+        // County-health alerts are primary valuation-risk drills; city remains
+        // display metadata and must not become the selected parent.
+        drillToRiskSurfaceSegment(
           a.neighborhoodCode ?? 'UNKNOWN',
           a.segmentId,
           a.revalArea,
         );
       }}
       onCriticalClick={() => {
-        setSegmentSeverityFilter('critical');
         const target = healthSummary.topAlerts
           .filter((alert) => alert.compositeRisk >= 67)
           .sort((a, b) => b.compositeRisk - a.compositeRisk)[0]
           ?? healthSummary.topAlerts[0];
         if (target) {
-          drillToSegment(
-            target.city ?? 'Unincorporated',
+          drillToRiskSurfaceSegment(
             target.neighborhoodCode ?? 'UNKNOWN',
             target.segmentId,
             target.revalArea,
           );
+          setSegmentSeverityFilter('critical');
           return;
         }
         drillToCounty();

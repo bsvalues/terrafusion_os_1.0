@@ -58,7 +58,7 @@ describe('County Studio sovereignty contract', () => {
     expect(hub).toContain('Study not available for active county scope.');
   });
 
-  it('County Studio still hands parcel-level work off to Atlas and Property Workbench with county context', () => {
+  it('County Studio still hands parcel-level work off to Atlas and Property Workbench with valuation context', () => {
     const page = read('../../pages/forge/county-studio/CountyStudyPage.tsx');
     const inspector = read('../../pages/forge/county-studio/components/ObjectInspector.tsx');
 
@@ -67,7 +67,14 @@ describe('County Studio sovereignty contract', () => {
     expect(page).toContain('countyId: activeStudy.countyId');
     expect(page).toContain('navigate(`/forge/atlas-live?${params.toString()}`)');
     expect(inspector).toContain("activateModule('property-workbench'");
-    expect(inspector).toContain('metadata: { segmentId: seg.segmentId, countyId: activeStudy?.countyId }');
+    expect(inspector).toContain('metadata: {');
+    expect(inspector).toContain('segmentId: seg.segmentId');
+    expect(inspector).toContain('countyId: activeStudy?.countyId');
+    expect(inspector).toContain('studyId: activeStudy?.studyId');
+    expect(inspector).toContain('taxYear: activeStudy?.taxYear');
+    expect(inspector).toContain('neighborhoodCode: segmentNeighborhoodCode');
+    expect(inspector).toContain('revalArea: segmentRevalArea');
+    expect(inspector).not.toContain('city: activeStudy');
     expect(inspector).toContain('countyId:      context.countyId');
     expect(inspector).toContain('countyId:         context.countyId');
   });

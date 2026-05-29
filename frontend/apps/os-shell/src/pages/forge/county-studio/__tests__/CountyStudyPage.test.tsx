@@ -201,7 +201,7 @@ describe('CountyStudyPage', () => {
     expect(screen.getByTestId('crumb-county')).toBeInTheDocument();
   });
 
-  it('county level renders Benton valuation risk surfaces instead of a city-first table', () => {
+  it('county level renders Benton valuation risk surfaces instead of a city-priority table', () => {
     act(() => {
       useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);

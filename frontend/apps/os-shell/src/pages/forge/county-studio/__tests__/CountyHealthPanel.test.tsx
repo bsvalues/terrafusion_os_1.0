@@ -177,7 +177,7 @@ describe('CountyHealthPanel', () => {
     expect(pills[2].getAttribute('data-bucket')).toBe('low');    // 22
   });
 
-  it('clicking a top-5 alert drills to its segment', () => {
+  it('clicking a top-5 alert drills to city-free risk-surface segment evidence', () => {
     act(() => {
       useCountyStudioStore.getState().setHealthSummary(summary());
       useCountyStudioStore.getState().setLoadStatus('healthSummary', 'success');
@@ -187,7 +187,7 @@ describe('CountyHealthPanel', () => {
     fireEvent.click(rows[1]); // Seg2 @ Richland / NBHD-R1
     const s = useCountyStudioStore.getState();
     expect(s.drillLevel).toBe('neighborhood');
-    expect(s.selectedCity).toBe('Richland');
+    expect(s.selectedCity).toBeNull();
     expect(s.selectedNeighborhood).toBe('NBHD-R1');
     expect(s.selectedNeighborhoodRevalArea).toBe(2);
     expect(s.selectedSegmentId).toBe('s2');
@@ -228,7 +228,7 @@ describe('CountyHealthPanel', () => {
     expect(screen.getByTestId('severity-bar-healthy')).toHaveTextContent('10');
   });
 
-  it('clicking Critical bar drills to the highest-risk critical segment with the critical filter active', () => {
+  it('clicking Critical bar drills to the highest-risk critical segment without restoring city scope', () => {
     act(() => {
       useCountyStudioStore.getState().drillToCity('Kennewick');
       useCountyStudioStore.getState().setHealthSummary(summary());
@@ -238,8 +238,9 @@ describe('CountyHealthPanel', () => {
     fireEvent.click(screen.getByTestId('severity-bar-critical'));
     const state = useCountyStudioStore.getState();
     expect(state.drillLevel).toBe('neighborhood');
-    expect(state.selectedCity).toBe('Kennewick');
+    expect(state.selectedCity).toBeNull();
     expect(state.selectedNeighborhood).toBe('NBHD-K1');
+    expect(state.selectedNeighborhoodRevalArea).toBe(2);
     expect(state.selectedSegmentId).toBe('s1');
     expect(state.segmentSeverityFilter).toBe('critical');
   });
