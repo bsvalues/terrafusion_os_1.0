@@ -11,6 +11,6 @@
   "postgresStarted": true,
   "postgresHealth": "healthy",
   "restoreStatus": "blocked_waiting_safe_canonical_snapshot",
-  "dnsStatus": "blocked_waiting_dev39_dns_record",
+  "dnsStatus": "verified_dev39_resolves_to_72.60.126.11",
   "generatedAt": "2026-05-29T19:13:06Z"
 }

@@ -1,0 +1,15 @@
+{
+  "overwrite": true,
+  "zone": [
+    {
+      "name": "dev39",
+      "type": "A",
+      "ttl": 300,
+      "records": [
+        {
+          "content": "72.60.126.11"
+        }
+      ]
+    }
+  ]
+}

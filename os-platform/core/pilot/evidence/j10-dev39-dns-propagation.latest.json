@@ -1,0 +1,12 @@
+{
+  "hostname": "dev39.terrafusionmarket.com",
+  "expectedAddress": "72.60.126.11",
+  "resolved": true,
+  "observations": [
+    {
+      "attempt": 1,
+      "addresses": ["72.60.126.11"]
+    }
+  ],
+  "note": "DNS propagation can remain pending after a successful Hostinger API update."
+}

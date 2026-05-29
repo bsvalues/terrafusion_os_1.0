@@ -17,9 +17,12 @@ Generated: 2026-05-29T19:13:06Z
 
 ## Blocked
 
-- DNS: `dev39.terrafusionmarket.com` does not resolve yet.
 - Restore: no safe canonical 39-county logical snapshot/export has been provided that is separate from the active Sync Postgres DB.
 - Runtime: API/frontend not started because restore is blocked.
+
+## DNS
+
+- `dev39.terrafusionmarket.com` resolves to `72.60.126.11`.
 
 ## Stop Conditions Preserved
 
@@ -31,8 +34,7 @@ Generated: 2026-05-29T19:13:06Z
 
 ## Next Required Actions
 
-1. Create Hostinger DNS A record: `dev39 -> 72.60.126.11`.
-2. Produce or provide a safe canonical 39-county logical Postgres snapshot/export.
-3. Restore that snapshot into `terrafusion_j10_data_dev`.
-4. Start the data-dev API/frontend stack.
-5. Run the dev39 truth gates.
+1. Produce or provide a safe canonical 39-county logical Postgres snapshot/export.
+2. Restore that snapshot into `terrafusion_j10_data_dev`.
+3. Start the data-dev API/frontend stack.
+4. Run the dev39 truth gates.
