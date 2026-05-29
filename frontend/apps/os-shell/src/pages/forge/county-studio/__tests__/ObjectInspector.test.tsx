@@ -380,16 +380,78 @@ describe('ObjectInspector — Action tab', () => {
     expect(params.get('segmentId')).toBe('s1');
     expect(params.get('countyId')).toBe('benton');
     expect(params.get('taxYear')).toBe('2026');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(params.get('revalArea')).toBeNull();
+    expect(params.get('city')).toBeNull();
   });
 
-  it('Find Parcels in Workbench still activates the workbench module (regression)', async () => {
+  it('Pop Out Map preserves risk-surface reval context without a city query param', async () => {
+    state.detail = baseDetail({ neighborhoodCode: 'NBHD-RISK', revalArea: 7, city: 'Kennewick' });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+    fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
+
+    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('neighborhoodCode')).toBe('NBHD-RISK');
+    expect(params.get('revalArea')).toBe('7');
+    expect(params.get('segmentId')).toBe('s1');
+    expect(params.get('city')).toBeNull();
+  });
+
+  it('Find Parcels in Workbench carries valuation context without city metadata', async () => {
+    state.detail = baseDetail({ neighborhoodCode: 'NBHD-RISK', revalArea: 7, city: 'Kennewick' });
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-workbench'));
     expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
       source: 'system',
-      metadata: expect.objectContaining({ segmentId: 's1', countyId: 'benton' }),
+      metadata: expect.objectContaining({
+        segmentId: 's1',
+        countyId: 'benton',
+        studyId: 'study-1',
+        taxYear: 2026,
+        neighborhoodCode: 'NBHD-RISK',
+        revalArea: 7,
+      }),
     }));
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata).not.toHaveProperty('city');
+  });
+
+  it('spatial handoffs ignore stale detail from the previously selected segment', async () => {
+    const nextSegment = {
+      ...MOCK_SEG,
+      segmentId: 's2',
+      name: 'Current Risk Segment',
+      geographyRef: 'NBHD-CURRENT',
+      revalArea: 9,
+    };
+    state.detail = baseDetail({
+      segmentId: 's1',
+      neighborhoodCode: 'NBHD-STALE',
+      revalArea: 1,
+    });
+    setup([MOCK_SEG, nextSegment], 's2');
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
+    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('segmentId')).toBe('s2');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-CURRENT');
+    expect(params.get('revalArea')).toBe('9');
+    expect(params.get('neighborhoodCode')).not.toBe('NBHD-STALE');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-workbench'));
+    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
+      metadata: expect.objectContaining({
+        segmentId: 's2',
+        neighborhoodCode: 'NBHD-CURRENT',
+        revalArea: 9,
+      }),
+    }));
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata.neighborhoodCode).not.toBe('NBHD-STALE');
   });
 
   it('persists direct Dais handoff receipt before activating the downstream suite', async () => {

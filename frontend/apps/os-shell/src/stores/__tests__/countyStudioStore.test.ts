@@ -146,6 +146,20 @@ describe('countyStudioStore — drill lattice', () => {
     expect(s.selectedNeighborhood).toBe('NBHD-R1');
   });
 
+  it('drillToRiskSurfaceSegment preserves valuation context without selecting city', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToCity('Kennewick');
+      useCountyStudioStore.getState().drillToRiskSurfaceSegment('NBHD-K1', 'seg-risk-1', 2);
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('neighborhood');
+    expect(s.selectedCity).toBeNull();
+    expect(s.selectedNeighborhood).toBe('NBHD-K1');
+    expect(s.selectedNeighborhoodRevalArea).toBe(2);
+    expect(s.selectedSegmentId).toBe('seg-risk-1');
+    expect(s.segmentSeverityFilter).toBe('all');
+  });
+
   it('drillToCounty collapses all drill state (from neighborhood)', () => {
     act(() => {
       useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');

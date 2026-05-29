@@ -1,9 +1,8 @@
 // frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx
 //
-// Task B — drill-lattice rewrite. The previous flat tab strip
-// (Overview / Ratio Study / Neighborhoods / Adjustments / Exceptions /
-// Compliance) has been replaced with a County → City → Neighborhood →
-// Segment drill driven by countyStudioStore.drillLevel.
+// County Studio opens on Benton valuation risk surfaces. Legacy city rollup
+// routes remain available as reference metadata, but primary command work
+// drills through risk surface → neighborhood/reval evidence → segment.
 //
 // The tab-filter concept is preserved as compact compliance/severity pills
 // that live ABOVE whichever rollup or segment table is active (inside the

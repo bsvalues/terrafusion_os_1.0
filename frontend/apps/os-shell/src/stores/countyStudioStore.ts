@@ -151,8 +151,7 @@ export interface CountyStudioState {
   drillToCity: (city: string) => void;
   /**
    * Advance drill to a specific neighborhood within a city. Both city and
-   * neighborhood are required so the state machine can never land at
-   * drillLevel='neighborhood' without a parent city.
+   * neighborhood are required for this legacy city-scoped route.
    * Legacy/reference path: new County Studio command work should prefer
    * drillToRiskSurfaceNeighborhood so city does not become the operating lens.
    */
@@ -166,12 +165,21 @@ export interface CountyStudioState {
     revalArea?: number | null,
     segmentId?: string | null
   ) => void;
+  /**
+   * Open specific segment evidence from a Benton risk surface. This is the
+   * primary county-health alert path: it preserves valuation context while
+   * keeping city as metadata only.
+   */
+  drillToRiskSurfaceSegment: (
+    neighborhoodCode: string,
+    segmentId: string,
+    revalArea?: number | null
+  ) => void;
   setSegmentSeverityFilter: (filter: SegmentSeverityFilter) => void;
   /**
-   * Jump straight to a specific segment — parent city + neighborhood are both
-   * required so the drill state stays consistent. Used by CountyHealthPanel
-   * top-5 alerts to navigate directly from the county-landing to a segment
-   * that lives in a different city/neighborhood than the current selection.
+   * Legacy/reference path that jumps straight to a specific segment under a
+   * city scope. New County Studio command work should prefer
+   * drillToRiskSurfaceSegment so primary drill paths do not depend on city.
    * Sets drillLevel='neighborhood' (so the SegmentTable renders) and pre-selects
    * the segment via selectedSegmentId (so RightRail shows its detail).
    */
@@ -360,6 +368,19 @@ export const useCountyStudioStore = create<CountyStudioState>()(
           },
           false,
           `drillToRiskSurfaceNeighborhood/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId ?? 'na'}`
+        ),
+      drillToRiskSurfaceSegment: (neighborhoodCode, segmentId, revalArea = null) =>
+        set(
+          {
+            drillLevel: 'neighborhood',
+            selectedCity: null,
+            selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
+            selectedSegmentId: segmentId,
+            segmentSeverityFilter: 'all',
+          },
+          false,
+          `drillToRiskSurfaceSegment/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId}`
         ),
       drillToSegment: (city, neighborhoodCode, segmentId, revalArea = null) =>
         set(

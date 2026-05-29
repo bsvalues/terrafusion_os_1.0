@@ -821,10 +821,12 @@ export function ObjectInspector() {
     );
   }
 
-  const segmentNeighborhoodCode = detail?.neighborhoodCode ?? seg.geographyRef;
-  const segmentRevalArea = detail?.revalArea ?? seg.revalArea;
-  const segmentBuildingType = detail?.buildingType ?? seg.buildingType;
-  const segmentQualityGrade = detail?.qualityGrade ?? seg.qualityGrade;
+  const currentDetail = detail?.segmentId === seg.segmentId ? detail : null;
+  const currentContext = context?.segmentId === seg.segmentId ? context : null;
+  const segmentNeighborhoodCode = currentDetail?.neighborhoodCode ?? seg.geographyRef;
+  const segmentRevalArea = currentDetail?.revalArea ?? seg.revalArea;
+  const segmentBuildingType = currentDetail?.buildingType ?? seg.buildingType;
+  const segmentQualityGrade = currentDetail?.qualityGrade ?? seg.qualityGrade;
   const segmentScopeLabel = [
     segmentNeighborhoodCode ? `Neighborhood ${segmentNeighborhoodCode}` : null,
     segmentRevalArea !== null && segmentRevalArea !== undefined ? `Reval ${segmentRevalArea}` : null,
@@ -845,8 +847,8 @@ export function ObjectInspector() {
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
-    if (seg.geographyRef) {
-      params.set('neighborhoodCode', seg.geographyRef);
+    if (segmentNeighborhoodCode) {
+      params.set('neighborhoodCode', segmentNeighborhoodCode);
     }
     if (segmentRevalArea !== null && segmentRevalArea !== undefined) {
       params.set('revalArea', String(segmentRevalArea));
@@ -856,7 +858,14 @@ export function ObjectInspector() {
   const handleFindParcels = () => {
     void activateModule('property-workbench', {
       source: 'system',
-      metadata: { segmentId: seg.segmentId, countyId: activeStudy?.countyId },
+      metadata: {
+        segmentId: seg.segmentId,
+        countyId: activeStudy?.countyId,
+        studyId: activeStudy?.studyId,
+        taxYear: activeStudy?.taxYear,
+        neighborhoodCode: segmentNeighborhoodCode,
+        revalArea: segmentRevalArea,
+      },
     });
   };
 
@@ -885,7 +894,7 @@ export function ObjectInspector() {
 
         <TabsContent value="metrics" data-testid="inspector-panel-metrics">
           <MetricsPanel
-            detail={detail}
+            detail={currentDetail}
             loading={detailLoading}
             error={detailError}
             onRetry={retryDetail}
@@ -894,7 +903,7 @@ export function ObjectInspector() {
 
         <TabsContent value="trend" data-testid="inspector-panel-trend">
           <TrendPanel
-            detail={detail}
+            detail={currentDetail}
             loading={detailLoading}
             error={detailError}
             onRetry={retryDetail}
@@ -903,7 +912,7 @@ export function ObjectInspector() {
 
         <TabsContent value="action" data-testid="inspector-panel-action">
           <ActionPanel
-            context={context}
+            context={currentContext}
             loading={contextLoading}
             error={contextError}
             onRetry={retryContext}
