@@ -8,8 +8,7 @@
 //   2. Findings — each with code pill, summary, evidence bar, expandable
 //      evidence dictionary, and clickable parcel-hint chips.
 //   3. Recommended actions — priority, target badge, summary, rationale,
-//      a button that fires activateModule() with the backend's
-//      prebuiltContext as metadata.
+//      a button that fires activateModule() with city-free valuation context.
 //   4. Narrative card — the 2–4 sentence service output, monospaced.
 //
 // Loading / error / 409 (not derived) states are handled distinctly.
@@ -100,6 +99,37 @@ function formatValue(v: unknown): string {
     return v.toFixed(1);
   }
   return String(v);
+}
+
+function buildActionMetadata(action: SegmentRecommendedAction, dto: SegmentDiagnosisDto): Record<string, unknown> {
+  const metadata: Record<string, unknown> = {
+    ...(action.prebuiltContext ?? {}),
+  };
+  delete metadata.city;
+  delete metadata.cityName;
+  delete metadata.municipality;
+  if (metadata.rollupScope === 'city') {
+    delete metadata.rollupScope;
+  }
+
+  if (dto.neighborhoodCode) {
+    metadata.neighborhoodCode = dto.neighborhoodCode;
+  }
+
+  metadata.segmentId = dto.segmentId;
+  metadata.diagnosisActionCode = action.actionCode;
+  return metadata;
+}
+
+function buildParcelHintMetadata(parcelId: string, dto: SegmentDiagnosisDto): Record<string, unknown> {
+  const metadata: Record<string, unknown> = {
+    parcelId,
+    segmentId: dto.segmentId,
+  };
+  if (dto.neighborhoodCode) {
+    metadata.neighborhoodCode = dto.neighborhoodCode;
+  }
+  return metadata;
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────
@@ -344,11 +374,7 @@ const ActionRow = ({
           onClick={() => {
             void activateModule(moduleId, {
               source: 'system',
-              metadata: {
-                ...(action.prebuiltContext ?? {}),
-                segmentId: dto.segmentId,
-                diagnosisActionCode: action.actionCode,
-              },
+              metadata: buildActionMetadata(action, dto),
             });
           }}
           style={{
@@ -473,7 +499,7 @@ export function AiDiagnosisPanel({
     }
     void activateModule('property-workbench', {
       source: 'system',
-      metadata: { parcelId: pid, segmentId: diagnosis.segmentId },
+      metadata: buildParcelHintMetadata(pid, diagnosis),
     });
   };
 
