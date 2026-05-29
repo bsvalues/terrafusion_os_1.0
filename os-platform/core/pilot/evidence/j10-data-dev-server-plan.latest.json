@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-05-29T19:01:14.663Z",
+  "planType": "june10_data_dev_server_plan",
+  "environmentName": "june10-data-dev",
+  "publicUrl": "https://dev39.terrafusionmarket.com",
+  "alternatePublicUrl": "https://june10-dev.terrafusionmarket.com",
+  "appRoot": "/opt/terrafusion/june10-data-dev",
+  "runtimeRole": "39-county canonical Postgres proving ground",
+  "decision": "READY_TO_PROVISION_DATA_DEV",
+  "dataDevBindingAllowed": true,
+  "productionBindingAllowed": false,
+  "syncDbMutationAllowed": false,
+  "database": {
+    "provider": "Postgres",
+    "name": "terrafusion_j10_data_dev",
+    "hostLabel": "j10-data-dev-postgres",
+    "connectionStringName": "ConnectionStrings__DefaultConnection",
+    "connectionStringSource": "vps-local app.env",
+    "restoreMode": "logical_snapshot_restore",
+    "restoreSource": "canonical 39-county Postgres snapshot/export",
+    "sharesDatabaseWithSync": false,
+    "sharesDatabaseWithProduction": false,
+    "usesSqliteFallback": false
+  },
+  "requiredTruthGates": [
+    "GET /health",
+    "GET /api/runtime/truth/db-identity",
+    "GET /api/runtime/truth/db-content",
+    "GET /api/counties/benton/parcels",
+    "GET /api/counties/king/parcels",
+    "GET /api/counties/spokane/parcels",
+    "pnpm run truth:runtime-db-identity",
+    "pnpm run truth:runtime-db-content",
+    "pnpm run truth:county-runtime-registration-ledger",
+    "pnpm run truth:benton-parcel-count-sanity",
+    "pnpm run truth:june10-wa-initial-seed-receipt-reconciliation",
+    "pnpm run truth:runtime-row-path-proof",
+    "pnpm run truth:june10-readiness-packet"
+  ],
+  "blockers": [],
+  "warnings": [
+    "DNS is not verified yet for the data-dev hostname.",
+    "Canonical Postgres snapshot has not been restored to data-dev yet.",
+    "Live data-dev API smoke has not been verified yet."
+  ],
+  "nextActions": [
+    "Create DNS A record for dev39.terrafusionmarket.com or june10-dev.terrafusionmarket.com.",
+    "Provision a separate Postgres database named terrafusion_j10_data_dev.",
+    "Restore a logical snapshot/export of the canonical 39-county DB into the data-dev database.",
+    "Deploy API/frontend with DatabaseProvider=Postgres and app.env-bound ConnectionStrings__DefaultConnection.",
+    "Run all required truth gates against the data-dev hostname.",
+    "Keep terrafusionmarket.com production binding blocked until data-dev truth gates pass."
+  ],
+  "forbiddenActions": [
+    "Do not use terrafusion-postgres-dev.",
+    "Do not attach the app runtime directly to the active Sync database.",
+    "Do not use SQLite fallback.",
+    "Do not mutate production data.",
+    "Do not call this production.",
+    "Do not claim 39-county production certification from this plan alone."
+  ]
+}

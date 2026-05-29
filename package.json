@@ -136,6 +136,7 @@
     "truth:june10-statewide-arcgis-source-discovery": "node os-platform/core/pilot/june10-statewide-arcgis-source-discovery.mjs",
     "truth:june10-wa-initial-seed-receipt-reconciliation": "node os-platform/core/pilot/june10-wa-initial-seed-receipt-reconciliation.mjs",
     "truth:june10-production-db-binding-plan": "node os-platform/core/pilot/june10-production-db-binding-plan.mjs",
+    "truth:june10-data-dev-server-plan": "node os-platform/core/pilot/j10-data-dev-server-plan.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
     "truth:june10-claim-guard": "node os-platform/core/pilot/june10-claim-guard.mjs",
     "truth:june10-control-plane-freshness": "node os-platform/core/pilot/june10-control-plane-freshness.mjs",
