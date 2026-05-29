@@ -1,0 +1,16 @@
+{
+  "environmentName": "june10-data-dev",
+  "appRoot": "/opt/terrafusion/june10-data-dev",
+  "database": "terrafusion_j10_data_dev",
+  "databaseUser": "terrafusion_j10_dev",
+  "container": "terrafusion-j10-data-dev-postgres",
+  "sharesDatabaseWithSync": false,
+  "sharesDatabaseWithProduction": false,
+  "productionBindingAllowed": false,
+  "runtimeStarted": false,
+  "postgresStarted": true,
+  "postgresHealth": "healthy",
+  "restoreStatus": "blocked_waiting_safe_canonical_snapshot",
+  "dnsStatus": "blocked_waiting_dev39_dns_record",
+  "generatedAt": "2026-05-29T19:13:06Z"
+}
