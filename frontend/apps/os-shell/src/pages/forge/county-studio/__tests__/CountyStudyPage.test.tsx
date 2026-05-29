@@ -13,6 +13,15 @@ import type {
   NeighborhoodRollupRowDto,
 } from '../types/countyStudio.types';
 
+const { mockNavigate } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+}));
+
+vi.mock('react-router-dom', async (importActual) => {
+  const actual = await importActual<typeof import('react-router-dom')>();
+  return { ...actual, useNavigate: () => mockNavigate };
+});
+
 vi.mock('../hooks/useCountyStudyHub', () => ({ useCountyStudyHub: () => ({}) }));
 vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => ({ retryAll: vi.fn() }) }));
 vi.mock('../components/CohortCreationDialog', () => ({ CohortCreationDialog: () => null }));
@@ -140,6 +149,7 @@ const MOCK_HEALTH: CountyHealthSummaryDto = {
 describe('CountyStudyPage', () => {
   beforeEach(() => {
     act(() => {
+      mockNavigate.mockClear();
       useCountyStudioStore.getState().setStudy(null);
       useCountyStudioStore.getState().setSegments([]);
       useCountyStudioStore.getState().setCityRollup([]);
@@ -175,6 +185,33 @@ describe('CountyStudyPage', () => {
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
     expect(screen.getByRole('button', { name: /pop out map/i })).toBeInTheDocument();
+  });
+
+  it('page-level Atlas handoff preserves valuation context without city as a primary key', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1', 2);
+      useCountyStudioStore.getState().selectSegment('s2');
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: /pop out map/i }));
+
+    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('studyId')).toBe('study-1');
+    expect(params.get('countyId')).toBe('benton');
+    expect(params.get('countyName')).toBe('Benton County');
+    expect(params.get('taxYear')).toBe('2026');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-K1');
+    expect(params.get('revalArea')).toBe('2');
+    expect(params.get('segmentId')).toBe('s2');
+    expect(params.get('city')).toBeNull();
   });
 
   it('opens the native County Studio analytics workbench mode', () => {
