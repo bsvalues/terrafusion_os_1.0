@@ -1,0 +1,159 @@
+name: June 10 dev39 DNS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/projector-delete-insert-atomicity
+    paths:
+      - .github/workflows/j10-dev39-dns.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: june10-dev39-dns
+  cancel-in-progress: false
+
+jobs:
+  provision-dev39-dns:
+    name: Provision dev39 DNS record
+    runs-on: ubuntu-latest
+    env:
+      HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+      HOSTINGER_DOMAIN: ${{ vars.HOSTINGER_DOMAIN }}
+      DEV39_DNS_TARGET: ${{ vars.DEV39_DNS_TARGET }}
+      HOSTINGER_API_BASE: https://developers.hostinger.com
+    steps:
+      - name: Validate sealed inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for required in HOSTINGER_API_TOKEN HOSTINGER_DOMAIN DEV39_DNS_TARGET; do
+            if [ -z "${!required:-}" ]; then
+              echo "Missing required secret/variable: ${required}"
+              exit 1
+            fi
+          done
+          if [ "$HOSTINGER_DOMAIN" != "terrafusionmarket.com" ]; then
+            echo "Unexpected HOSTINGER_DOMAIN: $HOSTINGER_DOMAIN"
+            exit 1
+          fi
+          if [ "$DEV39_DNS_TARGET" != "72.60.126.11" ]; then
+            echo "Unexpected DEV39_DNS_TARGET: $DEV39_DNS_TARGET"
+            exit 1
+          fi
+
+      - name: Build dev39 DNS payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python - <<'PY'
+          import json
+          import os
+
+          payload = {
+              "overwrite": True,
+              "zone": [
+                  {
+                      "name": "dev39",
+                      "type": "A",
+                      "ttl": 300,
+                      "records": [
+                          {"content": os.environ["DEV39_DNS_TARGET"]},
+                      ],
+                  }
+              ],
+          }
+          with open("payload.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2)
+              handle.write("\n")
+          with open("evidence/dev39-dns-request.redacted.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2)
+              handle.write("\n")
+          PY
+
+      - name: Validate record with Hostinger API
+        shell: bash
+        run: |
+          set -euo pipefail
+          http_status="$(
+            curl -sS -o evidence/hostinger-validate-response.json -w '%{http_code}' \
+              -X POST "$HOSTINGER_API_BASE/api/dns/v1/zones/$HOSTINGER_DOMAIN/validate" \
+              -H "Authorization: Bearer $HOSTINGER_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/json" \
+              --data-binary @payload.json
+          )"
+          printf '%s\n' "$http_status" > evidence/hostinger-validate-status.txt
+          if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "Hostinger DNS validation failed with HTTP $http_status"
+            cat evidence/hostinger-validate-response.json
+            exit 1
+          fi
+
+      - name: Apply dev39 A record with Hostinger API
+        shell: bash
+        run: |
+          set -euo pipefail
+          http_status="$(
+            curl -sS -o evidence/hostinger-update-response.json -w '%{http_code}' \
+              -X PUT "$HOSTINGER_API_BASE/api/dns/v1/zones/$HOSTINGER_DOMAIN" \
+              -H "Authorization: Bearer $HOSTINGER_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/json" \
+              --data-binary @payload.json
+          )"
+          printf '%s\n' "$http_status" > evidence/hostinger-update-status.txt
+          if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "Hostinger DNS update failed with HTTP $http_status"
+            cat evidence/hostinger-update-response.json
+            exit 1
+          fi
+
+      - name: Verify DNS propagation attempt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import socket
+          import time
+
+          hostname = "dev39.terrafusionmarket.com"
+          expected = "72.60.126.11"
+          observations = []
+          resolved = False
+          for attempt in range(1, 31):
+              try:
+                  addrs = sorted({item[4][0] for item in socket.getaddrinfo(hostname, 443, proto=socket.IPPROTO_TCP)})
+              except OSError as exc:
+                  addrs = []
+                  observations.append({"attempt": attempt, "error": str(exc)})
+              else:
+                  observations.append({"attempt": attempt, "addresses": addrs})
+                  if expected in addrs:
+                      resolved = True
+                      break
+              time.sleep(10)
+
+          result = {
+              "hostname": hostname,
+              "expectedAddress": expected,
+              "resolved": resolved,
+              "observations": observations,
+              "note": "DNS propagation can remain pending after a successful Hostinger API update.",
+          }
+          with open("evidence/dev39-dns-propagation.json", "w", encoding="utf-8") as handle:
+              json.dump(result, handle, indent=2)
+              handle.write("\n")
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Upload DNS evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: j10-dev39-dns-evidence
+          path: evidence/
+          if-no-files-found: error
