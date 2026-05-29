@@ -73,7 +73,6 @@ export function CountyStudyPage() {
     activeStudy,
     syncState,
     drillLevel,
-    selectedCity,
     selectedNeighborhood,
     selectedNeighborhoodRevalArea,
     selectedSegmentId,
@@ -98,9 +97,6 @@ export function CountyStudyPage() {
     });
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
-    }
-    if (selectedCity) {
-      params.set('city', selectedCity);
     }
     if (selectedNeighborhood) {
       params.set('neighborhoodCode', selectedNeighborhood);

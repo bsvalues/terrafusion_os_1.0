@@ -91,7 +91,6 @@ export function NeighborhoodInspector() {
         countyId: activeStudy.countyId,
         countyName: activeStudy.countyName,
         taxYear: activeStudy.taxYear,
-        city: row.city,
         neighborhoodCode: row.neighborhoodCode,
         neighborhoodName: row.neighborhoodName,
         revalArea: row.revalArea,
@@ -106,7 +105,6 @@ export function NeighborhoodInspector() {
       studyId: activeStudy.studyId,
       countyId: activeStudy.countyId,
       taxYear: String(activeStudy.taxYear),
-      city: row.city,
       neighborhoodCode: row.neighborhoodCode,
     });
     if (row.revalArea !== null) {
