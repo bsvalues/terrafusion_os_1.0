@@ -11,6 +11,26 @@ interface Props {
   onClose: () => void;
 }
 
+const CITY_PRIMARY_KEYS = new Set(['city', 'cityName', 'selectedCity']);
+
+function stripCityPrimaryKeys(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(stripCityPrimaryKeys);
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([key, item]) => !CITY_PRIMARY_KEYS.has(key) && !(key === 'rollupScope' && item === 'city'))
+        .map(([key, item]) => [key, stripCityPrimaryKeys(item)]),
+    );
+  }
+  return value;
+}
+
+function sanitizeEvidencePacketForExport(packet: EvidencePacketDto): EvidencePacketDto {
+  return stripCityPrimaryKeys(packet) as EvidencePacketDto;
+}
+
 export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
   const [packet, setPacket] = useState<EvidencePacketDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +46,7 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
 
   const handleDownloadJson = () => {
     if (!packet) return;
-    const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(sanitizeEvidencePacketForExport(packet), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -37,7 +57,7 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
 
   const handleCopyMarkdown = async () => {
     if (!packet) return;
-    const md = evidencePacketToMarkdown(packet);
+    const md = evidencePacketToMarkdown(sanitizeEvidencePacketForExport(packet));
     await navigator.clipboard.writeText(md);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
