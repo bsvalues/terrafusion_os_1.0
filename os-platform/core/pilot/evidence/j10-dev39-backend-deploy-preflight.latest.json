@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-05-31T20:06:13.563Z",
+  "operation": "dev39_backend_deploy_preflight",
+  "target": "dev39",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "cleanup": "docker_builder_cache_only",
+  "beforeUsePercent": 86,
+  "afterUsePercent": 85,
+  "warningThresholdPercent": 90,
+  "verdict": "PASS_BELOW_WARNING_THRESHOLD",
+  "packetHash": "9cff9cf679b38f79d231fb02ac98b76c69404effe30faa2294ecec0273255a25"
+}

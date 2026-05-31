@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 
@@ -194,17 +195,42 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> GetProfile()
     {
         await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
-            var email = User.FindFirst("email")?.Value;
-            var roles = User.FindAll("role").Select(c => c.Value).ToArray();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                ?? User.FindFirstValue("nameid");
+            var email = User.FindFirstValue(JwtRegisteredClaimNames.Email)
+                ?? User.FindFirstValue(ClaimTypes.Email)
+                ?? User.FindFirstValue("email");
+            var roles = User.FindAll(ClaimTypes.Role)
+                .Concat(User.FindAll("role"))
+                .Select(c => c.Value)
+                .Where(role => !string.IsNullOrWhiteSpace(role))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var permissions = User.FindAll("perm")
+                .Select(c => c.Value)
+                .Where(permission => !string.IsNullOrWhiteSpace(permission))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var countyId = User.FindFirstValue("countyId")
+                ?? User.FindFirstValue("CountyId");
+            var countyCode = User.FindFirstValue("countyCode")
+                ?? User.FindFirstValue("CountyCode");
 
-            return Ok(new UserProfile
+            return Ok(new
             {
-                Email = email!,
-                Roles = roles,
-                LastLogin = DateTime.UtcNow // In production, get from database
+                userId,
+                email,
+                roles,
+                permissions,
+                countyId,
+                fips = countyId,
+                countyCode,
+                state = "WA",
+                sessionValid = true,
+                lastLogin = DateTime.UtcNow // In production, get from database
             });
         }
         catch (Exception ex)

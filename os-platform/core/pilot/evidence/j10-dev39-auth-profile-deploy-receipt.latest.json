@@ -1,0 +1,12 @@
+{
+  "operation": "auth_profile_dev39_backend_deploy",
+  "target": "dev39",
+  "appRoot": "/opt/terrafusion/june10-data-dev",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "backendImage": "terrafusion-dev39-backend:auth-profile-f9542230d88d-20260531200903",
+  "releaseSha": "f9542230d88d-auth-profile-dev39",
+  "baseCommit": "f9542230d88db5ad6b8fd007158081c2ce76cca3",
+  "publishTarSha256": "85aced94af368b622858d200dadd91f1c38de36d35bc5512e9d0006200d16026",
+  "deployedAtUtc": "2026-05-31T20:09:03Z"
+}
