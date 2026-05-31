@@ -1,0 +1,13 @@
+{
+  "operation": "multicounty_federation_empty_state_dev39_backend_deploy",
+  "target": "dev39",
+  "appRoot": "/opt/terrafusion/june10-data-dev",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "backendImage": "terrafusion-dev39-backend:multicounty-empty-state-f9542230d88d-20260531170000",
+  "releaseSha": "f9542230d88d-multicounty-empty-state-dev39",
+  "baseCommit": "f9542230d88db5ad6b8fd007158081c2ce76cca3",
+  "sourcePatchSha256": "22be4955263ec1ea1cd4badbaca4ec498d3b742685f5af69d0056a9c5d0b1290",
+  "publishTarSha256": "0dda41adbf965ac0d316f07f53d45ab4cd94f4dad29fa9580fb1fab8ff5a50ee",
+  "deployedAtUtc": "2026-05-31T17:54:17Z"
+}

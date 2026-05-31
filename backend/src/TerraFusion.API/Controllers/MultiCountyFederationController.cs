@@ -312,8 +312,10 @@ public class MultiCountyFederationController : ControllerBase
                 },
                 performance = new
                 {
-                    averageResponseTime = health.CountyHealthResults.Average(c => c.ResponseTime.TotalMilliseconds),
-                    championshipStatus = "TIER 5+ OPERATIONAL",
+                    averageResponseTime = health.CountyHealthResults.Length == 0
+                        ? 0
+                        : health.CountyHealthResults.Average(c => c.ResponseTime.TotalMilliseconds),
+                    championshipStatus = health.TotalCounties == 0 ? "NOT_INITIALIZED" : "TIER 5+ OPERATIONAL",
                     quantumSecurityEnabled = true,
                     federatedGovernanceActive = true
                 }
@@ -344,9 +346,10 @@ public class MultiCountyFederationController : ControllerBase
 
             var status = new
             {
-                federationStatus = "TIER 5+ OPERATIONAL",
-                systemHealth = health.OverallHealth >= 95.0 ? "CHAMPIONSHIP" :
-                              health.OverallHealth >= 90.0 ? "EXCELLENT" : "GOOD",
+                federationStatus = health.TotalCounties == 0 ? "NOT_INITIALIZED" : "TIER 5+ OPERATIONAL",
+                systemHealth = health.TotalCounties == 0 ? "UNAVAILABLE" :
+                    health.OverallHealth >= 95.0 ? "CHAMPIONSHIP" :
+                    health.OverallHealth >= 90.0 ? "EXCELLENT" : "GOOD",
                 totalCounties = health.TotalCounties,
                 operationalCounties = health.OperationalCounties,
                 federationUptime = health.FederationUptime,

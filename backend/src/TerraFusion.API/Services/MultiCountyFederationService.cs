@@ -261,6 +261,21 @@ public class MultiCountyFederationService : IMultiCountyFederationService
 
             var healthResults = await Task.WhenAll(healthTasks);
 
+            if (healthResults.Length == 0)
+            {
+                return new FederationHealthResult
+                {
+                    OverallHealth = 0,
+                    TotalCounties = 0,
+                    OperationalCounties = 0,
+                    FederationUptime = DateTime.UtcNow - _federationStartTime,
+                    CountyHealthResults = Array.Empty<CountyHealthResult>(),
+                    SuccessRate = _totalFederatedOperations > 0 ?
+                        ((double)_successfulOperations / _totalFederatedOperations) * 100 : 100.0,
+                    LastHealthCheck = DateTime.UtcNow
+                };
+            }
+
             var overallHealth = healthResults.Average(h => h.HealthScore);
             var operationalCounties = healthResults.Count(h => h.IsOperational);
 
@@ -396,6 +411,20 @@ public class MultiCountyFederationService : IMultiCountyFederationService
                 ValidateCountyComplianceAsync(county)).ToArray();
 
             var complianceResults = await Task.WhenAll(complianceTasks);
+
+            if (complianceResults.Length == 0)
+            {
+                return new MultiCountyComplianceValidationResult
+                {
+                    IsCompliant = false,
+                    OverallComplianceScore = 0,
+                    TotalCounties = 0,
+                    CompliantCounties = 0,
+                    CountyComplianceResults = Array.Empty<CountyComplianceResult>(),
+                    ValidationTime = DateTime.UtcNow,
+                    ComplianceFrameworks = new[] { "FISMA", "FedRAMP", "SOC2", "NIST" }
+                };
+            }
 
             var overallCompliance = complianceResults.Average(c => c.ComplianceScore);
             var compliantCounties = complianceResults.Count(c => c.IsCompliant);
