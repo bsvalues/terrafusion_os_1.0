@@ -1,0 +1,108 @@
+{
+  "artifact": "j10-dev39-health-disk-release-smoke",
+  "generatedAtUtc": "2026-05-31T18:11:52.464Z",
+  "scope": "Endpoint Triage Wave 8",
+  "target": "dev39",
+  "dev39Only": true,
+  "productionTouched": false,
+  "databaseMutationTouched": false,
+  "codeChanged": false,
+  "fakeDataAdded": false,
+  "broadModuleEnablement": false,
+  "cluster": "Health endpoint bad config / disk-pressure 503",
+  "rootCause": "/api/health returned 503 because dev39 disk usage was 97%, making the Disk Space health check Unhealthy. Database connectivity was healthy; AI engine remained idle/degraded but not unhealthy.",
+  "action": "Removed disposable dev39 build contexts under /opt/terrafusion/june10-data-dev and pruned Docker build cache. Running containers, volumes, tagged release images, database, production, and application code were not changed.",
+  "diskBefore": {
+    "usedPercent": 97,
+    "available": "1.6G"
+  },
+  "diskAfter": {
+    "usedPercent": 84,
+    "available": "8.2G"
+  },
+  "liveChecks": [
+    {
+      "route": "/health",
+      "status": 200,
+      "ok": true,
+      "statusBody": "Healthy"
+    },
+    {
+      "route": "/api/health",
+      "status": 200,
+      "ok": true,
+      "statusBody": "Degraded",
+      "checks": [
+        {
+          "name": "Database",
+          "status": "Healthy",
+          "description": "Connected successfully. 0 properties in database"
+        },
+        {
+          "name": "AI Engine",
+          "status": "Degraded",
+          "description": "AI Engine is Idle. 0/0 models active"
+        },
+        {
+          "name": "Memory",
+          "status": "Healthy",
+          "description": "Memory usage: 94.00 MB"
+        },
+        {
+          "name": "Disk Space",
+          "status": "Degraded",
+          "description": "Disk usage: 83.2% (8.0 GB free of 48.0 GB)"
+        }
+      ]
+    }
+  ],
+  "matrixSummary": {
+    "totalEndpoints": 1281,
+    "classificationCounts": {
+      "live": 238,
+      "protected": 563,
+      "broken": 167,
+      "mock": 16,
+      "dead": 41,
+      "not_applicable": 0,
+      "unknown": 256
+    },
+    "evidenceSourceCounts": {
+      "live dev39 probe": 545,
+      "static only": 736
+    },
+    "methodCounts": {
+      "GET": 782,
+      "POST": 428,
+      "PATCH": 21,
+      "DELETE": 22,
+      "PUT": 28
+    },
+    "safeDev39GetCandidates": 545
+  },
+  "triageSummary": {
+    "totalBrokenGetEndpoints": 167,
+    "likelyCauseCounts": {
+      "missing DB table": 116,
+      "not applicable to dev39": 45,
+      "unknown": 5,
+      "bad config": 1
+    },
+    "priorityCounts": {
+      "production blocker": 128,
+      "module blocker": 39
+    },
+    "statusCodeCounts": {
+      "0": 1,
+      "400": 47,
+      "500": 118,
+      "503": 1
+    }
+  },
+  "capabilityVerdict": {
+    "controlledStatewideRuntimePreview": "READY_FOR_DEMO",
+    "fullApplicationCapability": "NOT_READY",
+    "productionReadiness": "NO_GO",
+    "fullStatewideCertification": "NO_GO"
+  }
+}

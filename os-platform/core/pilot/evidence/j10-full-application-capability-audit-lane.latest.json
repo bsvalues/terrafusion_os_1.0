@@ -1,0 +1,157 @@
+{
+  "generatedAt": "2026-05-31T18:11:16.634Z",
+  "name": "Full Application Capability Audit Lane",
+  "scope": {
+    "target": "full application capability, not frozen demo path only",
+    "nonMutating": true,
+    "noProductionBinding": true,
+    "noSchemaChange": true,
+    "noFeatureWork": true
+  },
+  "statuses": ["PROVEN", "PARTIAL", "BROKEN", "MOCK", "DEAD", "UNKNOWN"],
+  "verdict": {
+    "controlledStatewideRuntimePreview": "READY_FOR_DEMO",
+    "fullApplicationCapability": "NOT_READY",
+    "productionReadiness": "NO_GO",
+    "fullStatewideCertification": "NO_GO"
+  },
+  "inventory": {
+    "frontendRouteCount": 0,
+    "backendHttpMethodCount": 1277,
+    "backendControllerFileCount": 160,
+    "frontendApiServiceFileCount": 210,
+    "activeRustCargoFileCount": 203
+  },
+  "liveSmokeSummary": {
+    "apiProbeCount": 18,
+    "apiFailureCount": 8,
+    "uiRouteProbeCount": 9,
+    "uiRouteFailureCount": 1,
+    "consoleErrorCount": 9
+  },
+  "categories": [
+    {
+      "id": "route_inventory",
+      "label": "Route Inventory",
+      "status": "BROKEN",
+      "evidence": {
+        "frontendRouteCount": 0,
+        "liveRouteProbeCount": 9,
+        "liveRouteFailureCount": 1,
+        "coverageRatio": 0
+      },
+      "requiredNextProof": "Every router path must be visited with auth posture, render status, console errors, and data dependencies recorded."
+    },
+    {
+      "id": "api_inventory",
+      "label": "API Inventory",
+      "status": "BROKEN",
+      "evidence": {
+        "backendHttpMethodCount": 1277,
+        "liveApiProbeCount": 18,
+        "liveApiFailureCount": 8,
+        "coverageRatio": 0.0141,
+        "failingProbes": [
+          "GET /api/counties/benton/parcels?limit=2 -> 404",
+          "GET /api/sales?limit=2 -> 400",
+          "GET /api/dais/queue/all -> 403",
+          "GET /api/pilot/explain -> 405",
+          "GET /api/TerraFusionMarketplace/health -> 501",
+          "GET /api/workbench/flags -> 403",
+          "GET /api/workbench/sync-readiness -> 400",
+          "GET /api/canon/doctor -> 404"
+        ]
+      },
+      "requiredNextProof": "Build a full endpoint contract matrix for every HTTP method attribute and classify live/protected/broken/dead/not-applicable."
+    },
+    {
+      "id": "module_inventory",
+      "label": "Module Inventory",
+      "status": "UNKNOWN",
+      "evidence": {
+        "routeBackedModulesKnown": 9,
+        "fullModuleTaskProof": false
+      },
+      "requiredNextProof": "Each suite/module needs task proof: load, real data, action, result, error handling, and exit path."
+    },
+    {
+      "id": "data_provenance",
+      "label": "Data Provenance Audit",
+      "status": "PARTIAL",
+      "evidence": {
+        "browserStorageReferenceCount": 798,
+        "legacyReferenceCount": 4298
+      },
+      "requiredNextProof": "Map every user-facing screen to dev39 Postgres, production DB, mock JSON, hardcoded fixtures, local storage, or unknown."
+    },
+    {
+      "id": "rust_engine_audit",
+      "label": "Rust Engine Audit",
+      "status": "UNKNOWN",
+      "evidence": {
+        "activeRustCargoFileCount": 203,
+        "liveRustInvocationProof": false
+      },
+      "requiredNextProof": "Compile and trace live calls into each claimed Rust engine before any runtime claim."
+    },
+    {
+      "id": "redis_audit",
+      "label": "Redis Audit",
+      "status": "UNKNOWN",
+      "evidence": {
+        "redisEvidenceCount": 1727,
+        "liveRedisProof": false
+      },
+      "requiredNextProof": "Prove configured Redis endpoint, cache hits/misses, failure behavior, and whether runtime depends on it."
+    },
+    {
+      "id": "observability_audit",
+      "label": "Prometheus / Observability Audit",
+      "status": "UNKNOWN",
+      "evidence": {
+        "prometheusEvidenceCount": 13926,
+        "liveMetricsEndpointProof": true
+      },
+      "requiredNextProof": "Verify metrics emission, scrapeability, dashboards, alerting, and correlationId traceability for live failures."
+    },
+    {
+      "id": "cli_operator_tooling",
+      "label": "CLI / Operator Tooling Audit",
+      "status": "UNKNOWN",
+      "evidence": {
+        "knownPackageScripts": "not fully audited by this lane",
+        "operatorRunbookProof": false
+      },
+      "requiredNextProof": "Inventory CLI/operator tools, run each supported command, and mark dead/internal/launch-critical."
+    },
+    {
+      "id": "ux_workflow_audit",
+      "label": "UX / Workflow Audit",
+      "status": "BROKEN",
+      "evidence": {
+        "liveRouteFailureCount": 1,
+        "consoleErrorCount": 9,
+        "fullTaskCompletionProof": false
+      },
+      "requiredNextProof": "Run real user tasks: login, find parcel, open TerraForge, execute workflow, export/view evidence, logout."
+    },
+    {
+      "id": "mock_stub_audit",
+      "label": "Mock / Stub Audit",
+      "status": "MOCK",
+      "evidence": {
+        "mockStubDemoReferenceCount": 10476
+      },
+      "requiredNextProof": "Classify every mock/stub/demo/sample/placeholder as production-excluded, test-only, dead, or active blocker."
+    }
+  ],
+  "nextExecutionSlices": [
+    "Build endpoint contract matrix for all backend HTTP method attributes.",
+    "Build route-to-workflow matrix for every frontend router path.",
+    "Classify mock/stub/demo/sample/placeholder references into active blocker vs test-only.",
+    "Map each user-facing data dependency to Postgres, API, local storage, fixture, or unknown.",
+    "Run Rust, Redis, Prometheus, and CLI runtime proof lanes separately."
+  ],
+  "hardStop": "Do not claim full production readiness until every category is PROVEN or explicitly not applicable with evidence.",
+  "packetHash": "308bd366d36d92a22efa984feec7303873499046c146cce212229ee1044f0da6"
+}
