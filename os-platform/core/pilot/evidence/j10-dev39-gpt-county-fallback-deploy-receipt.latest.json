@@ -1,0 +1,12 @@
+{
+  "operation": "gpt_county_fallback_dev39_backend_deploy",
+  "target": "dev39",
+  "appRoot": "/opt/terrafusion/june10-data-dev",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "backendImage": "terrafusion-dev39-backend:gpt-county-fallback-f9542230d88d-20260531194756",
+  "releaseSha": "f9542230d88d-gpt-county-fallback-dev39",
+  "baseCommit": "f9542230d88db5ad6b8fd007158081c2ce76cca3",
+  "publishTarSha256": "00b52ce67f3a2d1b0f263e37328367f5bc31b74032424329558ffd3356c64103",
+  "deployedAtUtc": "2026-05-31T19:47:56Z"
+}

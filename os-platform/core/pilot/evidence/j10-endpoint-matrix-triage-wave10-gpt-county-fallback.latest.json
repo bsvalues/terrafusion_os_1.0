@@ -1,0 +1,656 @@
+{
+  "generatedAt": "2026-05-31T19:52:49.462Z",
+  "verdict": "TRIAGE_ONLY_NO_FIXES",
+  "scope": {
+    "brokenGetEndpointSource": "j10-backend-endpoint-contract-matrix.latest.json",
+    "baseUrl": null,
+    "reprobeEnabled": false,
+    "productionBindingTouched": false,
+    "dataMutationTouched": false,
+    "featureFixesTouched": false
+  },
+  "allowedCauses": [
+    "missing service",
+    "missing DB table",
+    "auth/permission mismatch",
+    "stale route",
+    "mock/stub",
+    "disabled module",
+    "bad config",
+    "not applicable to dev39",
+    "unknown"
+  ],
+  "allowedPriorities": [
+    "demo blocker",
+    "production blocker",
+    "module blocker",
+    "dead/defer"
+  ],
+  "summary": {
+    "totalBrokenGetEndpoints": 29,
+    "likelyCauseCounts": {
+      "unknown": 29
+    },
+    "priorityCounts": {
+      "module blocker": 26,
+      "production blocker": 3
+    },
+    "statusCodeCounts": {
+      "400": 7,
+      "500": 21,
+      "503": 1
+    }
+  },
+  "brokenEndpoints": [
+    {
+      "controller": "BankedCapacityController",
+      "action": "GetBankedCapacity",
+      "route": "/api/levy/v1/banked-capacity",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\BankedCapacityController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "TerraFusion auth/session DB",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 91,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "BudgetImpactController",
+      "action": "GetVisualization",
+      "route": "/api/levy/budget/visualization",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\BudgetImpactController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 831,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "BudgetImpactController",
+      "action": "GetScenarios",
+      "route": "/api/levy/budget/scenarios",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\BudgetImpactController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 824,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "CostForgeController",
+      "action": "GetCalcTraces",
+      "route": "/api/costforge/traces",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\CostForgeController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "production blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": "Permission=access:costforge",
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 105,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "ListRatioRules",
+      "route": "/api/sync/doctrine/policy/ratio",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 98,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "EvaluateRatio",
+      "route": "/api/sync/doctrine/policy/ratio/evaluate",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 140,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "ListUniverseRules",
+      "route": "/api/sync/doctrine/policy/universe",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 127,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "FromQuery",
+      "route": "/api/sync/doctrine/policy/universe/classify",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 119,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "ListAttributeDictionary",
+      "route": "/api/sync/doctrine/policy/universe/attribute-dictionary",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 133,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "FromQuery",
+      "route": "/api/sync/doctrine/policy/sales-qualification",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "sales/canonical sale data",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 158,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrinePolicyController",
+      "action": "AuditSalesQualification",
+      "route": "/api/sync/doctrine/policy/sales-qualification/audit",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrinePolicyController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "sales/canonical sale data",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 151,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrineStatusController",
+      "action": "GetDoctrineState",
+      "route": "/api/sync/doctrine/state",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrineStatusController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 3989,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "DoctrineStatusController",
+      "action": "GetLaneHealth",
+      "route": "/api/sync/doctrine/lanes",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\DoctrineStatusController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 3945,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "GovernmentComplianceController",
+      "action": "GetCertificationStatus",
+      "route": "/api/compliance/certification",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\GovernmentComplianceController.cs",
+      "statusCode": 503,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "unknown",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 161,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyAuditController",
+      "action": "Dashboard",
+      "route": "/api/levy/audit/dashboard",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyAuditController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "TerraFusion DB context",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 221,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyDashboardController",
+      "action": "Summary",
+      "route": "/api/levy/dashboard/summary",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyDashboardController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 121,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyDashboardController",
+      "action": "Metrics",
+      "route": "/api/levy/dashboard/metrics",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyDashboardController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 112,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyDashboardController",
+      "action": "DistrictsOverview",
+      "route": "/api/levy/dashboard/districts-overview",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyDashboardController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 115,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyDataQualityController",
+      "action": "DistrictRiskSummary",
+      "route": "/api/levy/v1/data-quality/district-risk-summary",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyDataQualityController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "TerraFusion DB context",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 94,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyForecastController",
+      "action": "Dashboard",
+      "route": "/api/levy/forecast/dashboard",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyForecastController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 110,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevyForecastController",
+      "action": "Compare",
+      "route": "/api/levy/forecast/compare",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevyForecastController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 105,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevySearchController",
+      "action": "Search",
+      "route": "/api/levy/search/search",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevySearchController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 90,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "LevySearchController",
+      "action": "Autocomplete",
+      "route": "/api/levy/search/autocomplete",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\LevySearchController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 107,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "PlaygroundController",
+      "action": "GetScenarios",
+      "route": "/api/playground/scenarios",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\PlaygroundController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "anonymous",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "unknown",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 93,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "PublicLevyPortalController",
+      "action": "GetTaxEstimate",
+      "route": "/api/levy/public/tax-estimate",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\PublicLevyPortalController.cs",
+      "statusCode": 400,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "canonical county/parcel runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 83,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "SwarmIntelligenceController",
+      "action": "GetSwarmStatus",
+      "route": "/api/swarmintelligence/status",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\SwarmIntelligenceController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "production blocker",
+      "authRequirement": "authorized",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "reporting runtime",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 87,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "WhatIfScenariosController",
+      "action": "GetScenarios",
+      "route": "/api/what-if-scenarios",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\WhatIfScenariosController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "production blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "unknown",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 73,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "WorkbenchFController",
+      "action": "ListQuarantine",
+      "route": "/api/sync/workbench/f/quarantine/imprv-attr",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\WorkbenchFController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "unknown",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 116,
+        "responseSnippet": ""
+      }
+    },
+    {
+      "controller": "WorkbenchGController",
+      "action": "ListCommits",
+      "route": "/api/sync/workbench/g/commits",
+      "httpMethod": "GET",
+      "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\WorkbenchGController.cs",
+      "statusCode": 500,
+      "correlationId": null,
+      "logError": null,
+      "likelyCause": "unknown",
+      "priority": "module blocker",
+      "authRequirement": "unknown",
+      "expectedRoleOrPermission": null,
+      "dataDependency": "unknown",
+      "evidenceSource": "endpoint matrix probe evidence",
+      "evidence": {
+        "contentType": null,
+        "durationMs": 115,
+        "responseSnippet": ""
+      }
+    }
+  ],
+  "packetHash": "18afaf1232d40a35e554a9ee0a9a812e271164ed59da773263d606c208c52b1e"
+}

@@ -1,0 +1,82 @@
+{
+  "operation": "endpoint_triage_wave10_gpt_county_claim_fallback",
+  "target": "dev39",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "fakeDataIntroduced": false,
+  "rootCause": "GPT read endpoints used throwing GetCountyId() for authenticated tokens that may not carry CountyId, producing 500s instead of an honest unscoped/empty read state.",
+  "fix": [
+    "GET /api/gpt uses neutral county scope 0 when authenticated token lacks CountyId, preserving system/public GPT visibility without inventing county data.",
+    "GET /api/gpt/conversations returns an empty scoped conversation list when CountyId is unavailable; write paths still require GetCountyId()."
+  ],
+  "releaseSha": "f9542230d88d-gpt-county-fallback-dev39",
+  "backendImage": "terrafusion-dev39-backend:gpt-county-fallback-f9542230d88d-20260531194756",
+  "diskPreflight": {
+    "warningThresholdExceeded": false,
+    "remoteRootUsePercentAfter": 86,
+    "remoteRootUsePercentBefore": 84
+  },
+  "smoke": {
+    "gptInventory": {
+      "body": "[]",
+      "status": 200
+    },
+    "gptConversationsWithoutValidAuth": {
+      "note": "local dev39 operator env is currently rejected by /api/auth/login, so protected conversation route is classified protected in this matrix refresh rather than live-auth-proven",
+      "status": 401
+    },
+    "health": {
+      "gitSha": "f9542230d88d-gpt-county-fallback-dev39",
+      "status": 200
+    }
+  },
+  "matrix": {
+    "gptConversationClassification": "protected",
+    "summary": {
+      "totalEndpoints": 1281,
+      "classificationCounts": {
+        "live": 113,
+        "protected": 853,
+        "broken": 29,
+        "mock": 16,
+        "dead": 13,
+        "not_applicable": 0,
+        "unknown": 257
+      },
+      "evidenceSourceCounts": {
+        "live dev39 probe": 544,
+        "static only": 737
+      },
+      "methodCounts": {
+        "GET": 782,
+        "POST": 428,
+        "PATCH": 21,
+        "DELETE": 22,
+        "PUT": 28
+      },
+      "safeDev39GetCandidates": 544
+    },
+    "gptInventoryClassification": "live",
+    "source": "j10-backend-endpoint-contract-matrix.wave10-gpt-county-fallback.json"
+  },
+  "triage": {
+    "source": "j10-endpoint-matrix-triage-wave10-gpt-county-fallback.latest.json",
+    "summary": {
+      "totalBrokenGetEndpoints": 29,
+      "likelyCauseCounts": {
+        "unknown": 29
+      },
+      "priorityCounts": {
+        "module blocker": 26,
+        "production blocker": 3
+      },
+      "statusCodeCounts": {
+        "400": 7,
+        "500": 21,
+        "503": 1
+      }
+    }
+  },
+  "capabilityVerdict": "NOT_READY",
+  "demoPosture": "READY_FOR_DEMO"
+}

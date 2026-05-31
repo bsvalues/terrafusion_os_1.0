@@ -109,7 +109,9 @@ namespace TerraFusion.API.Controllers
             {
                 var isAuth = User?.Identity?.IsAuthenticated == true;
                 var userId   = isAuth ? GetUserId()   : "dev-anonymous";
-                var countyId = isAuth ? GetCountyId() : 1;
+                var countyId = isAuth
+                    ? (TryGetCountyId(out var authenticatedCountyId) ? authenticatedCountyId : 0)
+                    : 1;
                 var role     = isAuth ? GetUserRole() : "User";
 
                 var gpts = await _configService.GetAvailableGPTsAsync(userId, countyId, role);
@@ -331,7 +333,14 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var userId = GetUserId();
-                var countyId = GetCountyId();
+                if (!TryGetCountyId(out var countyId))
+                {
+                    _logger.LogWarning(
+                        "GPT conversation list requested without CountyId claim for user {UserId}; returning empty county-scoped conversation list",
+                        userId);
+                    return Ok(new List<GPTConversation>());
+                }
+
                 var conversations = await _orchestrationService.GetAllConversationsAsync(
                     userId, countyId, skip, limit, cancellationToken);
                 return Ok(conversations);
@@ -2276,6 +2285,12 @@ namespace TerraFusion.API.Controllers
                 throw new InvalidOperationException("County ID not found in claims");
             }
             return countyId;
+        }
+
+        private bool TryGetCountyId(out int countyId)
+        {
+            var countyIdClaim = User.FindFirst("CountyId")?.Value;
+            return int.TryParse(countyIdClaim, out countyId);
         }
 
         private string GetUserRole()
