@@ -1,0 +1,95 @@
+{
+  "artifact": "j10-dev39-wave9-streaming-probe-smoke",
+  "generatedAtUtc": "2026-05-31T19:17:09.329Z",
+  "scope": "Endpoint Triage Wave 9",
+  "target": "dev39",
+  "dev39Only": true,
+  "productionTouched": false,
+  "databaseMutationTouched": false,
+  "backendCodeChanged": false,
+  "fakeDataAdded": false,
+  "broadModuleEnablement": false,
+  "rootCause": "The endpoint matrix treated the long-lived GPT Atlas live stream route as a finite safe GET probe. The probe timed out and falsely classified the endpoint as broken.",
+  "action": "Updated endpoint matrix safe-probe rules to keep streaming GET routes in static inventory while excluding them from live finite request/response probing.",
+  "cluster": "streaming/live endpoint probe contract",
+  "diskPreflight": {
+    "source": "df -h /opt/terrafusion/june10-data-dev",
+    "raw": "/dev/sda1        49G   41G  8.1G  84% /",
+    "coveredBy": "/api/health disk-space check and this SSH df preflight"
+  },
+  "endpointAfter": {
+    "controller": "GPTController",
+    "action": "GetAtlasLiveStream",
+    "sourceFile": "backend\\src\\TerraFusion.API\\Controllers\\GPTController.cs",
+    "httpMethod": "GET",
+    "route": "/api/gpt/system/atlas/live",
+    "routeTemplate": {
+      "controller": "api/[controller]",
+      "action": "system/atlas/live"
+    },
+    "authRequirement": "anonymous",
+    "expectedRoleOrPermission": null,
+    "dataDependency": "unknown",
+    "currentClassification": "unknown",
+    "evidenceSource": "static only",
+    "evidence": {
+      "staticAttributes": [
+        "[HttpGet(\"system/atlas/live\")]",
+        "[AllowAnonymous]"
+      ]
+    }
+  },
+  "runtimeTruthDbContentAfter": {
+    "route": "/api/runtime/truth/db-content",
+    "classification": "live",
+    "status": 200,
+    "durationMs": 5948
+  },
+  "matrixSummary": {
+    "totalEndpoints": 1281,
+    "classificationCounts": {
+      "live": 238,
+      "protected": 563,
+      "broken": 166,
+      "mock": 16,
+      "dead": 41,
+      "not_applicable": 0,
+      "unknown": 257
+    },
+    "evidenceSourceCounts": {
+      "live dev39 probe": 544,
+      "static only": 737
+    },
+    "methodCounts": {
+      "GET": 782,
+      "POST": 428,
+      "PATCH": 21,
+      "DELETE": 22,
+      "PUT": 28
+    },
+    "safeDev39GetCandidates": 544
+  },
+  "triageSummary": {
+    "totalBrokenGetEndpoints": 166,
+    "likelyCauseCounts": {
+      "missing DB table": 116,
+      "not applicable to dev39": 45,
+      "unknown": 5
+    },
+    "priorityCounts": {
+      "production blocker": 128,
+      "module blocker": 38
+    },
+    "statusCodeCounts": {
+      "400": 47,
+      "500": 118,
+      "503": 1
+    }
+  },
+  "capabilityVerdict": {
+    "controlledStatewideRuntimePreview": "READY_FOR_DEMO",
+    "fullApplicationCapability": "NOT_READY",
+    "productionReadiness": "NO_GO",
+    "fullStatewideCertification": "NO_GO"
+  }
+}
