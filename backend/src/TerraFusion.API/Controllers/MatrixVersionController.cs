@@ -9,7 +9,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+[Authorize]
 public class MatrixVersionController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
