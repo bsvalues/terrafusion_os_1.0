@@ -26,7 +26,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/sync/doctrine/policy")]
-[AllowAnonymous]
+[Authorize]
 public class DoctrinePolicyController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
