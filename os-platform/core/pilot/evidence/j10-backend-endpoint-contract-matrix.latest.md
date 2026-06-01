@@ -1,31 +1,31 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T18:36:07.088Z
+- Generated: 2026-06-01T19:30:48.035Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: b7b09f1894a5efd04a86dd05935eff3ec974e68613750b7a100c083a75e2f08e
+- Packet hash: f5fd899e44aa0fb829900962001204c306af41a218cb49667927d9008f7f70eb
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 544 |
-| Static-only endpoints | 737 |
-| Live dev39 probed endpoints | 544 |
+| Safe dev39 GET candidates | 519 |
+| Static-only endpoints | 762 |
+| Live dev39 probed endpoints | 519 |
 
 ## Classification Counts
 
 | Classification | Count |
 | --- | ---: |
-| live | 253 |
-| protected | 778 |
-| broken | 184 |
+| live | 263 |
+| protected | 762 |
+| broken | 149 |
 | mock | 0 |
 | dead | 47 |
-| not_applicable | 0 |
+| not_applicable | 41 |
 | unknown | 19 |
 
 ## Method Counts
@@ -38,10 +38,6 @@
 
 ## Live Dev39 Broken/Dead Sample
 
-- GET /api/adjustment/proposals: broken (500)
-- GET /api/adjustment/sets: broken (500)
-- GET /api/adjustment/runs: broken (500)
-- GET /api/adjustment/recommend: broken (400)
 - GET /api/aiassistant/health: broken (500)
 - GET /api/aimodels/status: dead (404)
 - GET /api/aimodels/sentiment-trends: dead (404)
@@ -88,6 +84,10 @@
 - GET /api/connectors/registry: dead (404)
 - GET /api/connectors: broken (500)
 - GET /api/ai/consciousness: dead (501)
+- GET /api/ai/consciousness/enhanced: dead (501)
+- GET /api/ai/consciousness/system-status: dead (501)
+- GET /api/ai/consciousness/status: dead (501)
+- GET /api/costforge/matrix: broken (400)
 
 ## Hard Stop
 

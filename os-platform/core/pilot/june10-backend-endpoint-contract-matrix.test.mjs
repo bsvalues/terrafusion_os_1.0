@@ -5,6 +5,7 @@ import {
   classifyEndpoint,
   composeRoute,
   extractEndpointContractsFromController,
+  getDev39ProbePath,
   isSafeDev39GetProbeCandidate,
   summarizeEndpointMatrix
 } from "./june10-backend-endpoint-contract-matrix.mjs";
@@ -93,6 +94,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "protected"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/geoforge/ratio-study/sales",
+      authRequirement: "authorized",
+      body: "_db.ComparableSales.Where(s => s.CountyId == BentonCountyId)"
+    }),
+    "not_applicable"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {
@@ -105,6 +115,29 @@ test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => 
   assert.equal(isSafeDev39GetProbeCandidate({ httpMethod: "POST", route: "/api/sample/create" }), false);
   assert.equal(isSafeDev39GetProbeCandidate({ httpMethod: "GET", route: "/api/sample/{id}" }), false);
   assert.equal(isSafeDev39GetProbeCandidate({ httpMethod: "GET", route: "/api/sample/public" }), true);
+  assert.equal(
+    isSafeDev39GetProbeCandidate({
+      httpMethod: "GET",
+      route: "/api/geoforge/ratio-study/sales",
+      currentClassification: "not_applicable"
+    }),
+    false
+  );
+});
+
+test("getDev39ProbePath adds representative county scope for TerraForge read probes", () => {
+  assert.equal(
+    getDev39ProbePath({ httpMethod: "GET", route: "/api/terraforge/sale-qualification" }),
+    "/api/terraforge/sale-qualification?countyId=spokane"
+  );
+  assert.equal(
+    getDev39ProbePath({ httpMethod: "GET", route: "/api/terraforge/ratio-study?taxYear=2026" }),
+    "/api/terraforge/ratio-study?taxYear=2026&countyId=spokane"
+  );
+  assert.equal(
+    getDev39ProbePath({ httpMethod: "GET", route: "/api/runtime/truth/db-identity" }),
+    "/api/runtime/truth/db-identity"
+  );
 });
 
 test("summarizeEndpointMatrix reports classification and evidence counts", () => {

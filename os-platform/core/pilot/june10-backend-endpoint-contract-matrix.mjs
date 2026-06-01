@@ -167,6 +167,9 @@ function readMethodName(lines, methodLineIndex) {
 
 export function classifyEndpoint(endpoint) {
   const body = endpoint.body ?? "";
+  if (/\bBentonCountyId\b/.test(body)) {
+    return "not_applicable";
+  }
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
     return "dead";
   }
@@ -253,6 +256,7 @@ export function extractEndpointContractsFromController({ filePath, text }) {
 }
 
 export function isSafeDev39GetProbeCandidate(endpoint) {
+  if (endpoint.currentClassification === "not_applicable") return false;
   if (endpoint.httpMethod !== "GET") return false;
   if (/[{}]/.test(endpoint.route)) return false;
   if (/stream/i.test(endpoint.action ?? "")) return false;
@@ -306,12 +310,22 @@ async function loginForToken({ baseUrl, authEnvFile, timeoutMs }) {
   }
 }
 
+export function getDev39ProbePath(endpoint) {
+  const url = new URL(endpoint.route, "https://dev39.terrafusionmarket.com");
+  if (endpoint.route.startsWith("/api/terraforge/") || endpoint.route === "/api/terraforge") {
+    if (!url.searchParams.has("countyId")) {
+      url.searchParams.set("countyId", "spokane");
+    }
+  }
+  return `${url.pathname}${url.search}`;
+}
+
 async function probeEndpoint({ baseUrl, endpoint, token, timeoutMs }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const startedAt = Date.now();
   try {
-    const response = await fetch(new URL(endpoint.route, baseUrl), {
+    const response = await fetch(new URL(getDev39ProbePath(endpoint), baseUrl), {
       method: "GET",
       headers: token ? { authorization: `Bearer ${token}` } : {},
       signal: controller.signal
