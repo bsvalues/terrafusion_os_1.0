@@ -9,7 +9,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+[Authorize]
 public class CalibrationDiagnosticController : ControllerBase
 {
     private readonly IMatrixDiagnosticService _diagnosticService;
