@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T11:46:53.069Z",
+  "generatedAt": "2026-06-01T11:53:54.233Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,19 +52,19 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7515,
+    "totalFilesScanned": 7516,
     "filesWithSignals": 2109,
-    "productionRiskFiles": 397,
-    "demoSafeFiles": 1402,
+    "productionRiskFiles": 396,
+    "demoSafeFiles": 1403,
     "dormantFiles": 297,
     "deadFiles": 13,
-    "endpointAffectingMocks": 12,
+    "endpointAffectingMocks": 11,
     "wave1ProductionBlockersDispositioned": 39,
-    "wave1DispositionedStillPresentInCanonicalRisk": 36,
+    "wave1DispositionedStillPresentInCanonicalRisk": 35,
     "byBucket": {
-      "backend_runtime": 403,
+      "backend_runtime": 402,
       "docs": 156,
-      "test": 738,
+      "test": 739,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 87,
@@ -74,8 +74,8 @@
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 397,
-      "demo_safe": 1402,
+      "production_risk": 396,
+      "demo_safe": 1403,
       "dormant": 297,
       "dead": 13
     },
@@ -85,16 +85,16 @@
       "mock": 707,
       "sample_or_fixture": 427,
       "todo": 73,
-      "fallback": 535,
+      "fallback": 534,
       "fake": 104,
       "hardcoded": 120,
-      "not_implemented": 7
+      "not_implemented": 8
     }
   },
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 397,
+    "canonicalProductionRiskFiles": 396,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -190,14 +190,6 @@
       "route": "/api/playground/start",
       "method": "POST",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/PlaygroundController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "PropertiesController",
-      "action": "GetParcelActivity",
-      "route": "/api/properties/parcel/{parcelNumber}/activity",
-      "method": "GET",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
       "classification": "mock"
     }
   ],
@@ -1529,15 +1521,6 @@
       "matchCount": 3,
       "staticReferenceCount": 83,
       "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
-      "path": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["fallback", "stub"],
-      "matchCount": 3,
-      "staticReferenceCount": 136,
-      "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Controllers/QuantumConsciousnessController.cs",
@@ -13026,7 +13009,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 14,
+      "matchCount": 13,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -14079,6 +14062,15 @@
       "classification": "demo_safe",
       "signalKinds": ["stub"],
       "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-p0-properties-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["not_implemented", "stub"],
+      "matchCount": 2,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -20172,15 +20164,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["fallback", "stub"],
-      "matchCount": 3,
-      "staticReferenceCount": 136,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/QuantumConsciousnessController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -20293,7 +20276,16 @@
       "matchCount": 1,
       "staticReferenceCount": 23,
       "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.API/Security/Interfaces/ILdapService.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "staticReferenceCount": 35,
+      "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "648f08d738705ce0eff97d08aefe2181b974a507ba262b3f8512a514aa64ec4f"
+  "packetHash": "fa74830d7cfa1d98e808f7f0ead110d6e8ba7be60ce17f83bf0df138195f65f5"
 }

@@ -1,10 +1,10 @@
 # Canonical Mock/Stub Audit Refresh
 
-- Generated: 2026-06-01T11:46:53.069Z
+- Generated: 2026-06-01T11:53:54.233Z
 - Production touched: false
 - DB mutation: false
 - Feature work: false
-- Packet hash: 648f08d738705ce0eff97d08aefe2181b974a507ba262b3f8512a514aa64ec4f
+- Packet hash: fa74830d7cfa1d98e808f7f0ead110d6e8ba7be60ce17f83bf0df138195f65f5
 
 ## Verdict
 
@@ -20,15 +20,15 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 
 | Metric | Count |
 | --- | ---: |
-| Total files scanned | 7515 |
+| Total files scanned | 7516 |
 | Files with mock/stub signals | 2109 |
-| Production-risk files | 397 |
-| Demo-safe files | 1402 |
+| Production-risk files | 396 |
+| Demo-safe files | 1403 |
 | Dormant files | 297 |
 | Dead files | 13 |
-| Endpoint-affecting mocks | 12 |
+| Endpoint-affecting mocks | 11 |
 | Wave 1 production blockers dispositioned | 39 |
-| Wave 1 dispositioned still present in canonical risk | 36 |
+| Wave 1 dispositioned still present in canonical risk | 35 |
 
 ## Count Reconciliation
 
@@ -36,7 +36,7 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 | --- | ---: |
 | Previous broad audit production-risk files | 724 |
 | Previous Wave 1 inline production-risk files | 618 |
-| Canonical production-risk files | 397 |
+| Canonical production-risk files | 396 |
 
 Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules.
 
@@ -56,8 +56,8 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 
 | Classification | Count |
 | --- | ---: |
-| production_risk | 397 |
-| demo_safe | 1402 |
+| production_risk | 396 |
+| demo_safe | 1403 |
 | dormant | 297 |
 | dead | 13 |
 
@@ -74,7 +74,6 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 - `GET /api/forge/{parcelId}/reconciliation` (ForgeController)
 - `GET /api/massappraisal/segments/{modelId}` (MassAppraisalController)
 - `POST /api/playground/start` (PlaygroundController)
-- `GET /api/properties/parcel/{parcelNumber}/activity` (PropertiesController)
 
 ## Production-Risk Examples
 
@@ -121,4 +120,4 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 
 ## Conclusion
 
-This packet supersedes the conflicting 724 and 618 mock/stub denominator counts for this branch. The actionable state is now: canonical production-risk count = 397, endpoint-affecting mocks = 12, and Wave 1 blockers disposition-linked = 39.
+This packet supersedes the conflicting 724 and 618 mock/stub denominator counts for this branch. The actionable state is now: canonical production-risk count = 396, endpoint-affecting mocks = 11, and Wave 1 blockers disposition-linked = 39.

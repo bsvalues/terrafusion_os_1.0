@@ -138,7 +138,7 @@ public class PropertiesController : ControllerBase
                     property.LandAcres = Math.Round(cama.LandAreaSqft.Value / 43560m, 4);
             }
 
-            // Enrich legal description — GIS (varchar 255, ArcGIS-synced) as quick fallback
+            // Enrich legal description from GIS when the primary property record is missing it.
             if (string.IsNullOrEmpty(property.LegalDescription))
             {
                 var gisLegal = await _db.GisParcelGeometries
@@ -229,15 +229,22 @@ public class PropertiesController : ControllerBase
     }
 
     /// <summary>
-    /// Returns recent activity events for a parcel.
-    /// Stub: returns empty list until activity tracking is implemented.
+    /// Reports parcel activity availability.
     /// </summary>
     [HttpGet("parcel/{parcelNumber}/activity")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public IActionResult GetParcelActivity(string parcelNumber)
     {
-        _logger.LogDebug("Activity requested for parcel {ParcelNumber} — returning stub empty list", parcelNumber);
-        return Ok(new { items = Array.Empty<object>(), total = 0 });
+        _logger.LogWarning("Activity requested for parcel {ParcelNumber}, but governed activity tracking is not configured", parcelNumber);
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+        {
+            success = false,
+            code = "PROPERTY_ACTIVITY_UNAVAILABLE",
+            message = "Parcel activity tracking is not configured for governed runtime responses in this environment.",
+            parcelNumber,
+            generated = false,
+        });
     }
 
     /// <summary>
