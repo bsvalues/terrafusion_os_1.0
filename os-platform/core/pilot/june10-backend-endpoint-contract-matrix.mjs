@@ -170,6 +170,12 @@ export function classifyEndpoint(endpoint) {
   if (/\bBentonCountyId\b/.test(body)) {
     return "not_applicable";
   }
+  if (endpoint.route?.startsWith("/api/performance/elite/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/knowledgebase/")) {
+    return "dead";
+  }
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
     return "dead";
   }
@@ -256,7 +262,7 @@ export function extractEndpointContractsFromController({ filePath, text }) {
 }
 
 export function isSafeDev39GetProbeCandidate(endpoint) {
-  if (endpoint.currentClassification === "not_applicable") return false;
+  if (["dead", "not_applicable"].includes(endpoint.currentClassification)) return false;
   if (endpoint.httpMethod !== "GET") return false;
   if (/[{}]/.test(endpoint.route)) return false;
   if (/stream/i.test(endpoint.action ?? "")) return false;

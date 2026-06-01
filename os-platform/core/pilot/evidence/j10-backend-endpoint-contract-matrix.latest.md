@@ -1,30 +1,30 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T19:30:48.035Z
+- Generated: 2026-06-01T19:44:43.645Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: f5fd899e44aa0fb829900962001204c306af41a218cb49667927d9008f7f70eb
+- Packet hash: 2af76714a0d71237edc2dadaca8c8a663aa58810b6fd4efed0941c60c3d20ed9
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 519 |
-| Static-only endpoints | 762 |
-| Live dev39 probed endpoints | 519 |
+| Safe dev39 GET candidates | 463 |
+| Static-only endpoints | 788 |
+| Live dev39 probed endpoints | 493 |
 
 ## Classification Counts
 
 | Classification | Count |
 | --- | ---: |
 | live | 263 |
-| protected | 762 |
-| broken | 149 |
+| protected | 750 |
+| broken | 129 |
 | mock | 0 |
-| dead | 47 |
+| dead | 79 |
 | not_applicable | 41 |
 | unknown | 19 |
 
@@ -61,7 +61,6 @@
 - GET /api/debug/sync-pop-2/pacs-table-columns: dead (404)
 - GET /api/debug/pacs-counts: dead (404)
 - GET /api/codex/collaboration/health: broken (500)
-- GET /api/codex/notifications/history: dead (501)
 - GET /api/codex/performance/system-wide: broken (500)
 - GET /api/codex/performance/foundation: broken (500)
 - GET /api/codex/performance/amplification: broken (500)
@@ -88,6 +87,7 @@
 - GET /api/ai/consciousness/system-status: dead (501)
 - GET /api/ai/consciousness/status: dead (501)
 - GET /api/costforge/matrix: broken (400)
+- GET /api/costforge/traces: broken (400)
 
 ## Hard Stop
 

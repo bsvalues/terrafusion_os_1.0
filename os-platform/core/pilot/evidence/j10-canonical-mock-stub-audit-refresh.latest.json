@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T19:31:24.676Z",
+  "generatedAt": "2026-06-01T19:46:18.795Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -14092,7 +14092,7 @@
       "bucket": "test",
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "mock"],
-      "matchCount": 10,
+      "matchCount": 12,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -20213,5 +20213,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "b1510138cada9d66fa20f6424ef4d0fec9084385efc17ef1b1ee6e32c964e4b8"
+  "packetHash": "00f84fb5d4fe83291059a6486990d55673086ff6228b2769f71767a0d67de9a7"
 }

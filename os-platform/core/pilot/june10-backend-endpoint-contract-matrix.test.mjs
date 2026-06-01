@@ -103,6 +103,24 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "not_applicable"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/performance/elite/dashboard",
+      authRequirement: "authorized",
+      body: "return await _performanceService.GetPerformanceDashboardAsync();"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/knowledgebase/search",
+      authRequirement: "authorized",
+      body: "return await _knowledgeBaseService.SearchAsync(q, filters, page, limit);"
+    }),
+    "dead"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {
@@ -120,6 +138,22 @@ test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => 
       httpMethod: "GET",
       route: "/api/geoforge/ratio-study/sales",
       currentClassification: "not_applicable"
+    }),
+    false
+  );
+  assert.equal(
+    isSafeDev39GetProbeCandidate({
+      httpMethod: "GET",
+      route: "/api/sample/static-mock",
+      currentClassification: "mock"
+    }),
+    true
+  );
+  assert.equal(
+    isSafeDev39GetProbeCandidate({
+      httpMethod: "GET",
+      route: "/api/performance/elite/dashboard",
+      currentClassification: "dead"
     }),
     false
   );
