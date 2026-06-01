@@ -19,6 +19,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/forge")]
+[Authorize]
 public class ForgeController : ControllerBase
 {
     private readonly IValuationService _valuationService;
