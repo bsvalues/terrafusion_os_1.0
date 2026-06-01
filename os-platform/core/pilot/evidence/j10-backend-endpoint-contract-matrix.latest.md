@@ -1,11 +1,11 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T04:59:39.774Z
+- Generated: 2026-06-01T05:40:24.564Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: 1e4672e82656e86300b69b13b4e01001acb09e7788314bdc83f91085d7e72286
+- Packet hash: 0ac18f8f4beea9e06cfc7e46fadc3f86d5a7e065f518a3ad022bdf042adb4b0d
 
 ## Summary
 
@@ -23,10 +23,10 @@
 | live | 254 |
 | protected | 525 |
 | broken | 183 |
-| mock | 14 |
+| mock | 13 |
 | dead | 47 |
 | not_applicable | 0 |
-| unknown | 258 |
+| unknown | 259 |
 
 ## Method Counts
 
@@ -42,7 +42,7 @@
 - GET /api/adjustment/sets: broken (500)
 - GET /api/adjustment/runs: broken (500)
 - GET /api/adjustment/recommend: broken (400)
-- GET /api/aiassistant/health: broken (500)
+- GET /api/aiassistant/health: broken (0)
 - GET /api/aimodels/status: dead (404)
 - GET /api/aimodels/sentiment-trends: dead (404)
 - GET /api/aiorchestration/health: broken (500)

@@ -1052,7 +1052,7 @@ namespace TerraFusion.API.Controllers
                     ModeChangedAt = _modeService?.ChangedAt
                 };
 
-                // Phase 22: Non-Benton counties return placeholder diagnostics
+                // Phase 22: Non-Benton counties return unavailable diagnostics
                 if (!countyInfo.IsConfigured)
                 {
                     diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
@@ -1099,16 +1099,15 @@ namespace TerraFusion.API.Controllers
                 }).ToList();
 
                 // Embedding status
-                var embeddingMode = Environment.GetEnvironmentVariable("OPENAI_API_KEY") != null
-                    ? "OpenAI"
-                    : "Simulated";
+                var openAiConfigured = Environment.GetEnvironmentVariable("OPENAI_API_KEY") != null;
+                var embeddingMode = openAiConfigured ? "OpenAI" : "NotConfigured";
                 diagnostics.EmbeddingStatus = new TerraFusion.AI.Models.EmbeddingServiceStatus
                 {
                     Mode = embeddingMode,
-                    Available = true, // Always available (simulated fallback)
+                    Available = openAiConfigured,
                     Provider = embeddingMode,
-                    Dimensions = embeddingMode == "OpenAI" ? 1536 : 384,
-                    LastSuccess = DateTime.UtcNow
+                    Dimensions = openAiConfigured ? 1536 : 0,
+                    LastSuccess = openAiConfigured ? DateTime.UtcNow : null
                 };
 
                 // RAG datasets
@@ -1149,7 +1148,7 @@ namespace TerraFusion.API.Controllers
                     }
                 }
 
-                // Usage statistics (placeholder - would query actual DB in production)
+                // Usage statistics remain empty until telemetry storage is configured.
                 diagnostics.Statistics = new TerraFusion.AI.Models.UsageStatistics
                 {
                     TotalConversations = 0,
@@ -1171,7 +1170,7 @@ namespace TerraFusion.API.Controllers
                 }
                 else
                 {
-                    // Fallback: Basic herald messages if evaluator not registered
+                    // Basic herald messages if evaluator is not registered.
                     diagnostics.HeraldMessages = new List<TerraFusion.AI.Models.HeraldMessage>
                     {
                         new()
@@ -1192,7 +1191,7 @@ namespace TerraFusion.API.Controllers
                         }
                     };
 
-                    // Fallback health determination
+                    // Basic health determination.
                     if (!ragHealth.Indexed)
                     {
                         diagnostics.OverallHealth = TerraFusion.AI.Models.SystemHealthStatus.Degraded;
@@ -1749,7 +1748,7 @@ namespace TerraFusion.API.Controllers
 
                 if (_ragFleetService == null)
                 {
-                    _logger.LogWarning("Phase 27: RagFleetService not registered, returning stub response");
+                    _logger.LogWarning("Phase 27: RagFleetService not registered, returning unavailable response");
                     return Ok(new RagFleetReadinessDto
                     {
                         GeneratedAtUtc = DateTime.UtcNow,
@@ -1829,7 +1828,7 @@ namespace TerraFusion.API.Controllers
 
                 if (_atlasService == null)
                 {
-                    _logger.LogWarning("Phase 28: AtlasService not registered, returning stub response");
+                    _logger.LogWarning("Phase 28: AtlasService not registered, returning unavailable response");
                     return Ok(new SystemGptAtlasResponseDto
                     {
                         GeneratedAtUtc = DateTime.UtcNow,
@@ -1892,7 +1891,7 @@ namespace TerraFusion.API.Controllers
         }
 
         /// <summary>
-        /// Get a single snapshot of current live data (for polling fallback).
+        /// Get a single snapshot of current live data for polling clients.
         /// Phase 29: Polling endpoint for clients that can't use SSE.
         /// </summary>
         [HttpGet("system/atlas/live/snapshot")]
@@ -1906,7 +1905,7 @@ namespace TerraFusion.API.Controllers
 
                 if (_atlasLiveService == null)
                 {
-                    _logger.LogWarning("Phase 29: Live service not registered, returning stub response");
+                    _logger.LogWarning("Phase 29: Live service not registered, returning unavailable response");
                     return Ok(new SystemGptAtlasLiveEventDto
                     {
                         Version = "1.0",
@@ -1928,343 +1927,29 @@ namespace TerraFusion.API.Controllers
 
         #endregion
 
-        #region ExplainGPT (Phase 13 - Self-Explaining TerraFusion, Phase 25 - V2 Source Attribution)
+        #region ExplainGPT
 
         /// <summary>
-        /// Get an AI-generated explanation for any TerraFusion screen, workflow, or data.
-        /// Phase 13: "Explain This" - Make TerraFusion self-explaining for county staff.
-        /// Phase 25: V2 - Source highlighting, segment attribution, and trace carousel.
+        /// Reports ExplainGPT availability without generating synthetic explanation content.
         /// </summary>
         [HttpPost("explain")]
-        [AllowAnonymous] // Allow explanations without auth for onboarding scenarios
-        public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.ExplainResponseV2Dto>> Explain(
-            [FromBody] TerraFusion.AI.Models.ExplainRequest request)
+        [AllowAnonymous] // Allow availability checks without auth for onboarding scenarios
+        public ActionResult Explain([FromBody] TerraFusion.AI.Models.ExplainRequest request)
         {
-            try
+            _logger.LogWarning(
+                "ExplainGPT requested for context '{ContextType}' ({ContextId}) but no governed explanation service is configured",
+                request.ContextType,
+                request.ContextId ?? "general");
+
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
             {
-                _logger.LogInformation("ExplainGPT V2: Generating explanation for context '{ContextType}' ({ContextId})",
-                    request.ContextType, request.ContextId ?? "general");
-
-                // Build the V2 explanation with source attribution and trace steps
-                var explanation = await GenerateExplanationAsync(request);
-
-                return Ok(explanation);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating explanation for context: {ContextType}", request.ContextType);
-                return StatusCode(500, new { error = "Failed to generate explanation" });
-            }
-        }
-
-        /// <summary>
-        /// Generates explanation using ExplainGPT configuration with V2 source attribution.
-        /// In CI mode (no API keys), returns a helpful stub explanation.
-        /// </summary>
-        private async Task<TerraFusion.AI.Models.ExplainResponseV2Dto> GenerateExplanationAsync(
-            TerraFusion.AI.Models.ExplainRequest request)
-        {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-            // Context-specific explanations for known screen types
-            var contextExplanations = GetContextExplanation(request.ContextType, request.ContextId);
-
-            // Generate sources based on context type
-            var sources = GenerateExplanationSources(request.ContextType, request.ContextId);
-
-            // Split explanation into segments and link to sources
-            var segments = GenerateExplanationSegments(contextExplanations.explanation, sources);
-
-            // Generate trace steps for how the explanation was constructed
-            var steps = GenerateExplanationSteps(request.ContextType, request.ContextId, sources);
-
-            stopwatch.Stop();
-
-            return await System.Threading.Tasks.Task.FromResult(new TerraFusion.AI.Models.ExplainResponseV2Dto
-            {
-                ExplanationId = Guid.NewGuid().ToString(),
-                FullText = contextExplanations.explanation,
-                Summary = contextExplanations.summary,
-                Segments = segments,
-                Sources = sources,
-                Steps = steps,
-                Confidence = 0.95m, // High confidence for known contexts
-                ProcessingTimeMs = (int)stopwatch.ElapsedMilliseconds
+                success = false,
+                code = "GPT_EXPLAIN_UNAVAILABLE",
+                message = "ExplainGPT is not configured for governed runtime responses in this environment.",
+                contextType = request.ContextType,
+                contextId = request.ContextId,
+                generated = false
             });
-        }
-
-        /// <summary>
-        /// Generate source attributions for explanation based on context type.
-        /// </summary>
-        private List<TerraFusion.AI.Models.ExplainSourceAttributionDto> GenerateExplanationSources(
-            string contextType, string? contextId)
-        {
-            return contextType switch
-            {
-                "GPTStudio" => new List<TerraFusion.AI.Models.ExplainSourceAttributionDto>
-                {
-                    new()
-                    {
-                        SourceId = "src-gptstudio-001",
-                        SourceTitle = "TerraFusion GPT Studio User Guide",
-                        SourceType = "documentation",
-                        Snippet = "GPT Studio provides AI-powered assistance for property assessment workflows..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-gptstudio-002",
-                        SourceTitle = "Benton County CAMA Integration",
-                        SourceType = "system-config",
-                        Snippet = "PropertyAssessmentGPT is trained on county-specific CAMA data and assessment standards..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-gptstudio-003",
-                        SourceTitle = "Natural Language Query Patterns",
-                        SourceType = "knowledge-base",
-                        Snippet = "Ask questions like 'What factors affect property values?' for AI-generated insights..."
-                    }
-                },
-
-                "RAGTrace" => new List<TerraFusion.AI.Models.ExplainSourceAttributionDto>
-                {
-                    new()
-                    {
-                        SourceId = "src-ragtrace-001",
-                        SourceTitle = "RAG Architecture Documentation",
-                        SourceType = "documentation",
-                        Snippet = "Retrieval-Augmented Generation ensures answers are grounded in county knowledge base..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-ragtrace-002",
-                        SourceTitle = "Government Audit Compliance",
-                        SourceType = "policy",
-                        Snippet = "All AI responses are auditable with full source citation for FISMA compliance..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-ragtrace-003",
-                        SourceTitle = "Relevance Scoring Algorithm",
-                        SourceType = "technical",
-                        Snippet = "Sources are scored by semantic similarity - 90%+ indicates high relevance match..."
-                    }
-                },
-
-                "PropertyCard" => new List<TerraFusion.AI.Models.ExplainSourceAttributionDto>
-                {
-                    new()
-                    {
-                        SourceId = "src-propcard-001",
-                        SourceTitle = $"Property Record: {contextId ?? "N/A"}",
-                        SourceType = "data-record",
-                        Snippet = "Current assessment details including value, characteristics, and history..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-propcard-002",
-                        SourceTitle = "Washington State Appraisal Standards",
-                        SourceType = "regulation",
-                        Snippet = "Cost approach, sales comparison, and income approaches per WAC 458-07..."
-                    },
-                    new()
-                    {
-                        SourceId = "src-propcard-003",
-                        SourceTitle = "Comparable Sales Database",
-                        SourceType = "database",
-                        Snippet = "Local market data for similar properties informs valuation adjustments..."
-                    }
-                },
-
-                _ => new List<TerraFusion.AI.Models.ExplainSourceAttributionDto>
-                {
-                    new()
-                    {
-                        SourceId = "src-default-001",
-                        SourceTitle = "TerraFusion OS Documentation",
-                        SourceType = "documentation",
-                        Snippet = "TerraFusion is a comprehensive property assessment platform for county assessors..."
-                    }
-                }
-            };
-        }
-
-        /// <summary>
-        /// Split explanation text into segments and link to sources.
-        /// </summary>
-        private List<TerraFusion.AI.Models.ExplainSegmentDto> GenerateExplanationSegments(
-            string explanation, List<TerraFusion.AI.Models.ExplainSourceAttributionDto> sources)
-        {
-            // Split on sentences (simple approach - split on ". " and preserve period)
-            var sentences = explanation.Split(new[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
-            var segments = new List<TerraFusion.AI.Models.ExplainSegmentDto>();
-
-            for (int i = 0; i < sentences.Length; i++)
-            {
-                var sentence = sentences[i].Trim();
-                if (!sentence.EndsWith(".") && i < sentences.Length - 1)
-                {
-                    sentence += ".";
-                }
-
-                // Link each segment to 1-2 sources based on position
-                var linkedSources = new List<string>();
-                if (sources.Count > 0)
-                {
-                    linkedSources.Add(sources[i % sources.Count].SourceId);
-                    if (sources.Count > 1 && i % 3 == 0)
-                    {
-                        linkedSources.Add(sources[(i + 1) % sources.Count].SourceId);
-                    }
-                }
-
-                segments.Add(new TerraFusion.AI.Models.ExplainSegmentDto
-                {
-                    SegmentId = $"seg-{i + 1:D3}",
-                    Text = sentence,
-                    SourceIds = linkedSources
-                });
-            }
-
-            return segments;
-        }
-
-        /// <summary>
-        /// Generate trace steps showing how the explanation was constructed.
-        /// </summary>
-        private List<TerraFusion.AI.Models.ExplainStepDto> GenerateExplanationSteps(
-            string contextType, string? contextId, List<TerraFusion.AI.Models.ExplainSourceAttributionDto> sources)
-        {
-            var steps = new List<TerraFusion.AI.Models.ExplainStepDto>
-            {
-                new()
-                {
-                    StepId = "step-001",
-                    Title = "Context Detection",
-                    Description = $"Identified current context as '{contextType}'" +
-                        (contextId != null ? $" with ID '{contextId}'" : ""),
-                    SourceIds = new List<string>()
-                },
-                new()
-                {
-                    StepId = "step-002",
-                    Title = "Knowledge Retrieval",
-                    Description = $"Retrieved {sources.Count} relevant source documents from knowledge base",
-                    SourceIds = sources.Take(2).Select(s => s.SourceId).ToList()
-                },
-                new()
-                {
-                    StepId = "step-003",
-                    Title = "Explanation Generation",
-                    Description = "Synthesized explanation from retrieved sources with county-specific context",
-                    SourceIds = sources.Select(s => s.SourceId).ToList()
-                },
-                new()
-                {
-                    StepId = "step-004",
-                    Title = "Source Attribution",
-                    Description = "Linked explanation segments to supporting source documents for auditability",
-                    SourceIds = new List<string>()
-                }
-            };
-
-            return steps;
-        }
-
-        /// <summary>
-        /// Get pre-built explanations for known context types.
-        /// These are deterministic and CI-safe.
-        /// </summary>
-        private (string explanation, string summary, List<string> keyPoints, List<TerraFusion.AI.Models.RelatedAction> relatedActions)
-            GetContextExplanation(string contextType, string? contextId)
-        {
-            return contextType switch
-            {
-                "GPTStudio" => (
-                    "GPT Studio is your AI-powered workspace for property assessment intelligence. " +
-                    "Here you can chat with PropertyAssessmentGPT, which has been trained on Benton County's " +
-                    "CAMA data, assessment standards, and comparable sales information. " +
-                    "Simply type your question in natural language - for example, 'What factors affect " +
-                    "residential property values in Benton County?' or 'Help me understand the assessment " +
-                    "appeal process.' The AI will provide accurate, county-specific answers with citations " +
-                    "to source documents.",
-                    "GPT Studio is your AI assistant for property assessment questions.",
-                    new List<string>
-                    {
-                        "Ask questions in natural language - no special syntax needed",
-                        "Responses include citations to source documents",
-                        "Click 'Show Sources' to see which documents informed each answer",
-                        "Use the preset flows on the left for common assessment tasks"
-                    },
-                    new List<TerraFusion.AI.Models.RelatedAction>
-                    {
-                        new() { Label = "View Assessment Flows", ActionType = "expand-sidebar", Target = "flows-panel" },
-                        new() { Label = "Show RAG Sources", ActionType = "toggle", Target = "show-sources" }
-                    }
-                ),
-
-                "RAGTrace" => (
-                    "The RAG Trace panel shows you exactly which documents and data chunks were used to " +
-                    "generate each AI response. RAG stands for 'Retrieval-Augmented Generation' - it means " +
-                    "the AI retrieves relevant information from your county's knowledge base before answering. " +
-                    "This ensures accuracy and allows you to verify the source of any claim. " +
-                    "Each source is shown with a relevance score - higher percentages indicate stronger matches.",
-                    "RAG Trace shows which county documents informed each AI response.",
-                    new List<string>
-                    {
-                        "Green scores (90%+) indicate highly relevant source documents",
-                        "Click any source to view the original document",
-                        "Every AI response is auditable for government compliance",
-                        "Chunk snippets show the exact text that informed the answer"
-                    },
-                    new List<TerraFusion.AI.Models.RelatedAction>
-                    {
-                        new() { Label = "Expand All Sources", ActionType = "expand-all", Target = "rag-sources" },
-                        new() { Label = "Export Audit Trail", ActionType = "export", Target = "trace-pdf" }
-                    }
-                ),
-
-                "PropertyCard" => (
-                    $"This property card shows the assessment details for property {contextId ?? "[selected property]"}. " +
-                    "You can see the current assessed value, property characteristics, and assessment history. " +
-                    "The valuation uses a combination of the cost approach, sales comparison approach, and " +
-                    "income approach (for commercial properties) as required by Washington State law. " +
-                    "If you have questions about any field, click the '?' icon next to it for a detailed explanation.",
-                    $"Property card showing assessment details for {contextId ?? "the selected property"}.",
-                    new List<string>
-                    {
-                        "Land and improvement values are shown separately",
-                        "Market value reflects the January 1st assessment date",
-                        "Click 'History' to see prior year assessments",
-                        "The 'Compare' button shows similar properties"
-                    },
-                    new List<TerraFusion.AI.Models.RelatedAction>
-                    {
-                        new() { Label = "View Assessment History", ActionType = "navigate", Target = $"/property/{contextId}/history" },
-                        new() { Label = "Find Comparable Sales", ActionType = "navigate", Target = $"/property/{contextId}/comps" }
-                    }
-                ),
-
-                _ => (
-                    $"This is the {contextType} view in TerraFusion OS. TerraFusion is a comprehensive " +
-                    "property assessment platform designed for Washington State county assessors. " +
-                    "If you need help with a specific feature, click the 'Explain This' button on that screen, " +
-                    "or ask PropertyAssessmentGPT in GPT Studio.",
-                    $"You're viewing the {contextType} area of TerraFusion OS.",
-                    new List<string>
-                    {
-                        "TerraFusion helps county assessors with property valuation",
-                        "Use GPT Studio for AI-powered assessment assistance",
-                        "All data is auditable for government compliance",
-                        "Click 'Explain This' on any screen for help"
-                    },
-                    new List<TerraFusion.AI.Models.RelatedAction>
-                    {
-                        new() { Label = "Open GPT Studio", ActionType = "navigate", Target = "/gpt-studio" },
-                        new() { Label = "View Documentation", ActionType = "navigate", Target = "/docs" }
-                    }
-                )
-            };
         }
 
         #endregion
