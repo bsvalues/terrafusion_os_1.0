@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T12:15:09.137Z",
+  "generatedAt": "2026-06-01T12:20:21.898Z",
   "name": "June 10 dev39 Decision Matrix",
   "productionTouched": false,
   "databaseMutation": false,
@@ -24,17 +24,17 @@
   "metrics": {
     "endpointMatrix": {
       "totalEndpoints": 1281,
-      "live": 254,
-      "protected": 527,
-      "broken": 183,
-      "synthetic": 9,
+      "live": 253,
+      "protected": 528,
+      "broken": 184,
+      "synthetic": 8,
       "dead": 47,
       "unknown": 261
     },
     "syntheticSurfaceAudit": {
-      "productionRiskFiles": 394,
-      "endpointAffectingMocks": 9,
-      "wave1DispositionedStillPresentInCanonicalRisk": 33
+      "productionRiskFiles": 393,
+      "endpointAffectingMocks": 8,
+      "wave1DispositionedStillPresentInCanonicalRisk": 32
     }
   },
   "nextPriorityOrder": [
@@ -51,5 +51,5 @@
     "Full statewide certification ready",
     "Production DB binding approved"
   ],
-  "packetHash": "c4872afd8c140962839a3f369e623c7d64c6cf39d2457784190e97c283580ca4"
+  "packetHash": "a312fdf2936524679890de4f8b451c82e77eca68936dafe866cd99de5ef277e3"
 }

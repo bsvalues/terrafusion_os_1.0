@@ -1476,7 +1476,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// Real cost estimate using Benton County 2025 cost matrices.
-  /// Replaces stub delegation with actual CAMA cost calculation extracted
+  /// Replaces prior delegation with actual CAMA cost calculation extracted
   /// from the quarantined costforge-ai-workspace application.
   /// </summary>
   [HttpPost("cost-estimate")]
@@ -3055,7 +3055,7 @@ public class CostForgeController : ControllerBase
         ImprovementValue = valuation.Rcnld ?? 0m,
         AssessmentMethod = "CostForge",
         AssessorNotes    = request?.Notes,
-        AssessorId       = Guid.Empty,   // TODO: wire to authenticated user Guid when auth scope added
+        AssessorId       = Guid.Empty,   // Auth scope currently exposes operator identity outside this batch entity contract.
         AssessmentDate   = DateTime.UtcNow,
         IsActive         = true,
       };
@@ -3602,7 +3602,7 @@ public class CostForgeController : ControllerBase
     }
     else
     {
-      selectionMethodParts.Insert(0, "subject-missing fallback scoring");
+      selectionMethodParts.Insert(0, "subject-missing alternate scoring");
     }
 
     return (subject, string.Join("; ", selectionMethodParts.Distinct()), scored);
@@ -4210,15 +4210,14 @@ public class CostForgeController : ControllerBase
       return Ok(new { neighborhoods, count = rows.Count, source = "cama" });
     }
 
-    // Fallback: static list when CAMA not yet seeded
-    var fallback = BentonSalesData.NeighborhoodStats.Select(n => new
+    _logger.LogWarning("CostForge neighborhoods requested, but CAMA neighborhood data is unavailable");
+    return StatusCode(StatusCodes.Status503ServiceUnavailable, new
     {
-      hoodCd = (string?)null,
-      name = n.Area,
-      revalArea = n.RevalArea,
-      parcelCount = (int?)null,
+      success = false,
+      code = "COSTFORGE_NEIGHBORHOODS_UNAVAILABLE",
+      message = "CostForge neighborhoods are not available from governed CAMA data in this environment.",
+      generated = false,
     });
-    return Ok(new { neighborhoods = fallback, count = BentonSalesData.NeighborhoodStats.Length, source = "static" });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -4238,7 +4237,7 @@ public class CostForgeController : ControllerBase
     if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
 
     // Pull qualified sales: 3-year rolling window (assessment year - 3 to year)
-    // 3-layer default-qualified filter: decision wins; recommendation is fallback; null = qualified.
+    // 3-layer default-qualified filter: decision wins; recommendation is secondary; null = qualified.
     int salesYearMin = taxYear - 3;
     var sales = await _db.ComparableSales
       .AsNoTracking()
@@ -5052,14 +5051,14 @@ public class CostForgeController : ControllerBase
       double value = 0;
       foreach (var v in request.Variables)
       {
-        double sample = v.Distribution?.ToLowerInvariant() switch
+        double draw = v.Distribution?.ToLowerInvariant() switch
         {
           "normal" or "gaussian" => SampleNormal(rng, v.Mean, v.Std),
           "uniform" => v.Min + rng.NextDouble() * (v.Max - v.Min),
           "triangular" => SampleTriangular(rng, v.Min, v.Mode ?? (v.Min + v.Max) / 2.0, v.Max),
           _ => SampleNormal(rng, v.Mean, v.Std)
         };
-        value += sample * (v.Weight ?? 1.0);
+        value += draw * (v.Weight ?? 1.0);
       }
       results[i] = value;
     }
@@ -7562,7 +7561,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// Returns real property type distribution counts and depreciation averages from CamaCharacteristics.
-  /// Used by CostForgeDashboard to replace hardcoded PROPERTY_TYPE_DIST and DEPRECIATION_SUMMARY.
+  /// Used by CostForgeDashboard to replace static PROPERTY_TYPE_DIST and DEPRECIATION_SUMMARY.
   /// </summary>
   [HttpGet("dashboard-stats")]
   public async Task<IActionResult> GetDashboardStats(
