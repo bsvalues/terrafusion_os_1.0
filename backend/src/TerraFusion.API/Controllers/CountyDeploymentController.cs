@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
 
@@ -6,6 +7,7 @@ namespace TerraFusion.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CountyDeploymentController : ControllerBase
     {
         private readonly ICountyDeploymentService _countyDeploymentService;

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T14:21:07.522Z",
+  "generatedAt": "2026-06-01T14:25:03.114Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,7 +52,7 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7534,
+    "totalFilesScanned": 7535,
     "filesWithSignals": 2111,
     "productionRiskFiles": 391,
     "demoSafeFiles": 1409,
@@ -20204,5 +20204,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "434cf83520a9fceaa344b5980cad64738cfc21f78908b1375113b7402e1ca23e"
+  "packetHash": "f8ca43b41ad387a514649d60024b9896c26cbfa9942c8853506dfe37421679e0"
 }
