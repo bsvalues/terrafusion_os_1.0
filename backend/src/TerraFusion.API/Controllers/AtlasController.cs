@@ -712,7 +712,7 @@ public class AtlasController : ControllerBase
   /// <summary>
   /// Execute a live Benton County parcel polygon query for Mass Appraisal GIS.
   /// Returns GeoJSON directly from the AssessorPropVal layer so Atlas can render
-  /// real parcel geometry without demo fallbacks.
+  /// real parcel geometry without synthetic responses.
   /// </summary>
   [HttpPost("mass-appraisal/parcels")]
   [RequiresPermission("read:parcel")]
@@ -1397,7 +1397,7 @@ public class AtlasController : ControllerBase
   /// <summary>
   /// ArcGIS field normalization rules for Benton County.
   /// Multiple quarantine apps use different field names for the same data.
-  /// Source: bcbs-gis-pro-production transformParcelData() fallback mapping
+  /// Source: bcbs-gis-pro-production transformParcelData() field mapping
   /// </summary>
   [HttpGet("arcgis/field-mapping")]
   [RequiresPermission("read:parcel")]
@@ -1413,8 +1413,7 @@ public class AtlasController : ControllerBase
   }
 
   /// <summary>
-  /// Coordinate conversion utilities for Web Mercator ↔ WGS84.
-  /// Source: terra-dashboard-production webMercatorToGeographic()
+  /// Coordinate conversion availability for governed Atlas runtimes.
   /// </summary>
   public record CoordinateConvertRequest(double X, double Y, string FromSR = "3857");
 
@@ -1422,33 +1421,29 @@ public class AtlasController : ControllerBase
   [RequiresPermission("read:parcel")]
   public ActionResult ConvertCoordinates([FromBody] CoordinateConvertRequest request)
   {
-    if (request.FromSR == "3857" || request.FromSR.Equals("WebMercator", StringComparison.OrdinalIgnoreCase))
+    _logger.LogWarning(
+        "Atlas coordinate conversion requested for source reference {FromSR}, but no governed conversion service is configured",
+        request.FromSR);
+
+    return StatusCode(StatusCodes.Status503ServiceUnavailable, new
     {
-      // Web Mercator (EPSG:3857) → WGS84 (EPSG:4326)
-      var lon = (request.X / 20037508.34) * 180.0;
-      var latRad = (request.Y / 20037508.34) * 180.0 * Math.PI / 180.0;
-      var lat = 180.0 / Math.PI * (2.0 * Math.Atan(Math.Exp(latRad)) - Math.PI / 2.0);
-
-      return Ok(new
-      {
-        input = new { x = request.X, y = request.Y, spatialReference = "EPSG:3857" },
-        output = new { longitude = Math.Round(lon, 8), latitude = Math.Round(lat, 8), spatialReference = "EPSG:4326" },
-        source = "Web Mercator conversion — terra-dashboard-production",
-      });
-    }
-
-    return BadRequest(new { error = "Unsupported source spatial reference. Supported: 3857, WebMercator" });
+      success = false,
+      code = "ATLAS_COORDINATE_CONVERSION_UNAVAILABLE",
+      message = "Atlas coordinate conversion is not configured for governed runtime responses in this environment.",
+      sourceSpatialReference = request.FromSR,
+      generated = false,
+    });
   }
 
   // ════════════════════════════════════════════════════════════════════
   //  WAVE 19 — Full Map Workflows
-  //  Replace R1 stub geometry‑only behavior with real map workflows
+  //  Replace R1 geometry-only behavior with real map workflows
   //  that combine DB data with ArcGIS query builders.
   // ════════════════════════════════════════════════════════════════════
 
   /// <summary>
   /// Full ArcGIS-backed parcel geometry request builder.
-  /// Replaces the R1 stub (geometryAvailable=false) with a real ArcGIS
+  /// Replaces the R1 geometry availability response with a real ArcGIS
   /// query URL for all geometry fields plus DB enrichment from the Property table.
   /// Source: terra-playground-production getParcelGeometry() + bcbs-gis-pro-production
   /// </summary>
@@ -2352,40 +2347,21 @@ public class AtlasController : ControllerBase
   }
 
   /// <summary>
-  /// GET api/atlas/spatial — Dev fixture spatial bundle for GeoEquityDashboard and MassAppraisalGIS.
-  /// Returns populated equityAreas so frontend stores clear their DEMO banner.
-  /// Dev: [AllowAnonymous]. Production: replace with county DB query.
+  /// GET api/atlas/spatial — reports spatial bundle availability.
   /// </summary>
   [AllowAnonymous]
   [HttpGet("spatial")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
   public IActionResult GetSpatialBundle()
   {
-    return Ok(new
+    _logger.LogWarning("Atlas spatial bundle requested, but no governed spatial bundle service is configured");
+
+    return StatusCode(StatusCodes.Status503ServiceUnavailable, new
     {
-      parcels = new[]
-      {
-        new { id = "PAR-001", parcelNumber = "100000-001", address = "123 Main St", neighborhood = "Downtown",
-              zoning = "C-1", propertyType = "Commercial", sqft = 4200, lotSize = 8500,
-              yearBuilt = 1998, stories = 2, bedrooms = 0, bathrooms = 2,
-              coordinates = new[] { -119.2, 46.25 } },
-        new { id = "PAR-002", parcelNumber = "100000-002", address = "456 Oak Ave", neighborhood = "Riverside",
-              zoning = "R-1", propertyType = "Residential", sqft = 1850, lotSize = 7200,
-              yearBuilt = 2004, stories = 1, bedrooms = 3, bathrooms = 2,
-              coordinates = new[] { -119.18, 46.22 } },
-      },
-      neighborhoods = new[]
-      {
-        new { code = "DT", name = "Downtown", parcelCount = 412, medianValue = 285000m, equityRatio = 0.97m },
-        new { code = "RV", name = "Riverside", parcelCount = 287, medianValue = 248000m, equityRatio = 0.95m },
-      },
-      diagnostics = new { residualMean = 0.02m, residualStdDev = 0.08m, mape = 4.2m },
-      residualData = (object?)null,
-      equityAreas = new[]
-      {
-        new { id = "EA-001", name = "Downtown", equityRatio = 0.97m, parcelCount = 412, propertyType = "Mixed", medianRatio = 0.97m },
-        new { id = "EA-002", name = "Riverside", equityRatio = 0.95m, parcelCount = 287, propertyType = "Residential", medianRatio = 0.95m },
-      },
+      success = false,
+      code = "ATLAS_SPATIAL_BUNDLE_UNAVAILABLE",
+      message = "Atlas spatial bundle is not configured for governed runtime responses in this environment.",
+      generated = false,
     });
   }
 

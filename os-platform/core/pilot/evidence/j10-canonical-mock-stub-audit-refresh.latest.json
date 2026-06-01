@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T05:40:52.012Z",
+  "generatedAt": "2026-06-01T11:46:53.069Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,19 +52,19 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7514,
+    "totalFilesScanned": 7515,
     "filesWithSignals": 2109,
-    "productionRiskFiles": 398,
-    "demoSafeFiles": 1401,
+    "productionRiskFiles": 397,
+    "demoSafeFiles": 1402,
     "dormantFiles": 297,
     "deadFiles": 13,
-    "endpointAffectingMocks": 13,
+    "endpointAffectingMocks": 12,
     "wave1ProductionBlockersDispositioned": 39,
-    "wave1DispositionedStillPresentInCanonicalRisk": 37,
+    "wave1DispositionedStillPresentInCanonicalRisk": 36,
     "byBucket": {
-      "backend_runtime": 404,
+      "backend_runtime": 403,
       "docs": 156,
-      "test": 737,
+      "test": 738,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 87,
@@ -74,27 +74,27 @@
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 398,
-      "demo_safe": 1401,
+      "production_risk": 397,
+      "demo_safe": 1402,
       "dormant": 297,
       "dead": 13
     },
     "bySignalKind": {
-      "stub": 214,
+      "stub": 213,
       "placeholder": 479,
       "mock": 707,
-      "sample_or_fixture": 428,
+      "sample_or_fixture": 427,
       "todo": 73,
-      "fallback": 536,
+      "fallback": 535,
       "fake": 104,
       "hardcoded": 120,
-      "not_implemented": 6
+      "not_implemented": 7
     }
   },
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 398,
+    "canonicalProductionRiskFiles": 397,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -134,14 +134,6 @@
       "route": "/api/aisuperiority/demo/{demoId}/stop",
       "method": "POST",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/AISuperiorityController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "AtlasController",
-      "action": "ConvertCoordinates",
-      "route": "/api/atlas/arcgis/convert-coordinates",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/AtlasController.cs",
       "classification": "mock"
     },
     {
@@ -1299,15 +1291,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/AtlasController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["fallback", "stub", "sample_or_fixture"],
-      "matchCount": 4,
-      "staticReferenceCount": 550,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/AuditController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -1703,7 +1686,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
       "matchCount": 8,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1712,7 +1695,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 22,
+      "staticReferenceCount": 23,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -13043,7 +13026,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 15,
+      "matchCount": 14,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -14069,6 +14052,15 @@
       "classification": "demo_safe",
       "signalKinds": ["mock", "stub", "sample_or_fixture", "fallback"],
       "matchCount": 15,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-p0-atlas-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["not_implemented"],
+      "matchCount": 1,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -20030,15 +20022,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/AtlasController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["fallback", "stub", "sample_or_fixture"],
-      "matchCount": 4,
-      "staticReferenceCount": 550,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/AuditController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -20299,9 +20282,18 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
       "matchCount": 8,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.API/Security/EliteSecurityHardening.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["placeholder"],
+      "matchCount": 1,
+      "staticReferenceCount": 23,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
     }
   ],
-  "packetHash": "ef67cf6556bbff7e675f769bfbd527823be0f51f0564a10ca88fd4d67a1affbc"
+  "packetHash": "648f08d738705ce0eff97d08aefe2181b974a507ba262b3f8512a514aa64ec4f"
 }
