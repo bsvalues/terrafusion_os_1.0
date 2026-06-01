@@ -1,7 +1,7 @@
 # June 10 dev39 Decision Matrix
 
-- Generated: 2026-06-01T12:20:21.898Z
-- Packet hash: a312fdf2936524679890de4f8b451c82e77eca68936dafe866cd99de5ef277e3
+- Generated: 2026-06-01T13:23:45.828Z
+- Packet hash: ab43a55be0ee48c5217c16f9d8c89179fd661ab7b2d6f7b26f975cd415cdc560
 - Production touched: false
 - Database mutation: false
 - dev39 scope expansion: false
@@ -29,10 +29,10 @@
 | Class | Count |
 | --- | ---: |
 | Total | 1281 |
-| Live | 253 |
-| Protected | 528 |
-| Broken | 184 |
-| Synthetic | 8 |
+| Live | 252 |
+| Protected | 529 |
+| Broken | 185 |
+| Synthetic | 7 |
 | Dead | 47 |
 | Unknown | 261 |
 
@@ -41,7 +41,7 @@
 | Metric | Count |
 | --- | ---: |
 | Production-risk files | 393 |
-| Endpoint-affecting surfaces | 8 |
+| Endpoint-affecting surfaces | 7 |
 | Wave 1 blockers still present | 32 |
 
 ## Next Priority Order

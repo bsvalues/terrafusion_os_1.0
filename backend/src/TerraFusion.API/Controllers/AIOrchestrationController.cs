@@ -366,7 +366,7 @@ public class AIOrchestrationController : ControllerBase
     [ProducesResponseType(typeof(CountyAgentStatusDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CountyAgentStatusDto>> GetCountyAgentStatus(
+    public ActionResult<CountyAgentStatusDto> GetCountyAgentStatus(
         [FromRoute][Required] string countyId)
     {
         _logger.LogInformation("🏛️ API: Getting agent status for county {CountyId}", countyId);
@@ -385,29 +385,15 @@ public class AIOrchestrationController : ControllerBase
                 });
             }
 
-            // Get overall health to extract county-specific information
-            var swarmHealth = await _orchestrator.GetAgentSwarmHealthAsync();
-
-            // In a real implementation, this would filter by county
-            // For this demo, we'll return simulated county-specific data
-            var random = new Random(countyId.GetHashCode());
-            var countyAgentCount = 20 + random.Next(15); // 20-35 agents per county
-            var healthyAgents = (int)(countyAgentCount * (0.95 + random.NextDouble() * 0.049));
-
-            return Ok(new CountyAgentStatusDto
+            _logger.LogWarning("County agent status requested for {CountyId}, but county-scoped agent telemetry is unavailable", countyId);
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
             {
+                success = false,
+                code = "AI_ORCHESTRATION_COUNTY_AGENTS_UNAVAILABLE",
+                message = "County-scoped AI orchestration telemetry is not available from a governed runtime source in this environment.",
                 CountyId = countyId,
                 CountyName = WashingtonStateCounties.Counties[countyId].Name,
-                TotalAgents = countyAgentCount,
-                HealthyAgents = healthyAgents,
-                UnhealthyAgents = countyAgentCount - healthyAgents,
-                HealthPercentage = (double)healthyAgents / countyAgentCount,
-                AverageResponseTimeMs = 15 + random.NextDouble() * 10, // 15-25ms
-                ThroughputOpsPerSec = 25 + random.NextDouble() * 15, // 25-40 ops/sec
-                LastHealthCheck = DateTime.UtcNow.AddMinutes(-random.Next(5)),
-                Status = healthyAgents == countyAgentCount ? "OPTIMAL" :
-                         healthyAgents >= countyAgentCount * 0.95 ? "GOOD" :
-                         healthyAgents >= countyAgentCount * 0.90 ? "ACCEPTABLE" : "DEGRADED"
+                generated = false
             });
         }
         catch (Exception ex)

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T12:20:14.043Z",
+  "generatedAt": "2026-06-01T13:23:33.443Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,13 +52,13 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7523,
+    "totalFilesScanned": 7524,
     "filesWithSignals": 2111,
     "productionRiskFiles": 393,
     "demoSafeFiles": 1407,
     "dormantFiles": 298,
     "deadFiles": 13,
-    "endpointAffectingMocks": 8,
+    "endpointAffectingMocks": 7,
     "wave1ProductionBlockersDispositioned": 39,
     "wave1DispositionedStillPresentInCanonicalRisk": 32,
     "byBucket": {
@@ -104,14 +104,6 @@
     "reason": "The canonical denominator is now stable for this worktree. Wave 1 production blockers are disposition-linked, but production/full capability remain blocked by unresolved production-risk mock/stub files and endpoint-affecting mocks."
   },
   "endpointMockSignals": [
-    {
-      "controller": "AIOrchestrationController",
-      "action": "GetCountyAgentStatus",
-      "route": "/api/aiorchestration/county/{countyId}/agents",
-      "method": "GET",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/AIOrchestrationController.cs",
-      "classification": "mock"
-    },
     {
       "controller": "AISuperiorityController",
       "action": "LaunchSupremacyDemonstration",
@@ -1657,7 +1649,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -12952,7 +12944,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 10,
+      "matchCount": 9,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -17161,7 +17153,7 @@
       "classification": "demo_safe",
       "signalKinds": ["placeholder", "mock", "fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 9348,
+      "staticReferenceCount": 9350,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20265,9 +20257,9 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "e68c8107bfb7d7982cc16441cc3e25c9efcdc4c0aa9e73e1a8a4f6ebebed9d04"
+  "packetHash": "701de84be0dba4231066203d1999329ff2cb2e005c2607b259776b2131966c72"
 }
