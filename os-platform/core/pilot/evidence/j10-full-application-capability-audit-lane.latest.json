@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T14:39:54.611Z",
+  "generatedAt": "2026-06-01T14:44:47.113Z",
   "name": "Full Application Capability Audit Lane",
   "scope": {
     "target": "full application capability, not frozen demo path only",
@@ -100,7 +100,7 @@
       "label": "Prometheus / Observability Audit",
       "status": "UNKNOWN",
       "evidence": {
-        "prometheusEvidenceCount": 13750,
+        "prometheusEvidenceCount": 13749,
         "liveMetricsEndpointProof": false
       },
       "requiredNextProof": "Verify metrics emission, scrapeability, dashboards, alerting, and correlationId traceability for live failures."
@@ -144,5 +144,5 @@
     "Run Rust, Redis, Prometheus, and CLI runtime proof lanes separately."
   ],
   "hardStop": "Do not claim full production readiness until every category is PROVEN or explicitly not applicable with evidence.",
-  "packetHash": "457b4aea909f272f18544436cc9f7f54fe3ee2c7740d05b37e72b8f23c0e5aa8"
+  "packetHash": "058c91e473b049ba6f05c93b2a9a355599192203a751f32ad5ce24b599dcb27e"
 }

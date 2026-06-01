@@ -12,12 +12,11 @@ namespace TerraFusion.API.Controllers;
 /// SYNC-COMPLETE-2: durable full-corpus sync runner endpoints.
 ///
 /// <para>Mirrors the workbench controller pattern: explicitly tagged
-/// <c>[AllowAnonymous]</c> (PR-2 / Prometheus T3 — the global
-/// <c>FallbackPolicy.RequireAuthenticatedUser()</c> requires every
-/// controller to declare its auth posture). Single-county-per-deployment
-/// doctrine; operator-driven via curl. All state mutations go through
-/// the orchestrator service (status transitions are the orchestrator's
-/// responsibility, not the controller's).</para>
+/// <c>[Authorize]</c> so corpus operations are limited to authenticated
+/// operators. Single-county-per-deployment doctrine; operator-driven via
+/// governed client calls. All state mutations go through the orchestrator
+/// service (status transitions are the orchestrator's responsibility, not
+/// the controller's).</para>
 ///
 /// <para>Endpoints:</para>
 /// <list type="bullet">
@@ -36,7 +35,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/sync/corpus")]
-[AllowAnonymous]
+[Authorize]
 public sealed class FullCorpusController : ControllerBase
 {
     private const string ZipMediaType = "application/zip";
