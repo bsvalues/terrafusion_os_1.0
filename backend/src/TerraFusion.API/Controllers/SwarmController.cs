@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
 using TerraFusion.API.Services.Telemetry;
@@ -7,6 +8,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class SwarmController : ControllerBase
 {
     private readonly IAIModuleOrchestrator _aiOrchestrator;

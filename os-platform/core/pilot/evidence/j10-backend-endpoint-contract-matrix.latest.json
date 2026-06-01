@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T16:54:17.454Z",
+  "generatedAt": "2026-06-01T17:07:27.680Z",
   "verdict": "CLASSIFICATION_ONLY_NOT_PRODUCTION_READY",
   "scope": {
     "controllerRoot": "C:\\Users\\bsval\\terrafusion_os_1.0\\backend\\src\\TerraFusion.API\\Controllers",
@@ -21,13 +21,13 @@
   "summary": {
     "totalEndpoints": 1281,
     "classificationCounts": {
-      "live": 253,
-      "protected": 706,
-      "broken": 184,
+      "live": 252,
+      "protected": 749,
+      "broken": 185,
       "mock": 0,
       "dead": 47,
       "not_applicable": 0,
-      "unknown": 91
+      "unknown": 48
     },
     "evidenceSourceCounts": {
       "live dev39 probe": 544,
@@ -63,7 +63,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1100
+          "durationMs": 1401
         }
       }
     },
@@ -182,7 +182,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2387
+          "durationMs": 1388
         }
       }
     },
@@ -301,7 +301,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2387
+          "durationMs": 1398
         }
       }
     },
@@ -382,7 +382,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 2591
+          "durationMs": 1388
         }
       }
     },
@@ -406,7 +406,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2380
+          "durationMs": 624
         }
       }
     },
@@ -430,7 +430,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2085
+          "durationMs": 897
         }
       }
     },
@@ -473,7 +473,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1494
+          "durationMs": 274
         }
       }
     },
@@ -497,7 +497,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 310
+          "durationMs": 492
         }
       }
     },
@@ -612,7 +612,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 212
+          "durationMs": 494
         }
       }
     },
@@ -636,7 +636,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 410
+          "durationMs": 405
         }
       }
     },
@@ -729,7 +729,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 7599
+          "durationMs": 404
         }
       }
     },
@@ -753,7 +753,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 484
+          "durationMs": 5002
         }
       }
     },
@@ -777,7 +777,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 203
+          "durationMs": 1300
         }
       }
     },
@@ -791,13 +791,13 @@
         "controller": "api/[controller]",
         "action": "execute"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Policy=OSCoreAccess",
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": ["[HttpPost(\"execute\")]", "[AllowAnonymous]"]
+        "staticAttributes": ["[HttpPost(\"execute\")]"]
       }
     },
     {
@@ -886,13 +886,13 @@
         "controller": "api/[controller]",
         "action": "predict-cost"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Policy=OSCoreAccess",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": ["[HttpPost(\"predict-cost\")]", "[AllowAnonymous]"]
+        "staticAttributes": ["[HttpPost(\"predict-cost\")]"]
       }
     },
     {
@@ -915,7 +915,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2590
+          "durationMs": 1295
         }
       }
     },
@@ -1035,7 +1035,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 697
+          "durationMs": 406
         }
       }
     },
@@ -1109,7 +1109,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 98
+          "durationMs": 894
         }
       }
     },
@@ -1238,7 +1238,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 95
+          "durationMs": 713
         }
       }
     },
@@ -1262,7 +1262,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 316
+          "durationMs": 879
         }
       }
     },
@@ -1286,7 +1286,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 402
+          "durationMs": 183
         }
       }
     },
@@ -1310,7 +1310,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 388
+          "durationMs": 220
         }
       }
     },
@@ -1334,7 +1334,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1978
+          "durationMs": 802
         }
       }
     },
@@ -1396,7 +1396,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1898
+          "durationMs": 511
         }
       }
     },
@@ -1420,7 +1420,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1885
+          "durationMs": 505
         }
       }
     },
@@ -1447,7 +1447,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1881
+          "durationMs": 292
         }
       }
     },
@@ -1474,7 +1474,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 507
+          "durationMs": 294
         }
       }
     },
@@ -1501,7 +1501,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 512
+          "durationMs": 215
         }
       }
     },
@@ -1528,7 +1528,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 503
+          "durationMs": 598
         }
       }
     },
@@ -1578,7 +1578,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 495
+          "durationMs": 301
         }
       }
     },
@@ -1605,7 +1605,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 495
+          "durationMs": 294
         }
       }
     },
@@ -1632,7 +1632,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 508
+          "durationMs": 387
         }
       }
     },
@@ -1659,7 +1659,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 501
+          "durationMs": 301
         }
       }
     },
@@ -1686,7 +1686,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 504
+          "durationMs": 294
         }
       }
     },
@@ -1713,7 +1713,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 503
+          "durationMs": 288
         }
       }
     },
@@ -1762,7 +1762,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1085
+          "durationMs": 1102
         }
       }
     },
@@ -1789,7 +1789,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 593
+          "durationMs": 1919
         }
       }
     },
@@ -1816,7 +1816,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 589
+          "durationMs": 908
         }
       }
     },
@@ -1887,7 +1887,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 590
+          "durationMs": 200
         }
       }
     },
@@ -1914,7 +1914,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 586
+          "durationMs": 194
         }
       }
     },
@@ -1941,7 +1941,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 505
+          "durationMs": 489
         }
       }
     },
@@ -2034,7 +2034,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 502
+          "durationMs": 1796
         }
       }
     },
@@ -2061,7 +2061,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 514
+          "durationMs": 1706
         }
       }
     },
@@ -2110,7 +2110,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 509
+          "durationMs": 1205
         }
       }
     },
@@ -2137,7 +2137,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 502
+          "durationMs": 1090
         }
       }
     },
@@ -2230,7 +2230,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1110
+          "durationMs": 290
         }
       }
     },
@@ -2257,7 +2257,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 5413
+          "durationMs": 308
         }
       }
     },
@@ -2416,7 +2416,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1106
+          "durationMs": 421
         }
       }
     },
@@ -2465,7 +2465,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1105
+          "durationMs": 302
         }
       }
     },
@@ -2492,7 +2492,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1096
+          "durationMs": 205
         }
       }
     },
@@ -2541,7 +2541,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 395
+          "durationMs": 595
         }
       }
     },
@@ -2569,7 +2569,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 107
+          "durationMs": 406
         }
       }
     },
@@ -2597,7 +2597,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 393
+          "durationMs": 490
         }
       }
     },
@@ -2625,7 +2625,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 390
+          "durationMs": 277
         }
       }
     },
@@ -2686,15 +2686,14 @@
         "controller": "api/atlas/gis",
         "action": "parcels/{parcelId}/boundary"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
           "[HttpGet(\"parcels/{parcelId}/boundary\")]",
-          "[AllowAnonymous]",
           "[ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status404NotFound)]"
         ]
@@ -2710,15 +2709,14 @@
         "controller": "api/atlas/gis",
         "action": "parcels/{parcelId}/layers"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
           "[HttpGet(\"parcels/{parcelId}/layers\")]",
-          "[AllowAnonymous]",
           "[ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]"
         ]
       }
@@ -2733,15 +2731,14 @@
         "controller": "api/atlas/gis",
         "action": "parcels/{parcelId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
           "[HttpGet(\"parcels/{parcelId}\")]",
-          "[AllowAnonymous]",
           "[ProducesResponseType(StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status404NotFound)]"
         ]
@@ -2767,7 +2764,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1188
+          "durationMs": 1077
         }
       }
     },
@@ -2791,7 +2788,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 699
+          "durationMs": 706
         }
       }
     },
@@ -2853,7 +2850,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 694
+          "durationMs": 621
         }
       }
     },
@@ -2899,7 +2896,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 499
+          "durationMs": 500
         }
       }
     },
@@ -2980,7 +2977,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 395
+          "durationMs": 407
         }
       }
     },
@@ -3008,7 +3005,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 405
+          "durationMs": 406
         }
       }
     },
@@ -3032,7 +3029,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 207
+          "durationMs": 201
         }
       }
     },
@@ -3056,7 +3053,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 315
+          "durationMs": 194
         }
       }
     },
@@ -3080,7 +3077,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 310
+          "durationMs": 195
         }
       }
     },
@@ -3104,7 +3101,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 303
+          "durationMs": 188
         }
       }
     },
@@ -3128,7 +3125,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 901
+          "durationMs": 195
         }
       }
     },
@@ -3152,7 +3149,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 995
+          "durationMs": 903
         }
       }
     },
@@ -3203,7 +3200,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1692
+          "durationMs": 1407
         }
       }
     },
@@ -3231,7 +3228,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1792
+          "durationMs": 911
         }
       }
     },
@@ -3258,7 +3255,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 808
+          "durationMs": 697
         }
       }
     },
@@ -3373,7 +3370,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 210
+          "durationMs": 696
         }
       }
     },
@@ -3422,7 +3419,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 196
+          "durationMs": 1108
         }
       }
     },
@@ -3449,7 +3446,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 415
+          "durationMs": 200
         }
       }
     },
@@ -3533,7 +3530,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 791
+          "durationMs": 707
         }
       }
     },
@@ -3576,7 +3573,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 700
+          "durationMs": 695
         }
       }
     },
@@ -3621,7 +3618,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 383
+          "durationMs": 214
         }
       }
     },
@@ -3645,7 +3642,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1111
+          "durationMs": 685
         }
       }
     },
@@ -3707,7 +3704,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 492
+          "durationMs": 480
         }
       }
     },
@@ -3788,7 +3785,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 1394
+          "durationMs": 480
         }
       }
     },
@@ -3850,7 +3847,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1495
+          "durationMs": 404
         }
       }
     },
@@ -3874,7 +3871,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 404
+          "durationMs": 398
         }
       }
     },
@@ -3917,7 +3914,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 607
+          "durationMs": 402
         }
       }
     },
@@ -4245,7 +4242,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 907
+          "durationMs": 298
         }
       }
     },
@@ -4288,7 +4285,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 585
+          "durationMs": 1208
         }
       }
     },
@@ -4331,7 +4328,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 298
+          "durationMs": 209
         }
       }
     },
@@ -4604,7 +4601,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 288
+          "durationMs": 603
         }
       }
     },
@@ -4628,7 +4625,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 300
+          "durationMs": 1002
         }
       }
     },
@@ -4652,7 +4649,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 301
+          "durationMs": 996
         }
       }
     },
@@ -4676,7 +4673,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 289
+          "durationMs": 919
         }
       }
     },
@@ -4700,7 +4697,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 223
+          "durationMs": 1212
         }
       }
     },
@@ -4724,7 +4721,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 119
+          "durationMs": 503
         }
       }
     },
@@ -4767,7 +4764,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 113
+          "durationMs": 414
         }
       }
     },
@@ -4935,7 +4932,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 305
+          "durationMs": 691
         }
       }
     },
@@ -4963,7 +4960,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 696
+          "durationMs": 684
         }
       }
     },
@@ -5035,7 +5032,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 288
+          "durationMs": 393
         }
       }
     },
@@ -5062,7 +5059,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 287
+          "durationMs": 305
         }
       }
     },
@@ -5089,7 +5086,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 291
+          "durationMs": 288
         }
       }
     },
@@ -5116,7 +5113,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 280
+          "durationMs": 285
         }
       }
     },
@@ -5143,7 +5140,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 219
+          "durationMs": 279
         }
       }
     },
@@ -5171,7 +5168,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 399
+          "durationMs": 275
         }
       }
     },
@@ -5199,7 +5196,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 405
+          "durationMs": 716
         }
       }
     },
@@ -5273,7 +5270,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 392
+          "durationMs": 716
         }
       }
     },
@@ -5301,7 +5298,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 397
+          "durationMs": 718
         }
       }
     },
@@ -5329,7 +5326,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 187
+          "durationMs": 710
         }
       }
     },
@@ -5357,7 +5354,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 210
+          "durationMs": 707
         }
       }
     },
@@ -5385,7 +5382,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 220
+          "durationMs": 705
         }
       }
     },
@@ -5413,7 +5410,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 206
+          "durationMs": 395
         }
       }
     },
@@ -5610,7 +5607,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1697
+          "durationMs": 398
         }
       }
     },
@@ -5637,7 +5634,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 211
+          "durationMs": 395
         }
       }
     },
@@ -5665,7 +5662,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 200
+          "durationMs": 389
         }
       }
     },
@@ -5689,7 +5686,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2105
+          "durationMs": 795
         }
       }
     },
@@ -5713,7 +5710,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2101
+          "durationMs": 390
         }
       }
     },
@@ -5737,7 +5734,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2096
+          "durationMs": 1001
         }
       }
     },
@@ -5761,7 +5758,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1506
+          "durationMs": 401
         }
       }
     },
@@ -5785,7 +5782,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1496
+          "durationMs": 710
         }
       }
     },
@@ -5809,7 +5806,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 612
+          "durationMs": 398
         }
       }
     },
@@ -5833,7 +5830,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 879
+          "durationMs": 398
         }
       }
     },
@@ -5860,7 +5857,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 288
+          "durationMs": 304
         }
       }
     },
@@ -6090,7 +6087,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 97
+          "durationMs": 304
         }
       }
     },
@@ -6255,7 +6252,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 106
+          "durationMs": 605
         }
       }
     },
@@ -6737,7 +6734,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 388
+          "durationMs": 300
         }
       }
     },
@@ -6764,7 +6761,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 493
+          "durationMs": 300
         }
       }
     },
@@ -6835,7 +6832,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 688
+          "durationMs": 293
         }
       }
     },
@@ -6884,7 +6881,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 488
+          "durationMs": 293
         }
       }
     },
@@ -6952,7 +6949,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 313
+          "durationMs": 288
         }
       }
     },
@@ -7067,7 +7064,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 302
+          "durationMs": 1009
         }
       }
     },
@@ -7173,7 +7170,7 @@
         "controller": "api/[controller]",
         "action": null
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "runtime health/config",
       "currentClassification": "broken",
@@ -7183,7 +7180,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 205
+          "durationMs": 121
         }
       }
     },
@@ -7197,10 +7194,10 @@
         "controller": "api/[controller]",
         "action": "{name}/health"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "runtime health/config",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"{name}/health\")]"]
@@ -7216,10 +7213,10 @@
         "controller": "api/[controller]",
         "action": "{name}/test-connection"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"{name}/test-connection\")]"]
@@ -7235,7 +7232,7 @@
         "controller": "api/ai/consciousness",
         "action": null
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "dead",
@@ -7245,7 +7242,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 278
+          "durationMs": 1004
         }
       }
     },
@@ -7259,7 +7256,7 @@
         "controller": "api/ai/consciousness",
         "action": "enhanced"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "dead",
@@ -7269,7 +7266,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 119
+          "durationMs": 1003
         }
       }
     },
@@ -7283,10 +7280,10 @@
         "controller": "api/ai/consciousness",
         "action": "mode"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"mode\")]"]
@@ -7302,7 +7299,7 @@
         "controller": "api/ai/consciousness",
         "action": "system-status"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "dead",
@@ -7312,7 +7309,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 298
+          "durationMs": 997
         }
       }
     },
@@ -7326,7 +7323,7 @@
         "controller": "api/ai/consciousness",
         "action": "status"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "dead",
@@ -7336,7 +7333,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 105
+          "durationMs": 1001
         }
       }
     },
@@ -7350,10 +7347,10 @@
         "controller": "api/ai/consciousness",
         "action": "initialize"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"initialize\")]"]
@@ -7379,7 +7376,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 205
+          "durationMs": 187
         }
       }
     },
@@ -7538,7 +7535,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 809
+          "durationMs": 699
         }
       }
     },
@@ -7565,7 +7562,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 811
+          "durationMs": 614
         }
       }
     },
@@ -7592,7 +7589,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1100
+          "durationMs": 997
         }
       }
     },
@@ -7641,7 +7638,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1026
+          "durationMs": 994
         }
       }
     },
@@ -7706,7 +7703,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1401
+          "durationMs": 1006
         }
       }
     },
@@ -7730,7 +7727,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1403
+          "durationMs": 506
         }
       }
     },
@@ -7773,7 +7770,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 304
+          "durationMs": 508
         }
       }
     },
@@ -7799,7 +7796,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 775
+          "durationMs": 490
         }
       }
     },
@@ -7823,7 +7820,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 484
+          "durationMs": 497
         }
       }
     },
@@ -7849,7 +7846,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 479
+          "durationMs": 398
         }
       }
     },
@@ -7915,7 +7912,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 476
+          "durationMs": 1316
         }
       }
     },
@@ -7941,7 +7938,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1817
+          "durationMs": 1304
         }
       }
     },
@@ -7967,7 +7964,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 316
+          "durationMs": 1307
         }
       }
     },
@@ -8033,7 +8030,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1715
+          "durationMs": 1290
         }
       }
     },
@@ -8080,7 +8077,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1613
+          "durationMs": 186
         }
       }
     },
@@ -8106,7 +8103,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 302
+          "durationMs": 184
         }
       }
     },
@@ -8132,7 +8129,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 292
+          "durationMs": 1109
         }
       }
     },
@@ -8194,7 +8191,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1116
+          "durationMs": 1103
         }
       }
     },
@@ -8413,7 +8410,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1009
+          "durationMs": 810
         }
       }
     },
@@ -8437,7 +8434,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1389
+          "durationMs": 811
         }
       }
     },
@@ -8464,7 +8461,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1991
+          "durationMs": 1701
         }
       }
     },
@@ -8491,7 +8488,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 298
+          "durationMs": 1908
         }
       }
     },
@@ -8505,16 +8502,13 @@
         "controller": "api/[controller]",
         "action": "calibration/mass-adjust-preview"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"calibration/mass-adjust-preview\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"calibration/mass-adjust-preview\")]"]
       }
     },
     {
@@ -8540,7 +8534,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 500
+          "durationMs": 1906
         }
       }
     },
@@ -8567,7 +8561,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 399
+          "durationMs": 800
         }
       }
     },
@@ -8594,7 +8588,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 383
+          "durationMs": 1498
         }
       }
     },
@@ -8621,7 +8615,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 393
+          "durationMs": 491
         }
       }
     },
@@ -8648,7 +8642,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1100
+          "durationMs": 1498
         }
       }
     },
@@ -8748,7 +8742,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1214
+          "durationMs": 2400
         }
       }
     },
@@ -8831,7 +8825,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1204
+          "durationMs": 1107
         }
       }
     },
@@ -8912,7 +8906,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1009
+          "durationMs": 896
         }
       }
     },
@@ -9014,7 +9008,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 1190
+          "durationMs": 1686
         }
       }
     },
@@ -9114,7 +9108,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 594
+          "durationMs": 1293
         }
       }
     },
@@ -9214,7 +9208,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 384
+          "durationMs": 1393
         }
       }
     },
@@ -9228,16 +9222,13 @@
         "controller": "api/[controller]",
         "action": "analytics/data-quality/assess"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"analytics/data-quality/assess\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"analytics/data-quality/assess\")]"]
       }
     },
     {
@@ -9279,7 +9270,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 523
+          "durationMs": 1402
         }
       }
     },
@@ -9341,7 +9332,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 309
+          "durationMs": 1394
         }
       }
     },
@@ -9403,7 +9394,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 791
+          "durationMs": 598
         }
       }
     },
@@ -9465,7 +9456,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 387
+          "durationMs": 610
         }
       }
     },
@@ -9489,7 +9480,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 524
+          "durationMs": 514
         }
       }
     },
@@ -9503,16 +9494,13 @@
         "controller": "api/[controller]",
         "action": "neighborhoods/{hoodCd}/parcels"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpGet(\"neighborhoods/{hoodCd}/parcels\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpGet(\"neighborhoods/{hoodCd}/parcels\")]"]
       }
     },
     {
@@ -9535,7 +9523,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 498
+          "durationMs": 502
         }
       }
     },
@@ -9562,7 +9550,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 586
+          "durationMs": 497
         }
       }
     },
@@ -9586,7 +9574,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 501
+          "durationMs": 491
         }
       }
     },
@@ -9600,16 +9588,13 @@
         "controller": "api/[controller]",
         "action": "effective-age"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"effective-age\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"effective-age\")]"]
       }
     },
     {
@@ -9635,7 +9620,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1598
+          "durationMs": 491
         }
       }
     },
@@ -9649,16 +9634,13 @@
         "controller": "api/[controller]",
         "action": "calibration/mass-adjust-apply"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"calibration/mass-adjust-apply\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"calibration/mass-adjust-apply\")]"]
       }
     },
     {
@@ -9684,7 +9666,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1405
+          "durationMs": 593
         }
       }
     },
@@ -9698,13 +9680,13 @@
         "controller": "api/[controller]",
         "action": "batch/apply"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": ["[HttpPost(\"batch/apply\")]", "[AllowAnonymous]"]
+        "staticAttributes": ["[HttpPost(\"batch/apply\")]"]
       }
     },
     {
@@ -9717,16 +9699,13 @@
         "controller": "api/[controller]",
         "action": "batch/status/{jobId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "TerraFusion DB context",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpGet(\"batch/status/{jobId}\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpGet(\"batch/status/{jobId}\")]"]
       }
     },
     {
@@ -9739,16 +9718,13 @@
         "controller": "api/[controller]",
         "action": "batch/cancel/{jobId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Permission=access:costforge",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"batch/cancel/{jobId}\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"batch/cancel/{jobId}\")]"]
       }
     },
     {
@@ -9771,7 +9747,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 1675
+          "durationMs": 484
         }
       }
     },
@@ -9795,7 +9771,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 1607
+          "durationMs": 479
         }
       }
     },
@@ -9819,7 +9795,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 1215
+          "durationMs": 824
         }
       }
     },
@@ -9919,7 +9895,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1601
+          "durationMs": 618
         }
       }
     },
@@ -10021,7 +9997,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 305
+          "durationMs": 921
         }
       }
     },
@@ -10035,10 +10011,10 @@
         "controller": "api/counties/{countyToken}",
         "action": "parcels"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"parcels\")]"]
@@ -10054,10 +10030,10 @@
         "controller": "api/counties/{countyToken}",
         "action": "sales"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"sales\")]"]
@@ -10073,10 +10049,10 @@
         "controller": "api/counties/{countyToken}",
         "action": "runtime-lineage"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"runtime-lineage\")]"]
@@ -10121,7 +10097,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 388
+          "durationMs": 1125
         }
       }
     },
@@ -10951,7 +10927,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 383
+          "durationMs": 617
         }
       }
     },
@@ -10975,7 +10951,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 415
+          "durationMs": 714
         }
       }
     },
@@ -10999,7 +10975,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 401
+          "durationMs": 495
         }
       }
     },
@@ -11023,7 +10999,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 397
+          "durationMs": 296
         }
       }
     },
@@ -11087,7 +11063,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 312
+          "durationMs": 981
         }
       }
     },
@@ -11168,7 +11144,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 313
+          "durationMs": 290
         }
       }
     },
@@ -11192,7 +11168,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 307
+          "durationMs": 199
         }
       }
     },
@@ -11216,7 +11192,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 314
+          "durationMs": 195
         }
       }
     },
@@ -11240,7 +11216,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1109
+          "durationMs": 418
         }
       }
     },
@@ -11285,7 +11261,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1599
+          "durationMs": 691
         }
       }
     },
@@ -11309,7 +11285,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 5500
+          "durationMs": 685
         }
       }
     },
@@ -11352,7 +11328,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3195
+          "durationMs": 689
         }
       }
     },
@@ -11414,7 +11390,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 2202
+          "durationMs": 693
         }
       }
     },
@@ -11609,7 +11585,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 2513
+          "durationMs": 481
         }
       }
     },
@@ -11633,7 +11609,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 2995
+          "durationMs": 508
         }
       }
     },
@@ -11657,7 +11633,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 2706
+          "durationMs": 503
         }
       }
     },
@@ -11681,7 +11657,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 400
+          "durationMs": 1310
         }
       }
     },
@@ -11705,7 +11681,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 216
+          "durationMs": 1310
         }
       }
     },
@@ -11824,7 +11800,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 366
+          "durationMs": 1302
         }
       }
     },
@@ -11989,7 +11965,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 182
+          "durationMs": 1103
         }
       }
     },
@@ -12022,7 +11998,7 @@
         "controller": "api/[controller]",
         "action": "status"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -12032,7 +12008,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3295
+          "durationMs": 1409
         }
       }
     },
@@ -12046,10 +12022,10 @@
         "controller": "api/[controller]",
         "action": "initialize"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"initialize\")]"]
@@ -12065,10 +12041,10 @@
         "controller": "api/[controller]",
         "action": "seed-modules"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"seed-modules\")]"]
@@ -12094,7 +12070,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 322
+          "durationMs": 814
         }
       }
     },
@@ -12137,7 +12113,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 892
+          "durationMs": 805
         }
       }
     },
@@ -12221,7 +12197,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 588
+          "durationMs": 596
         }
       }
     },
@@ -12248,7 +12224,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 210
+          "durationMs": 695
         }
       }
     },
@@ -12295,7 +12271,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1371
+          "durationMs": 595
         }
       }
     },
@@ -12319,7 +12295,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 287
+          "durationMs": 591
         }
       }
     },
@@ -12343,7 +12319,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 904
+          "durationMs": 95
         }
       }
     },
@@ -12389,7 +12365,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1190
+          "durationMs": 293
         }
       }
     },
@@ -12527,7 +12503,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1912
+          "durationMs": 1089
         }
       }
     },
@@ -12551,7 +12527,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1094
+          "durationMs": 202
         }
       }
     },
@@ -12594,7 +12570,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1424
+          "durationMs": 999
         }
       }
     },
@@ -12618,7 +12594,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 801
+          "durationMs": 194
         }
       }
     },
@@ -12642,7 +12618,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 806
+          "durationMs": 891
         }
       }
     },
@@ -12723,7 +12699,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1408
+          "durationMs": 897
         }
       }
     },
@@ -12747,7 +12723,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1109
+          "durationMs": 1096
         }
       }
     },
@@ -12771,7 +12747,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1099
+          "durationMs": 1014
         }
       }
     },
@@ -12814,7 +12790,7 @@
         "dev39Probe": {
           "status": 0,
           "ok": false,
-          "durationMs": 15006,
+          "durationMs": 15009,
           "error": "timeout"
         }
       }
@@ -12858,7 +12834,7 @@
         "dev39Probe": {
           "status": 0,
           "ok": false,
-          "durationMs": 15003,
+          "durationMs": 15009,
           "error": "timeout"
         }
       }
@@ -12974,7 +12950,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 914
+          "durationMs": 1002
         }
       }
     },
@@ -13142,7 +13118,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 399
+          "durationMs": 896
         }
       }
     },
@@ -13166,7 +13142,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 389
+          "durationMs": 395
         }
       }
     },
@@ -13190,7 +13166,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 100
+          "durationMs": 398
         }
       }
     },
@@ -13214,7 +13190,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 397
+          "durationMs": 400
         }
       }
     },
@@ -13676,7 +13652,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 9114
+          "durationMs": 9322
         }
       }
     },
@@ -13700,7 +13676,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 987
+          "durationMs": 2009
         }
       }
     },
@@ -13724,7 +13700,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3609
+          "durationMs": 2606
         }
       }
     },
@@ -13748,7 +13724,7 @@
         "dev39Probe": {
           "status": 0,
           "ok": false,
-          "durationMs": 15004,
+          "durationMs": 15005,
           "error": "timeout"
         }
       }
@@ -13763,7 +13739,7 @@
         "controller": "api/elite-operations",
         "action": "dashboard"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -13777,7 +13753,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 926
+          "durationMs": 697
         }
       }
     },
@@ -13791,7 +13767,7 @@
         "controller": "api/elite-operations",
         "action": "status"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
       "currentClassification": "live",
@@ -13804,7 +13780,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 274
+          "durationMs": 197
         }
       }
     },
@@ -13818,10 +13794,10 @@
         "controller": "api/elite-operations",
         "action": "execute-cycle"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
@@ -13841,7 +13817,7 @@
         "controller": "api/elite-operations",
         "action": "excellence-score"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -13854,7 +13830,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 994
+          "durationMs": 196
         }
       }
     },
@@ -13868,10 +13844,10 @@
         "controller": "api/elite-operations",
         "action": "initialize"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
@@ -13891,7 +13867,7 @@
         "controller": "api/elite-operations",
         "action": "ai-agents"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -13904,7 +13880,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 123
+          "durationMs": 199
         }
       }
     },
@@ -13918,7 +13894,7 @@
         "controller": "api/elite-operations",
         "action": "performance"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -13931,7 +13907,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 296
+          "durationMs": 207
         }
       }
     },
@@ -13955,7 +13931,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1897
+          "durationMs": 3398
         }
       }
     },
@@ -14036,7 +14012,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1080
+          "durationMs": 899
         }
       }
     },
@@ -14064,7 +14040,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 511
+          "durationMs": 93
         }
       }
     },
@@ -14092,7 +14068,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 488
+          "durationMs": 293
         }
       }
     },
@@ -14120,7 +14096,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 200
+          "durationMs": 107
         }
       }
     },
@@ -14148,7 +14124,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 105
+          "durationMs": 98
         }
       }
     },
@@ -14176,7 +14152,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 110
+          "durationMs": 301
         }
       }
     },
@@ -14204,7 +14180,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 100
+          "durationMs": 96
         }
       }
     },
@@ -14232,7 +14208,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 84
+          "durationMs": 116
         }
       }
     },
@@ -14260,7 +14236,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 107
+          "durationMs": 85
         }
       }
     },
@@ -14312,7 +14288,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 106
+          "durationMs": 398
         }
       }
     },
@@ -14341,7 +14317,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 497
+          "durationMs": 705
         }
       }
     },
@@ -14369,7 +14345,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 96
+          "durationMs": 106
         }
       }
     },
@@ -14393,7 +14369,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 702
+          "durationMs": 178
         }
       }
     },
@@ -14474,7 +14450,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 304
+          "durationMs": 702
         }
       }
     },
@@ -14491,14 +14467,15 @@
       "authRequirement": "unknown",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "live",
+      "currentClassification": "broken",
       "evidenceSource": "live dev39 probe",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"mission-completion\")]"],
         "dev39Probe": {
-          "status": 200,
-          "ok": true,
-          "durationMs": 7197
+          "status": 0,
+          "ok": false,
+          "durationMs": 15004,
+          "error": "timeout"
         }
       }
     },
@@ -14522,7 +14499,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 201
+          "durationMs": 691
         }
       }
     },
@@ -14546,7 +14523,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 785
+          "durationMs": 1219
         }
       }
     },
@@ -14570,7 +14547,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1008
+          "durationMs": 1398
         }
       }
     },
@@ -14670,7 +14647,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 600
+          "durationMs": 892
         }
       }
     },
@@ -14716,7 +14693,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 94
+          "durationMs": 97
         }
       }
     },
@@ -14806,7 +14783,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 198
+          "durationMs": 1194
         }
       }
     },
@@ -14830,7 +14807,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 605
+          "durationMs": 1297
         }
       }
     },
@@ -14854,7 +14831,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3509
+          "durationMs": 5408
         }
       }
     },
@@ -14878,7 +14855,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 495
+          "durationMs": 4599
         }
       }
     },
@@ -14902,7 +14879,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 205
+          "durationMs": 4404
         }
       }
     },
@@ -14926,7 +14903,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 200
+          "durationMs": 3901
         }
       }
     },
@@ -14950,7 +14927,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 197
+          "durationMs": 2902
         }
       }
     },
@@ -14974,7 +14951,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 201
+          "durationMs": 1683
         }
       }
     },
@@ -15057,7 +15034,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 492
+          "durationMs": 609
         }
       }
     },
@@ -15100,7 +15077,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 103
+          "durationMs": 481
         }
       }
     },
@@ -15143,7 +15120,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 106
+          "durationMs": 117
         }
       }
     },
@@ -15186,7 +15163,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 90
+          "durationMs": 89
         }
       }
     },
@@ -15210,7 +15187,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 101
+          "durationMs": 104
         }
       }
     },
@@ -15352,7 +15329,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 222
+          "durationMs": 500
         }
       }
     },
@@ -15380,7 +15357,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 281
+          "durationMs": 493
         }
       }
     },
@@ -15574,7 +15551,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 112
+          "durationMs": 418
         }
       }
     },
@@ -15598,7 +15575,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 188
+          "durationMs": 104
         }
       }
     },
@@ -15622,7 +15599,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 197
+          "durationMs": 1700
         }
       }
     },
@@ -15665,7 +15642,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 109
+          "durationMs": 390
         }
       }
     },
@@ -15689,7 +15666,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1098
+          "durationMs": 1399
         }
       }
     },
@@ -15713,7 +15690,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2298
+          "durationMs": 396
         }
       }
     },
@@ -15737,7 +15714,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 486
+          "durationMs": 390
         }
       }
     },
@@ -15761,7 +15738,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 694
+          "durationMs": 1014
         }
       }
     },
@@ -15823,7 +15800,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1596
+          "durationMs": 1797
         }
       }
     },
@@ -15847,7 +15824,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 101
+          "durationMs": 1003
         }
       }
     },
@@ -15890,7 +15867,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1301
+          "durationMs": 1314
         }
       }
     },
@@ -15914,7 +15891,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1192
+          "durationMs": 792
         }
       }
     },
@@ -15938,7 +15915,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1190
+          "durationMs": 1581
         }
       }
     },
@@ -15962,7 +15939,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 792
+          "durationMs": 788
         }
       }
     },
@@ -15986,7 +15963,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 793
+          "durationMs": 799
         }
       }
     },
@@ -16010,7 +15987,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 793
+          "durationMs": 794
         }
       }
     },
@@ -16034,7 +16011,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 492
+          "durationMs": 794
         }
       }
     },
@@ -16058,7 +16035,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 581
+          "durationMs": 583
         }
       }
     },
@@ -16082,7 +16059,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1914
+          "durationMs": 1204
         }
       }
     },
@@ -16106,7 +16083,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1214
+          "durationMs": 314
         }
       }
     },
@@ -16153,7 +16130,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 215
+          "durationMs": 726
         }
       }
     },
@@ -16181,7 +16158,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1119
+          "durationMs": 306
         }
       }
     },
@@ -16231,7 +16208,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1098
+          "durationMs": 918
         }
       }
     },
@@ -16259,7 +16236,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1109
+          "durationMs": 708
         }
       }
     },
@@ -16283,7 +16260,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1900
+          "durationMs": 1107
         }
       }
     },
@@ -16326,7 +16303,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 689
+          "durationMs": 1109
         }
       }
     },
@@ -16377,7 +16354,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 508
+          "durationMs": 885
         }
       }
     },
@@ -16404,7 +16381,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1806
+          "durationMs": 597
         }
       }
     },
@@ -16431,7 +16408,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 788
+          "durationMs": 979
         }
       }
     },
@@ -16458,7 +16435,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 596
+          "durationMs": 801
         }
       }
     },
@@ -16485,7 +16462,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 307
+          "durationMs": 1212
         }
       }
     },
@@ -16512,7 +16489,7 @@
         "dev39Probe": {
           "status": 503,
           "ok": false,
-          "durationMs": 1109
+          "durationMs": 1207
         }
       }
     },
@@ -16540,7 +16517,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 811
+          "durationMs": 906
         }
       }
     },
@@ -16568,7 +16545,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1197
+          "durationMs": 1685
         }
       }
     },
@@ -16596,7 +16573,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1597
+          "durationMs": 1304
         }
       }
     },
@@ -16624,7 +16601,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1810
+          "durationMs": 1296
         }
       }
     },
@@ -16652,7 +16629,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 406
+          "durationMs": 787
         }
       }
     },
@@ -16676,7 +16653,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 785
+          "durationMs": 689
         }
       }
     },
@@ -16700,7 +16677,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 595
+          "durationMs": 670
         }
       }
     },
@@ -16724,7 +16701,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 795
+          "durationMs": 501
         }
       }
     },
@@ -16748,7 +16725,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 380
+          "durationMs": 508
         }
       }
     },
@@ -16772,7 +16749,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 407
+          "durationMs": 311
         }
       }
     },
@@ -16891,7 +16868,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 402
+          "durationMs": 307
         }
       }
     },
@@ -17072,7 +17049,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 213
+          "durationMs": 308
         }
       }
     },
@@ -17096,7 +17073,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 405
+          "durationMs": 482
         }
       }
     },
@@ -17163,7 +17140,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 583
+          "durationMs": 1410
         }
       }
     },
@@ -17190,7 +17167,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3376
+          "durationMs": 1416
         }
       }
     },
@@ -17236,7 +17213,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 406
+          "durationMs": 1791
         }
       }
     },
@@ -17263,7 +17240,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2597
+          "durationMs": 1517
         }
       }
     },
@@ -17290,7 +17267,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 398
+          "durationMs": 415
         }
       }
     },
@@ -17317,7 +17294,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 402
+          "durationMs": 1508
         }
       }
     },
@@ -17344,7 +17321,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1607
+          "durationMs": 1104
         }
       }
     },
@@ -17371,7 +17348,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 715
+          "durationMs": 589
         }
       }
     },
@@ -17417,7 +17394,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 711
+          "durationMs": 589
         }
       }
     },
@@ -17444,7 +17421,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 704
+          "durationMs": 390
         }
       }
     },
@@ -17489,7 +17466,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 896
+          "durationMs": 294
         }
       }
     },
@@ -17535,7 +17512,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1093
+          "durationMs": 296
         }
       }
     },
@@ -17673,7 +17650,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1092
+          "durationMs": 313
         }
       }
     },
@@ -17721,7 +17698,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 201
+          "durationMs": 98
         }
       }
     },
@@ -17946,7 +17923,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 197
+          "durationMs": 95
         }
       }
     },
@@ -17970,7 +17947,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 396
+          "durationMs": 300
         }
       }
     },
@@ -17994,7 +17971,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1595
+          "durationMs": 1709
         }
       }
     },
@@ -18018,7 +17995,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3795
+          "durationMs": 3006
         }
       }
     },
@@ -18042,7 +18019,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 8355
+          "durationMs": 3006
         }
       }
     },
@@ -18070,7 +18047,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 411
+          "durationMs": 593
         }
       }
     },
@@ -18098,7 +18075,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 403
+          "durationMs": 586
         }
       }
     },
@@ -18141,7 +18118,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 796
+          "durationMs": 1409
         }
       }
     },
@@ -18165,7 +18142,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 798
+          "durationMs": 1409
         }
       }
     },
@@ -18189,7 +18166,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 2203
+          "durationMs": 1023
         }
       }
     },
@@ -18213,7 +18190,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1208
+          "durationMs": 385
         }
       }
     },
@@ -18256,7 +18233,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1688
+          "durationMs": 386
         }
       }
     },
@@ -18280,7 +18257,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1201
+          "durationMs": 386
         }
       }
     },
@@ -18304,7 +18281,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 488
+          "durationMs": 787
         }
       }
     },
@@ -18385,7 +18362,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 481
+          "durationMs": 699
         }
       }
     },
@@ -18409,7 +18386,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 518
+          "durationMs": 5607
         }
       }
     },
@@ -18433,7 +18410,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 512
+          "durationMs": 1694
         }
       }
     },
@@ -18479,7 +18456,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2521
+          "durationMs": 597
         }
       }
     },
@@ -18631,7 +18608,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1814
+          "durationMs": 490
         }
       }
     },
@@ -18659,7 +18636,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 3001
+          "durationMs": 293
         }
       }
     },
@@ -18687,7 +18664,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2008
+          "durationMs": 219
         }
       }
     },
@@ -18761,7 +18738,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 3240
+          "durationMs": 603
         }
       }
     },
@@ -18812,7 +18789,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1341
+          "durationMs": 214
         }
       }
     },
@@ -18839,7 +18816,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1232
+          "durationMs": 215
         }
       }
     },
@@ -18866,7 +18843,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2551
+          "durationMs": 192
         }
       }
     },
@@ -18880,16 +18857,13 @@
         "controller": "api/levy-calculation",
         "action": "highest-lawful-levy"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Roles=LevyClerk,Assessor,Admin,Administrator",
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"highest-lawful-levy\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"highest-lawful-levy\")]"]
       }
     },
     {
@@ -18902,16 +18876,13 @@
         "controller": "api/levy-calculation",
         "action": "aggregate-check"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": "Roles=LevyClerk,Assessor,Admin,Administrator",
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
-        "staticAttributes": [
-          "[HttpPost(\"aggregate-check\")]",
-          "[AllowAnonymous]"
-        ]
+        "staticAttributes": ["[HttpPost(\"aggregate-check\")]"]
       }
     },
     {
@@ -18924,14 +18895,13 @@
         "controller": "api/levy/calculator",
         "action": "calculate-rate"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpPost(\"calculate-rate\")]",
           "[ProducesResponseType(StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status400BadRequest)]"
@@ -18948,14 +18918,13 @@
         "controller": "api/levy/calculator",
         "action": "bill-impact"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpPost(\"bill-impact\")]",
           "[ProducesResponseType(StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status400BadRequest)]"
@@ -18972,14 +18941,13 @@
         "controller": "api/levy/calculator",
         "action": "rate-comparison/{districtId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"rate-comparison/{districtId}\")]",
           "[ProducesResponseType(StatusCodes.Status200OK)]"
         ]
@@ -19009,7 +18977,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 429
+          "durationMs": 200
         }
       }
     },
@@ -19060,7 +19028,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 361
+          "durationMs": 204
         }
       }
     },
@@ -19084,7 +19052,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1321
+          "durationMs": 197
         }
       }
     },
@@ -19108,7 +19076,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2055
+          "durationMs": 186
         }
       }
     },
@@ -19132,7 +19100,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1317
+          "durationMs": 195
         }
       }
     },
@@ -19160,7 +19128,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1316
+          "durationMs": 605
         }
       }
     },
@@ -19184,7 +19152,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1443
+          "durationMs": 595
         }
       }
     },
@@ -19211,7 +19179,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2451
+          "durationMs": 605
         }
       }
     },
@@ -19260,7 +19228,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 2446
+          "durationMs": 610
         }
       }
     },
@@ -19287,7 +19255,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 2258
+          "durationMs": 589
         }
       }
     },
@@ -19337,7 +19305,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 552
+          "durationMs": 404
         }
       }
     },
@@ -19413,7 +19381,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 508
+          "durationMs": 401
         }
       }
     },
@@ -19440,7 +19408,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 708
+          "durationMs": 397
         }
       }
     },
@@ -19490,7 +19458,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1200
+          "durationMs": 394
         }
       }
     },
@@ -19518,7 +19486,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1907
+          "durationMs": 1084
         }
       }
     },
@@ -19613,7 +19581,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1002
+          "durationMs": 993
         }
       }
     },
@@ -19640,7 +19608,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 920
+          "durationMs": 992
         }
       }
     },
@@ -19676,14 +19644,13 @@
         "controller": "api/levy/forecast",
         "action": "district/{id}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"district/{id}\")]",
           "[ProducesResponseType(typeof(DistrictForecastEnvelope), StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status404NotFound)]"
@@ -19714,7 +19681,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 1208
+          "durationMs": 819
         }
       }
     },
@@ -19743,7 +19710,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 912
+          "durationMs": 917
         }
       }
     },
@@ -19863,7 +19830,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 914
+          "durationMs": 216
         }
       }
     },
@@ -19891,7 +19858,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 900
+          "durationMs": 276
         }
       }
     },
@@ -19919,7 +19886,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 5187
+          "durationMs": 301
         }
       }
     },
@@ -19947,7 +19914,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 301
+          "durationMs": 300
         }
       }
     },
@@ -19975,7 +19942,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2986
+          "durationMs": 225
         }
       }
     },
@@ -20027,7 +19994,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 291
+          "durationMs": 219
         }
       }
     },
@@ -20055,7 +20022,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 293
+          "durationMs": 313
         }
       }
     },
@@ -20069,14 +20036,13 @@
         "controller": "api/levy/reports",
         "action": "generate"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpPost(\"generate\")]",
           "[ProducesResponseType(StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status400BadRequest)]",
@@ -20108,7 +20074,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 985
+          "durationMs": 314
         }
       }
     },
@@ -20137,7 +20103,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 982
+          "durationMs": 706
         }
       }
     },
@@ -20165,7 +20131,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 983
+          "durationMs": 1212
         }
       }
     },
@@ -20193,7 +20159,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 982
+          "durationMs": 311
         }
       }
     },
@@ -20247,7 +20213,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 299
+          "durationMs": 1082
         }
       }
     },
@@ -20274,7 +20240,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 119
+          "durationMs": 389
         }
       }
     },
@@ -20298,7 +20264,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 116
+          "durationMs": 94
         }
       }
     },
@@ -20322,7 +20288,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 193
+          "durationMs": 800
         }
       }
     },
@@ -20401,14 +20367,13 @@
         "controller": "api/[controller]",
         "action": "ratio-study/{modelId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"ratio-study/{modelId}\")]",
           "[ProducesResponseType(typeof(RatioStudyResult), StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status404NotFound)]"
@@ -20439,7 +20404,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 295
+          "durationMs": 913
         }
       }
     },
@@ -20453,14 +20418,13 @@
         "controller": "api/[controller]",
         "action": "ratio-study/{modelId}/strata"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"ratio-study/{modelId}/strata\")]",
           "[ProducesResponseType(typeof(List<StrataResultDto>), StatusCodes.Status200OK)]"
         ]
@@ -20476,14 +20440,13 @@
         "controller": "api/[controller]",
         "action": "ratio-study/{modelId}/outliers"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"ratio-study/{modelId}/outliers\")]",
           "[ProducesResponseType(typeof(List<OutlierRecordDto>), StatusCodes.Status200OK)]"
         ]
@@ -20499,14 +20462,13 @@
         "controller": "api/[controller]",
         "action": "compare"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpPost(\"compare\")]",
           "[ProducesResponseType(typeof(ModelComparisonDto), StatusCodes.Status200OK)]",
           "[ProducesResponseType(StatusCodes.Status400BadRequest)]"
@@ -20523,14 +20485,13 @@
         "controller": "api/[controller]",
         "action": "segments/{modelId}"
       },
-      "authRequirement": "anonymous",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": [
-          "[AllowAnonymous]",
           "[HttpGet(\"segments/{modelId}\")]",
           "[ProducesResponseType(typeof(List<DiscoveredSegmentDto>), StatusCodes.Status200OK)]"
         ]
@@ -20556,7 +20517,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 289
+          "durationMs": 793
         }
       }
     },
@@ -20656,7 +20617,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 322
+          "durationMs": 285
         }
       }
     },
@@ -20680,7 +20641,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 304
+          "durationMs": 587
         }
       }
     },
@@ -20704,7 +20665,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 399
+          "durationMs": 409
         }
       }
     },
@@ -20937,7 +20898,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 291
+          "durationMs": 310
         }
       }
     },
@@ -21037,7 +20998,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 102
+          "durationMs": 110
         }
       }
     },
@@ -21061,7 +21022,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 183
+          "durationMs": 302
         }
       }
     },
@@ -21208,7 +21169,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 98
+          "durationMs": 194
         }
       }
     },
@@ -21232,7 +21193,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 86
+          "durationMs": 188
         }
       }
     },
@@ -21313,7 +21274,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 210
+          "durationMs": 212
         }
       }
     },
@@ -21451,7 +21412,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 202
+          "durationMs": 406
         }
       }
     },
@@ -21475,7 +21436,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 202
+          "durationMs": 206
         }
       }
     },
@@ -21499,7 +21460,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 194
+          "durationMs": 197
         }
       }
     },
@@ -21523,7 +21484,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 906
+          "durationMs": 205
         }
       }
     },
@@ -21547,7 +21508,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 289
+          "durationMs": 199
         }
       }
     },
@@ -21571,7 +21532,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 895
+          "durationMs": 117
         }
       }
     },
@@ -21595,7 +21556,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 890
+          "durationMs": 99
         }
       }
     },
@@ -21619,7 +21580,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 430
+          "durationMs": 196
         }
       }
     },
@@ -21681,7 +21642,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 194
+          "durationMs": 97
         }
       }
     },
@@ -21762,7 +21723,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 186
+          "durationMs": 90
         }
       }
     },
@@ -21824,7 +21785,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 410
+          "durationMs": 109
         }
       }
     },
@@ -21867,7 +21828,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 408
+          "durationMs": 103
         }
       }
     },
@@ -21891,7 +21852,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 296
+          "durationMs": 104
         }
       }
     },
@@ -21915,7 +21876,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 7509
+          "durationMs": 8983
         }
       }
     },
@@ -22034,7 +21995,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 7693
+          "durationMs": 8901
         }
       }
     },
@@ -22058,7 +22019,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 114
+          "durationMs": 705
         }
       }
     },
@@ -22101,7 +22062,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 803
+          "durationMs": 1301
         }
       }
     },
@@ -22125,7 +22086,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 798
+          "durationMs": 1304
         }
       }
     },
@@ -22168,7 +22129,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 801
+          "durationMs": 1293
         }
       }
     },
@@ -22287,7 +22248,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 605
+          "durationMs": 602
         }
       }
     },
@@ -22311,7 +22272,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1408
+          "durationMs": 2990
         }
       }
     },
@@ -22392,7 +22353,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1288
+          "durationMs": 2193
         }
       }
     },
@@ -22454,7 +22415,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 194
+          "durationMs": 94
         }
       }
     },
@@ -22478,7 +22439,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 161
+          "durationMs": 93
         }
       }
     },
@@ -22507,7 +22468,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 94
+          "durationMs": 102
         }
       }
     },
@@ -22531,7 +22492,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 91
+          "durationMs": 95
         }
       }
     },
@@ -22577,7 +22538,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 141
+          "durationMs": 96
         }
       }
     },
@@ -22689,7 +22650,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3605
+          "durationMs": 803
         }
       }
     },
@@ -22713,7 +22674,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 3493
+          "durationMs": 2707
         }
       }
     },
@@ -22737,7 +22698,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 305
+          "durationMs": 189
         }
       }
     },
@@ -22761,7 +22722,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 193
+          "durationMs": 1407
         }
       }
     },
@@ -22804,7 +22765,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 5110
+          "durationMs": 793
         }
       }
     },
@@ -22831,7 +22792,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1999
+          "durationMs": 398
         }
       }
     },
@@ -22912,7 +22873,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 582
+          "durationMs": 302
         }
       }
     },
@@ -22980,7 +22941,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 214
+          "durationMs": 112
         }
       }
     },
@@ -23023,7 +22984,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 193
+          "durationMs": 188
         }
       }
     },
@@ -23047,7 +23008,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 205
+          "durationMs": 90
         }
       }
     },
@@ -23090,7 +23051,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 308
+          "durationMs": 121
         }
       }
     },
@@ -23138,7 +23099,7 @@
         "dev39Probe": {
           "status": 401,
           "ok": false,
-          "durationMs": 608
+          "durationMs": 218
         }
       }
     },
@@ -23238,7 +23199,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 214
+          "durationMs": 195
         }
       }
     },
@@ -23262,7 +23223,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 214
+          "durationMs": 116
         }
       }
     },
@@ -23308,7 +23269,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 290
+          "durationMs": 102
         }
       }
     },
@@ -23351,7 +23312,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 293
+          "durationMs": 697
         }
       }
     },
@@ -23432,7 +23393,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 801
+          "durationMs": 692
         }
       }
     },
@@ -23503,7 +23464,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 792
+          "durationMs": 488
         }
       }
     },
@@ -23531,7 +23492,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 789
+          "durationMs": 399
         }
       }
     },
@@ -23605,7 +23566,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 116
+          "durationMs": 202
         }
       }
     },
@@ -23702,7 +23663,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 115
+          "durationMs": 190
         }
       }
     },
@@ -23753,7 +23714,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 804
+          "durationMs": 213
         }
       }
     },
@@ -23868,7 +23829,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 392
+          "durationMs": 205
         }
       }
     },
@@ -24045,7 +24006,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 380
+          "durationMs": 201
         }
       }
     },
@@ -24118,7 +24079,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 377
+          "durationMs": 187
         }
       }
     },
@@ -24147,7 +24108,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 209
+          "durationMs": 421
         }
       }
     },
@@ -24209,7 +24170,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1099
+          "durationMs": 408
         }
       }
     },
@@ -24328,7 +24289,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 907
+          "durationMs": 599
         }
       }
     },
@@ -24352,7 +24313,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1093
+          "durationMs": 592
         }
       }
     },
@@ -24376,7 +24337,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 495
+          "durationMs": 291
         }
       }
     },
@@ -24438,7 +24399,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 494
+          "durationMs": 291
         }
       }
     },
@@ -24481,7 +24442,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 199
+          "durationMs": 104
         }
       }
     },
@@ -24604,7 +24565,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 106
+          "durationMs": 94
         }
       }
     },
@@ -24666,7 +24627,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 92
+          "durationMs": 212
         }
       }
     },
@@ -24709,7 +24670,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 394
+          "durationMs": 208
         }
       }
     },
@@ -24889,7 +24850,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 198
+          "durationMs": 412
         }
       }
     },
@@ -24913,7 +24874,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 190
+          "durationMs": 202
         }
       }
     },
@@ -24937,7 +24898,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 110
+          "durationMs": 204
         }
       }
     },
@@ -24980,7 +24941,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 301
+          "durationMs": 194
         }
       }
     },
@@ -25023,7 +24984,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 206
+          "durationMs": 205
         }
       }
     },
@@ -25047,7 +25008,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 199
+          "durationMs": 102
         }
       }
     },
@@ -25174,7 +25135,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 197
+          "durationMs": 89
         }
       }
     },
@@ -25198,7 +25159,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 623
+          "durationMs": 489
         }
       }
     },
@@ -25279,7 +25240,7 @@
         "dev39Probe": {
           "status": 0,
           "ok": false,
-          "durationMs": 15007,
+          "durationMs": 15003,
           "error": "timeout"
         }
       }
@@ -25304,7 +25265,7 @@
         "dev39Probe": {
           "status": 0,
           "ok": false,
-          "durationMs": 15007,
+          "durationMs": 15013,
           "error": "timeout"
         }
       }
@@ -25329,7 +25290,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1804
+          "durationMs": 800
         }
       }
     },
@@ -25564,7 +25525,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1204
+          "durationMs": 397
         }
       }
     },
@@ -25588,7 +25549,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 897
+          "durationMs": 490
         }
       }
     },
@@ -25612,7 +25573,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 284
+          "durationMs": 196
         }
       }
     },
@@ -25636,7 +25597,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 320
+          "durationMs": 87
         }
       }
     },
@@ -25660,7 +25621,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 313
+          "durationMs": 109
         }
       }
     },
@@ -25757,7 +25718,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 108
+          "durationMs": 101
         }
       }
     },
@@ -25771,7 +25732,7 @@
         "controller": "api/[controller]",
         "action": "status"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "runtime health/config",
       "currentClassification": "live",
@@ -25781,7 +25742,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 678
+          "durationMs": 799
         }
       }
     },
@@ -25795,7 +25756,7 @@
         "controller": "api/[controller]",
         "action": "modules"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "live",
@@ -25805,7 +25766,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 589
+          "durationMs": 794
         }
       }
     },
@@ -25819,10 +25780,10 @@
         "controller": "api/[controller]",
         "action": "execute"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"execute\")]"]
@@ -25838,10 +25799,10 @@
         "controller": "api/[controller]",
         "action": "modules/{moduleName}/start"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"modules/{moduleName}/start\")]"]
@@ -25857,10 +25818,10 @@
         "controller": "api/[controller]",
         "action": "modules/{moduleName}/stop"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost(\"modules/{moduleName}/stop\")]"]
@@ -25876,7 +25837,7 @@
         "controller": "api/[controller]",
         "action": "mcp-tools"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "dead",
@@ -25886,7 +25847,7 @@
         "dev39Probe": {
           "status": 404,
           "ok": false,
-          "durationMs": 589
+          "durationMs": 2106
         }
       }
     },
@@ -25913,7 +25874,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 96
+          "durationMs": 117
         }
       }
     },
@@ -25962,7 +25923,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 505
+          "durationMs": 907
         }
       }
     },
@@ -26135,7 +26096,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1000
+          "durationMs": 895
         }
       }
     },
@@ -26163,7 +26124,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 410
+          "durationMs": 793
         }
       }
     },
@@ -26229,7 +26190,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 997
+          "durationMs": 1314
         }
       }
     },
@@ -26257,7 +26218,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 593
+          "durationMs": 1389
         }
       }
     },
@@ -26284,7 +26245,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 584
+          "durationMs": 2101
         }
       }
     },
@@ -26308,7 +26269,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 417
+          "durationMs": 105
         }
       }
     },
@@ -26332,7 +26293,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 115
+          "durationMs": 93
         }
       }
     },
@@ -26403,7 +26364,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 105
+          "durationMs": 84
         }
       }
     },
@@ -26474,7 +26435,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 97
+          "durationMs": 100
         }
       }
     },
@@ -26520,7 +26481,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1409
+          "durationMs": 111
         }
       }
     },
@@ -26544,7 +26505,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 1405
+          "durationMs": 3407
         }
       }
     },
@@ -26587,7 +26548,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1398
+          "durationMs": 599
         }
       }
     },
@@ -26630,7 +26591,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 7686
+          "durationMs": 898
         }
       }
     },
@@ -26656,7 +26617,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1996
+          "durationMs": 307
         }
       }
     },
@@ -26678,10 +26639,9 @@
       "evidence": {
         "staticAttributes": ["[HttpGet(\"sale-qualification/code-audit\")]"],
         "dev39Probe": {
-          "status": 0,
+          "status": 400,
           "ok": false,
-          "durationMs": 15012,
-          "error": "timeout"
+          "durationMs": 297
         }
       }
     },
@@ -26705,7 +26665,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 1896
+          "durationMs": 614
         }
       }
     },
@@ -26729,7 +26689,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 792
+          "durationMs": 607
         }
       }
     },
@@ -26753,7 +26713,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 695
+          "durationMs": 599
         }
       }
     },
@@ -26777,7 +26737,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 704
+          "durationMs": 1292
         }
       }
     },
@@ -26879,7 +26839,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 319
+          "durationMs": 1788
         }
       }
     },
@@ -26903,7 +26863,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 605
+          "durationMs": 1786
         }
       }
     },
@@ -26930,7 +26890,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 223
+          "durationMs": 1525
         }
       }
     },
@@ -26954,7 +26914,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 390
+          "durationMs": 1411
         }
       }
     },
@@ -26980,7 +26940,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 5498
+          "durationMs": 1413
         }
       }
     },
@@ -27004,7 +26964,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 2597
+          "durationMs": 1507
         }
       }
     },
@@ -27031,7 +26991,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 10819
+          "durationMs": 483
         }
       }
     },
@@ -27055,7 +27015,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 8482
+          "durationMs": 193
         }
       }
     },
@@ -27081,7 +27041,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 194
+          "durationMs": 294
         }
       }
     },
@@ -27105,7 +27065,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 587
+          "durationMs": 406
         }
       }
     },
@@ -27129,7 +27089,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 4715
+          "durationMs": 406
         }
       }
     },
@@ -27153,7 +27113,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 7207
+          "durationMs": 196
         }
       }
     },
@@ -27177,7 +27137,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 5796
+          "durationMs": 410
         }
       }
     },
@@ -27201,7 +27161,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 4176
+          "durationMs": 306
         }
       }
     },
@@ -27313,7 +27273,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 2391
+          "durationMs": 199
         }
       }
     },
@@ -27337,7 +27297,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 3711
+          "durationMs": 193
         }
       }
     },
@@ -27420,7 +27380,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 2807
+          "durationMs": 497
         }
       }
     },
@@ -27528,7 +27488,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 396
+          "durationMs": 486
         }
       }
     },
@@ -27552,7 +27512,7 @@
         "dev39Probe": {
           "status": 501,
           "ok": false,
-          "durationMs": 394
+          "durationMs": 101
         }
       }
     },
@@ -27627,7 +27587,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1398
+          "durationMs": 479
         }
       }
     },
@@ -27654,7 +27614,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1399
+          "durationMs": 387
         }
       }
     },
@@ -27681,7 +27641,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 1396
+          "durationMs": 698
         }
       }
     },
@@ -27800,7 +27760,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 416
+          "durationMs": 699
         }
       }
     },
@@ -27850,7 +27810,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 402
+          "durationMs": 697
         }
       }
     },
@@ -27877,7 +27837,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 586
+          "durationMs": 198
         }
       }
     },
@@ -27904,7 +27864,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 589
+          "durationMs": 494
         }
       }
     },
@@ -27955,7 +27915,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 589
+          "durationMs": 1012
         }
       }
     },
@@ -27983,7 +27943,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 600
+          "durationMs": 1514
         }
       }
     },
@@ -28035,7 +27995,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 584
+          "durationMs": 1209
         }
       }
     },
@@ -28059,7 +28019,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 586
+          "durationMs": 1512
         }
       }
     },
@@ -28110,7 +28070,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 710
+          "durationMs": 94
         }
       }
     },
@@ -28153,7 +28113,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 516
+          "durationMs": 104
         }
       }
     },
@@ -28251,7 +28211,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 707
+          "durationMs": 385
         }
       }
     },
@@ -28280,7 +28240,7 @@
         "dev39Probe": {
           "status": 200,
           "ok": true,
-          "durationMs": 413
+          "durationMs": 297
         }
       }
     },
@@ -28401,7 +28361,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 1102
+          "durationMs": 593
         }
       }
     },
@@ -28470,7 +28430,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 502
+          "durationMs": 391
         }
       }
     },
@@ -28541,7 +28501,7 @@
         "controller": "api/what-if-scenarios",
         "action": null
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
       "currentClassification": "broken",
@@ -28551,7 +28511,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 303
+          "durationMs": 101
         }
       }
     },
@@ -28565,10 +28525,10 @@
         "controller": "api/what-if-scenarios",
         "action": "{id}"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "unknown",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpGet(\"{id}\")]"]
@@ -28584,10 +28544,10 @@
         "controller": "api/what-if-scenarios",
         "action": null
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPost]"]
@@ -28603,10 +28563,10 @@
         "controller": "api/what-if-scenarios",
         "action": "{id}"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpPatch(\"{id}\")]"]
@@ -28622,10 +28582,10 @@
         "controller": "api/what-if-scenarios",
         "action": "{id}"
       },
-      "authRequirement": "unknown",
+      "authRequirement": "authorized",
       "expectedRoleOrPermission": null,
       "dataDependency": "canonical county/parcel runtime",
-      "currentClassification": "unknown",
+      "currentClassification": "protected",
       "evidenceSource": "static only",
       "evidence": {
         "staticAttributes": ["[HttpDelete(\"{id}\")]"]
@@ -28651,7 +28611,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 798
+          "durationMs": 721
         }
       }
     },
@@ -28721,7 +28681,7 @@
         "dev39Probe": {
           "status": 403,
           "ok": false,
-          "durationMs": 207
+          "durationMs": 289
         }
       }
     },
@@ -28813,7 +28773,7 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 406
+          "durationMs": 905
         }
       }
     },
@@ -28898,7 +28858,7 @@
         "dev39Probe": {
           "status": 400,
           "ok": false,
-          "durationMs": 398
+          "durationMs": 1101
         }
       }
     },
@@ -29032,10 +28992,10 @@
         "dev39Probe": {
           "status": 500,
           "ok": false,
-          "durationMs": 386
+          "durationMs": 204
         }
       }
     }
   ],
-  "packetHash": "7a08c029998f631608eae7036a8323bf87effe04bd43e25dffe176fc0d880789"
+  "packetHash": "a2cb961e584e26a8ab2fb1022c1d23812ca8c2e81b00c5442b9dd11690bfc0c0"
 }

@@ -10,6 +10,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/ai/consciousness")]
+[Authorize]
 public class ConsciousnessController : ControllerBase
 {
     private readonly ILogger<ConsciousnessController> _logger;

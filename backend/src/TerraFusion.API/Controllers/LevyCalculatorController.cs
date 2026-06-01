@@ -97,7 +97,6 @@ public sealed class LevyCalculatorController : ControllerBase
     /// <summary>
     /// Calculate the levy rate for a given district, assessed value, and levy amount.
     /// </summary>
-    [AllowAnonymous]
     [HttpPost("calculate-rate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -143,7 +142,6 @@ public sealed class LevyCalculatorController : ControllerBase
     /// <summary>
     /// Calculate the tax bill impact of a proposed levy change on a property.
     /// </summary>
-    [AllowAnonymous]
     [HttpPost("bill-impact")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -215,7 +213,6 @@ public sealed class LevyCalculatorController : ControllerBase
     /// <summary>
     /// Compare levy rates across years for a specific tax district.
     /// </summary>
-    [AllowAnonymous]
     [HttpGet("rate-comparison/{districtId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> RateComparison(

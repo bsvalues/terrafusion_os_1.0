@@ -63,7 +63,6 @@ public class AIModulesController : ControllerBase
     /// Execute AI command on specific module (ai-command-brain, ai-swarm, ai-advanced)
     /// </summary>
     [HttpPost("execute")]
-    [AllowAnonymous]
     public async Task<ActionResult<AICommandResult>> ExecuteAICommand([FromBody] AICommandRequest request)
     {
         try
@@ -218,7 +217,6 @@ public class AIModulesController : ControllerBase
     /// POST /api/aimodules/predict-cost
     /// </summary>
     [HttpPost("predict-cost")]
-    [AllowAnonymous]
     public IActionResult PredictCost([FromBody] CostPredictionRequest req)
     {
         try

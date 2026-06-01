@@ -4383,7 +4383,6 @@ public class CostForgeController : ControllerBase
   // POST /api/costforge/calibration/mass-adjust-preview
   // ─────────────────────────────────────────────────────────────────────────────
   [HttpPost("calibration/mass-adjust-preview")]
-  [AllowAnonymous]
   public async Task<IActionResult> MassAdjustPreview([FromBody] MassAdjustPreviewRequest req)
   {
     var countyContext = await ResolveCountyContextAsync();
@@ -6821,7 +6820,6 @@ public class CostForgeController : ControllerBase
   /// DataQualityTab sends { taxYear } and expects scores on 0-1 scale.
   /// </summary>
   [HttpPost("analytics/data-quality/assess")]
-  [AllowAnonymous]
   public async Task<IActionResult> AssessDataQuality([FromBody] DataQualityRequest req)
   {
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
@@ -7794,7 +7792,6 @@ public class CostForgeController : ControllerBase
   /// Joins CAMA characteristics with Properties (AV) and ComparableSales (SP).
   /// </summary>
   [HttpGet("neighborhoods/{hoodCd}/parcels")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetNeighborhoodParcels(
       string hoodCd,
       [FromQuery] int taxYear = 0)
@@ -8172,7 +8169,6 @@ public class CostForgeController : ControllerBase
   ///   POOR:      actualAge + 5
   /// </summary>
   [HttpPost("effective-age")]
-  [AllowAnonymous]
   public async Task<IActionResult> ComputeEffectiveAge([FromBody] EffectiveAgeRequest req)
   {
     var countyContext = await ResolveCountyContextAsync();
@@ -8246,7 +8242,6 @@ public class CostForgeController : ControllerBase
   /// Two-step safety: preview must have been run first; client sends same params.
   /// </summary>
   [HttpPost("calibration/mass-adjust-apply")]
-  [AllowAnonymous]
   public async Task<IActionResult> MassAdjustApply([FromBody] MassAdjustPreviewRequest req)
   {
     if (req.AdjustmentPct < -50 || req.AdjustmentPct > 100)
@@ -8342,7 +8337,6 @@ public class CostForgeController : ControllerBase
   /// Creates a ValuationPipeline record to track progress.
   /// </summary>
   [HttpPost("batch/apply")]
-  [AllowAnonymous]
   public async Task<IActionResult> BatchApply([FromBody] BatchApplyRequest req)
   {
     var countyCtx = await ResolveCountyContextAsync();
@@ -8489,7 +8483,6 @@ public class CostForgeController : ControllerBase
   /// Poll batch job progress. Used by BatchCostApplyPanel every 5 seconds.
   /// </summary>
   [HttpGet("batch/status/{jobId}")]
-  [AllowAnonymous]
   public async Task<IActionResult> BatchStatus(string jobId)
   {
     if (!int.TryParse(jobId, out var id))
@@ -8509,7 +8502,6 @@ public class CostForgeController : ControllerBase
   /// Mark a batch job as cancelled.
   /// </summary>
   [HttpPost("batch/cancel/{jobId}")]
-  [AllowAnonymous]
   public async Task<IActionResult> BatchCancel(string jobId)
   {
     if (!int.TryParse(jobId, out var id))

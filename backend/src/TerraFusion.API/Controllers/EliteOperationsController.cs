@@ -15,6 +15,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/elite-operations")]
+[Authorize]
 public class EliteOperationsController : ControllerBase
 {
     private readonly IEliteOperationalService _eliteOperationalService;

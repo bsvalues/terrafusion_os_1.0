@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ namespace TerraFusion.API.Controllers;
 [ApiController]
 [Route("api/counties/{countyToken}")]
 [Produces("application/json")]
+[Authorize]
 public sealed class CountyRowsController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;

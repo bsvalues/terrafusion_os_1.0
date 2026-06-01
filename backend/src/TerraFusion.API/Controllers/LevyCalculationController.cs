@@ -694,7 +694,6 @@ public class LevyCalculationController : ControllerBase
   /// 1% over the prior year's highest lawful levy plus new construction and annexation value.
   /// </summary>
   [HttpPost("highest-lawful-levy")]
-  [AllowAnonymous]
   public IActionResult CalculateHighestLawfulLevy([FromBody] HighestLawfulLevyRequest request)
   {
     if (request is null)
@@ -717,7 +716,6 @@ public class LevyCalculationController : ControllerBase
   /// Ensures combined regular levies do not exceed $5.90/$10.00 per $1,000 AV thresholds.
   /// </summary>
   [HttpPost("aggregate-check")]
-  [AllowAnonymous]
   public IActionResult CheckAggregateLimits([FromBody] AggregateLimitRequest request)
   {
     if (request is null || request.DistrictLevies is null || request.DistrictLevies.Length == 0)

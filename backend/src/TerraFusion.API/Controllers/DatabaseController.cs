@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
 
@@ -5,6 +6,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DatabaseController : ControllerBase
 {
     private readonly IDatabaseInitializationService _databaseService;

@@ -259,7 +259,6 @@ public sealed class LevyForecastController : ControllerBase
     /// <summary>
     /// Retrieve the current forecast for a specific district.
     /// </summary>
-    [AllowAnonymous]
     [HttpGet("district/{id}")]
     [ProducesResponseType(typeof(DistrictForecastEnvelope), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

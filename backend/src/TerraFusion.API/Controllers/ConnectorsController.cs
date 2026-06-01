@@ -1,6 +1,7 @@
 // TFT-027 — Connectors API Controller
 // REST endpoints for connector status and operations.
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.DTOs;
@@ -14,6 +15,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ConnectorsController : ControllerBase
 {
     private readonly ILogger<ConnectorsController> _logger;

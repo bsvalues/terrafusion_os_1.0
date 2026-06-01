@@ -246,7 +246,6 @@ public class AtlasGisController : ControllerBase
     /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/boundary")]
-    [AllowAnonymous]
     [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelBoundary(string parcelId, CancellationToken ct)
@@ -266,7 +265,6 @@ public class AtlasGisController : ControllerBase
     /// <param name="parcelId">GeoId of the parcel.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/layers")]
-    [AllowAnonymous]
     [ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetParcelLayers(string parcelId, CancellationToken ct)
     {
@@ -282,7 +280,6 @@ public class AtlasGisController : ControllerBase
     /// <param name="parcelId">GeoId of the parcel.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}")]
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcel(string parcelId, CancellationToken ct)

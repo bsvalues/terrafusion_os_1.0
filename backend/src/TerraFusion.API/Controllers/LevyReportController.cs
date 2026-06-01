@@ -191,7 +191,6 @@ public sealed class LevyReportController : ControllerBase
     /// <summary>
     /// Generate a levy report from a template with the specified parameters.
     /// </summary>
-    [AllowAnonymous]
     [HttpPost("generate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
