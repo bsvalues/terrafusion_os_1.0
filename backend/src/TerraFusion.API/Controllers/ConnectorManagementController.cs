@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TerraFusion.API.Controllers
@@ -208,6 +209,7 @@ namespace TerraFusion.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/connectors")]
+    [Authorize]
     public class ConnectorManagementController : ControllerBase
     {
         private readonly IConnectorRegistry _registry;
