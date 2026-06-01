@@ -1,0 +1,2002 @@
+{
+  "generatedAt": "2026-06-01T04:39:32.429Z",
+  "operation": "production_risk_mock_stub_triage_wave1",
+  "sourceAudit": "inline_wave1_scan_no_prior_audit_file",
+  "target": "top_50_production_risk_mock_stub_files",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "featureWork": false,
+  "summary": {
+    "sourceProductionRiskFiles": 618,
+    "triagedFiles": 50,
+    "dispositionCounts": {
+      "production_blocker": 39,
+      "safe_demo_only": 2,
+      "dormant": 9
+    },
+    "confidenceCounts": {
+      "high": 33,
+      "medium": 8,
+      "low": 9
+    },
+    "blockerCount": 39,
+    "dormantCount": 9,
+    "intentionalFallbackCount": 0,
+    "safeDemoOnlyCount": 2,
+    "deadCodeCount": 0
+  },
+  "verdict": {
+    "controlledPreview": "still_ready",
+    "productionReadiness": "blocked_by_mock_stub_disposition",
+    "fullCapability": "not_ready",
+    "reason": "Top production-risk mock/stub files are dominated by runtime AI/API execution surfaces with stub, placeholder, TODO, hardcoded, or mock behavior. This does not block the controlled demo path, but it does block full production capability claims."
+  },
+  "triagedFiles": [
+    {
+      "rank": 1,
+      "path": "backend/src/TerraFusion.Core/Services/ComplianceAutomationService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["not_implemented"],
+      "matchCount": 1,
+      "priorityScore": 10011,
+      "symbols": [
+        "ComplianceAutomationService",
+        "IComplianceAutomationService"
+      ],
+      "staticReferenceCount": 8,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": ["not_implemented_signal_in_runtime_source"],
+      "signalPreview": [
+        {
+          "line": 356,
+          "kind": "not_implemented",
+          "preview": "var nonImplementedControls = controls.Where(c => c.Status == ComplianceControlStatus.NotImplemented).ToList();"
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "path": "backend/src/TerraFusion.Abstractions/DTOs/ComplianceDto.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["not_implemented"],
+      "matchCount": 1,
+      "priorityScore": 10001,
+      "symbols": [
+        "ComplianceControl",
+        "ComplianceViolation",
+        "ComplianceStatus",
+        "ComplianceMetrics",
+        "ComplianceRecommendation",
+        "ComplianceDashboardData",
+        "ComplianceReport",
+        "ComplianceReportSchedule",
+        "AuditTrail"
+      ],
+      "staticReferenceCount": 296,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": ["not_implemented_signal_in_runtime_source"],
+      "signalPreview": [
+        {
+          "line": 27,
+          "kind": "not_implemented",
+          "preview": "NotImplemented,"
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "path": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 13,
+      "priorityScore": 9058,
+      "symbols": ["PilotController"],
+      "staticReferenceCount": 182,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 147,
+          "kind": "stub",
+          "preview": "/// <summary>Stub: returns empty tool list when pilot runtime is offline.</summary>"
+        },
+        {
+          "line": 152,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"Pilot tools stub hit (mode={Mode}) — pilot runtime offline\", mode);"
+        },
+        {
+          "line": 153,
+          "kind": "stub",
+          "preview": "return Ok(new { tools = Array.Empty<object>(), source = \"stub\", runtimeOnline = false });"
+        },
+        {
+          "line": 156,
+          "kind": "stub",
+          "preview": "/// <summary>Stub: returns graceful error when pilot invoke is hit without runtime.</summary>"
+        },
+        {
+          "line": 161,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"Pilot invoke stub hit — pilot runtime offline\");"
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "path": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": [
+        "stub",
+        "todo",
+        "fallback",
+        "sample_or_fixture",
+        "hardcoded"
+      ],
+      "matchCount": 10,
+      "priorityScore": 9055,
+      "symbols": [
+        "CostForgeController",
+        "BentonIncomeData",
+        "BentonSalesData",
+        "ReconciliationDefaults",
+        "ValuationLineageData",
+        "BentonCostData",
+        "CostEstimateResult",
+        "EffectiveAgeRequest",
+        "CostEstimateRequest",
+        "DepreciationCalculationRequest",
+        "DepreciationCalculationResult",
+        "PropertyCostCalculationRequest",
+        "ScaleAgentsRequest",
+        "CostForgeStatusDto",
+        "PropertyValuationRequestDto",
+        "PropertyValuationDto",
+        "BatchValuationRequestDto",
+        "BatchValuationResultDto",
+        "AIAgentStatusDto",
+        "AgentGroupStatusDto",
+        "HarrisSyncRequestDto",
+        "HarrisSyncResultDto",
+        "ModuleHealthDto",
+        "AnalyticsDto",
+        "OlsRegressionRequest",
+        "RegressionObservation",
+        "BayesianEstimationRequest",
+        "MonteCarloRequest",
+        "McVariable",
+        "SpatialAutocorrelationRequest",
+        "SpatialObservation",
+        "MarketAnalysisRequest",
+        "SaleRecord",
+        "TimeTrendRequest",
+        "Rcw8434Request",
+        "Rcw8426Request",
+        "Rcw8436381Request",
+        "LevyCalculateRequest",
+        "LevyBalanceTestRequest",
+        "LevyDistrictInput",
+        "DataQualityRequest",
+        "DataQualityRecord",
+        "EtlSyncRequest",
+        "EtlSyncRecord",
+        "MlPredictRequest",
+        "PipelineStartRequest",
+        "MassAdjustPreviewRequest",
+        "BatchApplyRequest",
+        "CountyContext",
+        "ComparableSubjectContext",
+        "ComparableSelection",
+        "NoiCalculationRequest",
+        "IncomeValuationRequest",
+        "NoiResult",
+        "IncomeValuationResult",
+        "CapRateRange",
+        "MarketIndicators",
+        "EmploymentSector",
+        "ExpenseRatioEntry",
+        "LocationPremium",
+        "CompAdjustmentRequest",
+        "SalesReconciliationRequest",
+        "ReconciliationComp",
+        "CompAdjustmentResult",
+        "SalesReconciliationResult",
+        "CompWeight",
+        "PhysicalAdjustment",
+        "ConditionAdjEntry",
+        "LocationAdjEntry",
+        "NeighborhoodStat",
+        "PropertyTypeDist",
+        "SeasonalityFactor",
+        "ConfidenceLevel",
+        "QualityFlag",
+        "ThreeApproachReconciliationRequest",
+        "ThreeApproachReconciliationResult",
+        "ApproachDetail",
+        "ReconciliationGuideline",
+        "SaveValuationRequest",
+        "UpdateStatusRequest",
+        "CertifyValuationRequest",
+        "IngestComparableRequest",
+        "UpsertCamaRequest",
+        "FullLineageRequest",
+        "SiteImprovementInput",
+        "FullLineageResult",
+        "SiteImprovementLineItem",
+        "DepreciationBreakdownDetail",
+        "EconomicLifeEntry",
+        "ObsolescenceEntry",
+        "LandRateEntry",
+        "SiteImprovementEntry",
+        "CostMatrixEntry",
+        "DepreciationBracket"
+      ],
+      "staticReferenceCount": 2620,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 1479,
+          "kind": "stub",
+          "preview": "/// Replaces stub delegation with actual CAMA cost calculation extracted"
+        },
+        {
+          "line": 3058,
+          "kind": "todo",
+          "preview": "AssessorId = Guid.Empty, // TODO: wire to authenticated user Guid when auth scope added"
+        },
+        {
+          "line": 3605,
+          "kind": "fallback",
+          "preview": "selectionMethodParts.Insert(0, \"subject-missing fallback scoring\");"
+        },
+        {
+          "line": 4213,
+          "kind": "fallback",
+          "preview": "// Fallback: static list when CAMA not yet seeded"
+        },
+        {
+          "line": 4214,
+          "kind": "fallback",
+          "preview": "var fallback = BentonSalesData.NeighborhoodStats.Select(n => new"
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "path": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["placeholder", "fallback", "stub"],
+      "matchCount": 10,
+      "priorityScore": 9055,
+      "symbols": [
+        "GPTController",
+        "CreateConversationRequest",
+        "SendMessageRequest",
+        "RateConversationRequest",
+        "RAGHealthResponse",
+        "DatasetHealthInfo",
+        "RAGIngestionRequest",
+        "RAGIngestionResponse",
+        "ConversationTraceResponse",
+        "TraceMessageDto",
+        "RAGChunkDetailDto"
+      ],
+      "staticReferenceCount": 632,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 1055,
+          "kind": "placeholder",
+          "preview": "// Phase 22: Non-Benton counties return placeholder diagnostics"
+        },
+        {
+          "line": 1108,
+          "kind": "fallback",
+          "preview": "Available = true, // Always available (simulated fallback)"
+        },
+        {
+          "line": 1152,
+          "kind": "placeholder",
+          "preview": "// Usage statistics (placeholder - would query actual DB in production)"
+        },
+        {
+          "line": 1174,
+          "kind": "fallback",
+          "preview": "// Fallback: Basic herald messages if evaluator not registered"
+        },
+        {
+          "line": 1195,
+          "kind": "fallback",
+          "preview": "// Fallback health determination"
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "path": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["mock", "stub"],
+      "matchCount": 7,
+      "priorityScore": 9052,
+      "symbols": [
+        "CostForgeTestController",
+        "TestScaleAgentsRequest",
+        "TestHarrisSyncRequest",
+        "TestPropertyCostRequest"
+      ],
+      "staticReferenceCount": 99,
+      "disposition": "safe_demo_only",
+      "confidence": "medium",
+      "reasons": ["test_or_test_endpoint_surface_inside_runtime_tree"],
+      "signalPreview": [
+        {
+          "line": 22,
+          "kind": "mock",
+          "preview": "/// Mock system status endpoint for CostForgeIntegrationPanel"
+        },
+        {
+          "line": 46,
+          "kind": "mock",
+          "preview": "/// Mock performance metrics endpoint"
+        },
+        {
+          "line": 71,
+          "kind": "mock",
+          "preview": "/// Mock AI agent status endpoint"
+        },
+        {
+          "line": 96,
+          "kind": "mock",
+          "preview": "/// Mock scale agents endpoint"
+        },
+        {
+          "line": 114,
+          "kind": "mock",
+          "preview": "/// Mock source-ingestion status endpoint"
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "path": "backend/src/TerraFusion.API/Controllers/AtlasController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "stub", "sample_or_fixture"],
+      "matchCount": 4,
+      "priorityScore": 9049,
+      "symbols": [
+        "AtlasController",
+        "ArcGisFieldMappings",
+        "ArcGisSpatialLayers",
+        "BentonTaxingDistricts",
+        "BentonCityBoundaries",
+        "BentonArcGisData",
+        "ParcelSearchRequest",
+        "ArcGisSearchRequest",
+        "MassAppraisalParcelSearchRequest",
+        "GeoEquityAreaDto",
+        "GeometryHealthAreaDto",
+        "SpatialExtentRequest",
+        "CoordinateConvertRequest",
+        "MapIdentifyRequest",
+        "MapSelectionRequest",
+        "ParcelComparisonRequest",
+        "SpatialLayerConfig",
+        "ArcGisLayerEntry"
+      ],
+      "staticReferenceCount": 544,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 1400,
+          "kind": "fallback",
+          "preview": "/// Source: bcbs-gis-pro-production transformParcelData() fallback mapping"
+        },
+        {
+          "line": 1445,
+          "kind": "stub",
+          "preview": "// Replace R1 stub geometry‑only behavior with real map workflows"
+        },
+        {
+          "line": 1451,
+          "kind": "stub",
+          "preview": "/// Replaces the R1 stub (geometryAvailable=false) with a real ArcGIS"
+        },
+        {
+          "line": 2355,
+          "kind": "sample_or_fixture",
+          "preview": "/// GET api/atlas/spatial — Dev fixture spatial bundle for GeoEquityDashboard and MassAppraisalGIS."
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "path": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["sample_or_fixture", "fallback", "stub"],
+      "matchCount": 4,
+      "priorityScore": 9049,
+      "symbols": [
+        "DaisController",
+        "BentonPermitData",
+        "PermitClassifyRequest",
+        "PermitClassification",
+        "PermitTypeEntry",
+        "WorkflowStageEntry",
+        "FeeEntry",
+        "CreateAppealRequest",
+        "UpdateAppealStatusRequest",
+        "CreateExemptionRequest",
+        "UpdateExemptionStatusRequest",
+        "UpdateNoticeStatusRequest",
+        "UpdateQueueStatusRequest",
+        "AssignQueueItemRequest",
+        "ReviewQueueItemRequest",
+        "ExemptionRenewalRequest",
+        "ScheduleHearingRequest",
+        "SignOffRequest",
+        "CertificationActionRequest",
+        "QueueNoticesRequest",
+        "EscalateTaskRequest",
+        "SeniorDisabledRequest",
+        "CurrentUseRequest",
+        "HistoricPropertyRequest",
+        "GenerateNoticeRequest",
+        "QueueAssignRequest"
+      ],
+      "staticReferenceCount": 749,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 468,
+          "kind": "sample_or_fixture",
+          "preview": "new(\"Plumbing Permit\", 100.00m, \"flat\", null, \"Per fixture rates may apply for large projects\"),"
+        },
+        {
+          "line": 1267,
+          "kind": "fallback",
+          "preview": "/// Returns structured fallback when queue service data is sparse."
+        },
+        {
+          "line": 1305,
+          "kind": "fallback",
+          "preview": "source = \"fallback\","
+        },
+        {
+          "line": 2026,
+          "kind": "stub",
+          "preview": "catch (KeyNotFoundException) { /* task not found — return stub result */ }"
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "path": "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "sample_or_fixture", "stub"],
+      "matchCount": 4,
+      "priorityScore": 9049,
+      "symbols": [
+        "ForgeController",
+        "SaleQualificationOverrideRequest",
+        "ReconciliationApproachInput",
+        "ReconciliationCommitRequest"
+      ],
+      "staticReferenceCount": 153,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 18,
+          "kind": "fallback",
+          "preview": "/// Queries PACS tables for real Benton County data; returns structured fallback"
+        },
+        {
+          "line": 130,
+          "kind": "sample_or_fixture",
+          "preview": "/// GET /api/forge/cost/batch/preview — Dev fixture for batch cost run preview."
+        },
+        {
+          "line": 131,
+          "kind": "stub",
+          "preview": "/// Returns a stub adjustment bundle so BatchCostRun clears its DEMO DATA banner"
+        },
+        {
+          "line": 156,
+          "kind": "stub",
+          "preview": "/// GET /api/forge/cost/batch/history — Dev stub for batch cost run history."
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "path": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 4,
+      "priorityScore": 9049,
+      "symbols": [
+        "MassAppraisalController",
+        "MassAppraisalRunRequest",
+        "MassAppraisalRunResult",
+        "ModelCalibrationRequest",
+        "ModelCalibrationResult",
+        "RatioStudyResult",
+        "AppraisalModelSummary",
+        "MassAppraisalServiceStub",
+        "IMassAppraisalService"
+      ],
+      "staticReferenceCount": 204,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 385,
+          "kind": "stub",
+          "preview": "/// Dev stub for IMassAppraisalService."
+        },
+        {
+          "line": 397,
+          "kind": "stub",
+          "preview": "Name = \"Dev Stub — Cost Approach\","
+        },
+        {
+          "line": 422,
+          "kind": "stub",
+          "preview": "throw new NotSupportedException(\"CAMA model execution is not available in stub mode.\");"
+        },
+        {
+          "line": 425,
+          "kind": "stub",
+          "preview": "throw new NotSupportedException(\"Model calibration is not available in stub mode.\");"
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "path": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "stub"],
+      "matchCount": 3,
+      "priorityScore": 9048,
+      "symbols": ["PropertiesController"],
+      "staticReferenceCount": 130,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 141,
+          "kind": "fallback",
+          "preview": "// Enrich legal description — GIS (varchar 255, ArcGIS-synced) as quick fallback"
+        },
+        {
+          "line": 233,
+          "kind": "stub",
+          "preview": "/// Stub: returns empty list until activity tracking is implemented."
+        },
+        {
+          "line": 239,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"Activity requested for parcel {ParcelNumber} — returning stub empty list\", parcelNumber);"
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "path": "backend/src/TerraFusion.API/Controllers/SystemOrchestrationController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9047,
+      "symbols": ["SystemOrchestrationController"],
+      "staticReferenceCount": 122,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 202,
+          "kind": "stub",
+          "preview": "Parcels = 89_247, // CARD-10: Benton County parcel count stub"
+        },
+        {
+          "line": 298,
+          "kind": "stub",
+          "preview": "Parcels = 89_247, // CARD-10: Benton County parcel count stub"
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "path": "backend/src/TerraFusion.API/Controllers/LevyExportController.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9046,
+      "symbols": ["LevyExportController"],
+      "staticReferenceCount": 46,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 8,
+          "kind": "stub",
+          "preview": "/// This surface previously returned fake stub success payloads. The backing"
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "path": "backend/src/TerraFusion.API/Services/ValuationService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "stub"],
+      "matchCount": 11,
+      "priorityScore": 9046,
+      "symbols": ["ValuationService", "SimilarityScorer"],
+      "staticReferenceCount": 10,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 42,
+          "kind": "fallback",
+          "preview": "_logger.LogWarning(\"Parcel {ParcelId} not found in canonical Properties — returning fallback cost approach\", parcelId);"
+        },
+        {
+          "line": 141,
+          "kind": "stub",
+          "preview": "Source = hasData ? \"canonical\" : \"stub\","
+        },
+        {
+          "line": 181,
+          "kind": "fallback",
+          "preview": "_logger.LogWarning(\"Parcel {ParcelId} not found — returning fallback sales comparison\", parcelId);"
+        },
+        {
+          "line": 396,
+          "kind": "stub",
+          "preview": "Source = hasData ? \"canonical\" : \"stub\","
+        },
+        {
+          "line": 424,
+          "kind": "fallback",
+          "preview": "_logger.LogWarning(\"Parcel {ParcelId} not found — returning fallback income approach\", parcelId);"
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "path": "backend/src/TerraFusion.API/Program.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": [
+        "hardcoded",
+        "stub",
+        "fallback",
+        "sample_or_fixture",
+        "placeholder"
+      ],
+      "matchCount": 20,
+      "priorityScore": 9045,
+      "symbols": ["Program"],
+      "staticReferenceCount": 227,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 1187,
+          "kind": "hardcoded",
+          "preview": "// 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!"
+        },
+        {
+          "line": 1480,
+          "kind": "stub",
+          "preview": "// ✅ STUB: Consciousness Engine stub for DI resolution"
+        },
+        {
+          "line": 1533,
+          "kind": "stub",
+          "preview": "// Dev stub: returns empty until a real CAMA service is registered"
+        },
+        {
+          "line": 1621,
+          "kind": "fallback",
+          "preview": "// Conditionally register Redis-backed cache or NoOp fallback"
+        },
+        {
+          "line": 1726,
+          "kind": "fallback",
+          "preview": "// (dbo.imprv_attr_val preferred, dbo.imprv_attr-derived fallback)"
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "path": "backend/src/TerraFusion.API/Seeds/PacsCanonicalizer.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 20,
+      "priorityScore": 9045,
+      "symbols": ["PacsCanonicalizer", "CanonicalizeResult"],
+      "staticReferenceCount": 28,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 290,
+          "kind": "stub",
+          "preview": "foreach (var stub in batch)"
+        },
+        {
+          "line": 292,
+          "kind": "stub",
+          "preview": "if (string.IsNullOrEmpty(stub.GeoId)) continue;"
+        },
+        {
+          "line": 294,
+          "kind": "stub",
+          "preview": "allValMap.TryGetValue(stub.PropId, out var val);"
+        },
+        {
+          "line": 295,
+          "kind": "stub",
+          "preview": "allSitusMap.TryGetValue(stub.PropId, out var situs);"
+        },
+        {
+          "line": 296,
+          "kind": "stub",
+          "preview": "allOwnerMap.TryGetValue(stub.PropId, out var ownerName);"
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "path": "backend/src/TerraFusion.AI/Forecasting/LevyForecastService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 4,
+      "priorityScore": 9039,
+      "symbols": ["LevyForecastService", "ForecastResult", "ForecastPoint"],
+      "staticReferenceCount": 54,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 31,
+          "kind": "stub",
+          "preview": "// Simple linear regression stub"
+        },
+        {
+          "line": 77,
+          "kind": "stub",
+          "preview": "// Stub — would fit y = a * e^(b*x)"
+        },
+        {
+          "line": 89,
+          "kind": "stub",
+          "preview": "// Stub — ARIMA(p,d,q) requires ML.NET or external library"
+        },
+        {
+          "line": 100,
+          "kind": "stub",
+          "preview": "// Stub — would combine linear, exponential, ARIMA with weighted averaging"
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "path": "backend/src/TerraFusion.AI/Narratives/DefenseNarrativeService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 2,
+      "priorityScore": 9037,
+      "symbols": [
+        "DefenseNarrativeRequest",
+        "DefenseNarrative",
+        "DefenseNarrativeService",
+        "IDefenseNarrativeService"
+      ],
+      "staticReferenceCount": 11,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 50,
+          "kind": "stub",
+          "preview": "/// Stub implementation of defense narrative generation."
+        },
+        {
+          "line": 51,
+          "kind": "placeholder",
+          "preview": "/// Produces placeholder narratives; real LLM integration comes in a later phase."
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "path": "backend/src/TerraFusion.AI/Services/IntegrationOrchestrationService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9037,
+      "symbols": [
+        "IntegrationOrchestrationService",
+        "SystemConnectorState",
+        "IntegrationStatus",
+        "SystemConnector",
+        "SyncRequest",
+        "SyncOperation",
+        "SyncHistory",
+        "IntegrationHealth",
+        "SystemHealthDetail",
+        "DataMappingRequest",
+        "DataMappingResult",
+        "FieldMapping",
+        "IntegrationMetric",
+        "IIntegrationOrchestrationService"
+      ],
+      "staticReferenceCount": 87,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 74,
+          "kind": "stub",
+          "preview": "TotalRecords = 89_247, // CARD-10: Benton County parcel count stub"
+        },
+        {
+          "line": 131,
+          "kind": "stub",
+          "preview": "TotalRecords = 89_247, // CARD-10: Benton County parcel count stub"
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "path": "backend/src/TerraFusion.API/Services/GisDataService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9037,
+      "symbols": ["GisDataService"],
+      "staticReferenceCount": 5,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 72,
+          "kind": "stub",
+          "preview": "Flood: new ParcelFloodLayer(\"X\", \"Minimal risk\", \"stub\"),"
+        },
+        {
+          "line": 98,
+          "kind": "stub",
+          "preview": "Flood: new ParcelFloodLayer(\"X\", \"Minimal risk — FEMA data requires external enrichment\", \"stub\"),"
+        }
+      ]
+    },
+    {
+      "rank": 21,
+      "path": "backend/src/TerraFusion.AI/ML/AnalyticsService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": [
+        "AnalyticsService",
+        "PropertyFeatures",
+        "PredictionResult",
+        "Hotspot",
+        "ForecastPoint",
+        "IAnalyticsService"
+      ],
+      "staticReferenceCount": 80,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 126,
+          "kind": "stub",
+          "preview": "// Spatial lag stub: add small premium for coordinates present."
+        }
+      ]
+    },
+    {
+      "rank": 22,
+      "path": "backend/src/TerraFusion.AI/Notices/DraftNoticeService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": [
+        "NoticeRequest",
+        "AssessmentNotice",
+        "DraftNoticeService",
+        "IDraftNoticeService"
+      ],
+      "staticReferenceCount": 6,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 51,
+          "kind": "stub",
+          "preview": "/// Stub implementation of draft notice generation."
+        }
+      ]
+    },
+    {
+      "rank": 23,
+      "path": "backend/src/TerraFusion.AI/Services/AnalyticsReportingService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": [
+        "AnalyticsReportingService",
+        "AnalyticsSummary",
+        "UserAnalytics",
+        "SystemAnalytics",
+        "CountyAnalytics",
+        "AIAnalytics",
+        "TopMetric",
+        "TrendAnalysis",
+        "TrendDataPoint",
+        "AnalyticsReportingForecastPoint",
+        "ReportRequest",
+        "CustomReport",
+        "ReportSection",
+        "DataAggregation",
+        "AnalyticsReportingPredictiveInsights",
+        "Prediction",
+        "AnomalyDetection",
+        "UserActivityReport",
+        "UserActivity",
+        "HourlyActivity",
+        "DailyActivity",
+        "FeatureUsage",
+        "SystemUsageReport",
+        "EndpointUsage",
+        "ServiceResourceUsage",
+        "ErrorCategory",
+        "IAnalyticsReportingService"
+      ],
+      "staticReferenceCount": 213,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 34,
+          "kind": "stub",
+          "preview": "// CARD-10: static stub — replace with live DB query once CARD-06 Properties seeding is verified."
+        }
+      ]
+    },
+    {
+      "rank": 24,
+      "path": "backend/src/TerraFusion.AI/Services/CostForgeAIService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": ["CostForgeAIService"],
+      "staticReferenceCount": 6,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 385,
+          "kind": "stub",
+          "preview": "RecordsProcessed = 89_247, // CARD-10: Benton County parcel count stub"
+        }
+      ]
+    },
+    {
+      "rank": 25,
+      "path": "backend/src/TerraFusion.API/Security/Interfaces/ILdapService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": ["LdapAuthResult", "LdapUserInfo", "ILdapService"],
+      "staticReferenceCount": 33,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 6,
+          "kind": "stub",
+          "preview": "/// Development: In-memory stub with pre-seeded government accounts."
+        }
+      ]
+    },
+    {
+      "rank": 26,
+      "path": "backend/src/TerraFusion.API/Security/Services/DevelopmentLdapService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": ["DevelopmentLdapService", "DevUser"],
+      "staticReferenceCount": 7,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 10,
+          "kind": "stub",
+          "preview": "/// Development LDAP stub with pre-seeded government accounts."
+        }
+      ]
+    },
+    {
+      "rank": 27,
+      "path": "backend/src/TerraFusion.API/Security/Services/RejectingLdapService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": ["RejectingLdapService"],
+      "staticReferenceCount": 4,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 6,
+          "kind": "stub",
+          "preview": "/// Production LDAP stub that rejects all authentication until a real"
+        }
+      ]
+    },
+    {
+      "rank": 28,
+      "path": "backend/src/TerraFusion.API/Services/DataPipelineService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": [
+        "DataPipelineService",
+        "CreatePipelineRequest",
+        "PipelineStepConfig",
+        "PipelineDefinition",
+        "PipelineRun",
+        "IPipelineService"
+      ],
+      "staticReferenceCount": 8,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 179,
+          "kind": "stub",
+          "preview": "// Stub: mark completed immediately (real impl would run async ETL)"
+        }
+      ]
+    },
+    {
+      "rank": 29,
+      "path": "backend/src/TerraFusion.API/Services/ForgeStatisticsService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9036,
+      "symbols": ["ForgeStatisticsService", "SaleRow"],
+      "staticReferenceCount": 13,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 10,
+          "kind": "stub",
+          "preview": "/// ComparableSales + Properties data. Replaces the prior Random()-based stub."
+        }
+      ]
+    },
+    {
+      "rank": 30,
+      "path": "frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 10,
+      "priorityScore": 9035,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 236,
+          "kind": "stub",
+          "preview": "{incomeAPI.data.source === 'stub' && !incomeAPI.data.incomeApproachApplicable"
+        },
+        {
+          "line": 264,
+          "kind": "placeholder",
+          "preview": "{ field: 'grossRentalIncome', label: 'Potential Gross Income ($)', placeholder: '120000' },"
+        },
+        {
+          "line": 265,
+          "kind": "placeholder",
+          "preview": "{ field: 'vacancyRate', label: 'Vacancy Rate (%)', placeholder: '5' },"
+        },
+        {
+          "line": 266,
+          "kind": "placeholder",
+          "preview": "{ field: 'creditLossRate', label: 'Credit Loss Rate (%)', placeholder: '1' },"
+        },
+        {
+          "line": 267,
+          "kind": "placeholder",
+          "preview": "{ field: 'operatingExpenses', label: 'Operating Expenses ($)', placeholder: '24000' },"
+        }
+      ]
+    },
+    {
+      "rank": 31,
+      "path": "backend/src/TerraFusion.API/Seeds/PacsDataSeeder.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "stub"],
+      "matchCount": 9,
+      "priorityScore": 9034,
+      "symbols": ["PacsDataSeeder", "PacsSeederResult"],
+      "staticReferenceCount": 20,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 163,
+          "kind": "fallback",
+          "preview": "// Proceeding into a dirty table causes the unique-index fallback to skip every insert."
+        },
+        {
+          "line": 636,
+          "kind": "fallback",
+          "preview": "// Fallback: individual DELETEs with FK-safe order"
+        },
+        {
+          "line": 894,
+          "kind": "stub",
+          "preview": "// Use HAVING COUNT >= 1000 to skip sparse stub years (same pattern as owner fix)."
+        },
+        {
+          "line": 1120,
+          "kind": "stub",
+          "preview": "// Substantive year: skip sparse stub years (HAVING >= 1000)."
+        },
+        {
+          "line": 1254,
+          "kind": "stub",
+          "preview": "// Substantive year: skip sparse stub years (HAVING >= 1000)."
+        }
+      ]
+    },
+    {
+      "rank": 32,
+      "path": "backend/src/TerraFusion.AI/Agents/DocumentConversion/PiltDocumentConversionAgent.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 8,
+      "priorityScore": 9033,
+      "symbols": [
+        "PiltDocumentConversionAgent",
+        "PiltPaymentRecord",
+        "IDocumentConversionAgent"
+      ],
+      "staticReferenceCount": 7,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 44,
+          "kind": "stub",
+          "preview": "/// Stub implementation of <see cref=\"IDocumentConversionAgent\"/> for PILT documents."
+        },
+        {
+          "line": 50,
+          "kind": "placeholder",
+          "preview": "/// This is a placeholder agent. The production implementation will integrate with"
+        },
+        {
+          "line": 73,
+          "kind": "stub",
+          "preview": "// Stub: return a placeholder record indicating extraction has not been implemented."
+        },
+        {
+          "line": 81,
+          "kind": "placeholder",
+          "preview": "var placeholder = new PiltPaymentRecord("
+        },
+        {
+          "line": 82,
+          "kind": "placeholder",
+          "preview": "PayingEntityName: \"Placeholder Entity — document conversion pending\","
+        }
+      ]
+    },
+    {
+      "rank": 33,
+      "path": "backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
+      "matchCount": 8,
+      "priorityScore": 9033,
+      "symbols": [
+        "AuthenticationConfiguration",
+        "JwtAuthValidator",
+        "ApiJwtTokenServiceAdapter",
+        "ConfiguredBootstrapSecurityService",
+        "InMemorySecurityService"
+      ],
+      "staticReferenceCount": 8,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 48,
+          "kind": "fallback",
+          "preview": "// Dev-only fallback. 64+ chars to satisfy HS256 minimum."
+        },
+        {
+          "line": 50,
+          "kind": "fallback",
+          "preview": "Console.WriteLine(\"⚠️ WARNING: Using Development JWT fallback key. NEVER use this in production.\");"
+        },
+        {
+          "line": 164,
+          "kind": "stub",
+          "preview": "/// of the in-memory dev stub, which previously was registered in BOTH"
+        },
+        {
+          "line": 177,
+          "kind": "hardcoded",
+          "preview": "// Phase 9: Only register dev LDAP with hardcoded credentials in Development"
+        },
+        {
+          "line": 184,
+          "kind": "stub",
+          "preview": "// prod surfaces loud instead of silently succeeding via dev stub."
+        }
+      ]
+    },
+    {
+      "rank": 34,
+      "path": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["todo", "stub"],
+      "matchCount": 7,
+      "priorityScore": 9032,
+      "symbols": ["ProductionPACSDataEngine", "IProductionPACSDataEngine"],
+      "staticReferenceCount": 19,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 278,
+          "kind": "todo",
+          "preview": "// TODO: Implement training record preparation when processor signatures are finalized"
+        },
+        {
+          "line": 293,
+          "kind": "todo",
+          "preview": "TrainingRecordsGenerated = 0, // TODO: Update when training record preparation is implemented"
+        },
+        {
+          "line": 408,
+          "kind": "todo",
+          "preview": "// TODO: Implement permit training record preparation when processor signatures are finalized"
+        },
+        {
+          "line": 423,
+          "kind": "todo",
+          "preview": "TrainingRecordsGenerated = 0, // TODO: Update when training record preparation is implemented"
+        },
+        {
+          "line": 874,
+          "kind": "stub",
+          "preview": "// Stub implementation - validates environment configuration"
+        }
+      ]
+    },
+    {
+      "rank": 35,
+      "path": "frontend/apps/os-shell/src/hooks/useAtlasGis.ts",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["fallback", "stub"],
+      "matchCount": 6,
+      "priorityScore": 9031,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 88,
+          "kind": "fallback",
+          "preview": "export type AtlasGisSource = 'live' | 'fallback' | 'unavailable';"
+        },
+        {
+          "line": 114,
+          "kind": "stub",
+          "preview": "// \"stub\" — parcel not found or layer not available (treat as unavailable)"
+        },
+        {
+          "line": 115,
+          "kind": "fallback",
+          "preview": "// anything else non-empty — partial/enriched fallback"
+        },
+        {
+          "line": 121,
+          "kind": "stub",
+          "preview": ": rawSrc === 'unavailable' || rawSrc === 'stub' || rawSrc === ''"
+        },
+        {
+          "line": 123,
+          "kind": "fallback",
+          "preview": ": 'fallback';"
+        }
+      ]
+    },
+    {
+      "rank": 36,
+      "path": "backend/src/TerraFusion.AI/Agents/DocumentFormatting/PiltDocumentFormattingAgent.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 5,
+      "priorityScore": 9030,
+      "symbols": [
+        "PiltDocumentFormattingAgent",
+        "PiltSummary",
+        "PiltPaymentLine",
+        "IPiltDocumentFormattingAgent"
+      ],
+      "staticReferenceCount": 13,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 51,
+          "kind": "stub",
+          "preview": "/// Stub implementation of <see cref=\"IPiltDocumentFormattingAgent\"/>."
+        },
+        {
+          "line": 57,
+          "kind": "placeholder",
+          "preview": "/// This is a placeholder agent. The production implementation will integrate"
+        },
+        {
+          "line": 82,
+          "kind": "stub",
+          "preview": "// Stub: return a minimal placeholder PDF byte array."
+        },
+        {
+          "line": 91,
+          "kind": "stub",
+          "preview": "// Minimal valid PDF structure for stub purposes."
+        },
+        {
+          "line": 100,
+          "kind": "stub",
+          "preview": "\"PILT report formatting returned stub PDF — production agent not yet active\");"
+        }
+      ]
+    },
+    {
+      "rank": 37,
+      "path": "frontend/apps/os-shell/src/components/pilot/RiskConfirmationModal.tsx",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 5,
+      "priorityScore": 9030,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 202,
+          "kind": "stub",
+          "preview": "// Phase 3 stub: non-irreversible supervisor approval still blocked"
+        },
+        {
+          "line": 300,
+          "kind": "placeholder",
+          "preview": "placeholder={`Type \"${expectedPhrase}\" to confirm`}"
+        },
+        {
+          "line": 364,
+          "kind": "stub",
+          "preview": "{/* Legacy Supervisor Approval Stub (non-irreversible) */}"
+        },
+        {
+          "line": 375,
+          "kind": "stub",
+          "preview": "<p className='phase-stub'>Approval workflow coming in Phase 4</p>"
+        },
+        {
+          "line": 573,
+          "kind": "stub",
+          "preview": ".phase-stub {"
+        }
+      ]
+    },
+    {
+      "rank": 38,
+      "path": "frontend/apps/os-shell/src/services/countyIsolation.ts",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 5,
+      "priorityScore": 9030,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 30,
+          "kind": "stub",
+          "preview": "| 'stub' // Endpoint exists but returns placeholder data"
+        },
+        {
+          "line": 283,
+          "kind": "stub",
+          "preview": "enforcement: 'stub',"
+        },
+        {
+          "line": 284,
+          "kind": "stub",
+          "preview": "gap: 'Stub controller — no county scoping infrastructure for future implementation',"
+        },
+        {
+          "line": 291,
+          "kind": "stub",
+          "preview": "enforcement: 'stub',"
+        },
+        {
+          "line": 292,
+          "kind": "stub",
+          "preview": "gap: 'Stub controller — no county scoping infrastructure',"
+        }
+      ]
+    },
+    {
+      "rank": 39,
+      "path": "backend/src/TerraFusion.API/Services/DataMigrationEngine.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub", "todo"],
+      "matchCount": 4,
+      "priorityScore": 9029,
+      "symbols": [
+        "DataMigrationEngine",
+        "DataMigrationState",
+        "DataMigrationProgress",
+        "SourceDataAnalysis",
+        "TableAnalysis",
+        "DataMigrationMapping",
+        "TableMapping",
+        "TransformationRule",
+        "DataValidationRule",
+        "TableMigrationResult",
+        "BatchMigrationResult",
+        "RollbackValidationResult"
+      ],
+      "staticReferenceCount": 23,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 334,
+          "kind": "stub",
+          "preview": "new TableAnalysis { TableName = \"Parcels\", RecordCount = 89_247, ComplexityScore = 0.8m }, // CARD-10: Benton County parcel count stub"
+        },
+        {
+          "line": 503,
+          "kind": "todo",
+          "preview": "// TODO: Implement full data migration logic with actual async operations"
+        },
+        {
+          "line": 535,
+          "kind": "todo",
+          "preview": "// TODO: Implement data integrity validation"
+        },
+        {
+          "line": 567,
+          "kind": "todo",
+          "preview": "// TODO: Implement legacy data transformation"
+        }
+      ]
+    },
+    {
+      "rank": 40,
+      "path": "backend/src/TerraFusion.Core/Services/IntegrationService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 19,
+      "priorityScore": 9029,
+      "symbols": ["IntegrationService"],
+      "staticReferenceCount": 3,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 8,
+          "kind": "stub",
+          "preview": "/// Stub implementation of IIntegrationService."
+        },
+        {
+          "line": 22,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"GetSystemIntegrations: {ProjectId} (stub)\", projectId);"
+        },
+        {
+          "line": 28,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"GetSystemIntegration: {IntegrationId} (stub)\", integrationId);"
+        },
+        {
+          "line": 34,
+          "kind": "stub",
+          "preview": "_logger.LogInformation(\"CreateSystemIntegration: {ProjectId} (stub)\", projectId);"
+        },
+        {
+          "line": 40,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"UpdateSystemIntegration: {IntegrationId} (stub)\", integrationId);"
+        }
+      ]
+    },
+    {
+      "rank": 41,
+      "path": "frontend/apps/os-shell/src/components/CommandPalette.tsx",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 3,
+      "priorityScore": 9028,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 2,
+          "kind": "stub",
+          "preview": "* CommandPalette — overlay command launcher stub."
+        },
+        {
+          "line": 5,
+          "kind": "placeholder",
+          "preview": "* implementation is deferred to a future phase. This placeholder"
+        },
+        {
+          "line": 29,
+          "kind": "placeholder",
+          "preview": "{/* Placeholder — Ctrl+K overlay deferred to future phase */}"
+        }
+      ]
+    },
+    {
+      "rank": 42,
+      "path": "backend/src/TerraFusion.AI/Models/TestModels.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9027,
+      "symbols": [
+        "PropertyAnalysisRequest",
+        "PropertyAnalysis",
+        "HealthStatus",
+        "AISwarmStatus",
+        "AIRecommendation",
+        "AnalysisInsight",
+        "IAAOComplianceMetrics"
+      ],
+      "staticReferenceCount": 266,
+      "disposition": "safe_demo_only",
+      "confidence": "medium",
+      "reasons": ["test_or_test_endpoint_surface_inside_runtime_tree"],
+      "signalPreview": [
+        {
+          "line": 3,
+          "kind": "stub",
+          "preview": "* TEST MODELS - Stub Types for Integration Tests"
+        },
+        {
+          "line": 15,
+          "kind": "stub",
+          "preview": "/// Stub models for integration tests - to be implemented with full API layer"
+        }
+      ]
+    },
+    {
+      "rank": 43,
+      "path": "backend/src/TerraFusion.AI/Services/AdvancedAnalyticsEngine.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9027,
+      "symbols": [
+        "AdvancedAnalyticsEngine",
+        "PredictiveModel",
+        "PerformanceDataPoint"
+      ],
+      "staticReferenceCount": 27,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 474,
+          "kind": "stub",
+          "preview": "// Helper methods with stub implementations"
+        },
+        {
+          "line": 496,
+          "kind": "stub",
+          "preview": "// Stub implementations for missing methods"
+        }
+      ]
+    },
+    {
+      "rank": 44,
+      "path": "frontend/apps/os-shell/src/middleware/security-plugin.ts",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["placeholder", "stub"],
+      "matchCount": 2,
+      "priorityScore": 9027,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 10,
+          "kind": "placeholder",
+          "preview": "// Lightweight placeholder to keep dev/build working until the real plugin is restored."
+        },
+        {
+          "line": 16,
+          "kind": "stub",
+          "preview": "name: 'security-plugin-stub',"
+        }
+      ]
+    },
+    {
+      "rank": 45,
+      "path": "frontend/apps/os-shell/src/services/gptBackendTruth.ts",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 2,
+      "priorityScore": 9027,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 8,
+          "kind": "stub",
+          "preview": "* - Every endpoint's implementation status (real vs stub)"
+        },
+        {
+          "line": 18,
+          "kind": "stub",
+          "preview": "export type ImplementationStatus = 'real' | 'stub' | 'placeholder';"
+        }
+      ]
+    },
+    {
+      "rank": 46,
+      "path": "backend/src/TerraFusion.API/Models/CanonicalCostMatrixReader.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9026,
+      "symbols": ["CanonicalCostMatrixReader"],
+      "staticReferenceCount": 4,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 2,
+          "kind": "stub",
+          "preview": "// COMPILE STUB — CanonicalCostMatrixReader"
+        }
+      ]
+    },
+    {
+      "rank": 47,
+      "path": "backend/src/TerraFusion.API/Models/Production/ProductionHelperModels.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9026,
+      "symbols": [
+        "PACSSchemaValidator",
+        "CIAPSDataProcessor",
+        "BuildingPermitProcessor",
+        "PropertyValuationProcessor",
+        "HistoricalDataAnalyzer",
+        "ProductionPerformanceMonitor",
+        "FISMAHighComplianceValidator",
+        "QuantumResistantEncryptionService",
+        "EliteAuditLoggingService",
+        "ContinuousComplianceMonitor",
+        "ThreatAnalysisEngine",
+        "SecurityIncidentResponseSystem",
+        "PenetrationTestingFramework",
+        "GovernmentSecurityConfiguration",
+        "FISMAHighRequirements",
+        "QuantumEncryptionConfiguration",
+        "QuantumPerformanceAnalyzer",
+        "PredictiveHealthAnalyzer",
+        "AIAgentPerformanceTracker",
+        "ProductionSystemMonitor",
+        "ChampionshipMetricsCalculator",
+        "PerformanceAnomalyDetector",
+        "SystemOptimizationEngine",
+        "PerformanceMonitoringHub",
+        "PerformanceThresholds",
+        "AIAgentMetrics",
+        "SystemHealthMetric",
+        "ProductionMetric",
+        "ComplianceMetric",
+        "AuditLogEntry",
+        "TransitionStep",
+        "WorkflowComparison",
+        "StepComparison",
+        "MigrationRiskAssessmentEngine",
+        "PredictiveMigrationAnalytics",
+        "RiskAssessmentResult",
+        "RiskFactor",
+        "PredictiveAnalysisResult"
+      ],
+      "staticReferenceCount": 342,
+      "disposition": "production_blocker",
+      "confidence": "medium",
+      "reasons": [
+        "runtime_model_or_config_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 81,
+          "kind": "stub",
+          "preview": "foreach (var permit in permits.Take(100)) // Process first 100 for stub"
+        }
+      ]
+    },
+    {
+      "rank": 48,
+      "path": "frontend/apps/os-shell/src/pages/workbench/income/DcfPanel.tsx",
+      "bucket": "frontend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "priorityScore": 9026,
+      "symbols": [],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 4,
+          "kind": "stub",
+          "preview": "* DcfPanel — Discounted Cash Flow Panel (stub)"
+        }
+      ]
+    },
+    {
+      "rank": 49,
+      "path": "backend/src/TerraFusion.Core/Services/ExportService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub"],
+      "matchCount": 15,
+      "priorityScore": 9025,
+      "symbols": ["ExportService"],
+      "staticReferenceCount": 0,
+      "disposition": "dormant",
+      "confidence": "low",
+      "reasons": ["no_static_symbol_references_found"],
+      "signalPreview": [
+        {
+          "line": 7,
+          "kind": "stub",
+          "preview": "/// Stub implementation of IExportService."
+        },
+        {
+          "line": 21,
+          "kind": "stub",
+          "preview": "_logger.LogWarning(\"ExportProjectData: {ProjectId}/{Format} (stub)\", projectId, format);"
+        },
+        {
+          "line": 27,
+          "kind": "stub",
+          "preview": "_logger.LogWarning(\"ExportTeamData: {TeamId}/{Format} (stub)\", teamId, format);"
+        },
+        {
+          "line": 33,
+          "kind": "stub",
+          "preview": "_logger.LogWarning(\"ExportTaskData: {ProjectId}/{Format} (stub)\", projectId, format);"
+        },
+        {
+          "line": 39,
+          "kind": "stub",
+          "preview": "_logger.LogWarning(\"ExportDocuments: {ProjectId}/{Format} (stub)\", projectId, format);"
+        }
+      ]
+    },
+    {
+      "rank": 50,
+      "path": "backend/src/TerraFusion.Core/Services/AnalyticsService.cs",
+      "bucket": "backend_runtime",
+      "signalKinds": ["stub", "placeholder"],
+      "matchCount": 14,
+      "priorityScore": 9024,
+      "symbols": ["AnalyticsService"],
+      "staticReferenceCount": 16,
+      "disposition": "production_blocker",
+      "confidence": "high",
+      "reasons": [
+        "runtime_execution_surface_contains_mock_stub_placeholder_or_fake_signal"
+      ],
+      "signalPreview": [
+        {
+          "line": 7,
+          "kind": "stub",
+          "preview": "/// Stub implementation of IAnalyticsService."
+        },
+        {
+          "line": 8,
+          "kind": "placeholder",
+          "preview": "/// Returns empty analytics data and placeholder reports."
+        },
+        {
+          "line": 21,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"GetDashboardData: {UserId}/{DashboardType} (stub)\", userId, dashboardType);"
+        },
+        {
+          "line": 26,
+          "kind": "stub",
+          "preview": "[\"stub\"] = true"
+        },
+        {
+          "line": 32,
+          "kind": "stub",
+          "preview": "_logger.LogDebug(\"GetExecutiveReports: {Start} to {End} (stub)\", startDate, endDate);"
+        }
+      ]
+    }
+  ],
+  "unsafeManualGaps": [
+    {
+      "gap": "Production-risk files are not yet owner-dispositioned",
+      "impact": "The system cannot distinguish dormant AI experiments from production blockers without a reviewed disposition ledger.",
+      "recommendation": "Create a mock/stub disposition ledger with owner, runtime route/module, preview allowance, and production action."
+    },
+    {
+      "gap": "AI/API runtime surfaces dominate Wave 1 blockers",
+      "impact": "TerraFusion can truthfully demo the statewide runtime preview, but cannot claim complete AI/workflow capability.",
+      "recommendation": "Separate June 10 preview route set from full product capability route set."
+    }
+  ],
+  "recommendedNextSteps": [
+    "Review each Wave 1 production_blocker with module ownership and decide: replace, disable, downgrade to explicit unavailable, or defer as non-production module.",
+    "Run Wave 2 on the next 50 production-risk files after this packet is reviewed.",
+    "Merge this triage with endpoint mock signals so route-level capability claims cannot hide source-level stubs."
+  ],
+  "packetHash": "8cf370d548f3c683fa2075e3361e9c6fc9180030b1af020f1092bdca3377ca9e"
+}
