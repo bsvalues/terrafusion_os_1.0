@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Data;
@@ -6,6 +7,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/geoforge")]
+[Authorize]
 public partial class GeoForgeController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;

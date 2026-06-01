@@ -1,10 +1,10 @@
 # Canonical Mock/Stub Audit Refresh
 
-- Generated: 2026-06-01T14:44:40.149Z
+- Generated: 2026-06-01T14:50:04.626Z
 - Production touched: false
 - DB mutation: false
 - Feature work: false
-- Packet hash: 7f269533db9c4c65ec0265a72dc5b68ec1c7c8f520c62370a25b91e90fe76f2b
+- Packet hash: f31c3cb9b0292718e67cde0bd0ff45700dc04e44021ca5007de2f4b20d589cb0
 
 ## Verdict
 
@@ -20,7 +20,7 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 
 | Metric | Count |
 | --- | ---: |
-| Total files scanned | 7539 |
+| Total files scanned | 7540 |
 | Files with mock/stub signals | 2111 |
 | Production-risk files | 391 |
 | Demo-safe files | 1409 |
