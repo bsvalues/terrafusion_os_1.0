@@ -56,7 +56,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/debug")]
-[AllowAnonymous]
+[Authorize]
 public class CanonicalDebugController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
