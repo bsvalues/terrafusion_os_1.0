@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T12:09:00.764Z",
+  "generatedAt": "2026-06-01T12:15:08.424Z",
   "name": "Full Application Capability Audit Lane",
   "scope": {
     "target": "full application capability, not frozen demo path only",
@@ -71,7 +71,7 @@
       "status": "PARTIAL",
       "evidence": {
         "browserStorageReferenceCount": 706,
-        "legacyReferenceCount": 4261
+        "legacyReferenceCount": 4259
       },
       "requiredNextProof": "Map every user-facing screen to dev39 Postgres, production DB, mock JSON, hardcoded fixtures, local storage, or unknown."
     },
@@ -131,7 +131,7 @@
       "label": "Mock / Stub Audit",
       "status": "MOCK",
       "evidence": {
-        "mockStubDemoReferenceCount": 10246
+        "mockStubDemoReferenceCount": 10248
       },
       "requiredNextProof": "Classify every mock/stub/demo/sample/placeholder as production-excluded, test-only, dead, or active blocker."
     }
@@ -144,5 +144,5 @@
     "Run Rust, Redis, Prometheus, and CLI runtime proof lanes separately."
   ],
   "hardStop": "Do not claim full production readiness until every category is PROVEN or explicitly not applicable with evidence.",
-  "packetHash": "e0d932c0cba8f54e59ef206a1c53886a548be4210e76a98e7b14a4f5b08480e4"
+  "packetHash": "24e4d73c8bcdaa2294ab90880e2c53c60503e68f73ae6a88b8e1918ff528b291"
 }

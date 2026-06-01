@@ -15,8 +15,7 @@ namespace TerraFusion.API.Controllers;
 /// <summary>
 /// Phase 10 — PropertyForge valuation API.
 /// Four endpoints serving the Forge sub-tabs: cost, sales, income, reconciliation.
-/// Queries PACS tables for real Benton County data; returns structured fallback
-/// where PACS data is incomplete.
+/// Queries governed valuation services for real Benton County data.
 /// </summary>
 [ApiController]
 [Route("api/forge")]
@@ -127,42 +126,48 @@ public class ForgeController : ControllerBase
     }
 
     /// <summary>
-    /// GET /api/forge/cost/batch/preview — Dev fixture for batch cost run preview.
-    /// Returns a stub adjustment bundle so BatchCostRun clears its DEMO DATA banner
-    /// without a live CAMA batch engine. Safe for anonymous dev access.
+    /// GET /api/forge/cost/batch/preview — reports batch cost preview availability.
     /// </summary>
     [AllowAnonymous]
     [HttpGet("cost/batch/preview")]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public IActionResult GetBatchCostPreview(
         [FromQuery] string? neighborhood,
         [FromQuery] string? propertyType)
     {
-        return Ok(new
+        _logger.LogWarning(
+            "Forge batch cost preview requested for neighborhood {Neighborhood} and property type {PropertyType}, but no governed batch cost engine is configured",
+            neighborhood,
+            propertyType);
+
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
         {
-            neighborhood = neighborhood ?? "Downtown",
-            propertyType = propertyType ?? "Residential",
-            matchCount = 12,
-            affectedCount = 12,
-            batchId = Guid.NewGuid().ToString("N")[..8],
-            adjustments = new[]
-            {
-                new { factor = "BaseRate",        currentValue = 1.00m, proposedValue = 1.05m,   delta =  0.050m, parcels = 12 },
-                new { factor = "DepreciationRate", currentValue = 0.02m, proposedValue = 0.018m, delta = -0.002m, parcels = 12 },
-            },
+            success = false,
+            code = "FORGE_BATCH_COST_PREVIEW_UNAVAILABLE",
+            message = "Forge batch cost preview is not configured for governed runtime responses in this environment.",
+            neighborhood,
+            propertyType,
+            generated = false,
         });
     }
 
     /// <summary>
-    /// GET /api/forge/cost/batch/history — Dev stub for batch cost run history.
-    /// Returns an empty array (no completed runs yet in dev), which signals
-    /// BatchCostRun that the history endpoint is reachable so historyIsFixtureBacked
-    /// clears. An empty array is honest: no runs have been applied in dev mode.
+    /// GET /api/forge/cost/batch/history — reports batch cost history availability.
     /// </summary>
     [AllowAnonymous]
     [HttpGet("cost/batch/history")]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public IActionResult GetBatchCostHistory()
     {
-        return Ok(Array.Empty<object>());
+        _logger.LogWarning("Forge batch cost history requested, but no governed batch cost engine is configured");
+
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+        {
+            success = false,
+            code = "FORGE_BATCH_COST_HISTORY_UNAVAILABLE",
+            message = "Forge batch cost history is not configured for governed runtime responses in this environment.",
+            generated = false,
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
