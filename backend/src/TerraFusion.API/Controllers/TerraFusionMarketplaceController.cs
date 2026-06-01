@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TerraFusion.API.Models;
 
 namespace TerraFusion.API.Controllers
@@ -21,6 +22,7 @@ namespace TerraFusion.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TerraFusionMarketplaceController : ControllerBase
     {
         private readonly ILogger<TerraFusionMarketplaceController> _logger;
