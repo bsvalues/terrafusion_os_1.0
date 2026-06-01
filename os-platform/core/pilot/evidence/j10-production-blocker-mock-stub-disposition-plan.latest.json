@@ -1,0 +1,1954 @@
+{
+  "generatedAt": "2026-06-01T04:44:24.450Z",
+  "operation": "production_blocker_mock_stub_disposition_plan",
+  "sourceWave1": "os-platform/core/pilot/evidence/j10-mock-stub-triage-wave1.latest.json",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "featureWork": false,
+  "scope": {
+    "source": "39 production_blocker files from Wave 1",
+    "fixesIncluded": false,
+    "classificationOnly": true
+  },
+  "countReconciliation": {
+    "earlierAuditProductionRiskFiles": 724,
+    "earlierAuditSource": "j10-mock-stub-audit.latest.json from prior audit packet / branch context",
+    "currentWave1ProductionRiskFiles": 618,
+    "currentWave1Source": "inline_wave1_scan_no_prior_audit_file",
+    "reconciledInterpretation": "Do not compare 724 and 618 as the same denominator. The 724 count came from a broader prior audit artifact; Wave 1 used an inline scan in this worktree and excludes core pilot audit tooling/test/docs/evidence differently. Executive reporting should use the count tied to the specific packet being cited.",
+    "recommendedExecutiveMetric": "Use Wave 1 blocker result for immediate action: 39 production blockers in the top 50 triaged files. Use total production-risk count only after regenerating one canonical mock/stub audit on the current branch."
+  },
+  "summary": {
+    "wave1TriagedFiles": 50,
+    "wave1ProductionBlockers": 39,
+    "dispositionRows": 39,
+    "byPriority": {
+      "P1": 13,
+      "P0": 7,
+      "P3": 4,
+      "P2": 15
+    },
+    "byFixType": {
+      "implement real service": 30,
+      "replace with honest unavailable state": 6,
+      "disable surface": 3
+    },
+    "byRuntimeSurface": {
+      "DI service/runtime service": 17,
+      "contract/model surface": 3,
+      "HTTP controller": 10,
+      "runtime source": 1,
+      "data seed/import path": 2,
+      "AI agent": 2,
+      "auth/security surface": 1,
+      "runtime engine": 3
+    },
+    "june10PreviewBlockers": 0,
+    "productionBlockers": 39
+  },
+  "verdict": {
+    "controlledPreview": "still_ready",
+    "productionReadiness": "no_go",
+    "fullApplicationCapability": "not_ready",
+    "reason": "Wave 1 production blockers mostly affect AI/API/valuation/workflow surfaces outside the frozen dev39 preview path, but they block any full production or full capability claim until dispositioned and remediated."
+  },
+  "dispositions": [
+    {
+      "rank": 1,
+      "file": "backend/src/TerraFusion.Core/Services/ComplianceAutomationService.cs",
+      "owningModule": "Core Service/ComplianceAutomation",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["not_implemented"],
+      "confidence": "high",
+      "staticReferenceCount": 8,
+      "userFacingImpact": "Compliance dashboard/automation state cannot be treated as complete production compliance.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 2,
+      "file": "backend/src/TerraFusion.Abstractions/DTOs/ComplianceDto.cs",
+      "owningModule": "Abstractions/DTO",
+      "runtimeSurface": "contract/model surface",
+      "signalKinds": ["not_implemented"],
+      "confidence": "high",
+      "staticReferenceCount": 296,
+      "userFacingImpact": "Compliance dashboard/automation state cannot be treated as complete production compliance.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 3,
+      "file": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
+      "owningModule": "API/Pilot",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 182,
+      "userFacingImpact": "Pilot invocation/tool-list behavior can present offline stubs instead of real tool execution.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api/pilot/router/status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/explain"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/drafts"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pilot/drafts/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pilot/drafts"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/drafts/{id:guid}/approve"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/drafts/{id:guid}/reject"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pilot/tools"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/invoke"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pilot/traces"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pilot/health"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pilot/validate"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 4,
+      "file": "backend/src/TerraFusion.API/Controllers/CostForgeController.cs",
+      "owningModule": "API/CostForge",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": [
+        "stub",
+        "todo",
+        "fallback",
+        "sample_or_fixture",
+        "hardcoded"
+      ],
+      "confidence": "high",
+      "staticReferenceCount": 2620,
+      "userFacingImpact": "Cost/valuation workflows may return stubbed, hardcoded, or incomplete cost model behavior.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "POST",
+          "route": "/api/calculate"
+        },
+        {
+          "method": "POST",
+          "route": "/api/batch-calculate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{propertyId}/breakdown"
+        },
+        {
+          "method": "GET",
+          "route": "/api/compare/{propertyId1}/{propertyId2}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{propertyId}/forecast"
+        },
+        {
+          "method": "GET",
+          "route": "/api/factors/{region}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/matrix"
+        },
+        {
+          "method": "GET",
+          "route": "/api/status"
+        },
+        {
+          "method": "GET",
+          "route": "/api/agents/status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/agents/scale"
+        },
+        {
+          "method": "GET",
+          "route": "/api/metrics"
+        },
+        {
+          "method": "POST",
+          "route": "/api/sync/source-status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/cost-estimate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/cost-matrix/benton"
+        },
+        {
+          "method": "GET",
+          "route": "/api/depreciation-schedule"
+        },
+        {
+          "method": "POST",
+          "route": "/api/depreciation-calculate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/income-approach/cap-rates"
+        },
+        {
+          "method": "GET",
+          "route": "/api/income-approach/market-data/benton"
+        },
+        {
+          "method": "GET",
+          "route": "/api/income-approach/expense-ratios"
+        },
+        {
+          "method": "GET",
+          "route": "/api/income-approach/location-premiums/benton"
+        },
+        {
+          "method": "POST",
+          "route": "/api/income-approach/calculate-noi"
+        },
+        {
+          "method": "POST",
+          "route": "/api/income-approach/calculate-valuation"
+        },
+        {
+          "method": "GET",
+          "route": "/api/sales-comparison/adjustment-factors"
+        },
+        {
+          "method": "GET",
+          "route": "/api/sales-comparison/market-areas/benton"
+        },
+        {
+          "method": "GET",
+          "route": "/api/sales-comparison/confidence-thresholds"
+        },
+        {
+          "method": "POST",
+          "route": "/api/sales-comparison/adjust-comparable"
+        },
+        {
+          "method": "POST",
+          "route": "/api/sales-comparison/reconcile"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuation-reconciliation/weight-guidelines"
+        },
+        {
+          "method": "POST",
+          "route": "/api/valuation-reconciliation/reconcile"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuation-lineage/depreciation-model"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuation-lineage/land-rates/benton"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuation-lineage/site-improvements"
+        },
+        {
+          "method": "POST",
+          "route": "/api/valuation-lineage/compute-full"
+        },
+        {
+          "method": "POST",
+          "route": "/api/valuations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/valuations/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcels/{parcelId}/valuations"
+        },
+        {
+          "method": "PATCH",
+          "route": "/api/valuations/{id:guid}/status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/valuations/{id:guid}/certify"
+        },
+        {
+          "method": "POST",
+          "route": "/api/comparables"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcels/{parcelId}/comparables"
+        },
+        {
+          "method": "POST",
+          "route": "/api/characteristics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcels/{parcelId}/characteristics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/models/{modelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/comps/{subjectId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/building-types"
+        },
+        {
+          "method": "GET",
+          "route": "/api/regions"
+        },
+        {
+          "method": "GET",
+          "route": "/api/neighborhoods"
+        },
+        {
+          "method": "GET",
+          "route": "/api/calibration/neighborhood-matrix"
+        },
+        {
+          "method": "POST",
+          "route": "/api/calibration/mass-adjust-preview"
+        },
+        {
+          "method": "GET",
+          "route": "/api/ratio-study/by-stratum"
+        },
+        {
+          "method": "GET",
+          "route": "/api/quality-grades"
+        },
+        {
+          "method": "GET",
+          "route": "/api/condition-grades"
+        },
+        {
+          "method": "GET",
+          "route": "/api/feature-factors"
+        },
+        {
+          "method": "GET",
+          "route": "/api/cost-breakdown"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/bayesian"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/bayesian/{id:guid}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/montecarlo"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/montecarlo/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/montecarlo/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/regression"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/regression/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/regression/{id:guid}/diagnostics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/regression/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/spatial/moran"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/spatial/geary"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/spatial/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/spatial/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/market/comparable-sales"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/market/time-trend"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/market/ratio-study"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/market/{id:int}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/market/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/rcw/84-34"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/rcw/84-26"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/rcw/84-36-381"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/rcw/{id:int}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/rcw/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/levy/calculate"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/levy/balance-test"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/levy/{id}/certify"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/levy/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/levy/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/data-quality/assess"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/data-quality/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/data-quality/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/etl/sync"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/etl/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/etl/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/analytics/ml/predict"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/ml/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/analytics/ml/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/pipeline/start"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pipeline/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/pipeline/history"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dashboard-stats"
+        },
+        {
+          "method": "GET",
+          "route": "/api/neighborhoods/{hoodCd}/parcels"
+        },
+        {
+          "method": "GET",
+          "route": "/api/traces"
+        },
+        {
+          "method": "GET",
+          "route": "/api/improvement-type-codes"
+        },
+        {
+          "method": "GET",
+          "route": "/api/schedule"
+        },
+        {
+          "method": "POST",
+          "route": "/api/effective-age"
+        },
+        {
+          "method": "GET",
+          "route": "/api/depreciation/calculate"
+        },
+        {
+          "method": "POST",
+          "route": "/api/calibration/mass-adjust-apply"
+        },
+        {
+          "method": "GET",
+          "route": "/api/batch/preview"
+        },
+        {
+          "method": "POST",
+          "route": "/api/batch/apply"
+        },
+        {
+          "method": "GET",
+          "route": "/api/batch/status/{jobId}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/batch/cancel/{jobId}"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 5,
+      "file": "backend/src/TerraFusion.API/Controllers/GPTController.cs",
+      "owningModule": "API/GPT",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["placeholder", "fallback", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 632,
+      "userFacingImpact": "GPT/explanation workflows may use placeholder or fallback behavior rather than fully proven runtime intelligence.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system"
+        },
+        {
+          "method": "GET",
+          "route": "/api/featured"
+        },
+        {
+          "method": "GET",
+          "route": "/api/popular"
+        },
+        {
+          "method": "GET",
+          "route": "/api/search"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{id}"
+        },
+        {
+          "method": "POST",
+          "route": "/api"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/{id}"
+        },
+        {
+          "method": "DELETE",
+          "route": "/api/{id}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/conversations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/conversations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/conversations/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{gptId}/conversations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/conversations/{id}/history"
+        },
+        {
+          "method": "POST",
+          "route": "/api/conversations/{conversationId}/messages"
+        },
+        {
+          "method": "POST",
+          "route": "/api/conversations/{id}/archive"
+        },
+        {
+          "method": "DELETE",
+          "route": "/api/conversations/{id}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/conversations/{id}/rate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{id}/statistics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/statistics/county"
+        },
+        {
+          "method": "GET",
+          "route": "/api/rag/health"
+        },
+        {
+          "method": "POST",
+          "route": "/api/rag/index/{datasetId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/conversations/{conversationId}/trace"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/diagnostics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/diagnostics/download"
+        },
+        {
+          "method": "POST",
+          "route": "/api/system/safe-mode"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/safe-mode"
+        },
+        {
+          "method": "GET",
+          "route": "/api/rag/benton-assessment-basics/export"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/events"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/metrics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/federated-overview"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/policy"
+        },
+        {
+          "method": "POST",
+          "route": "/api/system/policy/evaluate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/policy/all"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/fleet/rag-readiness"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/fleet/rag-readiness/{countyId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/atlas"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/atlas/live"
+        },
+        {
+          "method": "GET",
+          "route": "/api/system/atlas/live/snapshot"
+        },
+        {
+          "method": "POST",
+          "route": "/api/explain"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 7,
+      "file": "backend/src/TerraFusion.API/Controllers/AtlasController.cs",
+      "owningModule": "API/Atlas",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["fallback", "stub", "sample_or_fixture"],
+      "confidence": "high",
+      "staticReferenceCount": 544,
+      "userFacingImpact": "GIS/coordinate/map behavior may be partial or stubbed.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api/atlas/layers"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/parcels/search"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/zoning"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/flood-zones"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/stats"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}/layers"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis-layers"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/benton/service-endpoints"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/benton/reference"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}/arcgis"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/query/parcel/{parcelId}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/mass-appraisal/parcels"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/geo-equity/areas"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/geometry-health"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/arcgis/query/search"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/taxing-districts"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/city-boundaries"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/flood-zone/{parcelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/neighboring-parcels/{parcelId}"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/arcgis/query/spatial"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/layer-configs"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/arcgis/field-mapping"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/arcgis/convert-coordinates"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}/geometry"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}/spatial-profile"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/map/identify"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/parcels/{parcelId}/district-membership"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/zoning/{code}/details"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/map/valuation-heat-map"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/map/selection"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/map/basemaps"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/map/bookmarks"
+        },
+        {
+          "method": "POST",
+          "route": "/api/atlas/map/parcel-comparison"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/map/measurement-tools"
+        },
+        {
+          "method": "GET",
+          "route": "/api/atlas/spatial"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 8,
+      "file": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+      "owningModule": "API/Dais",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["sample_or_fixture", "fallback", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 749,
+      "userFacingImpact": "DAIS queue/escalation workflows may not be fully real beyond preview-safe paths.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api/dais/permit-types"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/workflow-stages"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/benton/fee-schedule"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/classification-rules"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/classify"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/permits/{parcelId}/assessment-impact"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/exempt/programs"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/exempt/senior-disabled"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/exempt/current-use"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/exempt/historic"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/exemptions/impact"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeal/grounds"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeal/timeline"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeal/evidence-checklist"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/certification/{county}/{taxYear:int}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/cert/status"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/notice/templates"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/notice/generate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/types"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/queue/assign"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/appeals"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeals"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeals/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/appeals/parcel/{parcelId}"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/dais/appeals/{id:guid}/status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/exemptions"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/exemptions/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/exemptions/parcel/{parcelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/notices/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/notices/parcel/{parcelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/{id:guid}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/pending"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/all"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/metrics"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/productivity"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/queue/review"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/dais/exemptions/{id:guid}/status"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/dais/notices/{id:guid}/status"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/dais/queue/{id:guid}/status"
+        },
+        {
+          "method": "PUT",
+          "route": "/api/dais/queue/{id:guid}/assign"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/exemptions/eligibility"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/exemptions/renewals"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/appeals/{appealId}/hearings"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/certification/{county}/{taxYear:int}/progress"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/certification/{county}/{taxYear:int}/sign-off"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/certification/{county}/{taxYear:int}/submit-dor"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/certification/{county}/{taxYear:int}/accept-dor"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/notices/queue"
+        },
+        {
+          "method": "GET",
+          "route": "/api/dais/queue/statistics"
+        },
+        {
+          "method": "POST",
+          "route": "/api/dais/queue/escalate"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 9,
+      "file": "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
+      "owningModule": "API/Forge",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["fallback", "sample_or_fixture", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 153,
+      "userFacingImpact": "Forge workbench/reconciliation/statistics may expose incomplete operational outputs.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api/forge/{parcelId}/years"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/{parcelId}/cost"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/{parcelId}/sales"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/{parcelId}/income"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/{parcelId}/reconciliation"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/cost/batch/preview"
+        },
+        {
+          "method": "GET",
+          "route": "/api/forge/cost/batch/history"
+        },
+        {
+          "method": "PATCH",
+          "route": "/api/forge/sales/{saleId}/qualification"
+        },
+        {
+          "method": "POST",
+          "route": "/api/forge/sales/recompute-recommendations"
+        },
+        {
+          "method": "POST",
+          "route": "/api/forge/{parcelId}/reconciliation/commit"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 10,
+      "file": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
+      "owningModule": "API/MassAppraisal",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 204,
+      "userFacingImpact": "Valuation and mass appraisal claims are not production-safe.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "POST",
+          "route": "/api/run"
+        },
+        {
+          "method": "POST",
+          "route": "/api/calibrate"
+        },
+        {
+          "method": "GET",
+          "route": "/api/ratio-study/{modelId}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/models"
+        },
+        {
+          "method": "GET",
+          "route": "/api/ratio-study/{modelId}/strata"
+        },
+        {
+          "method": "GET",
+          "route": "/api/ratio-study/{modelId}/outliers"
+        },
+        {
+          "method": "POST",
+          "route": "/api/compare"
+        },
+        {
+          "method": "GET",
+          "route": "/api/segments/{modelId}"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 11,
+      "file": "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
+      "owningModule": "API/Properties",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["fallback", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 130,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{id}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcel/{parcelNumber}"
+        },
+        {
+          "method": "GET",
+          "route": "/api/{id}/valuations"
+        },
+        {
+          "method": "POST",
+          "route": "/api/{id}/valuations"
+        },
+        {
+          "method": "GET",
+          "route": "/api/stats"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcel/{parcelNumber}/activity"
+        },
+        {
+          "method": "GET",
+          "route": "/api/parcel/{parcelNumber}/sketch"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P0",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 12,
+      "file": "backend/src/TerraFusion.API/Controllers/SystemOrchestrationController.cs",
+      "owningModule": "API/SystemOrchestration",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 122,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "GET",
+          "route": "/api/health"
+        },
+        {
+          "method": "POST",
+          "route": "/api/start-all"
+        },
+        {
+          "method": "POST",
+          "route": "/api/stop-all"
+        },
+        {
+          "method": "GET",
+          "route": "/api/modules/status"
+        },
+        {
+          "method": "POST",
+          "route": "/api/modules/{moduleName}/restart"
+        },
+        {
+          "method": "POST",
+          "route": "/api/legacy-sync"
+        },
+        {
+          "method": "GET",
+          "route": "/api/info"
+        },
+        {
+          "method": "POST",
+          "route": "/api/diagnostics"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P3",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 13,
+      "file": "backend/src/TerraFusion.API/Controllers/LevyExportController.cs",
+      "owningModule": "API/LevyExport",
+      "runtimeSurface": "HTTP controller",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 46,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [
+        {
+          "method": "POST",
+          "route": "/api/levy/export/upload"
+        },
+        {
+          "method": "GET",
+          "route": "/api/levy/export/history"
+        },
+        {
+          "method": "GET",
+          "route": "/api/levy/export/compare"
+        }
+      ],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 14,
+      "file": "backend/src/TerraFusion.API/Services/ValuationService.cs",
+      "owningModule": "API Service/Valuation",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["fallback", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 10,
+      "userFacingImpact": "Valuation and mass appraisal claims are not production-safe.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 15,
+      "file": "backend/src/TerraFusion.API/Program.cs",
+      "owningModule": "Unknown",
+      "runtimeSurface": "runtime source",
+      "signalKinds": [
+        "hardcoded",
+        "stub",
+        "fallback",
+        "sample_or_fixture",
+        "placeholder"
+      ],
+      "confidence": "medium",
+      "staticReferenceCount": 227,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 16,
+      "file": "backend/src/TerraFusion.API/Seeds/PacsCanonicalizer.cs",
+      "owningModule": "API Seed/Import",
+      "runtimeSurface": "data seed/import path",
+      "signalKinds": ["stub"],
+      "confidence": "medium",
+      "staticReferenceCount": 28,
+      "userFacingImpact": "Data import/seed/migration behavior needs source-specific review before production mutation claims.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "disable surface",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 17,
+      "file": "backend/src/TerraFusion.AI/Forecasting/LevyForecastService.cs",
+      "owningModule": "AI Forecasting",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 54,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 18,
+      "file": "backend/src/TerraFusion.AI/Narratives/DefenseNarrativeService.cs",
+      "owningModule": "AI Narratives",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub", "placeholder"],
+      "confidence": "high",
+      "staticReferenceCount": 11,
+      "userFacingImpact": "Document generation/narrative outputs are not production-complete.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 19,
+      "file": "backend/src/TerraFusion.AI/Services/IntegrationOrchestrationService.cs",
+      "owningModule": "AI Service/IntegrationOrchestration",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 87,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 20,
+      "file": "backend/src/TerraFusion.API/Services/GisDataService.cs",
+      "owningModule": "API Service/GisData",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 5,
+      "userFacingImpact": "GIS/coordinate/map behavior may be partial or stubbed.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 21,
+      "file": "backend/src/TerraFusion.AI/ML/AnalyticsService.cs",
+      "owningModule": "AI ML",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 80,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 22,
+      "file": "backend/src/TerraFusion.AI/Notices/DraftNoticeService.cs",
+      "owningModule": "AI Notices",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 6,
+      "userFacingImpact": "Document generation/narrative outputs are not production-complete.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 23,
+      "file": "backend/src/TerraFusion.AI/Services/AnalyticsReportingService.cs",
+      "owningModule": "AI Service/AnalyticsReporting",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 213,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 24,
+      "file": "backend/src/TerraFusion.AI/Services/CostForgeAIService.cs",
+      "owningModule": "AI Service/CostForgeAI",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 6,
+      "userFacingImpact": "Cost/valuation workflows may return stubbed, hardcoded, or incomplete cost model behavior.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P3",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 25,
+      "file": "backend/src/TerraFusion.API/Security/Interfaces/ILdapService.cs",
+      "owningModule": "API Security/Auth",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 33,
+      "userFacingImpact": "Auth integration is provisioned-account-ready but enterprise directory behavior is not production-proven.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 26,
+      "file": "backend/src/TerraFusion.API/Security/Services/DevelopmentLdapService.cs",
+      "owningModule": "API Security/Auth",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 7,
+      "userFacingImpact": "Auth integration is provisioned-account-ready but enterprise directory behavior is not production-proven.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 27,
+      "file": "backend/src/TerraFusion.API/Security/Services/RejectingLdapService.cs",
+      "owningModule": "API Security/Auth",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 4,
+      "userFacingImpact": "Auth integration is provisioned-account-ready but enterprise directory behavior is not production-proven.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "replace with honest unavailable state",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 28,
+      "file": "backend/src/TerraFusion.API/Services/DataPipelineService.cs",
+      "owningModule": "API Service/DataPipeline",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 8,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 29,
+      "file": "backend/src/TerraFusion.API/Services/ForgeStatisticsService.cs",
+      "owningModule": "API Service/ForgeStatistics",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 13,
+      "userFacingImpact": "Forge workbench/reconciliation/statistics may expose incomplete operational outputs.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 31,
+      "file": "backend/src/TerraFusion.API/Seeds/PacsDataSeeder.cs",
+      "owningModule": "API Seed/Import",
+      "runtimeSurface": "data seed/import path",
+      "signalKinds": ["fallback", "stub"],
+      "confidence": "medium",
+      "staticReferenceCount": 20,
+      "userFacingImpact": "Data import/seed/migration behavior needs source-specific review before production mutation claims.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "disable surface",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 32,
+      "file": "backend/src/TerraFusion.AI/Agents/DocumentConversion/PiltDocumentConversionAgent.cs",
+      "owningModule": "AI Agent",
+      "runtimeSurface": "AI agent",
+      "signalKinds": ["stub", "placeholder"],
+      "confidence": "high",
+      "staticReferenceCount": 7,
+      "userFacingImpact": "Document generation/narrative outputs are not production-complete.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 33,
+      "file": "backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs",
+      "owningModule": "API Security/Auth",
+      "runtimeSurface": "auth/security surface",
+      "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
+      "confidence": "medium",
+      "staticReferenceCount": 8,
+      "userFacingImpact": "Auth integration is provisioned-account-ready but enterprise directory behavior is not production-proven.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 34,
+      "file": "backend/src/TerraFusion.API/Services/ProductionPACSDataEngine.cs",
+      "owningModule": "API Service/ProductionPACSDataEngine",
+      "runtimeSurface": "runtime engine",
+      "signalKinds": ["todo", "stub"],
+      "confidence": "high",
+      "staticReferenceCount": 19,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 36,
+      "file": "backend/src/TerraFusion.AI/Agents/DocumentFormatting/PiltDocumentFormattingAgent.cs",
+      "owningModule": "AI Agent",
+      "runtimeSurface": "AI agent",
+      "signalKinds": ["stub", "placeholder"],
+      "confidence": "high",
+      "staticReferenceCount": 13,
+      "userFacingImpact": "Document generation/narrative outputs are not production-complete.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 39,
+      "file": "backend/src/TerraFusion.API/Services/DataMigrationEngine.cs",
+      "owningModule": "API Service/DataMigrationEngine",
+      "runtimeSurface": "runtime engine",
+      "signalKinds": ["stub", "todo"],
+      "confidence": "high",
+      "staticReferenceCount": 23,
+      "userFacingImpact": "Data import/seed/migration behavior needs source-specific review before production mutation claims.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "disable surface",
+      "priority": "P1",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 40,
+      "file": "backend/src/TerraFusion.Core/Services/IntegrationService.cs",
+      "owningModule": "Core Service/Integration",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 3,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 43,
+      "file": "backend/src/TerraFusion.AI/Services/AdvancedAnalyticsEngine.cs",
+      "owningModule": "AI Service/AdvancedAnalyticsEngine",
+      "runtimeSurface": "runtime engine",
+      "signalKinds": ["stub"],
+      "confidence": "high",
+      "staticReferenceCount": 27,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 46,
+      "file": "backend/src/TerraFusion.API/Models/CanonicalCostMatrixReader.cs",
+      "owningModule": "API Model",
+      "runtimeSurface": "contract/model surface",
+      "signalKinds": ["stub"],
+      "confidence": "medium",
+      "staticReferenceCount": 4,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P3",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 47,
+      "file": "backend/src/TerraFusion.API/Models/Production/ProductionHelperModels.cs",
+      "owningModule": "API Model",
+      "runtimeSurface": "contract/model surface",
+      "signalKinds": ["stub"],
+      "confidence": "medium",
+      "staticReferenceCount": 342,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P3",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    },
+    {
+      "rank": 50,
+      "file": "backend/src/TerraFusion.Core/Services/AnalyticsService.cs",
+      "owningModule": "Core Service/Analytics",
+      "runtimeSurface": "DI service/runtime service",
+      "signalKinds": ["stub", "placeholder"],
+      "confidence": "high",
+      "staticReferenceCount": 16,
+      "userFacingImpact": "Module behavior may be incomplete or misleading if surfaced as production-ready.",
+      "endpointsOrRoutesAffected": [],
+      "blocksJune10Preview": false,
+      "june10PreviewRationale": "Not in the frozen controlled dev39 preview path as currently defined.",
+      "blocksProduction": true,
+      "productionRationale": "Runtime production-risk mock/stub signal requires explicit disposition or remediation.",
+      "fixType": "implement real service",
+      "priority": "P2",
+      "currentDecision": "requires_owner_disposition",
+      "allowedBeforeDisposition": "Do not claim full production capability for this surface."
+    }
+  ],
+  "requiredNextStep": "Owner review of this disposition plan. For each row choose implement, disable, mark dev-only, return honest unavailable, or quarantine. No code fixes were made in this slice.",
+  "packetHash": "bcdc9296304b14f0cf21ec6a7793e794bf6c7a4a5e6c6c68059e935b66b05c35"
+}
