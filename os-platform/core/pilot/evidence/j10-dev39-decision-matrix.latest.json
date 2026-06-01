@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-06-01T12:04:34.338Z",
+  "name": "June 10 dev39 Decision Matrix",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "dev39ScopeExpansion": false,
+  "inputs": {
+    "capabilityAudit": "os-platform/core/pilot/evidence/j10-full-application-capability-audit-lane.latest.json",
+    "endpointMatrix": "os-platform/core/pilot/evidence/j10-backend-endpoint-contract-matrix.latest.json",
+    "syntheticSurfaceAudit": "os-platform/core/pilot/evidence/j10-canonical-mock-stub-audit-refresh.latest.json"
+  },
+  "verdict": {
+    "controlledStatewideRuntimePreview": "READY_FOR_DEMO",
+    "fullApplicationCapability": "NOT_READY",
+    "productionReadiness": "NO_GO",
+    "fullStatewideCertification": "NO_GO"
+  },
+  "decisions": {
+    "controlledStatewideRuntimePreview": "GO",
+    "productionBinding": "BLOCKED",
+    "fullProductionReadiness": "NO_GO",
+    "fullStatewideCertification": "BLOCKED"
+  },
+  "metrics": {
+    "endpointMatrix": {
+      "totalEndpoints": 1281,
+      "live": 248,
+      "protected": 526,
+      "broken": 189,
+      "synthetic": 11,
+      "dead": 47,
+      "unknown": 260
+    },
+    "syntheticSurfaceAudit": {
+      "productionRiskFiles": 396,
+      "endpointAffectingMocks": 11,
+      "wave1DispositionedStillPresentInCanonicalRisk": 35
+    }
+  },
+  "nextPriorityOrder": [
+    "P0 production blockers",
+    "endpoint-affecting synthetic surfaces",
+    "unknown endpoint classification",
+    "Rust integration proof",
+    "Redis and observability production gaps",
+    "CLI/operator tooling consolidation"
+  ],
+  "prohibitedClaims": [
+    "Production ready",
+    "Full application capability ready",
+    "Full statewide certification ready",
+    "Production DB binding approved"
+  ],
+  "packetHash": "05da313c1c9f4c8fa7d0e504dedcba44c2f117f3d3dd09b8b49a2c0a3a32e09f"
+}

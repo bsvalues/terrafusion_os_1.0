@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T11:53:54.233Z",
+  "generatedAt": "2026-06-01T12:00:15.386Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,11 +52,11 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7516,
-    "filesWithSignals": 2109,
+    "totalFilesScanned": 7520,
+    "filesWithSignals": 2111,
     "productionRiskFiles": 396,
-    "demoSafeFiles": 1403,
-    "dormantFiles": 297,
+    "demoSafeFiles": 1404,
+    "dormantFiles": 298,
     "deadFiles": 13,
     "endpointAffectingMocks": 11,
     "wave1ProductionBlockersDispositioned": 39,
@@ -67,22 +67,22 @@
       "test": 739,
       "frontend_runtime": 403,
       "ops": 41,
-      "core_governance": 87,
-      "evidence": 76,
+      "core_governance": 88,
+      "evidence": 77,
       "scripts": 139,
       "tools": 16,
       "registry": 50
     },
     "byClassification": {
       "production_risk": 396,
-      "demo_safe": 1403,
-      "dormant": 297,
+      "demo_safe": 1404,
+      "dormant": 298,
       "dead": 13
     },
     "bySignalKind": {
       "stub": 213,
       "placeholder": 479,
-      "mock": 707,
+      "mock": 709,
       "sample_or_fixture": 427,
       "todo": 73,
       "fallback": 534,
@@ -1687,7 +1687,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 35,
+      "staticReferenceCount": 36,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -13139,6 +13139,15 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
+      "path": "os-platform/core/pilot/evidence/j10-dev39-decision-matrix.latest.json",
+      "bucket": "evidence",
+      "classification": "demo_safe",
+      "signalKinds": ["mock"],
+      "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
       "path": "os-platform/core/pilot/evidence/j10-dev39-gpt-county-fallback-deploy-receipt.latest.json",
       "bucket": "evidence",
       "classification": "demo_safe",
@@ -14188,6 +14197,15 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/june10-dev39-decision-matrix.mjs",
+      "bucket": "core_governance",
+      "classification": "dormant",
+      "signalKinds": ["mock"],
+      "matchCount": 1,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -16516,7 +16534,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1591,
+      "staticReferenceCount": 1593,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20283,9 +20301,9 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 35,
+      "staticReferenceCount": 36,
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "fa74830d7cfa1d98e808f7f0ead110d6e8ba7be60ce17f83bf0df138195f65f5"
+  "packetHash": "59cdb21ae7da626948c1046cde037839353fb40e49fe6ecf24b8834e072dd707"
 }

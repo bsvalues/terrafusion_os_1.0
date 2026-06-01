@@ -1,10 +1,10 @@
 # Canonical Mock/Stub Audit Refresh
 
-- Generated: 2026-06-01T11:53:54.233Z
+- Generated: 2026-06-01T12:00:15.386Z
 - Production touched: false
 - DB mutation: false
 - Feature work: false
-- Packet hash: fa74830d7cfa1d98e808f7f0ead110d6e8ba7be60ce17f83bf0df138195f65f5
+- Packet hash: 59cdb21ae7da626948c1046cde037839353fb40e49fe6ecf24b8834e072dd707
 
 ## Verdict
 
@@ -20,11 +20,11 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 
 | Metric | Count |
 | --- | ---: |
-| Total files scanned | 7516 |
-| Files with mock/stub signals | 2109 |
+| Total files scanned | 7520 |
+| Files with mock/stub signals | 2111 |
 | Production-risk files | 396 |
-| Demo-safe files | 1403 |
-| Dormant files | 297 |
+| Demo-safe files | 1404 |
+| Dormant files | 298 |
 | Dead files | 13 |
 | Endpoint-affecting mocks | 11 |
 | Wave 1 production blockers dispositioned | 39 |
@@ -57,8 +57,8 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 | Classification | Count |
 | --- | ---: |
 | production_risk | 396 |
-| demo_safe | 1403 |
-| dormant | 297 |
+| demo_safe | 1404 |
+| dormant | 298 |
 | dead | 13 |
 
 ## Endpoint-Affecting Mocks
