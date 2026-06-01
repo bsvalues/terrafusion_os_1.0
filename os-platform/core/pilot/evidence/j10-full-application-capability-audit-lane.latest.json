@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T12:01:42.951Z",
+  "generatedAt": "2026-06-01T12:09:00.764Z",
   "name": "Full Application Capability Audit Lane",
   "scope": {
     "target": "full application capability, not frozen demo path only",
@@ -131,7 +131,7 @@
       "label": "Mock / Stub Audit",
       "status": "MOCK",
       "evidence": {
-        "mockStubDemoReferenceCount": 10241
+        "mockStubDemoReferenceCount": 10246
       },
       "requiredNextProof": "Classify every mock/stub/demo/sample/placeholder as production-excluded, test-only, dead, or active blocker."
     }
@@ -144,5 +144,5 @@
     "Run Rust, Redis, Prometheus, and CLI runtime proof lanes separately."
   ],
   "hardStop": "Do not claim full production readiness until every category is PROVEN or explicitly not applicable with evidence.",
-  "packetHash": "d374ee5e9029482b586de98f046097f80bb24bc449175e84c3ee0920acbe540d"
+  "packetHash": "e0d932c0cba8f54e59ef206a1c53886a548be4210e76a98e7b14a4f5b08480e4"
 }

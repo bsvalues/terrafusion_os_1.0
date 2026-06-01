@@ -465,7 +465,7 @@ public class DaisController : ControllerBase
         new("Solar Panel Installation", 175.00m, "flat", null, "Includes structural and electrical review"),
         new("Accessory Dwelling Unit", 450.00m, "base + per sqft", 0.25m, "Subject to ADU ordinance requirements"),
         new("Mechanical Permit", 100.00m, "flat", null, "New installations; replacements at lower rate"),
-        new("Plumbing Permit", 100.00m, "flat", null, "Per fixture rates may apply for large projects"),
+        new("Plumbing Permit", 100.00m, "flat", null, "Per plumbing-unit rates may apply for large projects"),
         new("Electrical Permit", 100.00m, "flat", null, "Service upgrades may require additional fees"),
     ];
   }
@@ -1264,7 +1264,7 @@ public class DaisController : ControllerBase
   /// <summary>
   /// GET api/dais/queue — Workload summary (total parcels, reviewed, remaining, active appraisers).
   /// Used by the Management Dashboard MorningBriefingStrip workload card.
-  /// Returns structured fallback when queue service data is sparse.
+  /// Returns queue service data when the governed queue runtime is available.
   /// </summary>
   [HttpGet("queue")]
   public async Task<IActionResult> GetQueueSummary()
@@ -1298,16 +1298,15 @@ public class DaisController : ControllerBase
         utilizationPct,
       });
     }
-    catch
+    catch (Exception ex)
     {
-      return Ok(new
+      _logger.LogError(ex, "DAIS queue summary requested, but governed queue summary data is unavailable");
+      return StatusCode(StatusCodes.Status503ServiceUnavailable, new
       {
-        source = "fallback",
-        totalParcels = 0,
-        parcelsReviewed = 0,
-        parcelsRemaining = 0,
-        appraisersActive = 0,
-        utilizationPct = (double?)null,
+        success = false,
+        code = "DAIS_QUEUE_SUMMARY_UNAVAILABLE",
+        message = "DAIS queue summary is not available from the governed queue runtime in this environment.",
+        generated = false,
       });
     }
   }
@@ -2014,17 +2013,43 @@ public class DaisController : ControllerBase
       return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
+    if (!Guid.TryParse(request.TaskId, out var taskGuid))
+    {
+      return BadRequest(new
+      {
+        error = "TaskId must be a governed queue item identifier.",
+        code = "DAIS_QUEUE_TASK_ID_INVALID",
+      });
+    }
+
     var escalateTo = request.EscalateTo ?? "supervisor";
 
-    // If taskId is a valid GUID, update the queue item status to "escalated"
-    if (Guid.TryParse(request.TaskId, out var taskGuid))
+    try
     {
-      try
+      await _queueService.UpdateStatusAsync(taskGuid, "escalated", effectiveCountyId);
+    }
+    catch (KeyNotFoundException)
+    {
+      return NotFound(new
       {
-        await _queueService.UpdateStatusAsync(taskGuid, "escalated", effectiveCountyId);
-      }
-      catch (KeyNotFoundException) { /* task not found — return stub result */ }
-      catch (InvalidOperationException) { /* invalid transition — still return success for handler contract */ }
+        success = false,
+        code = "DAIS_QUEUE_TASK_NOT_FOUND",
+        message = "The requested queue task was not found in the governed queue runtime.",
+        taskId = request.TaskId,
+        generated = false,
+      });
+    }
+    catch (InvalidOperationException ex)
+    {
+      _logger.LogWarning(ex, "DAIS queue task {TaskId} could not be escalated because the transition is invalid", request.TaskId);
+      return Conflict(new
+      {
+        success = false,
+        code = "DAIS_QUEUE_TASK_INVALID_TRANSITION",
+        message = "The requested queue task cannot be escalated from its current governed state.",
+        taskId = request.TaskId,
+        generated = false,
+      });
     }
 
     Response.Headers["X-Dais-Source"] = "dais-queue-escalation";

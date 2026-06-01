@@ -1,11 +1,11 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T12:01:25.124Z
+- Generated: 2026-06-01T12:08:16.623Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: 252adad82c969342a29641a323fa72dad6a65799b1bf51cf127eea212a155d11
+- Packet hash: 8e37bf71359bf48a4a07b8f345cd632f39f839166b56342c3d5e4cd02b84f8b7
 
 ## Summary
 
@@ -20,10 +20,10 @@
 
 | Classification | Count |
 | --- | ---: |
-| live | 248 |
-| protected | 526 |
-| broken | 189 |
-| mock | 11 |
+| live | 254 |
+| protected | 527 |
+| broken | 183 |
+| mock | 10 |
 | dead | 47 |
 | not_applicable | 0 |
 | unknown | 260 |
@@ -79,15 +79,15 @@
 - GET /api/codex/reports/monthly: broken (500)
 - GET /api/codex/reports/quarterly: broken (500)
 - GET /api/codex/reports/annual: broken (500)
-- GET /api/cognitive-framework/monitoring/tier-distribution: broken (0)
-- GET /api/cognitive-framework/monitoring/confidence-gates: broken (0)
-- GET /api/cognitive-framework/monitoring/cognitive-load: broken (0)
-- GET /api/cognitive-framework/monitoring/active-executions: broken (0)
-- GET /api/cognitive-framework/monitoring/county-metrics: broken (0)
-- GET /api/cognitive-framework/monitoring/ai-swarm-metrics: broken (0)
 - GET /api/collaboration/users: broken (500)
 - GET /api/collaboration/teams: broken (500)
 - GET /api/collaboration/projects: broken (500)
+- GET /api/collaboration/metrics/teams: broken (500)
+- GET /api/collaboration/metrics/tasks: broken (500)
+- GET /api/compliance/dashboard: broken (500)
+- GET /api/connectors/registry: dead (404)
+- GET /api/connectors: broken (500)
+- GET /api/ai/consciousness: dead (501)
 
 ## Hard Stop
 

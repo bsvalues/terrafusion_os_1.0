@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T12:00:15.386Z",
+  "generatedAt": "2026-06-01T12:08:50.217Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,19 +52,19 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7520,
+    "totalFilesScanned": 7521,
     "filesWithSignals": 2111,
-    "productionRiskFiles": 396,
-    "demoSafeFiles": 1404,
+    "productionRiskFiles": 395,
+    "demoSafeFiles": 1405,
     "dormantFiles": 298,
     "deadFiles": 13,
-    "endpointAffectingMocks": 11,
+    "endpointAffectingMocks": 10,
     "wave1ProductionBlockersDispositioned": 39,
-    "wave1DispositionedStillPresentInCanonicalRisk": 35,
+    "wave1DispositionedStillPresentInCanonicalRisk": 34,
     "byBucket": {
-      "backend_runtime": 402,
+      "backend_runtime": 401,
       "docs": 156,
-      "test": 739,
+      "test": 740,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 88,
@@ -74,8 +74,8 @@
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 396,
-      "demo_safe": 1404,
+      "production_risk": 395,
+      "demo_safe": 1405,
       "dormant": 298,
       "dead": 13
     },
@@ -83,18 +83,18 @@
       "stub": 213,
       "placeholder": 479,
       "mock": 709,
-      "sample_or_fixture": 427,
+      "sample_or_fixture": 426,
       "todo": 73,
       "fallback": 534,
       "fake": 104,
       "hardcoded": 120,
-      "not_implemented": 8
+      "not_implemented": 9
     }
   },
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 396,
+    "canonicalProductionRiskFiles": 395,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -158,14 +158,6 @@
       "route": "/api/costforge-test/sync/source-status",
       "method": "POST",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "DaisController",
-      "action": "EscalateTask",
-      "route": "/api/dais/queue/escalate",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
       "classification": "mock"
     },
     {
@@ -1359,15 +1351,6 @@
       "matchCount": 1,
       "staticReferenceCount": 50,
       "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
-      "path": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["sample_or_fixture", "fallback", "stub"],
-      "matchCount": 4,
-      "staticReferenceCount": 755,
-      "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Controllers/DoctrineDrainController.cs",
@@ -13009,7 +12992,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 13,
+      "matchCount": 12,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -14053,6 +14036,15 @@
       "classification": "demo_safe",
       "signalKinds": ["not_implemented"],
       "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-p0-dais-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["not_implemented", "stub", "fallback"],
+      "matchCount": 3,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -20101,15 +20093,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/DaisController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["sample_or_fixture", "fallback", "stub"],
-      "matchCount": 4,
-      "staticReferenceCount": 755,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -20303,7 +20286,16 @@
       "matchCount": 1,
       "staticReferenceCount": 36,
       "wave1DispositionStatus": "wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.API/Security/Services/DevelopmentLdapService.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
+      "staticReferenceCount": 9,
+      "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "59cdb21ae7da626948c1046cde037839353fb40e49fe6ecf24b8834e072dd707"
+  "packetHash": "f76c9845986e742ff77e498d94fd270bcfa73d59d0fd9b233052fa9bc823ccd4"
 }
