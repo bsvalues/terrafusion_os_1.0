@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T13:30:17.810Z",
+  "generatedAt": "2026-06-01T13:35:45.895Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,19 +52,19 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7525,
+    "totalFilesScanned": 7526,
     "filesWithSignals": 2111,
-    "productionRiskFiles": 392,
-    "demoSafeFiles": 1408,
+    "productionRiskFiles": 391,
+    "demoSafeFiles": 1409,
     "dormantFiles": 298,
     "deadFiles": 13,
-    "endpointAffectingMocks": 6,
+    "endpointAffectingMocks": 4,
     "wave1ProductionBlockersDispositioned": 39,
     "wave1DispositionedStillPresentInCanonicalRisk": 31,
     "byBucket": {
-      "backend_runtime": 398,
+      "backend_runtime": 397,
       "docs": 156,
-      "test": 743,
+      "test": 744,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 88,
@@ -74,27 +74,27 @@
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 392,
-      "demo_safe": 1408,
+      "production_risk": 391,
+      "demo_safe": 1409,
       "dormant": 298,
       "dead": 13
     },
     "bySignalKind": {
-      "stub": 211,
+      "stub": 210,
       "placeholder": 479,
-      "mock": 709,
+      "mock": 708,
       "sample_or_fixture": 424,
       "todo": 72,
       "fallback": 532,
       "fake": 104,
       "hardcoded": 119,
-      "not_implemented": 11
+      "not_implemented": 12
     }
   },
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 392,
+    "canonicalProductionRiskFiles": 391,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -126,22 +126,6 @@
       "route": "/api/aisuperiority/demo/{demoId}/stop",
       "method": "POST",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/AISuperiorityController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "CostForgeTestController",
-      "action": "ScaleAIAgents",
-      "route": "/api/costforge-test/agents/scale",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "CostForgeTestController",
-      "action": "SyncWithHarrisPACS",
-      "route": "/api/costforge-test/sync/source-status",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
       "classification": "mock"
     },
     {
@@ -1288,15 +1272,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["mock", "stub"],
-      "matchCount": 7,
-      "staticReferenceCount": 107,
-      "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/CountyRowsController.cs",
       "bucket": "backend_runtime",
       "classification": "demo_safe",
@@ -1650,7 +1625,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 20,
-      "staticReferenceCount": 30,
+      "staticReferenceCount": 31,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2559,7 +2534,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1306,
+      "staticReferenceCount": 1305,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -12927,7 +12902,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 8,
+      "matchCount": 6,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -13933,6 +13908,15 @@
       "bucket": "test",
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
+      "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-endpoint-mock-costforge-test-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["not_implemented"],
       "matchCount": 1,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
@@ -16938,7 +16922,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "mock"],
       "matchCount": 2,
-      "staticReferenceCount": 156,
+      "staticReferenceCount": 157,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -17145,7 +17129,7 @@
       "classification": "demo_safe",
       "signalKinds": ["placeholder", "mock", "fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 9350,
+      "staticReferenceCount": 9348,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20031,15 +20015,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["mock", "stub"],
-      "matchCount": 7,
-      "staticReferenceCount": 107,
-      "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/LevyDataManagementController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -20249,9 +20224,18 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 20,
-      "staticReferenceCount": 30,
+      "staticReferenceCount": 31,
+      "wave1DispositionStatus": "wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.API/Seeds/PacsDataSeeder.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["fallback", "stub"],
+      "matchCount": 9,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "e816556fd6dd3b314dc974096ba5e02148b1c247d8ae87c78163536979544abb"
+  "packetHash": "028e6db6b9eec3218c0835aab29eae13c42ceb36c13512da2a28c0845d5ccb01"
 }
