@@ -9,6 +9,7 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TerraFusion.AI.Services;
 using TerraFusion.Core.Entities;
 using WorkflowExecution = TerraFusion.Core.Entities.WorkflowExecution;
@@ -20,6 +21,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class QuantumAnalyticsController : ControllerBase
 {
     private readonly IQuantumAnalyticsService _quantumAnalyticsService;
