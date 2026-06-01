@@ -1530,7 +1530,7 @@ builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>(
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
 builder.Services.AddScoped<TerraFusion.API.Controllers.IMassAppraisalService,
-    TerraFusion.API.Controllers.MassAppraisalServiceStub>();
+    TerraFusion.API.Controllers.UnavailableMassAppraisalService>();
 builder.Services.AddScoped<ISalesAiDiagnosticService, SalesAiDiagnosticService>();
 // Dev stub: returns empty until a real CAMA service is registered
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();

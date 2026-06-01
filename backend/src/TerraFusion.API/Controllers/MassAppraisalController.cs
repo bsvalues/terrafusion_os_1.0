@@ -382,46 +382,21 @@ namespace TerraFusion.API.Controllers
   }
 
   /// <summary>
-  /// Dev stub for IMassAppraisalService.
-  /// Returns empty collections until a real CAMA service is wired to the DI container.
-  /// Read endpoints return safe defaults; mutation endpoints throw (they are protected by [Authorize]).
+  /// Explicit unavailable implementation for mass appraisal operations.
+  /// Keeps the API host wired without inventing appraisal models or ratio-study results.
   /// </summary>
-  internal sealed class MassAppraisalServiceStub : IMassAppraisalService
+  internal sealed class UnavailableMassAppraisalService : IMassAppraisalService
   {
     public Task<IEnumerable<AppraisalModelSummary>> ListModelsAsync() =>
-        Task.FromResult<IEnumerable<AppraisalModelSummary>>(new[]
-        {
-            new AppraisalModelSummary
-            {
-                ModelId = "DEV-2026",
-                Name = "Dev Stub — Cost Approach",
-                ApproachType = "Cost",
-                PropertyClass = "Residential",
-                LastCalibrated = DateTime.UtcNow.AddDays(-7),
-                LastCOD = 8.2m,
-                Status = "Active",
-            },
-        });
+        Task.FromResult(Enumerable.Empty<AppraisalModelSummary>());
 
     public Task<RatioStudyResult?> GetRatioStudyAsync(string modelId) =>
-        Task.FromResult<RatioStudyResult?>(new RatioStudyResult
-        {
-            ModelId = modelId,
-            SampleSize = 120,
-            MedianRatio = 0.98m,
-            MeanRatio = 0.97m,
-            WeightedMeanRatio = 0.975m,
-            COD = 8.2m,
-            COV = 9.1m,
-            PRD = 1.01m,
-            PRB = 0.01m,
-            AsOfDate = DateTime.UtcNow,
-        });
+        Task.FromResult<RatioStudyResult?>(null);
 
     public Task<MassAppraisalRunResult> RunModelAsync(MassAppraisalRunRequest request) =>
-        throw new NotSupportedException("CAMA model execution is not available in stub mode.");
+        throw new NotSupportedException("Mass appraisal model execution is not available from a governed service.");
 
     public Task<ModelCalibrationResult> CalibrateModelAsync(ModelCalibrationRequest request) =>
-        throw new NotSupportedException("Model calibration is not available in stub mode.");
+        throw new NotSupportedException("Mass appraisal model calibration is not available from a governed service.");
   }
 }

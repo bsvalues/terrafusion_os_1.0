@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T13:23:33.443Z",
+  "generatedAt": "2026-06-01T13:30:17.810Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,19 +52,19 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7524,
+    "totalFilesScanned": 7525,
     "filesWithSignals": 2111,
-    "productionRiskFiles": 393,
-    "demoSafeFiles": 1407,
+    "productionRiskFiles": 392,
+    "demoSafeFiles": 1408,
     "dormantFiles": 298,
     "deadFiles": 13,
-    "endpointAffectingMocks": 7,
+    "endpointAffectingMocks": 6,
     "wave1ProductionBlockersDispositioned": 39,
-    "wave1DispositionedStillPresentInCanonicalRisk": 32,
+    "wave1DispositionedStillPresentInCanonicalRisk": 31,
     "byBucket": {
-      "backend_runtime": 399,
+      "backend_runtime": 398,
       "docs": 156,
-      "test": 742,
+      "test": 743,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 88,
@@ -74,8 +74,8 @@
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 393,
-      "demo_safe": 1407,
+      "production_risk": 392,
+      "demo_safe": 1408,
       "dormant": 298,
       "dead": 13
     },
@@ -94,7 +94,7 @@
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 393,
+    "canonicalProductionRiskFiles": 392,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -142,14 +142,6 @@
       "route": "/api/costforge-test/sync/source-status",
       "method": "POST",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/CostForgeTestController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "MassAppraisalController",
-      "action": "DiscoverSegments",
-      "route": "/api/massappraisal/segments/{modelId}",
-      "method": "GET",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
       "classification": "mock"
     },
     {
@@ -680,7 +672,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 128,
+      "staticReferenceCount": 127,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -950,7 +942,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 76,
+      "staticReferenceCount": 74,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1404,15 +1396,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["stub"],
-      "matchCount": 4,
-      "staticReferenceCount": 212,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/OpenWorkQueueController.cs",
       "bucket": "backend_runtime",
       "classification": "demo_safe",
@@ -1595,7 +1578,7 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 246,
+      "staticReferenceCount": 247,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2054,7 +2037,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 3,
-      "staticReferenceCount": 245,
+      "staticReferenceCount": 246,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3814,7 +3797,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 247,
+      "staticReferenceCount": 248,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -12774,7 +12757,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 9,
-      "staticReferenceCount": 5592,
+      "staticReferenceCount": 5591,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -12944,7 +12927,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 9,
+      "matchCount": 8,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -13950,6 +13933,15 @@
       "bucket": "test",
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
+      "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-endpoint-mock-massappraisal-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["stub"],
       "matchCount": 1,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
@@ -19855,7 +19847,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 76,
+      "staticReferenceCount": 74,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20084,15 +20076,6 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
-      "path": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["stub"],
-      "matchCount": 4,
-      "staticReferenceCount": 212,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
       "path": "backend/src/TerraFusion.API/Controllers/PacsOpsController.cs",
       "bucket": "backend_runtime",
       "classification": "production_risk",
@@ -20203,7 +20186,7 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 246,
+      "staticReferenceCount": 247,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20259,7 +20242,16 @@
       "matchCount": 1,
       "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.API/Seeds/PacsCanonicalizer.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["stub"],
+      "matchCount": 20,
+      "staticReferenceCount": 30,
+      "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "701de84be0dba4231066203d1999329ff2cb2e005c2607b259776b2131966c72"
+  "packetHash": "e816556fd6dd3b314dc974096ba5e02148b1c247d8ae87c78163536979544abb"
 }
