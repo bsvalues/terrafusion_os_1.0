@@ -8,7 +8,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+[Authorize]
 public class CalibrationMemoController : ControllerBase
 {
     private readonly ICalibrationMemoService _memoService;
