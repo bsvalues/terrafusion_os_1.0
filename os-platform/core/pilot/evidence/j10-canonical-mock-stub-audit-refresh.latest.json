@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T14:50:04.626Z",
+  "generatedAt": "2026-06-01T14:55:12.183Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,7 +52,7 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7540,
+    "totalFilesScanned": 7541,
     "filesWithSignals": 2111,
     "productionRiskFiles": 391,
     "demoSafeFiles": 1409,
@@ -1433,7 +1433,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 581,
+      "staticReferenceCount": 583,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20068,7 +20068,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 581,
+      "staticReferenceCount": 583,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20204,5 +20204,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "f31c3cb9b0292718e67cde0bd0ff45700dc04e44021ca5007de2f4b20d589cb0"
+  "packetHash": "ca7fa107a06bd6cdba4af56d608b91eecf0b42ee3580875bed038515e7c791f5"
 }
