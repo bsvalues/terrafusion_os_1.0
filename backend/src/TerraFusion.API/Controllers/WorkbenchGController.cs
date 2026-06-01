@@ -81,6 +81,7 @@ public sealed class WorkbenchGController : ControllerBase
     /// <c>GET /api/sync/workbench/g/commits/{commitId}</c>
     /// </summary>
     [HttpGet("commits/{commitId:guid}")]
+    [Authorize]
     public async Task<IActionResult> GetCommit(
         [FromRoute] Guid commitId,
         CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TerraFusion.API.Contracts.Trace;
 using TerraFusion.API.Services.Telemetry;
 
@@ -6,6 +7,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/trace")]
+[Authorize]
 public sealed class TraceController : ControllerBase
 {
     private readonly ITraceIngestionService _ingestion;

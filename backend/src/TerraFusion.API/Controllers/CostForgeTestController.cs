@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 #if DEBUG
 namespace TerraFusion.API.Controllers;
@@ -9,6 +10,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/costforge-test")]
+[Authorize]
 public class CostForgeTestController : ControllerBase
 {
     private readonly ILogger<CostForgeTestController> _logger;

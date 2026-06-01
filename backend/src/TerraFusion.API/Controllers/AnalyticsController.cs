@@ -17,7 +17,7 @@ namespace TerraFusion.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    [AllowAnonymous]
+    [Authorize]
     public class AnalyticsController : ControllerBase
     {
         private readonly IAnalyticsOrchestrator _analyticsOrchestrator;

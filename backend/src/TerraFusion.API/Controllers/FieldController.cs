@@ -19,7 +19,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/field")]
-[AllowAnonymous]
+[Authorize]
 public class FieldController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;

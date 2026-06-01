@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
@@ -26,6 +27,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/reports")]
+[Authorize]
 public class TerraForgeReportsController : ControllerBase
 {
     private readonly ILogger<TerraForgeReportsController> _logger;

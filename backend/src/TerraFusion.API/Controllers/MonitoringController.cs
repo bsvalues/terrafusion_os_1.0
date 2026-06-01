@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
@@ -11,6 +12,7 @@ namespace TerraFusion.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class MonitoringController : ControllerBase
 {
     private readonly ITelemetryService _telemetryService;

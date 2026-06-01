@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace TerraFusion.API.Controllers;
@@ -10,6 +11,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/levy/glossary")]
+[Authorize]
 public class GlossaryController : ControllerBase
 {
     private readonly ILogger<GlossaryController> _logger;

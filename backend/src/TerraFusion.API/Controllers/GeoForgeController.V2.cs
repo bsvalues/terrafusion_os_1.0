@@ -8,6 +8,7 @@
 // untouched so the existing map keeps working during rollout.
 
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -546,6 +547,7 @@ public partial class GeoForgeController
     //  returns before/after stats. Does NOT write anything to the database.
     // ──────────────────────────────────────────────────────────────────────
     [HttpPost("v2/mass-adjust/simulate")]
+    [Authorize]
     public async Task<IActionResult> SimulateMassAdjustment(
         [FromBody] MassAdjustSimulateRequest req,
         CancellationToken ct = default)

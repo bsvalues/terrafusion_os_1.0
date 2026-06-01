@@ -19,7 +19,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/levy/public")]
-[AllowAnonymous]
+[Authorize]
 public class PublicLevyPortalController : ControllerBase
 {
     private readonly ILogger<PublicLevyPortalController> _logger;

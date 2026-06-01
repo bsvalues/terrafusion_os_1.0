@@ -154,7 +154,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("revoke")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequest request)
     {
         try

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 
@@ -6,6 +7,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RealDataController : ControllerBase
 {
     private readonly IRealDatabaseService _realDatabaseService;

@@ -220,7 +220,7 @@ public class PacsOpsController : ControllerBase
     /// Returns core property data + ownership from the contract views.
     /// </summary>
     [HttpGet("property/{geoId}")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> GetProperty(string geoId, CancellationToken cancellationToken)
     {
         // Fail-fast: don't wait >2s for SQL Server in dev/SQLite environments

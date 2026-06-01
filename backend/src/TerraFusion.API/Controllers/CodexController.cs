@@ -2,6 +2,7 @@
 // Elite Systems Architecture by MIT PhD Agent
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace TerraFusion.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CodexController : ControllerBase
     {
         private readonly ICodexService _codexService;

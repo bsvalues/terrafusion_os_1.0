@@ -232,7 +232,6 @@ public class PropertiesController : ControllerBase
     /// Reports parcel activity availability.
     /// </summary>
     [HttpGet("parcel/{parcelNumber}/activity")]
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public IActionResult GetParcelActivity(string parcelNumber)
     {

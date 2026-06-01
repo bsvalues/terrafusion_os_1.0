@@ -160,7 +160,7 @@ public sealed class PilotController : ControllerBase
 
     /// <summary>Returns service-unavailable when pilot invoke is hit without runtime.</summary>
     [HttpPost("invoke")]
-    [AllowAnonymous]
+    [Authorize]
     public IActionResult InvokeTool([FromBody] object? body = null)
     {
         _logger.LogDebug("Pilot invoke unavailable response hit");
@@ -211,7 +211,7 @@ public sealed class PilotController : ControllerBase
 
     /// <summary>Returns service-unavailable for validation when pilot runtime is unavailable.</summary>
     [HttpPost("validate")]
-    [AllowAnonymous]
+    [Authorize]
     public IActionResult ValidateTool([FromBody] object? body = null)
     {
         return StatusCode(StatusCodes.Status503ServiceUnavailable, new

@@ -33,7 +33,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/sync/workbench/h")]
-[AllowAnonymous]
+[Authorize]
 public sealed class WorkbenchHController : ControllerBase
 {
     private const string ZipMediaType = "application/zip";
