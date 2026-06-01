@@ -1,7 +1,7 @@
 # June 10 dev39 Decision Matrix
 
-- Generated: 2026-06-01T13:41:52.598Z
-- Packet hash: 65b0515c92cb8b4797d4d25b1366d44b38072eed27ecffcc87829f76adad6a70
+- Generated: 2026-06-01T13:47:24.541Z
+- Packet hash: b93dd431ea445fdb8aedebadf96a86c96cd65d9b9fb4c9d9f13fb11c6ccee2a8
 - Production touched: false
 - Database mutation: false
 - dev39 scope expansion: false
@@ -30,11 +30,11 @@
 | --- | ---: |
 | Total | 1281 |
 | Live | 254 |
-| Protected | 533 |
+| Protected | 574 |
 | Broken | 183 |
 | Synthetic | 0 |
 | Dead | 47 |
-| Unknown | 264 |
+| Unknown | 223 |
 
 ## Synthetic Surface Audit
 

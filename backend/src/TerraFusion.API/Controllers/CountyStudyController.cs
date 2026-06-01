@@ -2,7 +2,7 @@
 //
 // CountyStudy REST controller — TerraForge County Studio backend.
 // All 19+ endpoints delegate to ICountyStudyService; no business logic here.
-// Auth is handled at the gateway level; no [Authorize] attribute required.
+// Auth is enforced by the API host and may also be enforced by an upstream gateway.
 //
 // Route: api/county-study  (explicit, avoids token-expansion quirks)
 //
@@ -11,6 +11,7 @@
 //   Exception                 → 500 Internal     { error: "Internal error" }  + Error log
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TerraFusion.Core.DTOs;
@@ -22,6 +23,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/county-study")]
+[Authorize]
 public class CountyStudyController : ControllerBase
 {
     private readonly ICountyStudyService _svc;
