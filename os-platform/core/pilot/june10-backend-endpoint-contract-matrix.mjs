@@ -170,7 +170,7 @@ export function classifyEndpoint(endpoint) {
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
     return "dead";
   }
-  if (/\b(mock|stub|fake|placeholder|sample data|demo)\b/i.test(`${endpoint.route} ${body}`)) {
+  if (/\b(mock|stub|fake|placeholder|sample data|demo data)\b/i.test(`${endpoint.route} ${body}`)) {
     return "mock";
   }
   if (endpoint.authRequirement === "authorized") return "protected";

@@ -84,6 +84,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "mock"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/aisuperiority/demo/{demoId}/dashboard",
+      authRequirement: "authorized",
+      body: "return StatusCode(503, new { error = \"Governed benchmark evidence is unavailable\" });"
+    }),
+    "protected"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {

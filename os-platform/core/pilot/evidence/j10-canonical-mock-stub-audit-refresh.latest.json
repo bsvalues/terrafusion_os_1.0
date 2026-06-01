@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T13:35:45.895Z",
+  "generatedAt": "2026-06-01T13:41:44.809Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -58,7 +58,7 @@
     "demoSafeFiles": 1409,
     "dormantFiles": 298,
     "deadFiles": 13,
-    "endpointAffectingMocks": 4,
+    "endpointAffectingMocks": 0,
     "wave1ProductionBlockersDispositioned": 39,
     "wave1DispositionedStillPresentInCanonicalRisk": 31,
     "byBucket": {
@@ -103,40 +103,7 @@
     "fullApplicationCapability": "not_ready",
     "reason": "The canonical denominator is now stable for this worktree. Wave 1 production blockers are disposition-linked, but production/full capability remain blocked by unresolved production-risk mock/stub files and endpoint-affecting mocks."
   },
-  "endpointMockSignals": [
-    {
-      "controller": "AISuperiorityController",
-      "action": "LaunchSupremacyDemonstration",
-      "route": "/api/aisuperiority/launch",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/AISuperiorityController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "AISuperiorityController",
-      "action": "GetDemoDashboard",
-      "route": "/api/aisuperiority/demo/{demoId}/dashboard",
-      "method": "GET",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/AISuperiorityController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "AISuperiorityController",
-      "action": "StopDemonstration",
-      "route": "/api/aisuperiority/demo/{demoId}/stop",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/AISuperiorityController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "PlaygroundController",
-      "action": "StartScenario",
-      "route": "/api/playground/start",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/PlaygroundController.cs",
-      "classification": "mock"
-    }
-  ],
+  "endpointMockSignals": [],
   "wave1DispositionedBlockers": [
     {
       "file": "backend/src/TerraFusion.Core/Services/ComplianceAutomationService.cs",
@@ -1634,7 +1601,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 9,
-      "staticReferenceCount": 22,
+      "staticReferenceCount": 23,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -12902,7 +12869,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 6,
+      "matchCount": 2,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -16922,7 +16889,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "mock"],
       "matchCount": 2,
-      "staticReferenceCount": 157,
+      "staticReferenceCount": 149,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20233,9 +20200,9 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 9,
-      "staticReferenceCount": 22,
+      "staticReferenceCount": 23,
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "028e6db6b9eec3218c0835aab29eae13c42ceb36c13512da2a28c0845d5ccb01"
+  "packetHash": "fde76cc7db5e9274268bcfa38b1f36409176bd00fdc0f4268987e101f11c6ac5"
 }
