@@ -1,11 +1,11 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-05-31T19:15:59.545Z
+- Generated: 2026-06-01T04:59:39.774Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: 50d1f43f607a55926af37ce50d498167bb41425b61093382bd5dfe48c329608f
+- Packet hash: 1e4672e82656e86300b69b13b4e01001acb09e7788314bdc83f91085d7e72286
 
 ## Summary
 
@@ -20,13 +20,13 @@
 
 | Classification | Count |
 | --- | ---: |
-| live | 238 |
-| protected | 563 |
-| broken | 166 |
-| mock | 16 |
-| dead | 41 |
+| live | 254 |
+| protected | 525 |
+| broken | 183 |
+| mock | 14 |
+| dead | 47 |
 | not_applicable | 0 |
-| unknown | 257 |
+| unknown | 258 |
 
 ## Method Counts
 
@@ -42,6 +42,7 @@
 - GET /api/adjustment/sets: broken (500)
 - GET /api/adjustment/runs: broken (500)
 - GET /api/adjustment/recommend: broken (400)
+- GET /api/aiassistant/health: broken (500)
 - GET /api/aimodels/status: dead (404)
 - GET /api/aimodels/sentiment-trends: dead (404)
 - GET /api/aiorchestration/health: broken (500)
@@ -50,6 +51,9 @@
 - GET /api/aisuperiority/performance/comparison: broken (500)
 - GET /api/aisuperiority/scenarios: broken (500)
 - GET /api/aisuperiority/battalions: broken (500)
+- GET /api/aiswarm/status: dead (501)
+- GET /api/aiswarm/performance: dead (501)
+- GET /api/aiswarm/workflows: dead (501)
 - GET /api/atlas/gis/geocode: broken (500)
 - GET /api/atlas/gis/spatial-query: broken (500)
 - GET /api/levy/v1/banked-capacity: broken (400)
@@ -60,34 +64,30 @@
 - GET /api/debug/canonical-counts: dead (404)
 - GET /api/debug/sync-pop-2/pacs-table-columns: dead (404)
 - GET /api/debug/pacs-counts: dead (404)
+- GET /api/codex/collaboration/health: broken (500)
+- GET /api/codex/notifications/history: dead (501)
 - GET /api/codex/performance/system-wide: broken (500)
 - GET /api/codex/performance/foundation: broken (500)
 - GET /api/codex/performance/amplification: broken (500)
 - GET /api/codex/performance/ultimate-power: broken (500)
 - GET /api/codex/performance/alerts: broken (500)
+- GET /api/codex/performance/metrics: broken (500)
+- GET /api/codex/performance/cache/statistics: broken (500)
+- GET /api/codex/performance/health: broken (500)
+- GET /api/codex/reports/daily: broken (500)
+- GET /api/codex/reports/weekly: broken (500)
+- GET /api/codex/reports/monthly: broken (500)
+- GET /api/codex/reports/quarterly: broken (500)
+- GET /api/codex/reports/annual: broken (500)
 - GET /api/collaboration/users: broken (500)
 - GET /api/collaboration/teams: broken (500)
 - GET /api/collaboration/projects: broken (500)
 - GET /api/collaboration/metrics/teams: broken (500)
 - GET /api/collaboration/metrics/tasks: broken (500)
+- GET /api/compliance/dashboard: broken (500)
+- GET /api/connectors/registry: dead (404)
+- GET /api/connectors: broken (500)
 - GET /api/ai/consciousness: dead (501)
-- GET /api/ai/consciousness/enhanced: dead (501)
-- GET /api/ai/consciousness/system-status: dead (501)
-- GET /api/ai/consciousness/status: dead (501)
-- GET /api/costforge/traces: broken (400)
-- GET /api/costforge-test/status: dead (404)
-- GET /api/costforge-test/metrics: dead (404)
-- GET /api/costforge-test/agents/status: dead (404)
-- GET /api/county-study/studies: broken (400)
-- GET /api/dataimport/api/files: dead (404)
-- GET /api/dataimport/api/import-history: dead (404)
-- GET /api/dataquality/report: broken (500)
-- GET /api/dataquality/issues: broken (500)
-- GET /api/sync/doctrine/policy/ratio: broken (500)
-- GET /api/sync/doctrine/policy/ratio/evaluate: broken (400)
-- GET /api/sync/doctrine/policy/universe: broken (500)
-- GET /api/sync/doctrine/policy/universe/classify: broken (400)
-- GET /api/sync/doctrine/policy/universe/attribute-dictionary: broken (500)
 
 ## Hard Stop
 

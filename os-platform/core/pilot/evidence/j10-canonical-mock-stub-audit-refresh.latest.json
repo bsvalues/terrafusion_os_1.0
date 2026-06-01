@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T04:49:44.383Z",
+  "generatedAt": "2026-06-01T05:00:10.302Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,49 +52,49 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7510,
-    "filesWithSignals": 2107,
-    "productionRiskFiles": 372,
-    "demoSafeFiles": 1397,
-    "dormantFiles": 325,
+    "totalFilesScanned": 7513,
+    "filesWithSignals": 2109,
+    "productionRiskFiles": 399,
+    "demoSafeFiles": 1400,
+    "dormantFiles": 297,
     "deadFiles": 13,
-    "endpointAffectingMocks": 16,
+    "endpointAffectingMocks": 14,
     "wave1ProductionBlockersDispositioned": 39,
-    "wave1DispositionedStillPresentInCanonicalRisk": 39,
+    "wave1DispositionedStillPresentInCanonicalRisk": 38,
     "byBucket": {
-      "backend_runtime": 406,
-      "docs": 155,
-      "test": 735,
+      "backend_runtime": 405,
+      "docs": 156,
+      "test": 736,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 87,
-      "evidence": 75,
+      "evidence": 76,
       "scripts": 139,
       "tools": 16,
       "registry": 50
     },
     "byClassification": {
-      "production_risk": 372,
-      "demo_safe": 1397,
-      "dormant": 325,
+      "production_risk": 399,
+      "demo_safe": 1400,
+      "dormant": 297,
       "dead": 13
     },
     "bySignalKind": {
-      "stub": 213,
-      "placeholder": 478,
-      "mock": 704,
+      "stub": 215,
+      "placeholder": 480,
+      "mock": 706,
       "sample_or_fixture": 428,
-      "todo": 71,
-      "fallback": 536,
-      "fake": 102,
-      "hardcoded": 119,
+      "todo": 73,
+      "fallback": 537,
+      "fake": 104,
+      "hardcoded": 120,
       "not_implemented": 6
     }
   },
   "denominatorReconciliation": {
     "previousBroadAuditProductionRiskFiles": 724,
     "previousWave1InlineProductionRiskFiles": 618,
-    "canonicalProductionRiskFiles": 372,
+    "canonicalProductionRiskFiles": 399,
     "decision": "Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules."
   },
   "verdict": {
@@ -198,22 +198,6 @@
       "route": "/api/massappraisal/segments/{modelId}",
       "method": "GET",
       "sourceFile": "backend/src/TerraFusion.API/Controllers/MassAppraisalController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "PilotController",
-      "action": "RejectDraft",
-      "route": "/api/pilot/drafts/{id:guid}/reject",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
-      "classification": "mock"
-    },
-    {
-      "controller": "PilotController",
-      "action": "InvokeTool",
-      "route": "/api/pilot/invoke",
-      "method": "POST",
-      "sourceFile": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
       "classification": "mock"
     },
     {
@@ -554,7 +538,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 8,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -563,7 +547,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 5,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 17,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -572,7 +556,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -590,7 +574,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -599,7 +583,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -608,7 +592,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -617,7 +601,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 255,
+      "staticReferenceCount": 258,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -635,7 +619,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 55,
+      "staticReferenceCount": 59,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -644,7 +628,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -653,7 +637,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 85,
+      "staticReferenceCount": 91,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -662,7 +646,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 22,
+      "staticReferenceCount": 23,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -734,7 +718,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 16,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -743,7 +727,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -752,7 +736,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 127,
+      "staticReferenceCount": 128,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -761,7 +745,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 6,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -770,16 +754,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.AI/Services/AIAnalyticsService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -788,7 +772,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -797,7 +781,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -806,16 +790,16 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.AI/Services/AdvancedAIOrchestrator.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 7,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -824,7 +808,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 32,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -833,7 +817,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1290,
+      "staticReferenceCount": 1292,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -842,7 +826,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -851,7 +835,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 218,
+      "staticReferenceCount": 222,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -869,7 +853,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "hardcoded"],
       "matchCount": 6,
-      "staticReferenceCount": 33,
+      "staticReferenceCount": 36,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -878,7 +862,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -887,7 +871,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -896,7 +880,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -905,7 +889,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -914,7 +898,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -932,7 +916,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -941,7 +925,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -950,7 +934,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 34,
+      "staticReferenceCount": 37,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -959,7 +943,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -968,7 +952,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "todo"],
       "matchCount": 2,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -977,7 +961,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "todo"],
       "matchCount": 6,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -986,7 +970,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 88,
+      "staticReferenceCount": 92,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -995,7 +979,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1004,7 +988,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 15,
+      "staticReferenceCount": 16,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1013,7 +997,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1022,7 +1006,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 73,
+      "staticReferenceCount": 76,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1031,7 +1015,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1040,7 +1024,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1049,7 +1033,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1058,7 +1042,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 8,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1067,7 +1051,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1076,7 +1060,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 83,
+      "staticReferenceCount": 85,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1085,7 +1069,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "mock"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1094,7 +1078,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "todo"],
       "matchCount": 3,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1103,7 +1087,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 7,
-      "staticReferenceCount": 98,
+      "staticReferenceCount": 101,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1112,7 +1096,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1121,7 +1105,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 52,
+      "staticReferenceCount": 53,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1130,7 +1114,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 269,
+      "staticReferenceCount": 270,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1139,7 +1123,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1148,7 +1132,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1157,7 +1141,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1166,7 +1150,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1175,7 +1159,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 3,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1184,7 +1168,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1193,7 +1177,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 7,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1202,7 +1186,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1211,7 +1195,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 38,
+      "staticReferenceCount": 39,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1220,7 +1204,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1229,7 +1213,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1247,7 +1231,7 @@
       "classification": "demo_safe",
       "signalKinds": ["mock", "fallback"],
       "matchCount": 17,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1256,7 +1240,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1265,7 +1249,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1274,7 +1258,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1283,7 +1267,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 4,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1292,7 +1276,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 4,
-      "staticReferenceCount": 26,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1310,7 +1294,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 157,
+      "staticReferenceCount": 158,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1319,7 +1303,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 89,
+      "staticReferenceCount": 91,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1328,7 +1312,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub", "sample_or_fixture"],
       "matchCount": 4,
-      "staticReferenceCount": 544,
+      "staticReferenceCount": 550,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1337,7 +1321,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 76,
+      "staticReferenceCount": 78,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1346,7 +1330,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 307,
+      "staticReferenceCount": 309,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1355,7 +1339,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 119,
+      "staticReferenceCount": 121,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1364,7 +1348,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 110,
+      "staticReferenceCount": 112,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1373,7 +1357,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 100,
+      "staticReferenceCount": 102,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1388,7 +1372,7 @@
         "hardcoded"
       ],
       "matchCount": 10,
-      "staticReferenceCount": 2620,
+      "staticReferenceCount": 2626,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1397,7 +1381,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock", "stub"],
       "matchCount": 7,
-      "staticReferenceCount": 99,
+      "staticReferenceCount": 107,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1406,7 +1390,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 49,
+      "staticReferenceCount": 50,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1415,7 +1399,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "fallback", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 749,
+      "staticReferenceCount": 755,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1424,7 +1408,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 95,
+      "staticReferenceCount": 96,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1433,7 +1417,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 509,
+      "staticReferenceCount": 510,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1442,7 +1426,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 57,
+      "staticReferenceCount": 58,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1451,7 +1435,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 153,
+      "staticReferenceCount": 159,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1460,7 +1444,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "fallback", "stub"],
       "matchCount": 10,
-      "staticReferenceCount": 632,
+      "staticReferenceCount": 638,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1469,7 +1453,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 423,
+      "staticReferenceCount": 424,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1478,7 +1462,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 14,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1487,7 +1471,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 14,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1496,7 +1480,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 78,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1505,7 +1489,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 139,
+      "staticReferenceCount": 141,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1514,7 +1498,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 47,
+      "staticReferenceCount": 50,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1523,7 +1507,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 193,
+      "staticReferenceCount": 195,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1532,7 +1516,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 206,
+      "staticReferenceCount": 212,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1541,7 +1525,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 21,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1550,7 +1534,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 80,
+      "staticReferenceCount": 82,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1559,17 +1543,8 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 32,
+      "staticReferenceCount": 33,
       "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
-      "path": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["stub"],
-      "matchCount": 13,
-      "staticReferenceCount": 184,
-      "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Controllers/PiltController.cs",
@@ -1577,7 +1552,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 243,
+      "staticReferenceCount": 245,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1586,7 +1561,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 79,
+      "staticReferenceCount": 83,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1595,7 +1570,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 3,
-      "staticReferenceCount": 130,
+      "staticReferenceCount": 136,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1604,7 +1579,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 78,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1613,7 +1588,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 84,
+      "staticReferenceCount": 85,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1622,7 +1597,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 205,
+      "staticReferenceCount": 206,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1631,7 +1606,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 16,
+      "staticReferenceCount": 18,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1640,7 +1615,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 122,
+      "staticReferenceCount": 125,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1649,7 +1624,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 579,
+      "staticReferenceCount": 581,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1658,7 +1633,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 9,
-      "staticReferenceCount": 88,
+      "staticReferenceCount": 89,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1667,7 +1642,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1676,7 +1651,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1685,7 +1660,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 7,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1694,7 +1669,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1703,7 +1678,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1721,7 +1696,7 @@
       "classification": "dead",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1736,7 +1711,7 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 241,
+      "staticReferenceCount": 246,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1745,7 +1720,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
       "matchCount": 8,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1754,7 +1729,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 21,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1763,7 +1738,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 33,
+      "staticReferenceCount": 35,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1772,7 +1747,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1781,7 +1756,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1790,7 +1765,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1799,7 +1774,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 6,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1808,7 +1783,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 20,
-      "staticReferenceCount": 28,
+      "staticReferenceCount": 30,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1817,7 +1792,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 9,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1826,7 +1801,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1835,7 +1810,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 48,
+      "staticReferenceCount": 49,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1844,7 +1819,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1853,16 +1828,16 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Services/CountyMigrationPathways.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 4,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1871,7 +1846,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "todo"],
       "matchCount": 4,
-      "staticReferenceCount": 23,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1880,7 +1855,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1889,7 +1864,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "todo", "placeholder"],
       "matchCount": 20,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1898,7 +1873,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1907,7 +1882,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 258,
+      "staticReferenceCount": 259,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1916,7 +1891,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1925,7 +1900,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1934,7 +1909,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1943,7 +1918,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1952,7 +1927,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1961,7 +1936,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "mock"],
       "matchCount": 5,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1970,7 +1945,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 3,
-      "staticReferenceCount": 175,
+      "staticReferenceCount": 176,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1979,7 +1954,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1988,7 +1963,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1997,16 +1972,16 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Services/MockAuthValidator.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2015,7 +1990,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 29,
+      "staticReferenceCount": 30,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2024,7 +1999,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 34,
+      "staticReferenceCount": 35,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2033,7 +2008,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2042,7 +2017,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2051,7 +2026,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2060,7 +2035,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo", "stub"],
       "matchCount": 7,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2069,7 +2044,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2078,7 +2053,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 5,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2087,7 +2062,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2096,7 +2071,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2105,7 +2080,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2114,7 +2089,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2123,7 +2098,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2132,7 +2107,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 116,
+      "staticReferenceCount": 117,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2141,7 +2116,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 11,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2177,7 +2152,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "fallback", "todo"],
       "matchCount": 7,
-      "staticReferenceCount": 484,
+      "staticReferenceCount": 485,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2195,7 +2170,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 3,
-      "staticReferenceCount": 240,
+      "staticReferenceCount": 245,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2204,7 +2179,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2213,7 +2188,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2231,7 +2206,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2240,7 +2215,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 582,
+      "staticReferenceCount": 584,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2276,7 +2251,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2294,7 +2269,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2303,7 +2278,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 78,
+      "staticReferenceCount": 79,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2312,7 +2287,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2321,7 +2296,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 89,
+      "staticReferenceCount": 90,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2330,7 +2305,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 124,
+      "staticReferenceCount": 125,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2339,7 +2314,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 4,
-      "staticReferenceCount": 170,
+      "staticReferenceCount": 171,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2348,7 +2323,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 167,
+      "staticReferenceCount": 168,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2357,7 +2332,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 45,
+      "staticReferenceCount": 46,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2366,7 +2341,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 40,
+      "staticReferenceCount": 41,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2375,7 +2350,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 20,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2384,7 +2359,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 303,
+      "staticReferenceCount": 304,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2393,7 +2368,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 45,
+      "staticReferenceCount": 46,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2402,7 +2377,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2411,7 +2386,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2420,7 +2395,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2429,7 +2404,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2438,16 +2413,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 222,
+      "staticReferenceCount": 223,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/PACS/PacsServiceRegistration.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2456,7 +2431,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 277,
+      "staticReferenceCount": 278,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2465,7 +2440,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 5,
-      "staticReferenceCount": 449,
+      "staticReferenceCount": 450,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2474,7 +2449,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 415,
+      "staticReferenceCount": 416,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2483,7 +2458,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "fallback"],
       "matchCount": 10,
-      "staticReferenceCount": 257,
+      "staticReferenceCount": 258,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2492,7 +2467,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 63,
+      "staticReferenceCount": 64,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2501,7 +2476,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 12,
-      "staticReferenceCount": 50,
+      "staticReferenceCount": 51,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2510,7 +2485,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 74,
+      "staticReferenceCount": 75,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2519,7 +2494,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 297,
+      "staticReferenceCount": 301,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2528,7 +2503,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2537,7 +2512,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 282,
+      "staticReferenceCount": 283,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2546,7 +2521,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 14,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2555,7 +2530,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2573,16 +2548,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/CitizenContextService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 9,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2591,7 +2566,7 @@
       "classification": "production_risk",
       "signalKinds": ["not_implemented"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2600,7 +2575,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 20,
-      "staticReferenceCount": 79,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2609,16 +2584,16 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 21,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/ContextEnrichmentService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2627,7 +2602,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2636,7 +2611,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 5,
-      "staticReferenceCount": 85,
+      "staticReferenceCount": 86,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2645,7 +2620,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 6,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2654,7 +2629,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 37,
+      "staticReferenceCount": 38,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2663,7 +2638,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 21,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2672,7 +2647,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 37,
+      "staticReferenceCount": 38,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2681,7 +2656,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2690,7 +2665,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 3,
-      "staticReferenceCount": 863,
+      "staticReferenceCount": 864,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2699,7 +2674,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2708,7 +2683,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2717,7 +2692,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1305,
+      "staticReferenceCount": 1307,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2726,7 +2701,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 15,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2735,7 +2710,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2744,7 +2719,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2753,7 +2728,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 94,
+      "staticReferenceCount": 95,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2762,7 +2737,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2771,7 +2746,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 44,
+      "staticReferenceCount": 45,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2780,7 +2755,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 19,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -2789,7 +2764,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "stub", "fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 600,
+      "staticReferenceCount": 601,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2798,7 +2773,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2807,7 +2782,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2816,7 +2791,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2825,7 +2800,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 20,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2834,7 +2809,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2843,7 +2818,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2852,7 +2827,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2861,7 +2836,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2870,7 +2845,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2879,7 +2854,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "fake"],
       "matchCount": 3,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2888,7 +2863,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2897,7 +2872,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2906,16 +2881,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/PermissionService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 6,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2924,7 +2899,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 5,
-      "staticReferenceCount": 47,
+      "staticReferenceCount": 48,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2933,16 +2908,16 @@
       "classification": "production_risk",
       "signalKinds": ["todo", "placeholder"],
       "matchCount": 9,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/QuantumAIRoutingService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2951,7 +2926,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 55,
+      "staticReferenceCount": 56,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2960,7 +2935,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 23,
+      "staticReferenceCount": 24,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2969,16 +2944,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "hardcoded"],
       "matchCount": 3,
-      "staticReferenceCount": 666,
+      "staticReferenceCount": 668,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/ServiceDiscoveryService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 6,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2987,7 +2962,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2996,16 +2971,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Core/Services/WhiteboardService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 9,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3014,7 +2989,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3023,7 +2998,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3032,7 +3007,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3041,7 +3016,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3050,7 +3025,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 6,
-      "staticReferenceCount": 21,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3059,7 +3034,7 @@
       "classification": "dead",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 15,
+      "staticReferenceCount": 16,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3068,7 +3043,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 16,
+      "staticReferenceCount": 17,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3077,7 +3052,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3086,7 +3061,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3095,7 +3070,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3104,7 +3079,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 31,
+      "staticReferenceCount": 32,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3113,16 +3088,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 20,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.CostForge/Services/AdvancedAgentPerformanceMonitor.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3131,7 +3106,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 5,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3140,16 +3115,16 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 5,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.CostForge/Services/QuantumFactorEnhancementService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3158,7 +3133,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 31,
+      "staticReferenceCount": 32,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3167,7 +3142,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 3,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3176,7 +3151,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3185,7 +3160,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3194,7 +3169,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 281,
+      "staticReferenceCount": 282,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3203,7 +3178,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 10,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3212,7 +3187,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 24,
+      "staticReferenceCount": 25,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3221,7 +3196,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3230,7 +3205,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3239,7 +3214,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3248,7 +3223,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3257,7 +3232,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3266,7 +3241,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3275,7 +3250,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 14,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3365,7 +3340,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3374,7 +3349,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3383,7 +3358,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3392,7 +3367,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3401,7 +3376,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3410,7 +3385,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3419,7 +3394,7 @@
       "classification": "dead",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3428,7 +3403,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3437,7 +3412,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3446,7 +3421,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3455,7 +3430,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 14,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3464,7 +3439,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3473,7 +3448,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3482,7 +3457,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3491,7 +3466,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3500,7 +3475,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3509,7 +3484,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 6,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3518,7 +3493,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3527,7 +3502,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3536,7 +3511,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 2,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3545,7 +3520,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 3,
-      "staticReferenceCount": 32,
+      "staticReferenceCount": 33,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3559,34 +3534,34 @@
         "placeholder"
       ],
       "matchCount": 4,
-      "staticReferenceCount": 582,
+      "staticReferenceCount": 583,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining.Tests/AttomEtlTests.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining.Tests/PacsConnectionTests.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/API/EtlRoutes.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 7,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3595,34 +3570,34 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 5,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/API/ScheduleRoutes.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/Connectors/AttomConnector.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["hardcoded", "stub"],
       "matchCount": 5,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/Connectors/HudConnector.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["hardcoded", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3631,7 +3606,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3640,7 +3615,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3649,7 +3624,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3658,7 +3633,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "stub"],
       "matchCount": 5,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3667,16 +3642,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/DataQuality/DeduplicationDashboard.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3685,7 +3660,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 20,
+      "staticReferenceCount": 21,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3703,16 +3678,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/ETL/NarrprEtlPlugin.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 5,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3721,16 +3696,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/ETL/ZillowEtlPlugin.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3739,7 +3714,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3748,16 +3723,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 219,
+      "staticReferenceCount": 220,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/PacsApiServer.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 7,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3766,7 +3741,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3775,16 +3750,16 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 8,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.DataMining/Reports/EmailReportUtils.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3793,7 +3768,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3802,7 +3777,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3811,7 +3786,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 5,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3820,7 +3795,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 5,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3829,7 +3804,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 10,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3838,7 +3813,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3847,7 +3822,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 5,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3856,7 +3831,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 38,
+      "staticReferenceCount": 39,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3865,7 +3840,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 24,
+      "staticReferenceCount": 25,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3874,7 +3849,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 16,
+      "staticReferenceCount": 17,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3883,7 +3858,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 6,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3892,7 +3867,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3901,7 +3876,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 79,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3919,7 +3894,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3928,7 +3903,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3937,7 +3912,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3946,7 +3921,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3955,7 +3930,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 242,
+      "staticReferenceCount": 247,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3964,7 +3939,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3973,7 +3948,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3982,7 +3957,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3991,7 +3966,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 5,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4000,25 +3975,25 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 81,
+      "staticReferenceCount": 82,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Security/Services/CommonPasswordService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Security/Services/InMemoryPasswordHistoryRepository.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4027,7 +4002,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4036,16 +4011,16 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 11,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Sync/Services/TerraFusionSyncAdvancedIntegrator.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 13,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4054,7 +4029,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 10,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4063,7 +4038,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 6,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4081,7 +4056,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 20,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4090,7 +4065,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4099,7 +4074,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4108,16 +4083,16 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 2,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.Sync/Workbench/Pacs/DictionaryLoaderService.cs",
       "bucket": "backend_runtime",
-      "classification": "dormant",
+      "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4126,7 +4101,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 30,
+      "staticReferenceCount": 31,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4135,7 +4110,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 15,
+      "staticReferenceCount": 16,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4144,7 +4119,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4153,7 +4128,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4162,7 +4137,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4171,7 +4146,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4180,7 +4155,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4189,7 +4164,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake", "fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4207,7 +4182,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4216,7 +4191,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4225,7 +4200,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 14,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4234,7 +4209,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 18,
+      "staticReferenceCount": 19,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4243,7 +4218,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 3,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4252,7 +4227,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 4,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -4261,7 +4236,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -7321,7 +7296,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 9,
-      "staticReferenceCount": 112,
+      "staticReferenceCount": 115,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -7483,7 +7458,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 112,
+      "staticReferenceCount": 115,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -7672,7 +7647,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 24,
+      "staticReferenceCount": 26,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -8424,7 +8399,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -8433,7 +8408,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 20,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 1,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -10827,7 +10802,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "fake"],
       "matchCount": 2,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -10845,7 +10820,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -11025,7 +11000,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -11214,7 +11189,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 59,
+      "staticReferenceCount": 61,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -11304,7 +11279,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 3,
-      "staticReferenceCount": 59,
+      "staticReferenceCount": 61,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -13085,7 +13060,7 @@
       "bucket": "evidence",
       "classification": "demo_safe",
       "signalKinds": ["mock"],
-      "matchCount": 18,
+      "matchCount": 16,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -13167,6 +13142,32 @@
       "classification": "demo_safe",
       "signalKinds": ["mock", "sample_or_fixture"],
       "matchCount": 2,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/j10-canonical-mock-stub-audit-refresh.latest.json",
+      "bucket": "evidence",
+      "classification": "demo_safe",
+      "signalKinds": [
+        "stub",
+        "placeholder",
+        "mock",
+        "todo",
+        "fallback",
+        "fake",
+        "hardcoded"
+      ],
+      "matchCount": 20,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/evidence/j10-canonical-mock-stub-audit-refresh.latest.md",
+      "bucket": "docs",
+      "classification": "demo_safe",
+      "signalKinds": ["mock", "stub", "placeholder", "todo", "fake"],
+      "matchCount": 20,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -14085,6 +14086,15 @@
       "classification": "demo_safe",
       "signalKinds": ["mock", "stub", "sample_or_fixture", "fallback"],
       "matchCount": 15,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "os-platform/core/pilot/j10-p0-pilot-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["stub"],
+      "matchCount": 1,
       "staticReferenceCount": 0,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
@@ -15327,7 +15337,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 290,
+      "staticReferenceCount": 291,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -15990,7 +16000,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -16899,7 +16909,7 @@
       "classification": "demo_safe",
       "signalKinds": ["placeholder", "fake", "stub"],
       "matchCount": 5,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 30,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -16980,7 +16990,7 @@
       "classification": "demo_safe",
       "signalKinds": ["sample_or_fixture", "mock"],
       "matchCount": 2,
-      "staticReferenceCount": 147,
+      "staticReferenceCount": 156,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -17187,7 +17197,7 @@
       "classification": "demo_safe",
       "signalKinds": ["placeholder", "mock", "fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 9187,
+      "staticReferenceCount": 9381,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -17196,7 +17206,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "mock"],
       "matchCount": 10,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -17205,7 +17215,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 5,
-      "staticReferenceCount": 17,
+      "staticReferenceCount": 18,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19563,7 +19573,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 4,
-      "staticReferenceCount": 14,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     }
   ],
@@ -19574,7 +19584,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 8,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19583,7 +19593,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 5,
-      "staticReferenceCount": 13,
+      "staticReferenceCount": 17,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19592,7 +19602,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 25,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19601,7 +19611,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 0,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19610,7 +19620,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 255,
+      "staticReferenceCount": 258,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19619,7 +19629,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 55,
+      "staticReferenceCount": 59,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19628,7 +19638,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 4,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19637,7 +19647,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 85,
+      "staticReferenceCount": 91,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19691,7 +19701,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 16,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19700,7 +19710,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19709,7 +19719,25 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 6,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 11,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.AI/Services/AIAnalyticsService.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["mock"],
+      "matchCount": 1,
+      "staticReferenceCount": 3,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
+      "path": "backend/src/TerraFusion.AI/Services/AdvancedAIOrchestrator.cs",
+      "bucket": "backend_runtime",
+      "classification": "production_risk",
+      "signalKinds": ["placeholder"],
+      "matchCount": 7,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19718,7 +19746,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 27,
+      "staticReferenceCount": 32,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19727,7 +19755,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 218,
+      "staticReferenceCount": 222,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19736,7 +19764,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "hardcoded"],
       "matchCount": 6,
-      "staticReferenceCount": 33,
+      "staticReferenceCount": 36,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19745,7 +19773,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19754,7 +19782,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture"],
       "matchCount": 1,
-      "staticReferenceCount": 3,
+      "staticReferenceCount": 6,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19763,7 +19791,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19772,7 +19800,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19790,7 +19818,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19799,7 +19827,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19808,7 +19836,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 34,
+      "staticReferenceCount": 37,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19817,7 +19845,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 2,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 11,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19826,7 +19854,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded", "todo"],
       "matchCount": 2,
-      "staticReferenceCount": 19,
+      "staticReferenceCount": 22,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19835,7 +19863,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "todo"],
       "matchCount": 6,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19844,7 +19872,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 88,
+      "staticReferenceCount": 92,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19853,7 +19881,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo", "placeholder"],
       "matchCount": 4,
-      "staticReferenceCount": 12,
+      "staticReferenceCount": 15,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19862,7 +19890,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19871,7 +19899,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 73,
+      "staticReferenceCount": 76,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19880,7 +19908,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 2,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19889,7 +19917,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "mock"],
       "matchCount": 4,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 5,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19898,7 +19926,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "todo"],
       "matchCount": 3,
-      "staticReferenceCount": 9,
+      "staticReferenceCount": 13,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19907,7 +19935,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 7,
-      "staticReferenceCount": 98,
+      "staticReferenceCount": 101,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19916,7 +19944,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 1,
-      "staticReferenceCount": 5,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19925,7 +19953,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback"],
       "matchCount": 4,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19934,7 +19962,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "placeholder"],
       "matchCount": 3,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19943,7 +19971,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 6,
+      "staticReferenceCount": 8,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19952,7 +19980,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19961,7 +19989,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19970,7 +19998,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "sample_or_fixture"],
       "matchCount": 2,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19979,7 +20007,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19988,7 +20016,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 4,
-      "staticReferenceCount": 10,
+      "staticReferenceCount": 12,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19997,7 +20025,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 4,
-      "staticReferenceCount": 26,
+      "staticReferenceCount": 28,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20006,7 +20034,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 89,
+      "staticReferenceCount": 91,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20015,7 +20043,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub", "sample_or_fixture"],
       "matchCount": 4,
-      "staticReferenceCount": 544,
+      "staticReferenceCount": 550,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20024,7 +20052,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 76,
+      "staticReferenceCount": 78,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20033,7 +20061,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 307,
+      "staticReferenceCount": 309,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20042,7 +20070,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 119,
+      "staticReferenceCount": 121,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20051,7 +20079,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 110,
+      "staticReferenceCount": 112,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20060,7 +20088,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 100,
+      "staticReferenceCount": 102,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20075,7 +20103,7 @@
         "hardcoded"
       ],
       "matchCount": 10,
-      "staticReferenceCount": 2620,
+      "staticReferenceCount": 2626,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20084,7 +20112,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock", "stub"],
       "matchCount": 7,
-      "staticReferenceCount": 99,
+      "staticReferenceCount": 107,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20093,7 +20121,7 @@
       "classification": "production_risk",
       "signalKinds": ["sample_or_fixture", "fallback", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 749,
+      "staticReferenceCount": 755,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20102,7 +20130,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "stub"],
       "matchCount": 4,
-      "staticReferenceCount": 153,
+      "staticReferenceCount": 159,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20111,7 +20139,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder", "fallback", "stub"],
       "matchCount": 10,
-      "staticReferenceCount": 632,
+      "staticReferenceCount": 638,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20120,7 +20148,7 @@
       "classification": "production_risk",
       "signalKinds": ["fake"],
       "matchCount": 1,
-      "staticReferenceCount": 78,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20129,7 +20157,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 139,
+      "staticReferenceCount": 141,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20138,7 +20166,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 47,
+      "staticReferenceCount": 50,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20147,7 +20175,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 193,
+      "staticReferenceCount": 195,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20156,7 +20184,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 4,
-      "staticReferenceCount": 206,
+      "staticReferenceCount": 212,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20165,17 +20193,8 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 80,
+      "staticReferenceCount": 82,
       "wave1DispositionStatus": "not_wave1_dispositioned"
-    },
-    {
-      "path": "backend/src/TerraFusion.API/Controllers/PilotController.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["stub"],
-      "matchCount": 13,
-      "staticReferenceCount": 184,
-      "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
       "path": "backend/src/TerraFusion.API/Controllers/PiltController.cs",
@@ -20183,7 +20202,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 243,
+      "staticReferenceCount": 245,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20192,7 +20211,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "stub"],
       "matchCount": 3,
-      "staticReferenceCount": 130,
+      "staticReferenceCount": 136,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20201,7 +20220,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 78,
+      "staticReferenceCount": 80,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20210,7 +20229,7 @@
       "classification": "production_risk",
       "signalKinds": ["hardcoded"],
       "matchCount": 1,
-      "staticReferenceCount": 16,
+      "staticReferenceCount": 18,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20219,7 +20238,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 122,
+      "staticReferenceCount": 125,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20228,7 +20247,7 @@
       "classification": "production_risk",
       "signalKinds": ["fallback", "sample_or_fixture", "hardcoded"],
       "matchCount": 20,
-      "staticReferenceCount": 579,
+      "staticReferenceCount": 581,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20237,7 +20256,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 1,
-      "staticReferenceCount": 1,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20246,7 +20265,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 7,
-      "staticReferenceCount": 7,
+      "staticReferenceCount": 9,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20255,7 +20274,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 10,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20264,7 +20283,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 1,
-      "staticReferenceCount": 4,
+      "staticReferenceCount": 7,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20288,18 +20307,9 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 241,
-      "wave1DispositionStatus": "wave1_dispositioned"
-    },
-    {
-      "path": "backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs",
-      "bucket": "backend_runtime",
-      "classification": "production_risk",
-      "signalKinds": ["fallback", "stub", "hardcoded", "todo"],
-      "matchCount": 8,
-      "staticReferenceCount": 8,
+      "staticReferenceCount": 246,
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "73de3097cd837b8fce5605257af23e09c429399f15a9cf05509233ac8670bcfc"
+  "packetHash": "a618c8c69ea3798503a080e49b95b2846ab905aff8b59c27b621bcc445606d58"
 }

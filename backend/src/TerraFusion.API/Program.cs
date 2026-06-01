@@ -1186,6 +1186,9 @@ builder.Services.AddTerraFusionSecurityServices(builder.Configuration, builder.E
 
 // 🎯 SERVICE REGISTRY & DISCOVERY - No more hardcoded ports!
 builder.Services.AddSingleton<ServiceRegistry>();
+builder.Services.AddScoped<
+    TerraFusion.API.Controllers.IConnectorRegistry,
+    TerraFusion.API.Controllers.EnumerableConnectorRegistry>();
 // ✅ RE-ENABLED: Fixed BackgroundService pattern with proper ExecuteAsync implementation
 builder.Services.AddHostedService<StartupOrchestrationService>();
 

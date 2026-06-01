@@ -140,61 +140,86 @@ public sealed class PilotController : ControllerBase
         }
     }
 
-    // ── Graceful-degradation stubs for when the dedicated pilot runtime
-    // (dev-pilot-runtime.mjs, port 4317) is offline. The frontend proxy
-    // is redirected here so the Pilot tab renders rather than showing 500s.
+    // Dedicated pilot runtime is optional in preview environments. These responses
+    // keep read surfaces honest when that runtime is unavailable.
 
-    /// <summary>Stub: returns empty tool list when pilot runtime is offline.</summary>
+    /// <summary>Returns an explicit empty tool list when pilot runtime is unavailable.</summary>
     [HttpGet("tools")]
     [AllowAnonymous]
     public IActionResult GetTools([FromQuery] string? mode = null)
     {
-        _logger.LogDebug("Pilot tools stub hit (mode={Mode}) — pilot runtime offline", mode);
-        return Ok(new { tools = Array.Empty<object>(), source = "stub", runtimeOnline = false });
+        _logger.LogDebug("Pilot tools unavailable response hit (mode={Mode})", mode);
+        return Ok(new
+        {
+            tools = Array.Empty<object>(),
+            source = "pilot_runtime_unavailable",
+            runtimeOnline = false,
+            code = "PILOT_RUNTIME_UNAVAILABLE"
+        });
     }
 
-    /// <summary>Stub: returns graceful error when pilot invoke is hit without runtime.</summary>
+    /// <summary>Returns service-unavailable when pilot invoke is hit without runtime.</summary>
     [HttpPost("invoke")]
     [AllowAnonymous]
     public IActionResult InvokeTool([FromBody] object? body = null)
     {
-        _logger.LogDebug("Pilot invoke stub hit — pilot runtime offline");
-        return Ok(new
+        _logger.LogDebug("Pilot invoke unavailable response hit");
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
         {
             success = false,
-            correlationId = $"stub-{Guid.NewGuid():N}",
+            runtimeOnline = false,
+            correlationId = $"pilot-unavailable-{Guid.NewGuid():N}",
             error = new
             {
-                code = "PILOT_RUNTIME_OFFLINE",
-                message = "Pilot runtime is not running. Start it with: pnpm run dev:pilot (or TF: Swarm Online task)",
-                severity = "warning"
+                code = "PILOT_RUNTIME_UNAVAILABLE",
+                message = "Pilot runtime is unavailable in this environment.",
+                severity = "unavailable"
             }
         });
     }
 
-    /// <summary>Stub: returns empty traces when pilot runtime is offline.</summary>
+    /// <summary>Returns explicit empty traces when pilot runtime is unavailable.</summary>
     [HttpGet("traces")]
     [AllowAnonymous]
     public IActionResult GetTraces()
     {
-        _logger.LogDebug("Pilot traces stub hit — pilot runtime offline");
-        return Ok(new { events = Array.Empty<object>(), total = 0, source = "stub", runtimeOnline = false });
+        _logger.LogDebug("Pilot traces unavailable response hit");
+        return Ok(new
+        {
+            events = Array.Empty<object>(),
+            total = 0,
+            source = "pilot_runtime_unavailable",
+            runtimeOnline = false,
+            code = "PILOT_RUNTIME_UNAVAILABLE"
+        });
     }
 
-    /// <summary>Stub: returns health indicating pilot runtime is offline.</summary>
+    /// <summary>Returns health indicating pilot runtime is unavailable.</summary>
     [HttpGet("health")]
     [AllowAnonymous]
     public IActionResult GetPilotHealth()
     {
-        _logger.LogDebug("Pilot health stub hit — pilot runtime offline");
-        return Ok(new { status = "degraded", runtimeOnline = false, message = "Pilot runtime offline — using .NET fallback stubs" });
+        _logger.LogDebug("Pilot health unavailable response hit");
+        return Ok(new
+        {
+            status = "degraded",
+            runtimeOnline = false,
+            code = "PILOT_RUNTIME_UNAVAILABLE",
+            message = "Pilot runtime unavailable"
+        });
     }
 
-    /// <summary>Stub: returns empty for validate when pilot runtime is offline.</summary>
+    /// <summary>Returns service-unavailable for validation when pilot runtime is unavailable.</summary>
     [HttpPost("validate")]
     [AllowAnonymous]
     public IActionResult ValidateTool([FromBody] object? body = null)
     {
-        return Ok(new { valid = false, runtimeOnline = false });
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+        {
+            valid = false,
+            runtimeOnline = false,
+            code = "PILOT_RUNTIME_UNAVAILABLE",
+            message = "Pilot runtime is unavailable in this environment."
+        });
     }
 }

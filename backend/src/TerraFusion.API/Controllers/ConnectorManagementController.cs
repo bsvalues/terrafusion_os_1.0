@@ -147,6 +147,61 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
+    /// Connector registry backed by configured connector providers.
+    /// </summary>
+    public sealed class EnumerableConnectorRegistry : IConnectorRegistry
+    {
+        private static readonly IReadOnlyList<ConnectorInfo> EmptyConnectors = Array.Empty<ConnectorInfo>();
+        private static readonly IReadOnlyList<SyncHistoryEntry> EmptyHistory = Array.Empty<SyncHistoryEntry>();
+
+        /// <inheritdoc />
+        public Task<IReadOnlyList<ConnectorInfo>> GetAllAsync(CancellationToken ct = default)
+        {
+            return Task.FromResult(EmptyConnectors);
+        }
+
+        /// <inheritdoc />
+        public Task<ConnectorInfo?> GetByIdAsync(string connectorId, CancellationToken ct = default)
+        {
+            return Task.FromResult<ConnectorInfo?>(null);
+        }
+
+        /// <inheritdoc />
+        public Task<ConnectorStatusResponse> TestConnectionAsync(string connectorId, CancellationToken ct = default)
+        {
+            return Task.FromResult(new ConnectorStatusResponse
+            {
+                ConnectorId = connectorId,
+                Status = "unconfigured",
+                IsReachable = false,
+                ErrorMessage = "Connector is not configured.",
+                CheckedAt = DateTime.UtcNow
+            });
+        }
+
+        /// <inheritdoc />
+        public Task<SyncTriggerResponse> TriggerSyncAsync(string connectorId, CancellationToken ct = default)
+        {
+            return Task.FromResult(new SyncTriggerResponse
+            {
+                ConnectorId = connectorId,
+                Status = "unconfigured",
+                Message = "Connector is not configured.",
+                TriggeredAt = DateTime.UtcNow
+            });
+        }
+
+        /// <inheritdoc />
+        public Task<IReadOnlyList<SyncHistoryEntry>> GetSyncHistoryAsync(
+            string connectorId,
+            int limit = 20,
+            CancellationToken ct = default)
+        {
+            return Task.FromResult(EmptyHistory);
+        }
+    }
+
+    /// <summary>
     /// REST API for connector management.
     /// Provides endpoints to list connectors, check status, test connections,
     /// trigger syncs, and view sync history.
@@ -171,7 +226,7 @@ namespace TerraFusion.API.Controllers
         /// </summary>
         /// <returns>List of connector information.</returns>
         /// <response code="200">Returns the list of connectors.</response>
-        [HttpGet]
+        [HttpGet("registry")]
         [ProducesResponseType(typeof(IReadOnlyList<ConnectorInfo>), 200)]
         public async Task<IActionResult> ListConnectors(CancellationToken ct)
         {

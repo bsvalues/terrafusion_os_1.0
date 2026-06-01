@@ -1,10 +1,10 @@
 # Canonical Mock/Stub Audit Refresh
 
-- Generated: 2026-06-01T04:49:44.383Z
+- Generated: 2026-06-01T05:00:10.302Z
 - Production touched: false
 - DB mutation: false
 - Feature work: false
-- Packet hash: 73de3097cd837b8fce5605257af23e09c429399f15a9cf05509233ac8670bcfc
+- Packet hash: a618c8c69ea3798503a080e49b95b2846ab905aff8b59c27b621bcc445606d58
 
 ## Verdict
 
@@ -20,15 +20,15 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 
 | Metric | Count |
 | --- | ---: |
-| Total files scanned | 7510 |
-| Files with mock/stub signals | 2107 |
-| Production-risk files | 372 |
-| Demo-safe files | 1397 |
-| Dormant files | 325 |
+| Total files scanned | 7513 |
+| Files with mock/stub signals | 2109 |
+| Production-risk files | 399 |
+| Demo-safe files | 1400 |
+| Dormant files | 297 |
 | Dead files | 13 |
-| Endpoint-affecting mocks | 16 |
+| Endpoint-affecting mocks | 14 |
 | Wave 1 production blockers dispositioned | 39 |
-| Wave 1 dispositioned still present in canonical risk | 39 |
+| Wave 1 dispositioned still present in canonical risk | 38 |
 
 ## Count Reconciliation
 
@@ -36,7 +36,7 @@ The canonical denominator is now stable for this worktree. Wave 1 production blo
 | --- | ---: |
 | Previous broad audit production-risk files | 724 |
 | Previous Wave 1 inline production-risk files | 618 |
-| Canonical production-risk files | 372 |
+| Canonical production-risk files | 399 |
 
 Use canonicalProductionRiskFiles from this packet for executive reporting going forward. Older 724 and 618 counts are superseded because they used different worktree state and include/exclude rules.
 
@@ -56,9 +56,9 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 
 | Classification | Count |
 | --- | ---: |
-| production_risk | 372 |
-| demo_safe | 1397 |
-| dormant | 325 |
+| production_risk | 399 |
+| demo_safe | 1400 |
+| dormant | 297 |
 | dead | 13 |
 
 ## Endpoint-Affecting Mocks
@@ -75,8 +75,6 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 - `GET /api/forge/{parcelId}/reconciliation` (ForgeController)
 - `POST /api/gpt/explain` (GPTController)
 - `GET /api/massappraisal/segments/{modelId}` (MassAppraisalController)
-- `POST /api/pilot/drafts/{id:guid}/reject` (PilotController)
-- `POST /api/pilot/invoke` (PilotController)
 - `POST /api/playground/start` (PlaygroundController)
 - `GET /api/properties/parcel/{parcelNumber}/activity` (PropertiesController)
 
@@ -98,6 +96,8 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 - `backend/src/TerraFusion.AI/Narratives/DefenseNarrativeService.cs` (backend_runtime; stub, placeholder; wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Notices/DraftNoticeService.cs` (backend_runtime; stub; wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Regression/MultipleRegressionEngine.cs` (backend_runtime; fake; not_wave1_dispositioned)
+- `backend/src/TerraFusion.AI/Services/AIAnalyticsService.cs` (backend_runtime; mock; not_wave1_dispositioned)
+- `backend/src/TerraFusion.AI/Services/AdvancedAIOrchestrator.cs` (backend_runtime; placeholder; not_wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Services/AdvancedAnalyticsEngine.cs` (backend_runtime; stub; wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Services/AnalyticsReportingService.cs` (backend_runtime; stub; wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Services/CodeAnalyticsService.cs` (backend_runtime; placeholder, hardcoded; not_wave1_dispositioned)
@@ -120,9 +120,7 @@ Use canonicalProductionRiskFiles from this packet for executive reporting going 
 - `backend/src/TerraFusion.AI/Services/PredictiveAnalyticsEngine.cs` (backend_runtime; placeholder, mock; not_wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Services/PropertyValuationService.cs` (backend_runtime; placeholder, todo; not_wave1_dispositioned)
 - `backend/src/TerraFusion.AI/Services/QuantumAIHybridService.cs` (backend_runtime; fallback, placeholder; not_wave1_dispositioned)
-- `backend/src/TerraFusion.AI/Services/QuantumAnalyticsService.cs` (backend_runtime; mock; not_wave1_dispositioned)
-- `backend/src/TerraFusion.AI/Services/SystemGptAtlasService.cs` (backend_runtime; fallback; not_wave1_dispositioned)
 
 ## Conclusion
 
-This packet supersedes the conflicting 724 and 618 mock/stub denominator counts for this branch. The actionable state is now: canonical production-risk count = 372, endpoint-affecting mocks = 16, and Wave 1 blockers disposition-linked = 39.
+This packet supersedes the conflicting 724 and 618 mock/stub denominator counts for this branch. The actionable state is now: canonical production-risk count = 399, endpoint-affecting mocks = 14, and Wave 1 blockers disposition-linked = 39.
