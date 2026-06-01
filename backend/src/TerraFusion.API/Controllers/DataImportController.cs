@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// DataImport Controller — file upload and import history stubs.
-    /// Full PACS sync wiring is Post-R1; these endpoints return empty collections
-    /// so the DataImportPage renders without errors.
+    /// DataImport Controller — reports import storage/runtime availability.
+    /// Import execution is unavailable until a governed import backend is configured.
     /// </summary>
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     [Produces("application/json")]
     public class DataImportController : ControllerBase
     {
@@ -24,42 +23,71 @@ namespace TerraFusion.API.Controllers
         [HttpGet("api/files")]
         public IActionResult GetFiles()
         {
-            return Ok(new { files = Array.Empty<object>(), total = 0 });
+            return Ok(new
+            {
+                files = Array.Empty<object>(),
+                total = 0,
+                configured = false,
+                code = "DATA_IMPORT_STORAGE_UNCONFIGURED",
+                generated = false,
+            });
         }
 
         /// <summary>DELETE /api/files/{fileId} — delete an uploaded file.</summary>
         [HttpDelete("api/files/{fileId}")]
         public IActionResult DeleteFile(string fileId)
         {
-            return Ok(new { deleted = true, fileId });
+            return ImportUnavailable("delete-file", fileId);
         }
 
         /// <summary>GET /api/import-history — list completed imports.</summary>
         [HttpGet("api/import-history")]
         public IActionResult GetImportHistory()
         {
-            return Ok(new { history = Array.Empty<object>(), total = 0 });
+            return Ok(new
+            {
+                history = Array.Empty<object>(),
+                total = 0,
+                configured = false,
+                code = "DATA_IMPORT_STORAGE_UNCONFIGURED",
+                generated = false,
+            });
         }
 
-        /// <summary>POST /api/upload — accept a file upload (stubbed).</summary>
+        /// <summary>POST /api/upload — reports import upload availability.</summary>
         [HttpPost("api/upload")]
         public IActionResult UploadFile()
         {
-            return Ok(new { fileId = Guid.NewGuid(), status = "pending", message = "PACS sync wiring is Post-R1; file queued for future processing." });
+            return ImportUnavailable("upload");
         }
 
         /// <summary>GET /api/preview-import/{fileId} — preview import rows.</summary>
         [HttpGet("api/preview-import/{fileId}")]
         public IActionResult PreviewImport(string fileId)
         {
-            return Ok(new { fileId, rows = Array.Empty<object>(), count = 0 });
+            return ImportUnavailable("preview-import", fileId);
         }
 
         /// <summary>POST /api/import — run import from uploaded file.</summary>
         [HttpPost("api/import")]
         public IActionResult RunImport([FromBody] object? request)
         {
-            return Ok(new { status = "queued", message = "PACS sync wiring is Post-R1; import queued." });
+            return ImportUnavailable("run-import");
+        }
+
+        private IActionResult ImportUnavailable(string operation, string? fileId = null)
+        {
+            _logger.LogWarning("Data import operation {Operation} requested, but no governed import backend is configured.", operation);
+
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                success = false,
+                code = "DATA_IMPORT_UNAVAILABLE",
+                message = "Data import is not configured for governed runtime execution in this environment.",
+                operation,
+                fileId,
+                generated = false,
+            });
         }
     }
 }

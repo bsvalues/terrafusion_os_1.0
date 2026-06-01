@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T15:00:26.833Z",
+  "generatedAt": "2026-06-01T15:06:39.379Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,10 +52,10 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7542,
-    "filesWithSignals": 2111,
+    "totalFilesScanned": 7543,
+    "filesWithSignals": 2112,
     "productionRiskFiles": 391,
-    "demoSafeFiles": 1409,
+    "demoSafeFiles": 1410,
     "dormantFiles": 298,
     "deadFiles": 13,
     "endpointAffectingMocks": 0,
@@ -64,7 +64,7 @@
     "byBucket": {
       "backend_runtime": 397,
       "docs": 156,
-      "test": 744,
+      "test": 745,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 88,
@@ -75,7 +75,7 @@
     },
     "byClassification": {
       "production_risk": 391,
-      "demo_safe": 1409,
+      "demo_safe": 1410,
       "dormant": 298,
       "dead": 13
     },
@@ -86,7 +86,7 @@
       "sample_or_fixture": 424,
       "todo": 72,
       "fallback": 532,
-      "fake": 104,
+      "fake": 105,
       "hardcoded": 119,
       "not_implemented": 12
     }
@@ -3622,7 +3622,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 3,
-      "staticReferenceCount": 2,
+      "staticReferenceCount": 3,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -13989,6 +13989,15 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
+      "path": "os-platform/core/pilot/j10-unknown-data-import-closure.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["fake"],
+      "matchCount": 1,
+      "staticReferenceCount": 88,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
       "path": "os-platform/core/pilot/june10-acceptance-criteria-review.mjs",
       "bucket": "core_governance",
       "classification": "demo_safe",
@@ -20204,5 +20213,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "1bbe64e0300ca25a7f039759d5545dd3f29559717c144a2d502956c9369f7343"
+  "packetHash": "fe670150b93d7c27d34812fd916fd2786da83b894c207574c3dfc6192e05dedc"
 }
