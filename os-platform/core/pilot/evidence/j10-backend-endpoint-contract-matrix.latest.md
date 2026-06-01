@@ -1,11 +1,11 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T13:57:19.543Z
+- Generated: 2026-06-01T14:05:34.038Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: c9dfcccfa110ad9553a1fbf0516f86d144e3457d9967253c54eddb6d78065423
+- Packet hash: 2d7707691435f95b8e1b07428a3efad77426d40bdec1bbaf9bf6c643f9980edc
 
 ## Summary
 
@@ -20,13 +20,13 @@
 
 | Classification | Count |
 | --- | ---: |
-| live | 253 |
-| protected | 607 |
-| broken | 184 |
+| live | 254 |
+| protected | 621 |
+| broken | 183 |
 | mock | 0 |
 | dead | 47 |
 | not_applicable | 0 |
-| unknown | 190 |
+| unknown | 176 |
 
 ## Method Counts
 

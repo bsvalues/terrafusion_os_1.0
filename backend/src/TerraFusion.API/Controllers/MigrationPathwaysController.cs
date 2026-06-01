@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TerraFusion.API.Models;
 using TerraFusion.API.Services;
@@ -25,6 +26,7 @@ namespace TerraFusion.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MigrationPathwaysController : ControllerBase
     {
         private readonly ILogger<MigrationPathwaysController> _logger;
