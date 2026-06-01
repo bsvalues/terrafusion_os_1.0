@@ -791,7 +791,6 @@ namespace TerraFusion.API.Controllers
         /// Trigger RAG ingestion for a specific dataset
         /// </summary>
         [HttpPost("rag/index/{datasetId}")]
-        [AllowAnonymous] // For now, allow without auth for dev; add auth for production
         public async System.Threading.Tasks.Task<ActionResult<RAGIngestionResponse>> IndexDataset(string datasetId)
         {
             try
@@ -1276,7 +1275,6 @@ namespace TerraFusion.API.Controllers
         /// Phase 17: Kill Switch - allows county tech leads to constrain AI behavior during incidents.
         /// </summary>
         [HttpPost("system/safe-mode")]
-        [AllowAnonymous] // Allow Safe Mode control without auth for emergency response
         public ActionResult<TerraFusion.AI.Models.SetSystemGptModeResponse> SetSafeMode(
             [FromBody] TerraFusion.AI.Models.SetSystemGptModeRequest request)
         {
@@ -1675,7 +1673,6 @@ namespace TerraFusion.API.Controllers
         /// Useful for UX pre-validation and debugging policy rules.
         /// </summary>
         [HttpPost("system/policy/evaluate")]
-        [AllowAnonymous] // Allow policy testing for debugging
         public async System.Threading.Tasks.Task<ActionResult<TerraFusion.AI.Models.PolicyEvaluationResult>> EvaluatePolicyRequest(
             [FromBody] TerraFusion.AI.Models.GptRequestContext request)
         {
@@ -1781,7 +1778,6 @@ namespace TerraFusion.API.Controllers
         /// Phase 27: Per-county detail view for fleet comparison.
         /// </summary>
         [HttpGet("system/fleet/rag-readiness/{countyId}")]
-        [AllowAnonymous] // Read-only county status - allow for dashboards
         public async System.Threading.Tasks.Task<ActionResult<RagCountyReadinessDto>> GetCountyRagReadiness(string countyId)
         {
             try
@@ -1855,7 +1851,6 @@ namespace TerraFusion.API.Controllers
         /// Phase 29: Real-time health updates for map visualization.
         /// </summary>
         [HttpGet("system/atlas/live")]
-        [AllowAnonymous] // Read-only streaming - allow for dashboards
         public async System.Threading.Tasks.Task GetAtlasLiveStream(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Phase 29: Starting Atlas live SSE stream");
@@ -1933,7 +1928,6 @@ namespace TerraFusion.API.Controllers
         /// Reports ExplainGPT availability without generating synthetic explanation content.
         /// </summary>
         [HttpPost("explain")]
-        [AllowAnonymous] // Allow availability checks without auth for onboarding scenarios
         public ActionResult Explain([FromBody] TerraFusion.AI.Models.ExplainRequest request)
         {
             _logger.LogWarning(
