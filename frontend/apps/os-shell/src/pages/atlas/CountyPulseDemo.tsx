@@ -191,7 +191,7 @@ export default function CountyPulseDemo() {
               color: 'hsl(150 70% 45%)',
             }}
           >
-            Live Data • Q2 2026
+            Demo Data — Benton County
           </div>
         </div>
       </header>
