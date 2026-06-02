@@ -4,6 +4,20 @@
 
 ---
 
+## Internal Definition (Not Marketing)
+
+**TerraFusion**: Converts expertise into capability.
+
+- **Atlas**: Converts property data into decisions.
+- **Academy**: Converts professional knowledge into capability.
+- **OS**: Converts capability into action.
+
+Every proposed feature must answer: **What decision becomes easier?**
+
+Not: What data becomes visible?
+
+---
+
 ## Validation
 
 Five personas walked through the demo individually and unguided. All five independently described the product the way we intended it to be described.
