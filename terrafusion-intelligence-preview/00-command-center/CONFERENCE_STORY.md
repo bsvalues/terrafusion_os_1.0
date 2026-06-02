@@ -222,3 +222,10 @@ Before the conference, a non-assessor should walk through the demo cold and answ
 - [ ] After 5 minutes with the demo, can I explain what TerraFusion does to someone else?
 - [ ] What's the one thing I remember?
 - [ ] Would I ask "Can I use this?"
+
+### The Confidence Question (ask every tester)
+- [ ] "Do you feel more confident about property assessment after using this?"
+- [ ] If yes: what specifically made you more confident?
+- [ ] If no: where did you get lost?
+
+This question matters more than "Would you use this?" because it tests capability transfer, not feature appeal. An expert might say "nice tool." A capability builder will say "now I understand." The second response is the mission.
