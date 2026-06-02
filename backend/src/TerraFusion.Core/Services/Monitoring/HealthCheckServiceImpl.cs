@@ -8,15 +8,20 @@ namespace TerraFusion.Core.Services.Monitoring;
 /// </summary>
 public class TerraFusionHealthCheckService : IHealthCheckService
 {
-    private readonly HealthCheckService _healthCheckService;
+    private readonly HealthCheckService? _healthCheckService;
 
-    public TerraFusionHealthCheckService(HealthCheckService healthCheckService)
+    public TerraFusionHealthCheckService(HealthCheckService? healthCheckService = null)
     {
         _healthCheckService = healthCheckService;
     }
 
     public async Task<HealthReport> GetHealthAsync(CancellationToken cancellationToken = default)
     {
+        if (_healthCheckService == null)
+        {
+            return BuildUnavailableHealthReport();
+        }
+
         var result = await _healthCheckService.CheckHealthAsync();
         // Convert HealthCheckResult to HealthReport
         var entries = new Dictionary<string, HealthReportEntry>();
@@ -34,6 +39,11 @@ public class TerraFusionHealthCheckService : IHealthCheckService
 
     public async Task<HealthStatus> GetComponentHealthAsync(string componentName, CancellationToken cancellationToken = default)
     {
+        if (_healthCheckService == null)
+        {
+            return TerraFusion.Core.Services.Monitoring.HealthStatus.Degraded;
+        }
+
         var healthReport = await _healthCheckService.CheckHealthAsync();
         
         if (healthReport.Data.ContainsKey(componentName))
@@ -53,5 +63,24 @@ public class TerraFusionHealthCheckService : IHealthCheckService
             Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy => TerraFusion.Core.Services.Monitoring.HealthStatus.Unhealthy,
             _ => TerraFusion.Core.Services.Monitoring.HealthStatus.Unknown
         };
+    }
+
+    private static HealthReport BuildUnavailableHealthReport()
+    {
+        var entries = new Dictionary<string, HealthReportEntry>
+        {
+            ["core_health_service_unavailable"] = new(
+                Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
+                "Core HealthCheckService is not configured for this runtime.",
+                TimeSpan.Zero,
+                null,
+                new Dictionary<string, object>
+                {
+                    ["configured"] = false,
+                    ["reason"] = "core_health_service_unavailable"
+                })
+        };
+
+        return new HealthReport(entries, TimeSpan.Zero);
     }
 }
