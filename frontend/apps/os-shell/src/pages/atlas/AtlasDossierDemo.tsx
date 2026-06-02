@@ -499,7 +499,7 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={Layers}
               title='Context'
-              subtitle='The environment that shapes this property's value'
+              subtitle="The environment that shapes this property's value"
               color='hsl(210 90% 55%)'
             />
 
@@ -813,7 +813,7 @@ export default function AtlasDossierDemo() {
               <SignalCard
                 icon={AlertTriangle}
                 title='New construction at 2900 Queensgate could reset comparable baseline'
-                description='A $520,000 new home nearing final inspection may sell below this property\'s assessed value. If it closes under $540K, it introduces a downward data point for the next assessment cycle. Decision: monitor this sale — if it closes low, investigate whether quality class or square footage differences justify the gap before adjusting.'
+                description="A $520,000 new home nearing final inspection may sell below this property's assessed value. If it closes under $540K, it introduces a downward data point for the next assessment cycle. Decision: monitor this sale — if it closes low, investigate whether quality class or square footage differences justify the gap before adjusting."
                 severity='watch'
               />
 
