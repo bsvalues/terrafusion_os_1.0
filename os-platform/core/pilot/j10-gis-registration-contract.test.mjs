@@ -41,6 +41,11 @@ test("GIS connector uses governed public catalog data instead of synthetic fallb
     /return new FeatureCollection\(Array\.Empty<GisFeature>\(\), 0\)/,
     "unknown unconfigured GIS layers must return an honest empty source result"
   );
+  assert.match(
+    connectorText,
+    /catch \(HttpRequestException ex\)/,
+    "unreachable public GIS sources must not leak request-time 500s"
+  );
 });
 
 test("dev39 endpoint probe uses bounded GIS query parameters", () => {

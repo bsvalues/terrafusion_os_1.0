@@ -204,7 +204,19 @@ public sealed class GisConnector : IGisConnector, IDisposable
         if (!string.IsNullOrWhiteSpace(_options.ApiKey))
             url += $"&token={_options.ApiKey}";
 
-        var doc = await _http.GetFromJsonAsync<JsonElement>(url, ct);
+        JsonElement doc;
+        try
+        {
+            doc = await _http.GetFromJsonAsync<JsonElement>(url, ct);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException("GIS geocode provider is unavailable.", ex);
+        }
+        catch (TaskCanceledException ex)
+        {
+            throw new InvalidOperationException("GIS geocode provider timed out.", ex);
+        }
 
         if (doc.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
         {
@@ -253,8 +265,27 @@ public sealed class GisConnector : IGisConnector, IDisposable
             if (!string.IsNullOrWhiteSpace(_options.ApiKey))
                 catalogUrl += $"&token={_options.ApiKey}";
 
-            var catalogDoc = await _http.GetFromJsonAsync<JsonElement>(catalogUrl, ct);
-            return ParseArcGisFeatures(catalogDoc);
+            try
+            {
+                var catalogDoc = await _http.GetFromJsonAsync<JsonElement>(catalogUrl, ct);
+                return ParseArcGisFeatures(catalogDoc);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "GIS catalog layer {Layer} is unavailable; returning empty source result.",
+                    layerName);
+                return new FeatureCollection(Array.Empty<GisFeature>(), 0);
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "GIS catalog layer {Layer} timed out; returning empty source result.",
+                    layerName);
+                return new FeatureCollection(Array.Empty<GisFeature>(), 0);
+            }
         }
 
         if (!HasConfiguredProvider)
