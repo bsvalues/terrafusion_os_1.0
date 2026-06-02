@@ -72,10 +72,36 @@ None of them mentioned AI, agents, architecture, or technology. All of them desc
 
 ---
 
-## The Test
+## The Tests
 
 Before any feature, any change, any addition:
 
 **What decision becomes easier?**
 
 If you can't answer that, the Memory Report has already told you what to do.
+
+Before any presentation, any explanation, any pitch:
+
+**Will this survive transmission?**
+
+The conference is not about what you say. It's about what people say after they leave. If the language survives without you in the room, the product is real.
+
+---
+
+## How This Doctrine Was Built
+
+Most product doctrine is invented, then tested. This one was discovered.
+
+```
+User Experience → Memory → Language → Doctrine
+```
+
+Not:
+
+```
+Doctrine → Language → Product → Hope
+```
+
+Five personas used the product independently. We recorded what they remembered. We studied what language they used. The doctrine is what emerged.
+
+That's why it feels real. It wasn't imposed. It was extracted from evidence.
