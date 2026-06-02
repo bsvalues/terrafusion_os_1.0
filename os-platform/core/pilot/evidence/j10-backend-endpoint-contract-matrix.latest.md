@@ -1,18 +1,18 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-01T19:44:43.645Z
+- Generated: 2026-06-02T01:42:24.880Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: 2af76714a0d71237edc2dadaca8c8a663aa58810b6fd4efed0941c60c3d20ed9
+- Packet hash: 833e4cec4417e7a0513c97a2ffe3fb6d7d800dd52eb45d0620d4e31e505278a3
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 463 |
+| Safe dev39 GET candidates | 465 |
 | Static-only endpoints | 788 |
 | Live dev39 probed endpoints | 493 |
 
@@ -20,11 +20,11 @@
 
 | Classification | Count |
 | --- | ---: |
-| live | 263 |
-| protected | 750 |
-| broken | 129 |
+| live | 276 |
+| protected | 751 |
+| broken | 117 |
 | mock | 0 |
-| dead | 79 |
+| dead | 77 |
 | not_applicable | 41 |
 | unknown | 19 |
 
@@ -38,7 +38,6 @@
 
 ## Live Dev39 Broken/Dead Sample
 
-- GET /api/aiassistant/health: broken (500)
 - GET /api/aimodels/status: dead (404)
 - GET /api/aimodels/sentiment-trends: dead (404)
 - GET /api/aiorchestration/health: broken (500)
@@ -50,6 +49,7 @@
 - GET /api/aiswarm/status: dead (501)
 - GET /api/aiswarm/performance: dead (501)
 - GET /api/aiswarm/workflows: dead (501)
+- GET /api/atlas/spatial: broken (503)
 - GET /api/atlas/gis/geocode: broken (500)
 - GET /api/atlas/gis/spatial-query: broken (500)
 - GET /api/levy/v1/banked-capacity: broken (400)
@@ -79,15 +79,15 @@
 - GET /api/collaboration/projects: broken (500)
 - GET /api/collaboration/metrics/teams: broken (500)
 - GET /api/collaboration/metrics/tasks: broken (500)
-- GET /api/compliance/dashboard: broken (500)
-- GET /api/connectors/registry: dead (404)
-- GET /api/connectors: broken (500)
 - GET /api/ai/consciousness: dead (501)
 - GET /api/ai/consciousness/enhanced: dead (501)
 - GET /api/ai/consciousness/system-status: dead (501)
 - GET /api/ai/consciousness/status: dead (501)
 - GET /api/costforge/matrix: broken (400)
+- GET /api/costforge/neighborhoods: broken (503)
 - GET /api/costforge/traces: broken (400)
+- GET /api/costforge-test/status: dead (404)
+- GET /api/costforge-test/metrics: dead (404)
 
 ## Hard Stop
 

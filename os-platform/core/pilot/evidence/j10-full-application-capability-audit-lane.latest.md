@@ -1,7 +1,7 @@
 # Full Application Capability Audit Lane
 
-- Generated: 2026-06-01T19:46:02.166Z
-- Packet hash: 97a4bcd09138dfcfc533b75e6b5e59898b3e9d86a89ca7561681fec540458ffd
+- Generated: 2026-06-02T01:42:39.017Z
+- Packet hash: 51e4a7edf111bca816a37bd2a40f885451d0b7c6e2e650d757162c9dedd0414d
 - Scope: full application capability, not frozen demo path only
 - No production binding: true
 - No schema change: true
