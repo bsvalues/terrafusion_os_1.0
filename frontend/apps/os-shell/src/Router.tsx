@@ -85,12 +85,16 @@ const CanonHome = lazy(() => import('./pages/CanonHome'));
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
 const PilotApiDemo = lazy(() => import('./pages/PilotApiDemo'));
 
+// Conference Preview: Demo landing
+const DemoLanding = lazy(() => import('./pages/DemoLanding'));
+
 // Conference Preview: Academy routes
 const AcademyHome = lazy(() => import('./pages/academy/AcademyHome'));
 const AcademyCodexEntry = lazy(() => import('./pages/academy/AcademyCodexEntry'));
 const AcademyAsk = lazy(() => import('./pages/academy/AcademyAsk'));
 
 // Conference Preview: Atlas demo routes
+const AtlasDossierDemo = lazy(() => import('./pages/atlas/AtlasDossierDemo'));
 const CountyPulseDemo = lazy(() => import('./pages/atlas/CountyPulseDemo'));
 
 // Phase 1: Error Display Demo (visual verification)
@@ -188,6 +192,9 @@ const Router: React.FC = () => {
                 <Route path='/dossier' element={<DossierHome />} />
                 <Route path='/gpt' element={<GptHome />} />
 
+                {/* Conference Preview: Demo Landing */}
+                <Route path='/demo' element={<DemoLanding />} />
+
                 {/* Conference Preview: Academy */}
                 <Route path='/academy' element={<AcademyHome />} />
                 <Route path='/academy/search' element={<AcademyHome />} />
@@ -196,7 +203,7 @@ const Router: React.FC = () => {
 
                 {/* Conference Preview: Atlas demo routes */}
                 <Route path='/atlas/search' element={<PropertySearch />} />
-                <Route path='/atlas/dossier/demo' element={<PropertyWorkbench />} />
+                <Route path='/atlas/dossier/demo' element={<AtlasDossierDemo />} />
                 <Route path='/atlas/county-pulse/demo' element={<CountyPulseDemo />} />
 
                 {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
