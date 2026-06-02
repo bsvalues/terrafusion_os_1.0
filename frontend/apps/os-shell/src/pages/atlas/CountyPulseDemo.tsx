@@ -72,45 +72,45 @@ const RISK_WATCH: RiskItem[] = [
   {
     severity: 'high',
     title: 'Ratio drift in Badger Mountain neighborhoods',
-    detail: 'COD of 18.2 in BM-South (target: <15). Rapid appreciation outpacing assessed values. 234 properties need revaluation review.',
+    detail: 'COD of 18.2 in BM-South (target: <15). Rapid appreciation outpacing assessed values. 234 properties need revaluation review. Decision: deploy field team to BM-South this cycle — if ratios are not corrected before the DOR study, the entire county risks a compliance finding.',
   },
   {
     severity: 'medium',
     title: 'Senior exemption backlog growing',
-    detail: '312 exemptions unverified for 3+ years. Cross-reference with vital statistics pending — estimated 15-20% may be ineligible.',
+    detail: '312 exemptions unverified for 3+ years. Cross-reference with vital statistics pending — estimated 15-20% may be ineligible. Decision: batch-send 50 verification letters per week starting now — clearing this backlog recovers an estimated $180K-$240K in levy capacity.',
   },
   {
     severity: 'medium',
     title: 'Commercial income data gap',
-    detail: 'Income questionnaire response rate at 28% (target: 35%). 47 commercial properties valued above $1M have no current income data.',
+    detail: 'Income questionnaire response rate at 28% (target: 35%). 47 commercial properties valued above $1M have no current income data. Decision: issue follow-up questionnaires with penalty notice for non-response — every 1% improvement in response rate improves income-approach accuracy by ~$2M in assessed value.',
   },
   {
     severity: 'low',
     title: 'Agricultural land conversion in west corridor',
-    detail: '8 parcels rezoned from agricultural to residential in Q1. Land values need reclassification from current use to market value.',
+    detail: '8 parcels rezoned from agricultural to residential in Q1. Land values need reclassification from current use to market value. Decision: reclassify before Q3 assessment roll — delay means underassessment of ~$4.2M and potential equity complaints from neighboring residential owners.',
   },
 ];
 
 const TOP_5_WATCH = [
   {
     title: 'Badger Mountain South — Fastest Growth Corridor',
-    detail: '67 permits in 6 months, $48M in new construction value. Assessment team needs to prioritize this corridor for timely new construction capture.',
+    detail: 'Why it matters: 67 permits in 6 months represent $48M in new construction value that must be captured before the assessment roll closes. Every month of delay is uncaptured value flowing through to the levy base. Prioritize field resources here first.',
   },
   {
-    title: 'Industrial Market Shift',
-    detail: 'Three major warehouse permits filed near I-82 interchange. If built, adds $15M+ to commercial roll. Watch for infrastructure bond impacts on levy.',
+    title: 'Industrial Market Shift Near I-82',
+    detail: 'Why it matters: Three major warehouse permits signal a potential market reclassification for the interchange area. If all three build, $15M+ enters the commercial roll — but infrastructure bonds tied to the interchange could offset levy gains. Model both scenarios before the next commissioner briefing.',
   },
   {
     title: 'BOE Appeal Season Approaching',
-    detail: '87 appeals filed to date — 23% above last year. Commercial properties account for 61% of total appealed value. Pre-build defense packets now.',
+    detail: 'Why it matters: 87 appeals filed (23% above last year) means your defense workload just increased by a quarter. Commercial properties account for 61% of total appealed value — a single lost commercial appeal can shift more value than 50 residential wins. Pre-build defense packets for the top 20 by dollar value now.',
   },
   {
     title: 'Legislative Session — HB 2147',
-    detail: 'Proposed expansion of senior exemption income threshold from $40,000 to $55,000. If passed, estimated 340 additional properties qualify. $2.1M levy impact.',
+    detail: 'Why it matters: If the senior exemption income threshold rises from $40,000 to $55,000, an estimated 340 additional Benton County properties qualify — creating a $2.1M hole in the levy base that other taxpayers absorb. Model the shifted burden now so commissioners have the data before the vote.',
   },
   {
     title: 'Ratio Study Due in 90 Days',
-    detail: 'Current preliminary median: 0.94. COD: 13.8 (passing). Three neighborhoods need targeted review before submission to DOR.',
+    detail: 'Why it matters: Preliminary median is 0.94 with COD of 13.8 — passing, but three neighborhoods are dragging the numbers. If those neighborhoods slip further, the county risks a conditional finding from DOR. Targeted review of those three areas is the highest-ROI use of analyst time this quarter.',
   },
 ];
 
@@ -199,14 +199,29 @@ export default function CountyPulseDemo() {
       {/* Content */}
       <main className='flex-1 min-h-0 overflow-y-auto'>
         <div className='max-w-[1600px] mx-auto px-6 py-6 space-y-8'>
+          <div className='rounded-xl p-5 mb-8' style={{
+            background: 'linear-gradient(135deg, hsl(var(--tf-suite-atlas) / 0.08), hsl(210 90% 55% / 0.04))',
+            border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
+          }}>
+            <p className='text-xs font-medium uppercase tracking-wider mb-2' style={{ color: 'hsl(var(--tf-suite-atlas))' }}>
+              County Intelligence Summary
+            </p>
+            <p className='text-lg font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
+              Benton County is growing faster than its assessment infrastructure can keep up — the south corridors are adding $128M in new value while ratio compliance is slipping in exactly those neighborhoods. Fix the ratios first, then ride the growth.
+            </p>
+          </div>
+
           {/* Growth Signals */}
           <section>
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <TrendingUp size={18} style={{ color: 'hsl(150 70% 45%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Growth Signals
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              Where growth is concentrated and what it means for assessments
+            </p>
             <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
               {GROWTH_SIGNALS.map((m) => (
                 <MetricCard key={m.label} metric={m} />
@@ -216,12 +231,15 @@ export default function CountyPulseDemo() {
 
           {/* Permit Activity */}
           <section>
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <Building2 size={18} style={{ color: 'hsl(210 90% 55%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Permit Activity
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              Construction patterns that signal future value changes
+            </p>
             <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
               {PERMIT_ACTIVITY.map((m) => (
                 <MetricCard key={m.label} metric={m} />
@@ -231,12 +249,15 @@ export default function CountyPulseDemo() {
 
           {/* Development Activity */}
           <section>
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <MapPin size={18} style={{ color: 'hsl(25 95% 55%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Development Activity — Growth Corridors
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              Where to allocate field resources for maximum value capture
+            </p>
             <div
               className='rounded-xl overflow-hidden'
               style={{
@@ -329,12 +350,15 @@ export default function CountyPulseDemo() {
 
           {/* Risk Watch */}
           <section>
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <Shield size={18} style={{ color: 'hsl(0 70% 55%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Risk Watch
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              Issues that cost money if ignored and what to do about each one
+            </p>
             <div className='space-y-3'>
               {RISK_WATCH.map((risk) => (
                 <div
@@ -380,12 +404,15 @@ export default function CountyPulseDemo() {
 
           {/* Top 5 Things to Watch */}
           <section>
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <Eye size={18} style={{ color: 'hsl(270 80% 60%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Top 5 Things to Watch
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              The items with the highest potential to change your assessment roll this cycle
+            </p>
             <div className='space-y-3'>
               {TOP_5_WATCH.map((item, i) => (
                 <div
@@ -429,45 +456,83 @@ export default function CountyPulseDemo() {
               border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
             }}
           >
-            <div className='flex items-center gap-2 mb-4'>
+            <div className='flex items-center gap-2 mb-1'>
               <ArrowRight size={18} style={{ color: 'hsl(120 60% 45%)' }} />
               <h2 className='text-base font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                 Now What?
               </h2>
             </div>
+            <p className='text-sm mb-4 ml-7' style={{ color: 'hsl(var(--tf-muted))' }}>
+              Prioritized actions by timeframe — each tied to a specific risk or opportunity above
+            </p>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <div className='space-y-2'>
                 <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                   This Week
                 </h3>
-                <ul className='text-sm space-y-1' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <li>• Review Badger Mountain ratio drift — assign field team</li>
-                  <li>• Send senior exemption verification letters (batch of 50)</li>
-                  <li>• Pre-build BOE defense packets for top 20 appeals</li>
+                <ul className='text-sm space-y-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <li>• Assign 2 field appraisers to Badger Mountain South — pull the 234-parcel revaluation list from PACS and split by neighborhood code</li>
+                  <li>• Mail first batch of 50 senior exemption verification letters — start with exemptions oldest by verification date</li>
+                  <li>• Pull comparable data for top 20 BOE appeals by dollar value and assign defense packets to senior staff</li>
                 </ul>
               </div>
               <div className='space-y-2'>
                 <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                   This Month
                 </h3>
-                <ul className='text-sm space-y-1' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <li>• Complete ratio study for DOR submission</li>
-                  <li>• Update commercial income questionnaires (Q2 mailing)</li>
-                  <li>• Assess 43 commercial permits nearing completion</li>
+                <ul className='text-sm space-y-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <li>• Finalize ratio study — run targeted reviews on the three flagged neighborhoods to bring COD below 15 before DOR submission deadline</li>
+                  <li>• Send Q2 commercial income questionnaires with penalty notice — target the 47 properties over $1M with no current income data first</li>
+                  <li>• Complete new-construction assessments for 43 commercial permits nearing occupancy — $31M+ in value to capture</li>
                 </ul>
               </div>
               <div className='space-y-2'>
                 <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
                   This Quarter
                 </h3>
-                <ul className='text-sm space-y-1' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <li>• Reclassify 8 agricultural-to-residential conversions</li>
-                  <li>• Model HB 2147 impact on levy if passed</li>
-                  <li>• Commissioner quarterly briefing with corridor analysis</li>
+                <ul className='text-sm space-y-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <li>• Reclassify 8 ag-to-residential parcels in the west corridor — file with DOR before Q3 roll to avoid underassessment of ~$4.2M</li>
+                  <li>• Build HB 2147 impact model showing $2.1M levy shift if passed — deliver to commissioners before legislative session vote</li>
+                  <li>• Prepare quarterly commissioner briefing with growth corridor analysis, BOE outcomes, and ratio study results as a single decision package</li>
                 </ul>
               </div>
             </div>
           </section>
+
+          <div className='rounded-xl p-5 flex items-center justify-between' style={{
+            background: 'hsl(var(--tf-card-bg) / 0.5)',
+            border: '1px solid hsl(var(--tf-border))',
+          }}>
+            <div>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                TerraFusion Atlas • County Pulse • Benton County, WA
+              </p>
+            </div>
+            <div className='flex gap-2'>
+              <button
+                onClick={() => navigate('/atlas/dossier/demo')}
+                className='px-3 py-2 rounded-lg text-xs font-medium transition-colors'
+                style={{
+                  background: 'hsl(var(--tf-suite-atlas) / 0.1)',
+                  color: 'hsl(var(--tf-suite-atlas))',
+                  border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
+                }}
+              >
+                Atlas Dossier →
+              </button>
+              <button
+                onClick={() => navigate('/demo')}
+                className='px-3 py-2 rounded-lg text-xs font-medium transition-colors'
+                style={{
+                  background: 'hsl(270 80% 60% / 0.1)',
+                  color: 'hsl(270 80% 60%)',
+                  border: '1px solid hsl(270 80% 60% / 0.2)',
+                }}
+              >
+                Demo Landing →
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
