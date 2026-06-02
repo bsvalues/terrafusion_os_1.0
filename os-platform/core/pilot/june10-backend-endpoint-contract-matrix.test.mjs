@@ -92,7 +92,7 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
       authRequirement: "authorized",
       body: "return StatusCode(503, new { error = \"Governed benchmark evidence is unavailable\" });"
     }),
-    "protected"
+    "dead"
   );
   assert.equal(
     classifyEndpoint({
@@ -172,6 +172,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
       route: "/api/fismacompliance/status",
       authRequirement: "authorized",
       body: "return await _complianceService.GetComplianceStatusAsync();"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/aisuperiority/swarm/status",
+      authRequirement: "authorized",
+      body: "var swarmStatus = await _aiOrchestrator.GetCurrentSwarmStatusAsync();"
     }),
     "dead"
   );

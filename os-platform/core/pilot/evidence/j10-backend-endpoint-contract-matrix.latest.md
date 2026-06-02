@@ -1,30 +1,30 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-02T02:17:28.916Z
+- Generated: 2026-06-02T02:22:12.458Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: c7ccd49c3590b6852a216343b89a4634e0f422208eb2619e712ac3ab2b476b6b
+- Packet hash: fe49fedf1127411a612158ece99065301ca1d309ddf6e9dc60a28757af601696
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 428 |
-| Static-only endpoints | 825 |
-| Live dev39 probed endpoints | 456 |
+| Safe dev39 GET candidates | 424 |
+| Static-only endpoints | 829 |
+| Live dev39 probed endpoints | 452 |
 
 ## Classification Counts
 
 | Classification | Count |
 | --- | ---: |
 | live | 275 |
-| protected | 699 |
-| broken | 81 |
+| protected | 696 |
+| broken | 77 |
 | mock | 0 |
-| dead | 145 |
+| dead | 152 |
 | not_applicable | 62 |
 | unknown | 19 |
 
@@ -42,10 +42,6 @@
 - GET /api/aimodels/sentiment-trends: dead (404)
 - GET /api/aiorchestration/health: broken (500)
 - GET /api/aiorchestration/performance-analytics: broken (500)
-- GET /api/aisuperiority/swarm/status: broken (500)
-- GET /api/aisuperiority/performance/comparison: broken (500)
-- GET /api/aisuperiority/scenarios: broken (500)
-- GET /api/aisuperiority/battalions: broken (500)
 - GET /api/aiswarm/status: dead (501)
 - GET /api/aiswarm/performance: dead (501)
 - GET /api/aiswarm/workflows: dead (501)
@@ -88,6 +84,10 @@
 - GET /api/gis/layers: broken (500)
 - GET /api/gis/proximity: broken (500)
 - GET /api/levy/glossary/terms: dead (501)
+- GET /api/levy/glossary/categories: dead (501)
+- GET /api/compliance/certification: broken (503)
+- GET /api/gpt/search: broken (400)
+- GET /api/harrispacsenhancement/sessions: broken (500)
 
 ## Hard Stop
 

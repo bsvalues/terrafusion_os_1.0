@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TerraFusion.Core.GIS.Config;
 
 namespace TerraFusion.Core.GIS.Connectors;
 
@@ -105,6 +106,8 @@ public sealed class GisConnector : IGisConnector, IDisposable
         _http.Timeout = TimeSpan.FromSeconds(_options.TimeoutSeconds);
     }
 
+    private bool HasConfiguredProvider => !string.IsNullOrWhiteSpace(_options.BaseUrl);
+
     /// <inheritdoc />
     public async Task<GeocodeResult> GeocodeAddressAsync(string address, CancellationToken ct = default)
     {
@@ -196,7 +199,8 @@ public sealed class GisConnector : IGisConnector, IDisposable
 
     private async Task<GeocodeResult> GeocodeViaArcGisAsync(string address, CancellationToken ct)
     {
-        var url = $"findAddressCandidates?SingleLine={Uri.EscapeDataString(address)}&f=json&outFields=*&maxLocations=1";
+        var geocodeRoot = HasConfiguredProvider ? string.Empty : ArcGisServiceCatalog.GeocodeServiceUrl.TrimEnd('/') + "/";
+        var url = $"{geocodeRoot}findAddressCandidates?SingleLine={Uri.EscapeDataString(address)}&f=json&outFields=*&maxLocations=1";
         if (!string.IsNullOrWhiteSpace(_options.ApiKey))
             url += $"&token={_options.ApiKey}";
 
@@ -242,6 +246,25 @@ public sealed class GisConnector : IGisConnector, IDisposable
     {
         var envelope = $"{bbox.MinLng},{bbox.MinLat},{bbox.MaxLng},{bbox.MaxLat}";
         var where = string.IsNullOrWhiteSpace(filter) ? "1=1" : filter;
+
+        if (ArcGisServiceCatalog.TryGetLayer(layerName, out var catalogLayer) && catalogLayer is not null)
+        {
+            var catalogUrl = ArcGisServiceCatalog.BuildQueryUrl(catalogLayer, where, envelope);
+            if (!string.IsNullOrWhiteSpace(_options.ApiKey))
+                catalogUrl += $"&token={_options.ApiKey}";
+
+            var catalogDoc = await _http.GetFromJsonAsync<JsonElement>(catalogUrl, ct);
+            return ParseArcGisFeatures(catalogDoc);
+        }
+
+        if (!HasConfiguredProvider)
+        {
+            _logger.LogInformation(
+                "GIS layer {Layer} is not in the governed catalog and no GIS provider base URL is configured; returning empty source result.",
+                layerName);
+            return new FeatureCollection(Array.Empty<GisFeature>(), 0);
+        }
+
         var url = $"{Uri.EscapeDataString(layerName)}/query?geometry={envelope}" +
                   $"&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects" +
                   $"&where={Uri.EscapeDataString(where)}&outFields=*&f=json&returnGeometry=true";

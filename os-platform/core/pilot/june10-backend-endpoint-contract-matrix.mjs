@@ -194,6 +194,9 @@ export function classifyEndpoint(endpoint) {
   if (endpoint.route?.startsWith("/api/fismacompliance/")) {
     return "dead";
   }
+  if (endpoint.route?.startsWith("/api/aisuperiority/")) {
+    return "dead";
+  }
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
     return "dead";
   }
@@ -340,6 +343,17 @@ export function getDev39ProbePath(endpoint) {
     if (!url.searchParams.has("countyId")) {
       url.searchParams.set("countyId", "spokane");
     }
+  }
+  if (endpoint.route === "/api/gis/geocode") {
+    url.searchParams.set("address", "415 W 6th Ave, Kennewick, WA");
+  }
+  if (endpoint.route === "/api/gis/parcels/spatial") {
+    url.searchParams.set("bbox", "-119.24,46.19,-119.18,46.24");
+  }
+  if (endpoint.route === "/api/gis/proximity") {
+    url.searchParams.set("lat", "46.2087");
+    url.searchParams.set("lng", "-119.1190");
+    url.searchParams.set("radius", "0.25");
   }
   return `${url.pathname}${url.search}`;
 }

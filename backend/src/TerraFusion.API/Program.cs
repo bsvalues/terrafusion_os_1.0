@@ -18,7 +18,9 @@ using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.AI.Extensions;
+using TerraFusion.Core.GIS;
 using TerraFusion.Core.GIS.ArcGisRest;
+using TerraFusion.Core.GIS.Connectors;
 using TerraFusionOperations = TerraFusion.Operations.Services;
 using TerraFusionOperationsInterfaces = TerraFusion.Operations.Interfaces;
 using Prometheus;
@@ -1619,6 +1621,10 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.
 
 // Phase 11: GIS data service — PACS-sourced parcel boundary & layer data
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
+builder.Services.Configure<GisProviderOptions>(builder.Configuration.GetSection("GisProvider"));
+builder.Services.AddHttpClient<IGisConnector, GisConnector>();
+builder.Services.AddScoped<IGeospatialEnricher, GeospatialEnricher>();
+builder.Services.AddScoped<ISpatialAnalysisService, SpatialAnalysisService>();
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
 // When PacsConnection is configured: SQL Server via Dapper (PacsSqlAdapter)
