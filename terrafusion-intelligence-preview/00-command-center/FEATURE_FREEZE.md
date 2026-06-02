@@ -16,6 +16,18 @@ Experts drill to Layer 5. Non-experts stop at Layer 2 or 3. Both succeed.
 
 The test: "They won't understand every detail paragraph — but they'll understand the decisions."
 
+## Design Principle: Intelligence Density
+
+The optimization target is not more information. It is more meaning per screen.
+
+- If 0/5 personas remembered it, it should occupy less space.
+- If 5/5 personas remembered it, it should occupy more space.
+- Removing noise increases signal. Agent 32 proved this: -250 lines made the product sharper.
+
+The test: every element on screen must either support a decision or provide evidence for one. If it does neither, it is noise.
+
+**More value = less noise.**
+
 **Status**: ACTIVE
 **Effective**: Now
 **Lift date**: Post-conference or explicit override
