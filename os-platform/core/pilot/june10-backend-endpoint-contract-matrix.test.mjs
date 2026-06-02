@@ -151,9 +151,90 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
   assert.equal(
     classifyEndpoint({
       httpMethod: "GET",
+      route: "/api/costforge/matrix",
+      authRequirement: "authorized",
+      body: "var result = await _costForgeService.GetCostMatrixAsync(buildingType, region);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/costforge/neighborhoods",
+      authRequirement: "anonymous",
+      body: "var rows = await _db.CamaCharacteristics.AsNoTracking().GroupBy(c => c.NeighborhoodCode).ToListAsync();"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/costforge/traces",
+      authRequirement: "anonymous",
+      body: "var records = await _db.CamaCharacteristics.AsNoTracking().Where(c => c.ParcelId == parcelId).ToListAsync();"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/equity/metrics",
+      authRequirement: "unknown",
+      body: "var groups = await _equity.GetMetricsAsync(countyId, taxYear, by, segment, ct);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/levy/dashboard/summary",
+      authRequirement: "anonymous",
+      body: "var hasScenarioRows = await _db.LevyMeasures.AsNoTracking().Join(_db.LevyScenarios.AsNoTracking(), measure => measure.Id, scenario => scenario.LevyMeasureId, (_, _) => 1).AnyAsync(cancellationToken);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/levy/budget/scenarios",
+      authRequirement: "anonymous",
+      body: "var scenarios = await _db.LevyScenarios.AsNoTracking().Include(scenario => scenario.LevyMeasure).ToListAsync(cancellationToken);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
       route: "/api/codex/reports/daily",
       authRequirement: "authorized",
       body: "var report = await _reportService.GenerateDailyReportAsync(countyId, targetDate);"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/playground/health",
+      authRequirement: "anonymous",
+      body: "return Ok(new { status = \"playground-ready\", endpoints = new[] { \"/api/playground/start\" } });"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/market/metrics",
+      authRequirement: "authorized",
+      body: "var result = await _marketMetricsService.GetCurrentMetricsAsync(propertyClass);"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/aiorchestration/health",
+      authRequirement: "authorized",
+      body: "var health = await _orchestrator.GetAgentSwarmHealthAsync();"
     }),
     "dead"
   );
@@ -174,6 +255,42 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
       body: "var query = _db.TfDoctrineRatioPolicies.AsNoTracking().AsQueryable();"
     }),
     "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/sync/doctrine/state",
+      authRequirement: "authorized",
+      body: "var canonical = new { tf_parcel = await _db.TfParcels.CountAsync(cancellationToken), truth_pacs_sale = await _db.TruthPacsSales.CountAsync(cancellationToken) };"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/sync/active-workbook",
+      authRequirement: "authorized",
+      body: "var snap = await _activeWorkbook.GetAsync(countyId, ct);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/sync/comps/stale/summary",
+      authRequirement: "authorized",
+      body: "var baseline = await ResolveBaselineWorkbookAsync(countyId, workbookId, ct);"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/sync/schema/catalog/summary",
+      authRequirement: "authorized",
+      body: "return Ok(await _schemaCatalog.SummarizeAsync(ct));"
+    }),
+    "protected"
   );
   assert.equal(
     classifyEndpoint({
@@ -243,6 +360,14 @@ test("getDev39ProbePath adds representative county scope for TerraForge read pro
   assert.equal(
     getDev39ProbePath({ httpMethod: "GET", route: "/api/runtime/truth/db-identity" }),
     "/api/runtime/truth/db-identity"
+  );
+  assert.equal(
+    getDev39ProbePath({ httpMethod: "GET", route: "/api/atlas/gis/geocode" }),
+    "/api/atlas/gis/geocode?address=415+W+6th+Ave%2C+Kennewick%2C+WA"
+  );
+  assert.equal(
+    getDev39ProbePath({ httpMethod: "GET", route: "/api/atlas/gis/spatial-query" }),
+    "/api/atlas/gis/spatial-query?bbox=-119.24%2C46.19%2C-119.18%2C46.24"
   );
 });
 

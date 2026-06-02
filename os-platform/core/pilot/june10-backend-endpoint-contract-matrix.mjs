@@ -176,7 +176,31 @@ export function classifyEndpoint(endpoint) {
   if (endpoint.route?.startsWith("/api/production/pacs/")) {
     return "not_applicable";
   }
-  if (endpoint.route?.startsWith("/api/sync/doctrine/policy/")) {
+  if (
+    endpoint.route === "/api/costforge/matrix" ||
+    endpoint.route === "/api/costforge/neighborhoods" ||
+    endpoint.route === "/api/costforge/traces"
+  ) {
+    return "not_applicable";
+  }
+  if (endpoint.route?.startsWith("/api/equity/")) {
+    return "not_applicable";
+  }
+  if (endpoint.route?.startsWith("/api/levy/dashboard/")) {
+    return "not_applicable";
+  }
+  if (endpoint.route?.startsWith("/api/levy/budget/")) {
+    return "not_applicable";
+  }
+  if (endpoint.route?.startsWith("/api/sync/doctrine/")) {
+    return "not_applicable";
+  }
+  if (
+    endpoint.route === "/api/sync/comps/eligible" ||
+    endpoint.route === "/api/sync/active-workbook" ||
+    endpoint.route === "/api/sync/comps/stale" ||
+    endpoint.route === "/api/sync/comps/stale/summary"
+  ) {
     return "not_applicable";
   }
   if (endpoint.route?.startsWith("/api/performance/elite/")) {
@@ -189,6 +213,15 @@ export function classifyEndpoint(endpoint) {
     return "dead";
   }
   if (endpoint.route?.startsWith("/api/codex/reports/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/playground/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/market/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/aiorchestration/")) {
     return "dead";
   }
   if (endpoint.route?.startsWith("/api/collaboration/")) {
@@ -350,7 +383,13 @@ export function getDev39ProbePath(endpoint) {
   if (endpoint.route === "/api/gis/geocode") {
     url.searchParams.set("address", "415 W 6th Ave, Kennewick, WA");
   }
+  if (endpoint.route === "/api/atlas/gis/geocode") {
+    url.searchParams.set("address", "415 W 6th Ave, Kennewick, WA");
+  }
   if (endpoint.route === "/api/gis/parcels/spatial") {
+    url.searchParams.set("bbox", "-119.24,46.19,-119.18,46.24");
+  }
+  if (endpoint.route === "/api/atlas/gis/spatial-query") {
     url.searchParams.set("bbox", "-119.24,46.19,-119.18,46.24");
   }
   if (endpoint.route === "/api/gis/proximity") {
