@@ -8,9 +8,8 @@
  * Landing page with codex entry grid and Ask Academy CTA.
  */
 
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Search, MessageSquare, GraduationCap, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageSquare, GraduationCap, ChevronRight } from 'lucide-react';
 
 export interface CodexEntry {
   slug: string;
@@ -120,19 +119,6 @@ const DIFFICULTY_LABELS: Record<string, string> = {
 
 export default function AcademyHome() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  const filteredEntries = CODEX_ENTRIES.filter((entry) => {
-    const matchesSearch =
-      !searchQuery ||
-      entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || entry.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const categories = [...new Set(CODEX_ENTRIES.map((e) => e.category))];
 
   return (
     <div className='h-full flex flex-col' style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -178,58 +164,6 @@ export default function AcademyHome() {
         </div>
       </header>
 
-      {/* Search + Filters */}
-      <div className='max-w-[1600px] mx-auto px-6 py-4 w-full'>
-        <div className='flex items-center gap-3 flex-wrap'>
-          <div className='relative flex-1 min-w-[240px]'>
-            <Search
-              size={16}
-              className='absolute left-3 top-1/2 -translate-y-1/2'
-              style={{ color: 'hsl(var(--tf-muted))' }}
-            />
-            <input
-              type='text'
-              placeholder='Search codex entries...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full pl-9 pr-4 py-2.5 rounded-lg text-sm'
-              style={{
-                background: 'hsl(var(--tf-card-bg))',
-                border: '1px solid hsl(var(--tf-border))',
-                color: 'hsl(var(--tf-fg))',
-              }}
-            />
-          </div>
-          <div className='flex gap-2'>
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className='px-3 py-2 rounded-lg text-xs font-medium transition-colors'
-              style={{
-                background: !selectedCategory ? 'hsl(var(--tf-fg) / 0.1)' : 'transparent',
-                color: !selectedCategory ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                border: '1px solid hsl(var(--tf-border))',
-              }}
-            >
-              All
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                className='px-3 py-2 rounded-lg text-xs font-medium capitalize transition-colors'
-                style={{
-                  background: selectedCategory === cat ? `${CATEGORY_COLORS[cat]}20` : 'transparent',
-                  color: selectedCategory === cat ? CATEGORY_COLORS[cat] : 'hsl(var(--tf-muted))',
-                  border: `1px solid ${selectedCategory === cat ? `${CATEGORY_COLORS[cat]}40` : 'hsl(var(--tf-border))'}`,
-                }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Codex Grid */}
       <main className='flex-1 min-h-0 overflow-y-auto'>
         <div className='max-w-[1600px] mx-auto px-6 pb-8'>
@@ -268,10 +202,10 @@ export default function AcademyHome() {
             style={{ color: 'hsl(var(--tf-muted))' }}
           >
             <BookOpen size={14} className='inline mr-2' />
-            Codex — {filteredEntries.length} entries
+            Guides — {CODEX_ENTRIES.length} topics
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {filteredEntries.map((entry) => (
+            {CODEX_ENTRIES.map((entry) => (
               <button
                 key={entry.slug}
                 onClick={() => navigate(`/academy/codex/${entry.slug}`)}

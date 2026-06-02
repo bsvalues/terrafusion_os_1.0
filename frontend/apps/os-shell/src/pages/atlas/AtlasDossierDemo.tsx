@@ -32,17 +32,8 @@ import {
   ArrowRight,
   Building2,
   TrendingUp,
-  TrendingDown,
   AlertTriangle,
-  Shield,
-  TreePine,
-  Droplets,
-  GraduationCap,
   DollarSign,
-  Calendar,
-  Ruler,
-  Tag,
-  Users,
   FileText,
   BarChart3,
   ChevronRight,
@@ -562,6 +553,8 @@ export default function AtlasDossierDemo() {
 
           {/* ================================================================ */}
           {/* SECTION 2: Context — What surrounds it? */}
+          {/* Tier 4 in Memory Report — reduced to compact summary. */}
+          {/* Levy breakdown (Tier 2) kept prominent below. */}
           {/* ================================================================ */}
           <section id='dossier-context' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
@@ -571,114 +564,22 @@ export default function AtlasDossierDemo() {
               color='hsl(210 90% 55%)'
             />
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {/* Context cards */}
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <MapPin size={16} style={{ color: 'hsl(210 90% 55%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Location</h3>
-                </div>
-                <DataRow label='Latitude' value='46.2567° N' />
-                <DataRow label='Longitude' value='119.3012° W' />
-                <DataRow label='Elevation' value='407 ft' />
-                <DataRow label='Census Tract' value='010702' />
-                <DataRow label='Tax Area' value='310' />
-              </div>
-
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <GraduationCap size={16} style={{ color: 'hsl(270 80% 60%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Schools</h3>
-                </div>
-                <DataRow label='District' value='Richland SD #400' />
-                <DataRow label='Elementary' value='White Bluffs Elementary' />
-                <DataRow label='Middle' value='Enterprise Middle School' />
-                <DataRow label='High' value='Richland High School' />
-                <DataRow label='Distance' value='0.8 mi (elementary)' />
-              </div>
-
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <Droplets size={16} style={{ color: 'hsl(200 80% 50%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Environmental</h3>
-                </div>
-                <DataRow label='Flood Zone' value='Zone X (Minimal Risk)' />
-                <DataRow label='Wetlands' value='None Identified' />
-                <DataRow label='Seismic Zone' value='Zone 2B' />
-                <DataRow label='Fire Risk' value='Low' />
-                <DataRow label='Soil Type' value='Quincy fine sand' />
-              </div>
-
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <TreePine size={16} style={{ color: 'hsl(150 70% 45%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Neighborhood Profile</h3>
-                </div>
-                <DataRow label='Type' value='Suburban Residential' />
-                <DataRow label='Age Range' value='2015-2026 (New)' />
+            <div
+              className='rounded-xl p-5'
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                border: '1px solid hsl(var(--tf-border))',
+              }}
+            >
+              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-2'>
+                <DataRow label='Neighborhood' value='Suburban Residential (New, 2015-2026)' />
                 <DataRow label='Median Home Value' value='$495,000' />
-                <DataRow label='Median Lot Size' value='0.20 ac' />
-                <DataRow label='HOA' value='Queensgate HOA ($85/mo)' />
-              </div>
-
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <Shield size={16} style={{ color: 'hsl(25 95% 55%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Services</h3>
-                </div>
-                <DataRow label='Water' value='City of Richland' />
-                <DataRow label='Sewer' value='City of Richland' />
-                <DataRow label='Fire' value='Richland Fire Dept' />
-                <DataRow label='Police' value='Richland PD' />
-                <DataRow label='Trash' value='City collection' />
-              </div>
-
-              <div
-                className='rounded-xl p-5'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='flex items-center gap-2 mb-3'>
-                  <DollarSign size={16} style={{ color: 'hsl(35 90% 50%)' }} />
-                  <h3 className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Tax Burden</h3>
-                </div>
+                <DataRow label='School District' value='Richland SD #400' />
+                <DataRow label='Flood Zone' value='Zone X (Minimal Risk)' />
+                <DataRow label='Fire Risk' value='Low' />
                 <DataRow label='Annual Tax' value={fmt(DEMO_PARCEL.taxAmount)} accent />
                 <DataRow label='Levy Rate' value={`$${DEMO_PARCEL.levyRate} / $1,000`} />
                 <DataRow label='Exemptions' value='None' />
-                <DataRow label='Special Assessments' value='LID #2019-04 ($0)' />
-                <DataRow label='Delinquent' value='No' />
               </div>
             </div>
 
@@ -918,31 +819,13 @@ export default function AtlasDossierDemo() {
                 </p>
                 <p>
                   <strong style={{ color: 'hsl(270 80% 60%)' }}>Assessment confidence: High.</strong>{' '}
-                  Four comparable sales produce a median ratio of 1.00 with a spread of only 4%. The assessed
-                  value of {fmt(DEMO_PARCEL.assessedValue)} sits at ${Math.round(DEMO_PARCEL.assessedValue / DEMO_PARCEL.totalSqft)}/SF
-                  against a market average of ${Math.round((555000 + 538000 + 572000 + 549000) / 4 / DEMO_PARCEL.totalSqft)}/SF —
-                  well within defensible range. An appeal would not succeed. A challenge would not survive.
+                  Four comparable sales produce a median ratio of 1.00 with a spread of only 4%.
+                  An appeal would not succeed. A challenge would not survive.
                 </p>
                 <p>
-                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Appreciation trajectory: Sustainable.</strong>{' '}
-                  The 3.7% average annual growth over seven years tracks the Queensgate corridor average, not a price spike. This
-                  is demand-driven appreciation in a supply-constrained neighborhood — the kind that holds during
-                  corrections. The appreciation trend does not require adjustment or special monitoring.
-                </p>
-                <p>
-                  <strong style={{ color: 'hsl(270 80% 60%)' }}>The one variable to watch: Queensgate Blvd commercial development.</strong>{' '}
-                  $3.05M in active commercial permits within 0.5 miles is the single most important factor for this
-                  property's next assessment cycle. If the retail center and restaurant complete successfully, expect
-                  2-4% upward pressure on residential land values in the immediate area. If they stall or fail,
-                  the current trajectory holds — no downside, just no bonus. This is the decision point: when those
-                  developments complete (est. Q4 2026), re-run this dossier.
-                </p>
-                <p>
-                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Tax position: Proportionate.</strong>{' '}
-                  At ${DEMO_PARCEL.levyRate}/$1,000, the {fmt(DEMO_PARCEL.taxAmount)} annual burden is in line with
-                  comparable properties. The 44% share flowing to Richland School District is the primary reason
+                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Why taxes are high here — and why that's the point.</strong>{' '}
+                  The 44% share flowing to Richland School District is the primary reason
                   this neighborhood commands a price premium — the tax funds the amenity that drives the value.
-                  No action needed.
                 </p>
                 <p
                   className='rounded-xl px-5 py-4 mt-3 text-base leading-relaxed'
@@ -971,107 +854,37 @@ export default function AtlasDossierDemo() {
               color='hsl(120 60% 45%)'
             />
 
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
-              <div
-                className='rounded-xl overflow-hidden'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='h-1' style={{ background: 'hsl(var(--tf-suite-atlas))' }} />
-                <div className='p-5'>
-                  <div className='flex items-center gap-2.5 mb-4'>
-                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(var(--tf-suite-atlas) / 0.12)' }}>
-                      <FileText size={18} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                    </div>
-                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      For the Assessor
-                    </h3>
+            <div
+              className='rounded-xl overflow-hidden'
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                border: '1px solid hsl(var(--tf-border))',
+              }}
+            >
+              <div className='h-1' style={{ background: 'hsl(var(--tf-suite-atlas))' }} />
+              <div className='p-5'>
+                <div className='flex items-center gap-2.5 mb-4'>
+                  <div className='p-1.5 rounded-lg' style={{ background: 'hsl(var(--tf-suite-atlas) / 0.12)' }}>
+                    <FileText size={18} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
                   </div>
-                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                      <span>No value adjustment needed — current assessment is within 2% of comparable sales median</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                      <span>Monitor 2900 Queensgate sale price when finalized — may establish new comparable baseline</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
-                      <span>Schedule Queensgate Blvd commercial impact analysis when development completes (est. Q4 2026)</span>
-                    </li>
-                  </ul>
+                  <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                    Next Actions
+                  </h3>
                 </div>
-              </div>
-
-              <div
-                className='rounded-xl overflow-hidden'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='h-1' style={{ background: 'hsl(150 70% 45%)' }} />
-                <div className='p-5'>
-                  <div className='flex items-center gap-2.5 mb-4'>
-                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(150 70% 45% / 0.12)' }}>
-                      <TrendingUp size={18} style={{ color: 'hsl(150 70% 45%)' }} />
-                    </div>
-                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      For the Investor
-                    </h3>
-                  </div>
-                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                      <span>Stable appreciation (3.7% annual growth) with commercial amenity upside in 12-18 months</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                      <span>Owner equity: ~{fmt(DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice)} since 2019 purchase ({((DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice) / DEMO_PARCEL.lastSalePrice * 100).toFixed(0)}% gain)</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                      <span>Tax-to-value ratio of {((DEMO_PARCEL.taxAmount / DEMO_PARCEL.marketValue) * 100).toFixed(2)}% — in line with Benton County average</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div
-                className='rounded-xl overflow-hidden'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                }}
-              >
-                <div className='h-1' style={{ background: 'hsl(25 95% 55%)' }} />
-                <div className='p-5'>
-                  <div className='flex items-center gap-2.5 mb-4'>
-                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(25 95% 55% / 0.12)' }}>
-                      <Building2 size={18} style={{ color: 'hsl(25 95% 55%)' }} />
-                    </div>
-                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      For the Developer
-                    </h3>
-                  </div>
-                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                      <span>Proven buyer demand: ${Math.round((555000 + 538000 + 572000 + 549000) / 4).toLocaleString()} average sale price for 2,700+ SF homes in Queensgate</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
-                      <span>Zoning: R-1 supports single-family. Remaining buildable lots in Phase 12 are limited — check Phase 13 availability</span>
-                    </li>
-                    <li className='flex gap-2.5'>
-                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                      <span>Land cost basis: ~$115,000/lot at current assessment — factor into pro forma</span>
-                    </li>
-                  </ul>
-                </div>
+                <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
+                  <li className='flex gap-2.5'>
+                    <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
+                    <span><strong style={{ color: 'hsl(var(--tf-fg))' }}>No value adjustment needed</strong> — current assessment is within 2% of comparable sales median</span>
+                  </li>
+                  <li className='flex gap-2.5'>
+                    <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
+                    <span><strong style={{ color: 'hsl(var(--tf-fg))' }}>Monitor 2900 Queensgate sale price</strong> when finalized — may establish new comparable baseline</span>
+                  </li>
+                  <li className='flex gap-2.5'>
+                    <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
+                    <span><strong style={{ color: 'hsl(var(--tf-fg))' }}>Schedule commercial impact analysis</strong> when Queensgate Blvd development completes (est. Q4 2026)</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </section>

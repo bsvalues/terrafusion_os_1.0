@@ -1,6 +1,8 @@
 # TerraFusion Intelligence Preview — Conference Command Center
 
-> **People did not remember the software. They remembered the decisions.**
+> **Users remembered the decisions. They forgot the delivery mechanism.**
+>
+> *People did not remember the software. They remembered the decisions.*
 
 **Status**: ACTIVE
 **Created**: 2026-06-02
