@@ -153,15 +153,15 @@ function SectionHeader({
   color: string;
 }) {
   return (
-    <div className='flex items-center gap-3 mb-5'>
-      <div className='p-2.5 rounded-xl' style={{ background: `${color}12` }}>
-        <Icon size={22} style={{ color }} />
+    <div className='flex items-center gap-4 mb-6'>
+      <div className='p-3 rounded-xl' style={{ background: `${color}12` }}>
+        <Icon size={26} style={{ color }} />
       </div>
       <div>
-        <h2 className='text-lg font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
+        <h2 className='text-xl sm:text-2xl font-bold tracking-tight' style={{ color: 'hsl(var(--tf-fg))' }}>
           {title}
         </h2>
-        <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+        <p className='text-sm sm:text-base' style={{ color: 'hsl(var(--tf-muted))' }}>
           {subtitle}
         </p>
       </div>
@@ -171,7 +171,7 @@ function SectionHeader({
 
 function DataRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className='flex justify-between items-baseline py-1.5'>
+    <div className='flex justify-between items-baseline py-2' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.3)' }}>
       <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
         {label}
       </span>
@@ -201,26 +201,48 @@ function SignalCard({
     neutral: 'hsl(210 70% 55%)',
     watch: 'hsl(35 90% 50%)',
   };
+  const bgTints = {
+    positive: 'hsl(150 70% 45% / 0.04)',
+    neutral: 'hsl(210 70% 55% / 0.04)',
+    watch: 'hsl(35 90% 50% / 0.04)',
+  };
   const color = colors[severity];
+
+  const decisionSplit = description.split(/Decision:\s*/);
+  const hasDecision = decisionSplit.length > 1;
 
   return (
     <div
-      className='p-4 rounded-xl'
+      className='p-5 rounded-xl'
       style={{
-        background: 'hsl(var(--tf-card-bg))',
+        background: bgTints[severity],
         border: '1px solid hsl(var(--tf-border))',
-        borderLeft: `3px solid ${color}`,
+        borderLeft: `4px solid ${color}`,
       }}
     >
       <div className='flex items-start gap-3'>
-        <Icon size={18} className='mt-0.5 shrink-0' style={{ color }} />
-        <div>
-          <h4 className='text-sm font-medium mb-1' style={{ color: 'hsl(var(--tf-fg))' }}>
+        <div className='p-1.5 rounded-lg shrink-0 mt-0.5' style={{ background: `${color}18` }}>
+          <Icon size={20} style={{ color }} />
+        </div>
+        <div className='min-w-0'>
+          <h4 className='text-base font-semibold leading-snug mb-2' style={{ color: 'hsl(var(--tf-fg))' }}>
             {title}
           </h4>
           <p className='text-sm leading-relaxed' style={{ color: 'hsl(var(--tf-muted))' }}>
-            {description}
+            {hasDecision ? decisionSplit[0] : description}
           </p>
+          {hasDecision && (
+            <p
+              className='text-sm font-medium mt-2 px-3 py-2 rounded-lg leading-relaxed'
+              style={{
+                color,
+                background: `${color}10`,
+                border: `1px solid ${color}20`,
+              }}
+            >
+              Decision: {decisionSplit[1]}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -270,12 +292,12 @@ export default function AtlasDossierDemo() {
           </div>
           <div className='flex-1'>
             <p
-              className='text-xs font-medium uppercase tracking-wider'
+              className='text-xs font-semibold uppercase tracking-widest'
               style={{ color: 'hsl(var(--tf-suite-atlas))' }}
             >
               Atlas Property Dossier
             </p>
-            <h1 className='text-lg font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
+            <h1 className='text-xl font-bold tracking-tight' style={{ color: 'hsl(var(--tf-fg))' }}>
               {DEMO_PARCEL.address}, {DEMO_PARCEL.city}
             </h1>
           </div>
@@ -300,7 +322,7 @@ export default function AtlasDossierDemo() {
               <a
                 key={s.id}
                 href={`#dossier-${s.id}`}
-                className='flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-t-lg transition-colors whitespace-nowrap hover:bg-white/5'
+                className='flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap hover:bg-white/5'
                 style={{
                   color: 'hsl(var(--tf-muted))',
                   borderBottom: '2px solid transparent',
@@ -310,7 +332,7 @@ export default function AtlasDossierDemo() {
                   document.getElementById(`dossier-${s.id}`)?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                <Icon size={14} />
+                <Icon size={16} />
                 {s.label}
               </a>
             );
@@ -320,44 +342,90 @@ export default function AtlasDossierDemo() {
 
       {/* Dossier Content */}
       <main className='flex-1 min-h-0 overflow-y-auto'>
-        <div className='max-w-[1100px] mx-auto px-6 py-8 space-y-10'>
+        <div className='max-w-[1100px] mx-auto px-6 py-10 space-y-16'>
 
           {/* ================================================================ */}
           {/* HEADLINE: Atlas Intelligence Summary */}
           {/* The one thing they remember when they leave the room. */}
           {/* ================================================================ */}
           <section
-            className='rounded-2xl p-6 sm:p-8'
+            className='rounded-2xl p-8 sm:p-10 relative overflow-hidden'
             style={{
-              background: 'linear-gradient(135deg, hsl(var(--tf-suite-atlas) / 0.08), hsl(270 80% 60% / 0.05))',
-              border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
+              background: 'linear-gradient(135deg, hsl(var(--tf-suite-atlas) / 0.12), hsl(270 80% 60% / 0.08), hsl(var(--tf-suite-atlas) / 0.04))',
+              border: '2px solid hsl(var(--tf-suite-atlas) / 0.3)',
+              boxShadow: '0 0 40px hsl(var(--tf-suite-atlas) / 0.08), inset 0 1px 0 hsl(var(--tf-suite-atlas) / 0.1)',
             }}
           >
-            <p
-              className='text-xs font-semibold uppercase tracking-widest mb-3'
-              style={{ color: 'hsl(var(--tf-suite-atlas))' }}
-            >
-              Atlas Intelligence Summary
-            </p>
-            <p
-              className='text-xl sm:text-2xl font-bold leading-snug mb-4'
-              style={{ color: 'hsl(var(--tf-fg))' }}
-            >
-              A well-assessed property in an appreciating corridor — hold position, watch the
-              commercial development on Queensgate Blvd for upside.
-            </p>
-            <div className='flex flex-wrap gap-4 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.7)' }}>
-              <span>Assessed: <strong style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.assessedValue)}</strong></span>
-              <span>Ratio: <strong style={{ color: 'hsl(150 70% 45%)' }}>1.00</strong></span>
-              <span>Growth: <strong style={{ color: 'hsl(150 70% 45%)' }}>+{DEMO_PARCEL.changePercent}% YoY</strong></span>
-              <span>Risk: <strong style={{ color: 'hsl(150 70% 45%)' }}>Low</strong></span>
+            <div
+              className='absolute top-0 right-0 w-64 h-64 rounded-full opacity-20 blur-3xl pointer-events-none'
+              style={{ background: 'hsl(var(--tf-suite-atlas))' }}
+            />
+            <div className='relative'>
+              <div className='flex items-center gap-3 mb-4'>
+                <Lightbulb size={20} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                <p
+                  className='text-sm font-bold uppercase tracking-widest'
+                  style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+                >
+                  Atlas Intelligence Summary
+                </p>
+              </div>
+              <p
+                className='text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-6'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
+                A well-assessed property in an appreciating corridor — hold position, watch the
+                commercial development on Queensgate Blvd for upside.
+              </p>
+              <div className='flex flex-wrap gap-3'>
+                <span
+                  className='inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium'
+                  style={{
+                    background: 'hsl(var(--tf-card-bg) / 0.6)',
+                    border: '1px solid hsl(var(--tf-border))',
+                    color: 'hsl(var(--tf-fg))',
+                  }}
+                >
+                  Assessed: <strong>{fmt(DEMO_PARCEL.assessedValue)}</strong>
+                </span>
+                <span
+                  className='inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium'
+                  style={{
+                    background: 'hsl(150 70% 45% / 0.1)',
+                    border: '1px solid hsl(150 70% 45% / 0.2)',
+                    color: 'hsl(150 70% 45%)',
+                  }}
+                >
+                  Ratio: <strong>1.00</strong>
+                </span>
+                <span
+                  className='inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium'
+                  style={{
+                    background: 'hsl(150 70% 45% / 0.1)',
+                    border: '1px solid hsl(150 70% 45% / 0.2)',
+                    color: 'hsl(150 70% 45%)',
+                  }}
+                >
+                  Growth: <strong>+{DEMO_PARCEL.changePercent}% YoY</strong>
+                </span>
+                <span
+                  className='inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium'
+                  style={{
+                    background: 'hsl(150 70% 45% / 0.1)',
+                    border: '1px solid hsl(150 70% 45% / 0.2)',
+                    color: 'hsl(150 70% 45%)',
+                  }}
+                >
+                  Risk: <strong>Low</strong>
+                </span>
+              </div>
             </div>
           </section>
 
           {/* ================================================================ */}
           {/* SECTION 1: Property Snapshot — What is this? */}
           {/* ================================================================ */}
-          <section id='dossier-snapshot'>
+          <section id='dossier-snapshot' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={Home}
               title='Property Snapshot'
@@ -430,15 +498,15 @@ export default function AtlasDossierDemo() {
               </h3>
               <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
                 <div>
-                  <p className='text-xs mb-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>Assessed Value</p>
-                  <p className='text-xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.assessedValue)}</p>
-                  <p className='text-xs font-medium' style={{ color: 'hsl(150 70% 45%)' }}>
+                  <p className='text-xs mb-1' style={{ color: 'hsl(var(--tf-muted))' }}>Assessed Value</p>
+                  <p className='text-2xl sm:text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.assessedValue)}</p>
+                  <p className='text-xs font-semibold mt-0.5' style={{ color: 'hsl(150 70% 45%)' }}>
                     +{DEMO_PARCEL.changePercent}% from prior year
                   </p>
                 </div>
                 <div>
-                  <p className='text-xs mb-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>Market Value</p>
-                  <p className='text-xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.marketValue)}</p>
+                  <p className='text-xs mb-1' style={{ color: 'hsl(var(--tf-muted))' }}>Market Value</p>
+                  <p className='text-2xl sm:text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.marketValue)}</p>
                 </div>
                 <div>
                   <p className='text-xs mb-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>Land</p>
@@ -495,7 +563,7 @@ export default function AtlasDossierDemo() {
           {/* ================================================================ */}
           {/* SECTION 2: Context — What surrounds it? */}
           {/* ================================================================ */}
-          <section id='dossier-context'>
+          <section id='dossier-context' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={Layers}
               title='Context'
@@ -660,7 +728,7 @@ export default function AtlasDossierDemo() {
           {/* ================================================================ */}
           {/* SECTION 3: Activity — What is happening nearby? */}
           {/* ================================================================ */}
-          <section id='dossier-activity'>
+          <section id='dossier-activity' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={Activity}
               title='Activity'
@@ -694,7 +762,7 @@ export default function AtlasDossierDemo() {
                       </p>
                     </div>
                     <span
-                      className='text-xs px-2 py-0.5 rounded-full whitespace-nowrap'
+                      className='text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap'
                       style={{
                         background: p.status === 'Under Construction'
                           ? 'hsl(35 90% 50% / 0.15)'
@@ -780,7 +848,7 @@ export default function AtlasDossierDemo() {
           {/* ================================================================ */}
           {/* SECTION 4: Signals — What matters? */}
           {/* ================================================================ */}
-          <section id='dossier-signals'>
+          <section id='dossier-signals' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={Zap}
               title='Signals'
@@ -788,7 +856,7 @@ export default function AtlasDossierDemo() {
               color='hsl(35 90% 50%)'
             />
 
-            <div className='space-y-3'>
+            <div className='space-y-4'>
               <SignalCard
                 icon={TrendingUp}
                 title='The appreciation trend appears sustainable, not speculative'
@@ -829,7 +897,7 @@ export default function AtlasDossierDemo() {
           {/* ================================================================ */}
           {/* SECTION 5: Atlas Insight — What does it mean? */}
           {/* ================================================================ */}
-          <section id='dossier-insight'>
+          <section id='dossier-insight' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={Lightbulb}
               title='Atlas Insight'
@@ -838,13 +906,13 @@ export default function AtlasDossierDemo() {
             />
 
             <div
-              className='rounded-xl p-6'
+              className='rounded-xl p-6 sm:p-8'
               style={{
                 background: 'linear-gradient(135deg, hsl(270 80% 60% / 0.06), hsl(210 90% 55% / 0.06))',
-                border: '1px solid hsl(270 80% 60% / 0.15)',
+                border: '1px solid hsl(270 80% 60% / 0.2)',
               }}
             >
-              <div className='space-y-4 text-sm leading-relaxed' style={{ color: 'hsl(var(--tf-fg) / 0.9)' }}>
+              <div className='space-y-5 text-sm sm:text-base leading-relaxed' style={{ color: 'hsl(var(--tf-fg) / 0.9)' }}>
                 <p>
                   <strong style={{ color: 'hsl(var(--tf-fg))' }}>The current assessment is defensible, the market position is stable, and the only variable worth watching is the commercial corridor developing a quarter-mile south.</strong>
                 </p>
@@ -877,10 +945,10 @@ export default function AtlasDossierDemo() {
                   No action needed.
                 </p>
                 <p
-                  className='rounded-lg px-4 py-3 mt-2'
+                  className='rounded-xl px-5 py-4 mt-3 text-base leading-relaxed'
                   style={{
-                    background: 'hsl(270 80% 60% / 0.08)',
-                    border: '1px solid hsl(270 80% 60% / 0.12)',
+                    background: 'hsl(270 80% 60% / 0.1)',
+                    border: '1px solid hsl(270 80% 60% / 0.2)',
                     color: 'hsl(var(--tf-fg))',
                   }}
                 >
@@ -895,7 +963,7 @@ export default function AtlasDossierDemo() {
           {/* ================================================================ */}
           {/* SECTION 6: Now What? */}
           {/* ================================================================ */}
-          <section id='dossier-now-what'>
+          <section id='dossier-now-what' className='pt-4' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.4)' }}>
             <SectionHeader
               icon={ArrowRight}
               title='Now What?'
@@ -904,94 +972,106 @@ export default function AtlasDossierDemo() {
             />
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
-              {/* For the Assessor */}
               <div
-                className='rounded-xl p-5'
+                className='rounded-xl overflow-hidden'
                 style={{
                   background: 'hsl(var(--tf-card-bg))',
                   border: '1px solid hsl(var(--tf-border))',
                 }}
               >
-                <div className='flex items-center gap-2 mb-4'>
-                  <FileText size={18} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                  <h3 className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                    For the Assessor
-                  </h3>
+                <div className='h-1' style={{ background: 'hsl(var(--tf-suite-atlas))' }} />
+                <div className='p-5'>
+                  <div className='flex items-center gap-2.5 mb-4'>
+                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(var(--tf-suite-atlas) / 0.12)' }}>
+                      <FileText size={18} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                    </div>
+                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      For the Assessor
+                    </h3>
+                  </div>
+                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
+                      <span>No value adjustment needed — current assessment is within 2% of comparable sales median</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
+                      <span>Monitor 2900 Queensgate sale price when finalized — may establish new comparable baseline</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
+                      <span>Schedule Queensgate Blvd commercial impact analysis when development completes (est. Q4 2026)</span>
+                    </li>
+                  </ul>
                 </div>
-                <ul className='space-y-2.5 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                    <span>No value adjustment needed — current assessment is within 2% of comparable sales median</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                    <span>Monitor 2900 Queensgate sale price when finalized — may establish new comparable baseline</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
-                    <span>Schedule Queensgate Blvd commercial impact analysis when development completes (est. Q4 2026)</span>
-                  </li>
-                </ul>
               </div>
 
-              {/* For the Investor */}
               <div
-                className='rounded-xl p-5'
+                className='rounded-xl overflow-hidden'
                 style={{
                   background: 'hsl(var(--tf-card-bg))',
                   border: '1px solid hsl(var(--tf-border))',
                 }}
               >
-                <div className='flex items-center gap-2 mb-4'>
-                  <TrendingUp size={18} style={{ color: 'hsl(150 70% 45%)' }} />
-                  <h3 className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                    For the Investor
-                  </h3>
+                <div className='h-1' style={{ background: 'hsl(150 70% 45%)' }} />
+                <div className='p-5'>
+                  <div className='flex items-center gap-2.5 mb-4'>
+                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(150 70% 45% / 0.12)' }}>
+                      <TrendingUp size={18} style={{ color: 'hsl(150 70% 45%)' }} />
+                    </div>
+                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      For the Investor
+                    </h3>
+                  </div>
+                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
+                      <span>Stable appreciation (3.7% CAGR) with commercial amenity upside in 12-18 months</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
+                      <span>Owner equity: ~{fmt(DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice)} since 2019 purchase ({((DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice) / DEMO_PARCEL.lastSalePrice * 100).toFixed(0)}% gain)</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
+                      <span>Tax-to-value ratio of {((DEMO_PARCEL.taxAmount / DEMO_PARCEL.marketValue) * 100).toFixed(2)}% — in line with Benton County average</span>
+                    </li>
+                  </ul>
                 </div>
-                <ul className='space-y-2.5 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                    <span>Stable appreciation (3.7% CAGR) with commercial amenity upside in 12-18 months</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                    <span>Owner equity: ~{fmt(DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice)} since 2019 purchase ({((DEMO_PARCEL.marketValue - DEMO_PARCEL.lastSalePrice) / DEMO_PARCEL.lastSalePrice * 100).toFixed(0)}% gain)</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                    <span>Tax-to-value ratio of {((DEMO_PARCEL.taxAmount / DEMO_PARCEL.marketValue) * 100).toFixed(2)}% — in line with Benton County average</span>
-                  </li>
-                </ul>
               </div>
 
-              {/* For the Developer */}
               <div
-                className='rounded-xl p-5'
+                className='rounded-xl overflow-hidden'
                 style={{
                   background: 'hsl(var(--tf-card-bg))',
                   border: '1px solid hsl(var(--tf-border))',
                 }}
               >
-                <div className='flex items-center gap-2 mb-4'>
-                  <Building2 size={18} style={{ color: 'hsl(25 95% 55%)' }} />
-                  <h3 className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                    For the Developer
-                  </h3>
+                <div className='h-1' style={{ background: 'hsl(25 95% 55%)' }} />
+                <div className='p-5'>
+                  <div className='flex items-center gap-2.5 mb-4'>
+                    <div className='p-1.5 rounded-lg' style={{ background: 'hsl(25 95% 55% / 0.12)' }}>
+                      <Building2 size={18} style={{ color: 'hsl(25 95% 55%)' }} />
+                    </div>
+                    <h3 className='text-base font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      For the Developer
+                    </h3>
+                  </div>
+                  <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
+                      <span>Proven buyer demand: ${Math.round((555000 + 538000 + 572000 + 549000) / 4).toLocaleString()} average sale price for 2,700+ SF homes in Queensgate</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
+                      <span>Zoning: R-1 supports single-family. Remaining buildable lots in Phase 12 are limited — check Phase 13 availability</span>
+                    </li>
+                    <li className='flex gap-2.5'>
+                      <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
+                      <span>Land cost basis: ~$115,000/lot at current assessment — factor into pro forma</span>
+                    </li>
+                  </ul>
                 </div>
-                <ul className='space-y-2.5 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                    <span>Proven buyer demand: ${Math.round((555000 + 538000 + 572000 + 549000) / 4).toLocaleString()} average sale price for 2,700+ SF homes in Queensgate</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(210 70% 55%)' }} />
-                    <span>Zoning: R-1 supports single-family. Remaining buildable lots in Phase 12 are limited — check Phase 13 availability</span>
-                  </li>
-                  <li className='flex gap-2'>
-                    <ChevronRight size={14} className='mt-1 shrink-0' style={{ color: 'hsl(35 90% 50%)' }} />
-                    <span>Land cost basis: ~$115,000/lot at current assessment — factor into pro forma</span>
-                  </li>
-                </ul>
               </div>
             </div>
           </section>
@@ -1000,39 +1080,39 @@ export default function AtlasDossierDemo() {
           {/* Dossier Footer */}
           {/* ================================================================ */}
           <div
-            className='rounded-xl p-5 flex items-center justify-between'
+            className='rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'
             style={{
               background: 'hsl(var(--tf-card-bg) / 0.5)',
               border: '1px solid hsl(var(--tf-border))',
             }}
           >
             <div>
-              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+              <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
                 TerraFusion Atlas • Property Dossier • Generated {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </p>
-              <p className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
+              <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
                 Data sources: Benton County Assessor, PACS 9.0, Washington DOR, US Census
               </p>
             </div>
-            <div className='flex gap-2'>
+            <div className='flex gap-3 shrink-0'>
               <button
                 onClick={() => navigate('/atlas/county-pulse/demo')}
-                className='px-3 py-2 rounded-lg text-xs font-medium transition-colors'
+                className='px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105'
                 style={{
-                  background: 'hsl(var(--tf-suite-atlas) / 0.1)',
+                  background: 'hsl(var(--tf-suite-atlas) / 0.12)',
                   color: 'hsl(var(--tf-suite-atlas))',
-                  border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
+                  border: '1px solid hsl(var(--tf-suite-atlas) / 0.3)',
                 }}
               >
                 County Pulse →
               </button>
               <button
                 onClick={() => navigate('/academy')}
-                className='px-3 py-2 rounded-lg text-xs font-medium transition-colors'
+                className='px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105'
                 style={{
-                  background: 'hsl(270 80% 60% / 0.1)',
+                  background: 'hsl(270 80% 60% / 0.12)',
                   color: 'hsl(270 80% 60%)',
-                  border: '1px solid hsl(270 80% 60% / 0.2)',
+                  border: '1px solid hsl(270 80% 60% / 0.3)',
                 }}
               >
                 Academy →
