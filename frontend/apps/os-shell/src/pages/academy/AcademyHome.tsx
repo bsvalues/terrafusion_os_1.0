@@ -32,7 +32,7 @@ export const CODEX_ENTRIES: CodexEntry[] = [
   },
   {
     slug: 'boe-preparation',
-    title: 'BOE Preparation',
+    title: 'Board of Equalization (BOE) Prep',
     category: 'compliance',
     difficulty: 'advanced',
     summary: 'Build defensible cases for Board of Equalization hearings with evidence packages and market support.',
@@ -43,7 +43,7 @@ export const CODEX_ENTRIES: CodexEntry[] = [
     title: 'Ratio Study',
     category: 'analysis',
     difficulty: 'advanced',
-    summary: 'Measure assessment uniformity using COD, PRD, and PRB statistics per IAAO standards.',
+    summary: 'Measure assessment uniformity using industry-standard statistics to ensure fair and equitable valuations.',
     icon: '📊',
   },
   {

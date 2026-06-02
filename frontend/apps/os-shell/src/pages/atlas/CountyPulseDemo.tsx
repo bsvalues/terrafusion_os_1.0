@@ -72,7 +72,7 @@ const RISK_WATCH: RiskItem[] = [
   {
     severity: 'high',
     title: 'Ratio drift in Badger Mountain neighborhoods',
-    detail: 'COD of 18.2 in BM-South (target: <15). Rapid appreciation outpacing assessed values. 234 properties need revaluation review. Decision: deploy field team to BM-South this cycle — if ratios are not corrected before the DOR study, the entire county risks a compliance finding.',
+    detail: 'Uniformity score (COD) of 18.2 in BM-South (target: below 15). Rapid appreciation outpacing assessed values. 234 properties need revaluation review. Decision: deploy field team to BM-South this cycle — if ratios are not corrected before the Dept. of Revenue study, the entire county risks a compliance finding.',
   },
   {
     severity: 'medium',
@@ -110,7 +110,7 @@ const TOP_5_WATCH = [
   },
   {
     title: 'Ratio Study Due in 90 Days',
-    detail: 'Why it matters: Preliminary median is 0.94 with COD of 13.8 — passing, but three neighborhoods are dragging the numbers. If those neighborhoods slip further, the county risks a conditional finding from DOR. Targeted review of those three areas is the highest-ROI use of analyst time this quarter.',
+    detail: 'Why it matters: Preliminary median is 0.94 with uniformity score (COD) of 13.8 — passing, but three neighborhoods are dragging the numbers. If those neighborhoods slip further, the county risks a conditional finding from Dept. of Revenue. Targeted review of those three areas is the highest-ROI use of analyst time this quarter.',
   },
 ];
 
@@ -481,7 +481,7 @@ export default function CountyPulseDemo() {
                   This Month
                 </h3>
                 <ul className='text-sm space-y-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <li>• Finalize ratio study — run targeted reviews on the three flagged neighborhoods to bring COD below 15 before DOR submission deadline</li>
+                  <li>• Finalize ratio study — run targeted reviews on the three flagged neighborhoods to bring uniformity score below 15 before Dept. of Revenue submission deadline</li>
                   <li>• Send Q2 commercial income questionnaires with penalty notice — target the 47 properties over $1M with no current income data first</li>
                   <li>• Complete new-construction assessments for 43 commercial permits nearing occupancy — $31M+ in value to capture</li>
                 </ul>
@@ -491,7 +491,7 @@ export default function CountyPulseDemo() {
                   This Quarter
                 </h3>
                 <ul className='text-sm space-y-1.5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <li>• Reclassify 8 ag-to-residential parcels in the west corridor — file with DOR before Q3 roll to avoid underassessment of ~$4.2M</li>
+                  <li>• Reclassify 8 ag-to-residential parcels in the west corridor — file with Dept. of Revenue before Q3 roll to avoid underassessment of ~$4.2M</li>
                   <li>• Build HB 2147 impact model showing $2.1M levy shift if passed — deliver to commissioners before legislative session vote</li>
                   <li>• Prepare quarterly commissioner briefing with growth corridor analysis, BOE outcomes, and ratio study results as a single decision package</li>
                 </ul>

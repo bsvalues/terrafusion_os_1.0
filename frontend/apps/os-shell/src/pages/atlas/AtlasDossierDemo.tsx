@@ -81,7 +81,7 @@ const DEMO_PARCEL = {
   roof: 'Architectural shingle',
   heating: 'Forced air — gas',
   cooling: 'Central AC',
-  qualityClass: 'Good (Class 4)',
+  qualityClass: 'Good (Class 4 of 6)',
   condition: 'Good',
   pool: false,
   fireplace: true,
@@ -396,7 +396,7 @@ export default function AtlasDossierDemo() {
                     color: 'hsl(150 70% 45%)',
                   }}
                 >
-                  Ratio: <strong>1.00</strong>
+                  Assessment Ratio: <strong>1.00</strong> (on target)
                 </span>
                 <span
                   className='inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium'
@@ -874,7 +874,7 @@ export default function AtlasDossierDemo() {
               <SignalCard
                 icon={BarChart3}
                 title='Assessment is well-calibrated — no appeal exposure'
-                description='Four comparable sales produce a median ratio of 1.00 with only 4% spread (0.98-1.02). This is well within IAAO standards (COD target: &lt;15). Decision: no BOE defense preparation needed. This assessment would survive challenge.'
+                description='Four comparable sales produce a median ratio of 1.00 with only 4% spread (0.98-1.02). This is well within industry standards for uniformity (IAAO target: below 15). Decision: no Board of Equalization defense preparation needed. This assessment would survive challenge.'
                 severity='positive'
               />
 
@@ -925,7 +925,7 @@ export default function AtlasDossierDemo() {
                 </p>
                 <p>
                   <strong style={{ color: 'hsl(270 80% 60%)' }}>Appreciation trajectory: Sustainable.</strong>{' '}
-                  The 3.7% CAGR over seven years tracks the Queensgate corridor average, not a price spike. This
+                  The 3.7% average annual growth over seven years tracks the Queensgate corridor average, not a price spike. This
                   is demand-driven appreciation in a supply-constrained neighborhood — the kind that holds during
                   corrections. The appreciation trend does not require adjustment or special monitoring.
                 </p>
@@ -1026,7 +1026,7 @@ export default function AtlasDossierDemo() {
                   <ul className='space-y-3 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.85)' }}>
                     <li className='flex gap-2.5'>
                       <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
-                      <span>Stable appreciation (3.7% CAGR) with commercial amenity upside in 12-18 months</span>
+                      <span>Stable appreciation (3.7% annual growth) with commercial amenity upside in 12-18 months</span>
                     </li>
                     <li className='flex gap-2.5'>
                       <ChevronRight size={16} className='mt-0.5 shrink-0' style={{ color: 'hsl(150 70% 45%)' }} />
