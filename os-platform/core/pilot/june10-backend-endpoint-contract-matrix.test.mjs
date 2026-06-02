@@ -148,6 +148,33 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "dead"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/collaboration/users",
+      authRequirement: "authorized",
+      body: "return await _collaborationService.GetUsersAsync();"
+    }),
+    "dead"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/sync/doctrine/policy/ratio",
+      authRequirement: "authorized",
+      body: "var query = _db.TfDoctrineRatioPolicies.AsNoTracking().AsQueryable();"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/fismacompliance/status",
+      authRequirement: "authorized",
+      body: "return await _complianceService.GetComplianceStatusAsync();"
+    }),
+    "dead"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {

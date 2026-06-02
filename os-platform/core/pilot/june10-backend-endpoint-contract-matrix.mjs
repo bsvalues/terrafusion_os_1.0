@@ -173,6 +173,9 @@ export function classifyEndpoint(endpoint) {
   if (endpoint.route?.startsWith("/api/realdata/")) {
     return "not_applicable";
   }
+  if (endpoint.route?.startsWith("/api/sync/doctrine/policy/")) {
+    return "not_applicable";
+  }
   if (endpoint.route?.startsWith("/api/performance/elite/")) {
     return "dead";
   }
@@ -183,6 +186,12 @@ export function classifyEndpoint(endpoint) {
     return "dead";
   }
   if (endpoint.route?.startsWith("/api/codex/reports/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/collaboration/")) {
+    return "dead";
+  }
+  if (endpoint.route?.startsWith("/api/fismacompliance/")) {
     return "dead";
   }
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
