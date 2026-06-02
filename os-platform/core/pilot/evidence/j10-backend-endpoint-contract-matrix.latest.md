@@ -1,18 +1,18 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-02T02:22:12.458Z
+- Generated: 2026-06-02T03:21:56.560Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: fe49fedf1127411a612158ece99065301ca1d309ddf6e9dc60a28757af601696
+- Packet hash: e2653af315926f66ac5c75be8e5d70e6ebeb1e2056535b3a33754368ada1ae5a
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 424 |
+| Safe dev39 GET candidates | 422 |
 | Static-only endpoints | 829 |
 | Live dev39 probed endpoints | 452 |
 
@@ -20,11 +20,11 @@
 
 | Classification | Count |
 | --- | ---: |
-| live | 275 |
-| protected | 696 |
-| broken | 77 |
+| live | 272 |
+| protected | 695 |
+| broken | 79 |
 | mock | 0 |
-| dead | 152 |
+| dead | 154 |
 | not_applicable | 62 |
 | unknown | 19 |
 
@@ -38,6 +38,7 @@
 
 ## Live Dev39 Broken/Dead Sample
 
+- GET /api/aiassistant/health: broken (500)
 - GET /api/aimodels/status: dead (404)
 - GET /api/aimodels/sentiment-trends: dead (404)
 - GET /api/aiorchestration/health: broken (500)
@@ -46,8 +47,8 @@
 - GET /api/aiswarm/performance: dead (501)
 - GET /api/aiswarm/workflows: dead (501)
 - GET /api/atlas/spatial: broken (503)
-- GET /api/atlas/gis/geocode: broken (500)
-- GET /api/atlas/gis/spatial-query: broken (500)
+- GET /api/atlas/gis/geocode: broken (400)
+- GET /api/atlas/gis/spatial-query: broken (400)
 - GET /api/levy/v1/banked-capacity: broken (400)
 - GET /api/levy/budget/visualization: broken (500)
 - GET /api/levy/budget/scenarios: broken (500)
@@ -57,6 +58,7 @@
 - GET /api/debug/sync-pop-2/pacs-table-columns: dead (404)
 - GET /api/debug/pacs-counts: dead (404)
 - GET /api/codex/collaboration/health: broken (500)
+- GET /api/compliance/dashboard: broken (500)
 - GET /api/ai/consciousness: dead (501)
 - GET /api/ai/consciousness/enhanced: dead (501)
 - GET /api/ai/consciousness/system-status: dead (501)
@@ -74,20 +76,18 @@
 - GET /api/dataquality/issues: broken (500)
 - GET /api/sync/doctrine/state: broken (0)
 - GET /api/sync/doctrine/lanes: broken (0)
+- GET /api/elitedashboard/counties: broken (0)
 - GET /api/ecosystem/enhancement-modules: broken (500)
 - GET /api/equity/metrics: broken (400)
 - GET /api/equity/rollup: broken (400)
 - GET /api/forge/cost/batch/preview: broken (503)
 - GET /api/forge/cost/batch/history: broken (503)
-- GET /api/gis/geocode: broken (500)
-- GET /api/gis/parcels/spatial: broken (500)
-- GET /api/gis/layers: broken (500)
-- GET /api/gis/proximity: broken (500)
+- GET /api/gis/geocode: dead (404)
 - GET /api/levy/glossary/terms: dead (501)
 - GET /api/levy/glossary/categories: dead (501)
+- GET /api/compliance/government/dashboard: dead (404)
 - GET /api/compliance/certification: broken (503)
 - GET /api/gpt/search: broken (400)
-- GET /api/harrispacsenhancement/sessions: broken (500)
 
 ## Hard Stop
 

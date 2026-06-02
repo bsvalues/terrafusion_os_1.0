@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-02T02:35:18.134Z",
+  "generatedAt": "2026-06-02T03:01:58.907Z",
   "operation": "dev39_backend_deploy_preflight",
   "target": "dev39",
   "productionTouched": false,
   "databaseMutation": false,
   "cleanup": "docker_builder_cache_only",
-  "beforeUsePercent": 81,
-  "afterUsePercent": 81,
+  "beforeUsePercent": 83,
+  "afterUsePercent": 82,
   "warningThresholdPercent": 90,
   "verdict": "PASS_BELOW_WARNING_THRESHOLD",
-  "packetHash": "9a337d8a738fa26079629f497e2ec85ff37bf80b951a6ab4e41e08335c5b744e"
+  "packetHash": "b9aceeeca784a2497176e27061e48b34bfcd3d95c7a39ecf0b3fdaebf3c6007c"
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T02:23:27.667Z",
+  "generatedAt": "2026-06-02T03:19:11.950Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -52,10 +52,10 @@
     "note": "Lock files, generated/build outputs, dependency folders, archive/quarantine trees, and oversized files are excluded from the canonical denominator."
   },
   "summary": {
-    "totalFilesScanned": 7557,
-    "filesWithSignals": 2112,
+    "totalFilesScanned": 7558,
+    "filesWithSignals": 2113,
     "productionRiskFiles": 391,
-    "demoSafeFiles": 1410,
+    "demoSafeFiles": 1411,
     "dormantFiles": 298,
     "deadFiles": 13,
     "endpointAffectingMocks": 0,
@@ -64,7 +64,7 @@
     "byBucket": {
       "backend_runtime": 397,
       "docs": 156,
-      "test": 745,
+      "test": 746,
       "frontend_runtime": 403,
       "ops": 41,
       "core_governance": 88,
@@ -75,7 +75,7 @@
     },
     "byClassification": {
       "production_risk": 391,
-      "demo_safe": 1410,
+      "demo_safe": 1411,
       "dormant": 298,
       "dead": 13
     },
@@ -85,7 +85,7 @@
       "mock": 708,
       "sample_or_fixture": 424,
       "todo": 72,
-      "fallback": 532,
+      "fallback": 533,
       "fake": 106,
       "hardcoded": 119,
       "not_implemented": 12
@@ -1521,7 +1521,7 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 248,
+      "staticReferenceCount": 249,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -1980,7 +1980,7 @@
       "classification": "production_risk",
       "signalKinds": ["todo"],
       "matchCount": 3,
-      "staticReferenceCount": 247,
+      "staticReferenceCount": 248,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -2169,7 +2169,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 2,
-      "staticReferenceCount": 304,
+      "staticReferenceCount": 313,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -3740,7 +3740,7 @@
       "classification": "demo_safe",
       "signalKinds": ["fallback"],
       "matchCount": 1,
-      "staticReferenceCount": 249,
+      "staticReferenceCount": 250,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -13899,6 +13899,15 @@
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
+      "path": "os-platform/core/pilot/j10-gis-registration-contract.test.mjs",
+      "bucket": "test",
+      "classification": "demo_safe",
+      "signalKinds": ["fallback"],
+      "matchCount": 1,
+      "staticReferenceCount": 0,
+      "wave1DispositionStatus": "not_wave1_dispositioned"
+    },
+    {
       "path": "os-platform/core/pilot/j10-mock-stub-triage-wave1.mjs",
       "bucket": "core_governance",
       "classification": "dormant",
@@ -20139,7 +20148,7 @@
         "placeholder"
       ],
       "matchCount": 20,
-      "staticReferenceCount": 248,
+      "staticReferenceCount": 249,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20215,5 +20224,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "86cc9e17b0ea7ebb7ed5a7cea5a292bf204236899bd44dedbde6e9c0a5bb17e5"
+  "packetHash": "8ed472a68821894b5ebfb33f262e7d529a78f888c855533e77b01948c9d07533"
 }
