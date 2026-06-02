@@ -121,6 +121,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "dead"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/codex/performance/health",
+      authRequirement: "authorized",
+      body: "return await _performanceService.GetPerformanceMetricsAsync();"
+    }),
+    "dead"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {

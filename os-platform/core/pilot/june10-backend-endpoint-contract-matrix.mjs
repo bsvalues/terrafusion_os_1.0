@@ -176,6 +176,9 @@ export function classifyEndpoint(endpoint) {
   if (endpoint.route?.startsWith("/api/knowledgebase/")) {
     return "dead";
   }
+  if (endpoint.route?.startsWith("/api/codex/performance/")) {
+    return "dead";
+  }
   if (/StatusCode\s*\(\s*501\b|NotImplementedException|NotImplemented|not implemented/i.test(body)) {
     return "dead";
   }

@@ -1,30 +1,30 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-02T01:42:24.880Z
+- Generated: 2026-06-02T01:50:22.512Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: 833e4cec4417e7a0513c97a2ffe3fb6d7d800dd52eb45d0620d4e31e505278a3
+- Packet hash: 581804d874b249584b06e5668fe4dacbd74b17f3d116f5add654d825af2295b0
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 465 |
-| Static-only endpoints | 788 |
-| Live dev39 probed endpoints | 493 |
+| Safe dev39 GET candidates | 457 |
+| Static-only endpoints | 796 |
+| Live dev39 probed endpoints | 485 |
 
 ## Classification Counts
 
 | Classification | Count |
 | --- | ---: |
 | live | 276 |
-| protected | 751 |
-| broken | 117 |
+| protected | 749 |
+| broken | 109 |
 | mock | 0 |
-| dead | 77 |
+| dead | 87 |
 | not_applicable | 41 |
 | unknown | 19 |
 
@@ -61,14 +61,6 @@
 - GET /api/debug/sync-pop-2/pacs-table-columns: dead (404)
 - GET /api/debug/pacs-counts: dead (404)
 - GET /api/codex/collaboration/health: broken (500)
-- GET /api/codex/performance/system-wide: broken (500)
-- GET /api/codex/performance/foundation: broken (500)
-- GET /api/codex/performance/amplification: broken (500)
-- GET /api/codex/performance/ultimate-power: broken (500)
-- GET /api/codex/performance/alerts: broken (500)
-- GET /api/codex/performance/metrics: broken (500)
-- GET /api/codex/performance/cache/statistics: broken (500)
-- GET /api/codex/performance/health: broken (500)
 - GET /api/codex/reports/daily: broken (500)
 - GET /api/codex/reports/weekly: broken (500)
 - GET /api/codex/reports/monthly: broken (500)
@@ -88,6 +80,14 @@
 - GET /api/costforge/traces: broken (400)
 - GET /api/costforge-test/status: dead (404)
 - GET /api/costforge-test/metrics: dead (404)
+- GET /api/costforge-test/agents/status: dead (404)
+- GET /api/county-study/studies: broken (400)
+- GET /api/dataimport/api/files: dead (404)
+- GET /api/dataimport/api/import-history: dead (404)
+- GET /api/dataquality/report: broken (500)
+- GET /api/dataquality/issues: broken (500)
+- GET /api/sync/doctrine/policy/ratio: broken (500)
+- GET /api/sync/doctrine/policy/ratio/evaluate: broken (400)
 
 ## Hard Stop
 

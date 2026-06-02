@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T01:42:56.194Z",
+  "generatedAt": "2026-06-02T01:50:56.030Z",
   "operation": "canonical_mock_stub_audit_refresh",
   "productionTouched": false,
   "databaseMutation": false,
@@ -1199,7 +1199,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 81,
+      "staticReferenceCount": 78,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1226,7 +1226,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 118,
+      "staticReferenceCount": 112,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1334,7 +1334,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 198,
+      "staticReferenceCount": 195,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -1424,7 +1424,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 128,
+      "staticReferenceCount": 125,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -19952,7 +19952,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 81,
+      "staticReferenceCount": 78,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -19979,7 +19979,7 @@
       "classification": "production_risk",
       "signalKinds": ["mock"],
       "matchCount": 2,
-      "staticReferenceCount": 118,
+      "staticReferenceCount": 112,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20024,7 +20024,7 @@
       "classification": "production_risk",
       "signalKinds": ["placeholder"],
       "matchCount": 1,
-      "staticReferenceCount": 198,
+      "staticReferenceCount": 195,
       "wave1DispositionStatus": "not_wave1_dispositioned"
     },
     {
@@ -20069,7 +20069,7 @@
       "classification": "production_risk",
       "signalKinds": ["stub"],
       "matchCount": 2,
-      "staticReferenceCount": 128,
+      "staticReferenceCount": 125,
       "wave1DispositionStatus": "wave1_dispositioned"
     },
     {
@@ -20215,5 +20215,5 @@
       "wave1DispositionStatus": "wave1_dispositioned"
     }
   ],
-  "packetHash": "994dd9e76d0a3f9e2eead709490f5b1e01ca11657dd607ee7d1e727c1b901642"
+  "packetHash": "c8c75c0cdea1a1f3c8873016e8c9beb8d0c37ce5814385d5da9b29736fcf5896"
 }
