@@ -142,6 +142,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
   assert.equal(
     classifyEndpoint({
       httpMethod: "GET",
+      route: "/api/production/pacs/ciaps/properties",
+      authRequirement: "authorized",
+      body: "var extractionResult = await _pacsDataEngine.ExtractCIAPSPropertyDataAsync();"
+    }),
+    "not_applicable"
+  );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
       route: "/api/codex/reports/daily",
       authRequirement: "authorized",
       body: "var report = await _reportService.GenerateDailyReportAsync(countyId, targetDate);"

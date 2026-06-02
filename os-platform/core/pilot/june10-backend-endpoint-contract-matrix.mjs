@@ -173,6 +173,9 @@ export function classifyEndpoint(endpoint) {
   if (endpoint.route?.startsWith("/api/realdata/")) {
     return "not_applicable";
   }
+  if (endpoint.route?.startsWith("/api/production/pacs/")) {
+    return "not_applicable";
+  }
   if (endpoint.route?.startsWith("/api/sync/doctrine/policy/")) {
     return "not_applicable";
   }

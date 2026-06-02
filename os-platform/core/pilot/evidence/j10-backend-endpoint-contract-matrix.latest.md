@@ -1,31 +1,31 @@
 # Backend Endpoint Contract Matrix
 
-- Generated: 2026-06-02T03:21:56.560Z
+- Generated: 2026-06-02T03:26:48.901Z
 - Verdict: CLASSIFICATION_ONLY_NOT_PRODUCTION_READY
 - Controller root: C:\Users\bsval\terrafusion_os_1.0\backend\src\TerraFusion.API\Controllers
 - Production binding touched: false
 - DB mutation touched: false
-- Packet hash: e2653af315926f66ac5c75be8e5d70e6ebeb1e2056535b3a33754368ada1ae5a
+- Packet hash: 2a3b82dedf6bf40a748ba96a53fa58c881819624914325ec540511a0718bb953
 
 ## Summary
 
 | Metric | Count |
 | --- | ---: |
 | Total endpoints | 1281 |
-| Safe dev39 GET candidates | 422 |
-| Static-only endpoints | 829 |
-| Live dev39 probed endpoints | 452 |
+| Safe dev39 GET candidates | 418 |
+| Static-only endpoints | 833 |
+| Live dev39 probed endpoints | 448 |
 
 ## Classification Counts
 
 | Classification | Count |
 | --- | ---: |
-| live | 272 |
-| protected | 695 |
-| broken | 79 |
+| live | 273 |
+| protected | 688 |
+| broken | 74 |
 | mock | 0 |
 | dead | 154 |
-| not_applicable | 62 |
+| not_applicable | 73 |
 | unknown | 19 |
 
 ## Method Counts
@@ -76,7 +76,6 @@
 - GET /api/dataquality/issues: broken (500)
 - GET /api/sync/doctrine/state: broken (0)
 - GET /api/sync/doctrine/lanes: broken (0)
-- GET /api/elitedashboard/counties: broken (0)
 - GET /api/ecosystem/enhancement-modules: broken (500)
 - GET /api/equity/metrics: broken (400)
 - GET /api/equity/rollup: broken (400)
@@ -88,6 +87,7 @@
 - GET /api/compliance/government/dashboard: dead (404)
 - GET /api/compliance/certification: broken (503)
 - GET /api/gpt/search: broken (400)
+- GET /api/harrispacsenhancement/sessions: broken (500)
 
 ## Hard Stop
 

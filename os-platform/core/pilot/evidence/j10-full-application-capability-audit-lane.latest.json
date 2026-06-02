@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T03:22:18.157Z",
+  "generatedAt": "2026-06-02T03:27:07.772Z",
   "name": "Full Application Capability Audit Lane",
   "scope": {
     "target": "full application capability, not frozen demo path only",
@@ -144,5 +144,5 @@
     "Run Rust, Redis, Prometheus, and CLI runtime proof lanes separately."
   ],
   "hardStop": "Do not claim full production readiness until every category is PROVEN or explicitly not applicable with evidence.",
-  "packetHash": "27552cdd20dc99d4ab89a2fed4b55e06f1101e410d480b89abc5f2714ce14011"
+  "packetHash": "f3b0de9e7b98ef048cda28973f328d52365a41fa672a0389f2a6d12585cf27ab"
 }
