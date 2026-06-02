@@ -1118,6 +1118,20 @@ builder.Logging.AddDebug();
 // sinks; it does not displace Microsoft.Extensions.Logging providers).
 builder.Services.AddStructuredLogging(builder.Configuration, builder.Environment);
 
+// June 10 capability audit: MonitoringController depends on the Core
+// observability services, but the API host previously only wired structured
+// logging. Register the real read services so /api/monitoring/* activates
+// without adding fake monitoring data or starting extra collector loops.
+builder.Services.AddScoped<
+  TerraFusion.Core.Services.Monitoring.IObservabilityService,
+  TerraFusion.Core.Services.Monitoring.ObservabilityService>();
+builder.Services.AddScoped<
+  TerraFusion.Core.Services.Monitoring.IMetricsCollectionService,
+  TerraFusion.Core.Services.Monitoring.MetricsCollectionService>();
+builder.Services.AddScoped<
+  TerraFusion.Core.Services.Monitoring.IHealthCheckService,
+  TerraFusion.Core.Services.Monitoring.TerraFusionHealthCheckService>();
+
 // Add basic services with JSON serialization configuration
 builder.Services.AddControllers()
     .ConfigureApplicationPartManager(manager =>
