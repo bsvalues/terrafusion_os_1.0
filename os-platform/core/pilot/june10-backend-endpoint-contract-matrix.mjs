@@ -170,6 +170,9 @@ export function classifyEndpoint(endpoint) {
   if (/\bBentonCountyId\b/.test(body)) {
     return "not_applicable";
   }
+  if (endpoint.route?.startsWith("/api/realdata/")) {
+    return "not_applicable";
+  }
   if (endpoint.route?.startsWith("/api/performance/elite/")) {
     return "dead";
   }

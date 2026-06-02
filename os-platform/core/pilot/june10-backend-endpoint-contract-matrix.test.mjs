@@ -130,6 +130,15 @@ test("classifyEndpoint keeps inventory conservative before live proof", () => {
     }),
     "dead"
   );
+  assert.equal(
+    classifyEndpoint({
+      httpMethod: "GET",
+      route: "/api/realdata/property-stats",
+      authRequirement: "authorized",
+      body: "var stats = await _realDatabaseService.GetRealPropertyStatsAsync();"
+    }),
+    "not_applicable"
+  );
 });
 
 test("isSafeDev39GetProbeCandidate only allows finite static GET routes", () => {
