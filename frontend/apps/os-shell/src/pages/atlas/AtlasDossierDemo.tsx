@@ -323,6 +323,38 @@ export default function AtlasDossierDemo() {
         <div className='max-w-[1100px] mx-auto px-6 py-8 space-y-10'>
 
           {/* ================================================================ */}
+          {/* HEADLINE: Atlas Intelligence Summary */}
+          {/* The one thing they remember when they leave the room. */}
+          {/* ================================================================ */}
+          <section
+            className='rounded-2xl p-6 sm:p-8'
+            style={{
+              background: 'linear-gradient(135deg, hsl(var(--tf-suite-atlas) / 0.08), hsl(270 80% 60% / 0.05))',
+              border: '1px solid hsl(var(--tf-suite-atlas) / 0.2)',
+            }}
+          >
+            <p
+              className='text-xs font-semibold uppercase tracking-widest mb-3'
+              style={{ color: 'hsl(var(--tf-suite-atlas))' }}
+            >
+              Atlas Intelligence Summary
+            </p>
+            <p
+              className='text-xl sm:text-2xl font-bold leading-snug mb-4'
+              style={{ color: 'hsl(var(--tf-fg))' }}
+            >
+              A well-assessed property in an appreciating corridor — hold position, watch the
+              commercial development on Queensgate Blvd for upside.
+            </p>
+            <div className='flex flex-wrap gap-4 text-sm' style={{ color: 'hsl(var(--tf-fg) / 0.7)' }}>
+              <span>Assessed: <strong style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(DEMO_PARCEL.assessedValue)}</strong></span>
+              <span>Ratio: <strong style={{ color: 'hsl(150 70% 45%)' }}>1.00</strong></span>
+              <span>Growth: <strong style={{ color: 'hsl(150 70% 45%)' }}>+{DEMO_PARCEL.changePercent}% YoY</strong></span>
+              <span>Risk: <strong style={{ color: 'hsl(150 70% 45%)' }}>Low</strong></span>
+            </div>
+          </section>
+
+          {/* ================================================================ */}
           {/* SECTION 1: Property Snapshot — What is this? */}
           {/* ================================================================ */}
           <section id='dossier-snapshot'>
@@ -467,7 +499,7 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={Layers}
               title='Context'
-              subtitle='What surrounds this property?'
+              subtitle='The environment that shapes this property's value'
               color='hsl(210 90% 55%)'
             />
 
@@ -632,7 +664,7 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={Activity}
               title='Activity'
-              subtitle='What is happening around this property?'
+              subtitle='Investment and development that could affect this property'
               color='hsl(25 95% 55%)'
             />
 
@@ -752,43 +784,43 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={Zap}
               title='Signals'
-              subtitle='What should you pay attention to?'
+              subtitle='The forces acting on this property right now'
               color='hsl(35 90% 50%)'
             />
 
             <div className='space-y-3'>
               <SignalCard
                 icon={TrendingUp}
-                title='Appreciation Trend: Steady Growth'
-                description='This property has appreciated 28.9% since purchase in 2019 ($425,000 → $548,200 assessed). Annual compound growth rate of 3.7%. This is consistent with the Queensgate neighborhood average of 3.5-4.2% and reflects sustained demand for newer construction in south Richland.'
+                title='The appreciation trend appears sustainable, not speculative'
+                description='3.7% annual compound growth over 7 years, tracking the neighborhood average of 3.5-4.2%. This is demand-driven appreciation in a supply-constrained corridor — not a price bubble. Decision: current assessed value of $548,200 is defensible and does not require adjustment.'
                 severity='positive'
               />
 
               <SignalCard
                 icon={Building2}
-                title='Commercial Development Pressure'
-                description='Two commercial permits totaling $3.05M have been issued within 0.5 miles on Queensgate Blvd (retail center and restaurant). This development activity typically signals 1-3% additional land value appreciation within a 1-mile radius over the following 18 months as amenity access improves.'
+                title='$3.05M in nearby commercial investment signals growing residential demand'
+                description='A retail center ($2.2M) and restaurant ($850K) are under development on Queensgate Blvd within 0.5 miles. In comparable Tri-Cities corridors, this level of commercial amenity investment has preceded 2-4% residential land value increases within 18 months. Decision: anticipate upward land value pressure at next cycle.'
                 severity='positive'
               />
 
               <SignalCard
                 icon={BarChart3}
-                title='Assessment Ratio: Well-Calibrated'
-                description='Four comparable sales within the neighborhood show a median assessment-to-sale ratio of 1.00 with a tight range (0.98-1.02). This property is neither over- nor under-assessed relative to current market activity. No BOE appeal risk.'
+                title='Assessment is well-calibrated — no appeal exposure'
+                description='Four comparable sales produce a median ratio of 1.00 with only 4% spread (0.98-1.02). This is well within IAAO standards (COD target: &lt;15). Decision: no BOE defense preparation needed. This assessment would survive challenge.'
                 severity='positive'
               />
 
               <SignalCard
                 icon={AlertTriangle}
-                title='Watch: New Construction Competition'
-                description='One new residential permit at 2900 Queensgate Dr ($520,000) may establish a comparable data point slightly below this property\'s assessed value. If the sale closes below $540,000, it could introduce downward pressure on the next assessment cycle. Monitor for 6 months.'
+                title='New construction at 2900 Queensgate could reset comparable baseline'
+                description='A $520,000 new home nearing final inspection may sell below this property\'s assessed value. If it closes under $540K, it introduces a downward data point for the next assessment cycle. Decision: monitor this sale — if it closes low, investigate whether quality class or square footage differences justify the gap before adjusting.'
                 severity='watch'
               />
 
               <SignalCard
                 icon={Eye}
-                title='Neighborhood Maturation Phase'
-                description='Queensgate Phase 12 is transitioning from "new construction" to "established neighborhood" — the subdivision is nearly built out. Historically, this transition stabilizes appreciation rates but reduces volatility. Land value share (21%) is typical for a 5-7 year-old suburban development.'
+                title='Subdivision is maturing — expect stability over volatility'
+                description='Queensgate Phase 12 is nearly built out, transitioning from "new construction" to "established neighborhood." This shift typically reduces annual appreciation variance from ±3% to ±1%. Decision: future value changes will be market-driven rather than supply-driven. Model accordingly.'
                 severity='neutral'
               />
             </div>
@@ -801,7 +833,7 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={Lightbulb}
               title='Atlas Insight'
-              subtitle='What does all of this mean?'
+              subtitle='The decision context you need before acting'
               color='hsl(270 80% 60%)'
             />
 
@@ -814,31 +846,47 @@ export default function AtlasDossierDemo() {
             >
               <div className='space-y-4 text-sm leading-relaxed' style={{ color: 'hsl(var(--tf-fg) / 0.9)' }}>
                 <p>
-                  <strong style={{ color: 'hsl(var(--tf-fg))' }}>This is a well-positioned residential property in an appreciating market with low assessment risk.</strong>
+                  <strong style={{ color: 'hsl(var(--tf-fg))' }}>The current assessment is defensible, the market position is stable, and the only variable worth watching is the commercial corridor developing a quarter-mile south.</strong>
                 </p>
                 <p>
-                  The Queensgate neighborhood continues to attract buyer demand driven by newer housing stock,
-                  proximity to Richland amenities, and quality schools (Richland SD #400). The property's assessed
-                  value of {fmt(DEMO_PARCEL.assessedValue)} is well-supported by four recent comparable sales averaging
-                  ${Math.round((555000 + 538000 + 572000 + 549000) / 4 / DEMO_PARCEL.totalSqft)}/SF — the subject at
-                  ${Math.round(DEMO_PARCEL.assessedValue / DEMO_PARCEL.totalSqft)}/SF is within 3% of the market median.
+                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Assessment confidence: High.</strong>{' '}
+                  Four comparable sales produce a median ratio of 1.00 with a spread of only 4%. The assessed
+                  value of {fmt(DEMO_PARCEL.assessedValue)} sits at ${Math.round(DEMO_PARCEL.assessedValue / DEMO_PARCEL.totalSqft)}/SF
+                  against a market average of ${Math.round((555000 + 538000 + 572000 + 549000) / 4 / DEMO_PARCEL.totalSqft)}/SF —
+                  well within defensible range. An appeal would not succeed. A challenge would not survive.
                 </p>
                 <p>
-                  The emerging commercial corridor on Queensgate Blvd ($3.05M in active permits) is the most significant
-                  development signal. Retail and dining amenities within walking distance typically add 2-4% to
-                  residential land values once operational. This property should benefit directly.
+                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Appreciation trajectory: Sustainable.</strong>{' '}
+                  The 3.7% CAGR over seven years tracks the Queensgate corridor average, not a price spike. This
+                  is demand-driven appreciation in a supply-constrained neighborhood — the kind that holds during
+                  corrections. The appreciation trend does not require adjustment or special monitoring.
                 </p>
                 <p>
-                  At a levy rate of ${DEMO_PARCEL.levyRate}/$1,000, the annual tax burden of {fmt(DEMO_PARCEL.taxAmount)} is
-                  proportionate to services received. The largest share (44%) flows to Richland School District —
-                  a key driver of the neighborhood's desirability.
+                  <strong style={{ color: 'hsl(270 80% 60%)' }}>The one variable to watch: Queensgate Blvd commercial development.</strong>{' '}
+                  $3.05M in active commercial permits within 0.5 miles is the single most important factor for this
+                  property's next assessment cycle. If the retail center and restaurant complete successfully, expect
+                  2-4% upward pressure on residential land values in the immediate area. If they stall or fail,
+                  the current trajectory holds — no downside, just no bonus. This is the decision point: when those
+                  developments complete (est. Q4 2026), re-run this dossier.
                 </p>
-                <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  <em>
-                    No immediate action required. This property is accurately assessed, well-maintained, and
-                    in a stable-to-appreciating market position. Next review recommended at the 2027 assessment cycle
-                    or upon completion of the Queensgate Blvd commercial development.
-                  </em>
+                <p>
+                  <strong style={{ color: 'hsl(270 80% 60%)' }}>Tax position: Proportionate.</strong>{' '}
+                  At ${DEMO_PARCEL.levyRate}/$1,000, the {fmt(DEMO_PARCEL.taxAmount)} annual burden is in line with
+                  comparable properties. The 44% share flowing to Richland School District is the primary reason
+                  this neighborhood commands a price premium — the tax funds the amenity that drives the value.
+                  No action needed.
+                </p>
+                <p
+                  className='rounded-lg px-4 py-3 mt-2'
+                  style={{
+                    background: 'hsl(270 80% 60% / 0.08)',
+                    border: '1px solid hsl(270 80% 60% / 0.12)',
+                    color: 'hsl(var(--tf-fg))',
+                  }}
+                >
+                  <strong>Bottom line:</strong> Hold position. The assessment is accurate, the market is stable,
+                  and the only upside catalyst (commercial development) requires no action from you until it
+                  materializes. Revisit at the 2027 cycle or when Queensgate Blvd construction completes — whichever comes first.
                 </p>
               </div>
             </div>
@@ -851,7 +899,7 @@ export default function AtlasDossierDemo() {
             <SectionHeader
               icon={ArrowRight}
               title='Now What?'
-              subtitle='What should you do with this intelligence?'
+              subtitle='Specific next actions for every stakeholder'
               color='hsl(120 60% 45%)'
             />
 
