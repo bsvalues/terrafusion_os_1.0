@@ -153,3 +153,34 @@ Benton PACS for working year 2026 — all 71,736 of them — is present in Terra
 truth_pacs.imprv_current and projected to canonical_tf, with zero duplication. The 4,176
 mobile-home parcels are excluded by parcel-spine doctrine, not missed. No further draining
 required for the improvement lane.
+
+---
+
+# POST-RESTART SEAL VERIFICATION (2026-06-03)
+
+The laptop was shut down (E: external drive left at home) and later resumed. On
+return, full recovery was performed and the seal RE-VERIFIED end to end:
+- E: drive remounted; `...\Docker\wsl\disk` junction → `E:\DockerData` resolved.
+- Docker engine recovered from the recurring AF_UNIX `dockerInference` stale-socket
+  wedge via the proven run-dir quarantine (now codified in
+  scripts/admin/recover-docker-run-sockets.ps1).
+- PostgreSQL completed WAL replay (slow fsync — data lives on external E:),
+  reached consistent state, accepted connections.
+
+Re-run of the coverage proof query (verbatim) AFTER recovery:
+```
+SEALED DATA: parcels=71,736  rp_cov=100.00%  dup=1.0000x  rows=100,391
+```
+**Zero data loss across the shutdown/resume cycle. The seal held.**
+
+## Code committed (no longer at risk)
+- `fc5af4af4` feat(sync): targeted SeedPropIds backfill path — DoctrineDrainController
+  change + this artifact + diagnosis artifact + onlymode stability window.
+  (Recovered from stash@{7}^3 after a concurrent agent's `git stash --include-untracked`
+  swept the then-untracked evidence files; controller change was a tracked-file mod and
+  survived in the working tree. Quality gate passed: dotnet format + lint-staged clean.)
+- `5e12e4b6c` chore(ops): scripts/admin/recover-docker-run-sockets.ps1 — Docker
+  post-resume recovery automation. Quality gate passed.
+
+Improvement lane is now sealed in BOTH substance (100% coverage, 1.0× dup, verified
+post-restart) AND history (committed). Restart tax removed.
