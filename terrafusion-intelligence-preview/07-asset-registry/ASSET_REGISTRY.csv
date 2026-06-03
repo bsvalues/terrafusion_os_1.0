@@ -1,1 +1,19 @@
 asset_id,asset_name,source,location,category,atlas_value,academy_value,os_value,conference_value,commercial_value,government_value,effort_required,readiness,risk,recommended_action,evidence,notes
+A001,Router,active-codebase,frontend/apps/os-shell/src/Router.tsx,os,3,3,5,4,3,3,1,Green,low,reuse,git-verified main,Where new demo routes are registered
+A002,Suite Registry,active-codebase,frontend/apps/os-shell/src/config/suiteRegistry.ts,os,3,3,5,3,3,3,1,Green,low,reuse,git-verified main,Single source of truth for suites
+A003,Property Workbench,active-codebase,frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx,os,5,2,5,4,4,4,2,Yellow,medium,reuse-polish,git-verified main,Parcel-scoped tab hub; demo-readiness unverified
+A004,Property Dossier (tab),active-codebase,frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx,atlas,5,2,3,5,4,4,3,Orange,high,build-demo-variant,git-verified main,Centerpiece; sandbox said renders empty - needs backend-free demo
+A005,Atlas Suite Home,active-codebase,frontend/apps/os-shell/src/pages/suites/AtlasSuiteHome.tsx,atlas,5,1,3,4,3,4,2,Yellow,low,reuse-polish,git-verified main,GIS module launcher
+A006,Dossier Suite Home,active-codebase,frontend/apps/os-shell/src/pages/suites/DossierSuiteHome.tsx,atlas,4,1,3,3,3,4,2,Yellow,low,reuse,git-verified main,Document modules home
+A007,Forge Suite Home,active-codebase,frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx,os,2,4,4,3,4,4,2,Yellow,low,reuse,git-verified main,Valuation modules home
+A008,Gpt Suite Home,active-codebase,frontend/apps/os-shell/src/pages/suites/GptSuiteHome.tsx,academy,1,4,3,3,3,3,3,Orange,medium,pattern-for-ask-academy,git-verified main,Pattern source for Ask Academy
+A009,County Studio,active-codebase,frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx,os,2,3,5,4,4,5,2,Yellow,medium,reuse,git-verified main (72 files),County-wide study/adjustment - NOT the same as County Pulse
+A010,CostForge Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/CostForgeModule.tsx,os,2,4,4,3,4,4,2,Yellow,low,reuse,git-verified main,Cost approach
+A011,CompsForge Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/CompsForgeModule.tsx,os,2,4,4,3,4,4,2,Yellow,low,reuse,git-verified main,Sales comparison
+A012,AppealForge Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/AppealForgeModule.tsx,academy,2,5,4,3,4,4,2,Yellow,low,reuse,git-verified main,BOE defense builder
+A013,TerraPrint Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/TerraPrintModule.tsx,pdf,3,2,3,4,3,4,2,Yellow,medium,reuse-for-fallback-pdf,git-verified main,Source for fallback PDFs
+A014,GIS Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/GISModule.tsx,atlas,5,1,3,4,3,4,2,Yellow,medium,reuse,git-verified main,Parcel map viewer
+A015,RAG Datasets Module,active-codebase,frontend/apps/os-shell/src/pages/suites/modules/RAGDatasetsModule.tsx,shared-ai,2,4,3,2,3,3,3,Orange,medium,knowledge-source,git-verified main,Knowledge base for Ask Academy content
+A016,SystemGptAtlasPanel,active-codebase,frontend/apps/os-shell/src/features/gpt/components/SystemGptAtlasPanel.tsx,shared-ai,4,3,3,3,3,3,2,Yellow,low,pattern-for-ask-academy,scout-claimed needs reverify,Pattern for Ask Academy assistant - PATH NOT YET RE-VERIFIED
+A017,County Pulse (existing),active-codebase,os-platform/development/tools/TerraFusion-PublicRecords/src/components/CountyPulse.tsx,atlas,4,2,4,5,3,5,3,Orange,medium,lift-and-wire,git-verified main,Explore MISSED this; mine before building new County Pulse
+A018,AI Certification Academy (quarantine),quarantine,QUARANTINE/top-level-dirs/applications/terra-v0demo-production/components/ai-certification-academy.tsx,academy,1,5,3,5,4,4,3,Orange,medium,lift-and-adapt,git-verified main,Reusable Academy scaffold; second copy in terra-assessor-production
