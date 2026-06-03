@@ -130,6 +130,8 @@ const ForgeHome = lazy(() => import('./pages/suites/ForgeSuiteHome'));
 const AtlasHome = lazy(() => import('./pages/suites/AtlasSuiteHome'));
 // Atlas Property Dossier — conference demo (self-contained, offline-safe, no backend)
 const AtlasDossierDemo = lazy(() => import('./pages/atlas/DossierDemo'));
+// Atlas County Pulse — conference demo (self-contained, offline-safe, no backend)
+const AtlasCountyPulseDemo = lazy(() => import('./pages/atlas/CountyPulseDemo'));
 const DaisHome = lazy(() => import('./pages/suites/DaisSuiteHome'));
 const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
 const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
@@ -304,6 +306,8 @@ const Router: React.FC = () => {
                   <Route path='atlas' element={<AtlasHome />} />
                   {/* Atlas Property Dossier — conference demo (offline-safe) */}
                   <Route path='atlas/dossier/demo' element={<AtlasDossierDemo />} />
+                  {/* Atlas County Pulse — conference demo (offline-safe) */}
+                  <Route path='atlas/county-pulse/demo' element={<AtlasCountyPulseDemo />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
                   <Route path='gpt' element={<GptHome />} />
