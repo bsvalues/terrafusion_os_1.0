@@ -13,8 +13,10 @@
  * Benton County, WA. It is illustrative only and is NOT a real assessment record.
  * The page states this plainly to the viewer.
  *
- * STRUCTURE follows the dossier doctrine — five reads, ending in an action:
- *   Facts → Context → Signals → Interpretation → Now What?
+ * LAYOUT DOCTRINE (validated by the Memory Report): people remember and act on
+ * Signals -> Interpretation -> Now What. Those three LEAD and dominate the page.
+ * Facts and Context are demoted to a compact supporting "On the record" block at
+ * the bottom — present for credibility, not competing for attention.
  *
  * Styling uses TerraFusion design tokens (tf-* classes / --tf-* vars) only —
  * no raw gray/white Tailwind, per the UI token contract.
@@ -43,42 +45,67 @@ const COMPS = [
   { addr: '4455 W 4th Pl', soldFor: 541000, date: 'Apr 2025', sqft: 2520, ratio: 0.95 },
 ];
 
-// Signals — the things that actually matter on this parcel
-const SIGNALS: { label: string; value: string; tone: 'good' | 'watch' | 'flag' }[] = [
-  { label: 'Assessment-to-sale ratio (nbhd median)', value: '0.97 — within IAAO 0.90–1.10 band', tone: 'good' },
-  { label: 'Year-over-year value change', value: '+8.9% ($471K → $513K)', tone: 'watch' },
-  { label: '2024 building permit', value: 'BP-2024-1187: detached shop, 960 sf — not yet on the improvement record', tone: 'flag' },
-  { label: 'Covered patio (480 sf)', value: 'Present on sketch; contributes ~3% of building value (Benton Method)', tone: 'watch' },
-  { label: 'Appeal history', value: 'No appeals on file (last 6 years)', tone: 'good' },
+type Tone = 'good' | 'watch' | 'flag';
+
+// Signals — the few things on this parcel that decide it. This is the hero.
+const SIGNALS: { headline: string; detail: string; tone: Tone }[] = [
+  {
+    headline: 'A 2024 shop (960 sf) is missing from the record',
+    detail: 'Permit BP-2024-1187 closed; the structure was never added. Likely under-assessed, not over.',
+    tone: 'flag',
+  },
+  {
+    headline: 'Value jumped +8.9% year over year',
+    detail: '$471K → $513K. Tracks a genuinely rising Southridge market — but it is the kind of jump owners call about.',
+    tone: 'watch',
+  },
+  {
+    headline: 'Covered patio (480 sf) not fully captured',
+    detail: 'On the sketch; contributes ~3% of building value under the Benton Method. Reconcile for consistency.',
+    tone: 'watch',
+  },
+  {
+    headline: 'Assessment-to-sale ratio sits at 0.97',
+    detail: 'Inside the IAAO 0.90–1.10 equity band against three recent neighborhood sales.',
+    tone: 'good',
+  },
+  {
+    headline: 'No appeals on file in six years',
+    detail: 'Stable history; low contest risk if the value holds.',
+    tone: 'good',
+  },
 ];
 
-const toneVar: Record<'good' | 'watch' | 'flag', string> = {
+const toneVar: Record<Tone, string> = {
   good: '--tf-success',
   watch: '--tf-warning',
   flag: '--tf-danger',
 };
+const toneLabel: Record<Tone, string> = { good: 'Clear', watch: 'Watch', flag: 'Flag' };
 
 const usd = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
-const Section: React.FC<{ n: number; title: string; hint: string; children: React.ReactNode }> = ({
-  n,
+/** Prominent section used for the remembered trio (Signals / Interpretation / Now What). */
+const HeroSection: React.FC<{ kicker: string; title: string; children: React.ReactNode }> = ({
+  kicker,
   title,
-  hint,
   children,
 }) => (
-  <section className='tf-panel p-5 rounded-xl space-y-3'>
-    <div className='flex items-baseline gap-3'>
-      <span
-        className='text-xs font-bold rounded-full px-2 py-0.5'
-        style={{ background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.18)', color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
+  <section
+    className='tf-panel rounded-xl p-6 space-y-4'
+    style={{ borderLeft: '3px solid hsl(var(--tf-transcend-cyan-hs) 55%)' }}
+  >
+    <div>
+      <div
+        className='text-xs font-semibold tracking-widest uppercase'
+        style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
       >
-        {n}
-      </span>
-      <h2 className='tf-text text-lg font-semibold'>{title}</h2>
+        {kicker}
+      </div>
+      <h2 className='tf-text text-2xl font-bold mt-0.5'>{title}</h2>
     </div>
-    <p className='tf-text-dim text-xs'>{hint}</p>
-    <div>{children}</div>
+    {children}
   </section>
 );
 
@@ -92,6 +119,11 @@ const Row: React.FC<{ label: string; value: string; strong?: boolean }> = ({ lab
 export const DossierDemo: React.FC = () => {
   const pricePerSqFt = Math.round(PARCEL.assessed.total / PARCEL.livingSqFt);
   const yoyPct = (((PARCEL.assessed.total - PARCEL.priorTotal) / PARCEL.priorTotal) * 100).toFixed(1);
+
+  const counts = SIGNALS.reduce(
+    (acc, s) => ({ ...acc, [s.tone]: acc[s.tone] + 1 }),
+    { good: 0, watch: 0, flag: 0 } as Record<Tone, number>,
+  );
 
   return (
     <div
@@ -117,97 +149,124 @@ export const DossierDemo: React.FC = () => {
           </p>
         </header>
 
-        {/* 1 — Facts */}
-        <Section n={1} title='Facts' hint='What this property is, on the record.'>
-          <div className='grid gap-x-8 gap-y-0 sm:grid-cols-2'>
-            <Row label='Use' value={PARCEL.useCode} />
-            <Row label='Year built' value={String(PARCEL.yearBuilt)} />
-            <Row label='Living area' value={`${PARCEL.livingSqFt.toLocaleString()} sf`} />
-            <Row label='Lot size' value={`${PARCEL.lotAcres} ac`} />
-            <Row label='Land value' value={usd(PARCEL.assessed.land)} />
-            <Row label='Improvement value' value={usd(PARCEL.assessed.improvement)} />
-            <Row label='Total assessed' value={usd(PARCEL.assessed.total)} strong />
-            <Row label='Assessed $/sf' value={`$${pricePerSqFt}/sf`} />
-          </div>
-        </Section>
-
-        {/* 2 — Context */}
-        <Section n={2} title='Context' hint='How it sits against the neighborhood — recent qualified sales.'>
-          <div className='space-y-2'>
-            {COMPS.map((c) => (
-              <div key={c.addr} className='tf-overlay rounded-lg px-3 py-2 flex justify-between items-center gap-4'>
-                <div>
-                  <div className='tf-text text-sm font-medium'>{c.addr}</div>
-                  <div className='tf-text-dim text-xs'>
-                    {c.date} · {c.sqft.toLocaleString()} sf
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='tf-text text-sm'>{usd(c.soldFor)}</div>
-                  <div className='tf-text-dim text-xs'>A/S {c.ratio.toFixed(2)}</div>
-                </div>
-              </div>
-            ))}
-            <p className='tf-text-dim text-xs pt-1'>
-              Subject total {usd(PARCEL.assessed.total)} sits just below the comp range — consistent with an
-              assessment-to-sale ratio near 0.97.
-            </p>
-          </div>
-        </Section>
-
-        {/* 3 — Signals */}
-        <Section n={3} title='Signals' hint='The few things on this parcel that deserve attention.'>
-          <div className='space-y-2'>
-            {SIGNALS.map((s) => (
-              <div key={s.label} className='flex items-start gap-3 py-1'>
+        {/* ───────── HERO 1 — SIGNALS (what people remember; lead with it) ───────── */}
+        <HeroSection kicker='Start here' title='Signals'>
+          {/* density summary */}
+          <div className='flex items-center gap-2 flex-wrap'>
+            {(['flag', 'watch', 'good'] as Tone[]).map((t) =>
+              counts[t] ? (
                 <span
-                  className='mt-1.5 h-2 w-2 rounded-full shrink-0'
-                  style={{ background: `hsl(var(${toneVar[s.tone]}))` }}
+                  key={t}
+                  className='inline-flex items-center gap-2 text-xs font-medium rounded-full px-3 py-1'
+                  style={{ background: `hsl(var(${toneVar[t]}) / 0.14)`, color: `hsl(var(${toneVar[t]}))` }}
+                >
+                  <span
+                    className='h-2 w-2 rounded-full'
+                    style={{ background: `hsl(var(${toneVar[t]}))`, boxShadow: `0 0 8px hsl(var(${toneVar[t]}) / 0.8)` }}
+                  />
+                  {counts[t]} {toneLabel[t]}
+                </span>
+              ) : null,
+            )}
+          </div>
+
+          <div className='space-y-3'>
+            {SIGNALS.map((s) => (
+              <div key={s.headline} className='flex items-start gap-4'>
+                <span
+                  className='mt-1.5 h-3.5 w-3.5 rounded-full shrink-0'
+                  style={{ background: `hsl(var(${toneVar[s.tone]}))`, boxShadow: `0 0 10px hsl(var(${toneVar[s.tone]}) / 0.7)` }}
                   aria-hidden
                 />
-                <div>
-                  <div className='tf-text text-sm font-medium'>{s.label}</div>
-                  <div className='tf-text-dim text-sm'>{s.value}</div>
+                <div className='min-w-0'>
+                  <div className='flex items-center gap-2 flex-wrap'>
+                    <span className='tf-text font-semibold'>{s.headline}</span>
+                    <span
+                      className='text-[10px] font-bold uppercase tracking-wide rounded px-1.5 py-0.5'
+                      style={{ background: `hsl(var(${toneVar[s.tone]}) / 0.16)`, color: `hsl(var(${toneVar[s.tone]}))` }}
+                    >
+                      {toneLabel[s.tone]}
+                    </span>
+                  </div>
+                  <p className='tf-text-dim text-sm mt-0.5'>{s.detail}</p>
                 </div>
               </div>
             ))}
           </div>
-        </Section>
+        </HeroSection>
 
-        {/* 4 — Interpretation */}
-        <Section n={4} title='Interpretation' hint='What an experienced appraiser reads from the above.'>
-          <p className='tf-text-secondary text-sm leading-relaxed'>
-            The valuation is defensible: the +{yoyPct}% lift tracks a genuinely rising Southridge market, and the
-            0.97 neighborhood ratio keeps the parcel inside the IAAO equity band. The one real exposure is the{' '}
-            <span className='tf-text font-medium'>2024 detached shop (BP-2024-1187)</span> — a 960 sf structure that
-            has not yet landed on the improvement record. Under the Benton Method a shop of this class typically
-            contributes on the order of <span className='tf-text font-medium'>15–18% of building value</span>, so the
-            current total likely <span className='tf-text font-medium'>understates</span> true value rather than over-assessing it.
-            That makes the parcel low-risk on appeal but a candidate for a field-check before next roll.
+        {/* ───────── HERO 2 — INTERPRETATION (human language, not software) ───────── */}
+        <HeroSection kicker='What it means' title='Interpretation'>
+          <p className='tf-text-secondary text-base leading-relaxed'>
+            <span className='tf-text font-semibold'>The valuation is defensible.</span> The +{yoyPct}% lift tracks a
+            genuinely rising Southridge market, and the 0.97 neighborhood ratio keeps the parcel inside the equity band.
+            The one real exposure is the{' '}
+            <span className='tf-text font-medium'>2024 detached shop (BP-2024-1187)</span> — 960 sf that never landed on
+            the improvement record. Under the Benton Method a shop of this class typically adds{' '}
+            <span className='tf-text font-medium'>15–18% of building value</span>, so the current total most likely{' '}
+            <span className='tf-text font-medium'>understates</span> true value rather than over-assessing it. That makes
+            this parcel low-risk on appeal but a clear candidate for a field check before the next roll.
           </p>
-        </Section>
+        </HeroSection>
 
-        {/* 5 — Now What? */}
-        <Section n={5} title='Now What?' hint='The next concrete actions for the office.'>
-          <ol className='space-y-2'>
+        {/* ───────── HERO 3 — NOW WHAT (the action) ───────── */}
+        <HeroSection kicker='Do this next' title='Now What?'>
+          <ol className='space-y-2.5'>
             {[
               'Queue a field check to confirm the 2024 shop (BP-2024-1187) and add it to the improvement record for the next roll.',
               'Hold the current value for 2026 — it is well-supported by recent sales and sits inside the equity band.',
               'Flag the covered patio for sketch reconciliation so its ~3% contribution is captured consistently.',
-              'No appeal action needed; if appealed, the comp set and ratio above are the defense.',
+              'No appeal action needed; if appealed, the comp set and 0.97 ratio are the defense.',
             ].map((step, i) => (
               <li key={i} className='flex gap-3'>
                 <span
-                  className='text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shrink-0'
+                  className='text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shrink-0'
                   style={{ background: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.18)', color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
                 >
                   {i + 1}
                 </span>
-                <span className='tf-text-secondary text-sm'>{step}</span>
+                <span className='tf-text-secondary text-sm leading-relaxed pt-0.5'>{step}</span>
               </li>
             ))}
           </ol>
-        </Section>
+        </HeroSection>
+
+        {/* ───────── SUPPORTING — On the record (Facts + Context, demoted) ───────── */}
+        <div className='pt-2'>
+          <div className='tf-text-dim text-xs font-semibold tracking-widest uppercase mb-2'>
+            On the record — the underlying data
+          </div>
+          <div className='grid gap-4 md:grid-cols-2'>
+            {/* Facts (compact, muted) */}
+            <div className='tf-overlay rounded-lg p-4'>
+              <div className='tf-text-secondary text-sm font-medium mb-2'>Facts</div>
+              <Row label='Use' value={PARCEL.useCode} />
+              <Row label='Year built' value={String(PARCEL.yearBuilt)} />
+              <Row label='Living area' value={`${PARCEL.livingSqFt.toLocaleString()} sf`} />
+              <Row label='Lot size' value={`${PARCEL.lotAcres} ac`} />
+              <Row label='Land / Improvement' value={`${usd(PARCEL.assessed.land)} / ${usd(PARCEL.assessed.improvement)}`} />
+              <Row label='Total assessed' value={usd(PARCEL.assessed.total)} strong />
+              <Row label='Assessed $/sf' value={`$${pricePerSqFt}/sf`} />
+            </div>
+
+            {/* Context (compact, muted) */}
+            <div className='tf-overlay rounded-lg p-4'>
+              <div className='tf-text-secondary text-sm font-medium mb-2'>Context — recent qualified sales</div>
+              <div className='space-y-1.5'>
+                {COMPS.map((c) => (
+                  <div key={c.addr} className='flex justify-between items-center gap-3 text-sm'>
+                    <span className='tf-text-dim truncate'>
+                      {c.addr} <span className='opacity-60'>· {c.date}</span>
+                    </span>
+                    <span className='tf-text shrink-0'>
+                      {usd(c.soldFor)} <span className='tf-text-dim text-xs'>A/S {c.ratio.toFixed(2)}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <footer className='tf-text-dim text-xs pt-2'>
           Atlas · Property Dossier demo. All figures illustrative. Built for the TerraFusion Intelligence Preview.
