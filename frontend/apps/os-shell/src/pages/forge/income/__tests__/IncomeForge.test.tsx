@@ -129,6 +129,11 @@ describe('IncomeForge', () => {
 
     expect(screen.getByText('Active Income Case')).toBeInTheDocument();
     expect(screen.getByText('Readiness Inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('income-workbench-shell')).toBeInTheDocument();
+    expect(screen.getByText('Evidence Binder')).toBeInTheDocument();
+    expect(screen.getByText('Decision Inspector')).toBeInTheDocument();
+    expect(screen.getByText('Final value blocked')).toBeInTheDocument();
+    expect(screen.getByText('Local decision state')).toBeInTheDocument();
     expect(screen.getByTestId('income-readiness-desk')).not.toHaveClass('bg-red-50/70');
     expect(screen.getAllByText('Not income-ready').length).toBeGreaterThan(0);
   });

@@ -257,135 +257,150 @@ function ReviewDeskTab() {
   };
 
   return (
-    <div data-testid="income-readiness-desk" className="max-w-full space-y-4 overflow-x-hidden">
-      <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-slate-700/70 bg-slate-950/70 px-4 py-3">
-        <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Income Evidence Readiness Desk</div>
-          <div className="mt-1 text-sm text-slate-300">
-            Case Desk derived from live IncomeForge reference records and staff evidence state.
+    <div data-testid="income-readiness-desk" className="max-w-full overflow-x-hidden">
+      <div
+        data-testid="income-workbench-shell"
+        className="rounded-lg border border-slate-700/80 bg-slate-950 text-slate-100 shadow-2xl"
+      >
+        <div className="border-b border-slate-800 bg-slate-900/80 px-5 py-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-xs font-semibold uppercase tracking-wide text-cyan-300">Income Evidence Readiness Desk</div>
+              <div className="mt-1 text-2xl font-semibold leading-tight text-slate-50">{activeCase.title}</div>
+              <div className="mt-1 text-sm text-slate-400">
+                Case Desk derived from live IncomeForge reference records and staff evidence state.
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <StatusPill tone="hold">Final value blocked</StatusPill>
+              <StatusPill tone="hold">Not income-ready</StatusPill>
+              <StatusPill>Local decision state</StatusPill>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-2 md:grid-cols-4">
+            <div className="rounded-md border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <div className="text-xs text-slate-500">Active case</div>
+              <div className="text-sm font-semibold text-slate-100">Active case: {activeCase.id}</div>
+            </div>
+            <div className="rounded-md border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <div className="text-xs text-slate-500">Property type</div>
+              <div className="text-sm font-semibold text-slate-100">{activeCase.propertyType}</div>
+            </div>
+            <div className="rounded-md border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <div className="text-xs text-slate-500">Assigned owner</div>
+              <div className="text-sm font-semibold text-slate-100">{activeCase.owner}</div>
+            </div>
+            <div className="rounded-md border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <div className="text-xs text-slate-500">Queue status</div>
+              <div className="text-sm font-semibold text-slate-100">{activeCase.status}</div>
+            </div>
           </div>
         </div>
-        <StatusPill tone="hold">Not income-ready</StatusPill>
-      </div>
 
-      <div className="grid max-w-full gap-3 xl:grid-cols-[220px_minmax(0,1fr)_280px]">
-        <Card className="min-w-0 border-slate-700/70 bg-slate-950/70 text-slate-100">
-          <CardHeader className="border-b border-slate-800 pb-3">
-            <CardTitle className="text-base">Work Queue</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {INCOME_CASES.map((incomeCase) => (
-              <IncomeCaseButton
-                key={incomeCase.id}
-                incomeCase={incomeCase}
-                selected={incomeCase.id === activeCase.id}
-                onSelect={updateSelectedCase}
-              />
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="min-w-0 border-slate-700/70 bg-slate-950/70 text-slate-100">
-          <CardHeader className="border-b border-slate-800 pb-3">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Active Income Case</div>
-                <CardTitle className="mt-1 text-lg">{activeCase.title}</CardTitle>
-                <div className="mt-1 text-xs text-slate-400">Active case: {activeCase.id}</div>
-              </div>
-              <StatusPill tone="hold">Not income-ready</StatusPill>
+        <div className="grid gap-4 p-4 xl:grid-cols-[280px_minmax(420px,1fr)_340px]">
+          <section className="min-w-0 rounded-md border border-slate-800 bg-slate-900/50">
+            <div className="border-b border-slate-800 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Queue</div>
+              <h2 className="mt-1 text-base font-semibold text-slate-100">Work Queue</h2>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div className="rounded-md border border-slate-800 bg-slate-900/60 px-3 py-2">
-                <div className="text-xs text-slate-500">Property type</div>
-                <div className="text-sm font-semibold text-slate-100">{activeCase.propertyType}</div>
-              </div>
-              <div className="rounded-md border border-slate-800 bg-slate-900/60 px-3 py-2">
-                <div className="text-xs text-slate-500">Assigned owner</div>
-                <div className="text-sm font-semibold text-slate-100">{activeCase.owner}</div>
-              </div>
-              <div className="rounded-md border border-slate-800 bg-slate-900/60 px-3 py-2">
-                <div className="text-xs text-slate-500">Queue status</div>
-                <div className="text-sm font-semibold text-slate-100">{activeCase.status}</div>
-              </div>
-            </div>
-
-            <div className="rounded-md border border-slate-800 bg-slate-900/60 p-3">
-              <div className="text-sm font-semibold text-slate-100">Can this parcel support an income approach?</div>
-              <p className="mt-1 text-sm text-slate-300">
-                Not yet. IncomeForge has live Benton reference support, but parcel income evidence is not complete enough
-                to support direct reliance or a final value conclusion.
-              </p>
-              <p className="mt-2 text-sm text-slate-400">{activeCase.reasonOpen}</p>
-            </div>
-
-            <div className="space-y-2">
-              {readinessBlockers.map((blocker) => (
-                <div
-                  key={blocker}
-                  className="rounded-md border border-slate-800 bg-slate-900/50 px-3 py-2 text-sm text-slate-200"
-                >
-                  {blocker}
-                </div>
+            <div className="space-y-2 p-3">
+              {INCOME_CASES.map((incomeCase) => (
+                <IncomeCaseButton
+                  key={incomeCase.id}
+                  incomeCase={incomeCase}
+                  selected={incomeCase.id === activeCase.id}
+                  onSelect={updateSelectedCase}
+                />
               ))}
             </div>
+          </section>
 
-            <div className="grid gap-3">
-            <EvidenceChecklist
-              title="Rent Roll / Income Evidence"
-              items={[
-                { label: 'Current rent roll or income statement', status: 'Missing', blocker: true },
-                { label: 'Lease terms / unit mix / tenant income support', status: 'Missing', blocker: true },
-                { label: 'Other income support', status: 'Needed' },
-              ]}
-            />
-            <EvidenceChecklist
-              title="Expense Normalization"
-              items={[
-                { label: 'Actual operating expense statement', status: 'Missing', blocker: true },
-                { label: 'Taxes, insurance, utilities, repairs, reserves separated', status: 'Needed' },
-                { label: 'Non-operating or owner-specific costs identified', status: 'Needed' },
-              ]}
-            />
-            <EvidenceChecklist
-              title="Vacancy / Collection Loss"
-              items={[
-                { label: 'Subject vacancy support', status: 'Missing', blocker: true },
-                { label: 'Collection loss history', status: 'Missing', blocker: true },
-                { label: 'Market vacancy reference', status: stats.marketCapRate > 0 ? 'Reference loaded' : 'Needed' },
-              ]}
-            />
-            <EvidenceChecklist
-              title="NOI Reconciliation Readiness"
-              items={[
-                { label: 'Rent, vacancy, expenses, and cap-rate support tied to sources', status: 'Blocked', blocker: true },
-                { label: 'NOI worksheet lock/review', status: 'Not available', blocker: true },
-                { label: 'Chief review package', status: 'Not ready', blocker: true },
-              ]}
-            />
-          </div>
-          </CardContent>
-        </Card>
+          <section className="min-w-0 rounded-md border border-slate-800 bg-slate-900/50">
+            <div className="border-b border-slate-800 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Active Income Case</div>
+              <h2 className="mt-1 text-base font-semibold text-slate-100">Evidence Binder</h2>
+            </div>
+            <div className="space-y-4 p-4">
+              <div className="rounded-md border border-red-900/60 bg-red-950/30 p-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-red-100">Can this parcel support an income approach?</div>
+                    <p className="mt-1 text-sm text-slate-300">
+                      Not yet. IncomeForge has live Benton reference support, but parcel income evidence is not complete enough
+                      to support direct reliance or a final value conclusion.
+                    </p>
+                    <p className="mt-2 text-sm text-slate-400">{activeCase.reasonOpen}</p>
+                  </div>
+                  <StatusPill tone="hold">Not income-ready</StatusPill>
+                </div>
+              </div>
 
-        <div className="min-w-0 space-y-4">
-          <Card className="min-w-0 border-slate-700/70 bg-slate-950/70 text-slate-100">
-            <CardHeader className="border-b border-slate-800 pb-3">
-              <CardTitle className="text-base">Readiness Inspector</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
+              <div className="grid gap-2">
+                {readinessBlockers.map((blocker) => (
+                  <div
+                    key={blocker}
+                    className="rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-200"
+                  >
+                    {blocker}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid gap-3 2xl:grid-cols-2">
+                <EvidenceChecklist
+                  title="Rent Roll / Income Evidence"
+                  items={[
+                    { label: 'Current rent roll or income statement', status: 'Missing', blocker: true },
+                    { label: 'Lease terms / unit mix / tenant income support', status: 'Missing', blocker: true },
+                    { label: 'Other income support', status: 'Needed' },
+                  ]}
+                />
+                <EvidenceChecklist
+                  title="Expense Normalization"
+                  items={[
+                    { label: 'Actual operating expense statement', status: 'Missing', blocker: true },
+                    { label: 'Taxes, insurance, utilities, repairs, reserves separated', status: 'Needed' },
+                    { label: 'Non-operating or owner-specific costs identified', status: 'Needed' },
+                  ]}
+                />
+                <EvidenceChecklist
+                  title="Vacancy / Collection Loss"
+                  items={[
+                    { label: 'Subject vacancy support', status: 'Missing', blocker: true },
+                    { label: 'Collection loss history', status: 'Missing', blocker: true },
+                    { label: 'Market vacancy reference', status: stats.marketCapRate > 0 ? 'Reference loaded' : 'Needed' },
+                  ]}
+                />
+                <EvidenceChecklist
+                  title="NOI Reconciliation Readiness"
+                  items={[
+                    { label: 'Rent, vacancy, expenses, and cap-rate support tied to sources', status: 'Blocked', blocker: true },
+                    { label: 'NOI worksheet lock/review', status: 'Not available', blocker: true },
+                    { label: 'Chief review package', status: 'Not ready', blocker: true },
+                  ]}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="min-w-0 rounded-md border border-slate-800 bg-slate-900/50">
+            <div className="border-b border-slate-800 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Readiness Inspector</div>
+              <h2 className="mt-1 text-base font-semibold text-slate-100">Decision Inspector</h2>
+            </div>
+            <div className="space-y-4 p-4 text-sm">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reviewer Decision State</div>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-2 grid gap-2">
                   {DECISIONS.map((decision) => (
                     <button
                       key={decision}
                       type="button"
-                      className={`rounded-md border px-3 py-1.5 text-sm ${
+                      className={`rounded-md border px-3 py-2 text-left text-sm ${
                         workflowState.decision === decision
                           ? 'border-cyan-400/50 bg-cyan-950/70 text-cyan-100'
-                          : 'border-slate-700 bg-slate-900/80 text-slate-200 hover:bg-slate-800'
+                          : 'border-slate-700 bg-slate-950/70 text-slate-200 hover:bg-slate-800'
                       }`}
                       onClick={() => updateDecision(decision)}
                     >
@@ -393,10 +408,12 @@ function ReviewDeskTab() {
                     </button>
                   ))}
                 </div>
-                <div className="mt-3 text-slate-200">Current decision: {workflowState.decision}</div>
-                <div className="mt-1 text-slate-300">Reason code: {workflowState.reasonCode}</div>
-                <div className="mt-1 text-xs text-slate-500">
-                  Local workstation state only. Backend persistence belongs in the next evidence-state slice.
+                <div className="mt-3 rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2">
+                  <div className="text-slate-200">Current decision: {workflowState.decision}</div>
+                  <div className="mt-1 text-slate-300">Reason code: {workflowState.reasonCode}</div>
+                  <div className="mt-1 text-xs text-slate-500">
+                    Local workstation state only. Backend persistence belongs in the next evidence-state slice.
+                  </div>
                 </div>
               </div>
 
@@ -410,7 +427,7 @@ function ReviewDeskTab() {
                       className={`rounded-md border px-2.5 py-1 text-xs ${
                         workflowState.reasonCode === reasonCode
                           ? 'border-amber-400/50 bg-amber-950/60 text-amber-100'
-                          : 'border-slate-700 bg-slate-900/80 text-slate-300 hover:bg-slate-800'
+                          : 'border-slate-700 bg-slate-950/70 text-slate-300 hover:bg-slate-800'
                       }`}
                       onClick={() => updateReasonCode(reasonCode)}
                     >
@@ -420,42 +437,46 @@ function ReviewDeskTab() {
                 </div>
               </div>
 
-              <div className="rounded-md border border-slate-800 bg-slate-900/60 p-3">
+              <div className="rounded-md border border-slate-800 bg-slate-950/60 p-3">
                 <div className="text-xs text-slate-500">Reference market cap rate</div>
-                <div className="text-2xl font-semibold text-slate-100">{fmtPct(stats.marketCapRate)}</div>
+                <div className="text-3xl font-semibold text-slate-100">{fmtPct(stats.marketCapRate)}</div>
                 <div className="mt-2 text-slate-400">
                   Reference support only. Final cap-rate selection requires parcel risk, income durability, expense
                   support, and reviewer approval.
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
+        </div>
 
-          <Card className="min-w-0 border-slate-700/70 bg-slate-950/70 text-slate-100">
-            <CardHeader className="border-b border-slate-800 pb-3">
-              <CardTitle className="text-base">Evidence Trail</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="rounded-md border border-slate-700/70 bg-slate-950/50 px-3 py-2 text-sm text-slate-100">
-                {activeCase.id} {'->'} {workflowState.decision} {'->'} {workflowState.reasonCode}
-                <div className="mt-1 text-xs text-slate-500">Local reviewer state preserved on this workstation.</div>
+        <div className="border-t border-slate-800 bg-slate-900/60 p-4">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <section className="min-w-0 rounded-md border border-slate-800 bg-slate-950/60">
+              <div className="border-b border-slate-800 px-4 py-3">
+                <h2 className="text-base font-semibold text-slate-100">Evidence Trail</h2>
               </div>
-              <ReviewRow label="Reference income feeds loaded" status={referenceSource ? 'Loaded' : 'Pending'} owner="IncomeForge" />
-              <ReviewRow label="Reliance posture set" status="Blocked" owner="Reviewer" />
-              <ReviewRow label="Required evidence path" status="Open" owner="Assigned Appraiser" />
-            </CardContent>
-          </Card>
-          </div>
-      </div>
+              <div className="grid gap-2 p-3 text-sm md:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-md border border-slate-700/70 bg-slate-950/80 px-3 py-2 text-sm text-slate-100">
+                  {activeCase.id} {'->'} {workflowState.decision} {'->'} {workflowState.reasonCode}
+                  <div className="mt-1 text-xs text-slate-500">Local reviewer state preserved on this workstation.</div>
+                </div>
+                <ReviewRow label="Reference income feeds loaded" status={referenceSource ? 'Loaded' : 'Pending'} owner="IncomeForge" />
+                <ReviewRow label="Reliance posture set" status="Blocked" owner="Reviewer" />
+                <ReviewRow label="Required evidence path" status="Open" owner="Assigned Appraiser" />
+              </div>
+            </section>
 
-      <Card className="min-w-0 border-slate-700/70 bg-slate-950/70 text-slate-100">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Live Reference Coverage</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <StatsRail />
-        </CardContent>
-      </Card>
+            <section className="min-w-0 rounded-md border border-slate-800 bg-slate-950/60">
+              <div className="border-b border-slate-800 px-4 py-3">
+                <h2 className="text-base font-semibold text-slate-100">Live Reference Coverage</h2>
+              </div>
+              <div className="p-3">
+                <StatsRail />
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
