@@ -185,6 +185,62 @@ describe('AdjustmentSetPanel', () => {
     expect(screen.getByTestId('apply-posture-adj-001')).toHaveTextContent('Handed off for apply');
   });
 
+  test('Apply handoff metadata carries valuation scope without city-primary keys', async () => {
+    mockList.mockResolvedValueOnce([
+      makeAdj({
+        approvalState: 'Approved',
+        effectiveScope: JSON.stringify({
+          cohortId: 'cohort-007',
+          rollupScope: 'city',
+          city: 'Kennewick',
+          cityName: 'Kennewick',
+          selectedCity: 'Kennewick',
+          municipality: 'Kennewick',
+          neighborhoodCode: 'NBHD-420',
+          revalArea: 2026,
+          modelGroup: 'MG-12',
+          valueTier: 'Upper',
+          nested: {
+            city: 'Kennewick',
+            segmentId: 'seg-420',
+          },
+        }),
+      }),
+    ]);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-PrepareApply-adj-001');
+
+    await user.click(screen.getByTestId('btn-PrepareApply-adj-001'));
+
+    await waitFor(() => expect(activateModuleMock).toHaveBeenCalled());
+    const metadata = activateModuleMock.mock.calls[0]?.[1].metadata as Record<string, unknown>;
+    expect(metadata).toMatchObject({
+      applyTemplate: 'AdjustmentApplyPacket',
+      adjustmentSetId: 'adj-001',
+      scenarioId: 'scen-001',
+      studyId: STUDY_ID,
+      effectiveScope: {
+        cohortId: 'cohort-007',
+        neighborhoodCode: 'NBHD-420',
+        revalArea: 2026,
+        modelGroup: 'MG-12',
+        valueTier: 'Upper',
+        nested: {
+          segmentId: 'seg-420',
+        },
+      },
+    });
+    expect(metadata.effectiveScope).not.toMatchObject({
+      city: expect.anything(),
+      cityName: expect.anything(),
+      selectedCity: expect.anything(),
+      municipality: expect.anything(),
+      rollupScope: 'city',
+    });
+    expect((metadata.effectiveScope as { nested: Record<string, unknown> }).nested).not.toHaveProperty('city');
+  });
+
   test('loads durable apply handoff receipts from the backend', async () => {
     mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
     mockListReceipts.mockResolvedValueOnce([{
