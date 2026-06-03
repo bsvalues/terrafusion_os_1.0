@@ -13,12 +13,16 @@
 
 ## Static package to prepare (Pod 4)
 
-- [ ] Atlas Property Dossier — PDF
-- [ ] County Pulse — PDF
-- [ ] Academy Codex (10 entries) — PDF
-- [ ] Screenshots of every smoke route, in demo order
-- [ ] 3-minute script (printed)
-- [ ] 10-minute script (printed)
+- [x] Atlas Property Dossier — PDF (`10-demo-package/pdfs/02-atlas-dossier.pdf`)
+- [x] County Pulse — PDF (`03-county-pulse.pdf`)
+- [x] Academy Codex (10 entries) — PDF (`codex-*.pdf` × 10)
+- [x] Demo front door + Ask Academy — PDF (`01-demo-front-door.pdf`, `05-ask-academy.pdf`)
+- [x] Screenshots of every route, in demo order (`10-demo-package/screenshots/*.png`)
+- [x] 3-minute script — drafted in `DEMO_SCRIPT.md` (print before conference)
+- [x] 10-minute script — drafted in `DEMO_SCRIPT.md` (print before conference)
+
+All PDFs/screenshots captured via headless Chrome (no network/extension); each PDF verified
+(`%PDF` header + non-trivial size). Tier-3 fallback is ready: the demo can run from these alone.
 
 ## Transition triggers (decide BEFORE you're on stage)
 
