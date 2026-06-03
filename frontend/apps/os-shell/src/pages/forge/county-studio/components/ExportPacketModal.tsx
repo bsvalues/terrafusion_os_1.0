@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { evidencePacketApi, type EvidencePacketDto } from '../countyStudyApi';
 import { evidencePacketToMarkdown } from '../utils/evidencePacketMarkdown';
+import { stripCityPrimaryKeys } from '../utils/cityPrimarySanitizer';
 
 interface Props {
   studyId: string;
@@ -11,24 +12,8 @@ interface Props {
   onClose: () => void;
 }
 
-const CITY_PRIMARY_KEYS = new Set(['city', 'cityName', 'selectedCity']);
-
-function stripCityPrimaryKeys(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(stripCityPrimaryKeys);
-  }
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .filter(([key, item]) => !CITY_PRIMARY_KEYS.has(key) && !(key === 'rollupScope' && item === 'city'))
-        .map(([key, item]) => [key, stripCityPrimaryKeys(item)]),
-    );
-  }
-  return value;
-}
-
 function sanitizeEvidencePacketForExport(packet: EvidencePacketDto): EvidencePacketDto {
-  return stripCityPrimaryKeys(packet) as EvidencePacketDto;
+  return stripCityPrimaryKeys(packet);
 }
 
 export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {

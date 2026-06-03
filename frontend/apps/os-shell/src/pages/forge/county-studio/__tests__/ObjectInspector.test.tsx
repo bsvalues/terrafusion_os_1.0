@@ -484,6 +484,85 @@ describe('ObjectInspector — Action tab', () => {
     ));
   });
 
+  it('strips city-primary query keys from Dais and Dossier segment handoffs', async () => {
+    recordSegmentInspectorReceiptMock
+      .mockResolvedValueOnce({
+        receiptId: 'receipt-direct-dais',
+        exceptionSetId: null,
+        studyId: 'study-1',
+        countyId: 'benton',
+        sourceType: 'SegmentInspector',
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 's1',
+        segmentLabel: 'NBHD-WR',
+        status: 'Drafted',
+        downstreamEntityId: null,
+        evidenceRef: null,
+        notes: null,
+        draftedAt: '2026-05-01T00:00:00.000Z',
+        updatedAt: '2026-05-01T00:00:00.000Z',
+        updatedBy: 'router',
+      })
+      .mockResolvedValueOnce({
+        receiptId: 'receipt-direct-dossier',
+        exceptionSetId: null,
+        studyId: 'study-1',
+        countyId: 'benton',
+        sourceType: 'SegmentInspector',
+        destination: 'Dossier',
+        template: 'SegmentEvidence',
+        segmentId: 's1',
+        segmentLabel: 'NBHD-WR',
+        status: 'Drafted',
+        downstreamEntityId: null,
+        evidenceRef: null,
+        notes: null,
+        draftedAt: '2026-05-01T00:00:00.000Z',
+        updatedAt: '2026-05-01T00:00:00.000Z',
+        updatedBy: 'router',
+      });
+    state.context =baseContext({
+      dais: {
+        workflowTemplate: 'SegmentReview',
+        deeplinkQuery: '?template=SegmentReview&segmentId=s1&city=Kennewick&selectedCity=Kennewick&rollupScope=city&neighborhoodCode=NBHD-WR&revalArea=7',
+      },
+      dossier: {
+        packetTemplate: 'SegmentEvidence',
+        deeplinkQuery: '?template=SegmentEvidence&segmentId=s1&cityName=Kennewick&rollupScope=city&neighborhoodCode=NBHD-WR&revalArea=7',
+      },
+    });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-dais'));
+    fireEvent.click(screen.getByTestId('inspector-handoff-dossier'));
+
+    await waitFor(() => expect(activateModuleMock).toHaveBeenCalledTimes(2));
+    const activatedByModuleId = new Map(
+      activateModuleMock.mock.calls.map(([moduleId, payload]) => [moduleId, payload]),
+    );
+    const daisQuery = activatedByModuleId.get('suite-dais')?.metadata.deeplinkQuery as string;
+    const dossierQuery = activatedByModuleId.get('suite-dossier')?.metadata.deeplinkQuery as string;
+    const daisParams = new URLSearchParams(daisQuery.slice(1));
+    const dossierParams = new URLSearchParams(dossierQuery.slice(1));
+
+    expect(daisParams.get('template')).toBe('SegmentReview');
+    expect(daisParams.get('segmentId')).toBe('s1');
+    expect(daisParams.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(daisParams.get('revalArea')).toBe('7');
+    expect(daisParams.get('city')).toBeNull();
+    expect(daisParams.get('selectedCity')).toBeNull();
+    expect(daisParams.get('rollupScope')).toBeNull();
+
+    expect(dossierParams.get('template')).toBe('SegmentEvidence');
+    expect(dossierParams.get('segmentId')).toBe('s1');
+    expect(dossierParams.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(dossierParams.get('revalArea')).toBe('7');
+    expect(dossierParams.get('cityName')).toBeNull();
+    expect(dossierParams.get('rollupScope')).toBeNull();
+  });
+
   it('shows a visible handoff error when direct receipt persistence fails', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     recordSegmentInspectorReceiptMock.mockRejectedValueOnce(new Error('receipt write failed'));
