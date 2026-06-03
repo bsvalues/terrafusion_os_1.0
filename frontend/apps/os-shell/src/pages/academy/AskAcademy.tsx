@@ -182,7 +182,7 @@ export const AskAcademy: React.FC = () => {
                 key={ex}
                 onClick={() => ask(ex)}
                 className='text-sm rounded-full px-3 py-1.5'
-                style={{ background: 'hsl(var(--tf-overlay))', color: 'hsl(var(--tf-text) / 0.85)' }}
+                style={{ background: 'hsl(var(--tf-bg) / 0.6)', color: 'hsl(var(--tf-text) / 0.85)' }}
                 data-testid='ask-example'
               >
                 {ex}

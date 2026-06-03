@@ -46,7 +46,7 @@ const LEGS: Leg[] = [
     product: 'TerraFusion OS',
     question: 'What should my office do next?',
     blurb:
-      'Every property read and every method ends in a clear "Now What." County Pulse is where that intelligence becomes the office’s operational next moves.',
+      'Every property read and every method ends in a clear "Now What." County Pulse shows those next moves at county scale — what to watch, and where to focus.',
     cta: { to: '/atlas/county-pulse/demo', label: 'Open the operational briefing' },
   },
 ];

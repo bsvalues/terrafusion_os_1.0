@@ -79,7 +79,7 @@ const SIGNALS: { headline: string; detail: string; tone: Tone }[] = [
 const toneVar: Record<Tone, string> = {
   good: '--tf-success',
   watch: '--tf-warning',
-  flag: '--tf-danger',
+  flag: '--tf-error',
 };
 const toneLabel: Record<Tone, string> = { good: 'Clear', watch: 'Watch', flag: 'Flag' };
 

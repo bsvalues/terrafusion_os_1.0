@@ -51,7 +51,7 @@ const ListCard: React.FC<{ title: string; items: string[]; numbered?: boolean; f
           ) : (
             <span
               className='mt-1.5 h-1.5 w-1.5 rounded-full shrink-0'
-              style={{ background: flag ? 'hsl(var(--tf-danger))' : 'hsl(var(--tf-muted))' }}
+              style={{ background: flag ? 'hsl(var(--tf-error))' : 'hsl(var(--tf-muted))' }}
               aria-hidden
             />
           )}
@@ -126,7 +126,7 @@ export const AcademyCodexEntry: React.FC = () => {
               <span
                 key={t}
                 className='text-xs rounded-full px-3 py-1'
-                style={{ background: 'hsl(var(--tf-overlay))', color: 'hsl(var(--tf-text) / 0.8)' }}
+                style={{ background: 'hsl(var(--tf-bg) / 0.6)', color: 'hsl(var(--tf-text) / 0.8)' }}
               >
                 {t}
               </span>
