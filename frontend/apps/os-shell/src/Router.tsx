@@ -132,6 +132,10 @@ const AtlasHome = lazy(() => import('./pages/suites/AtlasSuiteHome'));
 const AtlasDossierDemo = lazy(() => import('./pages/atlas/DossierDemo'));
 // Atlas County Pulse — conference demo (self-contained, offline-safe, no backend)
 const AtlasCountyPulseDemo = lazy(() => import('./pages/atlas/CountyPulseDemo'));
+// Academy — conference demo (self-contained, offline-safe): shell, codex, ask
+const AcademyHome = lazy(() => import('./pages/academy/AcademyHome'));
+const AcademyCodexEntry = lazy(() => import('./pages/academy/AcademyCodexEntry'));
+const AskAcademy = lazy(() => import('./pages/academy/AskAcademy'));
 const DaisHome = lazy(() => import('./pages/suites/DaisSuiteHome'));
 const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
 const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
@@ -308,6 +312,11 @@ const Router: React.FC = () => {
                   <Route path='atlas/dossier/demo' element={<AtlasDossierDemo />} />
                   {/* Atlas County Pulse — conference demo (offline-safe) */}
                   <Route path='atlas/county-pulse/demo' element={<AtlasCountyPulseDemo />} />
+                  {/* Academy — conference demo (offline-safe): shell, codex entries, ask */}
+                  <Route path='academy' element={<AcademyHome />} />
+                  <Route path='academy/search' element={<AcademyHome />} />
+                  <Route path='academy/codex/:slug' element={<AcademyCodexEntry />} />
+                  <Route path='academy/ask' element={<AskAcademy />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
                   <Route path='gpt' element={<GptHome />} />
