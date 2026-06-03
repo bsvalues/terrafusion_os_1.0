@@ -122,8 +122,9 @@ Not the universe. The proof.
 - **Pod 3 — Build:** Atlas shell/dossier/pulse, Academy shell/codex/ask
 - **Pod 4 — Hardening:** tests, typecheck/build, demo script, fallback PDFs, UX polish, reality tester
 
-### Phone-session reachable now
-staging structure · command-center files · active-codebase scout · GitHub scout · asset registry start · route scaffolding
-
-### Blocked until desktop (no external-drive access from phone)
-external-drive scout · NotebookLM scout · quarantine/old-workspace scout · ChatGPT conversation exports
+### Environment: full desktop — nothing blocked
+Running as Claude Code on the actual laptop. Full filesystem + build tools; external drives
+`D:\` and `E:\` mounted. All discovery lanes (active codebase, GitHub, external drives,
+quarantine, NotebookLM/ChatGPT exports where present on disk) and full build + verification
+are available now. (Any "blocked until desktop / phone session" note elsewhere is a prior
+error — disregard it.)

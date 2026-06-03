@@ -1,23 +1,27 @@
 # Daily Status
 
-## Day 1 — Foundation (phone session, real repo)
+## Day 1 — Foundation + Discovery (desktop, real repo, full tools)
+
+**Environment (corrected):** Claude Code on the actual Windows laptop. Full filesystem, build
+tools, and external drives `D:\` + `E:\` mounted. **Nothing is blocked.** (An earlier note
+wrongly described this as a "phone session" — that was an error; disregard any "blocked until
+desktop" language anywhere in these docs.)
 
 **What changed**
 - Confirmed prior sandbox "build" never persisted — nothing on this machine or any remote.
 - Created isolated worktree `feat/intelligence-preview` off `origin/main` (clean baseline).
-- Built 12-directory staging structure under `terrafusion-intelligence-preview/`.
-- Wrote command-center safety layer: Command Center, Agent Rules, Post-Conference,
-  Risk Register, Daily Status, Demo Script, Fallback Plan.
-- Started Asset Registry (header-only template — no unverified sandbox assets imported).
+- Built 12-directory staging structure + command-center safety layer.
+- Ran Active Codebase Scout + GitHub Scout; re-verified every claimed path against `main`.
+- Seeded Asset Registry with 18 verified rows.
 
 **Readiness snapshot**
 - All 8 demo routes: **Level 0** (nothing built yet in this real repo).
-- Foundation/command-center: **done**.
+- Foundation/command-center: done. Discovery: active-codebase + GitHub done; drives/quarantine in progress.
 
 **Blockers**
-- External-drive / NotebookLM / quarantine / ChatGPT-export scouts blocked until desktop.
+- None. (External drives accessible; full build available.)
 
-**Next action**
-- Run the two phone-reachable scouts in THIS repo: Active Codebase Scout + GitHub Scout.
-- Populate Asset Registry with verified findings (file paths required).
-- Then decide build order for Atlas dossier (R2) and Academy codex (R1).
+**In progress / next**
+- Discovery sweep: external-drive scout (D:/E:), quarantine deep scout.
+- Build: Atlas dossier demo (R2, centerpiece) + Academy (lift QUARANTINE scaffold) + County Pulse (lift existing component).
+- `npm install` in worktree to enable real type-check / dev-server verification.

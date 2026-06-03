@@ -10,5 +10,5 @@ Severity: 🔴 high · 🟠 medium · 🟢 low. Updated as the sprint runs.
 | R4 | **Scope creep** — new ideas mid-sprint | 🟠 | open | Founder Lock; POST_CONFERENCE.md ledger |
 | R5 | **Source work stranded** — prior build lived in a throwaway sandbox, never persisted | 🟠 | mitigated | Now building in a real, committed worktree off main |
 | R6 | **Dirty/co-mingled repo** — 60+ worktrees, multiple agents in the sync lane | 🟠 | mitigated | Isolated `feat/intelligence-preview` worktree; sync swamp untouched |
-| R7 | **External-drive / NotebookLM assets unreachable from phone** | 🟢 | accepted | Defer those scouts to desktop; proceed with active-codebase + GitHub now |
+| R7 | ~~External-drive / NotebookLM assets unreachable from phone~~ — **VOID: this was never a phone session; drives D:/E: are mounted** | 🟢 | closed | No deferral needed; run all scouts now |
 | R8 | **Ask Academy answers feel like AI fluff / only match a few topics** | 🟠 | open | Curated, evidence-backed responses; expand topic matchers; honest "I don't have that yet" defaults |
