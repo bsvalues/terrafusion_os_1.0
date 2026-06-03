@@ -136,6 +136,8 @@ const AtlasCountyPulseDemo = lazy(() => import('./pages/atlas/CountyPulseDemo'))
 const AcademyHome = lazy(() => import('./pages/academy/AcademyHome'));
 const AcademyCodexEntry = lazy(() => import('./pages/academy/AcademyCodexEntry'));
 const AskAcademy = lazy(() => import('./pages/academy/AskAcademy'));
+// Intelligence Preview front door — ties Atlas → Academy → OS into one entry point
+const DemoLanding = lazy(() => import('./pages/demo/DemoLanding'));
 const DaisHome = lazy(() => import('./pages/suites/DaisSuiteHome'));
 const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
 const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
@@ -317,6 +319,9 @@ const Router: React.FC = () => {
                   <Route path='academy/search' element={<AcademyHome />} />
                   <Route path='academy/codex/:slug' element={<AcademyCodexEntry />} />
                   <Route path='academy/ask' element={<AskAcademy />} />
+                  {/* Intelligence Preview front door (demo navigation + OS handoff) */}
+                  <Route path='demo' element={<DemoLanding />} />
+                  <Route path='preview' element={<DemoLanding />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
                   <Route path='gpt' element={<GptHome />} />
