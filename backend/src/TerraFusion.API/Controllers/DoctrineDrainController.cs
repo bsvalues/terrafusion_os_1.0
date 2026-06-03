@@ -1174,6 +1174,22 @@ public class DoctrineDrainController : ControllerBase
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
+            // ADVANCEMENT CURSOR (2026-06-03, land lane): bounded land drains keyset-
+            // paginate by prop_id (lane='land' row in sync_bridge.drain_cursor) so each
+            // chunk covers NEW parcels instead of re-pulling the same top-N. Same proven
+            // mechanism as the improvement lane. FullCorpus ignores the cursor (drains all).
+            int? afterPropId = null;
+            if (!fullCorpus)
+            {
+                await _db.Database.ExecuteSqlRawAsync(
+                    "CREATE TABLE IF NOT EXISTS sync_bridge.drain_cursor (lane text PRIMARY KEY, last_prop_id integer NOT NULL DEFAULT 0)",
+                    cancellationToken).ConfigureAwait(false);
+                var curRows = await _db.Database
+                    .SqlQueryRaw<int>("SELECT COALESCE((SELECT last_prop_id FROM sync_bridge.drain_cursor WHERE lane = 'land'), 0) AS \"Value\"")
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                afterPropId = curRows.FirstOrDefault();
+            }
+
             // Stage 1: Owner-Seed-S1.
             Guid ownerSeedBatchId;
             if (resume.ShouldSkip("Owner-Seed-S1"))
@@ -1183,8 +1199,8 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:land] Owner seed (TopN={Top}, FullCorpus={Full})", seedTopN, fullCorpus);
-                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN);
+                _logger.LogInformation("[Drain:land] Owner seed (TopN={Top}, FullCorpus={Full}, afterPropId={Cur})", seedTopN, fullCorpus, afterPropId);
+                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN, afterPropId: afterPropId);
                 var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
                 batchIds.Add(ownerSeedS1.LoadBatchId);
                 if (!IsCompleted(ownerSeedS1.Status))
@@ -1200,6 +1216,18 @@ public class DoctrineDrainController : ControllerBase
                 .Select(o => o.PropId)
                 .Distinct()
                 .ToListAsync(cancellationToken);
+
+            // Advance the land cursor to the highest prop_id seeded this chunk so the
+            // next bounded drain continues past it (cursor mode + rows returned only;
+            // empty seed => corpus exhausted).
+            if (!fullCorpus && afterPropId.HasValue && seedPropIds.Count > 0)
+            {
+                var maxSeeded = seedPropIds.Max();
+                await _db.Database.ExecuteSqlRawAsync(
+                    "INSERT INTO sync_bridge.drain_cursor (lane, last_prop_id) VALUES ('land', {0}) ON CONFLICT (lane) DO UPDATE SET last_prop_id = EXCLUDED.last_prop_id",
+                    new object[] { maxSeeded }, cancellationToken).ConfigureAwait(false);
+                _logger.LogInformation("[Drain:land] cursor advanced to prop_id={Max}", maxSeeded);
+            }
 
             // Stage 2: Parcel-S1.
             Guid parcelS1BatchId;
