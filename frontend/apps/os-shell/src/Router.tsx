@@ -128,6 +128,8 @@ const TerraLevyGen2 = lazy(() => import('./pages/gen2/TerraLevyGen2'));
 // Suite Home Pages (Wave 2: Vivified Constitutional Suite Routes)
 const ForgeHome = lazy(() => import('./pages/suites/ForgeSuiteHome'));
 const AtlasHome = lazy(() => import('./pages/suites/AtlasSuiteHome'));
+// Atlas Property Dossier — conference demo (self-contained, offline-safe, no backend)
+const AtlasDossierDemo = lazy(() => import('./pages/atlas/DossierDemo'));
 const DaisHome = lazy(() => import('./pages/suites/DaisSuiteHome'));
 const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
 const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
@@ -300,6 +302,8 @@ const Router: React.FC = () => {
                   {/* Atlas Live View */}
                   <Route path='forge/atlas-live' element={<AtlasLivePage />} />
                   <Route path='atlas' element={<AtlasHome />} />
+                  {/* Atlas Property Dossier — conference demo (offline-safe) */}
+                  <Route path='atlas/dossier/demo' element={<AtlasDossierDemo />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
                   <Route path='gpt' element={<GptHome />} />
