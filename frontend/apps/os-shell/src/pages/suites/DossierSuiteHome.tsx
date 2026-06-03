@@ -113,6 +113,31 @@ export interface DossierSuiteHomeProps {
   metadata?: Record<string, unknown>;
 }
 
+function getObjectMetadata(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function formatApplyScope(scope?: Record<string, unknown> | null): string[] {
+  if (!scope) return [];
+  const orderedKeys = [
+    'cohortId',
+    'revalArea',
+    'revaluationCycle',
+    'marketArea',
+    'neighborhoodCode',
+    'modelGroup',
+    'propertyClass',
+    'valueTier',
+  ];
+
+  return orderedKeys
+    .map((key) => scope[key])
+    .filter((value): value is string | number => typeof value === 'string' || typeof value === 'number')
+    .map((value) => String(value))
+    .slice(0, 6);
+}
+
 function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | null }) {
   const handoff = useAdjustmentApplyHandoffStore((s) =>
     adjustmentSetId ? s.handoffs[adjustmentSetId] : undefined,
@@ -125,6 +150,7 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
 
   const appliedEvidenceRef = `dossier-apply-return:${adjustmentSetId}`;
   const rollbackNote = 'Rollback reported by Dossier apply packet review.';
+  const scopeLabels = formatApplyScope(handoff.effectiveScope);
 
   const handleRecordApplied = () => {
     markAppliedExternally(
@@ -178,6 +204,11 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
         <p data-testid="dossier-apply-handoff-status" className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
           Handoff receipt: {handoff.status} · updated {new Date(handoff.updatedAt).toLocaleString()}
         </p>
+        {scopeLabels.length > 0 && (
+          <p data-testid="dossier-apply-handoff-scope" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+            Valuation scope: {scopeLabels.join(' · ')}
+          </p>
+        )}
         {handoff.evidenceRef && (
           <p data-testid="dossier-apply-handoff-evidence" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
             Evidence: {handoff.evidenceRef}
@@ -226,6 +257,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
   const markApplyHandoffOpened = useAdjustmentApplyHandoffStore((s) => s.markOpened);
   const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
+  const activeStoredApplyHandoffId = useAdjustmentApplyHandoffStore((s) => s.activeHandoffId);
   const [activeApplyHandoffId, setActiveApplyHandoffId] = useState<string | null>(null);
 
   // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
@@ -286,7 +318,12 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     const scenarioId = typeof metadata.scenarioId === 'string' ? metadata.scenarioId : null;
     const studyId = typeof metadata.studyId === 'string' ? metadata.studyId : null;
     if (applyTemplate === 'AdjustmentApplyPacket' && adjustmentSetId && scenarioId && studyId) {
-      prepareApplyHandoff({ adjustmentSetId, scenarioId, studyId });
+      prepareApplyHandoff({
+        adjustmentSetId,
+        scenarioId,
+        studyId,
+        effectiveScope: getObjectMetadata(metadata.effectiveScope),
+      });
       markApplyHandoffOpened(adjustmentSetId);
       void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
         status: 'Opened',
@@ -298,6 +335,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const displayedApplyHandoffId = activeApplyHandoffId ?? activeStoredApplyHandoffId;
   const [appealId, setAppealId] = useState('BOE-2026-001');
   const [draftVersion, setDraftVersion] = useState('benton-2026-working');
   const [packetState, setPacketState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: OpenAppealPacketSummary; correlationId?: string; error?: string }>({ status: 'idle' });
@@ -402,7 +440,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
 
       {/* Task D3 — County Studio handoff: segment evidence draft */}
       <DossierEvidenceDraftPanel />
-      <ApplyHandoffBanner adjustmentSetId={activeApplyHandoffId} />
+      <ApplyHandoffBanner adjustmentSetId={displayedApplyHandoffId} />
 
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (

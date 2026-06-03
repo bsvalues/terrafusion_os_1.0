@@ -279,6 +279,30 @@ describe('DossierSuiteHome — County Studio deeplink consumption (Task D3)', ()
     expect(screen.getByTestId('dossier-apply-handoff-status')).toHaveTextContent('Opened');
   });
 
+  it('renders an active apply handoff from the store when the Dossier window is already open', () => {
+    act(() => {
+      useAdjustmentApplyHandoffStore.getState().prepareHandoff({
+        adjustmentSetId: 'adj-apply',
+        scenarioId: 'scenario-apply',
+        studyId: 'study-apply',
+        effectiveScope: {
+          cohortId: 'cohort-007',
+          neighborhoodCode: 'NBHD-420',
+          modelGroup: 'MG-12',
+          valueTier: 'Upper',
+          nested: { segmentId: 'seg-420' },
+        },
+      });
+    });
+
+    render(<DossierSuiteHome />);
+
+    expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('County Studio Handoff · Apply Packet');
+    expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('NBHD-420');
+    expect(screen.getByTestId('dossier-apply-handoff')).toHaveTextContent('MG-12');
+    expect(screen.getByTestId('dossier-apply-handoff')).not.toHaveTextContent('Kennewick');
+  });
+
   it('records external apply return status without mutating values in County Studio', () => {
     render(
       <DossierSuiteHome
