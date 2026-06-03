@@ -123,16 +123,28 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
             await RecordSourceBatchGateAsync(batch, "PASS",
                 "both source batches COMPLETED", cancellationToken).ConfigureAwait(false);
 
-            // ── Idempotency: clear prior truth rows for this sale
-            //    batch (re-promotion replaces). ──
-            var priorRows = await _db.TruthPacsSales
-                .Where(t => t.SaleLoadBatchId == saleLoadBatchId)
+            // ── Iterate the sale batch and project. ──
+            var sales = await _db.LegacyPacsRawSales
+                .Where(s => s.LoadBatchId == saleLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
+
+            // ── Idempotency: clear prior truth rows by NATURAL KEY (the
+            //    sale-event identity (ChgOfOwnerId, PropId) carried by this
+            //    batch's sales), NOT by SaleLoadBatchId. Batch-scoped clearing
+            //    never removed rows promoted under an earlier batch id, so
+            //    re-draining the same sales duplicated truth (observed 1.96x on
+            //    truth_pacs.sale). Same root cause + fix as the improvement
+            //    (76027e412) and land (bfe989350) promoters. Clearing by the
+            //    (ChgOfOwnerId, PropId) set the batch covers makes re-drains
+            //    idempotent regardless of which batch first promoted them. ──
+            var batchChgIds = sales.Select(s => s.ChgOfOwnerId).Distinct().ToList();
+            var batchPropIds = sales.Select(s => s.PropId).Distinct().ToList();
+            var priorRowsRemoved = 0;
+            if (batchChgIds.Count > 0)
             {
-                _db.TruthPacsSales.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                priorRowsRemoved = await _db.TruthPacsSales
+                    .Where(t => batchChgIds.Contains(t.ChgOfOwnerId) && batchPropIds.Contains(t.PropId))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             // ── Build the supp pointer index from the supp batch. ──
@@ -149,11 +161,6 @@ public sealed class PacsSaleTruthPromoter : IPacsSaleTruthPromoter
                 .ToDictionary(
                     g => g.Key,
                     g => g.OrderBy(r => r.LandedAt).First());
-
-            // ── Iterate the sale batch and project. ──
-            var sales = await _db.LegacyPacsRawSales
-                .Where(s => s.LoadBatchId == saleLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
             var considered = sales.Count;
             var promoted = 0;
