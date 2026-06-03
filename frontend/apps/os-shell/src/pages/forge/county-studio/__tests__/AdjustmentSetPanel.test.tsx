@@ -215,6 +215,24 @@ describe('AdjustmentSetPanel', () => {
 
     await waitFor(() => expect(activateModuleMock).toHaveBeenCalled());
     const metadata = activateModuleMock.mock.calls[0]?.[1].metadata as Record<string, unknown>;
+    expect(useAdjustmentApplyHandoffStore.getState().activeHandoffId).toBe('adj-001');
+    expect(useAdjustmentApplyHandoffStore.getState().handoffs['adj-001'].effectiveScope).toMatchObject({
+      cohortId: 'cohort-007',
+      neighborhoodCode: 'NBHD-420',
+      revalArea: 2026,
+      modelGroup: 'MG-12',
+      valueTier: 'Upper',
+      nested: {
+        segmentId: 'seg-420',
+      },
+    });
+    expect(useAdjustmentApplyHandoffStore.getState().handoffs['adj-001'].effectiveScope).not.toMatchObject({
+      city: expect.anything(),
+      cityName: expect.anything(),
+      selectedCity: expect.anything(),
+      municipality: expect.anything(),
+      rollupScope: 'city',
+    });
     expect(metadata).toMatchObject({
       applyTemplate: 'AdjustmentApplyPacket',
       adjustmentSetId: 'adj-001',

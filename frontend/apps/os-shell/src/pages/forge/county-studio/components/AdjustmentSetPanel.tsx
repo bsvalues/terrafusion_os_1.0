@@ -346,6 +346,7 @@ export function AdjustmentSetPanel() {
           adjustmentSetId: adj.adjustmentSetId,
           scenarioId: adj.scenarioId,
           studyId: adj.studyId,
+          effectiveScope,
         });
         void activateModule('suite-dossier', {
           source: 'system',
