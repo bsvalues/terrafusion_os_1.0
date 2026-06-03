@@ -24,10 +24,14 @@ Atlas + County Pulse frozen per product-steward call (further changes require ev
 
 **Discovery:** complete on all lanes (active codebase, GitHub 125 repos, quarantine, external drives D:/E:).
 
-**Remaining (not yet built)**
-- Static **fallback package**: PDFs of each surface + screenshots, so the demo survives no-network (Pod 4).
-- Optional: a `/demo` tile on ShellHome (front door is reachable directly today).
-- Rehearsal against DEMO_SCRIPT.md (3-min + 10-min).
+**Finish line — reached**
+- ✅ 5/5 build items (routes built, type-checked, bundled)
+- ✅ Static fallback package: 6 screenshots + 15 PDFs (all routes incl. 10 codex), headless-captured + verified
+- ✅ 3-min + 10-min scripts drafted (`DEMO_SCRIPT.md`)
 
-**Next action:** build the static fallback package (export/screenshot each route) — the last scope item
-for a no-network-safe conference.
+**Remaining (human / optional)**
+- Rehearse against DEMO_SCRIPT.md; print the scripts + PDFs onto a USB.
+- Optional polish: a `/demo` tile on ShellHome (front door reachable directly today).
+- Decision: push `feat/intelligence-preview` / open PR (not pushed yet — awaiting go).
+
+**Next action:** none required to be demo-ready offline. On request: push the branch / open a PR.
