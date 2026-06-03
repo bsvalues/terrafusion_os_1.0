@@ -24,6 +24,7 @@ import type {
   SegmentDiagnosisFinding,
   SegmentRecommendedAction,
 } from '../types/countyStudio.types';
+import { stripCityPrimaryKeys } from '../utils/cityPrimarySanitizer';
 
 // ── Visual tokens ─────────────────────────────────────────────────────────
 //
@@ -102,15 +103,7 @@ function formatValue(v: unknown): string {
 }
 
 function buildActionMetadata(action: SegmentRecommendedAction, dto: SegmentDiagnosisDto): Record<string, unknown> {
-  const metadata: Record<string, unknown> = {
-    ...(action.prebuiltContext ?? {}),
-  };
-  delete metadata.city;
-  delete metadata.cityName;
-  delete metadata.municipality;
-  if (metadata.rollupScope === 'city') {
-    delete metadata.rollupScope;
-  }
+  const metadata: Record<string, unknown> = stripCityPrimaryKeys(action.prebuiltContext ?? {});
 
   if (dto.neighborhoodCode) {
     metadata.neighborhoodCode = dto.neighborhoodCode;

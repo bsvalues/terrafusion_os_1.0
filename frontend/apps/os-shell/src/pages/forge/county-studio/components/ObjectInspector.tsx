@@ -35,6 +35,7 @@ import type {
   SegmentActionContextDto,
   SegmentYearPoint,
 } from '../types/countyStudio.types';
+import { sanitizeCountyStudioHandoffQuery } from '../utils/cityPrimarySanitizer';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 // ── Presentation atoms ────────────────────────────────────────────────────
@@ -639,6 +640,11 @@ const ActionPanel = ({
   const fireModule = (moduleId: string, metadata: Record<string, unknown>) => {
     void activateModule(moduleId, { source: 'system', metadata });
   };
+  const salesForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.salesForge.deeplinkQuery);
+  const costForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.costForge.deeplinkQuery);
+  const compsForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.compsForge.deeplinkQuery);
+  const daisDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.dais.deeplinkQuery);
+  const dossierDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.dossier.deeplinkQuery);
   const findReceipt = (destination: 'Dais' | 'Dossier') =>
     directReceipts.find((receipt) =>
       receipt.sourceType === 'SegmentInspector'
@@ -713,10 +719,10 @@ const ActionPanel = ({
         label="Reconcile sales in SalesForge"
         subtitle={`Open the ${context.salesForge.qualifiedSaleCount} qualified sales for stratum ${context.salesForge.stratumKey} in ${context.salesForge.taxYear}`}
         disabledTooltip="SalesForge integration not yet active."
-        deeplinkQuery={context.salesForge.deeplinkQuery}
+        deeplinkQuery={salesForgeDeeplinkQuery}
         onClick={() => fireModule('sales-forge', {
           countyId:      context.countyId,
-          deeplinkQuery: context.salesForge.deeplinkQuery,
+          deeplinkQuery: salesForgeDeeplinkQuery,
           stratumKey:    context.salesForge.stratumKey,
           taxYear:       context.salesForge.taxYear,
           segmentId:     context.segmentId,
@@ -727,10 +733,10 @@ const ActionPanel = ({
         label="Calibrate cost in CostForge"
         subtitle={`Open stratum ${context.costForge.stratumKey}, ${context.costForge.taxYear} cost review`}
         disabledTooltip="CostForge integration not yet active."
-        deeplinkQuery={context.costForge.deeplinkQuery}
+        deeplinkQuery={costForgeDeeplinkQuery}
         onClick={() => fireModule('costforge', {
           countyId:      context.countyId,
-          deeplinkQuery: context.costForge.deeplinkQuery,
+          deeplinkQuery: costForgeDeeplinkQuery,
           stratumKey:    context.costForge.stratumKey,
           taxYear:       context.costForge.taxYear,
           segmentId:     context.segmentId,
@@ -741,10 +747,10 @@ const ActionPanel = ({
         label="Review comps in CompsForge"
         subtitle={`Open ${context.compsForge.sampleParcelIds.length} sample parcels for comparison`}
         disabledTooltip="CompsForge integration not yet active."
-        deeplinkQuery={context.compsForge.deeplinkQuery}
+        deeplinkQuery={compsForgeDeeplinkQuery}
         onClick={() => fireModule('comps-forge', {
           countyId:        context.countyId,
-          deeplinkQuery:   context.compsForge.deeplinkQuery,
+          deeplinkQuery:   compsForgeDeeplinkQuery,
           sampleParcelIds: context.compsForge.sampleParcelIds,
           segmentId:       context.segmentId,
         })}
@@ -754,11 +760,11 @@ const ActionPanel = ({
         label="Create Dais review packet"
         subtitle={`Dispatch ${context.dais.workflowTemplate} workflow with ${context.totalParcels.toLocaleString()} parcels`}
         disabledTooltip="Dais integration not yet active."
-        deeplinkQuery={context.dais.deeplinkQuery}
+        deeplinkQuery={daisDeeplinkQuery}
         receiptLabel={receiptLabel(findReceipt('Dais'))}
         onClick={() => void fireSegmentReceiptModule('suite-dais', 'Dais', 'SegmentReview', {
           countyId:         context.countyId,
-          deeplinkQuery:     context.dais.deeplinkQuery,
+          deeplinkQuery:     daisDeeplinkQuery,
           workflowTemplate:  context.dais.workflowTemplate,
           segmentId:         context.segmentId,
           studyId:           context.studyId,
@@ -769,11 +775,11 @@ const ActionPanel = ({
         label="Generate Dossier evidence packet"
         subtitle={`Prepare ${context.dossier.packetTemplate} packet for this segment`}
         disabledTooltip="Dossier integration not yet active."
-        deeplinkQuery={context.dossier.deeplinkQuery}
+        deeplinkQuery={dossierDeeplinkQuery}
         receiptLabel={receiptLabel(findReceipt('Dossier'))}
         onClick={() => void fireSegmentReceiptModule('suite-dossier', 'Dossier', 'SegmentEvidence', {
           countyId:       context.countyId,
-          deeplinkQuery:   context.dossier.deeplinkQuery,
+          deeplinkQuery:   dossierDeeplinkQuery,
           packetTemplate:  context.dossier.packetTemplate,
           segmentId:       context.segmentId,
           studyId:         context.studyId,
