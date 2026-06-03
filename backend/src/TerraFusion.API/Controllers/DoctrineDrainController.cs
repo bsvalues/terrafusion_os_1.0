@@ -1439,6 +1439,28 @@ public class DoctrineDrainController : ControllerBase
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var saleTopN = fullCorpus ? (int?)null : (topN ?? 500);
 
+            // SALES-CURSOR (2026-06-03): bounded sales drains keyset-paginate by
+            // chg_of_owner_id (lane='sales' row in sync_bridge.drain_cursor) so each
+            // chunk lands NEW sales instead of re-pulling the same TOP-N (the
+            // non-advancement that blocked the sweep). FullCorpus ignores the cursor.
+            // Mirrors the parcel/land/improvement afterPropId cursor.
+            long? afterChgId = null;
+            if (!fullCorpus)
+            {
+                await _db.Database.ExecuteSqlRawAsync(
+                    "CREATE TABLE IF NOT EXISTS sync_bridge.drain_cursor (lane text PRIMARY KEY, last_prop_id integer NOT NULL DEFAULT 0)",
+                    cancellationToken).ConfigureAwait(false);
+                // Reuse the drain_cursor table; sales stores its chg_of_owner_id high-water
+                // in a dedicated bigint column (added on demand) to avoid int overflow.
+                await _db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE sync_bridge.drain_cursor ADD COLUMN IF NOT EXISTS last_chg_id bigint NOT NULL DEFAULT 0",
+                    cancellationToken).ConfigureAwait(false);
+                var curRows = await _db.Database
+                    .SqlQueryRaw<long>("SELECT COALESCE((SELECT last_chg_id FROM sync_bridge.drain_cursor WHERE lane = 'sales'), 0) AS \"Value\"")
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                afterChgId = curRows.FirstOrDefault();
+            }
+
             // Stage 1: Sale-S1.
             Guid saleS1BatchId;
             int saleS1RowsLanded = 0;
@@ -1449,8 +1471,8 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:sales] Sale S1 (TopN={Top}, FullCorpus={Full})", saleTopN, fullCorpus);
-                var saleSrc = new SqlServerPacsSaleSource(pacsCs!, topN: saleTopN);
+                _logger.LogInformation("[Drain:sales] Sale S1 (TopN={Top}, FullCorpus={Full}, afterChgId={Cur})", saleTopN, fullCorpus, afterChgId);
+                var saleSrc = new SqlServerPacsSaleSource(pacsCs!, topN: saleTopN, afterChgId: afterChgId);
                 var saleS1 = await saleSvc.LandSalesAsync(saleSrc, operatorName, cancellationToken);
                 batchIds.Add(saleS1.LoadBatchId);
                 if (!IsCompleted(saleS1.Status))
@@ -1460,6 +1482,22 @@ public class DoctrineDrainController : ControllerBase
                 saleS1RowsLanded = saleS1.RowsLanded;
                 rowsLanded = saleS1RowsLanded;
                 await resume.CheckpointAsync("Sale-S1", batchIds, cancellationToken);
+
+                // Advance the sales cursor to the highest chg_of_owner_id landed this
+                // chunk (cursor mode + rows landed only; empty => corpus exhausted).
+                if (!fullCorpus && afterChgId.HasValue && saleS1RowsLanded > 0)
+                {
+                    var maxChg = await _db.LegacyPacsRawSales.AsNoTracking()
+                        .Where(s => s.LoadBatchId == saleS1BatchId)
+                        .MaxAsync(s => (long?)s.ChgOfOwnerId, cancellationToken).ConfigureAwait(false);
+                    if (maxChg.HasValue)
+                    {
+                        await _db.Database.ExecuteSqlRawAsync(
+                            "INSERT INTO sync_bridge.drain_cursor (lane, last_chg_id) VALUES ('sales', {0}) ON CONFLICT (lane) DO UPDATE SET last_chg_id = EXCLUDED.last_chg_id",
+                            new object[] { maxChg.Value }, cancellationToken).ConfigureAwait(false);
+                        _logger.LogInformation("[Drain:sales] cursor advanced to chg_of_owner_id={Max}", maxChg.Value);
+                    }
+                }
             }
 
             // Build supp keys from sale batch (independent of skip).

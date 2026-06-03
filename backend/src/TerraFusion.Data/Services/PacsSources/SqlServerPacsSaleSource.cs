@@ -19,16 +19,26 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
 {
     private readonly string _connectionString;
     private readonly int? _topN;
+    private readonly long? _afterChgId;
 
     /// <param name="topN">If set, limits the SQL Server query to TOP N rows.
     /// Used by SYNC-POP-2 proof runs that must complete inside an HTTP
     /// timeout. Production landing leaves this null to drain the full corpus.</param>
-    public SqlServerPacsSaleSource(string connectionString, int? topN = null)
+    /// <param name="afterChgId">SALES-CURSOR (2026-06-03): keyset cursor on
+    /// chg_of_owner_id. When set, the query returns only sales with
+    /// <c>chg_of_owner_id &gt; afterChgId</c>, ordered ASCENDING by
+    /// chg_of_owner_id — a forward keyset page so each bounded chunk covers NEW
+    /// sales instead of re-pulling the same TOP-N (the non-advancement problem
+    /// that blocked the sales sweep). Mirrors the afterPropId cursor on the
+    /// parcel/land/improvement lanes. FullCorpus (topN=null, afterChgId=null)
+    /// is unchanged. The 2018+ date filter is applied in cursor mode too.</param>
+    public SqlServerPacsSaleSource(string connectionString, int? topN = null, long? afterChgId = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("PACS connection string is required.", nameof(connectionString));
         _connectionString = connectionString;
         _topN = topN;
+        _afterChgId = afterChgId;
     }
 
     public string SourceSystem => "JCHARRISPACS";
@@ -72,9 +82,17 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
         // projection. Production drains all rows (topN=null), date filter
         // honored only when caller asks for a bounded sample.
         var topClause = _topN.HasValue ? $"TOP {_topN.Value} " : "";
-        var dateFilter = _topN.HasValue
-            ? "WHERE s.sl_dt >= '2018-01-01'"
-            : "";
+        // Bounded AND cursor runs scope to 2018+ (the qualified-sales universe).
+        var bounded = _topN.HasValue || _afterChgId.HasValue;
+        var wheres = new System.Collections.Generic.List<string>();
+        if (bounded) wheres.Add("s.sl_dt >= '2018-01-01'");
+        if (_afterChgId.HasValue) wheres.Add("s.chg_of_owner_id > @afterChgId");
+        var whereClause = wheres.Count > 0 ? "WHERE " + string.Join(" AND ", wheres) : "";
+        // Cursor mode advances forward (ASC) so the persisted last_chg_id moves up
+        // each chunk; non-cursor bounded proof runs keep the original DESC ordering.
+        var orderClause = _afterChgId.HasValue
+            ? "ORDER BY s.chg_of_owner_id ASC, copa.prop_id"
+            : "ORDER BY s.chg_of_owner_id DESC, copa.prop_id";
         var sql = $@"
             SELECT {topClause}s.chg_of_owner_id,
                    copa.prop_id,
@@ -89,13 +107,15 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
             FROM dbo.sale s
             INNER JOIN dbo.chg_of_owner_prop_assoc copa
                 ON copa.chg_of_owner_id = s.chg_of_owner_id
-            {dateFilter}
-            ORDER BY s.chg_of_owner_id DESC, copa.prop_id";
+            {whereClause}
+            {orderClause}";
 
         await using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         await using var cmd = new SqlCommand(sql, conn) { CommandTimeout = 600 };
+        if (_afterChgId.HasValue)
+            cmd.Parameters.AddWithValue("@afterChgId", _afterChgId.Value);
         await using var rdr = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
         var oChgId           = rdr.GetOrdinal("chg_of_owner_id");
