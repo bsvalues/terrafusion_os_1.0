@@ -91,6 +91,13 @@ public sealed class PacsSaleLandingService : IPacsSaleLandingService
         var unknownDate = 0;
         var rowsLanded = 0;
         var pending = 0;
+        // SALES-LANDING-IDEMPOTENCY (2026-06-03): collect the (ChgOfOwnerId, PropId)
+        // natural keys landed this batch so we can delete any PRIOR-batch rows for
+        // the same keys after the insert loop. Without this, cursor-mode re-runs of
+        // overlapping sales pile duplicate landing rows (1.03x+ per re-run), recreating
+        // the bloat we fixed in improvement/land. Same clear-by-natural-key pattern as
+        // the truth promoters; here it makes the LANDING layer re-runnable too.
+        var batchKeys = new HashSet<(long ChgOfOwnerId, int PropId)>();
 
         try
         {
@@ -126,6 +133,7 @@ public sealed class PacsSaleLandingService : IPacsSaleLandingService
                     LandedAt = DateTime.UtcNow,
                 };
                 _db.LegacyPacsRawSales.Add(landed);
+                batchKeys.Add((src.ChgOfOwnerId, src.PropId));
 
                 // Distribution + stale-code accounting.
                 var key = src.SlCountyRatioCd ?? "<NULL>";
@@ -164,6 +172,33 @@ public sealed class PacsSaleLandingService : IPacsSaleLandingService
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             } // end BulkInsertScope — AutoDetectChanges restored here so post-loop SaveChanges captures batch.Status updates
+
+            // SALES-LANDING-IDEMPOTENCY: collapse each (ChgOfOwnerId, PropId) natural
+            // key to a single landing row, keeping the most recently landed. This makes
+            // cursor-mode re-runs of overlapping sales idempotent at the landing layer
+            // (the rough edge from the cursor proof) without accumulating duplicates.
+            // Implemented as ONE set-based window DELETE (keep latest LandedAt/LandedRowId
+            // per key) rather than an IN×IN cross-product over ~75k keys — the
+            // cross-product version table-scanned under lock and ground PG to a halt.
+            // Scoped to keys this batch touched so it stays O(rows-for-those-keys).
+            if (batchKeys.Count > 0)
+            {
+                await _db.Database.ExecuteSqlRawAsync(@"
+                    DELETE FROM legacy_pacs_raw.sale s
+                    USING (
+                        SELECT ""LandedRowId"",
+                               ROW_NUMBER() OVER (
+                                   PARTITION BY ""ChgOfOwnerId"", ""PropId""
+                                   ORDER BY ""LandedAt"" DESC NULLS LAST, ""LandedRowId"" DESC) rn
+                        FROM legacy_pacs_raw.sale
+                        WHERE (""ChgOfOwnerId"", ""PropId"") IN (
+                            SELECT DISTINCT ""ChgOfOwnerId"", ""PropId""
+                            FROM legacy_pacs_raw.sale
+                            WHERE ""LoadBatchId"" = {0})
+                    ) d
+                    WHERE s.""LandedRowId"" = d.""LandedRowId"" AND d.rn > 1",
+                    new object[] { batch.LoadBatchId }, cancellationToken).ConfigureAwait(false);
+            }
 
             await WriteGatesAsync(
                 batch, distribution, staleViolations,
