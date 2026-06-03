@@ -752,13 +752,26 @@ public class DoctrineDrainController : ControllerBase
             _db.SuppressAuditLogging = true;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
+            // GAP-CLOSURE (2026-05-30): targeted backfill mode. When the request
+            // carries an explicit SeedPropIds list, bypass the owner-cursor seed
+            // entirely and use that exact set. The owners for these parcels are
+            // already landed (diagnosed), so the downstream keyed chain
+            // (parcel-S1 → property_val → spine → imprv → truth → canonical)
+            // needs only seedPropIds to run. The cursor is NOT read or advanced
+            // in this mode — it is a surgical fill, not a sweep. Distinct +
+            // ascending for deterministic batching. Cursor mode is untouched.
+            var targetedSeed = request?.SeedPropIds is { Count: > 0 } sp
+                ? sp.Distinct().OrderBy(x => x).ToList()
+                : null;
+
             // ADVANCEMENT CURSOR (2026-05-27): bounded improvement drains keyset-
             // paginate by prop_id so each chunk covers NEW parcels instead of
             // re-pulling the same top-N every time (the duplication/non-advancement
             // root cause). Cursor persists in sync_bridge.drain_cursor (PG) so it
             // survives restarts. FullCorpus drains ignore the cursor (drain all).
+            // Targeted backfill also ignores the cursor.
             int? afterPropId = null;
-            if (!fullCorpus)
+            if (!fullCorpus && targetedSeed is null)
             {
                 await _db.Database.ExecuteSqlRawAsync(
                     "CREATE TABLE IF NOT EXISTS sync_bridge.drain_cursor (lane text PRIMARY KEY, last_prop_id integer NOT NULL DEFAULT 0)",
@@ -769,43 +782,54 @@ public class DoctrineDrainController : ControllerBase
                 afterPropId = curRows.FirstOrDefault();
             }
 
-            // Stage 1: Owner-Seed-S1.
-            Guid ownerSeedBatchId;
-            if (resume.ShouldSkip("Owner-Seed-S1"))
+            List<int> seedPropIds;
+            if (targetedSeed is not null)
             {
-                ownerSeedBatchId = resume.GetPriorBatchId("Owner-Seed-S1") ?? throw new InvalidOperationException("Owner-Seed-S1 missing.");
-                _logger.LogInformation("[Drain:improvement] SKIP Owner-Seed-S1; batchId={Bid}", ownerSeedBatchId);
+                // Stage 1 (targeted): use the explicit prop_id list as the seed
+                // set; skip Owner-Seed-S1. Owners are pre-landed for this cohort.
+                _logger.LogInformation("[Drain:improvement] TARGETED BACKFILL seed ({Count} prop_ids, owner-seed SKIPPED)", targetedSeed.Count);
+                seedPropIds = targetedSeed;
             }
             else
             {
-                _logger.LogInformation("[Drain:improvement] Owner seed (TopN={Top}, FullCorpus={Full}, afterPropId={Cur})", seedTopN, fullCorpus, afterPropId);
-                var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN, afterPropId: afterPropId);
-                var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
-                batchIds.Add(ownerSeedS1.LoadBatchId);
-                if (!IsCompleted(ownerSeedS1.Status))
-                    return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
-                        batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
-                ownerSeedBatchId = ownerSeedS1.LoadBatchId;
-                await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
-            }
+                // Stage 1: Owner-Seed-S1.
+                Guid ownerSeedBatchId;
+                if (resume.ShouldSkip("Owner-Seed-S1"))
+                {
+                    ownerSeedBatchId = resume.GetPriorBatchId("Owner-Seed-S1") ?? throw new InvalidOperationException("Owner-Seed-S1 missing.");
+                    _logger.LogInformation("[Drain:improvement] SKIP Owner-Seed-S1; batchId={Bid}", ownerSeedBatchId);
+                }
+                else
+                {
+                    _logger.LogInformation("[Drain:improvement] Owner seed (TopN={Top}, FullCorpus={Full}, afterPropId={Cur})", seedTopN, fullCorpus, afterPropId);
+                    var ownerSeedSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: seedTopN, afterPropId: afterPropId);
+                    var ownerSeedS1 = await ownerSvc.LandOwnersAsync(ownerSeedSrc, operatorName, cancellationToken);
+                    batchIds.Add(ownerSeedS1.LoadBatchId);
+                    if (!IsCompleted(ownerSeedS1.Status))
+                        return await FailLaneAsync(LaneName, "Owner-Seed-S1", ownerSeedS1.ErrorSummary,
+                            batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+                    ownerSeedBatchId = ownerSeedS1.LoadBatchId;
+                    await resume.CheckpointAsync("Owner-Seed-S1", batchIds, cancellationToken);
+                }
 
-            var seedPropIds = await _db.LegacyPacsRawOwners
-                .AsNoTracking()
-                .Where(o => o.LoadBatchId == ownerSeedBatchId)
-                .Select(o => o.PropId)
-                .Distinct()
-                .ToListAsync(cancellationToken);
+                seedPropIds = await _db.LegacyPacsRawOwners
+                    .AsNoTracking()
+                    .Where(o => o.LoadBatchId == ownerSeedBatchId)
+                    .Select(o => o.PropId)
+                    .Distinct()
+                    .ToListAsync(cancellationToken);
 
-            // Advance the cursor to the highest prop_id seeded this chunk so the
-            // next bounded drain continues past it. Only when advancing (cursor
-            // mode) and rows were returned; an empty seed means corpus exhausted.
-            if (!fullCorpus && afterPropId.HasValue && seedPropIds.Count > 0)
-            {
-                var maxSeeded = seedPropIds.Max();
-                await _db.Database.ExecuteSqlRawAsync(
-                    "INSERT INTO sync_bridge.drain_cursor (lane, last_prop_id) VALUES ('improvement', {0}) ON CONFLICT (lane) DO UPDATE SET last_prop_id = EXCLUDED.last_prop_id",
-                    new object[] { maxSeeded }, cancellationToken).ConfigureAwait(false);
-                _logger.LogInformation("[Drain:improvement] cursor advanced to prop_id={Max}", maxSeeded);
+                // Advance the cursor to the highest prop_id seeded this chunk so the
+                // next bounded drain continues past it. Only when advancing (cursor
+                // mode) and rows were returned; an empty seed means corpus exhausted.
+                if (!fullCorpus && afterPropId.HasValue && seedPropIds.Count > 0)
+                {
+                    var maxSeeded = seedPropIds.Max();
+                    await _db.Database.ExecuteSqlRawAsync(
+                        "INSERT INTO sync_bridge.drain_cursor (lane, last_prop_id) VALUES ('improvement', {0}) ON CONFLICT (lane) DO UPDATE SET last_prop_id = EXCLUDED.last_prop_id",
+                        new object[] { maxSeeded }, cancellationToken).ConfigureAwait(false);
+                    _logger.LogInformation("[Drain:improvement] cursor advanced to prop_id={Max}", maxSeeded);
+                }
             }
 
             // IMPROVEMENT-ONLY MODE (2026-05-28, co-founder-approved slice): if EVERY
@@ -2206,11 +2230,25 @@ public class DoctrineDrainController : ControllerBase
     /// persisted <c>BatchIdsJson</c>. Ignored when <see cref="LaneResultId"/>
     /// is null (no row to load from). Unknown stage names → no skip
     /// (full lane rerun, which is safe).</param>
+    /// <param name="SeedPropIds">GAP-CLOSURE (2026-05-30): targeted backfill.
+    /// When non-empty, the improvement lane skips the owner-cursor seed stage
+    /// and uses this exact prop_id list as the seed set, running the unchanged
+    /// keyed parcel/property_val/spine/imprv/truth/canonical chain for only
+    /// these parcels. Null/empty leaves the existing cursor behavior unchanged.</param>
     public sealed record DoctrineDrainRequest(
         string? OperatorName,
         int? WorkingYear,
         bool? FullCorpus,
         int? TopN,
         Guid? LaneResultId = null,
-        string? ResumeFromStage = null);
+        string? ResumeFromStage = null,
+        // GAP-CLOSURE (2026-05-30): targeted backfill. When non-empty, the
+        // improvement lane skips the owner-cursor seed stage and uses this
+        // exact prop_id list as the seed set, running the unchanged keyed
+        // parcel/property_val/spine/imprv/truth/canonical chain for only
+        // these parcels. Null/empty => existing cursor behavior unchanged.
+        // Diagnosed gap cohorts: 4,176 never-landed (no property_val landing
+        // → no spine) + 497 landed-not-promoted. See
+        // evidence/2026-05-30-improvement-residual-gap-diagnosis.md.
+        IReadOnlyList<int>? SeedPropIds = null);
 }
