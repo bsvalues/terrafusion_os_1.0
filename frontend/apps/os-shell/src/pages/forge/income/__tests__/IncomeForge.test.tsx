@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const mockRuntime = vi.hoisted(() => ({
@@ -7,6 +9,8 @@ const mockRuntime = vi.hoisted(() => ({
     supported: true,
     message: null as string | null,
   },
+  fetchReferenceData: vi.fn(),
+  calculateValuation: vi.fn(),
 }));
 
 vi.mock('../incomeForgeStore', () => {
@@ -71,8 +75,8 @@ vi.mock('../incomeForgeStore', () => {
       expensesError: null,
       locationsError: null,
       valuationError: null,
-      fetchReferenceData: vi.fn(),
-      calculateValuation: vi.fn(),
+      fetchReferenceData: mockRuntime.fetchReferenceData,
+      calculateValuation: mockRuntime.calculateValuation,
     };
     return selector ? selector(state) : state;
   });
@@ -84,6 +88,8 @@ import IncomeForge from '../IncomeForge';
 
 describe('IncomeForge', () => {
   afterEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
     mockRuntime.countyScope = {
       countyId: '19190019-1919-1919-1919-191919191919',
       supported: true,
@@ -95,17 +101,77 @@ describe('IncomeForge', () => {
     render(<IncomeForge />);
 
     expect(screen.getByTestId('income-forge')).toBeInTheDocument();
-    expect(screen.getByText('IncomeForge')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'IncomeForge', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Live API')).toBeInTheDocument();
     expect(screen.getByText('Property Types')).toBeInTheDocument();
     expect(screen.getAllByText('2').length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Benton County Assessor/i).length).toBeGreaterThan(0);
   });
 
-  it('renders the five production income tabs', () => {
+  it('opens as an income evidence readiness desk instead of a final valuation engine', () => {
     render(<IncomeForge />);
 
-    expect(screen.getByText('Valuation')).toBeInTheDocument();
+    expect(screen.getAllByText('Income Evidence Readiness Desk').length).toBeGreaterThan(0);
+    expect(screen.getByText('Case Desk derived from live IncomeForge reference records and staff evidence state.')).toBeInTheDocument();
+    expect(screen.getByText('Can this parcel support an income approach?')).toBeInTheDocument();
+    expect(screen.getAllByText('Not income-ready').length).toBeGreaterThan(0);
+    expect(screen.getByText('Work Queue')).toBeInTheDocument();
+    expect(screen.getByText('Rent Roll / Income Evidence')).toBeInTheDocument();
+    expect(screen.getByText('Expense Normalization')).toBeInTheDocument();
+    expect(screen.getByText('Vacancy / Collection Loss')).toBeInTheDocument();
+    expect(screen.getByText('Reference market cap rate')).toBeInTheDocument();
+    expect(screen.getByText('NOI Reconciliation Readiness')).toBeInTheDocument();
+    expect(screen.getByText('Evidence Trail')).toBeInTheDocument();
+  });
+
+  it('uses a three-pane operational case desk instead of a dominant error blanket', () => {
+    render(<IncomeForge />);
+
+    expect(screen.getByText('Active Income Case')).toBeInTheDocument();
+    expect(screen.getByText('Readiness Inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('income-readiness-desk')).not.toHaveClass('bg-red-50/70');
+    expect(screen.getAllByText('Not income-ready').length).toBeGreaterThan(0);
+  });
+
+  it('does not auto-run or foreground a final income value conclusion', () => {
+    render(<IncomeForge />);
+
+    expect(mockRuntime.calculateValuation).not.toHaveBeenCalled();
+    expect(screen.queryByText('Backend Valuation Result')).not.toBeInTheDocument();
+    expect(screen.queryByText('Calculate Valuation')).not.toBeInTheDocument();
+    expect(screen.queryByText('Adjusted Value')).not.toBeInTheDocument();
+  });
+
+  it('persists selected case, reviewer decision, reason code, and evidence trail locally without unlocking valuation', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<IncomeForge />);
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: /IF-2026-002 Restaurant lease review/i }));
+      await user.click(screen.getByRole('button', { name: 'Chief Review Hold' }));
+      await user.click(screen.getByRole('button', { name: 'Expense support incomplete' }));
+    });
+
+    expect(screen.getByText('Active case: IF-2026-002')).toBeInTheDocument();
+    expect(screen.getByText('Current decision: Chief Review Hold')).toBeInTheDocument();
+    expect(screen.getByText('Reason code: Expense support incomplete')).toBeInTheDocument();
+    expect(screen.getByText(/IF-2026-002 .* Chief Review Hold .* Expense support incomplete/)).toBeInTheDocument();
+    expect(screen.queryByText('Calculate Valuation')).not.toBeInTheDocument();
+
+    unmount();
+    render(<IncomeForge />);
+
+    expect(screen.getByText('Active case: IF-2026-002')).toBeInTheDocument();
+    expect(screen.getByText('Current decision: Chief Review Hold')).toBeInTheDocument();
+    expect(screen.getByText('Reason code: Expense support incomplete')).toBeInTheDocument();
+    expect(screen.getByText(/IF-2026-002 .* Chief Review Hold .* Expense support incomplete/)).toBeInTheDocument();
+    expect(screen.queryByText('Backend Valuation Result')).not.toBeInTheDocument();
+  });
+
+  it('keeps reference support tabs without making them the primary workflow', () => {
+    render(<IncomeForge />);
+
+    expect(screen.getByText('Review Desk')).toBeInTheDocument();
     expect(screen.getByText('Cap Rates')).toBeInTheDocument();
     expect(screen.getByText('Market Data')).toBeInTheDocument();
     expect(screen.getByText('Expenses')).toBeInTheDocument();
