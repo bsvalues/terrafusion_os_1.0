@@ -170,21 +170,29 @@ describe('CityInspector', () => {
     expect(dashes.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('routes city scope to Atlas Live', () => {
+  it('routes Atlas handoff with city as reference metadata only', () => {
     act(() => {
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
       useCountyStudioStore.setState({ selectedCity: 'West Richland' });
     });
     render(<CityInspector />);
     fireEvent.click(screen.getByTestId('city-inspector-handoff-atlas'));
+    expect(navigateMock).toHaveBeenCalledTimes(1);
     expect(navigateMock).toHaveBeenCalledWith(
       expect.stringContaining('/forge/atlas-live?')
     );
-    expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');
-    expect(navigateMock.mock.calls[0]?.[0]).toContain('city=West+Richland');
+    const url = String(navigateMock.mock.calls[0]?.[0] ?? '');
+    const params = new URLSearchParams(url.split('?')[1] ?? '');
+    expect(params.get('countyId')).toBe('benton');
+    expect(params.get('referenceCity')).toBe('West Richland');
+    expect(params.get('resetValuationScope')).toBe('true');
+    expect(params.has('city')).toBe(false);
+    expect(params.has('selectedCity')).toBe(false);
+    expect(params.has('cityName')).toBe(false);
+    expect(params.get('rollupScope')).not.toBe('city');
   });
 
-  it('routes city scope into downstream forge modules', () => {
+  it('routes downstream forge handoffs with city as reference metadata only', () => {
     act(() => {
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
       useCountyStudioStore.setState({ selectedCity: 'West Richland' });
@@ -195,31 +203,28 @@ describe('CityInspector', () => {
     fireEvent.click(screen.getByTestId('city-inspector-handoff-costforge'));
     fireEvent.click(screen.getByTestId('city-inspector-handoff-compsforge'));
 
-    expect(activateModuleMock).toHaveBeenNthCalledWith(1, 'sales-forge', expect.objectContaining({
-      source: 'system',
-      metadata: expect.objectContaining({
-        countyId: 'benton',
-        city: 'West Richland',
-        rollupScope: 'city',
-      }),
-    }));
-    expect(activateModuleMock).toHaveBeenNthCalledWith(2, 'costforge', expect.objectContaining({
-      metadata: expect.objectContaining({
-        countyId: 'benton',
-        city: 'West Richland',
-        rollupScope: 'city',
-      }),
-    }));
-    expect(activateModuleMock).toHaveBeenNthCalledWith(3, 'comps-forge', expect.objectContaining({
-      metadata: expect.objectContaining({
-        countyId: 'benton',
-        city: 'West Richland',
-        rollupScope: 'city',
-      }),
-    }));
+    const expectedModules = ['sales-forge', 'costforge', 'comps-forge'];
+    expect(activateModuleMock).toHaveBeenCalledTimes(expectedModules.length);
+    expectedModules.forEach((moduleId, index) => {
+      expect(activateModuleMock).toHaveBeenNthCalledWith(index + 1, moduleId, expect.objectContaining({
+        source: 'system',
+        metadata: expect.objectContaining({
+          countyId: 'benton',
+          countyName: 'Benton County',
+          taxYear: 2026,
+          referenceCity: 'West Richland',
+          resetValuationScope: true,
+        }),
+      }));
+      const metadata = activateModuleMock.mock.calls[index]?.[1]?.metadata as Record<string, unknown>;
+      expect(metadata.city).toBeUndefined();
+      expect(metadata.selectedCity).toBeUndefined();
+      expect(metadata.cityName).toBeUndefined();
+      expect(metadata.rollupScope).not.toBe('city');
+    });
   });
 
-  it('keeps parcel workbench disabled at city scope', () => {
+  it('keeps parcel workbench disabled from the city reference panel', () => {
     act(() => {
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
       useCountyStudioStore.setState({ selectedCity: 'West Richland' });

@@ -142,6 +142,30 @@ describe('CostForge — County Studio deeplink consumption (Task D2)', () => {
     ).toBeInTheDocument();
   });
 
+  it('clears stale neighborhood scope for city-reference reset handoffs without city rollup scope', () => {
+    act(() => {
+      const s = useCostForgeWorkspaceStore.getState();
+      s.setSelectedHood('NBHD-STALE');
+      s.setActiveTab('hood-audit');
+    });
+
+    render(
+      <CostForge
+        metadata={{
+          countyName: 'Benton County',
+          taxYear: 2026,
+          referenceCity: 'Kennewick',
+          resetValuationScope: true,
+        }}
+      />
+    );
+
+    const s = useCostForgeWorkspaceStore.getState();
+    expect(s.selectedHoodCd).toBeNull();
+    expect(s.activeTab).toBe('triage');
+    expect(screen.queryByText(/City overview · Kennewick/)).not.toBeInTheDocument();
+  });
+
   it('Scoped From chip click fires activateModule("county-studio") with segmentId', () => {
     render(
       <CostForge

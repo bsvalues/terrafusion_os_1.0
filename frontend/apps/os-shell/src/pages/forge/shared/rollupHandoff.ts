@@ -14,6 +14,7 @@ export interface RollupHandoffContext {
   neighborhoodName: string | null;
   revalArea: number | null;
   rollupScope: RollupScope;
+  resetValuationScope: boolean;
   segmentId: string | null;
   segmentLabel: string | null;
   stratumKey: string | null;
@@ -30,6 +31,10 @@ function readNumber(value: unknown): number | null {
 
 function readRollupScope(value: unknown): RollupScope {
   return value === 'city' || value === 'neighborhood' ? value : null;
+}
+
+function readBoolean(value: unknown): boolean {
+  return value === true || value === 'true';
 }
 
 function readSampleParcelIds(value: unknown): string[] {
@@ -62,6 +67,7 @@ export function parseRollupHandoff(metadata?: Record<string, unknown>): RollupHa
     neighborhoodName: readString(metadata?.neighborhoodName),
     revalArea: readNumber(metadata?.revalArea),
     rollupScope: readRollupScope(metadata?.rollupScope),
+    resetValuationScope: readBoolean(metadata?.resetValuationScope),
     segmentId: readString(metadata?.segmentId),
     segmentLabel: readString(metadata?.segmentLabel),
     stratumKey: readString(metadata?.stratumKey),
