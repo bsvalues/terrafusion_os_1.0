@@ -69,7 +69,6 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
                 $"County {countyId} has empty ParcelFeatureServiceUrl.");
         }
 
-        var queryUrl = BuildQueryUrl(county);
         using var http = _httpClientFactory.CreateClient(HttpClientName);
         http.Timeout = TimeSpan.FromSeconds(county.RequestTimeoutSeconds);
 
@@ -79,54 +78,98 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
                 new AuthenticationHeaderValue("Bearer", county.BearerToken);
         }
 
-        ArcGisGeoJsonFeatureCollection? payload;
-        try
+        // GEOMETRY-PAGING (2026-06-04): ArcGIS FeatureServers cap each /query
+        // response at MaxRecordCount (commonly 2,000). The previous single-request
+        // implementation silently truncated at the first page (~3,955 of 80,076
+        // Benton parcels never landed). Page via resultOffset/resultRecordCount,
+        // accumulating until a page returns fewer rows than requested (or zero).
+        var results = new List<ArcGisParcelFeature>();
+        var pageSize = county.PageSize > 0 ? county.PageSize : 2000;
+        var offset = 0;
+        var pages = 0;
+        const int MaxPages = 1000; // hard backstop (1000 * 2000 = 2M features)
+
+        const int MaxAttemptsPerPage = 4;
+        while (pages < MaxPages)
         {
-            payload = await http.GetFromJsonAsync<ArcGisGeoJsonFeatureCollection>(
-                queryUrl, JsonOptions, cancellationToken).ConfigureAwait(false);
-        }
-        catch (HttpRequestException ex)
-        {
-            throw new ArcGisFeatureServiceTransportException(
-                $"ArcGIS feature-service request failed for county {countyId}: {ex.Message}", ex);
-        }
-        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
-        {
-            throw new ArcGisFeatureServiceTransportException(
-                $"ArcGIS feature-service request timed out after {county.RequestTimeoutSeconds}s for county {countyId}.", ex);
-        }
-        catch (JsonException ex)
-        {
-            throw new ArcGisFeatureServiceTransportException(
-                $"ArcGIS feature-service response was not valid JSON for county {countyId}: {ex.Message}", ex);
+            var queryUrl = BuildQueryUrl(county, offset, pageSize);
+            // GEOMETRY-PAGING resilience: ArcGIS occasionally times out / drops a
+            // single page under load. Retry the page (bounded, with backoff) so one
+            // transient failure does not abort the whole multi-page pull. Only the
+            // FINAL failed attempt surfaces as a transport exception.
+            ArcGisGeoJsonFeatureCollection? payload = null;
+            Exception? lastError = null;
+            for (var attempt = 1; attempt <= MaxAttemptsPerPage; attempt++)
+            {
+                try
+                {
+                    payload = await http.GetFromJsonAsync<ArcGisGeoJsonFeatureCollection>(
+                        queryUrl, JsonOptions, cancellationToken).ConfigureAwait(false);
+                    lastError = null;
+                    break;
+                }
+                catch (Exception ex) when (
+                    (ex is HttpRequestException
+                     || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested)
+                     || ex is System.IO.IOException
+                     || ex is JsonException)
+                    && attempt < MaxAttemptsPerPage)
+                {
+                    lastError = ex;
+                    _logger.LogWarning(
+                        "ArcGIS page fetch failed (county {CountyId}, offset {Offset}, attempt {Attempt}/{Max}): {Msg}; retrying",
+                        countyId, offset, attempt, MaxAttemptsPerPage, ex.Message);
+                    await Task.Delay(TimeSpan.FromSeconds(3 * attempt), cancellationToken).ConfigureAwait(false);
+                }
+            }
+            if (payload is null)
+            {
+                throw new ArcGisFeatureServiceTransportException(
+                    $"ArcGIS feature-service request failed for county {countyId} (offset {offset}) after {MaxAttemptsPerPage} attempts: {lastError?.Message}", lastError!);
+            }
+
+            var pageCount = payload?.Features?.Count ?? 0;
+            if (payload?.Features is not null)
+            {
+                foreach (var feature in payload.Features)
+                {
+                    var projected = TryProject(feature, countyId, county);
+                    if (projected is not null)
+                        results.Add(projected);
+                }
+            }
+
+            pages++;
+            // Last page when the server returned fewer than we asked for (or
+            // didn't flag a transfer-limit overflow). Either condition ends paging.
+            if (pageCount < pageSize || payload?.Properties?.ExceededTransferLimit == false)
+                break;
+            if (pageCount == 0)
+                break;
+            offset += pageCount;
         }
 
-        if (payload?.Features is null || payload.Features.Count == 0)
+        if (results.Count == 0)
         {
             _logger.LogWarning(
-                "ArcGIS feature service returned no features for county {CountyId} at {Url}",
-                countyId, county.ParcelFeatureServiceUrl);
+                "ArcGIS feature service returned no usable features for county {CountyId} at {Url} after {Pages} page(s)",
+                countyId, county.ParcelFeatureServiceUrl, pages);
             return Array.Empty<ArcGisParcelFeature>();
         }
 
-        var results = new List<ArcGisParcelFeature>(payload.Features.Count);
-        foreach (var feature in payload.Features)
-        {
-            var projected = TryProject(feature, countyId, county);
-            if (projected is not null)
-            {
-                results.Add(projected);
-            }
-        }
+        _logger.LogInformation(
+            "ArcGIS pull for county {CountyId}: {Count} features across {Pages} page(s) of {PageSize}",
+            countyId, results.Count, pages, pageSize);
         return results;
     }
 
-    private static string BuildQueryUrl(CountyArcGisOptions county)
+    private static string BuildQueryUrl(CountyArcGisOptions county, int resultOffset, int resultRecordCount)
     {
         var separator = county.ParcelFeatureServiceUrl.EndsWith('/') ? "query" : "/query";
         var sr = county.OutSpatialReferenceEpsg.ToString(CultureInfo.InvariantCulture);
         return $"{county.ParcelFeatureServiceUrl}{separator}" +
-               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true";
+               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true" +
+               $"&resultOffset={resultOffset}&resultRecordCount={resultRecordCount}";
     }
 
     private ArcGisParcelFeature? TryProject(
@@ -134,28 +177,60 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
         Guid countyId,
         CountyArcGisOptions county)
     {
-        if (feature.Geometry is null ||
-            !string.Equals(feature.Geometry.Type, "Polygon", StringComparison.OrdinalIgnoreCase))
+        if (feature.Geometry is null)
         {
-            // v1: only Polygon. MultiPolygon and other shapes are
-            // dropped silently with a warning so a single bad row
-            // doesn't fail the whole pull.
+            _logger.LogDebug("Skipping feature with null geometry for county {CountyId}", countyId);
+            return null;
+        }
+
+        var geomType = feature.Geometry.Type ?? "<null>";
+        var isPolygon = string.Equals(geomType, "Polygon", StringComparison.OrdinalIgnoreCase);
+        var isMultiPolygon = string.Equals(geomType, "MultiPolygon", StringComparison.OrdinalIgnoreCase);
+
+        if (!isPolygon && !isMultiPolygon)
+        {
+            // Genuinely unsupported (Point/LineString/etc.) — parcels should not be these.
             _logger.LogDebug(
                 "Skipping feature with unsupported geometry type {Type} for county {CountyId}",
-                feature.Geometry?.Type ?? "<null>", countyId);
+                geomType, countyId);
             return null;
         }
 
-        var ring = ExtractFirstRing(feature.Geometry.Coordinates);
-        if (ring is null || ring.Count < 3)
+        // GEOMETRY-MULTIPOLYGON (2026-06-04): MultiPolygon parcels (multi-part lots)
+        // were previously dropped silently, losing real parcels. Project both: a
+        // Polygon yields POLYGON((...)); a MultiPolygon yields MULTIPOLYGON(((...)),...).
+        // Centroid is computed over the LARGEST exterior ring (best single
+        // representative point for proximity queries).
+        string wkt;
+        double centroidLng, centroidLat;
+
+        if (isPolygon)
         {
-            _logger.LogDebug(
-                "Skipping feature with degenerate polygon for county {CountyId}", countyId);
-            return null;
+            var ring = ExtractFirstRing(feature.Geometry.Coordinates);
+            if (ring is null || ring.Count < 3)
+            {
+                _logger.LogDebug("Skipping feature with degenerate polygon for county {CountyId}", countyId);
+                return null;
+            }
+            (centroidLng, centroidLat) = ComputeCentroid(ring);
+            wkt = FormatPolygonWkt(ring);
         }
-
-        var (centroidLng, centroidLat) = ComputeCentroid(ring);
-        var wkt = FormatPolygonWkt(ring);
+        else
+        {
+            // MultiPolygon: coordinates = [ polygon, polygon, ... ], each polygon = [ ring, ring, ... ].
+            var polygonRings = ExtractMultiPolygonExteriorRings(feature.Geometry.Coordinates);
+            if (polygonRings.Count == 0)
+            {
+                _logger.LogDebug("Skipping feature with degenerate multipolygon for county {CountyId}", countyId);
+                return null;
+            }
+            wkt = FormatMultiPolygonWkt(polygonRings);
+            // centroid from the largest ring (by vertex count — cheap, adequate at parcel scale)
+            var largest = polygonRings[0];
+            foreach (var r in polygonRings)
+                if (r.Count > largest.Count) largest = r;
+            (centroidLng, centroidLat) = ComputeCentroid(largest);
+        }
 
         long objectId = 0;
         string? apn = null;
@@ -250,6 +325,51 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
             sb.Append(ring[i].Lat.ToString("G17", CultureInfo.InvariantCulture));
         }
         sb.Append("))");
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// GEOMETRY-MULTIPOLYGON: extract the exterior ring of each polygon in a
+    /// GeoJSON MultiPolygon. Coordinates shape is
+    /// <c>[ [ [ [lng,lat],... ] (exterior ring), [holes...] ], (next polygon)... ]</c>.
+    /// We keep the exterior ring (index 0) of each polygon; holes are ignored for
+    /// the v1 representative geometry (consistent with the single-Polygon path which
+    /// also takes only the first/exterior ring).
+    /// </summary>
+    private static List<List<(double Lng, double Lat)>> ExtractMultiPolygonExteriorRings(JsonElement coordinates)
+    {
+        var polygons = new List<List<(double Lng, double Lat)>>();
+        if (coordinates.ValueKind != JsonValueKind.Array)
+            return polygons;
+
+        foreach (var polygon in coordinates.EnumerateArray())
+        {
+            // each polygon is [ exteriorRing, hole, hole, ... ]; take exterior (first).
+            var ring = ExtractFirstRing(polygon);
+            if (ring is not null && ring.Count >= 3)
+                polygons.Add(ring);
+        }
+        return polygons;
+    }
+
+    private static string FormatMultiPolygonWkt(List<List<(double Lng, double Lat)>> polygons)
+    {
+        var sb = new StringBuilder("MULTIPOLYGON(");
+        for (int p = 0; p < polygons.Count; p++)
+        {
+            if (p > 0) sb.Append(", ");
+            sb.Append("((");
+            var ring = polygons[p];
+            for (int i = 0; i < ring.Count; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                sb.Append(ring[i].Lng.ToString("G17", CultureInfo.InvariantCulture));
+                sb.Append(' ');
+                sb.Append(ring[i].Lat.ToString("G17", CultureInfo.InvariantCulture));
+            }
+            sb.Append("))");
+        }
+        sb.Append(')');
         return sb.ToString();
     }
 

@@ -20,6 +20,18 @@ internal sealed class ArcGisGeoJsonFeatureCollection
 
     [JsonPropertyName("features")]
     public List<ArcGisGeoJsonFeature> Features { get; set; } = new();
+
+    // GEOMETRY-PAGING (2026-06-04): ArcGIS geojson responses carry a top-level
+    // "properties": { "exceededTransferLimit": true } when more rows remain past
+    // the page. Used (alongside short-page detection) to terminate the paging loop.
+    [JsonPropertyName("properties")]
+    public ArcGisGeoJsonCollectionProperties? Properties { get; set; }
+}
+
+internal sealed class ArcGisGeoJsonCollectionProperties
+{
+    [JsonPropertyName("exceededTransferLimit")]
+    public bool? ExceededTransferLimit { get; set; }
 }
 
 internal sealed class ArcGisGeoJsonFeature

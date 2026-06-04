@@ -95,4 +95,12 @@ public sealed class CountyArcGisOptions
     /// no token is required.
     /// </summary>
     public string? BearerToken { get; set; }
+
+    /// <summary>
+    /// GEOMETRY-PAGING (2026-06-04): page size for resultOffset/resultRecordCount
+    /// pagination of the ArcGIS /query endpoint. Must be ≤ the service's
+    /// MaxRecordCount (commonly 2,000) — the server clamps larger values, which the
+    /// paging loop tolerates (it pages until a short page). Default 2,000.
+    /// </summary>
+    public int PageSize { get; set; } = 2000;
 }
