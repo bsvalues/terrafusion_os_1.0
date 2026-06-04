@@ -58,14 +58,23 @@ interface ComparableSalesPanelProps {
 }
 
 type CandidateDecision = 'use' | 'reject' | 'needs-data';
+type PhysicalSupportStatus = 'supported' | 'partial' | 'blocked';
+type AdjustmentSupportStatus = 'supported' | 'partial' | 'blocked';
 
 // ═══════════════════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════════════════
 
+const REQUIRED_COMP_COUNT = 3;
+const REQUIRED_COMPLETENESS = 1;
+
 const fmtCurrency = (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 const fmtPct = (v: number) => `${Math.round(v * 100)}%`;
 const fmtDate = (d: string) => d.slice(0, 10);
+
+function compKey(comp: ComparableSale): string {
+  return `${comp.parcelId}|${comp.saleDate}`;
+}
 
 function hasPhysicalSupport(comp: ComparableSale): boolean {
   return Boolean(
@@ -92,6 +101,86 @@ function hasSubjectPhysicalSupport(subject: SubjectProperty): boolean {
 
 function isSimilarityDefensible(comp: ScoredComp): boolean {
   return comp.similarityScore >= 0.4;
+}
+
+function getSubjectBlockers(subject: SubjectProperty): string[] {
+  return [
+    subject.grossLivingArea > 0 ? null : 'Subject missing GLA',
+    subject.lotSizeSqft > 0 ? null : 'Subject missing site size',
+    subject.yearBuilt > 0 ? null : 'Subject missing year built',
+    subject.propertyType ? null : 'Subject missing property type',
+    subject.condition ? null : 'Subject missing condition',
+    subject.qualityGrade ? null : 'Subject missing quality',
+  ].filter((value): value is string => Boolean(value));
+}
+
+function getCompCompleteness(comp: ComparableSale): number {
+  const checks = [
+    comp.grossLivingArea != null && comp.grossLivingArea > 0,
+    comp.lotSizeSqft != null && comp.lotSizeSqft > 0,
+    comp.yearBuilt != null && comp.yearBuilt > 0,
+    Boolean(comp.condition),
+    Boolean(comp.qualityGrade),
+  ];
+  return checks.filter(Boolean).length / checks.length;
+}
+
+function getPhysicalSupportStatus(total: number, supported: number): PhysicalSupportStatus {
+  if (total === 0 || supported === 0) return 'blocked';
+  if (supported === total) return 'supported';
+  return 'partial';
+}
+
+function getAdjustmentSupportStatus(total: number, adjusted: number): AdjustmentSupportStatus {
+  if (total === 0 || adjusted === 0) return 'blocked';
+  if (adjusted === total) return 'supported';
+  return 'partial';
+}
+
+function formatSupportStatus(status: PhysicalSupportStatus | AdjustmentSupportStatus): string {
+  if (status === 'supported') return 'supported';
+  if (status === 'partial') return 'partial';
+  return 'blocked';
+}
+
+function getCompBlockers(
+  comp: ScoredComp,
+  decision: CandidateDecision | undefined,
+  adjustment: AdjustmentResult | undefined
+): string[] {
+  const blockers: string[] = [];
+  const label = `Comp ${comp.parcelId}`;
+
+  if (decision === 'reject') blockers.push(`${label} rejected`);
+  if (decision === 'needs-data') blockers.push(`${label} needs sale validation`);
+  if (decision !== 'use') return blockers;
+
+  if (comp.saleQualification !== 'qualified') blockers.push(`${label} needs sale validation`);
+  if (getCompCompleteness(comp) < REQUIRED_COMPLETENESS) blockers.push(`${label} missing physical support`);
+  if (!hasPhysicalSupport(comp)) blockers.push(`${label} has physical mismatch`);
+  if (!isSimilarityDefensible(comp)) blockers.push(`${label} below minimum similarity support`);
+  if (!adjustment) blockers.push(`${label} selected but not adjusted`);
+  if (adjustment && adjustment.grossAdjustmentPct > 25) {
+    blockers.push(`${label} exceeds gross adjustment tolerance`);
+  }
+
+  return blockers;
+}
+
+function isDefensibleComp(
+  comp: ScoredComp,
+  decision: CandidateDecision | undefined,
+  adjustment: AdjustmentResult | undefined
+): boolean {
+  return (
+    decision === 'use' &&
+    comp.saleQualification === 'qualified' &&
+    getCompCompleteness(comp) >= REQUIRED_COMPLETENESS &&
+    hasPhysicalSupport(comp) &&
+    isSimilarityDefensible(comp) &&
+    Boolean(adjustment) &&
+    (!adjustment || adjustment.grossAdjustmentPct <= 25)
+  );
 }
 
 function stringFromRecord(record: Record<string, unknown>, keys: string[]): string | null {
@@ -302,13 +391,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       parcelReady: Boolean(subject.parcelId && subject.address && subject.assessedValue > 0),
       improvementReady: Boolean(subject.grossLivingArea > 0 && subject.yearBuilt > 0),
       landReady: Boolean(subject.lotSizeSqft > 0),
-      missingPhysicals: [
-        subject.grossLivingArea > 0 ? null : 'GLA',
-        subject.yearBuilt > 0 ? null : 'year built',
-        subject.lotSizeSqft > 0 ? null : 'site size',
-        subject.condition ? null : 'condition',
-        subject.qualityGrade ? null : 'quality',
-      ].filter((value): value is string => Boolean(value)),
+      missingPhysicals: getSubjectBlockers(subject).map((blocker) =>
+        blocker.replace(/^Subject missing /, '')
+      ),
     };
   }, [activeParcel, subject]);
 
@@ -374,7 +459,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   );
 
   const toggleComp = useCallback((comp: ScoredComp) => {
-    const key = `${comp.parcelId}|${comp.saleDate}`;
+    const key = compKey(comp);
     setSelectedKeys((prev) => {
       const next = new Set(prev);
       if (next.has(key)) {
@@ -393,7 +478,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   }, []);
 
   const setCandidateDecision = useCallback((comp: ScoredComp, decision: CandidateDecision) => {
-    const key = `${comp.parcelId}|${comp.saleDate}`;
+    const key = compKey(comp);
 
     setCandidateDecisions((prev) => ({ ...prev, [key]: decision }));
     setSelectedKeys((prev) => {
@@ -405,7 +490,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   }, []);
 
   const selectedComps = useMemo(
-    () => candidates.filter((c) => selectedKeys.has(`${c.parcelId}|${c.saleDate}`)),
+    () => candidates.filter((c) => selectedKeys.has(compKey(c))),
     [candidates, selectedKeys]
   );
 
@@ -439,13 +524,13 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     }
 
     const pending = selectedComps.filter((c) => {
-      const key = `${c.parcelId}|${c.saleDate}`;
+      const key = compKey(c);
       return !adjustments[key] && !adjustLoading.has(key);
     });
 
     if (pending.length === 0) return;
 
-    const keys = pending.map((c) => `${c.parcelId}|${c.saleDate}`);
+    const keys = pending.map(compKey);
     setAdjustLoading((prev) => {
       const next = new Set(prev);
       keys.forEach((k) => next.add(k));
@@ -488,32 +573,35 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   ]);
 
   const adjustedCount = selectedComps.filter(
-    (c) => adjustments[`${c.parcelId}|${c.saleDate}`]
+    (c) => adjustments[compKey(c)]
   ).length;
 
   const physicallySupportedCount = selectedComps.filter(hasPhysicalSupport).length;
-  const defensibleSelectedCount = selectedComps.filter(
-    (comp) => hasPhysicalSupport(comp) && isSimilarityDefensible(comp)
+  const physicalSupportStatus = getPhysicalSupportStatus(
+    selectedComps.length,
+    physicallySupportedCount
+  );
+  const adjustmentSupportStatus = getAdjustmentSupportStatus(selectedComps.length, adjustedCount);
+  const defensibleSelectedCount = selectedComps.filter((comp) =>
+    isDefensibleComp(comp, candidateDecisions[compKey(comp)], adjustments[compKey(comp)])
   ).length;
   const overAdjustmentCount = selectedComps.filter((comp) => {
-    const adjustment = adjustments[`${comp.parcelId}|${comp.saleDate}`];
+    const adjustment = adjustments[compKey(comp)];
     return adjustment ? adjustment.grossAdjustmentPct > 25 : false;
   }).length;
   const readinessBlockers = useMemo(() => {
     const blockers: string[] = [];
 
-    if (selectedComps.length < 3) {
+    if (selectedComps.length < REQUIRED_COMP_COUNT) {
       blockers.push('Select at least 3 defensible comps.');
+      blockers.push(`Selected comps: ${selectedComps.length} / ${REQUIRED_COMP_COUNT} required.`);
     }
     if (!subjectPhysicalSupported) {
       blockers.push('Subject physical support incomplete.');
-      blockers.push('Subject quality and condition are unavailable from sealed improvement evidence.');
+      if (subject) blockers.push(...getSubjectBlockers(subject));
     }
     if (physicallySupportedCount < selectedComps.length) {
       blockers.push('Selected comps need complete physical support.');
-    }
-    if (defensibleSelectedCount < selectedComps.length) {
-      blockers.push('Selected comps must clear minimum similarity support.');
     }
     if (!adjustmentsSupported) {
       blockers.push('Governed paired adjustments are not certified for this county.');
@@ -524,18 +612,30 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     if (overAdjustmentCount > 0) {
       blockers.push('One or more comps exceed the gross adjustment tolerance.');
     }
+    selectedComps.forEach((comp) => {
+      blockers.push(
+        ...getCompBlockers(comp, candidateDecisions[compKey(comp)], adjustments[compKey(comp)])
+      );
+    });
 
-    return blockers;
+    return Array.from(new Set(blockers));
   }, [
     adjustedCount,
     adjustmentsSupported,
+    adjustments,
+    candidateDecisions,
     defensibleSelectedCount,
     overAdjustmentCount,
     physicallySupportedCount,
+    selectedComps,
     selectedComps.length,
+    subject,
     subjectPhysicalSupported,
   ]);
-  const reconciliationReady = selectedComps.length >= 3 && readinessBlockers.length === 0;
+  const reconciliationReady =
+    selectedComps.length >= REQUIRED_COMP_COUNT &&
+    defensibleSelectedCount >= REQUIRED_COMP_COUNT &&
+    readinessBlockers.length === 0;
 
   // Reconciliation
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
@@ -544,7 +644,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
   const handleReconcile = useCallback(async () => {
     const adjusted = selectedComps
-      .map((c) => adjustments[`${c.parcelId}|${c.saleDate}`])
+      .map((c) => adjustments[compKey(c)])
       .filter(Boolean);
 
     if (!reconciliationReady || adjusted.length < 3) return;
@@ -810,6 +910,10 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                     <th className='px-2 py-1.5 text-left'>Qual</th>
                     <th className='px-2 py-1.5 text-right'>$/Sq Ft</th>
                     <th className='px-2 py-1.5 text-right'>Sim</th>
+                    <th className='px-2 py-1.5 text-left'>Qualification</th>
+                    <th className='px-2 py-1.5 text-left'>Completeness</th>
+                    <th className='px-2 py-1.5 text-left'>Physical Support</th>
+                    <th className='px-2 py-1.5 text-left'>Adjustment Status</th>
                     <th className='px-2 py-1.5 text-left'>Decision</th>
                   </tr>
                 </thead>
@@ -817,7 +921,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                   {candidates.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={12}
+                        colSpan={16}
                         className='px-4 py-6 text-center'
                         style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
                       >
@@ -828,9 +932,17 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                     </tr>
                   ) : (
                     candidates.map((comp) => {
-                      const key = `${comp.parcelId}|${comp.saleDate}`;
+                      const key = compKey(comp);
                       const isSelected = selectedKeys.has(key);
                       const decision = candidateDecisions[key];
+                      const completeness = getCompCompleteness(comp);
+                      const physicalSupported = hasPhysicalSupport(comp);
+                      const adjustment = adjustments[key];
+                      const adjustmentStatus = adjustment
+                        ? 'Adjusted'
+                        : adjustLoading.has(key)
+                          ? 'Adjustment Pending'
+                          : 'Adjustment Pending';
                       const handleDecision = (
                         event: React.MouseEvent<HTMLButtonElement>,
                         nextDecision: CandidateDecision
@@ -905,6 +1017,64 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                               }}
                             >
                               {fmtPct(comp.similarityScore)}
+                            </span>
+                          </td>
+                          <td className='px-2 py-1'>
+                            <span
+                              className='rounded px-1.5 py-0.5 text-[10px] font-semibold'
+                              style={{
+                                background:
+                                  comp.saleQualification === 'qualified'
+                                    ? SUCCESS_BG_SUBTLE
+                                    : WARNING_BG_SUBTLE,
+                                color:
+                                  comp.saleQualification === 'qualified'
+                                    ? SUCCESS_COLOR
+                                    : WARNING_COLOR,
+                              }}
+                            >
+                              {comp.saleQualification === 'qualified'
+                                ? 'Qualified'
+                                : 'Sale Unverified'}
+                            </span>
+                          </td>
+                          <td className='px-2 py-1'>
+                            <span
+                              className='rounded px-1.5 py-0.5 text-[10px] font-semibold'
+                              style={{
+                                background:
+                                  completeness >= REQUIRED_COMPLETENESS
+                                    ? SUCCESS_BG_SUBTLE
+                                    : WARNING_BG_SUBTLE,
+                                color:
+                                  completeness >= REQUIRED_COMPLETENESS
+                                    ? SUCCESS_COLOR
+                                    : WARNING_COLOR,
+                              }}
+                            >
+                              {fmtPct(completeness)}
+                            </span>
+                          </td>
+                          <td className='px-2 py-1'>
+                            <span
+                              className='rounded px-1.5 py-0.5 text-[10px] font-semibold'
+                              style={{
+                                background: physicalSupported ? SUCCESS_BG_SUBTLE : WARNING_BG_SUBTLE,
+                                color: physicalSupported ? SUCCESS_COLOR : WARNING_COLOR,
+                              }}
+                            >
+                              {physicalSupported ? 'Supported' : 'Missing physicals'}
+                            </span>
+                          </td>
+                          <td className='px-2 py-1'>
+                            <span
+                              className='rounded px-1.5 py-0.5 text-[10px] font-semibold'
+                              style={{
+                                background: adjustment ? SUCCESS_BG_SUBTLE : WARNING_BG_SUBTLE,
+                                color: adjustment ? SUCCESS_COLOR : WARNING_COLOR,
+                              }}
+                            >
+                              {adjustmentStatus}
                             </span>
                           </td>
                           <td className='px-2 py-1'>
@@ -1044,6 +1214,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
               >
                 <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Selected</div>
                 <div className='text-lg font-semibold'>{selectedComps.length}</div>
+                <div className='text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Selected comps: {selectedComps.length} / {REQUIRED_COMP_COUNT} required
+                </div>
               </div>
               <div
                 className='rounded p-2'
@@ -1051,6 +1224,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
               >
                 <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Defensible</div>
                 <div className='text-lg font-semibold'>{defensibleSelectedCount}</div>
+                <div className='text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Defensible comps: {defensibleSelectedCount}
+                </div>
               </div>
               <div
                 className='rounded p-2'
@@ -1060,6 +1236,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                 <div className='text-lg font-semibold'>
                   {physicallySupportedCount}/{selectedComps.length}
                 </div>
+                <div className='text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Physical support: {formatSupportStatus(physicalSupportStatus)}
+                </div>
               </div>
               <div
                 className='rounded p-2'
@@ -1068,6 +1247,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                 <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Adjusted</div>
                 <div className='text-lg font-semibold'>
                   {adjustedCount}/{selectedComps.length}
+                </div>
+                <div className='text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Adjustment support: {formatSupportStatus(adjustmentSupportStatus)}
                 </div>
               </div>
             </div>
@@ -1092,7 +1274,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
               )}
               {reconciliationReady && (
                 <div className='mt-1'>
-                  Selected comps clear count, physical, adjustment, and tolerance checks.
+                  Selected comps clear qualification, physical, adjustment, and tolerance checks.
                 </div>
               )}
             </div>
@@ -1140,7 +1322,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
               </thead>
               <tbody>
                 {selectedComps.map((comp) => {
-                  const key = `${comp.parcelId}|${comp.saleDate}`;
+                  const key = compKey(comp);
                   const adj = adjustments[key];
                   const loading = adjustLoading.has(key);
 
