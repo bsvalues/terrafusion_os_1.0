@@ -93,11 +93,24 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
         var orderClause = _afterChgId.HasValue
             ? "ORDER BY s.chg_of_owner_id ASC, copa.prop_id"
             : "ORDER BY s.chg_of_owner_id DESC, copa.prop_id";
+        // SALES-SUPNUM-RESOLUTION (2026-06-03): resolve the ACTIVE supplement number
+        // for (prop_id, sale-year) instead of hardcoding 0. PACS prop_supp_assoc keeps
+        // one row per (prop_id, owner_tax_yr, sup_num); the active supplement for a year
+        // is MAX(sup_num) — frequently non-zero for historical years that sales
+        // reference (PropValYr = YEAR(sl_dt)). The previous hardcoded 0 made the
+        // sale→supp join fail for those parcel-years, silently dropping QUALIFIED sales
+        // (≥766 with county ratio code '100'). COALESCE→0 preserves the old value when
+        // no supp row exists (the promoter's no-supp gate then handles it as before).
         var sql = $@"
             SELECT {topClause}s.chg_of_owner_id,
                    copa.prop_id,
                    CAST(COALESCE(YEAR(s.sl_dt), YEAR(GETDATE())) AS smallint) AS prop_val_yr,
-                   CAST(0 AS smallint) AS sup_num,
+                   CAST(COALESCE((
+                       SELECT MAX(psa.sup_num)
+                       FROM dbo.prop_supp_assoc psa
+                       WHERE psa.prop_id = copa.prop_id
+                         AND psa.owner_tax_yr = COALESCE(YEAR(s.sl_dt), YEAR(GETDATE()))
+                   ), 0) AS smallint) AS sup_num,
                    s.sl_county_ratio_cd,
                    s.wac_cd,
                    s.sl_ratio_type_cd,

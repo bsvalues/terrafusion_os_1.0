@@ -1518,7 +1518,12 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, saleSuppKeys);
+                // SALES-SUPNUM-RESOLUTION: land the ACTIVE supplement (MAX sup_num) per
+                // (prop_id, owner_tax_yr), not just sup_num=0, so historical-year sales
+                // whose active supplement is non-zero resolve + promote. activeSupp:true
+                // is sales-scoped — the sealed current-year land/improvement lanes keep
+                // the sup=0 default.
+                var saleSuppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, saleSuppKeys, activeSupp: true);
                 var saleSuppS1 = await assocSvc.LandPropSuppAssocsAsync(saleSuppSrc, operatorName, cancellationToken);
                 batchIds.Add(saleSuppS1.LoadBatchId);
                 if (!IsCompleted(saleSuppS1.Status))
