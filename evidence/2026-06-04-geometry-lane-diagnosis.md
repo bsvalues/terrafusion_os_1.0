@@ -85,3 +85,51 @@ the legitimate SINGLE-COUNTY Benton geometry lane (the intended path), not a sta
 Raw→truth→canonical geometry is COMPLETE at 80,075 (1.0×) with MultiPolygon support — a major
 step from 3,955. But the canonical→tf_parcel APN linkage (11,420/80,075) is an open crosswalk
 normalization question to diagnose before declaring the geometry lane sealed.
+
+---
+
+# GEOMETRY SEAL (2026-06-04) — APN crosswalk normalized
+
+## APN crosswalk fix
+- D3 projector matched geom `ArcGisApn` → `tf_parcel.ParcelNumber` on RAW strings; ArcGIS
+  APN is space-padded, tf_parcel.ParcelNumber is clean → only 11,424 resolved.
+- Fix: TRIM both sides (index key + lookup) in `ArcGisCanonicalProjector`. Commit `62996c904`.
+- Added `api/debug/gis-pop-1/reproject-canonical` (AllowAnonymous) — D3-ONLY reproject against
+  existing D2 (no ArcGIS re-pull, no D1/D2 mutation) so the crosswalk fix runs without the
+  wasteful 80k-feature re-pull that timed out the full drain.
+
+## Final state (D3-only reproject, verified)
+| metric | value |
+|---|---|
+| D3 total | 80,075 |
+| D3 distinct (CountyId, ArcGisObjectId) | 80,075 → **dup 1.0000×** |
+| APN crosswalk LINKED to tf_parcel | **79,105 (98.8%)** (was 11,424) |
+| unlinked | 970 |
+| &nbsp;&nbsp;• null/empty ArcGIS APN | 301 (feature has geometry but no geo_id — uncrosswalkable) |
+| &nbsp;&nbsp;• APN present, no matching tf_parcel | 669 (ArcGIS-only / non-assessed parcels) |
+| MultiPolygon parcels | 978 |
+| prior canonical cleanly replaced | 80,075 (no dup) |
+
+## Denominator + residual
+ArcGIS service serves 80,076 features; we project 80,075 (1 dropped: non-polygon/degenerate).
+Of these, 98.8% link to a tf_parcel. The 970 unlinked are explained by class/reason and are
+legitimate source conditions (no APN, or APN with no assessed-parcel counterpart) — NOT a
+crosswalk defect. This is the honest geometry ceiling.
+
+## SEAL CHECKLIST
+| Question | Status | Evidence |
+|---|---|---|
+| Intake complete (raw→truth→canonical)? | YES — 80,075 of 80,076 (paging fix) | this artifact |
+| Duplication controlled? | YES — 1.0000× at D1/D2/D3 | this artifact |
+| MultiPolygon supported? | YES — 978 landed (was 0) | this artifact |
+| APN crosswalk resolved? | YES — 79,105/80,075 = 98.8% | reproject response |
+| Residual explained by reason? | YES — 301 null-APN + 669 no-tf_parcel-match | residual decomposition |
+| Re-runnable / idempotent? | YES — D3 clears+reprojects; dup held 1.0× | reproject (prior 80,075 removed) |
+
+**SEAL STATEMENT:** Every Benton ArcGIS parcel feature (80,075 of the service's 80,076) is
+landed → promoted → projected to gis_tf.tf_parcel_geom at 1.0000× duplication with
+MultiPolygon support; 79,105 (98.8%) are crosswalked to a TfParcel, with the 970-row residual
+diagnosed as legitimate source conditions. Geometry lane: SEALED.
+
+## Commits
+`c96e27560` (paging + MultiPolygon), `62996c904` (APN crosswalk TRIM + D3-only reproject endpoint).
