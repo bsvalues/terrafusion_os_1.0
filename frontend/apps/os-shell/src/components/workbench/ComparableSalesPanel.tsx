@@ -80,8 +80,28 @@ function hasPhysicalSupport(comp: ComparableSale): boolean {
   );
 }
 
+function hasSubjectPhysicalSupport(subject: SubjectProperty): boolean {
+  return Boolean(
+    subject.grossLivingArea > 0 &&
+      subject.lotSizeSqft > 0 &&
+      subject.yearBuilt > 0 &&
+      subject.condition &&
+      subject.qualityGrade
+  );
+}
+
 function isSimilarityDefensible(comp: ScoredComp): boolean {
   return comp.similarityScore >= 0.4;
+}
+
+function stringFromRecord(record: Record<string, unknown>, keys: string[]): string | null {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -241,6 +261,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   // Build subject from active parcel
   const subject = useMemo<SubjectProperty | null>(() => {
     if (!activeParcel) return null;
+    const parcelRecord = activeParcel as unknown as Record<string, unknown>;
     return {
       parcelId: activeParcel.parcelId || parcelId || '',
       address: activeParcel.address || '',
@@ -249,12 +270,46 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       yearBuilt: activeParcel.yearBuilt || 0,
       bedrooms: activeParcel.bedrooms || 0,
       bathrooms: activeParcel.bathrooms || 0,
-      condition: 'Average',
-      qualityGrade: 'AVG',
+      condition: stringFromRecord(parcelRecord, [
+        'condition',
+        'propertyCondition',
+        'improvementCondition',
+        'camaCondition',
+      ]),
+      qualityGrade: stringFromRecord(parcelRecord, [
+        'qualityGrade',
+        'quality',
+        'propertyQuality',
+        'improvementQuality',
+        'camaQualityGrade',
+      ]),
       propertyType: activeParcel.propertyType || 'residential',
       assessedValue: activeParcel.totalAssessedValue || 0,
     };
   }, [activeParcel, parcelId]);
+  const subjectPhysicalSupported = useMemo(
+    () => (subject ? hasSubjectPhysicalSupport(subject) : false),
+    [subject]
+  );
+  const subjectEvidence = useMemo(() => {
+    if (!activeParcel || !subject) return null;
+    return {
+      source:
+        activeParcel.dataSource === 'assessment-source-live'
+          ? 'Canonical parcel/improvement/land truth'
+          : 'Loaded workbench parcel record',
+      parcelReady: Boolean(subject.parcelId && subject.address && subject.assessedValue > 0),
+      improvementReady: Boolean(subject.grossLivingArea > 0 && subject.yearBuilt > 0),
+      landReady: Boolean(subject.lotSizeSqft > 0),
+      missingPhysicals: [
+        subject.grossLivingArea > 0 ? null : 'GLA',
+        subject.yearBuilt > 0 ? null : 'year built',
+        subject.lotSizeSqft > 0 ? null : 'site size',
+        subject.condition ? null : 'condition',
+        subject.qualityGrade ? null : 'quality',
+      ].filter((value): value is string => Boolean(value)),
+    };
+  }, [activeParcel, subject]);
 
   const [allSales, setAllSales] = useState<ComparableSale[]>([]);
   const [salesLoading, setSalesLoading] = useState(false);
@@ -362,6 +417,17 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   useEffect(() => {
     if (!subject || selectedComps.length === 0) return;
 
+    if (!subjectPhysicalSupported) {
+      if (Object.keys(adjustments).length > 0) {
+        setAdjustments({});
+      }
+      setReconciliation(null);
+      setAdjustError(
+        'Subject physical support incomplete — paired adjustments are blocked until CAMA quality and condition are present.'
+      );
+      return;
+    }
+
     if (!adjustmentsSupported) {
       setAdjustments({});
       setReconciliation(null);
@@ -410,7 +476,15 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
         setAdjustError('Backend unavailable — connect to CostForge API for paired adjustments');
       }
     });
-  }, [subject, selectedComps, adjustments, adjustLoading, adjustmentsSupported, countyName]);
+  }, [
+    subject,
+    selectedComps,
+    adjustments,
+    adjustLoading,
+    adjustmentsSupported,
+    countyName,
+    subjectPhysicalSupported,
+  ]);
 
   const adjustedCount = selectedComps.filter(
     (c) => adjustments[`${c.parcelId}|${c.saleDate}`]
@@ -429,6 +503,10 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
     if (selectedComps.length < 3) {
       blockers.push('Select at least 3 defensible comps.');
+    }
+    if (!subjectPhysicalSupported) {
+      blockers.push('Subject physical support incomplete.');
+      blockers.push('Subject quality and condition are unavailable from sealed improvement evidence.');
     }
     if (physicallySupportedCount < selectedComps.length) {
       blockers.push('Selected comps need complete physical support.');
@@ -454,6 +532,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     overAdjustmentCount,
     physicallySupportedCount,
     selectedComps.length,
+    subjectPhysicalSupported,
   ]);
   const reconciliationReady = selectedComps.length >= 3 && readinessBlockers.length === 0;
 
@@ -868,6 +947,46 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
             <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-text) / 0.58)' }}>
               Reconciliation stays blocked until the selected set has enough support to defend.
             </p>
+
+            {subjectEvidence && (
+              <div
+                className='mt-4 rounded p-3 text-xs'
+                style={{
+                  background: 'hsl(var(--tf-bg-surface) / 0.55)',
+                  border: '1px solid hsl(var(--tf-border) / 0.12)',
+                }}
+              >
+                <div className='font-semibold'>Sealed subject evidence</div>
+                <div className='mt-1' style={{ color: 'hsl(var(--tf-text) / 0.54)' }}>
+                  {subjectEvidence.source}
+                </div>
+                <div className='mt-3 flex flex-wrap gap-1.5'>
+                  {([
+                    ['Parcel', subjectEvidence.parcelReady],
+                    ['Improvement', subjectEvidence.improvementReady],
+                    ['Land', subjectEvidence.landReady],
+                  ] as Array<[string, boolean]>).map(([label, ready]) => (
+                    <span
+                      key={String(label)}
+                      className='rounded-full px-2 py-0.5 text-[10px] font-semibold'
+                      style={{
+                        background: ready ? SUCCESS_BG_SUBTLE : WARNING_BANNER_BG_SUBTLE,
+                        color: ready ? SUCCESS_COLOR : WARNING_COLOR,
+                        border: ready ? `1px solid ${SUCCESS_COLOR}33` : WARNING_BORDER,
+                      }}
+                    >
+                      {label} {ready ? 'ready' : 'needs data'}
+                    </span>
+                  ))}
+                </div>
+                {subjectEvidence.missingPhysicals.length > 0 && (
+                  <div className='mt-3' style={{ color: WARNING_COLOR }}>
+                    Subject quality and condition are unavailable when sealed improvement evidence
+                    is missing: {subjectEvidence.missingPhysicals.join(', ')}.
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className='mt-4 grid grid-cols-2 gap-2 text-xs'>
               <div
