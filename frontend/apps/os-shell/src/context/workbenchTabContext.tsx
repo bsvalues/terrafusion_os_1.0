@@ -38,6 +38,8 @@ export interface WorkbenchTabData {
   workMode: WorkMode;
   /** Optional segment-level handoff context when the workbench was opened from County Studio. */
   segmentHandoff?: WorkbenchSegmentHandoffContext | null;
+  /** Optional desktop-window launch metadata used when no route query/state exists. */
+  launchMetadata?: Record<string, unknown>;
 }
 
 export interface WorkbenchSegmentHandoffContext {

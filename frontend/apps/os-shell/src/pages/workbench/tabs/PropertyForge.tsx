@@ -58,24 +58,38 @@ const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
 
 const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
 
-function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
+function readLaunchStateSubTab(state: unknown): ForgeSubTab | null {
+  if (!state || typeof state !== 'object') return null;
+
+  const launchState = state as Record<string, unknown>;
+  const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
+  if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
+    return rawSubTab as ForgeSubTab;
+  }
+
+  if (launchState.moduleId === 'comparable-sales') {
+    return 'sales';
+  }
+
+  return null;
+}
+
+function readInitialSubTab(
+  search: string,
+  state: unknown,
+  launchMetadata?: Record<string, unknown>
+): ForgeSubTab {
   const params = new URLSearchParams(search);
   const queryHint = params.get('tab') ?? params.get('subTab') ?? params.get('initialSubTab');
   if (queryHint && FORGE_SUB_TABS.has(queryHint as ForgeSubTab)) {
     return queryHint as ForgeSubTab;
   }
 
-  if (state && typeof state === 'object') {
-    const launchState = state as Record<string, unknown>;
-    const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
-    if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
-      return rawSubTab as ForgeSubTab;
-    }
+  const routeStateSubTab = readLaunchStateSubTab(state);
+  if (routeStateSubTab) return routeStateSubTab;
 
-    if (launchState.moduleId === 'comparable-sales') {
-      return 'sales';
-    }
-  }
+  const desktopMetadataSubTab = readLaunchStateSubTab(launchMetadata);
+  if (desktopMetadataSubTab) return desktopMetadataSubTab;
 
   return 'overview';
 }
@@ -84,7 +98,7 @@ function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
 
 export const PropertyForge: React.FC = () => {
   const location = useLocation();
-  const { parcelId } = useWorkbenchTab();
+  const { parcelId, launchMetadata } = useWorkbenchTab();
 
   /* Probe the cost endpoint to determine if the Forge API is reachable */
   const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
@@ -94,7 +108,7 @@ export const PropertyForge: React.FC = () => {
 
   /* Shared state */
   const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
-    readInitialSubTab(location.search, location.state)
+    readInitialSubTab(location.search, location.state, launchMetadata)
   );
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);

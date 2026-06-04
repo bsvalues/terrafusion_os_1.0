@@ -20,7 +20,7 @@
  *   - ComparableSales, Reconciliation, Appeals, Value Audit (workbench openers)
  *   - RatioStudyPanel (removed surface)
  *   - "Parcel adapters, references, and planned scenes" heading
- *   - Any card that opens a property workbench from suite home
+ *   - Legacy standalone ComparableSales/Reconciliation/Appeals workbench-opener cards
  */
 
 import React from 'react';

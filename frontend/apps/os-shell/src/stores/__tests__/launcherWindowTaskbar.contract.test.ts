@@ -124,6 +124,17 @@ describe('codex routing for parcel-scoped suite IDs', () => {
     expect(windows[0].metadata).toMatchObject({ _routedTab: 'forge' });
   });
 
+  it('routed Forge desktop launch carries the canonical workbench tab id', () => {
+    const { openWindow } = useDesktopStore.getState();
+    openWindow('forge', 'TerraForge', '🔨');
+
+    const { windows } = useDesktopStore.getState();
+    expect(windows[0].metadata).toMatchObject({
+      _routedTab: 'forge',
+      tabId: 'forge',
+    });
+  });
+
   it('second parcel-scoped suite reuses existing workbench window', () => {
     const { openWindow } = useDesktopStore.getState();
     openWindow('forge', 'TerraForge', '🔨');
