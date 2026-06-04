@@ -38,6 +38,9 @@ type MockParcel = {
   propertyType: string;
   totalAssessedValue: number;
   ownerName?: string;
+  dataSource?: string;
+  condition?: string | null;
+  qualityGrade?: string | null;
 };
 
 const storeState: { activeParcel: MockParcel | null } = {
@@ -130,6 +133,15 @@ function buildBentonParcel(parcelId: string): MockParcel {
   return {
     ...buildParcel(parcelId),
     countyCode: '005',
+    dataSource: 'assessment-source-live',
+  };
+}
+
+function buildBentonParcelWithSubjectEvidence(parcelId: string): MockParcel {
+  return {
+    ...buildBentonParcel(parcelId),
+    condition: 'Average',
+    qualityGrade: 'AVG',
   };
 }
 
@@ -309,7 +321,7 @@ describe('Comparable Sales Forge host', () => {
   });
 
   it('keeps reconciliation blocked when three selected candidates lack physical support', async () => {
-    storeState.activeParcel = buildBentonParcel('GATE-TEST-001');
+    storeState.activeParcel = buildBentonParcelWithSubjectEvidence('GATE-TEST-001');
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
 
@@ -369,6 +381,58 @@ describe('Comparable Sales Forge host', () => {
     expect(reconcileCalls).toHaveLength(0);
     expect(screen.getAllByText(/Reconciliation blocked/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Selected comps need complete physical support/i)).toBeInTheDocument();
+  });
+
+  it('does not invent subject condition or quality before requesting paired adjustments', async () => {
+    storeState.activeParcel = buildBentonParcel('GATE-TEST-001');
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.includes('/launch-data/')) {
+        return {
+          ok: true,
+          json: async () => ({
+            county: 'Benton',
+            countyCode: '005',
+            records: [
+              {
+                countyCode: '005',
+                parcelNumber: 'GATE-TEST-101',
+                saleDate: '2025-01-15T00:00:00.000Z',
+                salePrice: 330000,
+                adjustedSalePrice: 330000,
+                useCode: 'Residential',
+                situsAddress: '101 Comp Ave',
+                situsCity: 'Kennewick',
+                situsZip: '99336',
+                acres: 0.27,
+                neighborhoodCode: 'N1',
+                currentNeighborhoodCode: 'N1',
+                reviewStatus: 'qualified',
+                flags: { needsReview: false },
+              },
+            ],
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        json: async () => ({}),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/101 Comp Ave/i);
+    fireEvent.click(screen.getByRole('button', { name: /use comp GATE-TEST-101/i }));
+
+    expect(screen.getAllByText(/Subject quality and condition are unavailable/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Subject physical support incomplete/i).length).toBeGreaterThanOrEqual(1);
+    expect(
+      fetchMock.mock.calls.some(([url]) => String(url).includes('/adjust-comparable'))
+    ).toBe(false);
   });
 
   it('filters out the subject parcel and respects qualified-only defaults', () => {
