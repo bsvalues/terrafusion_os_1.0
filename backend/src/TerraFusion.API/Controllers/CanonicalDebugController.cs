@@ -1950,6 +1950,55 @@ public class CanonicalDebugController : ControllerBase
     public sealed record GisPop1Request(
         string? OperatorName);
 
+    /// <summary>
+    /// GIS-POP-1 D3-ONLY re-project. Runs ONLY the canonical projection
+    /// (<c>truth_arcgis.parcel_geom_current</c> → <c>gis_tf.tf_parcel_geom</c> with
+    /// the APN crosswalk) against the EXISTING D2 truth rows. Does NOT call ArcGIS
+    /// (no D1 re-pull) and does NOT mutate D1/D2. Added 2026-06-04 to exercise the
+    /// TRIM-normalized APN crosswalk fix without re-pulling the 80k-feature county
+    /// set (the full geometry drain re-pulls ArcGIS and times out before D3).
+    /// </summary>
+    [HttpPost("gis-pop-1/reproject-canonical")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous] // dev D3-only reproject; parallels the AllowAnonymous geometry drain lane
+    public async Task<IActionResult> RunGisPop1ReprojectCanonical(
+        [FromServices] IArcGisCanonicalProjector canonicalProjector,
+        [FromBody] GisPop1Request? request,
+        CancellationToken cancellationToken = default)
+    {
+        var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
+            ? "gis-pop-1-reproject-canonical"
+            : request.OperatorName.Trim();
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            _logger.LogInformation("[GisPop1] D3-ONLY reproject for countyId={Cid} (no ArcGIS, no D1/D2 mutation)", bentonCountyId);
+            var d3 = await canonicalProjector.ProjectCountyAsync(
+                bentonCountyId, operatorName, cancellationToken);
+            if (!string.Equals(d3.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(500, new { stage = "ArcGis-D3", error = d3.ErrorSummary });
+
+            var tfParcelGeomCount = await _db.TfParcelGeoms.CountAsync(cancellationToken);
+            return Ok(new
+            {
+                operatorName,
+                bentonCountyId,
+                d3 = new
+                {
+                    d3.Status, d3.PromotionLoadBatchId,
+                    d3.TruthRowsConsidered, d3.RowsProjected,
+                    d3.ApnCrosswalkResolved, d3.ApnCrosswalkUnresolved,
+                    d3.PriorCanonicalRowsRemoved, d3.AreaSqFtSum,
+                },
+                counts = new { gisTfParcelGeoms = tfParcelGeomCount },
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GisPop1] D3-only reproject FAILED");
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
+    }
+
     // ════════════════════════════════════════════════════════════════════
     // DOCTRINE-CLOSURE-1: unified all-lanes runner.
     //   Owner-anchored seed → 6-lane closure in one call:

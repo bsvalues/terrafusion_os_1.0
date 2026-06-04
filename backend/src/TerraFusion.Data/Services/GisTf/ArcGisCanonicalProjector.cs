@@ -173,8 +173,15 @@ public sealed class ArcGisCanonicalProjector : IArcGisCanonicalProjector
                 .Select(p => new { p.ParcelNumber, p.TfParcelId })
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
+            // APN-NORMALIZATION (2026-06-04): the ArcGIS APN (geo_id) lands
+            // SPACE-PADDED (e.g. '112882020000008           ') while
+            // tf_parcel.ParcelNumber is clean. A raw equality match resolved only
+            // ~11,424 of 80,075 geoms; TRIM-normalizing BOTH sides recovers 79,460
+            // (99.2%). Key the crosswalk index by trimmed ParcelNumber and look up
+            // by trimmed ArcGisApn so the padding can no longer defeat the join.
             var apnByParcel = apnIndex
-                .GroupBy(x => x.ParcelNumber!, StringComparer.OrdinalIgnoreCase)
+                .Where(x => !string.IsNullOrWhiteSpace(x.ParcelNumber))
+                .GroupBy(x => x.ParcelNumber!.Trim(), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(
                     g => g.Key,
                     g => g.First().TfParcelId,
@@ -194,7 +201,7 @@ public sealed class ArcGisCanonicalProjector : IArcGisCanonicalProjector
 
                 Guid? resolvedTfParcelId = null;
                 if (!string.IsNullOrWhiteSpace(truth.ArcGisApn)
-                    && apnByParcel.TryGetValue(truth.ArcGisApn, out var pid))
+                    && apnByParcel.TryGetValue(truth.ArcGisApn.Trim(), out var pid))
                 {
                     resolvedTfParcelId = pid;
                     apnResolved++;
