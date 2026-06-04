@@ -240,6 +240,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 }) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const activeParcelLoading = usePropertyStore((s) => s.activeParcelLoading);
   const countyCode = activeParcel?.countyCode ?? null;
   const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
   const pilotCountyScope = useMemo(
@@ -615,6 +616,54 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
   // No subject
   if (!subject) {
+    if (parcelId) {
+      return (
+        <div
+          className='rounded-xl p-4 text-sm'
+          data-testid='comparable-sales-empty-state'
+          style={{
+            color: 'hsl(var(--tf-text))',
+            background:
+              'linear-gradient(135deg, hsl(var(--tf-bg-surface) / 0.96), hsl(var(--tf-bg-elevated) / 0.92))',
+            border: '1px solid hsl(var(--tf-border) / 0.22)',
+          }}
+        >
+          <div
+            className='text-[10px] font-semibold uppercase tracking-[0.16em]'
+            style={{ color: 'hsl(var(--tf-accent))' }}
+          >
+            Property Workbench / Forge / Sales
+          </div>
+          <div className='mt-2 flex flex-wrap items-center gap-2'>
+            <span className='text-base font-semibold'>
+              {activeParcelLoading
+                ? 'Loading parcel evidence.'
+                : 'Parcel evidence unavailable. Comparable review blocked.'}
+            </span>
+            <span
+              className='rounded-full px-2 py-0.5 text-[10px] font-semibold'
+              style={{
+                background: WARNING_BG_SUBTLE,
+                color: WARNING_COLOR,
+                border: `1px solid ${WARNING_COLOR}33`,
+              }}
+            >
+              Reconciliation blocked
+            </span>
+          </div>
+          <div className='mt-2 text-xs' style={{ color: 'hsl(var(--tf-text) / 0.62)' }}>
+            Route parcel: {parcelId}. Use sealed parcel, improvement, and land truth only.
+            Sales comparison remains on hold until the workbench can load the active parcel
+            record.
+          </div>
+          <div className='mt-3 text-xs' style={{ color: WARNING_COLOR }}>
+            No comparable selection, adjustment request, or reconciliation posture will run without
+            an active parcel evidence record.
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
         className='flex items-center justify-center h-32 text-sm'
