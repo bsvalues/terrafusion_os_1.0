@@ -8,7 +8,7 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -29,6 +29,7 @@ const mockInvokeTool = vi.mocked(invokeTool);
 type MockParcel = {
   parcelId: string;
   address: string;
+  countyCode?: string;
   buildingSquareFeet: number;
   landAcreage: number;
   yearBuilt: number;
@@ -66,45 +67,49 @@ vi.mock('../../stores/propertyStore', () => ({
 
 vi.mock('../../components/workbench', () => ({
   ParcelContextHeader: ({ parcelId }: { parcelId: string }) => (
-    <div data-testid="parcel-context-header">{parcelId}</div>
+    <div data-testid='parcel-context-header'>{parcelId}</div>
   ),
-  InvocationHistory: () => <div data-testid="invocation-history" />,
-  EvidenceSnapshotPanel: () => <div data-testid="evidence-snapshot-panel" />,
+  InvocationHistory: () => <div data-testid='invocation-history' />,
+  EvidenceSnapshotPanel: () => <div data-testid='evidence-snapshot-panel' />,
   WorkbenchSourceBadge: ({ source }: any) => (
-    <span data-testid="workbench-source-badge" data-source={source} />
+    <span data-testid='workbench-source-badge' data-source={source} />
   ),
 }));
 
 vi.mock('../../ui/materials/BentoCard', () => ({
   BentoCard: ({ children, title }: { children: React.ReactNode; title: string }) => (
-    <section data-testid="bento-card" aria-label={title}>
+    <section data-testid='bento-card' aria-label={title}>
       {children}
     </section>
   ),
 }));
 
 vi.mock('../../components/errors/ErrorDisplay', () => ({
-  ErrorDisplay: ({ error }: { error: { message: string; errorCode?: string; correlationId?: string } }) => (
-    <div data-testid="error-display">
+  ErrorDisplay: ({
+    error,
+  }: {
+    error: { message: string; errorCode?: string; correlationId?: string };
+  }) => (
+    <div data-testid='error-display'>
       {error.errorCode} {error.message} {error.correlationId}
     </div>
   ),
 }));
 
 vi.mock('../../pages/workbench/tabs/forge/ForgeOverview', () => ({
-  ForgeOverview: () => <div data-testid="mock-forge-overview" />,
+  ForgeOverview: () => <div data-testid='mock-forge-overview' />,
 }));
 
 vi.mock('../../pages/workbench/tabs/forge/CostApproach', () => ({
-  CostApproach: () => <div data-testid="mock-forge-cost" />,
+  CostApproach: () => <div data-testid='mock-forge-cost' />,
 }));
 
 vi.mock('../../pages/workbench/tabs/forge/IncomeApproach', () => ({
-  IncomeApproach: () => <div data-testid="mock-forge-income" />,
+  IncomeApproach: () => <div data-testid='mock-forge-income' />,
 }));
 
 vi.mock('../../pages/workbench/tabs/forge/Reconciliation', () => ({
-  Reconciliation: () => <div data-testid="mock-forge-reconcile" />,
+  Reconciliation: () => <div data-testid='mock-forge-reconcile' />,
 }));
 
 function buildParcel(parcelId: string): MockParcel {
@@ -121,45 +126,106 @@ function buildParcel(parcelId: string): MockParcel {
   };
 }
 
+function buildBentonParcel(parcelId: string): MockParcel {
+  return {
+    ...buildParcel(parcelId),
+    countyCode: '005',
+  };
+}
+
+function buildCountySalesShard() {
+  return {
+    county: 'Benton',
+    countyCode: '005',
+    records: [
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-101',
+        saleDate: '2025-01-15T00:00:00.000Z',
+        salePrice: 330000,
+        adjustedSalePrice: 330000,
+        useCode: 'Residential',
+        situsAddress: '101 Comp Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.27,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        flags: { needsReview: false },
+      },
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-102',
+        saleDate: '2025-02-15T00:00:00.000Z',
+        salePrice: 335000,
+        adjustedSalePrice: 335000,
+        useCode: 'Residential',
+        situsAddress: '102 Comp Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.29,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        flags: { needsReview: false },
+      },
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-103',
+        saleDate: '2025-03-15T00:00:00.000Z',
+        salePrice: 340000,
+        adjustedSalePrice: 340000,
+        useCode: 'Residential',
+        situsAddress: '103 Comp Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.3,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        flags: { needsReview: false },
+      },
+    ],
+  };
+}
+
 function renderForge(
   ui: React.ReactElement,
-  {
-    parcelId = 'GATE-TEST-001',
-    search = '?tab=sales',
-  }: { parcelId?: string; search?: string } = {}
+  { parcelId = 'GATE-TEST-001', search = '?tab=sales' }: { parcelId?: string; search?: string } = {}
 ) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={qc}>
-    <MemoryRouter initialEntries={[`/property/${parcelId}/forge${search}`]}>
-      <Routes>
-        <Route
-          path="/property/:parcelId"
-          element={
-            <Outlet
-              context={{
-                parcelId,
-                propertyData: {
+      <MemoryRouter initialEntries={[`/property/${parcelId}/forge${search}`]}>
+        <Routes>
+          <Route
+            path='/property/:parcelId'
+            element={
+              <Outlet
+                context={{
                   parcelId,
-                  address: '100 Sales Test Ave',
-                  owner: 'Sales Tester',
-                  assessedValue: 325000,
-                  marketValue: 340000,
-                  landValue: 90000,
-                  improvementValue: 235000,
-                  propertyType: 'Residential',
-                  legalDescription: 'LOT 1 BLK 1',
-                  source: 'fixture',
-                },
-                workMode: 'overview',
-              }}
-            />
-          }
-        >
-          <Route path="forge" element={ui} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+                  propertyData: {
+                    parcelId,
+                    address: '100 Sales Test Ave',
+                    owner: 'Sales Tester',
+                    assessedValue: 325000,
+                    marketValue: 340000,
+                    landValue: 90000,
+                    improvementValue: 235000,
+                    propertyType: 'Residential',
+                    legalDescription: 'LOT 1 BLK 1',
+                    source: 'fixture',
+                  },
+                  workMode: 'overview',
+                }}
+              />
+            }
+          >
+            <Route path='forge' element={ui} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
@@ -204,6 +270,105 @@ describe('Comparable Sales Forge host', () => {
     expect(screen.getByText(/subject: 100 sales test ave/i)).toBeInTheDocument();
     expect(screen.getByText(/sale date/i)).toBeInTheDocument();
     expect(screen.getByText(/qualified only/i)).toBeInTheDocument();
+  });
+
+  it('hosts a parcel-scoped CompsForge Review Desk with a defensibility inspector', () => {
+    storeState.activeParcel = buildParcel('GATE-TEST-001');
+
+    renderForge(<ComparableSalesPanel />);
+
+    expect(screen.getByTestId('compsforge-review-desk')).toBeInTheDocument();
+    expect(screen.getByText(/CompsForge Review Desk/i)).toBeInTheDocument();
+    expect(screen.getByText(/Candidate Sales/i)).toBeInTheDocument();
+    expect(screen.getByText(/Defensibility Inspector/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Reconciliation blocked/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Select at least 3 defensible comps/i)).toBeInTheDocument();
+  });
+
+  it('gives each loaded candidate explicit Use, Reject, and Needs Data controls', async () => {
+    storeState.activeParcel = buildBentonParcel('GATE-TEST-001');
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => buildCountySalesShard(),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/101 Comp Ave/i);
+
+    expect(screen.getAllByRole('button', { name: /use comp/i })).toHaveLength(3);
+    expect(screen.getAllByRole('button', { name: /reject comp/i })).toHaveLength(3);
+    expect(screen.getAllByRole('button', { name: /needs data/i })).toHaveLength(3);
+
+    fireEvent.click(screen.getAllByRole('button', { name: /reject comp/i })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Rejected/i)).toBeInTheDocument();
+    });
+  });
+
+  it('keeps reconciliation blocked when three selected candidates lack physical support', async () => {
+    storeState.activeParcel = buildBentonParcel('GATE-TEST-001');
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.includes('/launch-data/')) {
+        return {
+          ok: true,
+          json: async () => buildCountySalesShard(),
+        };
+      }
+
+      if (url.includes('/adjust-comparable')) {
+        return {
+          ok: true,
+          json: async () => ({
+            salePrice: 330000,
+            glaAdjustment: 0,
+            lotAdjustment: 0,
+            ageAdjustment: 0,
+            conditionAdjustment: 0,
+            totalNetAdjustment: 0,
+            adjustedPrice: 330000,
+            grossAdjustmentPct: 4,
+            netAdjustmentPct: 2,
+            adjustments: {},
+            warnings: [],
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        json: async () => ({
+          indicatedValue: 330000,
+          confidence: 'HIGH',
+        }),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/101 Comp Ave/i);
+    for (const button of screen.getAllByRole('button', { name: /use comp/i })) {
+      fireEvent.click(button);
+    }
+
+    await waitFor(() => {
+      const adjustmentCalls = fetchMock.mock.calls.filter(([url]) =>
+        String(url).includes('/adjust-comparable')
+      );
+      expect(adjustmentCalls).toHaveLength(3);
+    });
+
+    const reconcileCalls = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes('/reconcile')
+    );
+    expect(reconcileCalls).toHaveLength(0);
+    expect(screen.getAllByText(/Reconciliation blocked/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Selected comps need complete physical support/i)).toBeInTheDocument();
   });
 
   it('filters out the subject parcel and respects qualified-only defaults', () => {

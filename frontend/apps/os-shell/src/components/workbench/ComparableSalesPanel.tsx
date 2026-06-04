@@ -57,6 +57,8 @@ interface ComparableSalesPanelProps {
   onReconciledValue?: (result: ReconciliationResult) => void;
 }
 
+type CandidateDecision = 'use' | 'reject' | 'needs-data';
+
 // ═══════════════════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════════════════
@@ -65,6 +67,23 @@ const fmtCurrency = (v: number) => `$${v.toLocaleString(undefined, { maximumFrac
 const fmtPct = (v: number) => `${Math.round(v * 100)}%`;
 const fmtDate = (d: string) => d.slice(0, 10);
 
+function hasPhysicalSupport(comp: ComparableSale): boolean {
+  return Boolean(
+    comp.grossLivingArea &&
+    comp.grossLivingArea > 0 &&
+    comp.lotSizeSqft &&
+    comp.lotSizeSqft > 0 &&
+    comp.yearBuilt &&
+    comp.yearBuilt > 0 &&
+    comp.condition &&
+    comp.qualityGrade
+  );
+}
+
+function isSimilarityDefensible(comp: ScoredComp): boolean {
+  return comp.similarityScore >= 0.4;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Sub-components
 // ═══════════════════════════════════════════════════════════════
@@ -72,14 +91,14 @@ const fmtDate = (d: string) => d.slice(0, 10);
 /** Subject property context bar */
 const SubjectBar: React.FC<{ subject: SubjectProperty }> = ({ subject }) => (
   <div
-    className="flex flex-wrap gap-x-6 gap-y-1 px-4 py-2 text-xs"
+    className='flex flex-wrap gap-x-6 gap-y-1 px-4 py-2 text-xs'
     style={{
       background: 'hsl(var(--tf-accent) / 0.06)',
       borderBottom: '1px solid hsl(var(--tf-border) / 0.15)',
       color: 'hsl(var(--tf-text) / 0.8)',
     }}
   >
-    <span className="font-semibold" style={{ color: 'hsl(var(--tf-accent))' }}>
+    <span className='font-semibold' style={{ color: 'hsl(var(--tf-accent))' }}>
       Subject: {subject.address || subject.parcelId}
     </span>
     <span>GLA: {subject.grossLivingArea?.toLocaleString() || '—'} sq ft</span>
@@ -96,19 +115,19 @@ const FilterBar: React.FC<{
   totalCandidates: number;
 }> = ({ filters, onChange, totalCandidates }) => (
   <div
-    className="flex flex-wrap items-center gap-3 px-4 py-2 text-xs"
+    className='flex flex-wrap items-center gap-3 px-4 py-2 text-xs'
     style={{
       background: 'hsl(var(--tf-bg-surface) / 0.3)',
       borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
       color: 'hsl(var(--tf-text) / 0.7)',
     }}
   >
-    <label className="flex items-center gap-1">
+    <label className='flex items-center gap-1'>
       <input
-        type="checkbox"
+        type='checkbox'
         checked={filters.qualifiedOnly !== false}
         onChange={(e) => onChange({ ...filters, qualifiedOnly: e.target.checked })}
-        className="accent-current"
+        className='accent-current'
       />
       Qualified only
     </label>
@@ -120,18 +139,18 @@ const FilterBar: React.FC<{
 /** Reconciliation summary */
 const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ result }) => (
   <div
-    className="px-4 py-3"
+    className='px-4 py-3'
     style={{
       background: 'hsl(var(--tf-accent) / 0.04)',
       borderTop: '1px solid hsl(var(--tf-border) / 0.15)',
     }}
   >
-    <div className="flex items-center gap-2 mb-2">
-      <span className="text-xs font-semibold" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+    <div className='flex items-center gap-2 mb-2'>
+      <span className='text-xs font-semibold' style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
         Reconciliation
       </span>
       <span
-        className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+        className='text-[10px] px-1.5 py-0.5 rounded font-medium'
         style={{
           background:
             result.confidence === 'HIGH'
@@ -150,31 +169,43 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
         {result.confidence} confidence
       </span>
     </div>
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+    <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs'>
       <div>
-        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>Weighted Avg</span>
-        <span className="font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+        <span className='block' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+          Weighted Avg
+        </span>
+        <span className='font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
           {fmtCurrency(result.weightedAverage)}
         </span>
       </div>
       <div>
-        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>Median</span>
-        <span className="font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+        <span className='block' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+          Median
+        </span>
+        <span className='font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
           {fmtCurrency(result.median)}
         </span>
       </div>
       <div>
-        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>Range</span>
+        <span className='block' style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+          Range
+        </span>
         <span style={{ color: 'hsl(var(--tf-text))' }}>
           {fmtCurrency(result.low)} – {fmtCurrency(result.high)}
         </span>
       </div>
       <div>
-        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }} title="Coefficient of Variation (σ/μ) — measures spread relative to the mean; IAAO guideline ≤15%">CV</span>
+        <span
+          className='block'
+          style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
+          title='Coefficient of Variation (σ/μ) — measures spread relative to the mean; IAAO guideline ≤15%'
+        >
+          CV
+        </span>
         <span style={{ color: 'hsl(var(--tf-text))' }}>{result.coefficientOfVariation}%</span>
       </div>
     </div>
-    <div className="mt-1 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.35)' }}>
+    <div className='mt-1 text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.35)' }}>
       Source: {result.source}
     </div>
   </div>
@@ -191,17 +222,20 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const countyCode = activeParcel?.countyCode ?? null;
   const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
-  const pilotCountyScope = useMemo(() => getPilotCountyScopeToken(getSession()?.countyId ?? null), []);
+  const pilotCountyScope = useMemo(
+    () => getPilotCountyScopeToken(getSession()?.countyId ?? null),
+    []
+  );
   const countyScopeMismatch = useMemo(
     () =>
       countyCode != null &&
       pilotCountyScope != null &&
       !doesPilotCountyMatchComparableCounty(pilotCountyScope, countyCode),
-    [countyCode, pilotCountyScope],
+    [countyCode, pilotCountyScope]
   );
   const adjustmentsSupported = useMemo(
     () => supportsGovernedComparableAdjustments(countyCode),
-    [countyCode],
+    [countyCode]
   );
 
   // Build subject from active parcel
@@ -233,7 +267,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       if (!countyCode) {
         setAllSales([]);
         setSalesError(
-          'Comparable sales cannot load until the active parcel includes a county code.',
+          'Comparable sales cannot load until the active parcel includes a county code.'
         );
         setSalesLoading(false);
         return;
@@ -254,7 +288,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
           setSalesError(
             error instanceof Error
               ? error.message
-              : `${countyName} County comparable sales are unavailable.`,
+              : `${countyName} County comparable sales are unavailable.`
           );
           setSalesLoading(false);
         }
@@ -279,20 +313,44 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
   // Selected comp parcelIds + saleDates (unique key)
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [candidateDecisions, setCandidateDecisions] = useState<Record<string, CandidateDecision>>(
+    {}
+  );
 
   const toggleComp = useCallback((comp: ScoredComp) => {
     const key = `${comp.parcelId}|${comp.saleDate}`;
     setSelectedKeys((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      if (next.has(key)) {
+        next.delete(key);
+        setCandidateDecisions((decisions) => {
+          const rest = { ...decisions };
+          delete rest[key];
+          return rest;
+        });
+      } else {
+        next.add(key);
+        setCandidateDecisions((decisions) => ({ ...decisions, [key]: 'use' }));
+      }
+      return next;
+    });
+  }, []);
+
+  const setCandidateDecision = useCallback((comp: ScoredComp, decision: CandidateDecision) => {
+    const key = `${comp.parcelId}|${comp.saleDate}`;
+
+    setCandidateDecisions((prev) => ({ ...prev, [key]: decision }));
+    setSelectedKeys((prev) => {
+      const next = new Set(prev);
+      if (decision === 'use') next.add(key);
+      else next.delete(key);
       return next;
     });
   }, []);
 
   const selectedComps = useMemo(
     () => candidates.filter((c) => selectedKeys.has(`${c.parcelId}|${c.saleDate}`)),
-    [candidates, selectedKeys],
+    [candidates, selectedKeys]
   );
 
   // Adjustment results (keyed by parcelId|saleDate)
@@ -308,7 +366,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       setAdjustments({});
       setReconciliation(null);
       setAdjustError(
-        `${countyName} County comparable sales are available, but governed paired adjustments and reconciliation are currently certified only for Benton County.`,
+        `${countyName} County comparable sales are available, but governed paired adjustments and reconciliation are currently certified only for Benton County.`
       );
       return;
     }
@@ -354,6 +412,51 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     });
   }, [subject, selectedComps, adjustments, adjustLoading, adjustmentsSupported, countyName]);
 
+  const adjustedCount = selectedComps.filter(
+    (c) => adjustments[`${c.parcelId}|${c.saleDate}`]
+  ).length;
+
+  const physicallySupportedCount = selectedComps.filter(hasPhysicalSupport).length;
+  const defensibleSelectedCount = selectedComps.filter(
+    (comp) => hasPhysicalSupport(comp) && isSimilarityDefensible(comp)
+  ).length;
+  const overAdjustmentCount = selectedComps.filter((comp) => {
+    const adjustment = adjustments[`${comp.parcelId}|${comp.saleDate}`];
+    return adjustment ? adjustment.grossAdjustmentPct > 25 : false;
+  }).length;
+  const readinessBlockers = useMemo(() => {
+    const blockers: string[] = [];
+
+    if (selectedComps.length < 3) {
+      blockers.push('Select at least 3 defensible comps.');
+    }
+    if (physicallySupportedCount < selectedComps.length) {
+      blockers.push('Selected comps need complete physical support.');
+    }
+    if (defensibleSelectedCount < selectedComps.length) {
+      blockers.push('Selected comps must clear minimum similarity support.');
+    }
+    if (!adjustmentsSupported) {
+      blockers.push('Governed paired adjustments are not certified for this county.');
+    }
+    if (selectedComps.length > 0 && adjustedCount < selectedComps.length) {
+      blockers.push('Adjustment support is still incomplete.');
+    }
+    if (overAdjustmentCount > 0) {
+      blockers.push('One or more comps exceed the gross adjustment tolerance.');
+    }
+
+    return blockers;
+  }, [
+    adjustedCount,
+    adjustmentsSupported,
+    defensibleSelectedCount,
+    overAdjustmentCount,
+    physicallySupportedCount,
+    selectedComps.length,
+  ]);
+  const reconciliationReady = selectedComps.length >= 3 && readinessBlockers.length === 0;
+
   // Reconciliation
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
   const [reconLoading, setReconLoading] = useState(false);
@@ -364,7 +467,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       .map((c) => adjustments[`${c.parcelId}|${c.saleDate}`])
       .filter(Boolean);
 
-    if (adjusted.length < 2) return;
+    if (!reconciliationReady || adjusted.length < 3) return;
 
     setReconLoading(true);
     setReconError(null);
@@ -374,7 +477,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
         adjusted.map((a) => ({
           adjustedPrice: a.adjustedPrice,
           grossAdjustmentPct: a.grossAdjustmentPct,
-        })),
+        }))
       );
       setReconciliation(result);
       onReconciledValue?.(result);
@@ -383,20 +486,15 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     } finally {
       setReconLoading(false);
     }
-  }, [selectedComps, adjustments, onReconciledValue]);
-
-  // Auto-reconcile when we have enough adjusted comps
-  const adjustedCount = selectedComps.filter(
-    (c) => adjustments[`${c.parcelId}|${c.saleDate}`],
-  ).length;
+  }, [selectedComps, adjustments, onReconciledValue, reconciliationReady]);
 
   useEffect(() => {
-    if (adjustedCount >= 2) {
+    if (reconciliationReady) {
       handleReconcile();
     } else {
       setReconciliation(null);
     }
-  }, [adjustedCount]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reconciliationReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // AI rationale
   const [rationale, setRationale] = useState<string | null>(null);
@@ -440,8 +538,8 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   if (!subject) {
     return (
       <div
-        className="flex items-center justify-center h-32 text-sm"
-        data-testid="comparable-sales-empty-state"
+        className='flex items-center justify-center h-32 text-sm'
+        data-testid='comparable-sales-empty-state'
         style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
       >
         Select a parcel to view comparable sales
@@ -450,171 +548,403 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   }
 
   return (
-    <div className="flex flex-col" data-testid="comparable-sales-panel" style={{ color: 'hsl(var(--tf-text))' }}>
-      {/* Subject context */}
-      <SubjectBar subject={subject} />
-
-      {/* Filters */}
-      <FilterBar filters={filters} onChange={setFilters} totalCandidates={candidates.length} />
-
-      {salesError && (
+    <div
+      className='flex flex-col gap-3 rounded-xl p-3'
+      data-testid='comparable-sales-panel'
+      style={{
+        color: 'hsl(var(--tf-text))',
+        background:
+          'linear-gradient(135deg, hsl(var(--tf-bg-surface) / 0.96), hsl(var(--tf-bg-elevated) / 0.92))',
+        border: '1px solid hsl(var(--tf-border) / 0.22)',
+      }}
+    >
+      <section
+        className='rounded-lg'
+        data-testid='compsforge-review-desk'
+        style={{
+          background: 'hsl(var(--tf-bg-surface) / 0.50)',
+          border: '1px solid hsl(var(--tf-border) / 0.18)',
+        }}
+      >
         <div
-          className="text-xs px-3 py-2"
-          style={{
-            color: WARNING_COLOR,
-            background: WARNING_BANNER_BG_SUBTLE,
-            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
-          }}
+          className='flex flex-wrap items-start justify-between gap-3 px-4 py-3'
+          style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.14)' }}
         >
-          {salesError}
-        </div>
-      )}
-
-      {!adjustmentsSupported && countyCode && (
-        <div
-          className="text-xs px-3 py-2"
-          style={{
-            color: WARNING_COLOR,
-            background: WARNING_BANNER_BG_SUBTLE,
-            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
-          }}
-        >
-          {countyName} County comps are loaded from the statewide sales database, but governed paired adjustments and reconciliation remain Benton-certified only.
-        </div>
-      )}
-
-      {countyScopeMismatch && (
-        <div
-          className="text-xs px-3 py-2"
-          style={{
-            color: WARNING_COLOR,
-            background: WARNING_BANNER_BG_SUBTLE,
-            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
-          }}
-        >
-          You can review statewide parcels here, but governed county-scoped comp rationale is unavailable outside your own county.
-        </div>
-      )}
-
-      {/* Comp candidates table */}
-      <div className="overflow-auto" style={{ maxHeight: '320px' }}>
-        <table className="w-full text-xs">
-          <thead
-            className="sticky top-0"
+          <div>
+            <div
+              className='text-[10px] font-semibold uppercase tracking-[0.16em]'
+              style={{ color: 'hsl(var(--tf-accent))' }}
+            >
+              Property Workbench / Forge / Sales
+            </div>
+            <h3 className='mt-1 text-base font-semibold'>CompsForge Review Desk</h3>
+            <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-text) / 0.62)' }}>
+              Parcel-scoped comparable selection, adjustment support, and reconciliation readiness.
+            </p>
+          </div>
+          <div
+            className='rounded-full px-3 py-1 text-xs font-semibold'
             style={{
-              background: 'hsl(var(--tf-bg-surface))',
-              borderBottom: '1px solid hsl(var(--tf-border) / 0.2)',
+              background: reconciliationReady ? SUCCESS_BG : WARNING_BG_SUBTLE,
+              color: reconciliationReady ? SUCCESS_COLOR : WARNING_COLOR,
+              border: `1px solid ${reconciliationReady ? SUCCESS_COLOR : WARNING_COLOR}33`,
             }}
           >
-            <tr>
-              <th className="px-2 py-1.5 text-left w-8"></th>
-              <th className="px-2 py-1.5 text-left">Address</th>
-              <th className="px-2 py-1.5 text-right">Sale Date</th>
-              <th className="px-2 py-1.5 text-right">Sale Price</th>
-              <th className="px-2 py-1.5 text-right">GLA</th>
-              <th className="px-2 py-1.5 text-right">Lot</th>
-              <th className="px-2 py-1.5 text-right">Year</th>
-              <th className="px-2 py-1.5 text-left">Cond</th>
-              <th className="px-2 py-1.5 text-left">Qual</th>
-              <th className="px-2 py-1.5 text-right">$/Sq Ft</th>
-              <th className="px-2 py-1.5 text-right">Sim</th>
-            </tr>
-          </thead>
-          <tbody>
-            {candidates.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={11}
-                  className="px-4 py-6 text-center"
-                  style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
-                >
-                  {salesLoading
-                    ? `Loading ${countyName} County comparable sales...`
-                    : 'No comparable sales match current filters'}
-                </td>
-              </tr>
-            ) : (
-              candidates.map((comp) => {
-                const key = `${comp.parcelId}|${comp.saleDate}`;
-                const isSelected = selectedKeys.has(key);
-                return (
-                  <tr
-                    key={key}
-                    className="transition-colors cursor-pointer"
-                    style={{
-                      background: isSelected ? 'hsl(var(--tf-accent) / 0.06)' : 'transparent',
-                      borderBottom: '1px solid hsl(var(--tf-border) / 0.06)',
-                    }}
-                    onClick={() => toggleComp(comp)}
-                  >
-                    <td className="px-2 py-1">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleComp(comp)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="accent-current"
-                      />
-                    </td>
-                    <td className="px-2 py-1 truncate max-w-[180px]" title={comp.address}>
-                      {comp.address}
-                    </td>
-                    <td className="px-2 py-1 text-right whitespace-nowrap">{fmtDate(comp.saleDate)}</td>
-                    <td className="px-2 py-1 text-right font-medium">{fmtCurrency(comp.salePrice)}</td>
-                    <td className="px-2 py-1 text-right">
-                      {comp.grossLivingArea?.toLocaleString() ?? '—'}
-                    </td>
-                    <td className="px-2 py-1 text-right">
-                      {comp.lotSizeSqft ? Math.round(comp.lotSizeSqft).toLocaleString() : '—'}
-                    </td>
-                    <td className="px-2 py-1 text-right">{comp.yearBuilt ?? '—'}</td>
-                    <td className="px-2 py-1">{comp.condition ?? '—'}</td>
-                    <td className="px-2 py-1">{comp.qualityGrade ?? '—'}</td>
-                    <td className="px-2 py-1 text-right">
-                      {comp.pricePerSqft ? `$${comp.pricePerSqft.toFixed(0)}` : '—'}
-                    </td>
-                    <td className="px-2 py-1 text-right">
-                      <span
-                        className="inline-block px-1 py-0.5 rounded text-[10px] font-medium"
-                        style={{
-                          background:
-                            comp.similarityScore >= 0.7
-                              ? SUCCESS_BG_SUBTLE
-                              : comp.similarityScore >= 0.4
-                                ? WARNING_BG_SUBTLE
-                                : 'hsl(var(--tf-text) / 0.06)',
-                          color:
-                            comp.similarityScore >= 0.7
-                              ? SUCCESS_COLOR
-                              : comp.similarityScore >= 0.4
-                                ? WARNING_COLOR
-                                : 'hsl(var(--tf-text) / 0.5)',
-                        }}
-                      >
-                        {fmtPct(comp.similarityScore)}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })
+            {reconciliationReady ? 'Reconciliation ready' : 'Reconciliation blocked'}
+          </div>
+        </div>
+
+        <SubjectBar subject={subject} />
+
+        <div className='grid gap-3 p-3 xl:grid-cols-[minmax(0,1fr)_320px]'>
+          <div
+            className='min-w-0 rounded-lg'
+            style={{
+              background: 'hsl(var(--tf-bg-elevated) / 0.42)',
+              border: '1px solid hsl(var(--tf-border) / 0.14)',
+            }}
+          >
+            <div className='flex flex-wrap items-center justify-between gap-2 px-4 py-3'>
+              <div>
+                <div className='text-sm font-semibold'>Candidate Sales</div>
+                <div className='text-xs' style={{ color: 'hsl(var(--tf-text) / 0.55)' }}>
+                  Select only comps that can survive physical, adjustment, and review scrutiny.
+                </div>
+              </div>
+            </div>
+
+            <FilterBar
+              filters={filters}
+              onChange={setFilters}
+              totalCandidates={candidates.length}
+            />
+
+            {salesError && (
+              <div
+                className='text-xs px-3 py-2'
+                style={{
+                  color: WARNING_COLOR,
+                  background: WARNING_BANNER_BG_SUBTLE,
+                  borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+                }}
+              >
+                {salesError}
+              </div>
             )}
-          </tbody>
-        </table>
-      </div>
+
+            {!adjustmentsSupported && countyCode && (
+              <div
+                className='text-xs px-3 py-2'
+                style={{
+                  color: WARNING_COLOR,
+                  background: WARNING_BANNER_BG_SUBTLE,
+                  borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+                }}
+              >
+                {countyName} County comps are loaded from the statewide sales database, but governed
+                paired adjustments and reconciliation remain Benton-certified only.
+              </div>
+            )}
+
+            {countyScopeMismatch && (
+              <div
+                className='text-xs px-3 py-2'
+                style={{
+                  color: WARNING_COLOR,
+                  background: WARNING_BANNER_BG_SUBTLE,
+                  borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+                }}
+              >
+                You can review statewide parcels here, but governed county-scoped comp rationale is
+                unavailable outside your own county.
+              </div>
+            )}
+
+            {/* Comp candidates table */}
+            <div className='overflow-auto' style={{ maxHeight: '320px' }}>
+              <table className='w-full text-xs'>
+                <thead
+                  className='sticky top-0'
+                  style={{
+                    background: 'hsl(var(--tf-bg-surface))',
+                    borderBottom: '1px solid hsl(var(--tf-border) / 0.2)',
+                  }}
+                >
+                  <tr>
+                    <th className='px-2 py-1.5 text-left w-8'></th>
+                    <th className='px-2 py-1.5 text-left'>Address</th>
+                    <th className='px-2 py-1.5 text-right'>Sale Date</th>
+                    <th className='px-2 py-1.5 text-right'>Sale Price</th>
+                    <th className='px-2 py-1.5 text-right'>GLA</th>
+                    <th className='px-2 py-1.5 text-right'>Lot</th>
+                    <th className='px-2 py-1.5 text-right'>Year</th>
+                    <th className='px-2 py-1.5 text-left'>Cond</th>
+                    <th className='px-2 py-1.5 text-left'>Qual</th>
+                    <th className='px-2 py-1.5 text-right'>$/Sq Ft</th>
+                    <th className='px-2 py-1.5 text-right'>Sim</th>
+                    <th className='px-2 py-1.5 text-left'>Decision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={12}
+                        className='px-4 py-6 text-center'
+                        style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
+                      >
+                        {salesLoading
+                          ? `Loading ${countyName} County comparable sales...`
+                          : 'No comparable sales match current filters'}
+                      </td>
+                    </tr>
+                  ) : (
+                    candidates.map((comp) => {
+                      const key = `${comp.parcelId}|${comp.saleDate}`;
+                      const isSelected = selectedKeys.has(key);
+                      const decision = candidateDecisions[key];
+                      const handleDecision = (
+                        event: React.MouseEvent<HTMLButtonElement>,
+                        nextDecision: CandidateDecision
+                      ) => {
+                        event.stopPropagation();
+                        setCandidateDecision(comp, nextDecision);
+                      };
+                      const decisionLabel =
+                        decision === 'use'
+                          ? 'Using'
+                          : decision === 'reject'
+                            ? 'Rejected'
+                            : decision === 'needs-data'
+                              ? 'Needs Data'
+                              : 'No decision';
+                      return (
+                        <tr
+                          key={key}
+                          className='transition-colors cursor-pointer'
+                          style={{
+                            background: isSelected ? 'hsl(var(--tf-accent) / 0.06)' : 'transparent',
+                            borderBottom: '1px solid hsl(var(--tf-border) / 0.06)',
+                          }}
+                          onClick={() => toggleComp(comp)}
+                        >
+                          <td className='px-2 py-1'>
+                            <input
+                              type='checkbox'
+                              checked={isSelected}
+                              onChange={() => toggleComp(comp)}
+                              onClick={(e) => e.stopPropagation()}
+                              className='accent-current'
+                            />
+                          </td>
+                          <td className='px-2 py-1 truncate max-w-[180px]' title={comp.address}>
+                            {comp.address}
+                          </td>
+                          <td className='px-2 py-1 text-right whitespace-nowrap'>
+                            {fmtDate(comp.saleDate)}
+                          </td>
+                          <td className='px-2 py-1 text-right font-medium'>
+                            {fmtCurrency(comp.salePrice)}
+                          </td>
+                          <td className='px-2 py-1 text-right'>
+                            {comp.grossLivingArea?.toLocaleString() ?? '—'}
+                          </td>
+                          <td className='px-2 py-1 text-right'>
+                            {comp.lotSizeSqft ? Math.round(comp.lotSizeSqft).toLocaleString() : '—'}
+                          </td>
+                          <td className='px-2 py-1 text-right'>{comp.yearBuilt ?? '—'}</td>
+                          <td className='px-2 py-1'>{comp.condition ?? '—'}</td>
+                          <td className='px-2 py-1'>{comp.qualityGrade ?? '—'}</td>
+                          <td className='px-2 py-1 text-right'>
+                            {comp.pricePerSqft ? `$${comp.pricePerSqft.toFixed(0)}` : '—'}
+                          </td>
+                          <td className='px-2 py-1 text-right'>
+                            <span
+                              className='inline-block px-1 py-0.5 rounded text-[10px] font-medium'
+                              style={{
+                                background:
+                                  comp.similarityScore >= 0.7
+                                    ? SUCCESS_BG_SUBTLE
+                                    : comp.similarityScore >= 0.4
+                                      ? WARNING_BG_SUBTLE
+                                      : 'hsl(var(--tf-text) / 0.06)',
+                                color:
+                                  comp.similarityScore >= 0.7
+                                    ? SUCCESS_COLOR
+                                    : comp.similarityScore >= 0.4
+                                      ? WARNING_COLOR
+                                      : 'hsl(var(--tf-text) / 0.5)',
+                              }}
+                            >
+                              {fmtPct(comp.similarityScore)}
+                            </span>
+                          </td>
+                          <td className='px-2 py-1'>
+                            <div className='flex min-w-[170px] flex-col gap-1'>
+                              <div className='flex items-center gap-1'>
+                                <button
+                                  type='button'
+                                  aria-label={`Use comp ${comp.parcelId}`}
+                                  className='rounded px-2 py-1 text-[10px] font-semibold'
+                                  style={{
+                                    background:
+                                      decision === 'use'
+                                        ? SUCCESS_BG
+                                        : 'hsl(var(--tf-bg-surface) / 0.6)',
+                                    color:
+                                      decision === 'use'
+                                        ? SUCCESS_COLOR
+                                        : 'hsl(var(--tf-text) / 0.72)',
+                                    border: '1px solid hsl(var(--tf-border) / 0.18)',
+                                  }}
+                                  onClick={(event) => handleDecision(event, 'use')}
+                                >
+                                  Use
+                                </button>
+                                <button
+                                  type='button'
+                                  aria-label={`Reject comp ${comp.parcelId}`}
+                                  className='rounded px-2 py-1 text-[10px] font-semibold'
+                                  style={{
+                                    background:
+                                      decision === 'reject'
+                                        ? ERROR_BG
+                                        : 'hsl(var(--tf-bg-surface) / 0.6)',
+                                    color:
+                                      decision === 'reject'
+                                        ? ERROR_COLOR
+                                        : 'hsl(var(--tf-text) / 0.72)',
+                                    border: '1px solid hsl(var(--tf-border) / 0.18)',
+                                  }}
+                                  onClick={(event) => handleDecision(event, 'reject')}
+                                >
+                                  Reject
+                                </button>
+                                <button
+                                  type='button'
+                                  aria-label={`Needs data ${comp.parcelId}`}
+                                  className='rounded px-2 py-1 text-[10px] font-semibold'
+                                  style={{
+                                    background:
+                                      decision === 'needs-data'
+                                        ? WARNING_BG
+                                        : 'hsl(var(--tf-bg-surface) / 0.6)',
+                                    color:
+                                      decision === 'needs-data'
+                                        ? WARNING_COLOR
+                                        : 'hsl(var(--tf-text) / 0.72)',
+                                    border: '1px solid hsl(var(--tf-border) / 0.18)',
+                                  }}
+                                  onClick={(event) => handleDecision(event, 'needs-data')}
+                                >
+                                  Needs Data
+                                </button>
+                              </div>
+                              <div
+                                className='text-[10px]'
+                                style={{ color: 'hsl(var(--tf-text) / 0.48)' }}
+                              >
+                                {decisionLabel}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <aside
+            className='rounded-lg p-4'
+            style={{
+              background: 'hsl(var(--tf-bg-elevated) / 0.52)',
+              border: '1px solid hsl(var(--tf-border) / 0.16)',
+            }}
+          >
+            <div className='text-sm font-semibold'>Defensibility Inspector</div>
+            <p className='mt-1 text-xs' style={{ color: 'hsl(var(--tf-text) / 0.58)' }}>
+              Reconciliation stays blocked until the selected set has enough support to defend.
+            </p>
+
+            <div className='mt-4 grid grid-cols-2 gap-2 text-xs'>
+              <div
+                className='rounded p-2'
+                style={{ background: 'hsl(var(--tf-bg-surface) / 0.55)' }}
+              >
+                <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Selected</div>
+                <div className='text-lg font-semibold'>{selectedComps.length}</div>
+              </div>
+              <div
+                className='rounded p-2'
+                style={{ background: 'hsl(var(--tf-bg-surface) / 0.55)' }}
+              >
+                <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Defensible</div>
+                <div className='text-lg font-semibold'>{defensibleSelectedCount}</div>
+              </div>
+              <div
+                className='rounded p-2'
+                style={{ background: 'hsl(var(--tf-bg-surface) / 0.55)' }}
+              >
+                <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Physical support</div>
+                <div className='text-lg font-semibold'>
+                  {physicallySupportedCount}/{selectedComps.length}
+                </div>
+              </div>
+              <div
+                className='rounded p-2'
+                style={{ background: 'hsl(var(--tf-bg-surface) / 0.55)' }}
+              >
+                <div style={{ color: 'hsl(var(--tf-text) / 0.48)' }}>Adjusted</div>
+                <div className='text-lg font-semibold'>
+                  {adjustedCount}/{selectedComps.length}
+                </div>
+              </div>
+            </div>
+
+            <div
+              className='mt-4 rounded p-3 text-xs'
+              style={{
+                background: reconciliationReady ? SUCCESS_BG_SUBTLE : WARNING_BANNER_BG_SUBTLE,
+                color: reconciliationReady ? SUCCESS_COLOR : WARNING_COLOR,
+                border: reconciliationReady ? `1px solid ${SUCCESS_COLOR}33` : WARNING_BORDER,
+              }}
+            >
+              <div className='font-semibold'>
+                {reconciliationReady ? 'Ready for reconciliation review' : 'Reconciliation blocked'}
+              </div>
+              {!reconciliationReady && (
+                <ul className='mt-2 space-y-1'>
+                  {readinessBlockers.map((blocker) => (
+                    <li key={blocker}>{blocker}</li>
+                  ))}
+                </ul>
+              )}
+              {reconciliationReady && (
+                <div className='mt-1'>
+                  Selected comps clear count, physical, adjustment, and tolerance checks.
+                </div>
+              )}
+            </div>
+          </aside>
+        </div>
+      </section>
 
       {/* Adjustment grid for selected comps */}
       {selectedComps.length > 0 && (
-        <div
-          className="px-4 py-3"
-          style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.15)' }}
-        >
-          <div className="text-xs font-semibold mb-2" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+        <div className='px-4 py-3' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.15)' }}>
+          <div
+            className='text-xs font-semibold mb-2'
+            style={{ color: 'hsl(var(--tf-text) / 0.9)' }}
+          >
             Paired Adjustments ({selectedComps.length} selected)
           </div>
 
           {adjustError && (
             <div
-              className="text-xs px-3 py-2 rounded mb-2"
+              className='text-xs px-3 py-2 rounded mb-2'
               style={{
                 background: WARNING_BANNER_BG,
                 color: WARNING_COLOR,
@@ -625,19 +955,19 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
             </div>
           )}
 
-          <div className="overflow-auto">
-            <table className="w-full text-xs">
+          <div className='overflow-auto'>
+            <table className='w-full text-xs'>
               <thead>
                 <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
-                  <th className="px-2 py-1 text-left">Address</th>
-                  <th className="px-2 py-1 text-right">Sale Price</th>
-                  <th className="px-2 py-1 text-right">GLA Adj</th>
-                  <th className="px-2 py-1 text-right">Lot Adj</th>
-                  <th className="px-2 py-1 text-right">Age Adj</th>
-                  <th className="px-2 py-1 text-right">Cond Adj</th>
-                  <th className="px-2 py-1 text-right">Net Adj</th>
-                  <th className="px-2 py-1 text-right font-semibold">Adjusted</th>
-                  <th className="px-2 py-1 text-right">Gross%</th>
+                  <th className='px-2 py-1 text-left'>Address</th>
+                  <th className='px-2 py-1 text-right'>Sale Price</th>
+                  <th className='px-2 py-1 text-right'>GLA Adj</th>
+                  <th className='px-2 py-1 text-right'>Lot Adj</th>
+                  <th className='px-2 py-1 text-right'>Age Adj</th>
+                  <th className='px-2 py-1 text-right'>Cond Adj</th>
+                  <th className='px-2 py-1 text-right'>Net Adj</th>
+                  <th className='px-2 py-1 text-right font-semibold'>Adjusted</th>
+                  <th className='px-2 py-1 text-right'>Gross%</th>
                 </tr>
               </thead>
               <tbody>
@@ -648,9 +978,16 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
                   if (loading) {
                     return (
-                      <tr key={key} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}>
-                        <td className="px-2 py-1 truncate max-w-[150px]">{comp.address}</td>
-                        <td colSpan={8} className="px-2 py-1 text-center" style={{ color: 'hsl(var(--tf-text) / 0.4)' }}>
+                      <tr
+                        key={key}
+                        style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}
+                      >
+                        <td className='px-2 py-1 truncate max-w-[150px]'>{comp.address}</td>
+                        <td
+                          colSpan={8}
+                          className='px-2 py-1 text-center'
+                          style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
+                        >
                           Loading adjustments...
                         </td>
                       </tr>
@@ -659,10 +996,17 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
                   if (!adj) {
                     return (
-                      <tr key={key} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}>
-                        <td className="px-2 py-1 truncate max-w-[150px]">{comp.address}</td>
-                        <td className="px-2 py-1 text-right">{fmtCurrency(comp.salePrice)}</td>
-                        <td colSpan={7} className="px-2 py-1 text-center" style={{ color: 'hsl(var(--tf-text) / 0.35)' }}>
+                      <tr
+                        key={key}
+                        style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}
+                      >
+                        <td className='px-2 py-1 truncate max-w-[150px]'>{comp.address}</td>
+                        <td className='px-2 py-1 text-right'>{fmtCurrency(comp.salePrice)}</td>
+                        <td
+                          colSpan={7}
+                          className='px-2 py-1 text-center'
+                          style={{ color: 'hsl(var(--tf-text) / 0.35)' }}
+                        >
                           Awaiting backend
                         </td>
                       </tr>
@@ -675,18 +1019,26 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                   };
 
                   return (
-                    <tr key={key} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}>
-                      <td className="px-2 py-1 truncate max-w-[150px]">{comp.address}</td>
-                      <td className="px-2 py-1 text-right">{fmtCurrency(adj.salePrice)}</td>
-                      <td className="px-2 py-1 text-right">{fmtAdj(adj.glaAdjustment)}</td>
-                      <td className="px-2 py-1 text-right">{fmtAdj(adj.lotAdjustment)}</td>
-                      <td className="px-2 py-1 text-right">{fmtAdj(adj.ageAdjustment)}</td>
-                      <td className="px-2 py-1 text-right">{fmtAdj(adj.conditionAdjustment)}</td>
-                      <td className="px-2 py-1 text-right font-medium">{fmtAdj(adj.totalNetAdjustment)}</td>
-                      <td className="px-2 py-1 text-right font-semibold" style={{ color: 'hsl(var(--tf-accent))' }}>
+                    <tr
+                      key={key}
+                      style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.06)' }}
+                    >
+                      <td className='px-2 py-1 truncate max-w-[150px]'>{comp.address}</td>
+                      <td className='px-2 py-1 text-right'>{fmtCurrency(adj.salePrice)}</td>
+                      <td className='px-2 py-1 text-right'>{fmtAdj(adj.glaAdjustment)}</td>
+                      <td className='px-2 py-1 text-right'>{fmtAdj(adj.lotAdjustment)}</td>
+                      <td className='px-2 py-1 text-right'>{fmtAdj(adj.ageAdjustment)}</td>
+                      <td className='px-2 py-1 text-right'>{fmtAdj(adj.conditionAdjustment)}</td>
+                      <td className='px-2 py-1 text-right font-medium'>
+                        {fmtAdj(adj.totalNetAdjustment)}
+                      </td>
+                      <td
+                        className='px-2 py-1 text-right font-semibold'
+                        style={{ color: 'hsl(var(--tf-accent))' }}
+                      >
                         {fmtCurrency(adj.adjustedPrice)}
                       </td>
-                      <td className="px-2 py-1 text-right">{adj.grossAdjustmentPct}%</td>
+                      <td className='px-2 py-1 text-right'>{adj.grossAdjustmentPct}%</td>
                     </tr>
                   );
                 })}
@@ -695,7 +1047,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
           </div>
 
           {/* AI Rationale button */}
-          <div className="mt-2 flex items-center gap-2">
+          <div className='mt-2 flex items-center gap-2'>
             <button
               onClick={handleRationale}
               disabled={
@@ -704,7 +1056,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                 !pilotCountyScope ||
                 countyScopeMismatch
               }
-              className="text-xs px-3 py-1 rounded transition-colors"
+              className='text-xs px-3 py-1 rounded transition-colors'
               style={{
                 background: 'hsl(var(--tf-accent) / 0.1)',
                 color: 'hsl(var(--tf-accent))',
@@ -718,7 +1070,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
           {rationale && (
             <div
-              className="mt-2 text-xs p-3 rounded whitespace-pre-wrap"
+              className='mt-2 text-xs p-3 rounded whitespace-pre-wrap'
               style={{
                 background: 'hsl(var(--tf-bg-surface) / 0.5)',
                 color: 'hsl(var(--tf-text) / 0.8)',
@@ -734,8 +1086,11 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
       {/* Reconciliation summary */}
       {reconLoading && (
         <div
-          className="px-4 py-2 text-xs"
-          style={{ color: 'hsl(var(--tf-text) / 0.4)', borderTop: '1px solid hsl(var(--tf-border) / 0.1)' }}
+          className='px-4 py-2 text-xs'
+          style={{
+            color: 'hsl(var(--tf-text) / 0.4)',
+            borderTop: '1px solid hsl(var(--tf-border) / 0.1)',
+          }}
         >
           Reconciling...
         </div>
@@ -743,10 +1098,10 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
       {reconError && (
         <div
-          className="px-4 py-2 text-xs"
+          className='px-4 py-2 text-xs'
           style={{
-              color: WARNING_COLOR,
-              background: WARNING_BANNER_BG_SUBTLE,
+            color: WARNING_COLOR,
+            background: WARNING_BANNER_BG_SUBTLE,
             borderTop: '1px solid hsl(var(--tf-border) / 0.1)',
           }}
         >
