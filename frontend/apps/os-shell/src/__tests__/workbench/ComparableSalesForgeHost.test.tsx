@@ -266,11 +266,20 @@ describe('Comparable Sales Forge host', () => {
     expect(screen.getByText(/subject: 100 sales test ave/i)).toBeInTheDocument();
   });
 
-  it('shows the empty Comparable Sales state when no parcel is bound', () => {
+  it('shows a route-aware evidence block when the parcel record is unavailable', () => {
     renderForge(<ComparableSalesPanel />);
 
     expect(screen.getByTestId('comparable-sales-empty-state')).toBeInTheDocument();
-    expect(screen.getByText(/select a parcel to view comparable sales/i)).toBeInTheDocument();
+    expect(screen.getByText('Parcel evidence unavailable. Comparable review blocked.')).toBeInTheDocument();
+    expect(screen.getByText(/Route parcel: GATE-TEST-001/i)).toBeInTheDocument();
+  });
+
+  it('does not tell staff to select a parcel when the route already identifies one', () => {
+    renderForge(<ComparableSalesPanel />, { parcelId: '1-0529-100-0042' });
+
+    expect(screen.queryByText(/select a parcel to view comparable sales/i)).not.toBeInTheDocument();
+    expect(screen.getByText('Parcel evidence unavailable. Comparable review blocked.')).toBeInTheDocument();
+    expect(screen.getByText(/Use sealed parcel, improvement, and land truth only/i)).toBeInTheDocument();
   });
 
   it('shows the populated Comparable Sales state when parcel context is present', () => {
