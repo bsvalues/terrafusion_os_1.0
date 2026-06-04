@@ -39,7 +39,7 @@ const {
     return aliases[id] || id;
   }),
   mockIsModuleRegistered: vi.fn((id: string) => {
-    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai', 'property-workbench'];
     return registry.includes(id);
   }),
   mockTrackEvent: vi.fn(),
@@ -108,7 +108,7 @@ function resetAllMocks() {
     return aliases[id] || id;
   });
   mockIsModuleRegistered.mockClear().mockImplementation((id: string) => {
-    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai', 'property-workbench'];
     return registry.includes(id);
   });
 }
@@ -199,6 +199,24 @@ describe('moduleActivation', () => {
           moduleId: 'costforge',
           source: 'deep_link',
           metadata,
+        })
+      );
+    });
+
+    it('normalizes direct property workbench tab metadata for desktop windows', async () => {
+      await activateModule('property-workbench', {
+        source: 'system',
+        metadata: { parcelId: '1-0529-100-0042', tab: 'forge' },
+      });
+
+      expect(mockOpenWindow).toHaveBeenCalledWith(
+        'property-workbench',
+        expect.any(String),
+        expect.any(String),
+        expect.objectContaining({
+          parcelId: '1-0529-100-0042',
+          tab: 'forge',
+          tabId: 'forge',
         })
       );
     });

@@ -13,6 +13,7 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
+import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import { ComparableSalesPanel } from '../../components/workbench/ComparableSalesPanel';
 import {
   adjustComp,
@@ -242,6 +243,43 @@ function renderForge(
   );
 }
 
+function renderForgeInDesktopWindowContext(
+  ui: React.ReactElement,
+  { parcelId = 'GATE-TEST-001', launchMetadata = { tabId: 'forge', subTab: 'sales' } }: {
+    parcelId?: string;
+    launchMetadata?: Record<string, unknown>;
+  } = {}
+) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <MemoryRouter initialEntries={['/desktop']}>
+        <WorkbenchTabCtx.Provider
+          value={{
+            parcelId,
+            propertyData: {
+              parcelId,
+              address: '100 Sales Test Ave',
+              owner: 'Sales Tester',
+              assessedValue: 325000,
+              marketValue: 340000,
+              landValue: 90000,
+              improvementValue: 235000,
+              propertyType: 'Residential',
+              legalDescription: 'LOT 1 BLK 1',
+              source: 'fixture',
+            },
+            workMode: 'overview',
+            launchMetadata,
+          } as any}
+        >
+          {ui}
+        </WorkbenchTabCtx.Provider>
+      </MemoryRouter>
+    </QueryClientProvider>
+  );
+}
+
 describe('Comparable Sales Forge host', () => {
   beforeEach(() => {
     storeState.activeParcel = null;
@@ -264,6 +302,17 @@ describe('Comparable Sales Forge host', () => {
     expect(screen.getByRole('tab', { name: /sales/i })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByLabelText(/sales comps rationale/i)).toBeInTheDocument();
     expect(screen.getByText(/subject: 100 sales test ave/i)).toBeInTheDocument();
+  });
+
+  it('lands on the real Sales sub-tab from desktop window launch metadata', () => {
+    storeState.activeParcel = buildParcel('GATE-TEST-001');
+
+    renderForgeInDesktopWindowContext(<PropertyForge />);
+
+    expect(screen.getByTestId('sales-comparison-host')).toBeInTheDocument();
+    expect(screen.getByTestId('comparable-sales-panel')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /sales/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByTestId('mock-forge-overview')).not.toBeVisible();
   });
 
   it('shows a route-aware evidence block when the parcel record is unavailable', () => {

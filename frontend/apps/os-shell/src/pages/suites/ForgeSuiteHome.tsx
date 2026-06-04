@@ -17,7 +17,7 @@
  *
  * Verified layout (matches screenshot from 2026-04-09):
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
- *               CompsForge (sales comparison, standalone React module)
+ *               CompsForge (parcel-scoped sales comparison in Property Workbench)
  *               IncomeForge (income approach, live)
  *   SPECIALIST: Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview live
@@ -47,6 +47,7 @@ interface ForgeModuleDef {
   chipLabel?: string;
   truthState?: TruthState;
   workbenchTab?: WorkbenchTabSlug;
+  workbenchSubTab?: string;
   moduleId?: string;
 }
 
@@ -104,10 +105,11 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'comps-forge',
     label: 'CompsForge',
     description:
-      'County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends',
+      'Parcel-scoped sales comparison — comp quality, adjustment defensibility, and review-ready reconciliation',
     priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'comps-forge',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+    workbenchSubTab: 'sales',
     chipLabel: 'Sales comparison',
   },
   {
@@ -240,7 +242,12 @@ export default function ForgeSuiteHome() {
       const parcelId = activeParcel?.parcelId;
       void activateModule('property-workbench', {
         source: 'system',
-        metadata: { tab: mod.workbenchTab, ...(parcelId ? { parcelId } : {}) },
+        metadata: {
+          tab: mod.workbenchTab,
+          tabId: mod.workbenchTab,
+          ...(mod.workbenchSubTab ? { subTab: mod.workbenchSubTab } : {}),
+          ...(parcelId ? { parcelId } : {}),
+        },
       });
       return;
     }
