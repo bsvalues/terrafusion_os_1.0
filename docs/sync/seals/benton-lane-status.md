@@ -13,7 +13,7 @@ _Last updated: 2026-06-04._
 | Improvement | ✅ SEALED | 71,736 / 71,736 (100%) | Real-property (type R) improvement-bearing parcels; 4,176 MH excluded by spine doctrine | 1.0000× | `evidence/2026-05-30-improvement-residual-gap-diagnosis.md` + `evidence/2026-05-30-improvement-targeted-backfill.md` |
 | Land | ✅ SEALED | 82,012 / 82,012 (100%) | All type-R land-bearing parcels (no MH land segments; no doctrine exclusion) | 1.0000× | `evidence/2026-06-03-land-lane-seal.md` |
 | Sales | ✅ SEALED | 29,914 qualified | QUALIFIED sales (DOR-or-county per tf_doctrine_ratio_policy); 45,764 landed-but-unqualified correctly excluded | 1.0000× | `evidence/2026-06-03-sales-lane-seal.md` |
-| Geometry | ⏳ OPEN | — | — | — | — |
+| Geometry | 🔧 IN PROGRESS | D1/D2/D3 = 80,075 raw→truth→canonical (1.0×); 11,420/80,075 linked to tf_parcel | ArcGIS Parcels service = 80,076 features | 1.0000× (geom layer) | `evidence/2026-06-04-geometry-lane-diagnosis.md` |
 | Owner | ⏳ OPEN | — | — | — | — |
 
 ## Denominator notes (why coverage numbers differ per lane)
