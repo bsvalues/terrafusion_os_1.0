@@ -48,6 +48,23 @@ property_val), not a hardcoded 0.
 These are all sound; the sweep proved them (1.0× end-to-end). The SupNum-resolution issue is a
 SEPARATE, newly-surfaced correctness bug in the sale SOURCE, not in the idempotency/cursor work.
 
+## REFINED DIAGNOSIS (2026-06-03 PM) — bug is TWO coordinated sup_num=0 hardcodes, sales-scoped
+- `SqlServerPacsSaleSource` hardcodes `sup_num=0` on every landed sale.
+- `KeyedSqlServerPacsPropSuppAssocSource` has `WHERE sup_num = 0` — it ONLY lands the 0-supplement.
+- PACS `prop_supp_assoc` is keyed `(prop_id, owner_tax_yr, sup_num)` with exactly ONE row per
+  (prop_id, owner_tax_yr); that row's sup_num is the ACTIVE supplement for that year and is often
+  NON-ZERO for historical years (e.g. 10130/2024=10, 10372/2021=29, 10696/2018=44, 10971/2020=37),
+  but ZERO for the current year (10130/2026=0). Some historical years are also 0 (10625/2020=0).
+- **Why the SEALED lanes are NOT affected:** land + improvement drain WorkingYear=2026 → 2026 supp is
+  sup_num=0 → the sup=0 filter is correct + complete for them. Verified: parcel 10130 (active supp=10
+  for 2024) IS in both sealed lanes at sup_num=0 because for 2026 its supp is 0. The sealed lanes are
+  genuinely complete; the sup=0 default is correct for current-year lanes.
+- **Why SALES are affected:** a sale dated 2024 derives PropValYr=2024 (YEAR(sl_dt)), so it must match
+  the 2024 supplement — which may be non-zero. The sup=0 hardcode + sup=0-only supp landing miss it.
+- **Fix must be SALES-SCOPED** (opt-in), NOT a change to the shared sup=0 default (that would risk
+  regressing the sealed 2026 land/improvement lanes). Resolve the sale's SupNum to the actual active
+  sup_num for its (prop_id, owner_tax_yr), and land supp for that sup_num — only in the sales path.
+
 ## Decision needed (do not seal until resolved)
 Options:
 (A) Fix the sale source to resolve the real active sup_num per (prop_id, owner_tax_yr) from
