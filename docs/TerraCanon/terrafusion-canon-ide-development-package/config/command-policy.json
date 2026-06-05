@@ -1,0 +1,83 @@
+{
+  "version": "0.1.0",
+  "allowed": [
+    {
+      "pattern": "pnpm run type-check",
+      "scope": "repo"
+    },
+    {
+      "pattern": "pnpm test",
+      "scope": "repo"
+    },
+    {
+      "pattern": "npm test",
+      "scope": "repo"
+    },
+    {
+      "pattern": "dotnet build backend/TerraFusion.sln",
+      "scope": "repo"
+    },
+    {
+      "pattern": "node --test *",
+      "scope": "repo"
+    },
+    {
+      "pattern": "git status",
+      "scope": "repo"
+    },
+    {
+      "pattern": "git diff *",
+      "scope": "repo"
+    },
+    {
+      "pattern": "rg *",
+      "scope": "repo"
+    }
+  ],
+  "requiresApproval": [
+    {
+      "pattern": "git push *",
+      "reason": "External mutation"
+    },
+    {
+      "pattern": "gh pr create *",
+      "reason": "External PR creation"
+    },
+    {
+      "pattern": "dotnet ef migrations add *",
+      "reason": "Schema mutation"
+    },
+    {
+      "pattern": "pnpm install *",
+      "reason": "Dependency mutation"
+    }
+  ],
+  "blocked": [
+    {
+      "pattern": "rm -rf *",
+      "reason": "Destructive filesystem operation"
+    },
+    {
+      "pattern": "curl * | sh",
+      "reason": "Remote code execution"
+    },
+    {
+      "pattern": "git reset --hard *",
+      "reason": "Destructive Git operation"
+    },
+    {
+      "pattern": "git clean -fdx *",
+      "reason": "Destructive cleanup"
+    },
+    {
+      "pattern": "* --force",
+      "reason": "Force operation requires explicit custom approval"
+    }
+  ],
+  "defaults": {
+    "timeoutSeconds": 600,
+    "captureStdout": true,
+    "captureStderr": true,
+    "redactOutput": true
+  }
+}

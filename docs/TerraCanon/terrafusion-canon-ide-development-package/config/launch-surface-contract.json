@@ -1,0 +1,57 @@
+{
+  "version": "0.1.0",
+  "surfaces": [
+    {
+      "launcher": "Desktop: Canon",
+      "targetId": "os-canon",
+      "surfaceType": "OS Feature",
+      "parcelRequired": false,
+      "sizing": "near-full-stage",
+      "owner": "OS Core",
+      "launchMethod": "activateModule"
+    },
+    {
+      "launcher": "Desktop: Pilot",
+      "targetId": "os-pilot",
+      "surfaceType": "OS Feature",
+      "parcelRequired": false,
+      "sizing": "near-full-stage",
+      "owner": "OS Core",
+      "launchMethod": "activateModule"
+    },
+    {
+      "launcher": "Desktop: Trace",
+      "targetId": "os-trace",
+      "surfaceType": "OS Feature",
+      "parcelRequired": false,
+      "sizing": "near-full-stage",
+      "owner": "OS Core",
+      "launchMethod": "activateModule"
+    },
+    {
+      "launcher": "Desktop: Workbench",
+      "targetId": "property-workbench",
+      "surfaceType": "Tier-0 OS Surface",
+      "parcelRequired": true,
+      "sizing": "maximized",
+      "owner": "OS Core",
+      "launchMethod": "activateModule"
+    },
+    {
+      "launcher": "Dock: Forge",
+      "targetId": "suite-forge",
+      "surfaceType": "Suite Workspace",
+      "parcelRequired": false,
+      "sizing": "near-full-stage",
+      "owner": "TerraForge",
+      "launchMethod": "activateModule"
+    }
+  ],
+  "redFlags": [
+    "OS feature launches with navigate() route and loses shell context",
+    "Dock contains utilities such as Clock, NotificationBell, SentinelChip",
+    "Property Workbench opens as default 1024x700 window",
+    "Parcel-scoped action opens standalone instead of Workbench tab",
+    "Existing functional component is represented by placeholder"
+  ]
+}

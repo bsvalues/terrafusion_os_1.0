@@ -1,0 +1,308 @@
+{
+  "package": "terrafusion-canon-ide-development-package",
+  "version": "0.1.0",
+  "prepared": "2026-06-05",
+  "fileCount": 75,
+  "files": [
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/canon-task.md",
+      "bytes": 597
+    },
+    {
+      "path": ".terrafusion/skills/executing-bounded-plans/SKILL.md",
+      "bytes": 242
+    },
+    {
+      "path": ".terrafusion/skills/finishing-a-terrafusion-branch/SKILL.md",
+      "bytes": 266
+    },
+    {
+      "path": ".terrafusion/skills/requesting-canon-review/SKILL.md",
+      "bytes": 313
+    },
+    {
+      "path": ".terrafusion/skills/sealing-evidence/SKILL.md",
+      "bytes": 221
+    },
+    {
+      "path": ".terrafusion/skills/truth-gate/SKILL.md",
+      "bytes": 351
+    },
+    {
+      "path": ".terrafusion/skills/using-canon/SKILL.md",
+      "bytes": 446
+    },
+    {
+      "path": ".terrafusion/skills/using-worktrees/SKILL.md",
+      "bytes": 193
+    },
+    {
+      "path": ".terrafusion/skills/writing-bounded-plans/SKILL.md",
+      "bytes": 237
+    },
+    {
+      "path": "README.md",
+      "bytes": 2082
+    },
+    {
+      "path": "apps/canon-desktop/README.md",
+      "bytes": 595
+    },
+    {
+      "path": "cli/tf-canon.ts",
+      "bytes": 1021
+    },
+    {
+      "path": "config/agent-profiles.json",
+      "bytes": 2143
+    },
+    {
+      "path": "config/canon-index.json",
+      "bytes": 4430
+    },
+    {
+      "path": "config/command-policy.json",
+      "bytes": 1594
+    },
+    {
+      "path": "config/engineering-write-lanes.json",
+      "bytes": 2872
+    },
+    {
+      "path": "config/gate-registry.json",
+      "bytes": 2155
+    },
+    {
+      "path": "config/launch-surface-contract.json",
+      "bytes": 1657
+    },
+    {
+      "path": "config/standalone-boundaries.json",
+      "bytes": 1244
+    },
+    {
+      "path": "docs/00_SOURCE_ANCHORS.md",
+      "bytes": 1797
+    },
+    {
+      "path": "docs/01_MASTER_DEVELOPMENT_PACKAGE.md",
+      "bytes": 3056
+    },
+    {
+      "path": "docs/02_ARCHITECTURE_DECISIONS.md",
+      "bytes": 1816
+    },
+    {
+      "path": "docs/03_API_CONTRACTS.md",
+      "bytes": 1866
+    },
+    {
+      "path": "docs/04_UI_SURFACE_SPEC.md",
+      "bytes": 2753
+    },
+    {
+      "path": "docs/05_EXECUTION_BACKLOG.md",
+      "bytes": 2071
+    },
+    {
+      "path": "docs/06_ACCEPTANCE_GATES.md",
+      "bytes": 1280
+    },
+    {
+      "path": "docs/07_SECURITY_AND_STANDALONE_BOUNDARIES.md",
+      "bytes": 1564
+    },
+    {
+      "path": "docs/08_CODEX_CLAUDE_PARITY_MATRIX.md",
+      "bytes": 1067
+    },
+    {
+      "path": "docs/09_AGENT_SKILLS.md",
+      "bytes": 688
+    },
+    {
+      "path": "examples/evidence-bundle.example.json",
+      "bytes": 539
+    },
+    {
+      "path": "examples/fix-os-canon-launch-drift.task.json",
+      "bytes": 909
+    },
+    {
+      "path": "frontend/os-canon/CanonAgentStack.tsx",
+      "bytes": 280
+    },
+    {
+      "path": "frontend/os-canon/CanonApprovalPanel.tsx",
+      "bytes": 240
+    },
+    {
+      "path": "frontend/os-canon/CanonDiffPanel.tsx",
+      "bytes": 235
+    },
+    {
+      "path": "frontend/os-canon/CanonGatePanel.tsx",
+      "bytes": 234
+    },
+    {
+      "path": "frontend/os-canon/CanonPlanPanel.tsx",
+      "bytes": 227
+    },
+    {
+      "path": "frontend/os-canon/CanonRulePanel.tsx",
+      "bytes": 270
+    },
+    {
+      "path": "frontend/os-canon/CanonTaskComposer.tsx",
+      "bytes": 259
+    },
+    {
+      "path": "frontend/os-canon/CanonTracePanel.tsx",
+      "bytes": 253
+    },
+    {
+      "path": "frontend/os-canon/CanonWorkbench.tsx",
+      "bytes": 1027
+    },
+    {
+      "path": "frontend/os-canon/os-canon.registration.example.tsx",
+      "bytes": 364
+    },
+    {
+      "path": "package.json",
+      "bytes": 342
+    },
+    {
+      "path": "runbooks/FIRST_VERTICAL_SLICE.md",
+      "bytes": 1227
+    },
+    {
+      "path": "runbooks/RELEASE_GATES.md",
+      "bytes": 800
+    },
+    {
+      "path": "runbooks/TRUTH_GATE.md",
+      "bytes": 824
+    },
+    {
+      "path": "schemas/agent-profile.schema.json",
+      "bytes": 861
+    },
+    {
+      "path": "schemas/canon-rule.schema.json",
+      "bytes": 1795
+    },
+    {
+      "path": "schemas/canon-task.schema.json",
+      "bytes": 1645
+    },
+    {
+      "path": "schemas/evidence-bundle.schema.json",
+      "bytes": 1600
+    },
+    {
+      "path": "schemas/gate-result.schema.json",
+      "bytes": 738
+    },
+    {
+      "path": "scripts/truth-gate.sh",
+      "bytes": 608
+    },
+    {
+      "path": "scripts/verify-package.mjs",
+      "bytes": 674
+    },
+    {
+      "path": "src/os-platform/agents/command-policy.ts",
+      "bytes": 1443
+    },
+    {
+      "path": "src/os-platform/agents/hooks.ts",
+      "bytes": 1427
+    },
+    {
+      "path": "src/os-platform/agents/permissions.ts",
+      "bytes": 970
+    },
+    {
+      "path": "src/os-platform/agents/task-runner.ts",
+      "bytes": 600
+    },
+    {
+      "path": "src/os-platform/agents/task-state-machine.ts",
+      "bytes": 1506
+    },
+    {
+      "path": "src/os-platform/agents/tool-runner.ts",
+      "bytes": 1349
+    },
+    {
+      "path": "src/os-platform/agents/worktree-manager.ts",
+      "bytes": 1091
+    },
+    {
+      "path": "src/os-platform/canon/canon-diff.ts",
+      "bytes": 685
+    },
+    {
+      "path": "src/os-platform/canon/canon-loader.ts",
+      "bytes": 639
+    },
+    {
+      "path": "src/os-platform/canon/canon-query.ts",
+      "bytes": 2598
+    },
+    {
+      "path": "src/os-platform/canon/canon-risk.ts",
+      "bytes": 1829
+    },
+    {
+      "path": "src/os-platform/canon/index.ts",
+      "bytes": 163
+    },
+    {
+      "path": "src/os-platform/canon/path-match.ts",
+      "bytes": 418
+    },
+    {
+      "path": "src/os-platform/canon/types.ts",
+      "bytes": 1849
+    },
+    {
+      "path": "src/os-platform/gates/gate-runner.ts",
+      "bytes": 1240
+    },
+    {
+      "path": "src/os-platform/gates/gate-types.ts",
+      "bytes": 549
+    },
+    {
+      "path": "src/os-platform/git/commit.ts",
+      "bytes": 465
+    },
+    {
+      "path": "src/os-platform/git/diff.ts",
+      "bytes": 499
+    },
+    {
+      "path": "src/os-platform/trace/evidence-writer.ts",
+      "bytes": 1299
+    },
+    {
+      "path": "src/os-platform/trace/redaction.ts",
+      "bytes": 607
+    },
+    {
+      "path": "src/os-platform/trace/trace-seal.ts",
+      "bytes": 293
+    },
+    {
+      "path": "tests/launch-surface-contract.test.mjs",
+      "bytes": 659
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 312
+    }
+  ]
+}

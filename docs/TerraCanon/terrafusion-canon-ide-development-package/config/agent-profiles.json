@@ -1,0 +1,106 @@
+{
+  "version": "0.1.0",
+  "agents": [
+    {
+      "agentId": "explorer",
+      "role": "Repository Explorer",
+      "permissions": [
+        "read",
+        "search",
+        "summarize"
+      ],
+      "blockedPermissions": [
+        "edit",
+        "command:write",
+        "git:write"
+      ],
+      "defaultModelClass": "fast"
+    },
+    {
+      "agentId": "planner",
+      "role": "Bounded Planner",
+      "permissions": [
+        "read",
+        "canon:query",
+        "risk:estimate"
+      ],
+      "blockedPermissions": [
+        "edit",
+        "command:write",
+        "git:write"
+      ],
+      "defaultModelClass": "reasoning"
+    },
+    {
+      "agentId": "implementer",
+      "role": "Approved File Implementer",
+      "permissions": [
+        "read",
+        "edit:approved",
+        "command:approved"
+      ],
+      "blockedPermissions": [
+        "edit:forbidden",
+        "git:push"
+      ],
+      "defaultModelClass": "reasoning"
+    },
+    {
+      "agentId": "reviewer",
+      "role": "Diff Reviewer",
+      "permissions": [
+        "read",
+        "diff",
+        "canon:risk",
+        "comment"
+      ],
+      "blockedPermissions": [
+        "edit",
+        "git:write"
+      ],
+      "defaultModelClass": "reasoning"
+    },
+    {
+      "agentId": "governor",
+      "role": "Canon Governor",
+      "permissions": [
+        "canon:block",
+        "approval:require",
+        "trace:seal"
+      ],
+      "blockedPermissions": [
+        "edit"
+      ],
+      "defaultModelClass": "reasoning"
+    },
+    {
+      "agentId": "fixer",
+      "role": "Targeted Gate Fixer",
+      "permissions": [
+        "read",
+        "edit:approved",
+        "command:approved"
+      ],
+      "blockedPermissions": [
+        "edit:forbidden",
+        "git:push"
+      ],
+      "defaultModelClass": "balanced"
+    },
+    {
+      "agentId": "git-agent",
+      "role": "Git and PR Operator",
+      "permissions": [
+        "git:status",
+        "git:diff",
+        "git:stage",
+        "git:commit",
+        "git:pr-draft"
+      ],
+      "blockedPermissions": [
+        "git:push-unapproved"
+      ],
+      "defaultModelClass": "fast"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@terrafusion/canon-ide-development-package",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "truth-gate": "bash scripts/truth-gate.sh",
+    "verify-package": "node scripts/verify-package.mjs",
+    "test:launch-surface": "node tests/launch-surface-contract.test.mjs"
+  },
+  "devDependencies": {}
+}
