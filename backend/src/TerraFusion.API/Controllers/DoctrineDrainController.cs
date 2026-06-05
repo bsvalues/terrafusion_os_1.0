@@ -435,6 +435,21 @@ public class DoctrineDrainController : ControllerBase
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
             var ownerTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
+            // OWNER-CURSOR (2026-06-05): keyset-paginate by prop_id so each bounded
+            // chunk covers NEW parcels instead of re-pulling the same TopN.  Mirrors
+            // the proven improvement/land/sales cursor pattern.  FullCorpus ignores it.
+            int? afterPropId = null;
+            if (!fullCorpus)
+            {
+                await _db.Database.ExecuteSqlRawAsync(
+                    "CREATE TABLE IF NOT EXISTS sync_bridge.drain_cursor (lane text PRIMARY KEY, last_prop_id integer NOT NULL DEFAULT 0)",
+                    cancellationToken).ConfigureAwait(false);
+                var curRows = await _db.Database
+                    .SqlQueryRaw<int>("SELECT COALESCE((SELECT last_prop_id FROM sync_bridge.drain_cursor WHERE lane = 'owner-wsdor'), 0) AS \"Value\"")
+                    .ToListAsync(cancellationToken).ConfigureAwait(false);
+                afterPropId = curRows.FirstOrDefault();
+            }
+
             // Stage 1: Owner-S1.
             Guid ownerS1BatchId;
             int ownerS1RowsLanded = 0;
@@ -445,8 +460,8 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full})", ownerTopN, fullCorpus);
-                var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN);
+                _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full}, afterPropId={Cur})", ownerTopN, fullCorpus, afterPropId);
+                var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN, afterPropId: afterPropId);
                 var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
                 batchIds.Add(ownerS1.LoadBatchId);
                 if (!IsCompleted(ownerS1.Status))
@@ -456,6 +471,21 @@ public class DoctrineDrainController : ControllerBase
                 ownerS1RowsLanded = ownerS1.RowsLanded;
                 rowsLanded = ownerS1RowsLanded;
                 await resume.CheckpointAsync("Owner-S1", batchIds, cancellationToken);
+
+                // Advance cursor to the max prop_id seeded this chunk.
+                if (!fullCorpus && afterPropId.HasValue && ownerS1RowsLanded > 0)
+                {
+                    var maxSeeded = await _db.LegacyPacsRawOwners.AsNoTracking()
+                        .Where(o => o.LoadBatchId == ownerS1BatchId)
+                        .MaxAsync(o => (int?)o.PropId, cancellationToken).ConfigureAwait(false);
+                    if (maxSeeded.HasValue)
+                    {
+                        await _db.Database.ExecuteSqlRawAsync(
+                            "INSERT INTO sync_bridge.drain_cursor (lane, last_prop_id) VALUES ('owner-wsdor', {0}) ON CONFLICT (lane) DO UPDATE SET last_prop_id = EXCLUDED.last_prop_id",
+                            new object[] { maxSeeded.Value }, cancellationToken).ConfigureAwait(false);
+                        _logger.LogInformation("[Drain:owner-wsdor] cursor advanced to prop_id={Max}", maxSeeded.Value);
+                    }
+                }
             }
 
             // Reload owner rows from the (always-present) Owner-S1 batch
