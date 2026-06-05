@@ -1,0 +1,43 @@
+{
+  "version": "0.1.0",
+  "effectiveDate": "2026-06-05",
+  "note": "Intentionally small engineering write-lane seed (MVP). Each owner controls a set of source-code path patterns with a risk level, required gates, and manual-review policy. Expand later; do not bulk-import the whole repo.",
+  "lanes": [
+    {
+      "owner": "os-shell",
+      "paths": [
+        "frontend/apps/os-shell/src/config/**",
+        "frontend/apps/os-shell/src/shell/**",
+        "frontend/apps/os-shell/src/orchestration/**",
+        "frontend/apps/os-shell/src/stores/**"
+      ],
+      "risk": "high",
+      "requiredGates": ["typecheck", "launch-surface-contract"],
+      "manualReviewRequired": true
+    },
+    {
+      "owner": "os-canon",
+      "paths": [
+        "frontend/apps/os-shell/src/canon/**",
+        "frontend/apps/os-shell/src/modules/os-canon/**"
+      ],
+      "risk": "medium",
+      "requiredGates": ["typecheck", "canon-query"],
+      "manualReviewRequired": false
+    },
+    {
+      "owner": "canon-runtime",
+      "paths": ["os-platform/core/canon/**"],
+      "risk": "high",
+      "requiredGates": ["canon-query", "typecheck"],
+      "manualReviewRequired": true
+    },
+    {
+      "owner": "canon-docs",
+      "paths": ["docs/TerraCanon/**"],
+      "risk": "low",
+      "requiredGates": [],
+      "manualReviewRequired": false
+    }
+  ]
+}
