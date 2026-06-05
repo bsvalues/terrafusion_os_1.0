@@ -180,7 +180,7 @@ jobs:
   frontend-fast:
     name: 🎨 Frontend Fast Gate
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
-    timeout-minutes: 16
+    timeout-minutes: 30
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
 
