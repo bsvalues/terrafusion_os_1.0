@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-06-05T17:37:32.167Z",
+  "checkedAt": "2026-06-05T22:39:04.573Z",
   "slice": "county-studio-r1-production-proof",
-  "status": "PASS",
-  "decision": "COUNTY_STUDIO_R1_RUNTIME_PRODUCTION_PROOF_READY",
+  "status": "FAIL",
+  "decision": "COUNTY_STUDIO_R1_PRODUCTION_PROOF_BLOCKED",
   "scope": {
     "included": [
       "County Studio",
@@ -259,7 +259,7 @@
       "passed": true,
       "detail": "No mock/stub/fixture/fake/sample-data markers in County Studio production paths.",
       "payload": {
-        "scannedFiles": 46,
+        "scannedFiles": 47,
         "hits": []
       },
       "proof": [
@@ -289,8 +289,75 @@
       },
       "proof": [
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudioInvariants.ts:1",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:132",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:137",
         "frontend/apps/os-shell/src/pages/forge/county-studio/utils/cityPrimarySanitizer.ts:1"
+      ]
+    },
+    {
+      "id": "gis-contract.embedded-atlas-primary-center-surface",
+      "passed": true,
+      "detail": "missingEmbeddedTokens=0, commandCenterEmbeds=true, atlasGeometryContracts=3, popOutOnly=false, countyStudioGisWriteHits=0",
+      "payload": {
+        "requiredEmbeddedTokens": [
+          "county-studio-atlas-workspace",
+          "county-studio-embedded-atlas-canvas",
+          "primary-center-surface",
+          "useAtlasMapData",
+          "GeoForgeV2Map",
+          "AtlasOverlayManager",
+          "Parcels",
+          "Parcel boundaries",
+          "Neighborhoods",
+          "County segments",
+          "Reval areas",
+          "Taxing districts",
+          "Layer configuration",
+          "Valuation risk",
+          "Ratio / COD / PRD risk",
+          "Comparable sales clusters",
+          "Model groups",
+          "Value tiers",
+          "CAMA characteristic anomalies",
+          "Segment health",
+          "activateModule('property-workbench'",
+          "initialTab: 'atlas'",
+          "forge: 'parcel-valuation'",
+          "dossier: 'evidence'"
+        ],
+        "missingEmbeddedTokens": [],
+        "commandCenterEmbeds": true,
+        "atlasGeometryContracts": [
+          "fetchAtlasCompatibilityMapData",
+          "fetchGeoForgeCompatibilityOutlines",
+          "fetchGeoForgeCompatibilityParcels"
+        ],
+        "popOutOnly": false,
+        "countyStudioGisWriteHits": [],
+        "ownership": {
+          "terraAtlas": [
+            "geometry",
+            "layers",
+            "symbology",
+            "boundaries",
+            "annotations",
+            "bookmarks",
+            "neighborhood definitions"
+          ],
+          "terraForge": [
+            "valuation risk overlay",
+            "ratio/COD/PRD context",
+            "model groups",
+            "value tiers",
+            "segment health"
+          ]
+        }
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:245",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:7",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:190",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:220"
       ]
     },
     {
@@ -358,39 +425,232 @@
     },
     {
       "id": "runtime.screenshot-contract-ready",
-      "passed": true,
-      "detail": "missingVisibleSignals=0, cityRollupsVisible=false, consoleErrors=0",
+      "passed": false,
+      "detail": "missingVisibleSignals=0, disallowedVisibleHits=1, embeddedCanvasCount=1, mapCanvasCount=1, consoleErrors=42",
       "payload": {
         "mode": "runtime",
-        "url": "http://127.0.0.1:5176/forge/county-studio",
+        "url": "http://127.0.0.1:5177/forge/county-studio",
         "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
         "requiredVisibleSignals": [
           "County Studio",
-          "Risk Surfaces",
-          "Unified Risk Ledger"
+          "Embedded TerraAtlas GIS",
+          "TerraAtlas-owned layers",
+          "Forge-owned overlays",
+          "Unified Risk Ledger",
+          "Parcels",
+          "Parcel boundaries",
+          "Valuation risk"
         ],
         "missingVisibleSignals": [],
-        "cityRollupsVisible": false,
-        "consoleErrors": []
+        "disallowedVisibleSignals": [
+          "City Rollups",
+          "Mapbox token missing",
+          "Atlas map data unavailable",
+          "map-unavailable",
+          "ATLAS DISCONNECTED"
+        ],
+        "disallowedVisibleHits": ["ATLAS DISCONNECTED"],
+        "embeddedCanvasCount": 1,
+        "mapCanvasCount": 1,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        ]
       },
       "proof": [
         "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png"
       ]
     }
   ],
-  "failures": [],
+  "failures": [
+    {
+      "id": "runtime.screenshot-contract-ready",
+      "passed": false,
+      "detail": "missingVisibleSignals=0, disallowedVisibleHits=1, embeddedCanvasCount=1, mapCanvasCount=1, consoleErrors=42",
+      "payload": {
+        "mode": "runtime",
+        "url": "http://127.0.0.1:5177/forge/county-studio",
+        "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
+        "requiredVisibleSignals": [
+          "County Studio",
+          "Embedded TerraAtlas GIS",
+          "TerraAtlas-owned layers",
+          "Forge-owned overlays",
+          "Unified Risk Ledger",
+          "Parcels",
+          "Parcel boundaries",
+          "Valuation risk"
+        ],
+        "missingVisibleSignals": [],
+        "disallowedVisibleSignals": [
+          "City Rollups",
+          "Mapbox token missing",
+          "Atlas map data unavailable",
+          "map-unavailable",
+          "ATLAS DISCONNECTED"
+        ],
+        "disallowedVisibleHits": ["ATLAS DISCONNECTED"],
+        "embeddedCanvasCount": 1,
+        "mapCanvasCount": 1,
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        ]
+      },
+      "proof": [
+        "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png"
+      ]
+    }
+  ],
   "runtime": {
     "mode": "runtime",
-    "url": "http://127.0.0.1:5176/forge/county-studio",
+    "url": "http://127.0.0.1:5177/forge/county-studio",
     "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
     "requiredVisibleSignals": [
       "County Studio",
-      "Risk Surfaces",
-      "Unified Risk Ledger"
+      "Embedded TerraAtlas GIS",
+      "TerraAtlas-owned layers",
+      "Forge-owned overlays",
+      "Unified Risk Ledger",
+      "Parcels",
+      "Parcel boundaries",
+      "Valuation risk"
     ],
     "missingVisibleSignals": [],
-    "cityRollupsVisible": false,
-    "consoleErrors": []
+    "disallowedVisibleSignals": [
+      "City Rollups",
+      "Mapbox token missing",
+      "Atlas map data unavailable",
+      "map-unavailable",
+      "ATLAS DISCONNECTED"
+    ],
+    "disallowedVisibleHits": ["ATLAS DISCONNECTED"],
+    "embeddedCanvasCount": 1,
+    "mapCanvasCount": 1,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    ]
   },
   "tooling": {
     "cli": [

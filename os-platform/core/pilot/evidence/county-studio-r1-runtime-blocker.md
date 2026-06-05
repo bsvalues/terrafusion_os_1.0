@@ -1,6 +1,6 @@
 # County Studio R1 Runtime Blocker
 
-Checked: 2026-06-05T21:49:15.117Z
+Checked: 2026-06-05T22:37:08.611Z
 
 ## Status Split
 
@@ -62,6 +62,28 @@ System.TimeoutException: Timeout during reading attempt
 ```
 
 The direct study-load path could not complete because backend reads against database `terrafusion` timed out before County Studio could load an active study.
+
+## Refined Runtime Diagnosis
+
+Additional runtime diagnostics confirmed this is not a County Studio UI defect and not a proof-gate defect:
+
+```text
+127.0.0.1:5432 / [::]:5432 listener: com.docker.backend.exe
+Docker Desktop API: unhealthy
+Docker API proxy failure: dialing 192.168.65.7:2376: no route to host / context deadline exceeded
+Direct psql to 127.0.0.1:5432: TCP opens, PostgreSQL protocol handshake times out
+```
+
+Native PostgreSQL is also installed and running, but it is not the active TerraFusion runtime database for this proof:
+
+```text
+postgresql-x64-17 data dir: C:\Program Files\PostgreSQL\17\data
+native PostgreSQL port: 5433
+native PostgreSQL databases: postgres, template0, template1
+native terrafusion database: missing
+```
+
+Therefore, redirecting County Studio to native `5433` would not prove production runtime. It would require database creation/seeding, which is explicitly outside this County Studio lane and would violate the separation from the DB/seeding owner.
 
 ## Ownership Boundary
 
