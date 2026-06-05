@@ -103,15 +103,28 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                 "all three source batches COMPLETED", cancellationToken)
                 .ConfigureAwait(false);
 
-            // ── Idempotency: clear prior truth rows for this owner batch. ──
-            var priorRows = await _db.TruthPacsOwnerCurrents
-                .Where(t => t.OwnerLoadBatchId == ownerLoadBatchId)
+            // ── Iterate the owner batch and project. ──
+            var ownerRows = await _db.LegacyPacsRawOwners
+                .Where(o => o.LoadBatchId == ownerLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
+
+            // ── Idempotency: clear prior truth rows by NATURAL KEY (the
+            //    parcel-years this batch covers), NOT by OwnerLoadBatchId.
+            //    Batch-scoped clearing never removed rows promoted under an
+            //    earlier batch, so re-draining the same parcels duplicated owner
+            //    truth (observed 2.01x on owner_current). Same root cause + fix as
+            //    the improvement (76027e412) / land (bfe989350) / sales (7f635489f)
+            //    promoters. Re-promoting a (PropId, OwnerTaxYr) replaces ALL its
+            //    owner rows (co-ownership is multi-row per parcel-year), so clearing
+            //    by the parcel-year set makes re-drains idempotent. ──
+            var batchPropIds = ownerRows.Select(o => o.PropId).Distinct().ToList();
+            var batchYears = ownerRows.Select(o => o.OwnerTaxYr).Distinct().ToList();
+            var priorRowsRemoved = 0;
+            if (batchPropIds.Count > 0)
             {
-                _db.TruthPacsOwnerCurrents.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                priorRowsRemoved = await _db.TruthPacsOwnerCurrents
+                    .Where(t => batchPropIds.Contains(t.PropId) && batchYears.Contains(t.OwnerTaxYr))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             // ── Build supp pointer index from supp batch. ──
@@ -133,11 +146,6 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                 .ToDictionary(
                     g => g.Key,
                     g => g.OrderBy(r => r.LandedAt).First());
-
-            // ── Iterate the owner batch and project. ──
-            var ownerRows = await _db.LegacyPacsRawOwners
-                .Where(o => o.LoadBatchId == ownerLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
             var considered = ownerRows.Count;
             var promoted = 0;

@@ -88,15 +88,25 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
             await RecordSourceBatchGateAsync(batch, "PASS",
                 "both source batches COMPLETED", cancellationToken).ConfigureAwait(false);
 
-            // Idempotency: clear prior truth rows for this wpov batch.
-            var priorRows = await _db.TruthPacsWashPropOwnerVals
-                .Where(t => t.WpovLoadBatchId == wpovLoadBatchId)
+            // Iterate wpov rows.
+            var wpovRows = await _db.LegacyPacsRawWashPropOwnerVals
+                .Where(w => w.LoadBatchId == wpovLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
+
+            // Idempotency: clear prior truth rows by NATURAL KEY (the parcel-years
+            // this batch covers), NOT by WpovLoadBatchId. Batch-scoped clearing never
+            // removed rows promoted under an earlier batch → re-draining duplicated
+            // WSDOR truth. Same root cause + fix as the owner/improvement/land/sales
+            // promoters. WPOV is one row per (PropId, PropValYr, SupNum); clearing the
+            // parcel-year set makes re-drains idempotent.
+            var batchPropIds = wpovRows.Select(w => w.PropId).Distinct().ToList();
+            var batchYears = wpovRows.Select(w => w.PropValYr).Distinct().ToList();
+            var priorRowsRemoved = 0;
+            if (batchPropIds.Count > 0)
             {
-                _db.TruthPacsWashPropOwnerVals.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                priorRowsRemoved = await _db.TruthPacsWashPropOwnerVals
+                    .Where(t => batchPropIds.Contains(t.PropId) && batchYears.Contains(t.PropValYr))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             // Build supp pointer index from supp batch.
@@ -108,11 +118,6 @@ public sealed class PacsWashPropOwnerValTruthPromoter : IPacsWashPropOwnerValTru
                 .ToDictionary(
                     g => g.Key,
                     g => g.OrderBy(r => r.LandedAt).First());
-
-            // Iterate wpov rows.
-            var wpovRows = await _db.LegacyPacsRawWashPropOwnerVals
-                .Where(w => w.LoadBatchId == wpovLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
             var considered = wpovRows.Count;
             var promoted = 0;
