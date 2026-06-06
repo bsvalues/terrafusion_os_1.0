@@ -367,7 +367,7 @@ describe('ObjectInspector — Action tab', () => {
     expect(screen.getByTestId('inspector-action-error')).toBeInTheDocument();
   });
 
-  it('Pop Out Map opens the atlas-live pop-out route for the same study session', async () => {
+  it('Open in TerraAtlas opens the atlas-live route for the same study session', async () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
@@ -385,7 +385,7 @@ describe('ObjectInspector — Action tab', () => {
     expect(params.get('city')).toBeNull();
   });
 
-  it('Pop Out Map preserves risk-surface reval context without a city query param', async () => {
+  it('Open in TerraAtlas preserves risk-surface reval context without a city query param', async () => {
     state.detail = baseDetail({ neighborhoodCode: 'NBHD-RISK', revalArea: 7, city: 'Kennewick' });
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');

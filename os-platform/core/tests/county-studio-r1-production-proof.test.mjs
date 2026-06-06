@@ -141,3 +141,14 @@ test('runtime proof matches visible GIS contract labels case-insensitively', () 
   assert.match(source, /signal\.toLowerCase\(\)/);
   assert.match(source, /bodyTextLower\.includes/);
 });
+
+test('runtime proof requires Prometheus command-surface signals and risk map labels', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /Living County Risk Map/);
+  assert.match(source, /Roll Readiness/);
+  assert.match(source, /Selected Risk Object/);
+  assert.match(source, /Operational Focus/);
+  assert.match(source, /prometheus-risk-map-label/);
+  assert.match(source, /prometheusRiskLabelCount > 0/);
+});

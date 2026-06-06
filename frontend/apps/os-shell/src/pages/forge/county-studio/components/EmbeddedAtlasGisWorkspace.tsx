@@ -13,25 +13,8 @@ import type { CountySegmentDto } from '../types/countyStudio.types';
 const BENTON_COMPATIBILITY_CENTER: [number, number] = [-119.3, 46.25];
 const BENTON_COMPATIBILITY_ZOOM = 10;
 
-const atlasOwnedLayers = [
-  'Parcels',
-  'Parcel boundaries',
-  'Neighborhoods',
-  'County segments',
-  'Reval areas',
-  'Taxing districts',
-  'Layer configuration',
-];
-
-const forgeOwnedOverlays = [
-  'Valuation risk',
-  'Ratio / COD / PRD risk',
-  'Comparable sales clusters',
-  'Model groups',
-  'Value tiers',
-  'CAMA characteristic anomalies',
-  'Segment health',
-];
+const atlasLayerSummary = 'Parcels, Parcel boundaries, Neighborhoods, County segments, Reval areas, Taxing districts, Layer configuration';
+const forgeOverlaySummary = 'Valuation risk, Ratio / COD / PRD risk, Comparable sales clusters, Model groups, Value tiers, CAMA characteristic anomalies, Segment health';
 
 export const COUNTY_STUDIO_ATLAS_ACTIVE_LAYERS = [
   'parcels',
@@ -50,11 +33,31 @@ export type CountyStudioAtlasViewport = {
   zoom: number;
 };
 
+interface PrometheusRoleLensView {
+  label: string;
+  mapLens: string;
+  posture: string;
+}
+
+function riskLevel(score: number): 'Critical' | 'High' | 'Medium' | 'Low' {
+  if (score >= 75) return 'Critical';
+  if (score >= 60) return 'High';
+  if (score >= 35) return 'Medium';
+  return 'Low';
+}
+
 function riskColor(score: number): string {
   if (score >= 75) return 'crimson';
   if (score >= 60) return 'darkorange';
   if (score >= 35) return 'royalblue';
   return 'seagreen';
+}
+
+function riskChromeColor(score: number): string {
+  if (score >= 75) return 'hsl(var(--tf-danger, 0 84% 60%))';
+  if (score >= 60) return 'hsl(var(--tf-warning, 38 92% 50%))';
+  if (score >= 35) return 'hsl(var(--tf-accent, 217 91% 60%))';
+  return 'hsl(var(--tf-success, 142 71% 45%))';
 }
 
 function strongestSegmentForNeighborhood(
@@ -87,9 +90,10 @@ function buildAtlasScope(): AtlasRouteScope {
 
 interface EmbeddedAtlasGisWorkspaceProps {
   onViewportChange?: (viewport: CountyStudioAtlasViewport) => void;
+  roleLens?: PrometheusRoleLensView;
 }
 
-export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGisWorkspaceProps = {}) {
+export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: EmbeddedAtlasGisWorkspaceProps = {}) {
   const {
     activeStudy,
     segments,
@@ -248,14 +252,24 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGis
     : countyContext
       ? 'Atlas geometry scope connected; county geometry unpublished'
       : 'Atlas geometry scope loading';
+  const topRiskSegments = useMemo(
+    () => [...segments].sort((a, b) => b.riskScore - a.riskScore).slice(0, 3),
+    [segments],
+  );
+  const activeLens = roleLens ?? {
+    label: 'Roll Readiness',
+    mapLens: 'Roll Readiness',
+    posture: 'Benton County valuation health is being operated here.',
+  };
+  const disconnected = syncState === 'DISCONNECTED' || !countyContext;
 
   return (
     <section
       data-testid="county-studio-atlas-workspace"
       aria-label="Embedded TerraAtlas GIS valuation workspace"
       style={{
-        height: 'clamp(360px, 40vh, 480px)',
-        minHeight: 360,
+        height: 'clamp(300px, 33vh, 420px)',
+        minHeight: 300,
         display: 'block',
         borderBottom: '1px solid hsl(var(--tf-border))',
         background: 'hsl(var(--tf-bg))',
@@ -266,7 +280,7 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGis
         data-testid="county-studio-embedded-atlas-canvas"
         data-layout-role="primary-center-surface"
         data-atlas-connected={countyContext ? 'true' : 'false'}
-        style={{ position: 'relative', height: '100%', minHeight: 360, overflow: 'hidden' }}
+        style={{ position: 'relative', height: '100%', minHeight: 300, overflow: 'hidden' }}
       >
         <GeoForgeV2Map
           mapRef={mapRef}
@@ -284,6 +298,7 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGis
         <AtlasOverlayManager map={liveMap} />
 
         <div
+          data-testid="prometheus-map-chrome"
           style={{
             position: 'absolute',
             top: 12,
@@ -298,31 +313,85 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGis
         >
           <div
             style={{
-              padding: '9px 11px',
+              padding: '8px 10px',
               border: '1px solid hsl(var(--tf-border))',
               background: 'hsl(var(--tf-bg) / 0.82)',
               color: 'hsl(var(--tf-fg))',
               backdropFilter: 'blur(8px)',
               borderRadius: 4,
-              maxWidth: 520,
+              maxWidth: 620,
+              maxHeight: 92,
+              overflow: 'hidden',
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 900 }}>Embedded TerraAtlas GIS</div>
-            <div style={{ marginTop: 3, fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
-              {geometryStatus} · Forge valuation risk overlays are read-only feature-state projections.
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, fontWeight: 900 }}>Living County Risk Map</span>
+              <span style={{ fontSize: 10, fontWeight: 900, color: 'hsl(var(--tf-accent, 217 91% 60%))' }}>
+                {activeLens.mapLens}
+              </span>
+              <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Embedded TerraAtlas GIS</span>
+            </div>
+            <div
+              style={{
+                marginTop: 4,
+                fontSize: 10,
+                color: 'hsl(var(--tf-muted))',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {geometryStatus} · Atlas owns GIS truth · TerraAtlas-owned layers: Parcels · Parcel boundaries · Taxing districts · Forge-owned overlays: Valuation risk · Ratio / COD / PRD risk
+            </div>
+            {disconnected && (
+              <div
+                data-testid="prometheus-atlas-degraded-state"
+                style={{ marginTop: 5, fontSize: 10, color: 'hsl(var(--tf-warning, 38 92% 50%))' }}
+              >
+                Degraded mode: Atlas is disconnected or loading; ledger and inspector remain usable, live spatial proof is unavailable.
+              </div>
+            )}
+            <div style={{ marginTop: 6, display: 'flex', gap: 5, flexWrap: 'wrap', fontSize: 10 }}>
+              {(['Critical', 'High', 'Medium', 'Low'] as const).map((level) => (
+                <span
+                  key={level}
+                  style={{
+                    padding: '2px 5px',
+                    border: '1px solid hsl(var(--tf-border))',
+                    borderRadius: 4,
+                    background: 'hsl(var(--tf-bg) / 0.68)',
+                    color: level === 'Critical'
+                      ? 'hsl(var(--tf-danger, 0 84% 60%))'
+                      : level === 'High'
+                        ? 'hsl(var(--tf-warning, 38 92% 50%))'
+                        : level === 'Medium'
+                          ? 'hsl(var(--tf-accent, 217 91% 60%))'
+                          : 'hsl(var(--tf-success, 142 71% 45%))',
+                    fontWeight: 900,
+                  }}
+                >
+                  {level}
+                </span>
+              ))}
             </div>
             {scopeMessage && (
-              <div data-testid="county-studio-atlas-scope-message" style={{ marginTop: 5, fontSize: 10, color: 'hsl(var(--tf-warning, 38 92% 50%))' }}>
+              <div
+                data-testid="county-studio-atlas-scope-message"
+                style={{
+                  marginTop: 5,
+                  fontSize: 10,
+                  color: 'hsl(var(--tf-warning, 38 92% 50%))',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {scopeMessage}
               </div>
             )}
-            <div style={{ marginTop: 7, display: 'grid', gap: 3, fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
-              <span>
-                <strong style={{ color: 'hsl(var(--tf-fg))' }}>TerraAtlas-owned layers:</strong> {atlasOwnedLayers.join(', ')}
-              </span>
-              <span>
-                <strong style={{ color: 'hsl(var(--tf-fg))' }}>Forge-owned overlays:</strong> {forgeOwnedOverlays.join(', ')}
-              </span>
+            <div style={{ marginTop: 4, display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+              <span title={atlasLayerSummary}>TerraAtlas owns GIS artifacts.</span>
+              <span title={forgeOverlaySummary}>Forge overlays valuation risk.</span>
             </div>
           </div>
           <div
@@ -340,6 +409,35 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange }: EmbeddedAtlasGis
             ATLAS {syncState}
           </div>
         </div>
+
+        {topRiskSegments.map((segment, index) => (
+          <div
+            key={segment.segmentId}
+            data-testid="prometheus-risk-map-label"
+            style={{
+              position: 'absolute',
+              top: `${96 + index * 46}px`,
+              left: `${72 + index * 128}px`,
+              maxWidth: 230,
+              padding: '6px 8px',
+              border: `1px solid ${riskChromeColor(segment.riskScore)}`,
+              borderRadius: 4,
+              background: 'hsl(var(--tf-bg) / 0.84)',
+              color: 'hsl(var(--tf-fg))',
+              boxShadow: '0 10px 24px hsl(var(--tf-bg) / 0.22)',
+              backdropFilter: 'blur(8px)',
+              fontSize: 10,
+              pointerEvents: 'none',
+            }}
+          >
+            <div style={{ fontWeight: 900, color: riskChromeColor(segment.riskScore) }}>
+              {riskLevel(segment.riskScore)} · Neighborhood {segment.geographyRef ?? 'unassigned'}
+            </div>
+            <div style={{ marginTop: 2, color: 'hsl(var(--tf-muted))' }}>
+              {activeLens.mapLens} · COD {segment.cod?.toFixed(1) ?? 'n/a'} · PRD {segment.prd?.toFixed(3) ?? 'n/a'}
+            </div>
+          </div>
+        ))}
 
         {(loading || error) && (
           <div

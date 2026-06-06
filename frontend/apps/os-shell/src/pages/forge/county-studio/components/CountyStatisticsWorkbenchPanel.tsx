@@ -612,7 +612,7 @@ function StatisticsCompatContractPanel({
     <Card data-material="bento" data-testid="statistics-compat-contract-panel">
       <CardHeader>
         <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          statistics_ratio_study_compat_v1
+          Ratio Study Evidence Contract
           <Badge variant={mismatches.length === 0 && compat ? 'default' : 'secondary'}>
             {parityStatus}
           </Badge>
@@ -979,7 +979,7 @@ export function CountyStatisticsWorkbenchPanel() {
                 </CardHeader>
                 <CardContent>
                   The Benton-certified market reference lane is withheld for this county. Statistics
-                  Compat will not substitute Benton market data for a non-certified county scope.
+                  evidence will not substitute Benton market data for a non-certified county scope.
                 </CardContent>
               </Card>
             ) : null}
@@ -990,7 +990,7 @@ export function CountyStatisticsWorkbenchPanel() {
                 </CardHeader>
                 <CardContent>
                   {certifiedMarketReferenceLane.label} is displayed as context only and is excluded
-                  from Statistics Compat parity and County Studio superset proof.
+                  from Study Analytics parity and County Studio superset proof.
                 </CardContent>
               </Card>
             ) : null}
@@ -1079,13 +1079,13 @@ export function CountyStatisticsWorkbenchPanel() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Statistics Compat</h2>
-            <Badge variant="secondary">statistics_ratio_study_compat_v1</Badge>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Study Analytics</h2>
+            <Badge variant="secondary">Ratio Study Evidence</Badge>
           </div>
           <p style={{ margin: 0, fontSize: 12, color: 'hsl(var(--tf-muted))', lineHeight: 1.5 }}>
             Same-population ratio-study lens for {activeStudy.countyName ?? activeStudy.countyId}.
             Operational Health remains a separate segment-set rollup, and Statistics Studio stays
-            visible until this compat contract is proven against live data.
+            visible until this ratio-study contract is proven against live data.
           </p>
         </div>
         <StatSummaryCard

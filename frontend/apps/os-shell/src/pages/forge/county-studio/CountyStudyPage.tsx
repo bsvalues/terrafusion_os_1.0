@@ -136,7 +136,14 @@ export function CountyStudyPage() {
   }, [segmentSeverityFilter, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - var(--tf-county-studio-dock-safe-area, 170px))',
+        minHeight: 0,
+      }}
+    >
       {/* Top Bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -196,12 +203,13 @@ export function CountyStudyPage() {
                 fontWeight: 600,
               }}
             >
-              Statistics Compat
+              Study Analytics
             </button>
           </div>
           {activeStudy && (
             <button
-              aria-label="Pop Out Map"
+              aria-label="Open in TerraAtlas"
+              data-testid="county-studio-open-terraatlas"
               onClick={handleOpenAtlas}
               style={{
                 padding: '4px 10px', borderRadius: 4, border: '1px solid hsl(var(--tf-border))',
@@ -209,7 +217,7 @@ export function CountyStudyPage() {
                 cursor: 'pointer', fontWeight: 600,
               }}
             >
-              ↗ Pop Out Map
+              Open in TerraAtlas
             </button>
           )}
           <button
@@ -244,7 +252,16 @@ export function CountyStudyPage() {
         </div>
       ) : (
         /* Body Grid — 3 columns */
-        <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '210px 1fr 360px',
+            flex: 1,
+            minHeight: 0,
+            paddingBottom: 0,
+            boxSizing: 'border-box',
+          }}
+        >
           <div data-testid="cs-left-rail" style={{ borderRight: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
             <LeftRail />
           </div>

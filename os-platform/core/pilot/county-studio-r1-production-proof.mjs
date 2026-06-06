@@ -303,7 +303,7 @@ function gisContractCheck() {
     'fetchGeoForgeCompatibilityParcels',
   ].filter((token) => atlasLiveApi.includes(token));
   const popOutOnly =
-    countyPage.includes('Pop Out Map')
+    countyPage.includes('Open in TerraAtlas')
     && !riskSurface.includes('EmbeddedAtlasGisWorkspace')
     && !embeddedAtlas.includes('county-studio-embedded-atlas-canvas');
   const countyStudioFiles = listFiles('frontend/apps/os-shell/src/pages/forge/county-studio', (rel) =>
@@ -440,7 +440,7 @@ async function runtimeCheck(options) {
       {
         mode: 'skipped',
         command: 'node os-platform/core/pilot/county-studio-r1-production-proof.mjs --runtime-url http://127.0.0.1:5175/forge/county-studio',
-        requiredVisibleSignals: ['County Studio', 'Embedded TerraAtlas GIS', 'Unified Risk Ledger'],
+        requiredVisibleSignals: ['County Studio', 'Embedded TerraAtlas GIS', 'Living County Risk Map', 'Roll Readiness', 'Operational Focus', 'Selected Risk Object', 'Unified Risk Ledger'],
       },
       ['os-platform/core/pilot/ops/june10-benton-uat-screenshot-checklist-2026-05-13.md'],
     );
@@ -516,6 +516,10 @@ async function runtimeCheck(options) {
       'Embedded TerraAtlas GIS',
       'TerraAtlas-owned layers',
       'Forge-owned overlays',
+      'Living County Risk Map',
+      'Roll Readiness',
+      'Selected Risk Object',
+      'Operational Focus',
       'Unified Risk Ledger',
       'Parcels',
       'Parcel boundaries',
@@ -554,6 +558,7 @@ async function runtimeCheck(options) {
     const bodyTextLower = bodyText.toLowerCase();
     const embeddedCanvasCount = await page.locator('[data-testid="county-studio-embedded-atlas-canvas"]').count();
     const mapCanvasCount = await page.locator('[data-testid="county-studio-embedded-atlas-canvas"] canvas').count();
+    const prometheusRiskLabelCount = await page.locator('[data-testid="prometheus-risk-map-label"]').count();
     const segmentCount = extractVisibleCount(bodyText, 'segments');
     const riskObjectCount = extractVisibleCount(bodyText, 'risk objects');
     const atlasLiveVisible = bodyText.includes('ATLAS LIVE');
@@ -581,12 +586,49 @@ async function runtimeCheck(options) {
       const stage = rectFor('[data-testid="county-studio-gis-stage"]');
       const analytics = rectFor('[data-testid="county-studio-bottom-analytics"]');
       const rightRail = rectFor('[data-testid="cs-right-rail"]');
+      const commandSurface = rectFor('[data-testid="cs-drill-panel"]');
+      const visibleWithin = (rect, clip) => {
+        if (!rect || !clip) return rect;
+        return {
+          ...rect,
+          top: Math.max(rect.top, clip.top),
+          right: Math.min(rect.right, clip.right),
+          bottom: Math.min(rect.bottom, clip.bottom),
+          left: Math.max(rect.left, clip.left),
+          width: Math.max(0, Math.min(rect.right, clip.right) - Math.max(rect.left, clip.left)),
+          height: Math.max(0, Math.min(rect.bottom, clip.bottom) - Math.max(rect.top, clip.top)),
+        };
+      };
+      const visibleAnalytics = visibleWithin(analytics, commandSurface);
+      const dock = Array.from(document.querySelectorAll('[role="navigation"]'))
+        .map((node) => {
+          const style = window.getComputedStyle(node);
+          const rect = node.getBoundingClientRect();
+          return {
+            node,
+            style,
+            rect: {
+              top: rect.top,
+              right: rect.right,
+              bottom: rect.bottom,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height,
+            },
+          };
+        })
+        .find((entry) => entry.style.position === 'fixed' && entry.rect.bottom > window.innerHeight - 140)?.rect ?? null;
       return {
         stage,
         analytics,
+        visibleAnalytics,
         rightRail,
+        commandSurface,
+        dock,
         mapDoesNotOverlapAnalytics: Boolean(stage && analytics && !overlaps(stage, analytics)),
         mapDoesNotOverlapRightRail: Boolean(stage && rightRail && !overlaps(stage, rightRail)),
+        dockDoesNotOverlapCommandSurface: Boolean(!dock || (commandSurface && !overlaps(dock, commandSurface))),
+        dockDoesNotOverlapBottomQueue: Boolean(!dock || (visibleAnalytics && !overlaps(dock, visibleAnalytics))),
       };
     });
     await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -598,6 +640,7 @@ async function runtimeCheck(options) {
         && disallowedVisibleHits.length === 0
         && embeddedCanvasCount > 0
         && mapCanvasCount > 0
+        && prometheusRiskLabelCount > 0
         && atlasLiveVisible
         && studyOpenVisible
         && segmentCount > 0
@@ -605,8 +648,10 @@ async function runtimeCheck(options) {
         && !loadingHealthMetricsVisible
         && layoutGeometry.mapDoesNotOverlapAnalytics
         && layoutGeometry.mapDoesNotOverlapRightRail
+        && layoutGeometry.dockDoesNotOverlapCommandSurface
+        && layoutGeometry.dockDoesNotOverlapBottomQueue
         && consoleErrors.length === 0,
-      `missingVisibleSignals=${missingVisibleSignals.length}, disallowedVisibleHits=${disallowedVisibleHits.length}, embeddedCanvasCount=${embeddedCanvasCount}, mapCanvasCount=${mapCanvasCount}, segmentCount=${segmentCount}, riskObjectCount=${riskObjectCount}, atlasLiveVisible=${atlasLiveVisible}, loadingHealthMetricsVisible=${loadingHealthMetricsVisible}, mapDoesNotOverlapAnalytics=${layoutGeometry.mapDoesNotOverlapAnalytics}, mapDoesNotOverlapRightRail=${layoutGeometry.mapDoesNotOverlapRightRail}, consoleErrors=${consoleErrors.length}`,
+      `missingVisibleSignals=${missingVisibleSignals.length}, disallowedVisibleHits=${disallowedVisibleHits.length}, embeddedCanvasCount=${embeddedCanvasCount}, mapCanvasCount=${mapCanvasCount}, prometheusRiskLabelCount=${prometheusRiskLabelCount}, segmentCount=${segmentCount}, riskObjectCount=${riskObjectCount}, atlasLiveVisible=${atlasLiveVisible}, loadingHealthMetricsVisible=${loadingHealthMetricsVisible}, mapDoesNotOverlapAnalytics=${layoutGeometry.mapDoesNotOverlapAnalytics}, mapDoesNotOverlapRightRail=${layoutGeometry.mapDoesNotOverlapRightRail}, dockDoesNotOverlapCommandSurface=${layoutGeometry.dockDoesNotOverlapCommandSurface}, dockDoesNotOverlapBottomQueue=${layoutGeometry.dockDoesNotOverlapBottomQueue}, consoleErrors=${consoleErrors.length}`,
       {
         mode: 'runtime',
         url: options.runtimeUrl,
@@ -617,6 +662,7 @@ async function runtimeCheck(options) {
         disallowedVisibleHits,
         embeddedCanvasCount,
         mapCanvasCount,
+        prometheusRiskLabelCount,
         segmentCount,
         riskObjectCount,
         atlasLiveVisible,

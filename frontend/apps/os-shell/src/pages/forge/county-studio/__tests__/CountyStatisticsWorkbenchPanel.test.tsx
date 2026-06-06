@@ -296,8 +296,8 @@ describe('CountyStatisticsWorkbenchPanel', () => {
     render(<CountyStatisticsWorkbenchPanel />, { wrapper });
 
     expect(screen.getByTestId('county-studio-statistics-workbench')).toBeInTheDocument();
-    expect(screen.getByText('Statistics Compat')).toBeInTheDocument();
-    expect(screen.getAllByText('statistics_ratio_study_compat_v1').length).toBeGreaterThan(0);
+    expect(screen.getByText('Study Analytics')).toBeInTheDocument();
+    expect(screen.getByText('Ratio Study Evidence')).toBeInTheDocument();
     expect(screen.getByTestId('mock-ratio-panel')).toHaveTextContent('ratio study capability');
     expect(screen.getByTestId('county-analytics-stratified')).toBeInTheDocument();
     expect(screen.getByTestId('county-analytics-equity')).toBeInTheDocument();

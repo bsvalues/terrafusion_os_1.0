@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-06T00:12:04.225Z",
+  "checkedAt": "2026-06-06T02:01:45.187Z",
   "slice": "county-studio-r1-production-proof",
   "status": "PASS",
   "decision": "COUNTY_STUDIO_R1_RUNTIME_PRODUCTION_PROOF_READY",
@@ -289,7 +289,7 @@
       },
       "proof": [
         "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudioInvariants.ts:1",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:139",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:215",
         "frontend/apps/os-shell/src/pages/forge/county-studio/utils/cityPrimarySanitizer.ts:1"
       ]
     },
@@ -353,9 +353,9 @@
         }
       },
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:266",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:280",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:7",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:211",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:215",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:9",
         "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:220"
       ]
@@ -426,7 +426,7 @@
     {
       "id": "runtime.screenshot-contract-ready",
       "passed": true,
-      "detail": "missingVisibleSignals=0, disallowedVisibleHits=0, embeddedCanvasCount=1, mapCanvasCount=1, segmentCount=1393, riskObjectCount=688, atlasLiveVisible=true, loadingHealthMetricsVisible=false, mapDoesNotOverlapAnalytics=true, mapDoesNotOverlapRightRail=true, consoleErrors=0",
+      "detail": "missingVisibleSignals=0, disallowedVisibleHits=0, embeddedCanvasCount=1, mapCanvasCount=1, prometheusRiskLabelCount=3, segmentCount=1393, riskObjectCount=688, atlasLiveVisible=true, loadingHealthMetricsVisible=false, mapDoesNotOverlapAnalytics=true, mapDoesNotOverlapRightRail=true, dockDoesNotOverlapCommandSurface=true, dockDoesNotOverlapBottomQueue=true, consoleErrors=0",
       "payload": {
         "mode": "runtime",
         "url": "http://127.0.0.1:5177/forge/county-studio",
@@ -436,6 +436,10 @@
           "Embedded TerraAtlas GIS",
           "TerraAtlas-owned layers",
           "Forge-owned overlays",
+          "Living County Risk Map",
+          "Roll Readiness",
+          "Selected Risk Object",
+          "Operational Focus",
           "Unified Risk Ledger",
           "Parcels",
           "Parcel boundaries",
@@ -452,6 +456,7 @@
         "disallowedVisibleHits": [],
         "embeddedCanvasCount": 1,
         "mapCanvasCount": 1,
+        "prometheusRiskLabelCount": 3,
         "segmentCount": 1393,
         "riskObjectCount": 688,
         "atlasLiveVisible": true,
@@ -459,31 +464,57 @@
         "loadingHealthMetricsVisible": false,
         "layoutGeometry": {
           "stage": {
-            "top": 382.25,
+            "top": 461.84375,
             "right": 1080,
-            "bottom": 783.25,
+            "bottom": 792.84375,
             "left": 210,
             "width": 870,
-            "height": 401
+            "height": 331
           },
           "analytics": {
-            "top": 783.25,
+            "top": 792.84375,
             "right": 1080,
-            "bottom": 23457.21875,
+            "bottom": 966.84375,
             "left": 210,
             "width": 870,
-            "height": 22673.96875
+            "height": 174
+          },
+          "visibleAnalytics": {
+            "top": 792.84375,
+            "right": 1080,
+            "bottom": 878,
+            "left": 210,
+            "width": 870,
+            "height": 85.15625
           },
           "rightRail": {
             "top": 239.015625,
             "right": 1440,
-            "bottom": 1048,
+            "bottom": 878,
             "left": 1080,
             "width": 360,
-            "height": 808.984375
+            "height": 638.984375
+          },
+          "commandSurface": {
+            "top": 275.015625,
+            "right": 1080,
+            "bottom": 878,
+            "left": 210,
+            "width": 870,
+            "height": 602.984375
+          },
+          "dock": {
+            "top": 916,
+            "right": 924,
+            "bottom": 980,
+            "left": 516,
+            "width": 408,
+            "height": 64
           },
           "mapDoesNotOverlapAnalytics": true,
-          "mapDoesNotOverlapRightRail": true
+          "mapDoesNotOverlapRightRail": true,
+          "dockDoesNotOverlapCommandSurface": true,
+          "dockDoesNotOverlapBottomQueue": true
         },
         "consoleErrors": []
       },
@@ -502,6 +533,10 @@
       "Embedded TerraAtlas GIS",
       "TerraAtlas-owned layers",
       "Forge-owned overlays",
+      "Living County Risk Map",
+      "Roll Readiness",
+      "Selected Risk Object",
+      "Operational Focus",
       "Unified Risk Ledger",
       "Parcels",
       "Parcel boundaries",
@@ -518,6 +553,7 @@
     "disallowedVisibleHits": [],
     "embeddedCanvasCount": 1,
     "mapCanvasCount": 1,
+    "prometheusRiskLabelCount": 3,
     "segmentCount": 1393,
     "riskObjectCount": 688,
     "atlasLiveVisible": true,
@@ -525,31 +561,57 @@
     "loadingHealthMetricsVisible": false,
     "layoutGeometry": {
       "stage": {
-        "top": 382.25,
+        "top": 461.84375,
         "right": 1080,
-        "bottom": 783.25,
+        "bottom": 792.84375,
         "left": 210,
         "width": 870,
-        "height": 401
+        "height": 331
       },
       "analytics": {
-        "top": 783.25,
+        "top": 792.84375,
         "right": 1080,
-        "bottom": 23457.21875,
+        "bottom": 966.84375,
         "left": 210,
         "width": 870,
-        "height": 22673.96875
+        "height": 174
+      },
+      "visibleAnalytics": {
+        "top": 792.84375,
+        "right": 1080,
+        "bottom": 878,
+        "left": 210,
+        "width": 870,
+        "height": 85.15625
       },
       "rightRail": {
         "top": 239.015625,
         "right": 1440,
-        "bottom": 1048,
+        "bottom": 878,
         "left": 1080,
         "width": 360,
-        "height": 808.984375
+        "height": 638.984375
+      },
+      "commandSurface": {
+        "top": 275.015625,
+        "right": 1080,
+        "bottom": 878,
+        "left": 210,
+        "width": 870,
+        "height": 602.984375
+      },
+      "dock": {
+        "top": 916,
+        "right": 924,
+        "bottom": 980,
+        "left": 516,
+        "width": 408,
+        "height": 64
       },
       "mapDoesNotOverlapAnalytics": true,
-      "mapDoesNotOverlapRightRail": true
+      "mapDoesNotOverlapRightRail": true,
+      "dockDoesNotOverlapCommandSurface": true,
+      "dockDoesNotOverlapBottomQueue": true
     },
     "consoleErrors": []
   },

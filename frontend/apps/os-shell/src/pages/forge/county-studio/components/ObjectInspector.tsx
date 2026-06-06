@@ -581,13 +581,13 @@ const ActionPanel = ({
       <button
         type="button"
         data-testid="inspector-handoff-atlas"
-        aria-label="Pop Out Map"
+        aria-label="Open in TerraAtlas"
         onClick={onAtlas}
         style={handoffBtnBaseStyle}
       >
-        <div style={{ fontSize: 12, fontWeight: 700 }}>Pop Out Map</div>
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Open in TerraAtlas</div>
         <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-          Show segment geometry in the co-present map session
+          Open deep spatial analysis with the same study and risk context
         </div>
       </button>
       <button
