@@ -52,8 +52,8 @@ export interface SubjectProperty {
   yearBuilt: number;
   bedrooms: number;
   bathrooms: number;
-  condition: string;
-  qualityGrade: string;
+  condition: string | null;
+  qualityGrade: string | null;
   propertyType: string;
   assessedValue: number;
 }

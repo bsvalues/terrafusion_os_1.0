@@ -797,8 +797,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff }),
-    [parcelId, propertyData, segmentHandoff, workMode]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff, launchMetadata: metadata }),
+    [metadata, parcelId, propertyData, segmentHandoff, workMode]
   );
 
   // Badge state — collected from all providers

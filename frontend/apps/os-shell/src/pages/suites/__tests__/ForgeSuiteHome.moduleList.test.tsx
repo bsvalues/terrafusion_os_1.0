@@ -15,10 +15,12 @@
  * infrastructure until retired.
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import ForgeSuiteHome from '../ForgeSuiteHome';
+
+const activateModuleMock = vi.hoisted(() => vi.fn());
 
 // ── Minimal mocks ──────────────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ vi.mock('../../../stores/propertyStore', () => ({
 }));
 
 vi.mock('../../../orchestration/moduleActivation', () => ({
-  activateModule: vi.fn(),
+  activateModule: activateModuleMock,
 }));
 
 vi.mock('../../../components/workbench/ParcelContextBanner', () => ({
@@ -70,6 +72,10 @@ function renderForge() {
 // ── Contract tests ─────────────────────────────────────────────────────────
 
 describe('ForgeSuiteHome — frozen module list', () => {
+  beforeEach(() => {
+    activateModuleMock.mockClear();
+  });
+
   it('renders the five primary approach cards', () => {
     renderForge();
     expect(screen.getByText('CostForge')).toBeInTheDocument();
@@ -128,6 +134,25 @@ describe('ForgeSuiteHome — frozen module list', () => {
     const compsBtn = screen.getByText('CompsForge').closest('button');
     expect(costBtn).not.toBeDisabled();
     expect(compsBtn).not.toBeDisabled();
+  });
+
+  it('CompsForge launches the parcel-scoped Workbench Forge Sales desk, not the standalone countywide module', () => {
+    renderForge();
+
+    fireEvent.click(screen.getByText('CompsForge').closest('button')!);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', {
+      source: 'system',
+      metadata: expect.objectContaining({
+        tab: 'forge',
+        tabId: 'forge',
+        subTab: 'sales',
+      }),
+    });
+    expect(activateModuleMock).not.toHaveBeenCalledWith(
+      'comps-forge',
+      expect.anything(),
+    );
   });
 
   it('all KPI values show — (never fake numbers)', () => {

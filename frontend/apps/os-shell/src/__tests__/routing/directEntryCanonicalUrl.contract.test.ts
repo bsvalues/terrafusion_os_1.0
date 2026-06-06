@@ -167,23 +167,25 @@ describe('directEntryCanonicalUrl', () => {
     expect(canonicalizeEntryUrl('/property/123/FORGEE')).toBe('/property/123');
   });
 
-  // ── Source: ForgeSuiteHome modules use standalone launchMode ─────────────
+  // ── Source: ForgeSuiteHome routes CompsForge to Property Workbench ───────
   //
-  // ForgeSuiteHome (frozen at 8da26658a) is an application launcher, not a
-  // parcel-tool grid. All modules launch standalone (CostForge app, CompsForge,
-  // etc.). Parcel-scoped Forge analysis is accessed via /property/:id/forge
-  // through PropertyWorkbench routing — not through ForgeSuiteHome's module grid.
+  // ForgeSuiteHome is mostly an application launcher, but CompsForge is the
+  // explicit parcel-scoped exception: desktop/window intent must resolve to
+  // Property Workbench -> Forge -> Sales instead of the old standalone surface.
 
-  it('ForgeSuiteHome modules use standalone launchMode (application-level launchers)', () => {
-    // Extract PRIMARY_MODULES or module definitions from source
-    // ForgeSuiteHome defines its modules inline (not via SuiteModuleGrid)
+  it('ForgeSuiteHome routes only CompsForge through Property Workbench Forge Sales', () => {
     const standaloneEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'standalone'/g)];
-
-    // Forge is exclusively standalone — application-level tools, not parcel widgets
-    expect(standaloneEntries.length).toBeGreaterThan(0);
-    // Forge must NOT have workbench-mode entries in its module list
     const workbenchEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'workbench'/g)];
-    expect(workbenchEntries.length).toBe(0);
+
+    expect(standaloneEntries.length).toBeGreaterThan(0);
+    expect(workbenchEntries).toHaveLength(1);
+    expect(forgeSuiteSource).toContain("id: 'comps-forge'");
+    expect(forgeSuiteSource).toContain("workbenchTab: 'forge'");
+    expect(forgeSuiteSource).toContain("workbenchSubTab: 'sales'");
+    expect(forgeSuiteSource).toContain("moduleId: 'costforge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'income-forge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'sales-forge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'cuforge'");
   });
 
   // ── Source: AtlasSuiteHome parcel modules all use workbench launchMode ────

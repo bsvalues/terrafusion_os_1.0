@@ -16,6 +16,7 @@ import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { ComparableSalesPanel } from '../../../../components/workbench/ComparableSalesPanel';
+import { usePropertyStore } from '../../../../stores/propertyStore';
 import {
   useSalesComparison as useSalesComparisonAPI,
   usePatchSaleQualification,
@@ -37,7 +38,9 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   onValueIndicated,
 }) => {
   const { parcelId } = useWorkbenchTab();
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
   const countyScope = getPilotCountyScopeToken(getSession()?.countyId ?? null);
+  const hasActiveParcelEvidence = activeParcel?.parcelId === parcelId;
 
   /* ── Live API data ──────────────────────────────────────── */
   const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
@@ -75,6 +78,20 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   const handleSalesComps = useCallback(async () => {
     const ids = compIds.split(',').map((s) => s.trim()).filter(Boolean);
     if (ids.length === 0) return;
+    if (!hasActiveParcelEvidence) {
+      const correlationId = `evidence-${crypto.randomUUID().slice(0, 8)}`;
+      setCompsState({
+        status: 'error',
+        correlationId,
+        error: {
+          code: 'PARCEL_EVIDENCE_REQUIRED',
+          message: 'Rationale blocked until the active parcel evidence record loads.',
+          severity: 'error',
+          correlationId,
+        },
+      });
+      return;
+    }
     if (!countyScope) {
       const correlationId = `scope-${crypto.randomUUID().slice(0, 8)}`;
       setCompsState({
@@ -134,7 +151,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         },
       });
     }
-  }, [countyScope, parcelId, compIds, onHistoryRecord]);
+  }, [countyScope, parcelId, compIds, onHistoryRecord, hasActiveParcelEvidence]);
 
   /* ── Render ───────────────────────────────────────────── */
 
@@ -148,7 +165,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled={recompute.isPending}
+              disabled={recompute.isPending || !hasActiveParcelEvidence}
               onClick={() => recompute.mutate()}
               className="text-xs px-2 py-1 rounded transition-all disabled:opacity-50"
               style={{
@@ -473,6 +490,18 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           </div>
         )}
 
+        {!hasActiveParcelEvidence && (
+          <div
+            className="mb-4 px-3 py-2 rounded text-xs"
+            style={{
+              background: 'hsl(var(--tf-warning) / 0.10)',
+              color: 'hsl(var(--tf-warning))',
+            }}
+          >
+            Rationale blocked until the active parcel evidence record loads.
+          </div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="comp-ids" className="block tf-text-secondary text-sm mb-2">
             Comp Parcel IDs (comma-separated)
@@ -489,7 +518,12 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
 
         <button
           onClick={handleSalesComps}
-          disabled={compsState.status === 'loading' || !compIds.trim() || !countyScope}
+          disabled={
+            compsState.status === 'loading' ||
+            !compIds.trim() ||
+            !countyScope ||
+            !hasActiveParcelEvidence
+          }
           className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4"
         >
           {compsState.status === 'loading' ? 'Analyzing...' : 'Analyze Comps'}

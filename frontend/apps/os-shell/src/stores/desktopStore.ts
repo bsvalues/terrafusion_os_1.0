@@ -519,6 +519,7 @@ export const useDesktopStore = create<DesktopState>()(
             ...metadata,
             _routedTab: moduleId,
             _routeReason: verdict.reason,
+            tabId: typeof metadata?.tabId === 'string' ? metadata.tabId : moduleId,
           };
 
           // Check if workbench is already open — focus it and switch tab
