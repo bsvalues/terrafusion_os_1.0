@@ -56,7 +56,13 @@ function severity(segment: CountySegmentDto): string {
   return 'Low';
 }
 
-function PrometheusDecisionInspector({ segment }: { segment: CountySegmentDto | null }) {
+function PrometheusDecisionInspector({
+  segment,
+  onOpenAtlas,
+}: {
+  segment: CountySegmentDto | null;
+  onOpenAtlas: () => void;
+}) {
   if (!segment) return null;
   const neighborhood = segment.geographyRef ?? 'unassigned';
   const derivedModelGroup = [segment.buildingType, segment.qualityGrade].filter(Boolean).join(' / ');
@@ -106,6 +112,7 @@ function PrometheusDecisionInspector({ segment }: { segment: CountySegmentDto | 
           <button
             key={label}
             type="button"
+            onClick={label === 'Open in TerraAtlas' ? onOpenAtlas : undefined}
             style={{
               padding: '5px 6px',
               border: '1px solid hsl(var(--tf-border))',
@@ -154,6 +161,49 @@ export function RightRail() {
     segments,
   } = useCountyStudioStore();
   const operationalFocusSegment = strongestRiskSegment(segments, selectedSegmentId);
+
+  const handleOpenAtlas = () => {
+    if (!activeStudy) return;
+    const params = new URLSearchParams({
+      studyId: activeStudy.studyId,
+      countyId: activeStudy.countyId,
+      taxYear: String(activeStudy.taxYear),
+      source: 'county-studio',
+      activeLayers: [
+        'parcels',
+        'parcel-boundaries',
+        'neighborhoods',
+        'county-segments',
+        'reval-areas',
+        'taxing-districts',
+        'valuation-risk',
+        'ratio-risk',
+        'segment-health',
+      ].join(','),
+    });
+    if (activeStudy.countyName) {
+      params.set('countyName', activeStudy.countyName);
+    }
+    if (operationalFocusSegment) {
+      params.set('selectedRiskObject', operationalFocusSegment.segmentId);
+      params.set('segmentId', operationalFocusSegment.segmentId);
+      if (operationalFocusSegment.geographyRef) {
+        params.set('neighborhoodCode', operationalFocusSegment.geographyRef);
+      }
+      if (operationalFocusSegment.revalArea !== null && operationalFocusSegment.revalArea !== undefined) {
+        params.set('revalArea', String(operationalFocusSegment.revalArea));
+      }
+      if (operationalFocusSegment.modelGroup) {
+        params.set('modelGroup', operationalFocusSegment.modelGroup);
+      }
+      if (operationalFocusSegment.valueTier) {
+        params.set('valueTier', operationalFocusSegment.valueTier);
+      }
+    } else {
+      params.set('selectedRiskObject', 'county');
+    }
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
+  };
 
   const scopeLabel = (() => {
     if (selectedSegmentId) {
@@ -242,7 +292,7 @@ export function RightRail() {
       </div>
 
       {activeStudy && activePanel === 'inspector' && (
-        <PrometheusDecisionInspector segment={operationalFocusSegment} />
+        <PrometheusDecisionInspector segment={operationalFocusSegment} onOpenAtlas={handleOpenAtlas} />
       )}
 
       <div

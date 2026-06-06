@@ -4,7 +4,6 @@
 // neighborhood's rollup aggregates with IAAO compliance lamps.
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import type { RollupComplianceStatus } from '../types/countyStudio.types';
@@ -55,7 +54,6 @@ export function NeighborhoodInspector() {
     selectedNeighborhoodRevalArea,
     activeStudy,
   } = useCountyStudioStore();
-  const navigate = useNavigate();
   const row = selectedNeighborhood
     ? neighborhoodRollup.find((r) =>
         r.neighborhoodCode === selectedNeighborhood
@@ -113,7 +111,7 @@ export function NeighborhoodInspector() {
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

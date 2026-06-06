@@ -8,8 +8,8 @@
 //     empty copy for 0 / 1 points — no filler.
 //   - Action tab: Spatial (Atlas + Workbench) always active; Corrective
 //     handoff buttons follow the backend's DeeplinkQuery nullability.
-//   - Retained contract: Open-in-Atlas still navigates, Find-Parcels still
-//     activates the workbench module.
+//   - Retained contract: Open-in-Atlas opens a browser window, Find-Parcels
+//     still activates the workbench module.
 
 import React from 'react';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
@@ -52,6 +52,8 @@ const {
     contextError:   null as string | null,
   },
 }));
+
+const openMock = vi.fn();
 
 vi.mock('react-router-dom', async (importActual) => {
   const actual = await importActual<typeof import('react-router-dom')>();
@@ -163,6 +165,7 @@ async function switchToTab(tabTestId: string) {
 }
 
 beforeEach(() => {
+  vi.stubGlobal('open', openMock);
   state.detail =baseDetail();
   state.detailLoading =false;
   state.detailError =null;
@@ -173,6 +176,7 @@ beforeEach(() => {
   retryContextMock.mockClear();
   mockNavigate.mockClear();
   activateModuleMock.mockClear();
+  openMock.mockClear();
   listDownstreamReceiptsMock.mockResolvedValue([]);
   recordSegmentInspectorReceiptMock.mockResolvedValue({
     receiptId: 'receipt-direct-dais',
@@ -367,14 +371,13 @@ describe('ObjectInspector — Action tab', () => {
     expect(screen.getByTestId('inspector-action-error')).toBeInTheDocument();
   });
 
-  it('Open in TerraAtlas opens the atlas-live route for the same study session', async () => {
+  it('Open in TerraAtlas opens a browser window for the same study session', async () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
-    expect(mockNavigate).toHaveBeenCalledWith(
-      expect.stringContaining('/forge/atlas-live?'),
-    );
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    expect(mockNavigate).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('studyId')).toBe('study-1');
     expect(params.get('segmentId')).toBe('s1');
@@ -391,7 +394,7 @@ describe('ObjectInspector — Action tab', () => {
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
 
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('neighborhoodCode')).toBe('NBHD-RISK');
     expect(params.get('revalArea')).toBe('7');
@@ -436,7 +439,7 @@ describe('ObjectInspector — Action tab', () => {
     await switchToTab('inspector-tab-action');
 
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('segmentId')).toBe('s2');
     expect(params.get('neighborhoodCode')).toBe('NBHD-CURRENT');

@@ -18,6 +18,8 @@ const { mockNavigate, activateModuleMock } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
 }));
 
+const openMock = vi.fn();
+
 vi.mock('react-router-dom', async (importActual) => {
   const actual = await importActual<typeof import('react-router-dom')>();
   return { ...actual, useNavigate: () => mockNavigate };
@@ -293,9 +295,11 @@ const MOCK_HEALTH: CountyHealthSummaryDto = {
 
 describe('CountyStudyPage', () => {
   beforeEach(() => {
+    vi.stubGlobal('open', openMock);
     act(() => {
       mockNavigate.mockClear();
       activateModuleMock.mockClear();
+      openMock.mockClear();
       useCountyStudioStore.getState().setStudy(null);
       useCountyStudioStore.getState().setSegments([]);
       useCountyStudioStore.getState().setCityRollup([]);
@@ -333,7 +337,7 @@ describe('CountyStudyPage', () => {
     expect(screen.getByTestId('county-studio-open-terraatlas')).toBeInTheDocument();
   });
 
-  it('page-level Atlas handoff preserves valuation context without city as a primary key', () => {
+  it('page-level Atlas handoff opens a browser window and preserves valuation context without city as a primary key', () => {
     act(() => {
       useCountyStudioStore.getState().setStudy({
         studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
@@ -348,7 +352,9 @@ describe('CountyStudyPage', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
     fireEvent.click(screen.getByTestId('county-studio-open-terraatlas'));
 
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    expect(mockNavigate).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('studyId')).toBe('study-1');
     expect(params.get('countyId')).toBe('benton');
@@ -380,7 +386,7 @@ describe('CountyStudyPage', () => {
     fireEvent.click(screen.getByTestId('mock-atlas-viewport'));
     fireEvent.click(screen.getByTestId('county-studio-open-terraatlas'));
 
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('mapBounds')).toBe('-119.47,46.16,-119.17,46.39');
     expect(params.get('mapZoom')).toBe('11.25');

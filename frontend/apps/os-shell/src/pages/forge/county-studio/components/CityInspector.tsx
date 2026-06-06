@@ -6,7 +6,6 @@
 // surfaces (city / neighborhood / segment) feel consistent.
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import type { RollupComplianceStatus } from '../types/countyStudio.types';
@@ -57,7 +56,6 @@ function complianceLamp(status: RollupComplianceStatus): { color: string; label:
 
 export function CityInspector() {
   const { cityRollup, selectedCity, activeStudy } = useCountyStudioStore();
-  const navigate = useNavigate();
   const row = selectedCity ? cityRollup.find((r) => r.city === selectedCity) : null;
 
   if (!row) {
@@ -117,7 +115,7 @@ export function CityInspector() {
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

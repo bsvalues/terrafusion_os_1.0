@@ -365,7 +365,9 @@ function handoffCheck() {
   const required = [
     [files.objectInspector, objectInspector, 'sanitizeCountyStudioHandoffQuery'],
     [files.objectInspector, objectInspector, "activateModule('property-workbench'"],
-    [files.objectInspector, objectInspector, "navigate(`/forge/atlas-live?"],
+    [files.objectInspector, objectInspector, "window.open(`/forge/atlas-live?"],
+    [files.objectInspector, objectInspector, "'_blank'"],
+    [files.objectInspector, objectInspector, "'noopener,noreferrer'"],
     [files.objectInspector, objectInspector, "moduleId: 'suite-dais' | 'suite-dossier'"],
     [files.neighborhoodInspector, neighborhoodInspector, "rollupScope: 'neighborhood'"],
     [files.adjustmentPanel, adjustmentPanel, 'stripCityPrimaryKeys'],

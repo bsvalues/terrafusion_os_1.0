@@ -9,7 +9,6 @@
 // rollup table components, not here).
 
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { LeftRail } from './components/LeftRail';
 import { SegmentTable } from './components/SegmentTable';
@@ -84,7 +83,6 @@ export function CountyStudyPage() {
   const [showOpenStudy, setShowOpenStudy] = useState(false);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('operational-health');
   const [atlasViewport, setAtlasViewport] = useState<CountyStudioAtlasViewport | null>(null);
-  const navigate = useNavigate();
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
   const { retryAll } = useStudyData();
@@ -117,7 +115,7 @@ export function CountyStudyPage() {
       params.set('mapBounds', atlasViewport.bbox.join(','));
       params.set('mapZoom', String(atlasViewport.zoom));
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   // Compose segment filter: severity pill AND selectedNeighborhood (when at the
