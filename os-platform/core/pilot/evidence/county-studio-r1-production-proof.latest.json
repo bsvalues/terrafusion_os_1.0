@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-06T04:20:49.168Z",
+  "checkedAt": "2026-06-06T06:32:29.487Z",
   "slice": "county-studio-r1-production-proof",
   "status": "PASS",
   "decision": "COUNTY_STUDIO_R1_RUNTIME_PRODUCTION_PROOF_READY",
@@ -368,8 +368,8 @@
         "missing": []
       },
       "proof": [
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:38",
-        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:865",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:37",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:863",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/AdjustmentSetPanel.tsx:343",
         "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExportPacketModal.tsx:7"
       ]
@@ -429,7 +429,7 @@
       "detail": "missingVisibleSignals=0, disallowedVisibleHits=0, embeddedCanvasCount=1, mapCanvasCount=1, prometheusRiskLabelCount=3, segmentCount=1393, riskObjectCount=688, atlasLiveVisible=true, loadingHealthMetricsVisible=false, mapDoesNotOverlapAnalytics=true, mapDoesNotOverlapRightRail=true, dockDoesNotOverlapCommandSurface=true, dockDoesNotOverlapBottomQueue=true, consoleErrors=0",
       "payload": {
         "mode": "runtime",
-        "url": "http://127.0.0.1:5180/forge/county-studio",
+        "url": "http://127.0.0.1:5177/forge/county-studio",
         "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
         "requiredVisibleSignals": [
           "County Studio",
@@ -532,7 +532,7 @@
   "failures": [],
   "runtime": {
     "mode": "runtime",
-    "url": "http://127.0.0.1:5180/forge/county-studio",
+    "url": "http://127.0.0.1:5177/forge/county-studio",
     "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
     "requiredVisibleSignals": [
       "County Studio",
