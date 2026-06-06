@@ -172,14 +172,18 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const activeParcelError = usePropertyStore((s) => s.activeParcelError);
   const selectParcel = usePropertyStore((s) => s.selectParcel);
+  const isCurrentParcelBlocked = Boolean(
+    activeParcelError && (!activeParcelError.parcelId || activeParcelError.parcelId === parcelId)
+  );
 
   // Load parcel via store when parcelId changes (if not already loaded)
   useEffect(() => {
-    if (parcelId && activeParcel?.parcelId !== parcelId) {
+    if (parcelId && activeParcel?.parcelId !== parcelId && !propertyLoading && !isCurrentParcelBlocked) {
       selectParcel(parcelId);
     }
-  }, [parcelId, activeParcel?.parcelId, selectParcel]);
+  }, [parcelId, activeParcel?.parcelId, isCurrentParcelBlocked, propertyLoading, selectParcel]);
 
   const propertyData = useMemo(
     () => ({
@@ -357,9 +361,131 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     );
   }
 
+  // ── Parcel evidence unavailable ──
+  if (!activeParcel && activeParcelError) {
+    return (
+      <div
+        className="flex flex-col h-full"
+        style={{ background: 'hsl(var(--tf-bg))' }}
+        data-testid="property-workbench-root"
+      >
+        <nav
+          aria-label="Breadcrumb"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.25rem',
+            padding: '0.375rem 1rem',
+            background: 'hsl(var(--tf-surface) / 0.9)',
+            borderBottom: '1px solid hsl(var(--tf-border) / 0.4)',
+            fontSize: '0.75rem',
+            color: 'hsl(var(--tf-muted))',
+            flexShrink: 0,
+          }}
+        >
+          <button
+            onClick={() => navigate('/property')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'hsl(var(--tf-muted))',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.125rem 0.375rem',
+              borderRadius: '0.25rem',
+            }}
+            aria-label="Go to Property Search"
+          >
+            Property Search
+          </button>
+          <ChevronRight size={10} style={{ opacity: 0.4, flexShrink: 0 }} />
+          <span style={{ color: 'hsl(var(--tf-text) / 0.85)', fontWeight: 500 }}>
+            {parcelId}
+          </span>
+        </nav>
+
+        <div className="flex flex-1 items-center justify-center p-8">
+          <section
+            className="max-w-2xl rounded-lg p-5"
+            style={{
+              background: 'hsl(var(--tf-surface) / 0.65)',
+              border: '1px solid hsl(var(--tf-border) / 0.25)',
+              boxShadow: '0 18px 48px hsl(var(--tf-bg) / 0.35)',
+            }}
+            data-testid="workbench-property-evidence-blocker"
+            aria-live="polite"
+          >
+            <div
+              className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em]"
+              style={{ color: 'hsl(var(--tf-warning))' }}
+            >
+              Property Evidence Unavailable
+            </div>
+            <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              Review blocked for parcel {parcelId}
+            </h2>
+            <p className="mt-2 text-sm leading-6" style={{ color: 'hsl(var(--tf-text) / 0.72)' }}>
+              {activeParcelError.message}
+            </p>
+            <div
+              className="mt-4 grid gap-2 rounded-md p-3 text-xs"
+              style={{
+                background: 'hsl(var(--tf-bg) / 0.45)',
+                border: '1px solid hsl(var(--tf-border) / 0.18)',
+                color: 'hsl(var(--tf-text) / 0.66)',
+              }}
+            >
+              <div>
+                Workbench reliance remains blocked until authenticated parcel evidence loads from the live
+                property feed.
+              </div>
+              {activeParcelError.status && (
+                <div data-testid="workbench-property-evidence-status">
+                  API status: {activeParcelError.status}
+                  {activeParcelError.path ? ` · ${activeParcelError.path}` : ''}
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => parcelId && void selectParcel(parcelId)}
+                className="rounded-md px-3 py-2 text-sm font-medium"
+                style={{
+                  background: 'hsl(var(--tf-accent) / 0.14)',
+                  color: 'hsl(var(--tf-accent))',
+                  border: '1px solid hsl(var(--tf-accent) / 0.28)',
+                }}
+              >
+                Retry parcel load
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/property')}
+                className="rounded-md px-3 py-2 text-sm font-medium"
+                style={{
+                  background: 'hsl(var(--tf-text) / 0.06)',
+                  color: 'hsl(var(--tf-text) / 0.7)',
+                  border: '1px solid hsl(var(--tf-border) / 0.24)',
+                }}
+              >
+                Back to property search
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
   // ── Spec-compliant layout ──
   return (
-    <div className={`flex flex-col h-full ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div
+      className={`flex flex-col h-full ${className}`}
+      style={{ background: 'hsl(var(--tf-bg))' }}
+      data-testid="property-workbench-root"
+    >
       <nav
         aria-label="Breadcrumb"
         style={{

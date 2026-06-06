@@ -11,7 +11,7 @@
  *   - Filter/score logic: services/comparableSalesService.ts (adapted from legacy)
  *   - Adjustment math: CostForge POST /api/costforge/sales-comparison/adjust-comparable
  *   - Reconciliation: CostForge POST /api/costforge/sales-comparison/reconcile
- *   - Candidate data: Washington statewide launch package county shards
+ *   - Candidate data: live Forge sales DTO when hosted by Property Workbench
  *
  * GUARDRAILS:
  *   - All adjustment/reconciliation math stays in backend CostForge
@@ -55,6 +55,10 @@ const ERROR_BG = 'hsl(var(--tf-error) / 0.15)';
 
 interface ComparableSalesPanelProps {
   onReconciledValue?: (result: ReconciliationResult) => void;
+  providedSales?: ComparableSale[];
+  providedSalesSource?: string;
+  providedSalesLoading?: boolean;
+  providedSalesError?: string | null;
 }
 
 type CandidateDecision = 'use' | 'reject' | 'needs-data';
@@ -326,6 +330,10 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
 
 export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   onReconciledValue,
+  providedSales,
+  providedSalesSource,
+  providedSalesLoading = false,
+  providedSalesError = null,
 }) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
@@ -405,6 +413,13 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     let cancelled = false;
 
     async function loadSales() {
+      if (providedSales) {
+        setAllSales(providedSales);
+        setSalesError(providedSalesError);
+        setSalesLoading(providedSalesLoading);
+        return;
+      }
+
       if (!countyCode) {
         setAllSales([]);
         setSalesError(
@@ -441,7 +456,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [countyCode, countyName]);
+  }, [countyCode, countyName, providedSales, providedSalesError, providedSalesLoading]);
 
   // Filters
   const [filters, setFilters] = useState<CompFilter>({ qualifiedOnly: true });
@@ -838,6 +853,11 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                 <div className='text-xs' style={{ color: 'hsl(var(--tf-text) / 0.55)' }}>
                   Select only comps that can survive physical, adjustment, and review scrutiny.
                 </div>
+                {providedSalesSource && (
+                  <div className='mt-1 text-[10px]' style={{ color: 'hsl(var(--tf-text) / 0.42)' }}>
+                    Source: {providedSalesSource}
+                  </div>
+                )}
               </div>
             </div>
 
