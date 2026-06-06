@@ -528,7 +528,7 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys);
+                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys, activeSupp: true);
                 var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
                 batchIds.Add(suppS1.LoadBatchId);
                 if (!IsCompleted(suppS1.Status))
