@@ -24,7 +24,7 @@ const failedResponses: NetworkRecord[] = [];
 const consoleLines: string[] = [];
 
 function baseUrl(): string {
-  return process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://localhost:5046';
+  return process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://127.0.0.1:5046';
 }
 
 async function ensureEvidenceDir(): Promise<void> {

@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const testsRoot = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(testsRoot, '..');
+const smokeBaseURL =
+  process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://127.0.0.1:5046';
 
 export default defineConfig({
   testDir: resolve(testsRoot, 'e2e'),
@@ -26,9 +28,23 @@ export default defineConfig({
       { outputFile: resolve(repoRoot, '.tmp', 'workbench-smoke', 'playwright-results.json') },
     ],
   ],
+  webServer: {
+    command:
+      'pnpm run backend:watch:cleanup && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && pnpm run dev:backend:api',
+    cwd: repoRoot,
+    env: {
+      ...process.env,
+      ASPNETCORE_ENVIRONMENT: 'Development',
+      ASPNETCORE_URLS: 'http://127.0.0.1:5046',
+      TF_API_PORT: '5046',
+      TF_SKIP_DEV_SEEDERS: '1',
+    },
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+    url: `${smokeBaseURL}/api/auth/dev-token`,
+  },
   use: {
-    baseURL:
-      process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://localhost:5046',
+    baseURL: smokeBaseURL,
     screenshot: 'off',
     video: 'off',
     trace: 'retain-on-failure',
