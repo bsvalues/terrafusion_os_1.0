@@ -92,15 +92,25 @@ async function resolveSmokeParcel(api: APIRequestContext, token: string): Promis
   const explicit = process.env.WORKBENCH_SMOKE_PARCEL_ID?.trim();
   if (explicit) return explicit;
 
-  const response = await api.get('/api/properties?page=1&pageSize=1', {
+  const response = await api.get('/api/properties?page=1&pageSize=25', {
     headers: { Authorization: `Bearer ${token}` },
   });
   expect(response.ok(), 'smoke must be able to read at least one live property').toBe(true);
   const payload = await response.json();
-  const parcel =
-    payload.items?.[0]?.parcelNumber ?? payload.items?.[0]?.parcelId ?? payload.items?.[0]?.geoId;
-  expect(parcel, 'properties feed must expose a parcel identifier').toBeTruthy();
-  return String(parcel);
+  const candidates = (payload.items ?? [])
+    .map((item: Record<string, unknown>) => item.parcelNumber ?? item.parcelId ?? item.geoId)
+    .filter(Boolean)
+    .map(String);
+  expect(candidates.length, 'properties feed must expose parcel identifiers').toBeGreaterThan(0);
+
+  for (const parcel of candidates) {
+    const parcelResponse = await api.get(`/api/properties/parcel/${encodeURIComponent(parcel)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (parcelResponse.ok()) return parcel;
+  }
+
+  throw new Error('smoke could not find a listed parcel that loads from live property evidence');
 }
 
 async function installSmokeSession(

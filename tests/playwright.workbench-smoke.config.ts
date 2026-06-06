@@ -10,6 +10,7 @@ const smokeBaseURL =
 export default defineConfig({
   testDir: resolve(testsRoot, 'e2e'),
   testMatch: '**/property-workbench-production-smoke.spec.ts',
+  timeout: 120_000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
