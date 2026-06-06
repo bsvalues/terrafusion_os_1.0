@@ -1,0 +1,126 @@
+{
+  "generatedAtUtc": "2026-06-06T21:30:07.992Z",
+  "adapter": "benton-sync-drain-state-evidence",
+  "backendHealth": {
+    "status": "healthy",
+    "ok": true,
+    "statusCode": 200,
+    "url": "http://localhost:5000/health"
+  },
+  "activeDrain": {
+    "pid": 28503,
+    "alive": false,
+    "status": "NOT_RUNNING"
+  },
+  "loadBatch": {
+    "stage": "UNKNOWN",
+    "status": "UNKNOWN",
+    "loadBatchId": null
+  },
+  "queryResults": {
+    "latestLoadBatch": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "legacyProperty": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "legacyOwner": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "legacyPropSuppAssoc": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "legacyWashPropOwnerVal": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "legacyAccount": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "truthParcel": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "truthOwner": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "truthWsdor": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "canonicalParcel": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "canonicalOwner": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "canonicalWsdor": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    },
+    "gisParcelGeometry": {
+      "unavailable": true,
+      "reason": "spawnSync psql ENOENT"
+    }
+  },
+  "counts": {
+    "landingTables": {
+      "property": 0,
+      "owner": 0,
+      "propSuppAssoc": 0,
+      "washPropOwnerVal": 0
+    },
+    "truthTables": {
+      "parcel": 0,
+      "owner": 0,
+      "wsdor": 0
+    },
+    "canonical": {
+      "parcel": 0,
+      "owner": 0,
+      "account": 0,
+      "wsdor": 0
+    },
+    "gis": {
+      "parcelGeometry": 0
+    }
+  },
+  "countClassifications": {
+    "legacyProperty": "UNKNOWN",
+    "legacyOwner": "UNKNOWN",
+    "legacyPropSuppAssoc": "UNKNOWN",
+    "legacyWashPropOwnerVal": "UNKNOWN",
+    "legacyAccount": "UNKNOWN",
+    "truthParcel": "UNKNOWN",
+    "truthOwner": "UNKNOWN",
+    "truthWsdor": "UNKNOWN",
+    "canonicalParcel": "UNKNOWN",
+    "canonicalOwner": "UNKNOWN",
+    "canonicalWsdor": "UNKNOWN",
+    "gisParcelGeometry": "UNKNOWN"
+  },
+  "countyStudioDependencies": {
+    "map": "UNKNOWN",
+    "ledger": "UNKNOWN",
+    "inspector": "UNKNOWN"
+  },
+  "decisions": {
+    "realDevEvidenceReadable": false,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "rules": [
+    "Read-only evidence collector only.",
+    "Unavailable DB connection reports UNKNOWN, not PASS.",
+    "Partial seed may enable real dev readiness, not production proof.",
+    "Production and operational proof remain false."
+  ]
+}

@@ -3,6 +3,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  buildBentonSyncDrainStateEvidence,
+  evidenceToReadinessSource
+} from "./benton-sync-drain-state-evidence-adapter.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,28 +130,11 @@ async function probeBackendHealth(apiBases) {
 }
 
 async function collectRuntimeProbeEvidence(args) {
-  const backendHealth = await probeBackendHealth(args.apiBases);
-  const drainPid = args.drainPid;
-  const alive = processAlive(drainPid);
-  return {
-    backendHealth,
-    activeDrain: {
-      pid: drainPid ? Number(drainPid) : null,
-      alive,
-      status: alive === true ? "IN_PROGRESS" : alive === false ? "NOT_RUNNING" : "UNKNOWN"
-    },
-    loadBatch: { status: "UNKNOWN" },
-    counts: {
-      landingTables: {},
-      truthTables: {},
-      canonical: {}
-    },
-    countyStudioDependencies: {
-      map: "UNKNOWN",
-      ledger: "UNKNOWN",
-      inspector: "UNKNOWN"
-    }
-  };
+  const adapterEvidence = await buildBentonSyncDrainStateEvidence({
+    drainPid: args.drainPid,
+    probeBackendHealth: () => probeBackendHealth(args.apiBases)
+  });
+  return evidenceToReadinessSource(adapterEvidence);
 }
 
 function countRows(evidence) {

@@ -1,6 +1,6 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-06T21:11:20.233Z
+Generated: 2026-06-06T21:30:07.962Z
 Status: REAL_DEV_SERVER_BLOCKED
 
 ## Decision
@@ -24,7 +24,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 | --- | --- | --- | --- |
 | backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
 | active drain process state | UNKNOWN | false | Drain process is not alive; confirm whether client timeout or backend failure occurred. |
-| load_batch current stage | UNKNOWN | false | load_batch stage is not proven. |
+| load_batch current stage | UNKNOWN | false | load_batch stage is UNKNOWN (UNKNOWN). |
 | landing table counts | UNKNOWN | false | Property landing rows are missing or unknown. |
 | truth table counts | UNKNOWN | false | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
 | canonical parcel counts | UNKNOWN | false | Canonical parcel count is missing. |
@@ -41,7 +41,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 ## Blockers
 
 - active drain process state: Drain process is not alive; confirm whether client timeout or backend failure occurred.
-- load_batch current stage: load_batch stage is not proven.
+- load_batch current stage: load_batch stage is UNKNOWN (UNKNOWN).
 - landing table counts: Property landing rows are missing or unknown.
 - truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.
 - canonical parcel counts: Canonical parcel count is missing.
