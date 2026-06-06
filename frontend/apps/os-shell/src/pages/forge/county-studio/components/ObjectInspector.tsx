@@ -19,7 +19,6 @@
 // endpoint does not black out the entire panel.
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import { useInspectorData } from '../hooks/useInspectorData';
@@ -581,13 +580,13 @@ const ActionPanel = ({
       <button
         type="button"
         data-testid="inspector-handoff-atlas"
-        aria-label="Pop Out Map"
+        aria-label="Open in TerraAtlas"
         onClick={onAtlas}
         style={handoffBtnBaseStyle}
       >
-        <div style={{ fontSize: 12, fontWeight: 700 }}>Pop Out Map</div>
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Open in TerraAtlas</div>
         <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-          Show segment geometry in the co-present map session
+          Open deep spatial analysis with the same study and risk context
         </div>
       </button>
       <button
@@ -801,7 +800,6 @@ const ActionPanel = ({
 
 export function ObjectInspector() {
   const { segments, selectedSegmentId, activeStudy } = useCountyStudioStore();
-  const navigate = useNavigate();
   const seg = segments.find((s) => s.segmentId === selectedSegmentId);
   const receipts = useDownstreamClosureReceiptStore((s) => s.receipts);
   const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
@@ -859,7 +857,7 @@ export function ObjectInspector() {
     if (segmentRevalArea !== null && segmentRevalArea !== undefined) {
       params.set('revalArea', String(segmentRevalArea));
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
   const handleFindParcels = () => {
     void activateModule('property-workbench', {

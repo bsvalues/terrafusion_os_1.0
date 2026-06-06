@@ -6,16 +6,36 @@ import {
   type RiskSurfaceRow,
   type UnifiedRiskLedgerRow,
 } from '../utils/riskSurfaces';
+import { EmbeddedAtlasGisWorkspace, type CountyStudioAtlasViewport } from './EmbeddedAtlasGisWorkspace';
+import { BottomDeck } from './BottomDeck';
+import { CountyHealthPanel } from './CountyHealthPanel';
 
 const riskColor: Record<RiskLevel, string> = {
-  Critical: '#ef4444',
-  High: '#f59e0b',
-  Medium: '#3b82f6',
-  Low: '#22c55e',
+  Critical: 'hsl(var(--tf-danger, 0 84% 60%))',
+  High: 'hsl(var(--tf-warning, 38 92% 50%))',
+  Medium: 'hsl(var(--tf-accent, 217 91% 60%))',
+  Low: 'hsl(var(--tf-success, 142 71% 45%))',
 };
 
 type LedgerFilter = 'All' | RiskLevel;
 type LedgerSort = 'priority' | 'risk' | 'exposure' | 'type';
+type PrometheusOperationalLensKey =
+  | 'rollReadiness'
+  | 'equityRisk'
+  | 'modelDrift'
+  | 'salesSupport'
+  | 'spatialIntegrity'
+  | 'appealExposure'
+  | 'certificationRisk';
+
+export interface PrometheusOperationalLens {
+  key: PrometheusOperationalLensKey;
+  label: string;
+  mapLens: string;
+  command: string;
+  queueEmphasis: string;
+  posture: string;
+}
 
 const riskFilters: LedgerFilter[] = ['All', 'Critical', 'High', 'Medium', 'Low'];
 
@@ -25,6 +45,65 @@ const sortLabels: Record<LedgerSort, string> = {
   exposure: 'Exposure',
   type: 'Type',
 };
+
+const PROMETHEUS_OPERATIONAL_LENSES: PrometheusOperationalLens[] = [
+  {
+    key: 'rollReadiness',
+    label: 'Roll Readiness',
+    mapLens: 'Roll Readiness',
+    command: 'Roll posture, priority blockers, and defensibility',
+    queueEmphasis: 'roll readiness and certification posture',
+    posture: 'Benton County valuation health is being operated here.',
+  },
+  {
+    key: 'equityRisk',
+    label: 'Equity Risk',
+    mapLens: 'Equity Risk',
+    command: 'Horizontal equity, vertical equity, regressivity, and value-tier risk',
+    queueEmphasis: 'equity failures and defensibility risk',
+    posture: 'Find inequity before it reaches certification or appeal.',
+  },
+  {
+    key: 'modelDrift',
+    label: 'Model Drift',
+    mapLens: 'Model Drift',
+    command: 'Model groups, calibration drift, and stale valuation logic',
+    queueEmphasis: 'model calibration and drift',
+    posture: 'Route weak calibration before it becomes roll risk.',
+  },
+  {
+    key: 'salesSupport',
+    label: 'Sales Support',
+    mapLens: 'Sales Support',
+    command: 'Valid-sale support, sales deserts, and suspicious ratio clusters',
+    queueEmphasis: 'sales support gaps and sales-validity concerns',
+    posture: 'Separate valuation signal from weak or suspicious sale evidence.',
+  },
+  {
+    key: 'spatialIntegrity',
+    label: 'Spatial Integrity',
+    mapLens: 'Spatial Integrity',
+    command: 'Layer health, geometry confidence, joins, and map feed posture',
+    queueEmphasis: 'spatial truth and layer health',
+    posture: 'Validate spatial truth while TerraAtlas remains the GIS authority.',
+  },
+  {
+    key: 'appealExposure',
+    label: 'Appeal Exposure',
+    mapLens: 'Appeal Exposure',
+    command: 'Appeal concentration, public impact, and evidence readiness',
+    queueEmphasis: 'appeal exposure and public-risk posture',
+    posture: 'Identify where the county is exposed before taxpayers do.',
+  },
+  {
+    key: 'certificationRisk',
+    label: 'Certification Risk',
+    mapLens: 'Certification Risk',
+    command: 'Certification blockers, audit risk, and roll defensibility',
+    queueEmphasis: 'certification blockers and evidence posture',
+    posture: 'Decide whether the roll is defensible today.',
+  },
+];
 
 function formatNumber(value: number | null, digits = 2): string {
   return value === null ? 'n/a' : value.toFixed(digits);
@@ -90,9 +169,13 @@ function BoardTable({ title, rows, empty }: { title: string; rows: RiskSurfaceRo
 
 function UnifiedRiskLedger({
   rows,
+  focusedSegmentId,
+  onFocusMap,
   onOpenEvidence,
 }: {
   rows: UnifiedRiskLedgerRow[];
+  focusedSegmentId: string | null;
+  onFocusMap: (row: UnifiedRiskLedgerRow) => void;
   onOpenEvidence: (row: UnifiedRiskLedgerRow) => void;
 }) {
   const [filter, setFilter] = useState<LedgerFilter>('All');
@@ -209,7 +292,17 @@ function UnifiedRiskLedger({
           </thead>
           <tbody>
             {visibleRows.map((row) => (
-              <tr key={`${row.type}:${row.key}`} style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
+              <tr
+                key={`${row.type}:${row.key}`}
+                data-testid="risk-ledger-row"
+                data-focused={row.evidenceSegmentId === focusedSegmentId ? 'true' : 'false'}
+                onClick={() => onFocusMap(row)}
+                style={{
+                  borderTop: '1px solid hsl(var(--tf-border))',
+                  cursor: 'pointer',
+                  background: row.evidenceSegmentId === focusedSegmentId ? 'hsl(var(--tf-surface))' : 'transparent',
+                }}
+              >
                 <td style={{ padding: '7px 10px', fontWeight: 800 }}>{row.rank}</td>
                 <td data-testid="risk-ledger-object" style={{ padding: '7px 8px', fontWeight: 700 }}>{row.label}</td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>{row.type}</td>
@@ -221,7 +314,10 @@ function UnifiedRiskLedger({
                   <button
                     type="button"
                     aria-label={`${row.nextAction} for ${row.label}`}
-                    onClick={() => onOpenEvidence(row)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onOpenEvidence(row);
+                    }}
                     style={{
                       padding: 0,
                       border: 0,
@@ -245,10 +341,31 @@ function UnifiedRiskLedger({
   );
 }
 
-export function RiskSurfaceCommandCenter() {
+interface RiskSurfaceCommandCenterProps {
+  onAtlasViewportChange?: (viewport: CountyStudioAtlasViewport) => void;
+}
+
+export function RiskSurfaceCommandCenter({ onAtlasViewportChange }: RiskSurfaceCommandCenterProps = {}) {
+  const [activeLensKey, setActiveLensKey] = useState<PrometheusOperationalLensKey>('rollReadiness');
+  const activeStudy = useCountyStudioStore((state) => state.activeStudy);
   const segments = useCountyStudioStore((state) => state.segments);
+  const selectedSegmentId = useCountyStudioStore((state) => state.selectedSegmentId);
+  const focusRiskSurfaceMapObject = useCountyStudioStore((state) => state.focusRiskSurfaceMapObject);
   const drillToRiskSurfaceNeighborhood = useCountyStudioStore((state) => state.drillToRiskSurfaceNeighborhood);
   const commandCenter = useMemo(() => buildRiskSurfaceCommandCenter(segments), [segments]);
+  const activeLens = PROMETHEUS_OPERATIONAL_LENSES.find((lens) => lens.key === activeLensKey) ?? PROMETHEUS_OPERATIONAL_LENSES[0];
+
+  const focusLedgerRow = (row: UnifiedRiskLedgerRow) => {
+    const evidenceSegment = row.evidenceSegmentId
+      ? segments.find((segment) => segment.segmentId === row.evidenceSegmentId) ?? null
+      : null;
+    const neighborhood = row.context.neighborhood ?? evidenceSegment?.geographyRef ?? null;
+    focusRiskSurfaceMapObject(
+      neighborhood,
+      row.evidenceSegmentId,
+      evidenceSegment?.revalArea ?? null,
+    );
+  };
 
   const openLedgerRow = (row: UnifiedRiskLedgerRow) => {
     const evidenceSegment = row.evidenceSegmentId
@@ -262,6 +379,26 @@ export function RiskSurfaceCommandCenter() {
       row.evidenceSegmentId,
     );
   };
+
+  if (!activeStudy && segments.length === 0) {
+    return (
+      <div
+        data-testid="prometheus-empty-study-state"
+        style={{
+          padding: 18,
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+          color: 'hsl(var(--tf-fg))',
+        }}
+      >
+        <h2 style={{ margin: 0, fontSize: 14, fontWeight: 900 }}>Open a County Studio study</h2>
+        <p style={{ margin: '6px 0 0', fontSize: 12, color: 'hsl(var(--tf-muted))', lineHeight: 1.45 }}>
+          County Studio does not present an operational map without a study. Open or create a study to load Benton
+          valuation risk, Atlas geometry, ledger evidence, and downstream workbench context.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div data-testid="risk-surface-command-center" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -284,15 +421,58 @@ export function RiskSurfaceCommandCenter() {
             <div>{commandCenter.ledger.length} risk objects</div>
           </div>
         </div>
+        <div
+          data-testid="prometheus-operational-lens-selector"
+          role="toolbar"
+          aria-label="County Studio operational risk lens"
+          style={{ marginTop: 10, display: 'flex', alignItems: 'stretch', gap: 6, flexWrap: 'wrap' }}
+        >
+          {PROMETHEUS_OPERATIONAL_LENSES.map((lens) => (
+            <button
+              key={lens.key}
+              type="button"
+              aria-label={`${lens.label} lens`}
+              aria-pressed={activeLens.key === lens.key}
+              onClick={() => setActiveLensKey(lens.key)}
+              style={{
+                padding: '6px 9px',
+                border: '1px solid hsl(var(--tf-border))',
+                borderRadius: 4,
+                background: activeLens.key === lens.key ? 'hsl(var(--tf-accent, 217 91% 60%) / 0.16)' : 'transparent',
+                color: activeLens.key === lens.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                fontSize: 11,
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              {lens.label}
+            </button>
+          ))}
+          <div
+            data-testid="prometheus-active-lens"
+            style={{
+              flex: '1 1 260px',
+              minWidth: 240,
+              padding: '6px 9px',
+              border: '1px solid hsl(var(--tf-border))',
+              borderRadius: 4,
+              fontSize: 11,
+              color: 'hsl(var(--tf-muted))',
+              background: 'hsl(var(--tf-bg))',
+            }}
+          >
+            <strong style={{ color: 'hsl(var(--tf-fg))' }}>{activeLens.label}</strong> · {activeLens.command}
+          </div>
+        </div>
         {commandCenter.contractGaps.length > 0 && (
           <div
             data-testid="risk-surface-contract-gaps"
             style={{
               marginTop: 8,
               padding: '7px 8px',
-              border: '1px solid #f59e0b66',
-              background: '#f59e0b14',
-              color: '#f59e0b',
+              border: '1px solid hsl(var(--tf-warning, 38 92% 50%) / 0.42)',
+              background: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)',
+              color: 'hsl(var(--tf-warning, 38 92% 50%))',
               fontSize: 11,
             }}
           >
@@ -301,7 +481,110 @@ export function RiskSurfaceCommandCenter() {
         )}
       </div>
 
-      <UnifiedRiskLedger rows={commandCenter.ledger} onOpenEvidence={openLedgerRow} />
+      <div
+        data-testid="county-studio-gis-stage"
+        style={{
+          minHeight: 0,
+          overflow: 'hidden',
+          flexShrink: 0,
+          borderBottom: '1px solid hsl(var(--tf-border))',
+        }}
+      >
+        <EmbeddedAtlasGisWorkspace onViewportChange={onAtlasViewportChange} roleLens={activeLens} />
+      </div>
+
+      <div
+        data-testid="county-studio-bottom-analytics"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(360px, 1.05fr) minmax(360px, 0.95fr)',
+          alignItems: 'stretch',
+          minHeight: 154,
+          maxHeight: 174,
+          borderBottom: '1px solid hsl(var(--tf-border))',
+        }}
+      >
+        <div style={{ minHeight: 0, overflow: 'auto', borderRight: '1px solid hsl(var(--tf-border))' }}>
+          <div
+            data-testid="prometheus-command-queue"
+            style={{
+              padding: '8px 10px',
+              borderTop: '1px solid hsl(var(--tf-border))',
+              borderBottom: '1px solid hsl(var(--tf-border))',
+              background: 'hsl(var(--tf-surface))',
+              fontSize: 11,
+              color: 'hsl(var(--tf-muted))',
+            }}
+          >
+            <strong style={{ color: 'hsl(var(--tf-fg))' }}>{activeLens.label} command queue:</strong>{' '}
+            Unified Risk Ledger tuned to {activeLens.queueEmphasis}. {activeLens.posture}
+            <div style={{ display: 'grid', gap: 4, marginTop: 6 }}>
+              {commandCenter.ledger.slice(0, 2).map((row) => (
+                <button
+                  key={`${row.type}:${row.key}:queue`}
+                  type="button"
+                  data-testid="prometheus-command-queue-item"
+                  onClick={() => focusLedgerRow(row)}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '68px minmax(110px, 0.8fr) minmax(150px, 1.2fr)',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 7px',
+                    border: '1px solid hsl(var(--tf-border))',
+                    borderRadius: 4,
+                    background: 'hsl(var(--tf-bg))',
+                    color: 'hsl(var(--tf-fg))',
+                    fontSize: 10,
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ color: riskColor[row.riskLevel], fontWeight: 900 }}>{row.riskLevel}</span>
+                  <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 800 }}>
+                    {row.label}
+                  </span>
+                  <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'hsl(var(--tf-muted))' }}>
+                    Failure: {row.primaryReason} · Route: {row.nextAction} · Defensibility: {row.riskLevel === 'Critical' ? 'No' : row.riskLevel === 'High' ? 'Review' : 'Watch'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <UnifiedRiskLedger
+            rows={commandCenter.ledger}
+            focusedSegmentId={selectedSegmentId}
+            onFocusMap={focusLedgerRow}
+            onOpenEvidence={openLedgerRow}
+          />
+        </div>
+        <div
+          data-testid="county-studio-bottom-deck"
+          style={{
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateRows: 'minmax(92px, 1fr) auto',
+            overflow: 'hidden',
+          }}
+        >
+          <BottomDeck />
+        </div>
+      </div>
+
+      <div
+        data-testid="county-operational-scope-note"
+        style={{
+          padding: '8px 12px',
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+          fontSize: 11,
+          color: 'hsl(var(--tf-muted))',
+        }}
+      >
+        County Studio opens by how valuation decisions are made and defended: reval cycles, neighborhoods, model groups, districts, value tiers, and parcel evidence.
+      </div>
+
+      <CountyHealthPanel />
 
       <div
         style={{

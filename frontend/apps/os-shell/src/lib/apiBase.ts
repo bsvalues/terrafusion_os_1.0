@@ -24,6 +24,46 @@
  */
 
 import { getViteEnv } from '../shared/viteEnv';
+import { getToken, setToken } from '../auth/authStorage';
+
+let devTokenPromise: Promise<string | null> | null = null;
+
+function envFlag(value: unknown): boolean {
+  return String(value ?? '').toLowerCase() === 'true';
+}
+
+function shouldUseDevPreviewToken(): boolean {
+  const env = getViteEnv();
+  const explicitPreviewBypass =
+    envFlag(env.VITE_USE_MOCK_DATA) || envFlag(env.VITE_DEV_PREVIEW_BYPASS_AUTH);
+  const viteDevMode =
+    envFlag(env.DEV) && String(env.MODE ?? '').toLowerCase() === 'development';
+  const forceAuthInDev = envFlag(env.VITE_ENFORCE_AUTH_IN_DEV);
+
+  return explicitPreviewBypass || (viteDevMode && !forceAuthInDev);
+}
+
+async function getBearerTokenForApiFetch(path: string): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+
+  const existing = getToken();
+  if (existing) return existing;
+  if (path === '/auth/dev-token' || !shouldUseDevPreviewToken()) return null;
+
+  devTokenPromise ??= fetch('/api/auth/dev-token')
+    .then(async (response) => {
+      if (!response.ok) return null;
+      const payload = await response.json() as { token?: unknown };
+      return typeof payload.token === 'string' && payload.token.length > 0
+        ? payload.token
+        : null;
+    })
+    .catch(() => null);
+
+  const token = await devTokenPromise;
+  if (token) setToken(token);
+  return token;
+}
 
 /**
  * Returns the API base URL.
@@ -78,7 +118,20 @@ export function buildApiUrl(path: string): string {
  */
 export async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
   const url = buildApiUrl(path);
-  return fetch(url, init);
+  const token = await getBearerTokenForApiFetch(path);
+  if (!token) {
+    return fetch(url, init);
+  }
+
+  const headers = new Headers(init?.headers);
+  if (!headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  return fetch(url, {
+    ...init,
+    headers: Object.fromEntries(headers.entries()),
+  });
 }
 
 /**

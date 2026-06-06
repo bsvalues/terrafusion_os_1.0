@@ -13,9 +13,12 @@ import type {
   NeighborhoodRollupRowDto,
 } from '../types/countyStudio.types';
 
-const { mockNavigate } = vi.hoisted(() => ({
+const { mockNavigate, activateModuleMock } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
+  activateModuleMock: vi.fn(),
 }));
+
+const openMock = vi.fn();
 
 vi.mock('react-router-dom', async (importActual) => {
   const actual = await importActual<typeof import('react-router-dom')>();
@@ -24,6 +27,150 @@ vi.mock('react-router-dom', async (importActual) => {
 
 vi.mock('../hooks/useCountyStudyHub', () => ({ useCountyStudyHub: () => ({}) }));
 vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => ({ retryAll: vi.fn() }) }));
+vi.mock('@/orchestration/moduleActivation', () => ({
+  default: activateModuleMock,
+  activateModule: activateModuleMock,
+}));
+vi.mock('../countyStudyApi', async (importActual) => {
+  const actual = await importActual<typeof import('../countyStudyApi')>();
+  return {
+    ...actual,
+    exceptionApi: {
+      ...actual.exceptionApi,
+      listDownstreamReceipts: vi.fn(() => new Promise(() => {})),
+    },
+  };
+});
+vi.mock('../../atlas-live/hooks/useAtlasMapData', () => ({
+  useAtlasMapData: () => ({
+    countyContext: {
+      contractId: 'county_data_trust_launch_context_v1',
+      countyId: 'benton',
+      countyName: 'Benton',
+      countyCode: '005',
+      segmentId: null,
+      neighborhoodCode: null,
+      studyId: 'study-1',
+      taxYear: 2026,
+      primarySourceMode: 'local_pacs_mirror',
+      prometheusStatus: 'automated_with_review',
+      latestSaleDate: '2026-01-13',
+      stagedSales: 59559,
+      needsReview: 730,
+      detailRoute: '/launch-data/washington/counties/005.json',
+      salesRoute: '/launch-data/washington/sales/by-county/005.json',
+      geometryAvailability: 'compatibility',
+      geometryMessage: 'Compatibility geometry feed active.',
+      trustTier: 'production_provisional',
+      trustLabel: 'Production Provisional',
+      dataTrustBadges: ['Production Provisional'],
+      databasePosture: 'TerraFusion.Benton.Operational',
+      launchContextPosture: 'Benton operational/provisional lane.',
+      productionClaimAllowed: false,
+      dataTrustMessage: 'Benton operational geometry context.',
+    },
+    outlines: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [[[-119.4, 46.2], [-119.3, 46.2], [-119.3, 46.3], [-119.4, 46.3], [-119.4, 46.2]]] },
+          properties: {
+            neighborhoodCode: 'NBHD-K1',
+            medianRatio: 0.84,
+            saleCount: 22,
+            grade: 'F',
+            fillHsl: '16 55% 56% / 0.24',
+            strokeHsl: '16 62% 48%',
+          },
+        },
+      ],
+    },
+    parcels: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [[[-119.36, 46.24], [-119.35, 46.24], [-119.35, 46.25], [-119.36, 46.25], [-119.36, 46.24]]] },
+          properties: {
+            parcelId: 'P-100',
+            neighborhoodCode: 'NBHD-K1',
+            assessedValue: 420000,
+            propertyClass: 'R',
+            areaAcres: 0.2,
+            yearBuilt: 1999,
+            situsAddress: '100 Columbia Dr',
+            primaryUse: 'Residential',
+            saleDate: '2026-01-13',
+            salePrice: 500000,
+            qualDecision: 'Qualified',
+            ratio: 0.84,
+            nbhdMedianRatio: 0.84,
+            ratioDeviation: -0.16,
+            isOutlier: true,
+          },
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+    scopeMessage: 'Compatibility geometry feed active.',
+  }),
+}));
+vi.mock('../../geo/v2/GeoForgeV2Map', () => ({
+  GeoForgeV2Map: ({
+    selectedNeighborhoodCode,
+    onNeighborhoodClick,
+    onParcelClick,
+    onViewportChange,
+  }: {
+    selectedNeighborhoodCode: string | null;
+    onNeighborhoodClick: (code: string) => void;
+    onParcelClick: (parcel: unknown) => void;
+    onViewportChange: (bbox: [number, number, number, number], zoom: number) => void;
+  }) => (
+    <div
+      data-testid="mock-geoforge-v2-map"
+      data-selected-neighborhood-code={selectedNeighborhoodCode ?? ''}
+      role="application"
+      aria-label="Mock GeoForge v2 Atlas canvas"
+    >
+      <button type="button" data-testid="mock-atlas-neighborhood-nbhd-k1" onClick={() => onNeighborhoodClick('NBHD-K1')}>
+        Atlas neighborhood NBHD-K1
+      </button>
+      <button
+        type="button"
+        data-testid="mock-atlas-parcel-p100"
+        onClick={() => onParcelClick({
+          parcelId: 'P-100',
+          neighborhoodCode: 'NBHD-K1',
+          assessedValue: 420000,
+          propertyClass: 'R',
+          areaAcres: 0.2,
+          yearBuilt: 1999,
+          situsAddress: '100 Columbia Dr',
+          primaryUse: 'Residential',
+          saleDate: '2026-01-13',
+          salePrice: 500000,
+          qualDecision: 'Qualified',
+          ratio: 0.84,
+          nbhdMedianRatio: 0.84,
+          ratioDeviation: -0.16,
+          isOutlier: true,
+        })}
+      >
+        Atlas parcel P-100
+      </button>
+      <button
+        type="button"
+        data-testid="mock-atlas-viewport"
+        onClick={() => onViewportChange([-119.47, 46.16, -119.17, 46.39], 11.25)}
+      >
+        Set Atlas viewport
+      </button>
+    </div>
+  ),
+}));
 vi.mock('../components/CohortCreationDialog', () => ({ CohortCreationDialog: () => null }));
 vi.mock('../components/CountyStatisticsWorkbenchPanel', () => ({
   CountyStatisticsWorkbenchPanel: () => (
@@ -148,8 +295,11 @@ const MOCK_HEALTH: CountyHealthSummaryDto = {
 
 describe('CountyStudyPage', () => {
   beforeEach(() => {
+    vi.stubGlobal('open', openMock);
     act(() => {
       mockNavigate.mockClear();
+      activateModuleMock.mockClear();
+      openMock.mockClear();
       useCountyStudioStore.getState().setStudy(null);
       useCountyStudioStore.getState().setSegments([]);
       useCountyStudioStore.getState().setCityRollup([]);
@@ -170,12 +320,12 @@ describe('CountyStudyPage', () => {
     expect(screen.getByRole('button', { name: /open study/i })).toBeInTheDocument();
   });
 
-  it('does NOT show the pop-out map button when no study is active', () => {
+  it('does NOT show the TerraAtlas handoff when no study is active', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    expect(screen.queryByRole('button', { name: /pop out map/i })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('county-studio-open-terraatlas')).not.toBeInTheDocument();
   });
 
-  it('shows the pop-out map button when a study is active', () => {
+  it('shows the Open in TerraAtlas button when a study is active', () => {
     act(() => {
       useCountyStudioStore.getState().setStudy({
         studyId: 'study-1', countyId: 'benton', taxYear: 2026,
@@ -184,10 +334,10 @@ describe('CountyStudyPage', () => {
       });
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    expect(screen.getByRole('button', { name: /pop out map/i })).toBeInTheDocument();
+    expect(screen.getByTestId('county-studio-open-terraatlas')).toBeInTheDocument();
   });
 
-  it('page-level Atlas handoff preserves valuation context without city as a primary key', () => {
+  it('page-level Atlas handoff opens a browser window and preserves valuation context without city as a primary key', () => {
     act(() => {
       useCountyStudioStore.getState().setStudy({
         studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
@@ -200,9 +350,11 @@ describe('CountyStudyPage', () => {
     });
 
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    fireEvent.click(screen.getByRole('button', { name: /pop out map/i }));
+    fireEvent.click(screen.getByTestId('county-studio-open-terraatlas'));
 
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    expect(mockNavigate).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('studyId')).toBe('study-1');
     expect(params.get('countyId')).toBe('benton');
@@ -211,7 +363,34 @@ describe('CountyStudyPage', () => {
     expect(params.get('neighborhoodCode')).toBe('NBHD-K1');
     expect(params.get('revalArea')).toBe('2');
     expect(params.get('segmentId')).toBe('s2');
+    expect(params.get('source')).toBe('county-studio');
+    expect(params.get('activeLayers')).toContain('parcels');
+    expect(params.get('activeLayers')).toContain('taxing-districts');
+    expect(params.get('activeLayers')).toContain('valuation-risk');
+    expect(params.get('selectedRiskObject')).toBe('s2');
     expect(params.get('city')).toBeNull();
+  });
+
+  it('page-level Atlas handoff preserves active map bounds when the embedded map reports viewport changes', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().focusRiskSurfaceMapObject('NBHD-K1', null, 2);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByTestId('mock-atlas-viewport'));
+    fireEvent.click(screen.getByTestId('county-studio-open-terraatlas'));
+
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('mapBounds')).toBe('-119.47,46.16,-119.17,46.39');
+    expect(params.get('mapZoom')).toBe('11.25');
+    expect(params.get('selectedRiskObject')).toBe('NBHD-K1');
   });
 
   it('opens the native County Studio analytics workbench mode', () => {
@@ -255,6 +434,277 @@ describe('CountyStudyPage', () => {
     expect(screen.getByText('Unified Risk Ledger')).toBeInTheDocument();
     expect(screen.queryByText('Kennewick')).not.toBeInTheDocument();
     expect(screen.getByTestId('county-operational-scope-note')).toHaveTextContent(/valuation decisions are made and defended/i);
+  });
+
+  it('mounts embedded TerraAtlas GIS as the primary center surface above the ledger', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const workspace = screen.getByTestId('county-studio-atlas-workspace');
+    const canvas = screen.getByTestId('county-studio-embedded-atlas-canvas');
+    const ledger = screen.getByTestId('unified-risk-ledger');
+
+    expect(workspace).toBeInTheDocument();
+    expect(canvas).toHaveAttribute('data-layout-role', 'primary-center-surface');
+    expect(canvas).toHaveAttribute('data-atlas-connected', 'true');
+    expect(screen.getByTestId('mock-geoforge-v2-map')).toBeInTheDocument();
+    expect(workspace).toHaveTextContent('Embedded TerraAtlas GIS');
+    expect(workspace).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
+    expect(canvas.compareDocumentPosition(ledger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('keeps the embedded Atlas workspace ahead of county health dashboards in the primary county view', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const workspace = screen.getByTestId('county-studio-atlas-workspace');
+    const health = screen.getByTestId('county-operational-scope-note');
+
+    expect(workspace.compareDocumentPosition(health) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('uses a bounded county GIS stage with ledger and statistics below the map', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const stage = screen.getByTestId('county-studio-gis-stage');
+    const workspace = screen.getByTestId('county-studio-atlas-workspace');
+    const bottomAnalytics = screen.getByTestId('county-studio-bottom-analytics');
+    const ledger = screen.getByTestId('unified-risk-ledger');
+    const bottomDeck = screen.getByTestId('county-studio-bottom-deck');
+
+    expect(stage).toContainElement(workspace);
+    expect(bottomAnalytics).toContainElement(ledger);
+    expect(bottomAnalytics).toContainElement(bottomDeck);
+    expect(workspace.compareDocumentPosition(bottomAnalytics) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByTestId('county-studio-map-inspector')).not.toBeInTheDocument();
+  });
+
+  it('renders operational risk lenses instead of persona role selectors', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+      useCountyStudioStore.getState().setSyncState('LIVE');
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    expect(screen.queryByTestId('prometheus-role-lens-bar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Chief Appraiser/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Appraiser/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Assessor/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /GIS Analyst/i })).not.toBeInTheDocument();
+
+    const lensBar = screen.getByTestId('prometheus-operational-lens-selector');
+    expect(lensBar).toHaveTextContent('Roll Readiness');
+    expect(lensBar).toHaveTextContent('Equity Risk');
+    expect(lensBar).toHaveTextContent('Model Drift');
+    expect(lensBar).toHaveTextContent('Sales Support');
+    expect(lensBar).toHaveTextContent('Spatial Integrity');
+    expect(lensBar).toHaveTextContent('Appeal Exposure');
+    expect(lensBar).toHaveTextContent('Certification Risk');
+    expect(screen.getByTestId('prometheus-active-lens')).toHaveTextContent('Roll Readiness');
+
+    const chrome = screen.getByTestId('prometheus-map-chrome');
+    expect(chrome).toHaveTextContent('Lens: Roll Readiness');
+    expect(chrome).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
+    expect(chrome).toHaveTextContent('Roll Readiness');
+    expect(chrome).toHaveTextContent('Critical');
+    expect(chrome).not.toHaveTextContent('Benton County valuation health is being operated here');
+    expect(chrome).not.toHaveTextContent('TerraAtlas-owned layers');
+    expect(chrome).not.toHaveTextContent('Forge-owned overlays');
+    const riskLabels = screen.getAllByTestId('prometheus-risk-map-label');
+    expect(riskLabels.length).toBeGreaterThan(0);
+    expect(riskLabels[0]).toHaveTextContent(/Critical|High/);
+    expect(riskLabels[0]).toHaveTextContent('NBHD');
+    expect(riskLabels[0]).toHaveAttribute('data-marker-style', 'spatial-severity-marker');
+  });
+
+  it('changes the command emphasis by operational lens without changing suite ownership', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+      useCountyStudioStore.getState().setSyncState('LIVE');
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('button', { name: 'Model Drift lens' }));
+    expect(screen.getByTestId('prometheus-active-lens')).toHaveTextContent('Model Drift');
+    expect(screen.getByTestId('prometheus-command-queue')).toHaveTextContent('model calibration and drift');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Failure:');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Route:');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Defensibility:');
+    expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Model Drift');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Spatial Integrity lens' }));
+    expect(screen.getByTestId('prometheus-command-queue')).toHaveTextContent('spatial truth and layer health');
+    expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Spatial Integrity');
+    expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
+  });
+
+  it('keeps the right decision inspector operationally useful before the user opens a segment detail', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+      useCountyStudioStore.getState().setSyncState('LIVE');
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    const focus = screen.getByTestId('prometheus-decision-inspector');
+    expect(focus).toHaveTextContent('Critical equity failure');
+    expect(focus).toHaveTextContent('Neighborhood NBHD-K1 is under target');
+    expect(focus).toHaveTextContent('22 parcels are driving the failure');
+    expect(focus).toHaveTextContent('Likely cause');
+    expect(focus).toHaveTextContent('Not defensible for certification');
+    expect(focus).toHaveTextContent('Next: send');
+    expect(focus).not.toHaveTextContent('Selected Risk Object');
+    expect(focus).not.toHaveTextContent('Next best action');
+    expect(focus).toHaveTextContent('Open Workbench');
+    expect(focus).toHaveTextContent('Open in TerraAtlas');
+    expect(screen.queryByText('Select a segment to inspect.')).not.toBeInTheDocument();
+  });
+
+  it('does not expose internal compatibility labels in the command surface', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+      useCountyStudioStore.getState().setSyncState('LIVE');
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    expect(screen.queryByText(/Statistics Compat/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Study Evidence/i })).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: /Study Analytics/i })).not.toBeInTheDocument();
+  });
+
+  it('shows an honest empty command surface when no study or risk evidence is open', () => {
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+
+    expect(screen.getByTestId('prometheus-empty-study-state')).toHaveTextContent('Open a County Studio study');
+    expect(screen.queryByTestId('county-studio-atlas-workspace')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-geoforge-v2-map')).not.toBeInTheDocument();
+  });
+
+  it('map neighborhood selection focuses the ledger and object inspector without selectedCity', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByTestId('mock-atlas-neighborhood-nbhd-k1'));
+
+    expect(useCountyStudioStore.getState().selectedCity).toBeNull();
+    expect(useCountyStudioStore.getState().selectedNeighborhood).toBe('NBHD-K1');
+    expect(useCountyStudioStore.getState().selectedNeighborhoodRevalArea).toBe(2);
+    expect(useCountyStudioStore.getState().selectedSegmentId).toBe('s2');
+    expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Neighborhood NBHD-K1 · Reval 2');
+  });
+
+  it('ledger row selection highlights the embedded map object without drilling through city', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG, LARGE_EXPOSURE_SEG, HIGH_RISK_SEG]);
+      useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    const targetRow = screen.getAllByTestId('risk-ledger-row')
+      .find((row) => row.textContent?.includes('Neighborhood NBHD-K1'));
+    expect(targetRow).toBeTruthy();
+    fireEvent.click(targetRow!);
+
+    expect(useCountyStudioStore.getState().selectedCity).toBeNull();
+    expect(useCountyStudioStore.getState().selectedNeighborhood).toBe('NBHD-K1');
+    expect(screen.getByTestId('mock-geoforge-v2-map')).toHaveAttribute('data-selected-neighborhood-code', 'NBHD-K1');
+    expect(targetRow).toHaveAttribute('data-focused', 'true');
+  });
+
+  it('map parcel selection routes parcel-scoped action into Property Workbench with Atlas/Forge/Dossier context', () => {
+    act(() => {
+      useCountyStudioStore.getState().setStudy({
+        studyId: 'study-1', countyId: 'benton', countyName: 'Benton County', taxYear: 2026,
+        studyType: 'RatioStudy', status: 'Active', baselineVersion: null,
+        activeSegmentSetId: 'ss1', createdAt: '', updatedAt: '', createdBy: '', updatedBy: '',
+      });
+      useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
+    });
+
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByTestId('mock-atlas-parcel-p100'));
+    fireEvent.click(screen.getByTestId('county-studio-open-parcel-workbench'));
+
+    expect(useCountyStudioStore.getState().selectedCity).toBeNull();
+    expect(useCountyStudioStore.getState().pendingSelection?.parcelIds).toEqual(['P-100']);
+    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyId: 'benton',
+        taxYear: 2026,
+        studyId: 'study-1',
+        parcelId: 'P-100',
+        segmentId: 's2',
+        neighborhoodCode: 'NBHD-K1',
+        revalArea: 2,
+        initialTab: 'atlas',
+        tabs: {
+          atlas: 'parcel-gis',
+          forge: 'parcel-valuation',
+          dossier: 'evidence',
+        },
+      }),
+    }));
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata).not.toHaveProperty('city');
   });
 
   it('renders the unified risk ledger as the first command queue before supporting boards', () => {

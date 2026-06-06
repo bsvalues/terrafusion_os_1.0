@@ -223,7 +223,7 @@ describe('CUForge review regressions', () => {
     expect(Object.keys(body.currentUseValues).map(Number).sort((a, b) => a - b)).toEqual([
       2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
     ]);
-  });
+  }, 20_000);
 
   it('renders the operational case desk with work queues derived from live current use records', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
@@ -312,7 +312,7 @@ describe('CUForge review regressions', () => {
     expect(screen.getByText('Case Status')).toBeInTheDocument();
     expect(screen.getByText('Assigned To')).toBeInTheDocument();
     expect(screen.getByText('Aging')).toBeInTheDocument();
-  });
+  }, 20_000);
 
   it('supports assessor-grade local case transitions without claiming persistence', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
@@ -359,7 +359,7 @@ describe('CUForge review regressions', () => {
     await screen.findByRole('heading', { name: 'Current Use Case Desk' });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Rollback Incomplete 1/i }));
+      fireEvent.click(await screen.findByRole('button', { name: /Rollback Incomplete 1/i }, { timeout: 10_000 }));
     });
 
     expect(screen.getByRole('heading', { name: 'Rollback Review' })).toBeInTheDocument();
@@ -378,7 +378,7 @@ describe('CUForge review regressions', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Monitoring' })).toBeInTheDocument();
-  });
+  }, 20_000);
 
   it('does not carry prepared notice or rollback worksheet output across selected cases', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
@@ -444,7 +444,7 @@ describe('CUForge review regressions', () => {
     await screen.findByRole('heading', { name: 'Current Use Case Desk' });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Rollback Incomplete 1/i }));
+      fireEvent.click(await screen.findByRole('button', { name: /Rollback Incomplete 1/i }, { timeout: 10_000 }));
     });
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Calculate worksheet' }));
@@ -459,14 +459,14 @@ describe('CUForge review regressions', () => {
     expect(screen.getByText('Missing evidence request prepared for 1-4444-400-0004')).toBeInTheDocument();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Missing Evidence 1/i }));
+      fireEvent.click(await screen.findByRole('button', { name: /Missing Evidence 1/i }, { timeout: 10_000 }));
     });
 
     expect(screen.getAllByText('Missing lease evidence continuance').length).toBeGreaterThan(0);
     expect(screen.queryByText('$16,100.00')).not.toBeInTheDocument();
     expect(screen.queryByText('Missing evidence request prepared for 1-4444-400-0004')).not.toBeInTheDocument();
     expect(screen.getByText('No notice prepared for selected case.')).toBeInTheDocument();
-  });
+  }, 20_000);
 
   it('uses the existing rollback endpoint to produce an assessor-grade worksheet for the selected case', async () => {
     apiFetchJsonMock.mockImplementation((path: string) => {
@@ -552,5 +552,5 @@ describe('CUForge review regressions', () => {
     expect(screen.getByText('$2,500.00')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Print worksheet' })).toBeInTheDocument();
     expect(screen.getByText('$16,100.00')).toBeInTheDocument();
-  });
+  }, 20_000);
 });

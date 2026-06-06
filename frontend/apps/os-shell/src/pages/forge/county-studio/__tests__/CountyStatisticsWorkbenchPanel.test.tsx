@@ -292,12 +292,12 @@ describe('CountyStatisticsWorkbenchPanel', () => {
     });
   });
 
-  it('renders County Studio-owned analytics modes instead of an embedded Statistics Studio shell', () => {
+  it('renders County Studio-owned study evidence modes instead of an embedded Statistics Studio shell', () => {
     render(<CountyStatisticsWorkbenchPanel />, { wrapper });
 
     expect(screen.getByTestId('county-studio-statistics-workbench')).toBeInTheDocument();
-    expect(screen.getByText('Statistics Compat')).toBeInTheDocument();
-    expect(screen.getAllByText('statistics_ratio_study_compat_v1').length).toBeGreaterThan(0);
+    expect(screen.getByText('Study Evidence')).toBeInTheDocument();
+    expect(screen.getByText('Ratio Study Evidence')).toBeInTheDocument();
     expect(screen.getByTestId('mock-ratio-panel')).toHaveTextContent('ratio study capability');
     expect(screen.getByTestId('county-analytics-stratified')).toBeInTheDocument();
     expect(screen.getByTestId('county-analytics-equity')).toBeInTheDocument();
@@ -305,6 +305,44 @@ describe('CountyStatisticsWorkbenchPanel', () => {
     expect(screen.getByTestId('county-analytics-quality-control')).toBeInTheDocument();
     expect(screen.getByTestId('county-analytics-market-context')).toBeInTheDocument();
     expect(screen.queryByTestId('statistics-studio')).not.toBeInTheDocument();
+  });
+
+  it('translates ratio study contract metadata into assessor-facing trust evidence', async () => {
+    render(<CountyStatisticsWorkbenchPanel />, { wrapper });
+
+    const evidence = await screen.findByTestId('statistics-compat-contract-panel');
+
+    await waitFor(() => {
+      expect(evidence).toHaveTextContent('Can this ratio study be trusted?');
+      expect(evidence).toHaveTextContent('Status: Partial');
+      expect(evidence).toHaveTextContent('36 qualified sale ratio rows');
+      expect(evidence).toHaveTextContent('35 after trimming');
+      expect(evidence).toHaveTextContent('1 outlier excluded');
+      expect(evidence).toHaveTextContent('0 unmatched parcels');
+      expect(evidence).toHaveTextContent('Population');
+      expect(evidence).toHaveTextContent('Method');
+      expect(evidence).toHaveTextContent('Defensibility');
+      expect(evidence).toHaveTextContent('Evidence posture: partial');
+      expect(evidence).toHaveTextContent('Risk: sample size is thin');
+      expect(evidence).toHaveTextContent('Next action: review sale qualification and parcel reconciliation');
+      expect(evidence).toHaveTextContent('County Studio Evidence');
+    });
+    expect(screen.getByText('County Ratio Study Evidence View')).toBeInTheDocument();
+    expect(evidence).not.toHaveTextContent('Ratio Study Evidence Contract');
+    expect(evidence).not.toHaveTextContent('County Studio Compat');
+    expect(evidence).not.toHaveTextContent('contractId');
+    expect(evidence).not.toHaveTextContent('countWithRatio');
+    expect(evidence).not.toHaveTextContent('outliersExcluded');
+    expect(evidence).not.toHaveTextContent('trimmedCount');
+    expect(evidence).not.toHaveTextContent('trustPosture');
+    expect(evidence).not.toHaveTextContent('saleWindow');
+    expect(evidence).not.toHaveTextContent('qualificationPolicy');
+    expect(evidence).not.toHaveTextContent('suppressionPolicy');
+    expect(evidence).not.toHaveTextContent('parcelIdentityReconciliation');
+    expect(evidence).not.toHaveTextContent('conversionSensitiveCounts');
+
+    expect(screen.getByText('Technical details')).toBeInTheDocument();
+    expect(screen.queryByText('statistics_ratio_study_compat_v1')).not.toBeInTheDocument();
   });
 
   it('keeps statistics capability scoped to the active County Studio study', () => {

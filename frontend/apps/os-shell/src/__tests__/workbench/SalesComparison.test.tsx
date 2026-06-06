@@ -74,6 +74,31 @@ vi.mock('../../api/pilotApi', () => ({
   invokeTool: vi.fn(),
 }));
 
+vi.mock('../../hooks/forge/useForgeValuation', () => ({
+  useSalesComparison: () => ({
+    data: undefined,
+    loading: false,
+    error: null,
+    source: 'unavailable',
+    refetch: vi.fn(),
+  }),
+  usePatchSaleQualification: () => ({
+    mutate: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+    isError: false,
+    error: null,
+  }),
+  useRecomputeRecommendations: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    isSuccess: false,
+    error: null,
+    data: null,
+  }),
+}));
+
 const mockInvokeTool = vi.mocked(pilotApi.invokeTool);
 
 const renderSales = (props: { taxYear: number; onHistoryRecord: ReturnType<typeof vi.fn>; onValueIndicated: ReturnType<typeof vi.fn> }) => {
