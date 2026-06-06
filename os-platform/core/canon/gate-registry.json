@@ -1,0 +1,25 @@
+{
+  "version": "0.1.0",
+  "effectiveDate": "2026-06-05",
+  "note": "Gate vocabulary used by the MVP write-lane seed and rule index. IDs are intentionally short for this slice; the package's frontend:/shell:/canon: prefixed names are reconciled later.",
+  "gates": [
+    {
+      "gateId": "typecheck",
+      "label": "TypeScript Type Check",
+      "command": "pnpm run type-check",
+      "kind": "regression"
+    },
+    {
+      "gateId": "launch-surface-contract",
+      "label": "Launch Surface Contract",
+      "command": "node os-platform/core/tests/launch-surface-contract.test.mjs",
+      "kind": "contract"
+    },
+    {
+      "gateId": "canon-query",
+      "label": "Canon Runtime Query Self-Test",
+      "command": "node --test os-platform/core/tests/canon-query.test.mjs",
+      "kind": "contract"
+    }
+  ]
+}

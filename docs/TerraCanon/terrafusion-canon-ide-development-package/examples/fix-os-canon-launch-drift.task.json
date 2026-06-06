@@ -1,0 +1,28 @@
+{
+  "taskId": "canon-task-fix-os-canon-launch-drift",
+  "intent": "Fix os-canon shell launch drift so Canon opens as an in-shell near-full-stage OS Feature through activateModule.",
+  "surface": "os-canon",
+  "state": "Draft",
+  "risk": "high",
+  "scope": {
+    "allowedPaths": [
+      "frontend/apps/os-shell/src/config/moduleComponents.tsx",
+      "frontend/apps/os-shell/src/shell/desktop/DesktopIconGrid.tsx",
+      "frontend/apps/os-shell/src/orchestration/moduleActivation.ts",
+      "frontend/apps/os-shell/src/stores/desktopStore.ts",
+      "frontend/apps/os-shell/src/modules/os-canon/**",
+      "os-platform/core/tests/launch-surface-contract.test.mjs"
+    ],
+    "forbiddenPaths": [
+      "ARCHIVE/**",
+      "specialized/**",
+      "backend/**",
+      "marketplace/**"
+    ]
+  },
+  "requiredGates": [
+    "frontend:typecheck",
+    "shell:launch-surface-contract",
+    "trace:evidence-bundle"
+  ]
+}
