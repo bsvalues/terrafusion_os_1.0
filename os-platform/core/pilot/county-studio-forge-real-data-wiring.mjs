@@ -40,6 +40,14 @@ const DEFAULT_LINEAGE_JSON = path.join(
   "evidence",
   "county-studio-r1-data-lineage-reconciliation.json"
 );
+const DEFAULT_GEOMETRY_EVIDENCE_JSON = path.join(
+  repoRoot,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "county-studio-terraatlas-geometry-evidence.json"
+);
 const DEFAULT_OUT_JSON = path.join(
   repoRoot,
   "os-platform",
@@ -137,6 +145,9 @@ function wiringSurface({
 }) {
   const normalizedClassification = normalizeClassification(classification ?? source?.classification);
   const copied = copySource(source, overrides);
+  const observedCount = overrides.observedCount ?? copied.observedCount;
+  const failureReason = overrides.failureReason ?? copied.failureReason;
+  const requiredProofToUpgrade = overrides.requiredProofToUpgrade ?? copied.requiredProofToUpgrade;
   return {
     surface,
     sourceName,
@@ -146,7 +157,7 @@ function wiringSurface({
     dbTableOrView: copied.dbTableOrView,
     ownerLane,
     classification: normalizedClassification,
-    observedCount: copied.observedCount,
+    observedCount,
     joinKey: copied.joinKey,
     countyId: copied.countyId,
     taxYear: copied.taxYear,
@@ -154,8 +165,8 @@ function wiringSurface({
     requiredForForgeDev,
     productionProofAllowed: false,
     operationalProofAllowed: false,
-    failureReason: copied.failureReason,
-    requiredProofToUpgrade: copied.requiredProofToUpgrade,
+    failureReason,
+    requiredProofToUpgrade,
     status: surfaceStatus(normalizedClassification)
   };
 }
@@ -250,7 +261,7 @@ function scanSurface(gaps) {
   };
 }
 
-function buildSurfaces({ dataTruthReport, lineageReport, readinessReport }) {
+function buildSurfaces({ dataTruthReport, lineageReport, readinessReport, geometryEvidenceReport }) {
   const parcel = findInventory(lineageReport, "parcel/property identity");
   const valuation = findInventory(lineageReport, "valuation metrics");
   const risk = findInventory(lineageReport, "risk objects");
@@ -320,8 +331,15 @@ function buildSurfaces({ dataTruthReport, lineageReport, readinessReport }) {
       surface: "geometry/map context source",
       sourceName: "TerraAtlas geometry/map context consumed by County Studio",
       ownerLane: "Atlas",
-      classification: geometry?.classification ?? findProofArea(dataTruthReport, "Atlas layers")?.classification,
-      source: geometry
+      classification: geometryEvidenceReport?.classification
+        ?? geometry?.classification
+        ?? findProofArea(dataTruthReport, "Atlas layers")?.classification,
+      source: geometry,
+      overrides: {
+        observedCount: geometryEvidenceReport?.geometryCounts?.parcelGeometry,
+        failureReason: geometryEvidenceReport?.finding,
+        requiredProofToUpgrade: geometryEvidenceReport?.requiredProofToUpgrade
+      }
     })
   ];
 
@@ -359,9 +377,10 @@ export function buildCountyStudioForgeRealDataWiringReport({
   activationReport = null,
   dataTruthReport = null,
   lineageReport = null,
+  geometryEvidenceReport = null,
   generatedAtUtc = new Date().toISOString()
 } = {}) {
-  const surfaces = buildSurfaces({ dataTruthReport, lineageReport, readinessReport });
+  const surfaces = buildSurfaces({ dataTruthReport, lineageReport, readinessReport, geometryEvidenceReport });
   const wiringGaps = buildGaps(surfaces);
   const activationReady = activationReport?.decisions?.realDevActivationAllowed === true;
   const realDevServerAllowed = readinessReport?.decisions?.realDevServerAllowed === true;
@@ -413,6 +432,13 @@ export function buildCountyStudioForgeRealDataWiringReport({
       productionProofAllowed: lineageReport?.decisions?.productionProofAllowed === true,
       operationalProofAllowed: lineageReport?.decisions?.operationalProofAllowed === true
     },
+    geometryEvidencePosture: {
+      status: geometryEvidenceReport?.status ?? "UNKNOWN",
+      classification: geometryEvidenceReport?.classification ?? "UNKNOWN",
+      realGeometryExists: geometryEvidenceReport?.decisions?.realGeometryExists === true,
+      countyStudioUsesRealTerraAtlasGeometry:
+        geometryEvidenceReport?.decisions?.countyStudioUsesRealTerraAtlasGeometry === true
+    },
     blockers,
     boundaries: [
       "This gate does not touch County Studio UI.",
@@ -452,6 +478,16 @@ export function renderCountyStudioForgeRealDataWiringMarkdown(report) {
       `| ${surface.surface} | ${surface.classification} | ${surface.ownerLane} | ${surface.apiRoute} | ${surface.backendServiceOrController} | ${surface.dbTableOrView} | ${surface.joinKey} | ${surface.status} |`
     );
   });
+
+  lines.push(
+    "",
+    "## TerraAtlas Geometry Evidence",
+    "",
+    `- status: ${report.geometryEvidencePosture.status}`,
+    `- classification: ${report.geometryEvidencePosture.classification}`,
+    `- realGeometryExists: ${report.geometryEvidencePosture.realGeometryExists}`,
+    `- countyStudioUsesRealTerraAtlasGeometry: ${report.geometryEvidencePosture.countyStudioUsesRealTerraAtlasGeometry}`
+  );
 
   lines.push(
     "",
@@ -504,6 +540,7 @@ function parseArgs(argv) {
     activation: DEFAULT_ACTIVATION_JSON,
     dataTruth: DEFAULT_DATA_TRUTH_JSON,
     lineage: DEFAULT_LINEAGE_JSON,
+    geometryEvidence: DEFAULT_GEOMETRY_EVIDENCE_JSON,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     write: true
@@ -515,6 +552,7 @@ function parseArgs(argv) {
     else if (arg === "--activation") args.activation = path.resolve(argv[++i]);
     else if (arg === "--data-truth") args.dataTruth = path.resolve(argv[++i]);
     else if (arg === "--lineage") args.lineage = path.resolve(argv[++i]);
+    else if (arg === "--geometry-evidence") args.geometryEvidence = path.resolve(argv[++i]);
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -529,7 +567,8 @@ export function main(argv = process.argv.slice(2)) {
     readinessReport: readJson(args.readiness),
     activationReport: readJson(args.activation),
     dataTruthReport: readJson(args.dataTruth),
-    lineageReport: readJson(args.lineage)
+    lineageReport: readJson(args.lineage),
+    geometryEvidenceReport: readJson(args.geometryEvidence)
   });
 
   if (args.write) {

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T23:05:53.685Z",
+  "generatedAtUtc": "2026-06-06T23:47:15.927Z",
   "gate": "county-studio-forge-real-data-wiring",
   "status": "FORGE_REAL_DATA_WIRING_VERIFIED_WITH_GAPS",
   "decisions": {
@@ -59,8 +59,8 @@
       "requiredForForgeDev": true,
       "productionProofAllowed": false,
       "operationalProofAllowed": false,
-      "failureReason": "parcel/property source uses or references canonical service/table paths, but no authoritative Benton source/count manifest proves row-level truth.",
-      "requiredProofToUpgrade": "Compare seeded/sync-derived parcel identity counts to canonical Benton expected counts and prove APN/parcelId reconciliation.",
+      "failureReason": "Property characteristics are sync-derived for Forge dev; canonical CAMA count/field reconciliation remains incomplete.",
+      "requiredProofToUpgrade": "Reconcile property characteristic fields and parcel joins against canonical Benton CAMA expectations.",
       "status": "REAL_DEV_WIRED_PRODUCTION_BLOCKED"
     },
     {
@@ -134,7 +134,7 @@
       "backendServiceOrController": "Atlas Live compatibility API",
       "dbTableOrView": "gis_tf.tf_parcel_geom",
       "ownerLane": "Atlas",
-      "classification": "FALLBACK",
+      "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
       "observedCount": 80075,
       "joinKey": "countyId + parcelId/APN + layerId",
       "countyId": "19190019-1919-1919-1919-191919191919",
@@ -143,8 +143,8 @@
       "requiredForForgeDev": true,
       "productionProofAllowed": false,
       "operationalProofAllowed": false,
-      "failureReason": "Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof.",
-      "requiredProofToUpgrade": "Replace compatibility proof with TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, and taxing district layer contracts.",
+      "failureReason": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
+      "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage.",
       "status": "WIRING_GAP_IDENTIFIED"
     },
     {
@@ -177,7 +177,7 @@
       "dbTableOrView": "n/a",
       "ownerLane": "Forge",
       "classification": "GENERATED",
-      "observedCount": 2,
+      "observedCount": 1,
       "joinKey": "surface classification",
       "countyId": "19190019-1919-1919-1919-191919191919",
       "taxYear": 2026,
@@ -260,12 +260,6 @@
         "classification": "GENERATED",
         "failureReason": "risk objects are derived/presented by County Studio, but their authoritative source lineage and same-study binding are not proven.",
         "requiredProofToUpgrade": "Prove risk objects are recomputed from authoritative ratio/valuation rows and align with map, ledger, and inspector in one study context."
-      },
-      {
-        "surface": "geometry/map context source",
-        "classification": "FALLBACK",
-        "failureReason": "Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof.",
-        "requiredProofToUpgrade": "Replace compatibility proof with TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, and taxing district layer contracts."
       }
     ]
   },
@@ -278,9 +272,9 @@
     },
     {
       "surface": "geometry/map context source",
-      "classification": "FALLBACK",
-      "failureReason": "Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof.",
-      "requiredProofToUpgrade": "Replace compatibility proof with TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, and taxing district layer contracts."
+      "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+      "failureReason": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
+      "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage."
     }
   ],
   "dataTruthPosture": {
@@ -292,6 +286,12 @@
     "status": "DATA_LINEAGE_RECONCILED_WITH_PRODUCTION_BLOCKERS",
     "productionProofAllowed": false,
     "operationalProofAllowed": false
+  },
+  "geometryEvidencePosture": {
+    "status": "TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED",
+    "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+    "realGeometryExists": true,
+    "countyStudioUsesRealTerraAtlasGeometry": false
   },
   "blockers": [],
   "boundaries": [

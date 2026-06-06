@@ -1,0 +1,133 @@
+{
+  "generatedAtUtc": "2026-06-06T23:47:14.934Z",
+  "gate": "county-studio-terraatlas-geometry-evidence",
+  "status": "TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED",
+  "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+  "finding": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
+  "decisions": {
+    "realGeometryExists": true,
+    "countyStudioUsesRealTerraAtlasGeometry": false,
+    "atlasLayerAvailableNotWired": true,
+    "geometryMisclassified": false,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "geometryCounts": {
+    "parcelGeometry": 80075,
+    "canonicalParcel": 3199335,
+    "geometryInventoryObservedCount": 80075,
+    "mapInventoryObservedCount": 80075
+  },
+  "sourcePath": {
+    "frontendFile": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+    "countyStudioConsumer": "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx",
+    "hook": "frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts",
+    "apiRoute": "GET /launch-data/washington/counties/status.json + Atlas compatibility map routes",
+    "backendServiceOrController": "Atlas Live compatibility API",
+    "dbTableOrView": "gis_tf.tf_parcel_geom",
+    "joinKey": "countyId + parcelId/APN + layerId",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "studyId": "runtime-selected-study"
+  },
+  "candidateTables": [
+    {
+      "table": "gis_tf.tf_parcel_geom",
+      "exists": true,
+      "count": 80075
+    },
+    {
+      "table": "canonical_tf.tf_parcel",
+      "exists": true,
+      "count": null
+    },
+    {
+      "table": "truth_arcgis parcel geometry",
+      "exists": true,
+      "count": null
+    },
+    {
+      "table": "GeoForge compatibility tiles",
+      "exists": true,
+      "count": null
+    }
+  ],
+  "sourceScan": {
+    "frontendConsumer": "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx -> useAtlasMapData",
+    "apiRoute": "fetchAtlasCompatibilityMapData -> /geoforge/v2/neighborhoods/outline + /geoforge/v2/parcels/tiles",
+    "backendServiceOrController": "ParcelGeometryController + ParcelGeometryReader are available as real TerraAtlas geometry read path",
+    "usesCompatibilityMapData": true,
+    "usesTerraAtlasParcelGeometryEndpoint": false,
+    "usesTerraAtlasDbTable": false,
+    "availableRealGeometryReadPath": true,
+    "candidateTables": [
+      {
+        "table": "gis_tf.tf_parcel_geom",
+        "exists": true
+      },
+      {
+        "table": "canonical_tf.tf_parcel",
+        "exists": true
+      },
+      {
+        "table": "truth_arcgis parcel geometry",
+        "exists": true
+      },
+      {
+        "table": "GeoForge compatibility tiles",
+        "exists": true
+      }
+    ],
+    "sourceFiles": {
+      "embeddedAtlasWorkspace": "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx",
+      "atlasLiveApi": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+      "useAtlasMapData": "frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts",
+      "geoforgeV2Api": "frontend/apps/os-shell/src/pages/forge/geo/v2/v2Api.ts",
+      "parcelGeometryController": "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
+      "parcelGeometryReader": "backend/src/TerraFusion.Data/Services/GisTf/ParcelGeometryReader.cs",
+      "tfParcelGeomConfiguration": "backend/src/TerraFusion.Data/Configurations/GisTf/TfParcelGeomConfiguration.cs"
+    }
+  },
+  "atlasProof": {
+    "area": "Atlas layers",
+    "classification": "FALLBACK",
+    "productionProofAllowed": false,
+    "reason": "Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof.",
+    "evidence": {
+      "tokens": [
+        "fetchAtlasCompatibilityMapData",
+        "fetchGeoForgeCompatibilityOutlines",
+        "fetchGeoForgeCompatibilityParcels"
+      ]
+    }
+  },
+  "lineageGeometryInventory": {
+    "surface": "geometry/layers",
+    "sourceName": "TerraAtlas geometry and layer feed consumed by County Studio",
+    "frontendFile": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
+    "apiRoute": "GET /launch-data/washington/counties/status.json + Atlas compatibility map routes",
+    "backendServiceOrController": "Atlas Live compatibility API",
+    "dbTableOrView": "gis_tf.tf_parcel_geom",
+    "ownerLane": "Atlas",
+    "classification": "FALLBACK",
+    "observedCount": 80075,
+    "expectedCanonicalCount": null,
+    "joinKey": "countyId + parcelId/APN + layerId",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "studyId": "runtime-selected-study",
+    "failureReason": "Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof.",
+    "requiredProofToUpgrade": "Replace compatibility proof with TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, and taxing district layer contracts.",
+    "productionProofAllowed": false,
+    "status": "PRODUCTION_BLOCKER"
+  },
+  "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage.",
+  "boundaries": [
+    "This gate does not touch County Studio UI.",
+    "This gate does not mutate TerraFusion Sync.",
+    "This gate does not change DB seeding.",
+    "This gate does not invent geometry.",
+    "This gate does not weaken production or operational proof.",
+    "This gate does not hide fallback if fallback is real."
+  ]
+}

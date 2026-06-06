@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T23:05:49.276Z",
+  "generatedAtUtc": "2026-06-06T23:47:10.637Z",
   "gate": "benton-real-dev-server-readiness",
   "status": "REAL_DEV_DATA_AVAILABLE",
   "sourcePath": null,
@@ -77,7 +77,7 @@
       "evidence": {
         "propertyLanding": 999214,
         "ownerLanding": 7396857,
-        "suppAssociation": 2808351,
+        "suppAssociation": 2887351,
         "wpov": 1273143,
         "truthParcel": 83682,
         "truthOwner": 774760,
@@ -94,7 +94,7 @@
       "evidence": {
         "propertyLanding": 999214,
         "ownerLanding": 7396857,
-        "suppAssociation": 2808351,
+        "suppAssociation": 2887351,
         "wpov": 1273143,
         "truthParcel": 83682,
         "truthOwner": 774760,
@@ -137,7 +137,7 @@
       "passed": true,
       "reason": "Supplement association landing rows exist.",
       "evidence": {
-        "suppAssociation": 2808351
+        "suppAssociation": 2887351
       }
     },
     {

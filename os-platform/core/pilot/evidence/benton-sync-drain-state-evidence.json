@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T23:05:07.854Z",
+  "generatedAtUtc": "2026-06-06T23:47:05.120Z",
   "adapter": "benton-sync-drain-state-evidence",
   "backendHealth": {
     "status": "healthy",
@@ -38,7 +38,7 @@
     },
     "legacyProperty": 999214,
     "legacyOwner": 7396857,
-    "legacyPropSuppAssoc": 2808351,
+    "legacyPropSuppAssoc": 2887351,
     "legacyWashPropOwnerVal": 1273143,
     "legacyAccount": 425186,
     "truthParcel": 83682,
@@ -53,7 +53,7 @@
     "landingTables": {
       "property": 999214,
       "owner": 7396857,
-      "propSuppAssoc": 2808351,
+      "propSuppAssoc": 2887351,
       "washPropOwnerVal": 1273143
     },
     "truthTables": {

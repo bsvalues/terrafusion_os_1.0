@@ -168,6 +168,26 @@ function lineageReport(overrides = {}) {
   };
 }
 
+function geometryEvidenceReport(overrides = {}) {
+  return {
+    status: "TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED",
+    classification: "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+    decisions: {
+      realGeometryExists: true,
+      countyStudioUsesRealTerraAtlasGeometry: false,
+      productionProofAllowed: false,
+      operationalProofAllowed: false
+    },
+    geometryCounts: {
+      parcelGeometry: 80075
+    },
+    finding: "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
+    requiredProofToUpgrade:
+      "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove compatibility feed lineage.",
+    ...overrides
+  };
+}
+
 test("defines Forge real-data wiring surfaces without owner identity as Forge-dev required", () => {
   assert.deepEqual(REQUIRED_FORGE_WIRING_SURFACES, [
     "parcel/property identity source",
@@ -188,6 +208,7 @@ test("verifies core Forge valuation wiring while identifying generated and fallb
     activationReport: activationReport(),
     dataTruthReport: dataTruthReport(),
     lineageReport: lineageReport(),
+    geometryEvidenceReport: geometryEvidenceReport(),
     generatedAtUtc: "2026-06-06T00:00:00.000Z"
   });
 
@@ -215,12 +236,14 @@ test("verifies core Forge valuation wiring while identifying generated and fallb
   assert.equal(risk.status, "WIRING_GAP_IDENTIFIED");
 
   const geometry = report.surfaces.find((surface) => surface.surface === "geometry/map context source");
-  assert.equal(geometry.classification, "FALLBACK");
+  assert.equal(geometry.classification, "ATLAS_LAYER_AVAILABLE_NOT_WIRED");
   assert.equal(geometry.status, "WIRING_GAP_IDENTIFIED");
+  assert.equal(geometry.observedCount, 80075);
+  assert.match(geometry.failureReason, /available but County Studio is still wired/i);
 
   assert.ok(report.wiringGaps.some((gap) => gap.surface === "risk object source"));
   assert.ok(report.wiringGaps.some((gap) => gap.surface === "geometry/map context source"));
-  assert.equal(report.mockFallbackGeneratedScan.disallowedVisibleHits.length, 2);
+  assert.equal(report.mockFallbackGeneratedScan.disallowedVisibleHits.length, 1);
 });
 
 test("blocks wiring verification when real dev activation is not ready", () => {
@@ -265,6 +288,8 @@ test("CLI writes Forge real-data wiring JSON and markdown evidence", () => {
   fs.writeFileSync(activation, `${JSON.stringify(activationReport(), null, 2)}\n`);
   fs.writeFileSync(dataTruth, `${JSON.stringify(dataTruthReport(), null, 2)}\n`);
   fs.writeFileSync(lineage, `${JSON.stringify(lineageReport(), null, 2)}\n`);
+  const geometryEvidence = path.join(tmp, "geometry-evidence.json");
+  fs.writeFileSync(geometryEvidence, `${JSON.stringify(geometryEvidenceReport(), null, 2)}\n`);
 
   const result = spawnSync(
     "node",
@@ -278,6 +303,8 @@ test("CLI writes Forge real-data wiring JSON and markdown evidence", () => {
       dataTruth,
       "--lineage",
       lineage,
+      "--geometry-evidence",
+      geometryEvidence,
       "--out-json",
       outJson,
       "--out-md",

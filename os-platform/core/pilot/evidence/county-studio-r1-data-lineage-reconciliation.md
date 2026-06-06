@@ -1,6 +1,6 @@
 # County Studio R1 Data Lineage Reconciliation
 
-Generated: 2026-06-06T23:05:52.655Z
+Generated: 2026-06-06T23:47:13.908Z
 Status: DATA_LINEAGE_RECONCILED_WITH_PRODUCTION_BLOCKERS
 
 ## Decisions
@@ -22,7 +22,7 @@ Status: DATA_LINEAGE_RECONCILED_WITH_PRODUCTION_BLOCKERS
 | parcel/property identity | SYNC_DERIVED | Forge | 3199335 | REAL_DEV_AVAILABLE_PRODUCTION_BLOCKED | parcel/property source uses or references canonical service/table paths, but no authoritative Benton source/count manifest proves row-level truth. | Compare seeded/sync-derived parcel identity counts to canonical Benton expected counts and prove APN/parcelId reconciliation. |
 | valuation metrics | SYNC_DERIVED | Forge | 83682 | REAL_DEV_AVAILABLE_PRODUCTION_BLOCKED | ratio study population uses or references canonical service/table paths, but no authoritative Benton source/count manifest proves row-level truth. | Prove sale qualification, valuation rows, and ratio metrics against authoritative Benton source counts and direct recomputation. |
 | geometry/layers | FALLBACK | Atlas | 80075 | PRODUCTION_BLOCKER | Atlas layers is served through Atlas compatibility geometry; compatibility/provisional geometry cannot satisfy real TerraAtlas-owned GIS proof. | Replace compatibility proof with TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, and taxing district layer contracts. |
-| owner/account/supplement joins | PARTIAL_SEEDED | Forge | {"ownerLanding":7396857,"truthOwner":774760,"canonicalOwner":215009,"account":425186,"suppAssociation":2808351} | PACKET_OPS_BLOCKER_NOT_FORGE_DEV | Owner/account/supplement rows are readable for real dev, but owner lane reconciliation is not production-complete. | Complete owner/supplement association reconciliation and prove expected Benton owner/account counts before production proof. |
+| owner/account/supplement joins | PARTIAL_SEEDED | Forge | {"ownerLanding":7396857,"truthOwner":774760,"canonicalOwner":215009,"account":425186,"suppAssociation":2887351} | PACKET_OPS_BLOCKER_NOT_FORGE_DEV | Owner/account/supplement rows are readable for real dev, but owner lane reconciliation is not production-complete. | Complete owner/supplement association reconciliation and prove expected Benton owner/account counts before production proof. |
 | WPOV/WSDOR dependencies | PARTIAL_SEEDED | Forge | {"wpov":1273143,"truthWsdor":774696,"canonicalWsdor":686820} | REAL_DEV_AVAILABLE_PRODUCTION_BLOCKED | WPOV/WSDOR rows are present for real dev, but canonical source/count reconciliation remains incomplete. | Reconcile WPOV/WSDOR counts and joins against canonical Benton expectations and direct source recomputation. |
 
 ## What Is Now Real Enough For Dev
