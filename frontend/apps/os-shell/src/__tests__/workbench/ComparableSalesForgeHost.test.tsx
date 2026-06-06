@@ -8,7 +8,7 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -17,8 +17,10 @@ import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import { ComparableSalesPanel } from '../../components/workbench/ComparableSalesPanel';
 import {
   adjustComp,
+  clearComparableSalesCacheForTests,
   filterComps,
   findCompsForSubject,
+  loadCountyComps,
   reconcileComps,
   type ComparableSale,
   type SubjectProperty,
@@ -203,6 +205,81 @@ function buildCountySalesShard() {
   };
 }
 
+function buildReviewReadyCountySalesShard() {
+  return {
+    county: 'Benton',
+    countyCode: '005',
+    records: [
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-201',
+        saleDate: '2025-01-15T00:00:00.000Z',
+        salePrice: 331000,
+        adjustedSalePrice: 331000,
+        useCode: 'Residential',
+        situsAddress: '201 Defensible Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.28,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        grossLivingArea: 1840,
+        yearBuilt: 1999,
+        bedrooms: 3,
+        bathrooms: 2,
+        condition: 'Average',
+        qualityGrade: 'AVG',
+        flags: { needsReview: false },
+      },
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-202',
+        saleDate: '2025-02-15T00:00:00.000Z',
+        salePrice: 336000,
+        adjustedSalePrice: 336000,
+        useCode: 'Residential',
+        situsAddress: '202 Defensible Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.3,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        grossLivingArea: 1900,
+        yearBuilt: 1996,
+        bedrooms: 3,
+        bathrooms: 2,
+        condition: 'Average',
+        qualityGrade: 'AVG',
+        flags: { needsReview: false },
+      },
+      {
+        countyCode: '005',
+        parcelNumber: 'GATE-TEST-203',
+        saleDate: '2025-03-15T00:00:00.000Z',
+        salePrice: 339000,
+        adjustedSalePrice: 339000,
+        useCode: 'Residential',
+        situsAddress: '203 Defensible Ave',
+        situsCity: 'Kennewick',
+        situsZip: '99336',
+        acres: 0.27,
+        neighborhoodCode: 'N1',
+        currentNeighborhoodCode: 'N1',
+        reviewStatus: 'qualified',
+        grossLivingArea: 1810,
+        yearBuilt: 2001,
+        bedrooms: 3,
+        bathrooms: 2,
+        condition: 'Average',
+        qualityGrade: 'AVG',
+        flags: { needsReview: false },
+      },
+    ],
+  };
+}
+
 function renderForge(
   ui: React.ReactElement,
   { parcelId = 'GATE-TEST-001', search = '?tab=sales' }: { parcelId?: string; search?: string } = {}
@@ -282,6 +359,7 @@ function renderForgeInDesktopWindowContext(
 
 describe('Comparable Sales Forge host', () => {
   beforeEach(() => {
+    clearComparableSalesCacheForTests();
     storeState.activeParcel = null;
     mockInvokeTool.mockReset();
     mockInvokeTool.mockResolvedValue({ success: true, data: {} });
@@ -375,6 +453,198 @@ describe('Comparable Sales Forge host', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Rejected/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders decision-focused candidate rows with appraisal support status columns', async () => {
+    storeState.activeParcel = buildBentonParcel('GATE-TEST-001');
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => buildCountySalesShard(),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/101 Comp Ave/i);
+
+    expect(screen.getByRole('columnheader', { name: /qualification/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /completeness/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /physical support/i })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /adjustment status/i })).toBeInTheDocument();
+
+    const row = screen.getByRole('row', { name: /101 Comp Ave/i });
+    expect(within(row).getByText(/qualified/i)).toBeInTheDocument();
+    expect(within(row).getByText(/missing physicals/i)).toBeInTheDocument();
+    expect(within(row).getByText(/adjustment pending/i)).toBeInTheDocument();
+    expect(within(row).getByText(/no decision/i)).toBeInTheDocument();
+  });
+
+  it('surfaces in-flight adjustment requests separately from pending adjustments', async () => {
+    storeState.activeParcel = buildBentonParcelWithSubjectEvidence('GATE-TEST-001');
+    let resolveAdjustResponse: (value: { ok: boolean; json: () => Promise<unknown> }) => void =
+      () => undefined;
+    const adjustResponse = new Promise<{ ok: boolean; json: () => Promise<unknown> }>((resolve) => {
+      resolveAdjustResponse = resolve;
+    });
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.includes('/launch-data/')) {
+        return {
+          ok: true,
+          json: async () => buildReviewReadyCountySalesShard(),
+        };
+      }
+
+      if (url.includes('/adjust-comparable')) {
+        return adjustResponse;
+      }
+
+      return {
+        ok: true,
+        json: async () => ({}),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/201 Defensible Ave/i);
+    fireEvent.click(screen.getAllByRole('button', { name: /use comp/i })[0]);
+
+    await waitFor(() => {
+      const row = screen
+        .getAllByRole('row', { name: /201 Defensible Ave/i })
+        .find((candidateRow) =>
+          within(candidateRow).queryByText(/adjustment loading/i)
+        );
+      expect(row).toBeDefined();
+    });
+
+    resolveAdjustResponse({
+      ok: true,
+      json: async () => ({
+        salePrice: 331000,
+        glaAdjustment: 1500,
+        lotAdjustment: 500,
+        ageAdjustment: 0,
+        bedroomAdjustment: 0,
+        bathroomAdjustment: 0,
+        conditionAdjustment: 0,
+        locationAdjustment: 0,
+        totalNetAdjustment: 2000,
+        adjustedPrice: 333000,
+        grossAdjustmentPct: 6,
+        netAdjustmentPct: 2,
+        adjustments: {},
+        warnings: [],
+        source: 'costforge-test',
+      }),
+    });
+
+    await waitFor(() => {
+      const row = screen
+        .getAllByRole('row', { name: /201 Defensible Ave/i })
+        .find((candidateRow) =>
+          within(candidateRow).queryByText(/adjusted/i)
+        );
+      expect(row).toBeDefined();
+    });
+  });
+
+  it('opens reconciliation posture only after three selected comps are qualified, complete, physically supported, and adjusted', async () => {
+    storeState.activeParcel = buildBentonParcelWithSubjectEvidence('GATE-TEST-001');
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.includes('/launch-data/')) {
+        return {
+          ok: true,
+          json: async () => buildReviewReadyCountySalesShard(),
+        };
+      }
+
+      if (url.includes('/adjust-comparable')) {
+        return {
+          ok: true,
+          json: async () => ({
+            salePrice: 331000,
+            glaAdjustment: 1500,
+            lotAdjustment: 500,
+            ageAdjustment: 0,
+            bedroomAdjustment: 0,
+            bathroomAdjustment: 0,
+            conditionAdjustment: 0,
+            locationAdjustment: 0,
+            totalNetAdjustment: 2000,
+            adjustedPrice: 333000,
+            grossAdjustmentPct: 6,
+            netAdjustmentPct: 2,
+            adjustments: {},
+            warnings: [],
+            source: 'costforge-test',
+          }),
+        };
+      }
+
+      if (url.includes('/reconcile')) {
+        return {
+          ok: true,
+          json: async () => ({
+            comparableCount: 3,
+            weightedAverage: 334000,
+            median: 334000,
+            mean: 334000,
+            low: 333000,
+            high: 335000,
+            range: 2000,
+            coefficientOfVariation: 1,
+            averageGrossAdjustmentPct: 6,
+            confidence: 'HIGH',
+            comparableWeights: [
+              { adjustedPrice: 333000, weight: 0.34 },
+              { adjustedPrice: 334000, weight: 0.33 },
+              { adjustedPrice: 335000, weight: 0.33 },
+            ],
+            source: 'costforge-test',
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        json: async () => ({}),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/201 Defensible Ave/i);
+
+    expect(screen.getAllByText(/Reconciliation blocked/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText(/Ready for reconciliation review/i)).not.toBeInTheDocument();
+
+    for (const button of screen.getAllByRole('button', { name: /use comp/i })) {
+      fireEvent.click(button);
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ready for reconciliation review/i)).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/Selected comps: 3 \/ 3 required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Defensible comps: 3/i)).toBeInTheDocument();
+    expect(screen.getByText(/Physical support: supported/i)).toBeInTheDocument();
+    expect(screen.getByText(/Adjustment support: supported/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ready for reconciliation review/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      const reconcileCalls = fetchMock.mock.calls.filter(([url]) =>
+        String(url).includes('/reconcile')
+      );
+      expect(reconcileCalls).toHaveLength(1);
     });
   });
 
@@ -562,6 +832,56 @@ describe('Comparable Sales Forge host', () => {
     const ranked = findCompsForSubject(subject, comps);
     expect(ranked).toHaveLength(1);
     expect(ranked[0]?.parcelId).toBe('COMP-001');
+  });
+
+  it('passes through physical support fields when the county sales feed supplies them', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => buildReviewReadyCountySalesShard(),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const sales = await loadCountyComps('005');
+
+    expect(sales[0]).toEqual(
+      expect.objectContaining({
+        parcelId: 'GATE-TEST-201',
+        grossLivingArea: 1840,
+        lotSizeSqft: 12197,
+        yearBuilt: 1999,
+        bedrooms: 3,
+        bathrooms: 2,
+        condition: 'Average',
+        qualityGrade: 'AVG',
+        saleQualification: 'qualified',
+      })
+    );
+  });
+
+  it('does not invent physical support, adjustment support, or defensibility when the feed omits them', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => buildCountySalesShard(),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const sales = await loadCountyComps('005');
+    const sale = sales.find((candidate) => candidate.parcelId === 'GATE-TEST-101');
+
+    expect(sale).toEqual(
+      expect.objectContaining({
+        grossLivingArea: null,
+        yearBuilt: null,
+        bedrooms: null,
+        bathrooms: null,
+        condition: null,
+        qualityGrade: null,
+        saleQualification: 'qualified',
+      })
+    );
+    expect(sale).not.toHaveProperty('physicalSupport');
+    expect(sale).not.toHaveProperty('adjustmentSupport');
+    expect(sale).not.toHaveProperty('defensible');
   });
 
   it('covers adjust and reconcile backend success and failure responses', async () => {
