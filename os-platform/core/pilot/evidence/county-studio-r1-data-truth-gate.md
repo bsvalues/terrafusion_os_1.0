@@ -1,6 +1,6 @@
 # County Studio R1 Data Truth Gate
 
-Generated: 2026-06-06T22:47:01.611Z
+Generated: 2026-06-06T23:05:50.313Z
 Status: DATA_TRUTH_FAIL
 
 No data lineage, no production proof. No provenance, no operational claim. No canonical count comparison, no Benton truth. No geometry source, no GIS proof.

@@ -1,6 +1,6 @@
 # Benton Sync Drain State Evidence
 
-Generated: 2026-06-06T22:46:55.503Z
+Generated: 2026-06-06T23:05:07.854Z
 
 ## Decision
 
@@ -31,7 +31,7 @@ Generated: 2026-06-06T22:46:55.503Z
 | --- | --- | ---: | --- |
 | legacyProperty | PARTIAL_SEEDED | 999214 | count present |
 | legacyOwner | PARTIAL_SEEDED | 7396857 | count present |
-| legacyPropSuppAssoc | PARTIAL_SEEDED | 2772351 | count present |
+| legacyPropSuppAssoc | PARTIAL_SEEDED | 2808351 | count present |
 | legacyWashPropOwnerVal | PARTIAL_SEEDED | 1273143 | count present |
 | legacyAccount | SEEDED | 425186 | count present |
 | truthParcel | SYNC_DERIVED | 83682 | count present |

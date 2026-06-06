@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T22:47:03.263Z",
+  "generatedAtUtc": "2026-06-06T23:05:52.655Z",
   "gate": "county-studio-r1-data-lineage-reconciliation",
   "status": "DATA_LINEAGE_RECONCILED_WITH_PRODUCTION_BLOCKERS",
   "decisions": {
@@ -195,7 +195,7 @@
         "truthOwner": 774760,
         "canonicalOwner": 215009,
         "account": 425186,
-        "suppAssociation": 2772351
+        "suppAssociation": 2808351
       },
       "expectedCanonicalCount": null,
       "joinKey": "parcelId/APN + suppNum + ownerId/accountId",
