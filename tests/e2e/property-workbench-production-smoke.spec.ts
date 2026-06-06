@@ -24,7 +24,10 @@ const failedResponses: NetworkRecord[] = [];
 const consoleLines: string[] = [];
 
 function baseUrl(): string {
-  return process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://127.0.0.1:5046';
+  const apiPort = process.env.TF_API_PORT ?? '5046';
+  return (
+    process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? `http://127.0.0.1:${apiPort}`
+  );
 }
 
 async function ensureEvidenceDir(): Promise<void> {
@@ -47,8 +50,8 @@ async function writeEvidence(summaryNotes: string): Promise<void> {
   );
   await fs.writeFile(path.join(EVIDENCE_DIR, 'console.log'), consoleLines.join('\n'));
 
-  const unauthorized = network.filter(entry => entry.status === 401);
-  const failedApi = network.filter(entry => entry.url.includes('/api/') && !entry.ok);
+  const unauthorized = network.filter(entry => entry.status === 401 || entry.status === 403);
+  const failedApi = network.filter(entry => entry.url.includes('/api/') && entry.status >= 400);
   const markdown = [
     '# Property Workbench Production Smoke',
     '',
@@ -142,10 +145,10 @@ async function assertNoInfiniteLoading(page: Page): Promise<void> {
 }
 
 async function assertNoUnauthorizedNetwork(): Promise<void> {
-  const unauthorized = network.filter(entry => entry.status === 401);
+  const unauthorized = network.filter(entry => entry.status === 401 || entry.status === 403);
   expect(
     unauthorized,
-    `No API call should return 401: ${unauthorized.map(entry => entry.url).join(', ')}`
+    `No API call should return 401/403: ${unauthorized.map(entry => entry.url).join(', ')}`
   ).toHaveLength(0);
 }
 
@@ -181,20 +184,21 @@ test.describe('Property Workbench production runtime smoke', () => {
     });
     page.on('response', response => {
       const url = response.url();
-      if (!response.ok()) {
+      const status = response.status();
+      if (status >= 400) {
         failedResponses.push({
           method: response.request().method(),
           url,
-          status: response.status(),
-          ok: response.ok(),
+          status,
+          ok: false,
         });
       }
       if (url.includes('/api/') || url.includes('/ops/') || url.includes('/hubs/')) {
         network.push({
           method: response.request().method(),
           url,
-          status: response.status(),
-          ok: response.ok(),
+          status,
+          ok: status < 400,
         });
       }
     });

@@ -152,6 +152,24 @@ static string ResolveUiDistPath(string apiContentRoot)
     return Path.GetFullPath(Path.Combine(apiContentRoot, "..", "..", "..", "native-shell", "ui", "dist"));
 }
 
+static bool IsTruthySkipSeedersValue(string? value)
+{
+    return string.Equals(value, "1", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(value, "yes", StringComparison.OrdinalIgnoreCase);
+}
+
+static bool HasSkipDevSeedersArg(string[] args)
+{
+    return args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+}
+
+static bool ShouldSkipDevSeeders(string[] args)
+{
+    return IsTruthySkipSeedersValue(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim())
+        || HasSkipDevSeedersArg(args);
+}
+
 static IHostBuilder CreateCanonicalHostBuilder(string[] args, string environmentName)
 {
     var apiContentRoot = ResolveApiContentRoot();
@@ -985,13 +1003,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     ContentRootPath = apiContentRoot,
     EnvironmentName = runtimeEnvironment
 });
-var skipStartupSeedersValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
-var skipStartupSeedersArg = args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
-var shouldSkipStartupSeeders =
-  string.Equals(skipStartupSeedersValue, "1", StringComparison.OrdinalIgnoreCase) ||
-  string.Equals(skipStartupSeedersValue, "true", StringComparison.OrdinalIgnoreCase) ||
-  string.Equals(skipStartupSeedersValue, "yes", StringComparison.OrdinalIgnoreCase) ||
-  skipStartupSeedersArg;
+var shouldSkipStartupSeeders = ShouldSkipDevSeeders(args);
 
 builder.Host.UseContentRoot(apiContentRoot);
 builder.Configuration.SetBasePath(apiContentRoot);
@@ -2648,13 +2660,13 @@ if (!shouldSkipStartupSeeders)
 {
   using (var scope = app.Services.CreateScope())
   {
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
     try
     {
       var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
       await databaseInitializer.InitializeAsync();
 
       var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
-      var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
 
       var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
         scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
@@ -2664,7 +2676,8 @@ if (!shouldSkipStartupSeeders)
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"GPT seeding skipped: {ex.Message}");
+      logger.LogError(ex, "GPT seeding failed while running {MethodName}", nameof(TerraFusion.AI.Seeds.GPTConfigurationSeeder.SeedAllGPTsAsync));
+      throw;
     }
   }
 }
@@ -3552,10 +3565,8 @@ try
   // Respect TF_SKIP_DEV_SEEDERS env var — useful when starting against a
   // Postgres DB that already has canonical data (avoids unique-key conflicts).
   var skipDevSeedersValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
-  var skipDevSeedersArg = args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
-  var shouldSkipDevSeeders = skipDevSeedersArg ||
-                              string.Equals(skipDevSeedersValue, "true", StringComparison.OrdinalIgnoreCase) ||
-                              string.Equals(skipDevSeedersValue, "1", StringComparison.OrdinalIgnoreCase);
+  var skipDevSeedersArg = HasSkipDevSeedersArg(args);
+  var shouldSkipDevSeeders = ShouldSkipDevSeeders(args);
 
   Console.WriteLine($"[STARTUP] Dev seeders skip={shouldSkipDevSeeders} (arg={skipDevSeedersArg}, TF_SKIP_DEV_SEEDERS={skipDevSeedersValue ?? "<null>"})");
 

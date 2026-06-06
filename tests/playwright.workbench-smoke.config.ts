@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 const testsRoot = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(testsRoot, '..');
+const apiPort = process.env.TF_API_PORT ?? '5046';
 const smokeBaseURL =
-  process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? 'http://127.0.0.1:5046';
+  process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? `http://127.0.0.1:${apiPort}`;
 
 export default defineConfig({
   testDir: resolve(testsRoot, 'e2e'),
@@ -31,13 +32,14 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      'pnpm run backend:watch:cleanup && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --urls http://127.0.0.1:5046 --skip-dev-seeders',
+      'pnpm -C frontend build && pnpm run backend:watch:cleanup && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --skip-dev-seeders',
     cwd: repoRoot,
     env: {
       ...process.env,
       ASPNETCORE_ENVIRONMENT: 'Development',
-      ASPNETCORE_URLS: 'http://127.0.0.1:5046',
-      TF_API_PORT: '5046',
+      ASPNETCORE_URLS: `http://127.0.0.1:${apiPort}`,
+      TERRAFUSION_UI_DIST_PATH: resolve(repoRoot, 'frontend', 'dist'),
+      TF_API_PORT: apiPort,
       TF_SKIP_DEV_SEEDERS: '1',
     },
     reuseExistingServer: !process.env.CI,

@@ -153,6 +153,14 @@ async function apiFetch<T>(
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const controller = options?.timeoutMs ? new AbortController() : null;
+  const abortFromCaller = () => controller?.abort();
+  if (controller && init?.signal) {
+    if (init.signal.aborted) {
+      controller.abort();
+    } else {
+      init.signal.addEventListener('abort', abortFromCaller, { once: true });
+    }
+  }
   const timeoutId = controller
     ? window.setTimeout(() => controller.abort(), options.timeoutMs)
     : null;
@@ -161,12 +169,13 @@ async function apiFetch<T>(
     const res = await fetch(path, {
       ...init,
       headers,
-      signal: init?.signal ?? controller?.signal,
+      signal: controller?.signal ?? init?.signal,
     });
     if (!res.ok) throw new ApiFetchError(res.status, path);
     return res.json();
   } finally {
     if (timeoutId !== null) window.clearTimeout(timeoutId);
+    if (controller && init?.signal) init.signal.removeEventListener('abort', abortFromCaller);
   }
 }
 

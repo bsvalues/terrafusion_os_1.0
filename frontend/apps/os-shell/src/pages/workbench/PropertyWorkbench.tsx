@@ -172,18 +172,20 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const activeParcelLoadingParcelId = usePropertyStore((s) => s.activeParcelLoadingParcelId);
   const activeParcelError = usePropertyStore((s) => s.activeParcelError);
   const selectParcel = usePropertyStore((s) => s.selectParcel);
+  const isTargetParcelLoading = Boolean(parcelId && activeParcelLoadingParcelId === parcelId);
   const isCurrentParcelBlocked = Boolean(
     activeParcelError && (!activeParcelError.parcelId || activeParcelError.parcelId === parcelId)
   );
 
   // Load parcel via store when parcelId changes (if not already loaded)
   useEffect(() => {
-    if (parcelId && activeParcel?.parcelId !== parcelId && !propertyLoading && !isCurrentParcelBlocked) {
+    if (parcelId && activeParcel?.parcelId !== parcelId && !isTargetParcelLoading && !isCurrentParcelBlocked) {
       selectParcel(parcelId);
     }
-  }, [parcelId, activeParcel?.parcelId, isCurrentParcelBlocked, propertyLoading, selectParcel]);
+  }, [parcelId, activeParcel?.parcelId, isCurrentParcelBlocked, isTargetParcelLoading, selectParcel]);
 
   const propertyData = useMemo(
     () => ({

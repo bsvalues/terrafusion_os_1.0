@@ -36,6 +36,7 @@ interface PropertyState {
   // Active parcel (selected via search or navigation)
   activeParcel: Property | null;
   activeParcelLoading: boolean;
+  activeParcelLoadingParcelId: string | null;
   activeParcelError: {
     parcelId?: string;
     status?: number;
@@ -74,6 +75,18 @@ interface PropertyState {
 
 const MAX_RECENT = 10;
 const PARCEL_EVIDENCE_TIMEOUT_MS = 20_000;
+const EMPTY_RELATED_DATA = {
+  assessments: [],
+  documents: [],
+  appeals: [],
+  taxStatements: [],
+  recordings: [],
+  auditTrail: [],
+  operations: [],
+} satisfies Pick<
+  PropertyState,
+  'assessments' | 'documents' | 'appeals' | 'taxStatements' | 'recordings' | 'auditTrail' | 'operations'
+>;
 
 function withParcelEvidenceTimeout<T>(parcelId: string, request: Promise<T>): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -99,6 +112,7 @@ export const usePropertyStore = create<PropertyState>()(
       // Initial state
       activeParcel: null,
       activeParcelLoading: false,
+      activeParcelLoadingParcelId: null,
       activeParcelError: null,
       searchQuery: '',
       searchResults: [],
@@ -134,14 +148,22 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
-        set({ activeParcelLoading: true, activeParcelError: null });
+        set({
+          activeParcelLoading: true,
+          activeParcelLoadingParcelId: parcelId,
+          activeParcelError: null,
+          ...EMPTY_RELATED_DATA,
+        });
         try {
           const provider = getDataProvider();
           const parcel = await withParcelEvidenceTimeout(parcelId, provider.getParcel(parcelId));
+          if (get().activeParcelLoadingParcelId !== parcelId) return;
           if (!parcel) {
             set({
               activeParcel: null,
               activeParcelLoading: false,
+              activeParcelLoadingParcelId: null,
+              ...EMPTY_RELATED_DATA,
               activeParcelError: {
                 parcelId,
                 status: 404,
@@ -170,7 +192,9 @@ export const usePropertyStore = create<PropertyState>()(
             activeParcel: parcel,
             recentParcels: recent,
             activeParcelLoading: false,
+            activeParcelLoadingParcelId: null,
             activeParcelError: null,
+            ...EMPTY_RELATED_DATA,
           });
 
           // Eagerly load related data in parallel after the parcel shell is usable.
@@ -208,9 +232,12 @@ export const usePropertyStore = create<PropertyState>()(
               });
             });
         } catch (error) {
+          if (get().activeParcelLoadingParcelId !== parcelId) return;
           set({
             activeParcel: null,
             activeParcelLoading: false,
+            activeParcelLoadingParcelId: null,
+            ...EMPTY_RELATED_DATA,
             activeParcelError: isApiFetchError(error)
               ? {
                   parcelId,
@@ -237,14 +264,10 @@ export const usePropertyStore = create<PropertyState>()(
       clearParcel: () => {
         set({
           activeParcel: null,
+          activeParcelLoading: false,
+          activeParcelLoadingParcelId: null,
           activeParcelError: null,
-          assessments: [],
-          documents: [],
-          appeals: [],
-          taxStatements: [],
-          recordings: [],
-          auditTrail: [],
-          operations: [],
+          ...EMPTY_RELATED_DATA,
         });
       },
 
