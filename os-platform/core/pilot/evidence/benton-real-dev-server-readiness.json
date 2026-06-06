@@ -1,0 +1,235 @@
+{
+  "generatedAtUtc": "2026-06-06T21:11:20.233Z",
+  "gate": "benton-real-dev-server-readiness",
+  "status": "REAL_DEV_SERVER_BLOCKED",
+  "sourcePath": null,
+  "decisions": {
+    "realDevServerAllowed": false,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "maturity": {
+    "DATA_TRUTH_FAIL": true,
+    "REAL_DEV_DATA_AVAILABLE": false,
+    "SYNC_DERIVED_PARTIAL": false,
+    "SYNC_DERIVED_COMPLETE": false,
+    "AUTHORITATIVE_RECONCILED": false,
+    "PRODUCTION_PROOF_ALLOWED": false
+  },
+  "requiredChecks": [
+    "backend health",
+    "active drain process state",
+    "load_batch current stage",
+    "landing table counts",
+    "truth table counts",
+    "canonical parcel counts",
+    "owner truth count",
+    "account count",
+    "supp association count",
+    "property landing count",
+    "WPOV status",
+    "WSDOR status",
+    "map data dependency status",
+    "ledger data dependency status",
+    "inspector data dependency status"
+  ],
+  "checks": [
+    {
+      "name": "backend health",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Backend health is reported usable for dev reads.",
+      "evidence": {
+        "status": "healthy",
+        "ok": true,
+        "statusCode": 200,
+        "url": "http://localhost:5000/health"
+      }
+    },
+    {
+      "name": "active drain process state",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Drain process is not alive; confirm whether client timeout or backend failure occurred.",
+      "evidence": {
+        "pid": 28503,
+        "alive": false,
+        "status": "NOT_RUNNING"
+      }
+    },
+    {
+      "name": "load_batch current stage",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "load_batch stage is not proven.",
+      "evidence": {
+        "status": "UNKNOWN"
+      }
+    },
+    {
+      "name": "landing table counts",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Property landing rows are missing or unknown.",
+      "evidence": {
+        "propertyLanding": 0,
+        "ownerLanding": 0,
+        "suppAssociation": 0,
+        "wpov": 0,
+        "truthParcel": 0,
+        "truthOwner": 0,
+        "truthWsdor": 0,
+        "canonicalParcel": 0,
+        "account": 0
+      }
+    },
+    {
+      "name": "truth table counts",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Truth table counts are evaluated as partial until all expected Benton counts are reconciled.",
+      "evidence": {
+        "propertyLanding": 0,
+        "ownerLanding": 0,
+        "suppAssociation": 0,
+        "wpov": 0,
+        "truthParcel": 0,
+        "truthOwner": 0,
+        "truthWsdor": 0,
+        "canonicalParcel": 0,
+        "account": 0
+      }
+    },
+    {
+      "name": "canonical parcel counts",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Canonical parcel count is missing.",
+      "evidence": {
+        "canonicalParcel": 0
+      }
+    },
+    {
+      "name": "owner truth count",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Owner truth count is missing.",
+      "evidence": {
+        "truthOwner": 0,
+        "ownerLanding": 0
+      }
+    },
+    {
+      "name": "account count",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Account count is missing.",
+      "evidence": {
+        "account": 0
+      }
+    },
+    {
+      "name": "supp association count",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Supplement association count is missing.",
+      "evidence": {
+        "suppAssociation": 0
+      }
+    },
+    {
+      "name": "property landing count",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Property landing count is missing.",
+      "evidence": {
+        "propertyLanding": 0
+      }
+    },
+    {
+      "name": "WPOV status",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "WPOV landing status is missing.",
+      "evidence": {
+        "wpov": 0
+      }
+    },
+    {
+      "name": "WSDOR status",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "WSDOR truth status is missing.",
+      "evidence": {
+        "truthWsdor": 0
+      }
+    },
+    {
+      "name": "map data dependency status",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Map dependency is classified UNKNOWN.",
+      "evidence": {
+        "classification": "UNKNOWN"
+      }
+    },
+    {
+      "name": "ledger data dependency status",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Ledger dependency is classified UNKNOWN.",
+      "evidence": {
+        "classification": "UNKNOWN"
+      }
+    },
+    {
+      "name": "inspector data dependency status",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Inspector dependency is classified UNKNOWN.",
+      "evidence": {
+        "classification": "UNKNOWN"
+      }
+    }
+  ],
+  "blockers": [
+    "active drain process state: Drain process is not alive; confirm whether client timeout or backend failure occurred.",
+    "load_batch current stage: load_batch stage is not proven.",
+    "landing table counts: Property landing rows are missing or unknown.",
+    "truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.",
+    "canonical parcel counts: Canonical parcel count is missing.",
+    "owner truth count: Owner truth count is missing.",
+    "account count: Account count is missing.",
+    "supp association count: Supplement association count is missing.",
+    "property landing count: Property landing count is missing.",
+    "WPOV status: WPOV landing status is missing.",
+    "WSDOR status: WSDOR truth status is missing.",
+    "map data dependency status: Map dependency is classified UNKNOWN.",
+    "ledger data dependency status: Ledger dependency is classified UNKNOWN.",
+    "inspector data dependency status: Inspector dependency is classified UNKNOWN."
+  ],
+  "classifications": [
+    "AUTHORITATIVE",
+    "SYNC_DERIVED",
+    "SEEDED",
+    "PARTIAL_SEEDED",
+    "MOCK",
+    "FIXTURE",
+    "GENERATED",
+    "FALLBACK",
+    "UNKNOWN"
+  ],
+  "rules": [
+    "Client timeout is not data failure.",
+    "Backend death is data failure.",
+    "Stage stagnation without inserts is investigation.",
+    "Partial landing is usable for dev evidence, not production proof.",
+    "Do not relabel partial seed as authoritative."
+  ],
+  "boundaries": [
+    "This gate does not start or stop drains.",
+    "This gate does not touch TerraFusion Sync.",
+    "This gate does not touch DB seeding.",
+    "This gate does not weaken production proof gates."
+  ]
+}
