@@ -6,7 +6,7 @@ truth (rows = distinct natural keys), canonical projected, residual gap diagnose
 class/reason (not assumed), and the pipeline is idempotent/re-runnable. Evidence artifact
 required before SEALED.
 
-_Last updated: 2026-06-04._
+_Last updated: 2026-06-06._
 
 | Lane | Status | Coverage | Denominator | Dup | Evidence |
 |------|--------|----------|-------------|-----|----------|
@@ -14,7 +14,7 @@ _Last updated: 2026-06-04._
 | Land | ✅ SEALED | 82,012 / 82,012 (100%) | All type-R land-bearing parcels (no MH land segments; no doctrine exclusion) | 1.0000× | `evidence/2026-06-03-land-lane-seal.md` |
 | Sales | ✅ SEALED | 29,914 qualified | QUALIFIED sales (DOR-or-county per tf_doctrine_ratio_policy); 45,764 landed-but-unqualified correctly excluded | 1.0000× | `evidence/2026-06-03-sales-lane-seal.md` |
 | Geometry | ✅ SEALED | 80,075 geom (1.0×); 79,105/80,075 = 98.8% crosswalked to tf_parcel (970 residual: 301 null-APN + 669 no-tf_parcel-match, both legitimate) | ArcGIS Parcels service = 80,076 features | 1.0000× | `evidence/2026-06-04-geometry-lane-diagnosis.md` |
-| Owner | ⏳ OPEN | — | — | — | — |
+| Owner | ✅ SEALED (promoter ceiling) | 774,760 / 809,396 (95.72%); gap 34,636 = supp-assoc promoter reject (~28K) + doctrine tail (~6.6K); OWNER-SUPNUM-RESOLUTION scoped separately | (PropId, OwnerTaxYr, OwnerId) tuples; sup_num=0 source; 809,363/809,396 have PACS supp-assoc | 1.0000× | `evidence/2026-06-06-owner-lane-seal.md` |
 
 ## Denominator notes (why coverage numbers differ per lane)
 - **Improvement / Land** are parcel-keyed against the current working year (2026); their active
@@ -30,6 +30,7 @@ _Last updated: 2026-06-04._
 - **Land:** `bfe989350` (natural-key idempotency + advancement cursor), seal `007862a43`.
 - **Sales:** `7f635489f` (truth idem) · `9d893f667` (cursor) · `83664a4a7` (landing idem) ·
   `769bf800c` (SupNum-resolution) · seal `8c62d8304`.
+- **Owner:** `9c925516d` (natural-key idempotency truth+WSDOR) · `bd45b60e3` (advancement cursor) · seal `1e49f13cb`.
 
 ## Recurring pattern (apply to every remaining lane)
 1. **Idempotency bug class:** truth promoters cleared priors by LoadBatchId (batch-scoped) → re-drains
