@@ -609,7 +609,8 @@ describe('CountyStudyPage', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
 
     expect(screen.queryByText(/Statistics Compat/i)).not.toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Study Analytics/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Study Evidence/i })).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: /Study Analytics/i })).not.toBeInTheDocument();
   });
 
   it('shows an honest empty command surface when no study or risk evidence is open', () => {

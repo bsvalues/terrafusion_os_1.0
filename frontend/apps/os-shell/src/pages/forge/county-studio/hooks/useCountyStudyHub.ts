@@ -7,6 +7,10 @@ import { getCountyStudyScope } from '../countyStudyScope';
 const HUB_PATH = '/hubs/county-study';
 
 export function getCountyStudyHubUrl(apiBase = import.meta.env.VITE_API_URL || '') {
+  if (typeof window !== 'undefined') {
+    return HUB_PATH;
+  }
+
   const normalizedBase = apiBase.replace(/\/$/, '');
 
   if (!normalizedBase || normalizedBase === '/api') {

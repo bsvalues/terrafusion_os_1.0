@@ -203,7 +203,7 @@ export function CountyStudyPage() {
                 fontWeight: 600,
               }}
             >
-              Study Analytics
+              Study Evidence
             </button>
           </div>
           {activeStudy && (

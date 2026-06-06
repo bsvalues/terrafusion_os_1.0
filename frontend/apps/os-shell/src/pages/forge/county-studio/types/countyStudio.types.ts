@@ -245,7 +245,7 @@ export interface CountyHealthSummaryDto {
   derivedAt: string | null;
 }
 
-// ── Statistics Compat (statistics_ratio_study_compat_v1) ─────────────────
+// ── Study Evidence compatibility (statistics_ratio_study_compat_v1) ───────
 
 export interface StatisticsCompatSaleWindowDto {
   taxYear: number;

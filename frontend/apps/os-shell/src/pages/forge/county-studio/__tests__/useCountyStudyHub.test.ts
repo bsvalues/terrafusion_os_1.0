@@ -101,7 +101,20 @@ describe('useCountyStudyHub', () => {
   });
 
   it('strips an API suffix from absolute API bases for hub routing', () => {
-    expect(getCountyStudyHubUrl('https://example.test/api')).toBe('https://example.test/hubs/county-study');
+    const originalWindow = globalThis.window;
+    // Exercise the server/non-browser branch explicitly. Browser runtime must
+    // use the same-origin proxy so SignalR does not bypass Vite and trip CORS.
+    // @ts-expect-error test-only global override
+    delete globalThis.window;
+    try {
+      expect(getCountyStudyHubUrl('https://example.test/api')).toBe('https://example.test/hubs/county-study');
+    } finally {
+      globalThis.window = originalWindow;
+    }
+  });
+
+  it('keeps browser hub routing same-origin even when VITE_API_URL is absolute', () => {
+    expect(getCountyStudyHubUrl('http://127.0.0.1:5000')).toBe('/hubs/county-study');
   });
 
   it('sets syncState to LIVE after hub connects', async () => {

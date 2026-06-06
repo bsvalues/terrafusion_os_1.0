@@ -503,7 +503,7 @@ export const healthApi = {
 
   /**
    * GET /county-study/studies/:id/statistics-compat
-   * Returns the explicit County Studio Statistics Compat lens using
+   * Returns the explicit County Studio Study Evidence lens using
    * statistics_ratio_study_compat_v1. This is not the Operational Health
    * rollup and must not be used interchangeably with health-summary.
    */
