@@ -8,7 +8,7 @@
  * Extracted from PropertyForge.tsx monolith.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { getSession } from '../../../../auth/session';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
@@ -23,7 +23,7 @@ import {
   useRecomputeRecommendations,
   type QualificationDecisionValue,
 } from '../../../../hooks/forge/useForgeValuation';
-import { getPilotCountyScopeToken } from '../../../../services/comparableSalesService';
+import { getPilotCountyScopeToken, type ComparableSale } from '../../../../services/comparableSalesService';
 import {
   type ForgeSubTabProps,
   type SalesCompsResult,
@@ -46,6 +46,33 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
   const patchQualification = usePatchSaleQualification(parcelId, taxYear);
   const recompute = useRecomputeRecommendations(parcelId, taxYear);
+  const reviewDeskSales = useMemo<ComparableSale[]>(
+    () =>
+      (salesAPI.data?.comparables ?? []).map((sale) => ({
+        parcelId: sale.parcelId,
+        saleDate: sale.saleDate ?? '',
+        salePrice: sale.salePrice,
+        propertyType: activeParcel?.propertyType ?? 'unknown',
+        address: `Comparable sale ${sale.parcelId}`,
+        countyCode: activeParcel?.countyCode ?? null,
+        countyName: null,
+        city: null,
+        neighborhoodCode: null,
+        currentNeighborhoodCode: null,
+        grossLivingArea: null,
+        lotSizeSqft: null,
+        yearBuilt: null,
+        bedrooms: null,
+        bathrooms: null,
+        condition: null,
+        qualityGrade: null,
+        saleQualification:
+          sale.effectiveQualification === 'qualified'
+            ? 'qualified'
+            : sale.effectiveQualification,
+      })),
+    [activeParcel?.countyCode, activeParcel?.propertyType, salesAPI.data?.comparables],
+  );
 
   // Track which comp row has its override panel open
   const [openOverride, setOpenOverride] = useState<string | null>(null);
@@ -463,8 +490,12 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         )}
       </BentoCard>
 
-      {/* Full ComparableSalesPanel — existing 612-line component, no changes */}
+      {/* CompsForge Review Desk — hosted inside Property Workbench Forge Sales */}
       <ComparableSalesPanel
+        providedSales={reviewDeskSales}
+        providedSalesLoading={salesAPI.loading}
+        providedSalesError={salesAPI.error?.message ?? null}
+        providedSalesSource={salesAPI.data?.source ?? 'Live Forge sales endpoint'}
         onReconciledValue={(result) => {
           if (onValueIndicated && typeof result.weightedAverage === 'number') {
             onValueIndicated('sales', result.weightedAverage);

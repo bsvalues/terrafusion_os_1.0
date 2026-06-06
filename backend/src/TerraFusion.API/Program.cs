@@ -119,6 +119,57 @@ static string ResolveApiContentRoot()
         $"Unable to resolve TerraFusion.API content root from '{Directory.GetCurrentDirectory()}' and '{AppContext.BaseDirectory}'.");
 }
 
+static string ResolveUiDistPath(string apiContentRoot)
+{
+    var envOverride = Environment.GetEnvironmentVariable("TERRAFUSION_UI_DIST_PATH");
+    if (!string.IsNullOrWhiteSpace(envOverride) && Directory.Exists(envOverride))
+    {
+        return Path.GetFullPath(envOverride);
+    }
+
+    var candidateStarts = new[]
+    {
+        Directory.GetCurrentDirectory(),
+        apiContentRoot,
+        AppContext.BaseDirectory
+    }
+    .Where(path => !string.IsNullOrWhiteSpace(path))
+    .Select(Path.GetFullPath)
+    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var start in candidateStarts)
+    {
+        foreach (var probe in EnumerateSelfAndAncestors(start))
+        {
+            var candidate = Path.Combine(probe, "native-shell", "ui", "dist");
+            if (Directory.Exists(candidate))
+            {
+                return Path.GetFullPath(candidate);
+            }
+        }
+    }
+
+    return Path.GetFullPath(Path.Combine(apiContentRoot, "..", "..", "..", "native-shell", "ui", "dist"));
+}
+
+static bool IsTruthySkipSeedersValue(string? value)
+{
+    return string.Equals(value, "1", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(value, "yes", StringComparison.OrdinalIgnoreCase);
+}
+
+static bool HasSkipDevSeedersArg(string[] args)
+{
+    return args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
+}
+
+static bool ShouldSkipDevSeeders(string[] args)
+{
+    return IsTruthySkipSeedersValue(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim())
+        || HasSkipDevSeedersArg(args);
+}
+
 static IHostBuilder CreateCanonicalHostBuilder(string[] args, string environmentName)
 {
     var apiContentRoot = ResolveApiContentRoot();
@@ -952,6 +1003,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     ContentRootPath = apiContentRoot,
     EnvironmentName = runtimeEnvironment
 });
+var shouldSkipStartupSeeders = ShouldSkipDevSeeders(args);
+
 builder.Host.UseContentRoot(apiContentRoot);
 builder.Configuration.SetBasePath(apiContentRoot);
 
@@ -1797,8 +1850,11 @@ builder.Services.AddScoped<
 // SYNC-DOCTRINE-2 (B2): hosted service runs the seeder once at
 // startup so the doctrine table is populated before the first sale
 // truth-promotion call. Idempotent + non-fatal on failure.
-builder.Services.AddHostedService<
-    TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeederHostedService>();
+if (!shouldSkipStartupSeeders)
+{
+    builder.Services.AddHostedService<
+        TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeederHostedService>();
+}
 
 // SYNC-DOCTRINE-4: property-universe classifier. Singleton with
 // ConcurrentDictionary cache; loads rules from
@@ -1820,8 +1876,11 @@ builder.Services.AddScoped<
 // SYNC-DOCTRINE-4: hosted service runs both seeders at startup.
 // Idempotent; non-fatal on failure (classifier emits UNKNOWN until
 // successful seed).
-builder.Services.AddHostedService<
-    TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeederHostedService>();
+if (!shouldSkipStartupSeeders)
+{
+    builder.Services.AddHostedService<
+        TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeederHostedService>();
+}
 
 // SYNC-DOCTRINE-5: sales qualification codes doctrine table + audit.
 // Read-only audit service compares promoter snapshot against doctrine
@@ -1831,8 +1890,11 @@ builder.Services.AddScoped<
     TerraFusion.Data.Services.Doctrine.DoctrineSalesAuditService>();
 builder.Services.AddScoped<
     TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeeder>();
-builder.Services.AddHostedService<
-    TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeederHostedService>();
+if (!shouldSkipStartupSeeders)
+{
+    builder.Services.AddHostedService<
+        TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeederHostedService>();
+}
 
 // Slice L1: PACS land_detail raw landing — Block C's land lane
 // per-segment table. Four gates: distribution, 4-key-uniqueness,
@@ -1868,8 +1930,11 @@ builder.Services.AddScoped<
 // imprv_attr rows quarantine with UNKNOWN_I_ATTR_VAL_CD until an
 // operator manually runs /api/debug/attr-drain-1/run-drain. Idempotent
 // + non-fatal on failure.
-builder.Services.AddHostedService<
-    TerraFusion.Data.Services.PacsImprvAttr.ImprvAttrDictionaryRefreshHostedService>();
+if (!shouldSkipStartupSeeders)
+{
+    builder.Services.AddHostedService<
+        TerraFusion.Data.Services.PacsImprvAttr.ImprvAttrDictionaryRefreshHostedService>();
+}
 
 // Slice D1: ArcGIS REST FeatureService raw landing. Wraps the
 // existing G1-C IArcGisFeatureServiceClient and writes verbatim
@@ -2591,30 +2656,38 @@ var app = builder.Build();
 }
 
 // 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
-using (var scope = app.Services.CreateScope())
+if (!shouldSkipStartupSeeders)
 {
-  try
+  using (var scope = app.Services.CreateScope())
   {
-    var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
-    await databaseInitializer.InitializeAsync();
-
-    var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
+    try
+    {
+      var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
+      await databaseInitializer.InitializeAsync();
 
-    var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
+      var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+
+      var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
         scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
-    await seeder.SeedAllGPTsAsync();
+      await seeder.SeedAllGPTsAsync();
 
-    logger.LogInformation("GPT configurations seeded successfully");
+      logger.LogInformation("GPT configurations seeded successfully");
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, "GPT seeding failed while running {MethodName}", nameof(TerraFusion.AI.Seeds.GPTConfigurationSeeder.SeedAllGPTsAsync));
+      throw;
+    }
   }
-  catch (Exception ex)
-  {
-    Console.WriteLine($"GPT seeding skipped: {ex.Message}");
-  }
+}
+else
+{
+  Console.WriteLine("[STARTUP] GPT seeding skipped by TF_SKIP_DEV_SEEDERS/--skip-dev-seeders.");
 }
 
 // DX-01: Seed dossier runtime data in Development
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() && !shouldSkipStartupSeeders)
 {
   using var seedScope = app.Services.CreateScope();
   try
@@ -2626,6 +2699,10 @@ if (app.Environment.IsDevelopment())
   {
     Console.WriteLine($"[DX-01] Dossier seed skipped: {ex.Message}");
   }
+}
+else if (app.Environment.IsDevelopment())
+{
+  Console.WriteLine("[DX-01] Dossier seed skipped by TF_SKIP_DEV_SEEDERS/--skip-dev-seeders.");
 }
 
 // Configure pipeline
@@ -2673,7 +2750,7 @@ app.UseHttpMetrics();
 
 // Authentication & Authorization
 // Serve static files from native-shell/ui/dist BEFORE other middleware
-var uiPath = Path.GetFullPath(Path.Combine(apiContentRoot, "..", "..", "..", "native-shell", "ui", "dist"));
+var uiPath = ResolveUiDistPath(apiContentRoot);
 Console.WriteLine($"[STARTUP] Looking for UI at: {uiPath}");
 Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
 
@@ -3488,10 +3565,8 @@ try
   // Respect TF_SKIP_DEV_SEEDERS env var — useful when starting against a
   // Postgres DB that already has canonical data (avoids unique-key conflicts).
   var skipDevSeedersValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
-  var skipDevSeedersArg = args.Any(arg => string.Equals(arg, "--skip-dev-seeders", StringComparison.OrdinalIgnoreCase));
-  var shouldSkipDevSeeders = skipDevSeedersArg ||
-                              string.Equals(skipDevSeedersValue, "true", StringComparison.OrdinalIgnoreCase) ||
-                              string.Equals(skipDevSeedersValue, "1", StringComparison.OrdinalIgnoreCase);
+  var skipDevSeedersArg = HasSkipDevSeedersArg(args);
+  var shouldSkipDevSeeders = ShouldSkipDevSeeders(args);
 
   Console.WriteLine($"[STARTUP] Dev seeders skip={shouldSkipDevSeeders} (arg={skipDevSeedersArg}, TF_SKIP_DEV_SEEDERS={skipDevSeedersValue ?? "<null>"})");
 
