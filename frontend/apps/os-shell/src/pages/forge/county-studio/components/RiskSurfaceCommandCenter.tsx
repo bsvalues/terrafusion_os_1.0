@@ -6,12 +6,15 @@ import {
   type RiskSurfaceRow,
   type UnifiedRiskLedgerRow,
 } from '../utils/riskSurfaces';
+import { EmbeddedAtlasGisWorkspace, type CountyStudioAtlasViewport } from './EmbeddedAtlasGisWorkspace';
+import { BottomDeck } from './BottomDeck';
+import { CountyHealthPanel } from './CountyHealthPanel';
 
 const riskColor: Record<RiskLevel, string> = {
-  Critical: '#ef4444',
-  High: '#f59e0b',
-  Medium: '#3b82f6',
-  Low: '#22c55e',
+  Critical: 'hsl(var(--tf-danger, 0 84% 60%))',
+  High: 'hsl(var(--tf-warning, 38 92% 50%))',
+  Medium: 'hsl(var(--tf-accent, 217 91% 60%))',
+  Low: 'hsl(var(--tf-success, 142 71% 45%))',
 };
 
 type LedgerFilter = 'All' | RiskLevel;
@@ -90,9 +93,13 @@ function BoardTable({ title, rows, empty }: { title: string; rows: RiskSurfaceRo
 
 function UnifiedRiskLedger({
   rows,
+  focusedSegmentId,
+  onFocusMap,
   onOpenEvidence,
 }: {
   rows: UnifiedRiskLedgerRow[];
+  focusedSegmentId: string | null;
+  onFocusMap: (row: UnifiedRiskLedgerRow) => void;
   onOpenEvidence: (row: UnifiedRiskLedgerRow) => void;
 }) {
   const [filter, setFilter] = useState<LedgerFilter>('All');
@@ -209,7 +216,17 @@ function UnifiedRiskLedger({
           </thead>
           <tbody>
             {visibleRows.map((row) => (
-              <tr key={`${row.type}:${row.key}`} style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
+              <tr
+                key={`${row.type}:${row.key}`}
+                data-testid="risk-ledger-row"
+                data-focused={row.evidenceSegmentId === focusedSegmentId ? 'true' : 'false'}
+                onClick={() => onFocusMap(row)}
+                style={{
+                  borderTop: '1px solid hsl(var(--tf-border))',
+                  cursor: 'pointer',
+                  background: row.evidenceSegmentId === focusedSegmentId ? 'hsl(var(--tf-surface))' : 'transparent',
+                }}
+              >
                 <td style={{ padding: '7px 10px', fontWeight: 800 }}>{row.rank}</td>
                 <td data-testid="risk-ledger-object" style={{ padding: '7px 8px', fontWeight: 700 }}>{row.label}</td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>{row.type}</td>
@@ -221,7 +238,10 @@ function UnifiedRiskLedger({
                   <button
                     type="button"
                     aria-label={`${row.nextAction} for ${row.label}`}
-                    onClick={() => onOpenEvidence(row)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onOpenEvidence(row);
+                    }}
                     style={{
                       padding: 0,
                       border: 0,
@@ -245,10 +265,28 @@ function UnifiedRiskLedger({
   );
 }
 
-export function RiskSurfaceCommandCenter() {
+interface RiskSurfaceCommandCenterProps {
+  onAtlasViewportChange?: (viewport: CountyStudioAtlasViewport) => void;
+}
+
+export function RiskSurfaceCommandCenter({ onAtlasViewportChange }: RiskSurfaceCommandCenterProps = {}) {
   const segments = useCountyStudioStore((state) => state.segments);
+  const selectedSegmentId = useCountyStudioStore((state) => state.selectedSegmentId);
+  const focusRiskSurfaceMapObject = useCountyStudioStore((state) => state.focusRiskSurfaceMapObject);
   const drillToRiskSurfaceNeighborhood = useCountyStudioStore((state) => state.drillToRiskSurfaceNeighborhood);
   const commandCenter = useMemo(() => buildRiskSurfaceCommandCenter(segments), [segments]);
+
+  const focusLedgerRow = (row: UnifiedRiskLedgerRow) => {
+    const evidenceSegment = row.evidenceSegmentId
+      ? segments.find((segment) => segment.segmentId === row.evidenceSegmentId) ?? null
+      : null;
+    const neighborhood = row.context.neighborhood ?? evidenceSegment?.geographyRef ?? null;
+    focusRiskSurfaceMapObject(
+      neighborhood,
+      row.evidenceSegmentId,
+      evidenceSegment?.revalArea ?? null,
+    );
+  };
 
   const openLedgerRow = (row: UnifiedRiskLedgerRow) => {
     const evidenceSegment = row.evidenceSegmentId
@@ -290,9 +328,9 @@ export function RiskSurfaceCommandCenter() {
             style={{
               marginTop: 8,
               padding: '7px 8px',
-              border: '1px solid #f59e0b66',
-              background: '#f59e0b14',
-              color: '#f59e0b',
+              border: '1px solid hsl(var(--tf-warning, 38 92% 50%) / 0.42)',
+              background: 'hsl(var(--tf-warning, 38 92% 50%) / 0.14)',
+              color: 'hsl(var(--tf-warning, 38 92% 50%))',
               fontSize: 11,
             }}
           >
@@ -301,7 +339,63 @@ export function RiskSurfaceCommandCenter() {
         )}
       </div>
 
-      <UnifiedRiskLedger rows={commandCenter.ledger} onOpenEvidence={openLedgerRow} />
+      <div
+        data-testid="county-studio-gis-stage"
+        style={{
+          minHeight: 0,
+          overflow: 'hidden',
+          flexShrink: 0,
+          borderBottom: '1px solid hsl(var(--tf-border))',
+        }}
+      >
+        <EmbeddedAtlasGisWorkspace onViewportChange={onAtlasViewportChange} />
+      </div>
+
+      <div
+        data-testid="county-studio-bottom-analytics"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(360px, 1.05fr) minmax(360px, 0.95fr)',
+          alignItems: 'stretch',
+          minHeight: 260,
+          borderBottom: '1px solid hsl(var(--tf-border))',
+        }}
+      >
+        <div style={{ minHeight: 0, overflow: 'auto', borderRight: '1px solid hsl(var(--tf-border))' }}>
+          <UnifiedRiskLedger
+            rows={commandCenter.ledger}
+            focusedSegmentId={selectedSegmentId}
+            onFocusMap={focusLedgerRow}
+            onOpenEvidence={openLedgerRow}
+          />
+        </div>
+        <div
+          data-testid="county-studio-bottom-deck"
+          style={{
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateRows: 'minmax(150px, 1fr) auto',
+            overflow: 'hidden',
+          }}
+        >
+          <BottomDeck />
+        </div>
+      </div>
+
+      <div
+        data-testid="county-operational-scope-note"
+        style={{
+          padding: '8px 12px',
+          borderBottom: '1px solid hsl(var(--tf-border))',
+          background: 'hsl(var(--tf-bg))',
+          fontSize: 11,
+          color: 'hsl(var(--tf-muted))',
+        }}
+      >
+        County Studio opens by how valuation decisions are made and defended: reval cycles, neighborhoods, model groups, districts, value tiers, and parcel evidence.
+      </div>
+
+      <CountyHealthPanel />
 
       <div
         style={{

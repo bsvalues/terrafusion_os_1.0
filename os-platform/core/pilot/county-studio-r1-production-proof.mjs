@@ -19,7 +19,11 @@ const files = {
   ai: 'backend/src/TerraFusion.Core/Services/CountyStudioAiService.cs',
   invariant: 'frontend/apps/os-shell/src/pages/forge/county-studio/countyStudioInvariants.ts',
   riskSurface: 'frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx',
+  embeddedAtlas: 'frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx',
   healthPanel: 'frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx',
+  countyPage: 'frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx',
+  atlasLiveApi: 'frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts',
+  geoforgeMap: 'frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx',
   sanitizer: 'frontend/apps/os-shell/src/pages/forge/county-studio/utils/cityPrimarySanitizer.ts',
   objectInspector: 'frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx',
   neighborhoodInspector: 'frontend/apps/os-shell/src/pages/forge/county-studio/components/NeighborhoodInspector.tsx',
@@ -114,6 +118,11 @@ function listFiles(dir, predicate, excluded = new Set()) {
 
 function makeCheck(id, passed, detail, payload = {}, proof = []) {
   return { id, passed, detail, payload, proof };
+}
+
+function extractVisibleCount(bodyText, label) {
+  const match = bodyText.match(new RegExp(`([0-9][\\d,]*)\\s+${label}`, 'i'));
+  return match ? Number(match[1].replace(/,/g, '')) : 0;
 }
 
 function endpointContractCheck() {
@@ -255,6 +264,98 @@ function cityDoctrineCheck() {
   );
 }
 
+function gisContractCheck() {
+  const embeddedAtlas = read(files.embeddedAtlas);
+  const riskSurface = read(files.riskSurface);
+  const countyPage = read(files.countyPage);
+  const atlasLiveApi = read(files.atlasLiveApi);
+  const requiredEmbeddedTokens = [
+    'county-studio-atlas-workspace',
+    'county-studio-embedded-atlas-canvas',
+    'primary-center-surface',
+    'useAtlasMapData',
+    'GeoForgeV2Map',
+    'AtlasOverlayManager',
+    'Parcels',
+    'Parcel boundaries',
+    'Neighborhoods',
+    'County segments',
+    'Reval areas',
+    'Taxing districts',
+    'Layer configuration',
+    'Valuation risk',
+    'Ratio / COD / PRD risk',
+    'Comparable sales clusters',
+    'Model groups',
+    'Value tiers',
+    'CAMA characteristic anomalies',
+    'Segment health',
+    "activateModule('property-workbench'",
+    "initialTab: 'atlas'",
+    "forge: 'parcel-valuation'",
+    "dossier: 'evidence'",
+  ];
+  const missingEmbeddedTokens = requiredEmbeddedTokens.filter((token) => !embeddedAtlas.includes(token));
+  const commandCenterEmbeds = riskSurface.includes('EmbeddedAtlasGisWorkspace');
+  const atlasGeometryContracts = [
+    'fetchAtlasCompatibilityMapData',
+    'fetchGeoForgeCompatibilityOutlines',
+    'fetchGeoForgeCompatibilityParcels',
+  ].filter((token) => atlasLiveApi.includes(token));
+  const popOutOnly =
+    countyPage.includes('Pop Out Map')
+    && !riskSurface.includes('EmbeddedAtlasGisWorkspace')
+    && !embeddedAtlas.includes('county-studio-embedded-atlas-canvas');
+  const countyStudioFiles = listFiles('frontend/apps/os-shell/src/pages/forge/county-studio', (rel) =>
+    /\.(ts|tsx)$/.test(rel) && !rel.includes('/__tests__/'));
+  const forbiddenWritePatterns = [
+    /\baddSource\s*\(/,
+    /\bsetData\s*\(/,
+    /\baddLayer\s*\(/,
+    /\bsetPaintProperty\s*\(/,
+    /\bsetLayoutProperty\s*\(/,
+    /method:\s*['"](?:POST|PUT|PATCH|DELETE)['"].*atlas/si,
+  ];
+  const writeHits = [];
+  for (const rel of countyStudioFiles) {
+    const lines = read(rel).split(/\r?\n/);
+    lines.forEach((line, index) => {
+      if (forbiddenWritePatterns.some((pattern) => pattern.test(line))) {
+        writeHits.push({ file: rel, line: index + 1, text: line.trim().slice(0, 180) });
+      }
+    });
+  }
+
+  return makeCheck(
+    'gis-contract.embedded-atlas-primary-center-surface',
+    missingEmbeddedTokens.length === 0
+      && commandCenterEmbeds
+      && atlasGeometryContracts.length === 3
+      && !popOutOnly
+      && writeHits.length === 0,
+    `missingEmbeddedTokens=${missingEmbeddedTokens.length}, commandCenterEmbeds=${commandCenterEmbeds}, atlasGeometryContracts=${atlasGeometryContracts.length}, popOutOnly=${popOutOnly}, countyStudioGisWriteHits=${writeHits.length}`,
+    {
+      requiredEmbeddedTokens,
+      missingEmbeddedTokens,
+      commandCenterEmbeds,
+      atlasGeometryContracts,
+      popOutOnly,
+      countyStudioGisWriteHits: writeHits,
+      ownership: {
+        terraAtlas: ['geometry', 'layers', 'symbology', 'boundaries', 'annotations', 'bookmarks', 'neighborhood definitions'],
+        terraForge: ['valuation risk overlay', 'ratio/COD/PRD context', 'model groups', 'value tiers', 'segment health'],
+      },
+    },
+    [
+      findLine(files.embeddedAtlas, 'county-studio-embedded-atlas-canvas'),
+      findLine(files.embeddedAtlas, 'GeoForgeV2Map'),
+      findLine(files.embeddedAtlas, "activateModule('property-workbench'"),
+      findLine(files.riskSurface, 'EmbeddedAtlasGisWorkspace'),
+      findLine(files.atlasLiveApi, 'fetchAtlasCompatibilityMapData'),
+    ],
+  );
+}
+
 function handoffCheck() {
   const objectInspector = read(files.objectInspector);
   const neighborhoodInspector = read(files.neighborhoodInspector);
@@ -339,7 +440,7 @@ async function runtimeCheck(options) {
       {
         mode: 'skipped',
         command: 'node os-platform/core/pilot/county-studio-r1-production-proof.mjs --runtime-url http://127.0.0.1:5175/forge/county-studio',
-        requiredVisibleSignals: ['County Studio', 'Risk Surfaces', 'Unified Risk Ledger'],
+        requiredVisibleSignals: ['County Studio', 'Embedded TerraAtlas GIS', 'Unified Risk Ledger'],
       },
       ['os-platform/core/pilot/ops/june10-benton-uat-screenshot-checklist-2026-05-13.md'],
     );
@@ -367,28 +468,161 @@ async function runtimeCheck(options) {
   });
 
   try {
+    await page.addInitScript(() => {
+      localStorage.setItem('tf.session.dev', JSON.stringify({
+        userId: 'dev-user',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        role: 'dev',
+        mode: 'pilot',
+      }));
+    });
     await page.goto(options.runtimeUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    const requiredVisibleSignals = ['County Studio', 'Risk Surfaces', 'Unified Risk Ledger'];
+    await page.getByRole('button', { name: 'Open Study' }).click({ timeout: 30000 }).catch(() => null);
+    await page.getByText('Existing Studies').waitFor({ timeout: 30000 }).catch(() => null);
+    const studyChoices = page
+      .locator('button')
+      .filter({ hasText: /RatioStudy|MassAppraisal|IncomeApproach|CostApproach/ });
+    await studyChoices.first().waitFor({ timeout: 30000 }).catch(() => null);
+    const studyChoiceCount = await studyChoices.count().catch(() => 0);
+    for (let index = 0; index < studyChoiceCount; index += 1) {
+      if (index > 0) {
+        await page.getByRole('button', { name: 'Open Study' }).click({ timeout: 30000 }).catch(() => null);
+        await page.getByText('Existing Studies').waitFor({ timeout: 30000 }).catch(() => null);
+      }
+      await studyChoices.nth(index).click({ timeout: 30000 }).catch(() => null);
+      await page.waitForFunction(
+        () => !document.body.innerText.includes('No study open'),
+        { timeout: 30000 },
+      ).catch(() => null);
+      const dataReady = await page.waitForFunction(
+        () => {
+          const text = document.body.innerText;
+          const count = (label) => {
+            const match = text.match(new RegExp(`([1-9][\\d,]*)\\s+${label}`, 'i'));
+            return match ? Number(match[1].replace(/,/g, '')) : 0;
+          };
+          return text.includes('ATLAS LIVE')
+            && !text.includes('No study open')
+            && !text.includes('Loading countywide health metrics')
+            && count('segments') > 0
+            && count('risk objects') > 0;
+        },
+        { timeout: 20000 },
+      ).then(() => true).catch(() => false);
+      if (dataReady) break;
+    }
+    const requiredVisibleSignals = [
+      'County Studio',
+      'Embedded TerraAtlas GIS',
+      'TerraAtlas-owned layers',
+      'Forge-owned overlays',
+      'Unified Risk Ledger',
+      'Parcels',
+      'Parcel boundaries',
+      'Valuation risk',
+    ];
+    const disallowedVisibleSignals = [
+      'City Rollups',
+      'Mapbox token missing',
+      'Atlas map data unavailable',
+      'map-unavailable',
+      'ATLAS DISCONNECTED',
+    ];
     await page.waitForFunction(
       (signals) => signals.some((signal) => document.body.innerText.includes(signal)),
       requiredVisibleSignals,
       { timeout: 30000 },
     ).catch(() => null);
+    await page.waitForSelector('[data-testid="county-studio-embedded-atlas-canvas"]', { timeout: 30000 }).catch(() => null);
+    await page.waitForSelector('[data-testid="county-studio-atlas-loading"]', { state: 'hidden', timeout: 45000 }).catch(() => null);
+    await page.waitForFunction(
+      () => {
+        const text = document.body.innerText;
+        const count = (label) => {
+          const match = text.match(new RegExp(`([1-9][\\d,]*)\\s+${label}`, 'i'));
+          return match ? Number(match[1].replace(/,/g, '')) : 0;
+        };
+        return text.includes('ATLAS LIVE')
+          && !text.includes('No study open')
+          && !text.includes('Loading countywide health metrics')
+          && count('segments') > 0
+          && count('risk objects') > 0;
+      },
+      { timeout: 60000 },
+    ).catch(() => null);
     const bodyText = await page.locator('body').innerText({ timeout: 10000 });
+    const bodyTextLower = bodyText.toLowerCase();
+    const embeddedCanvasCount = await page.locator('[data-testid="county-studio-embedded-atlas-canvas"]').count();
+    const mapCanvasCount = await page.locator('[data-testid="county-studio-embedded-atlas-canvas"] canvas').count();
+    const segmentCount = extractVisibleCount(bodyText, 'segments');
+    const riskObjectCount = extractVisibleCount(bodyText, 'risk objects');
+    const atlasLiveVisible = bodyText.includes('ATLAS LIVE');
+    const studyOpenVisible = !bodyText.includes('No study open');
+    const loadingHealthMetricsVisible = bodyText.includes('Loading countywide health metrics');
+    const layoutGeometry = await page.evaluate(() => {
+      const rectFor = (selector) => {
+        const node = document.querySelector(selector);
+        if (!node) return null;
+        const rect = node.getBoundingClientRect();
+        return {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      };
+      const overlaps = (a, b) => Boolean(a && b
+        && a.left < b.right
+        && a.right > b.left
+        && a.top < b.bottom
+        && a.bottom > b.top);
+      const stage = rectFor('[data-testid="county-studio-gis-stage"]');
+      const analytics = rectFor('[data-testid="county-studio-bottom-analytics"]');
+      const rightRail = rectFor('[data-testid="cs-right-rail"]');
+      return {
+        stage,
+        analytics,
+        rightRail,
+        mapDoesNotOverlapAnalytics: Boolean(stage && analytics && !overlaps(stage, analytics)),
+        mapDoesNotOverlapRightRail: Boolean(stage && rightRail && !overlaps(stage, rightRail)),
+      };
+    });
     await page.screenshot({ path: screenshotPath, fullPage: true });
-    const missingVisibleSignals = requiredVisibleSignals.filter((signal) => !bodyText.includes(signal));
-    const cityRollupsVisible = bodyText.includes('City Rollups');
+    const missingVisibleSignals = requiredVisibleSignals.filter((signal) => !bodyTextLower.includes(signal.toLowerCase()));
+    const disallowedVisibleHits = disallowedVisibleSignals.filter((signal) => bodyTextLower.includes(signal.toLowerCase()));
     return makeCheck(
       'runtime.screenshot-contract-ready',
-      missingVisibleSignals.length === 0 && !cityRollupsVisible && consoleErrors.length === 0,
-      `missingVisibleSignals=${missingVisibleSignals.length}, cityRollupsVisible=${cityRollupsVisible}, consoleErrors=${consoleErrors.length}`,
+      missingVisibleSignals.length === 0
+        && disallowedVisibleHits.length === 0
+        && embeddedCanvasCount > 0
+        && mapCanvasCount > 0
+        && atlasLiveVisible
+        && studyOpenVisible
+        && segmentCount > 0
+        && riskObjectCount > 0
+        && !loadingHealthMetricsVisible
+        && layoutGeometry.mapDoesNotOverlapAnalytics
+        && layoutGeometry.mapDoesNotOverlapRightRail
+        && consoleErrors.length === 0,
+      `missingVisibleSignals=${missingVisibleSignals.length}, disallowedVisibleHits=${disallowedVisibleHits.length}, embeddedCanvasCount=${embeddedCanvasCount}, mapCanvasCount=${mapCanvasCount}, segmentCount=${segmentCount}, riskObjectCount=${riskObjectCount}, atlasLiveVisible=${atlasLiveVisible}, loadingHealthMetricsVisible=${loadingHealthMetricsVisible}, mapDoesNotOverlapAnalytics=${layoutGeometry.mapDoesNotOverlapAnalytics}, mapDoesNotOverlapRightRail=${layoutGeometry.mapDoesNotOverlapRightRail}, consoleErrors=${consoleErrors.length}`,
       {
         mode: 'runtime',
         url: options.runtimeUrl,
         screenshot: path.relative(repoRoot, screenshotPath).replace(/\\/g, '/'),
         requiredVisibleSignals,
         missingVisibleSignals,
-        cityRollupsVisible,
+        disallowedVisibleSignals,
+        disallowedVisibleHits,
+        embeddedCanvasCount,
+        mapCanvasCount,
+        segmentCount,
+        riskObjectCount,
+        atlasLiveVisible,
+        studyOpenVisible,
+        loadingHealthMetricsVisible,
+        layoutGeometry,
         consoleErrors,
       },
       [path.relative(repoRoot, screenshotPath).replace(/\\/g, '/')],
@@ -442,6 +676,7 @@ async function main() {
     dataFlowCheck(),
     mockAuditCheck(),
     cityDoctrineCheck(),
+    gisContractCheck(),
     handoffCheck(),
     toolsInventoryCheck(),
     await runtimeCheck(options),

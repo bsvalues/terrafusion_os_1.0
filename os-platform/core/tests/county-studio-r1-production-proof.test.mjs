@@ -96,3 +96,48 @@ test('runtime proof waits on document readiness before explicit County Studio si
   assert.match(source, /page\.waitForFunction/);
   assert.match(source, /requiredVisibleSignals/);
 });
+
+test('runtime proof waits for the embedded Atlas loading state to clear before screenshot', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /county-studio-atlas-loading/);
+  assert.match(source, /state: 'hidden'/);
+});
+
+test('runtime proof opens a real County Studio study before capturing GIS evidence', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /getByRole\('button', \{ name: 'Open Study' \}\)/);
+  assert.match(source, /Existing Studies/);
+  assert.match(source, /studyChoice/);
+  assert.match(source, /tf\.session\.dev/);
+  assert.match(source, /19190019-1919-1919-1919-191919191919/);
+});
+
+test('runtime proof waits for live study data before capturing the screenshot', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /ATLAS LIVE/);
+  assert.match(source, /Loading countywide health metrics/);
+  assert.match(source, /segmentCount > 0/);
+  assert.match(source, /riskObjectCount > 0/);
+  assert.match(source, /extractVisibleCount/);
+});
+
+test('runtime proof fails when the map overlaps ledger, statistics, or inspector regions', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /county-studio-gis-stage/);
+  assert.match(source, /county-studio-bottom-analytics/);
+  assert.match(source, /cs-right-rail/);
+  assert.match(source, /mapDoesNotOverlapAnalytics/);
+  assert.match(source, /mapDoesNotOverlapRightRail/);
+});
+
+test('runtime proof matches visible GIS contract labels case-insensitively', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /bodyTextLower/);
+  assert.match(source, /signal\.toLowerCase\(\)/);
+  assert.match(source, /bodyTextLower\.includes/);
+});

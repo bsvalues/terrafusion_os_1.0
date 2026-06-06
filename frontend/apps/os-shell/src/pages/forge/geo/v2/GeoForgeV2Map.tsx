@@ -15,7 +15,11 @@ import type { NbhdOutlineCollection, ParcelTileCollection, ParcelTileProps } fro
 import type { V2LayerId } from './LeftPanel';
 import type { MapContextPayload } from './mapContext';
 
-const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ?? '';
+const MAPBOX_TOKEN = (
+  (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined)
+  ?? (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)
+  ?? ''
+).trim();
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const DEFAULT_CENTER: [number, number] = [-120.9, 47.35];
@@ -454,7 +458,7 @@ export function GeoForgeV2Map({
   if (!MAPBOX_TOKEN) {
     return (
       <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-        Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN).
+        Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN or VITE_MAPBOX_TOKEN).
       </div>
     );
   }

@@ -175,6 +175,16 @@ export interface CountyStudioState {
     segmentId: string,
     revalArea?: number | null
   ) => void;
+  /**
+   * Focus an object on the embedded Atlas surface without changing the primary
+   * drill level. This keeps map/ledger/inspector coordination city-free while
+   * preserving the user's current workspace surface.
+   */
+  focusRiskSurfaceMapObject: (
+    neighborhoodCode: string | null,
+    segmentId?: string | null,
+    revalArea?: number | null
+  ) => void;
   setSegmentSeverityFilter: (filter: SegmentSeverityFilter) => void;
   /**
    * Legacy/reference path that jumps straight to a specific segment under a
@@ -381,6 +391,17 @@ export const useCountyStudioStore = create<CountyStudioState>()(
           },
           false,
           `drillToRiskSurfaceSegment/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId}`
+        ),
+      focusRiskSurfaceMapObject: (neighborhoodCode, segmentId = null, revalArea = null) =>
+        set(
+          {
+            selectedCity: null,
+            selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
+            selectedSegmentId: segmentId,
+          },
+          false,
+          `focusRiskSurfaceMapObject/${neighborhoodCode ?? 'na'}/${revalArea ?? 'na'}/${segmentId ?? 'na'}`
         ),
       drillToSegment: (city, neighborhoodCode, segmentId, revalArea = null) =>
         set(

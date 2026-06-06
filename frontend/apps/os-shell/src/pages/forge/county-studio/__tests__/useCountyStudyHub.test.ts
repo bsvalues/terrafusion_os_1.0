@@ -52,11 +52,13 @@ vi.mock('../countyStudyScope', () => ({
 
 import { getCountyStudyHubUrl, useCountyStudyHub } from '../hooks/useCountyStudyHub';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { clearToken, setToken } from '@/auth/authStorage';
 import { getMockConnection, getMockWithUrl } from '@microsoft/signalr';
 
 describe('useCountyStudyHub', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearToken();
     act(() => {
       useCountyStudioStore.getState().setSyncState('DISCONNECTED');
     });
@@ -78,8 +80,19 @@ describe('useCountyStudyHub', () => {
       await Promise.resolve();
     });
 
-    expect(withUrl).toHaveBeenCalledWith(expect.stringMatching(/\/hubs\/county-study\?countyId=benton$/));
+    expect(withUrl.mock.calls[0][0]).toEqual(expect.stringMatching(/\/hubs\/county-study\?countyId=benton$/));
     expect(withUrl.mock.calls[0][0]).not.toContain(['/api', '/hubs/county-study'].join(''));
+  });
+
+  it('passes the stored auth token to the county study hub', async () => {
+    setToken('hub-token');
+    renderHook(() => useCountyStudyHub('study-abc'));
+    const withUrl = getMockWithUrl();
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(withUrl.mock.calls[0][1]?.accessTokenFactory()).toBe('hub-token');
   });
 
   it('resolves relative API dev base to the real hub route', () => {

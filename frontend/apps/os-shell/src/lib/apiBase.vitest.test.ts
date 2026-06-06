@@ -49,11 +49,15 @@ describe('apiBase governance', () => {
     let originalFetch: typeof globalThis.fetch;
 
     beforeEach(() => {
+      localStorage.clear();
+      vi.unstubAllEnvs();
       originalFetch = globalThis.fetch;
       globalThis.fetch = vi.fn().mockResolvedValue(new Response('{}'));
     });
 
     afterEach(() => {
+      localStorage.clear();
+      vi.unstubAllEnvs();
       globalThis.fetch = originalFetch;
     });
 
@@ -66,6 +70,48 @@ describe('apiBase governance', () => {
       const init = { method: 'POST', body: '{}' };
       await apiFetch('/agents/events', init);
       expect(globalThis.fetch).toHaveBeenCalledWith('/api/agents/events', init);
+    });
+
+    it('adds bearer auth from authStorage without dropping caller headers', async () => {
+      localStorage.setItem('authToken', 'owner-token');
+
+      await apiFetch('/county-study/studies?countyId=benton', {
+        headers: { 'x-county-id': 'benton' },
+      });
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        '/api/county-study/studies?countyId=benton',
+        {
+          headers: {
+            'x-county-id': 'benton',
+            authorization: 'Bearer owner-token',
+          },
+        },
+      );
+    });
+
+    it('obtains the existing dev preview token before the first protected API fetch', async () => {
+      vi.stubEnv('VITE_DEV_PREVIEW_BYPASS_AUTH', 'true');
+      globalThis.fetch = vi.fn()
+        .mockResolvedValueOnce(new Response(JSON.stringify({ token: 'dev-jwt' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }))
+        .mockResolvedValueOnce(new Response('{}'));
+
+      await apiFetch('/geoforge/v2/parcels/tiles?taxYear=2026&limit=1');
+
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(1, '/api/auth/dev-token');
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(
+        2,
+        '/api/geoforge/v2/parcels/tiles?taxYear=2026&limit=1',
+        {
+          headers: {
+            authorization: 'Bearer dev-jwt',
+          },
+        },
+      );
+      expect(localStorage.getItem('authToken')).toBe('dev-jwt');
     });
   });
 });

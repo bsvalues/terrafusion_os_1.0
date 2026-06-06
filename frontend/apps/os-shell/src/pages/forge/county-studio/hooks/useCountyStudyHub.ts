@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { getToken } from '@/auth/authStorage';
 import { getCountyStudyScope } from '../countyStudyScope';
 
 const HUB_PATH = '/hubs/county-study';
@@ -29,7 +30,9 @@ export function useCountyStudyHub(studyId: string | null) {
     }
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${getCountyStudyHubUrl()}?countyId=${encodeURIComponent(countyScope.countyId)}`)
+      .withUrl(`${getCountyStudyHubUrl()}?countyId=${encodeURIComponent(countyScope.countyId)}`, {
+        accessTokenFactory: () => getToken() ?? '',
+      })
       .withAutomaticReconnect()
       .build();
 
