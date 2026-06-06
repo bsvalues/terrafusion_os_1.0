@@ -306,6 +306,7 @@ function toComparableSale(record: LaunchSaleRecord): ComparableSale {
 }
 
 export function clearComparableSalesCacheForTests(): void {
+  if (import.meta.env.MODE !== 'test') return;
   countyShardCache.clear();
 }
 

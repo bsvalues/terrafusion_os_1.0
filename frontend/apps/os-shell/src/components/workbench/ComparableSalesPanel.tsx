@@ -941,7 +941,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                       const adjustmentStatus = adjustment
                         ? 'Adjusted'
                         : adjustLoading.has(key)
-                          ? 'Adjustment Pending'
+                          ? 'Adjustment Loading'
                           : 'Adjustment Pending';
                       const handleDecision = (
                         event: React.MouseEvent<HTMLButtonElement>,

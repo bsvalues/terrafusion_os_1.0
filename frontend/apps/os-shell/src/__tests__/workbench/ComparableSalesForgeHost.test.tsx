@@ -480,6 +480,79 @@ describe('Comparable Sales Forge host', () => {
     expect(within(row).getByText(/no decision/i)).toBeInTheDocument();
   });
 
+  it('surfaces in-flight adjustment requests separately from pending adjustments', async () => {
+    storeState.activeParcel = buildBentonParcelWithSubjectEvidence('GATE-TEST-001');
+    let resolveAdjustResponse: (value: { ok: boolean; json: () => Promise<unknown> }) => void =
+      () => undefined;
+    const adjustResponse = new Promise<{ ok: boolean; json: () => Promise<unknown> }>((resolve) => {
+      resolveAdjustResponse = resolve;
+    });
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.includes('/launch-data/')) {
+        return {
+          ok: true,
+          json: async () => buildReviewReadyCountySalesShard(),
+        };
+      }
+
+      if (url.includes('/adjust-comparable')) {
+        return adjustResponse;
+      }
+
+      return {
+        ok: true,
+        json: async () => ({}),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderForge(<ComparableSalesPanel />);
+
+    await screen.findByText(/201 Defensible Ave/i);
+    fireEvent.click(screen.getAllByRole('button', { name: /use comp/i })[0]);
+
+    await waitFor(() => {
+      const row = screen
+        .getAllByRole('row', { name: /201 Defensible Ave/i })
+        .find((candidateRow) =>
+          within(candidateRow).queryByText(/adjustment loading/i)
+        );
+      expect(row).toBeDefined();
+    });
+
+    resolveAdjustResponse({
+      ok: true,
+      json: async () => ({
+        salePrice: 331000,
+        glaAdjustment: 1500,
+        lotAdjustment: 500,
+        ageAdjustment: 0,
+        bedroomAdjustment: 0,
+        bathroomAdjustment: 0,
+        conditionAdjustment: 0,
+        locationAdjustment: 0,
+        totalNetAdjustment: 2000,
+        adjustedPrice: 333000,
+        grossAdjustmentPct: 6,
+        netAdjustmentPct: 2,
+        adjustments: {},
+        warnings: [],
+        source: 'costforge-test',
+      }),
+    });
+
+    await waitFor(() => {
+      const row = screen
+        .getAllByRole('row', { name: /201 Defensible Ave/i })
+        .find((candidateRow) =>
+          within(candidateRow).queryByText(/adjusted/i)
+        );
+      expect(row).toBeDefined();
+    });
+  });
+
   it('opens reconciliation posture only after three selected comps are qualified, complete, physically supported, and adjusted', async () => {
     storeState.activeParcel = buildBentonParcelWithSubjectEvidence('GATE-TEST-001');
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
