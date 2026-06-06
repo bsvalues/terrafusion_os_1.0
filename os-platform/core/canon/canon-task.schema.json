@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/canon-task.schema.json",
+  "title": "CanonTask",
+  "description": "A governed agent task as an explicit state machine (ADR-005: Draft -> ... -> TraceSealed). Adapted from the Canon/IDE package into the repo-native os-platform/core/canon runtime. Read-only state-machine; no execution.",
+  "type": "object",
+  "required": [
+    "taskId",
+    "intent",
+    "surface",
+    "state",
+    "risk",
+    "scope",
+    "history"
+  ],
+  "properties": {
+    "taskId": { "type": "string" },
+    "intent": { "type": "string" },
+    "surface": { "enum": ["os-canon", "canon-desktop", "cli", "ci"] },
+    "state": {
+      "enum": [
+        "Draft",
+        "CanonContextLoaded",
+        "ScopeProposed",
+        "PlanProposed",
+        "RiskScored",
+        "AwaitingApproval",
+        "WorktreeCreated",
+        "Executing",
+        "DiffReady",
+        "GatesRunning",
+        "ReviewRequired",
+        "CommitReady",
+        "TraceSealed",
+        "PRReady",
+        "Closed",
+        "Failed"
+      ]
+    },
+    "risk": { "enum": ["low", "medium", "high", "critical"] },
+    "scope": {
+      "type": "object",
+      "required": ["allowedPaths", "forbiddenPaths"],
+      "properties": {
+        "allowedPaths": { "type": "array", "items": { "type": "string" } },
+        "forbiddenPaths": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "requiredGates": { "type": "array", "items": { "type": "string" } },
+    "approvals": { "type": "array", "items": { "type": "object" } },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["to", "actor", "at"],
+        "properties": {
+          "from": { "type": ["string", "null"] },
+          "to": { "type": "string" },
+          "actor": { "type": "string" },
+          "at": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}
