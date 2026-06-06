@@ -1,10 +1,10 @@
 {
-  "generatedAtUtc": "2026-06-06T22:03:29.127Z",
+  "generatedAtUtc": "2026-06-06T22:21:06.872Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_DATA_AVAILABLE",
+  "status": "REAL_DEV_SERVER_BLOCKED",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": true,
+    "realDevServerAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -43,28 +43,28 @@
         "status": "healthy",
         "ok": true,
         "statusCode": 200,
-        "url": "http://localhost:5000/health"
+        "url": "http://localhost:5046/health"
       }
     },
     {
       "name": "active drain process state",
-      "classification": "SYNC_DERIVED",
-      "passed": true,
-      "reason": "Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS.",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Drain process state is unknown.",
       "evidence": {
-        "pid": 28503,
-        "alive": false,
-        "status": "NOT_RUNNING"
+        "pid": null,
+        "alive": null,
+        "status": "UNKNOWN"
       }
     },
     {
       "name": "load_batch current stage",
-      "classification": "SYNC_DERIVED",
-      "passed": true,
-      "reason": "load_batch stage is owner-supnum-backfill (IN_PROGRESS).",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "load_batch stage is owner-supnum-backfill (FAILED).",
       "evidence": {
         "stage": "owner-supnum-backfill",
-        "status": "IN_PROGRESS",
+        "status": "FAILED",
         "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d"
       }
     },
@@ -194,7 +194,10 @@
       }
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "active drain process state: Drain process state is unknown.",
+    "load_batch current stage: load_batch stage is owner-supnum-backfill (FAILED)."
+  ],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

@@ -1,11 +1,11 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-06T22:03:29.127Z
-Status: REAL_DEV_DATA_AVAILABLE
+Generated: 2026-06-06T22:21:06.872Z
+Status: REAL_DEV_SERVER_BLOCKED
 
 ## Decision
 
-- Real Dev Server: ALLOWED
+- Real Dev Server: BLOCKED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
@@ -23,8 +23,8 @@ Status: REAL_DEV_DATA_AVAILABLE
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
 | backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
-| active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS. |
-| load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-backfill (IN_PROGRESS). |
+| active drain process state | UNKNOWN | false | Drain process state is unknown. |
+| load_batch current stage | UNKNOWN | false | load_batch stage is owner-supnum-backfill (FAILED). |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
 | canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
@@ -40,7 +40,8 @@ Status: REAL_DEV_DATA_AVAILABLE
 
 ## Blockers
 
-- None
+- active drain process state: Drain process state is unknown.
+- load_batch current stage: load_batch stage is owner-supnum-backfill (FAILED).
 
 ## Rules
 

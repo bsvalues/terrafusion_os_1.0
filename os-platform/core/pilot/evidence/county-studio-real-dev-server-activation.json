@@ -1,9 +1,9 @@
 {
-  "generatedAtUtc": "2026-06-06T22:03:31.890Z",
+  "generatedAtUtc": "2026-06-06T22:22:26.092Z",
   "gate": "county-studio-real-dev-server-activation",
-  "status": "REAL_DEV_ACTIVATION_READY",
+  "status": "REAL_DEV_ACTIVATION_BLOCKED",
   "decisions": {
-    "realDevActivationAllowed": true,
+    "realDevActivationAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -13,8 +13,8 @@
     "launchCommand": "cross-env TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton TF_COUNTY_STUDIO_PRODUCTION_PROOF=false TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false pnpm run dev"
   },
   "readinessPosture": {
-    "status": "REAL_DEV_DATA_AVAILABLE",
-    "realDevServerAllowed": true,
+    "status": "REAL_DEV_SERVER_BLOCKED",
+    "realDevServerAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -100,7 +100,11 @@
       "reason": "County Studio live SignalR payload provenance is not proven for the selected Benton study context."
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "Benton real-dev readiness is not allowed.",
+    "active drain process state: Drain process state is unknown.",
+    "load_batch current stage: load_batch stage is owner-supnum-backfill (FAILED)."
+  ],
   "rules": [
     "Real dev activation requires the Benton real-dev readiness DB gate.",
     "Mock, fixture, generated, fallback, or unknown activation dependencies cannot satisfy real dev mode.",
