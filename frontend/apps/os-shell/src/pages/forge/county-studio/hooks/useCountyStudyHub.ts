@@ -108,26 +108,52 @@ export function useCountyStudyHub(studyId: string | null) {
       }
     });
 
+    let cancelled = false;
+    let joinedStudy = false;
+
     const start = async () => {
+      if (cancelled) return;
       try {
         await connection.start();
+        if (cancelled) {
+          await connection.stop().catch(() => undefined);
+          return;
+        }
         await connection.invoke('JoinStudy', studyId);
+        joinedStudy = true;
+        if (cancelled) {
+          await connection.invoke('LeaveStudy', studyId).catch(() => undefined);
+          await connection.stop().catch(() => undefined);
+          return;
+        }
         setSyncState('LIVE');
       } catch (err) {
+        if (cancelled) return;
         setSyncState('DISCONNECTED');
         console.error('[CountyStudyHub] connection failed:', err);
       }
     };
 
-    start();
+    const startTimer = window.setTimeout(() => {
+      void start();
+    }, 0);
 
     connection.onreconnected(() => setSyncState('LIVE'));
     connection.onreconnecting(() => setSyncState('DISCONNECTED'));
     connection.onclose(() => setSyncState('DISCONNECTED'));
 
     return () => {
-      connection.invoke('LeaveStudy', studyId).catch(() => undefined);
-      connection.stop().catch(() => undefined);
+      cancelled = true;
+      window.clearTimeout(startTimer);
+      const shutdown = async () => {
+        if (joinedStudy && connection.state === signalR.HubConnectionState.Connected) {
+          await connection.invoke('LeaveStudy', studyId).catch(() => undefined);
+        }
+        if (connection.state !== signalR.HubConnectionState.Disconnected) {
+          await connection.stop().catch(() => undefined);
+        }
+      };
+      void shutdown();
       setSyncState('DISCONNECTED');
       connectionRef.current = null;
     };

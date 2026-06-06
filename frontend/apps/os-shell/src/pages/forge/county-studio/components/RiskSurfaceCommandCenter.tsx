@@ -527,10 +527,10 @@ export function RiskSurfaceCommandCenter({ onAtlasViewportChange }: RiskSurfaceC
                   onClick={() => focusLedgerRow(row)}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '76px minmax(120px, 1fr) minmax(130px, 1fr)',
+                    gridTemplateColumns: '68px minmax(110px, 0.8fr) minmax(150px, 1.2fr)',
                     alignItems: 'center',
                     gap: 8,
-                    padding: '5px 7px',
+                    padding: '6px 7px',
                     border: '1px solid hsl(var(--tf-border))',
                     borderRadius: 4,
                     background: 'hsl(var(--tf-bg))',
@@ -545,7 +545,7 @@ export function RiskSurfaceCommandCenter({ onAtlasViewportChange }: RiskSurfaceC
                     {row.label}
                   </span>
                   <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'hsl(var(--tf-muted))' }}>
-                    {row.primaryReason} · {row.nextAction}
+                    Failure: {row.primaryReason} · Route: {row.nextAction} · Defensibility: {row.riskLevel === 'Critical' ? 'No' : row.riskLevel === 'High' ? 'Review' : 'Watch'}
                   </span>
                 </button>
               ))}

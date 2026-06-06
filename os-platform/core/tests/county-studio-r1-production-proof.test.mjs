@@ -145,10 +145,27 @@ test('runtime proof matches visible GIS contract labels case-insensitively', () 
 test('runtime proof requires Prometheus command-surface signals and risk map labels', () => {
   const source = readFileSync(scriptPath, 'utf8');
 
-  assert.match(source, /Living County Risk Map/);
+  assert.match(source, /Roll Posture/);
   assert.match(source, /Roll Readiness/);
-  assert.match(source, /Selected Risk Object/);
-  assert.match(source, /Operational Focus/);
+  assert.match(source, /Lens: Roll Readiness/);
+  assert.match(source, /Layers: Atlas live/);
+  assert.match(source, /Critical equity failure/);
+  assert.match(source, /Not defensible for certification/);
   assert.match(source, /prometheus-risk-map-label/);
   assert.match(source, /prometheusRiskLabelCount > 0/);
+});
+
+test('runtime proof rejects old dashboard-heavy Prometheus chrome', () => {
+  const source = readFileSync(scriptPath, 'utf8');
+
+  assert.match(source, /disallowedVisibleSignals/);
+  assert.match(source, /Living County Risk Map/);
+  assert.match(source, /TerraAtlas-owned layers/);
+  assert.match(source, /Forge-owned overlays/);
+  assert.match(source, /Selected Risk Object/);
+  assert.match(source, /Operational Focus/);
+  assert.match(source, /Statistics Compat/);
+  assert.doesNotMatch(source, /'Operational Contract'/);
+  assert.doesNotMatch(source, /'Correction Contract'/);
+  assert.match(source, /disallowedVisibleHits\.length === 0/);
 });

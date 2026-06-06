@@ -55,6 +55,13 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { clearToken, setToken } from '@/auth/authStorage';
 import { getMockConnection, getMockWithUrl } from '@microsoft/signalr';
 
+async function flushHubStart() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await Promise.resolve();
+  });
+}
+
 describe('useCountyStudyHub', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -67,18 +74,14 @@ describe('useCountyStudyHub', () => {
   it('joins the study group when studyId is provided', async () => {
     renderHook(() => useCountyStudyHub('study-abc'));
     const conn = getMockConnection();
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await flushHubStart();
     expect(conn.invoke).toHaveBeenCalledWith('JoinStudy', 'study-abc');
   });
 
   it('connects to the backend county study hub route without the API prefix', async () => {
     renderHook(() => useCountyStudyHub('study-abc'));
     const withUrl = getMockWithUrl();
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await flushHubStart();
 
     expect(withUrl.mock.calls[0][0]).toEqual(expect.stringMatching(/\/hubs\/county-study\?countyId=benton$/));
     expect(withUrl.mock.calls[0][0]).not.toContain(['/api', '/hubs/county-study'].join(''));
@@ -88,9 +91,7 @@ describe('useCountyStudyHub', () => {
     setToken('hub-token');
     renderHook(() => useCountyStudyHub('study-abc'));
     const withUrl = getMockWithUrl();
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await flushHubStart();
 
     expect(withUrl.mock.calls[0][1]?.accessTokenFactory()).toBe('hub-token');
   });
@@ -105,18 +106,14 @@ describe('useCountyStudyHub', () => {
 
   it('sets syncState to LIVE after hub connects', async () => {
     renderHook(() => useCountyStudyHub('study-xyz'));
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await flushHubStart();
     expect(useCountyStudioStore.getState().syncState).toBe('LIVE');
   });
 
   it('registers ReceiveSelection handler', async () => {
     renderHook(() => useCountyStudyHub('study-abc'));
     const conn = getMockConnection();
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await flushHubStart();
     const registeredEvents = (conn.on as ReturnType<typeof vi.fn>).mock.calls.map((c: unknown[]) => c[0]);
     expect(registeredEvents).toContain('ReceiveSelection');
   });
@@ -132,7 +129,7 @@ describe('useCountyStudyHub', () => {
   it('ReceivePresence handler pushes event into store peerPresence', async () => {
     renderHook(() => useCountyStudyHub('study-abc'));
     const conn = getMockConnection();
-    await act(async () => { await Promise.resolve(); });
+    await flushHubStart();
 
     // Find the registered ReceivePresence callback and invoke it with a payload.
     const onCalls = (conn.on as ReturnType<typeof vi.fn>).mock.calls;
@@ -161,7 +158,7 @@ describe('useCountyStudyHub', () => {
   it('ReceiveProjection handler pushes event into store incomingProjections', async () => {
     renderHook(() => useCountyStudyHub('study-xyz'));
     const conn = getMockConnection();
-    await act(async () => { await Promise.resolve(); });
+    await flushHubStart();
 
     const onCalls = (conn.on as ReturnType<typeof vi.fn>).mock.calls;
     const projCall = onCalls.find((c: unknown[]) => c[0] === 'ReceiveProjection');
@@ -186,7 +183,7 @@ describe('useCountyStudyHub', () => {
   it('ReceiveProjection with type=clear flushes the ring buffer', async () => {
     renderHook(() => useCountyStudyHub('study-abc'));
     const conn = getMockConnection();
-    await act(async () => { await Promise.resolve(); });
+    await flushHubStart();
 
     const handler = (conn.on as ReturnType<typeof vi.fn>).mock.calls
       .find((c: unknown[]) => c[0] === 'ReceiveProjection')![1] as (event: unknown) => void;
@@ -201,5 +198,17 @@ describe('useCountyStudyHub', () => {
     });
 
     expect(useCountyStudioStore.getState().incomingProjections).toHaveLength(0);
+  });
+
+  it('cancels a StrictMode cleanup before starting hub negotiation', async () => {
+    const { unmount } = renderHook(() => useCountyStudyHub('study-abc'));
+
+    unmount();
+    await flushHubStart();
+
+    const conn = getMockConnection();
+    expect(conn.start).not.toHaveBeenCalled();
+    expect(conn.invoke).not.toHaveBeenCalledWith('JoinStudy', 'study-abc');
+    expect(conn.invoke).not.toHaveBeenCalledWith('LeaveStudy', 'study-abc');
   });
 });

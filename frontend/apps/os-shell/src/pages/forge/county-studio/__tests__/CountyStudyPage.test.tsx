@@ -451,11 +451,7 @@ describe('CountyStudyPage', () => {
     expect(canvas).toHaveAttribute('data-atlas-connected', 'true');
     expect(screen.getByTestId('mock-geoforge-v2-map')).toBeInTheDocument();
     expect(workspace).toHaveTextContent('Embedded TerraAtlas GIS');
-    expect(workspace).toHaveTextContent('Parcels');
-    expect(workspace).toHaveTextContent('Parcel boundaries');
-    expect(workspace).toHaveTextContent('Taxing districts');
-    expect(workspace).toHaveTextContent('Valuation risk');
-    expect(workspace).toHaveTextContent('Ratio / COD / PRD risk');
+    expect(workspace).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
     expect(canvas.compareDocumentPosition(ledger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -532,14 +528,18 @@ describe('CountyStudyPage', () => {
     expect(screen.getByTestId('prometheus-active-lens')).toHaveTextContent('Roll Readiness');
 
     const chrome = screen.getByTestId('prometheus-map-chrome');
-    expect(chrome).toHaveTextContent('Living County Risk Map');
+    expect(chrome).toHaveTextContent('Lens: Roll Readiness');
+    expect(chrome).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
     expect(chrome).toHaveTextContent('Roll Readiness');
-    expect(chrome).toHaveTextContent('Atlas owns GIS truth');
-    expect(chrome).toHaveTextContent('Forge overlays valuation risk');
     expect(chrome).toHaveTextContent('Critical');
+    expect(chrome).not.toHaveTextContent('Benton County valuation health is being operated here');
+    expect(chrome).not.toHaveTextContent('TerraAtlas-owned layers');
+    expect(chrome).not.toHaveTextContent('Forge-owned overlays');
     const riskLabels = screen.getAllByTestId('prometheus-risk-map-label');
     expect(riskLabels.length).toBeGreaterThan(0);
     expect(riskLabels[0]).toHaveTextContent(/Critical|High/);
+    expect(riskLabels[0]).toHaveTextContent('NBHD');
+    expect(riskLabels[0]).toHaveAttribute('data-marker-style', 'spatial-severity-marker');
   });
 
   it('changes the command emphasis by operational lens without changing suite ownership', () => {
@@ -557,12 +557,15 @@ describe('CountyStudyPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Model Drift lens' }));
     expect(screen.getByTestId('prometheus-active-lens')).toHaveTextContent('Model Drift');
     expect(screen.getByTestId('prometheus-command-queue')).toHaveTextContent('model calibration and drift');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Failure:');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Route:');
+    expect(screen.getAllByTestId('prometheus-command-queue-item')[0]).toHaveTextContent('Defensibility:');
     expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Model Drift');
 
     fireEvent.click(screen.getByRole('button', { name: 'Spatial Integrity lens' }));
     expect(screen.getByTestId('prometheus-command-queue')).toHaveTextContent('spatial truth and layer health');
     expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Spatial Integrity');
-    expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('TerraAtlas owns GIS artifacts');
+    expect(screen.getByTestId('prometheus-map-chrome')).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
   });
 
   it('keeps the right decision inspector operationally useful before the user opens a segment detail', () => {
@@ -579,17 +582,14 @@ describe('CountyStudyPage', () => {
     render(<CountyStudyPage />, { wrapper: Wrapper });
 
     const focus = screen.getByTestId('prometheus-decision-inspector');
-    expect(focus).toHaveTextContent('Selected Risk Object');
-    expect(focus).toHaveTextContent('Lens');
-    expect(focus).toHaveTextContent('Severity');
-    expect(focus).toHaveTextContent('Operational Focus');
-    expect(focus).toHaveTextContent('Neighborhood NBHD-K1');
-    expect(focus).toHaveTextContent('Failure');
-    expect(focus).toHaveTextContent('Affected parcels');
+    expect(focus).toHaveTextContent('Critical equity failure');
+    expect(focus).toHaveTextContent('Neighborhood NBHD-K1 is under target');
+    expect(focus).toHaveTextContent('22 parcels are driving the failure');
     expect(focus).toHaveTextContent('Likely cause');
-    expect(focus).toHaveTextContent('Defensibility');
-    expect(focus).toHaveTextContent('Evidence posture');
-    expect(focus).toHaveTextContent('Next best action');
+    expect(focus).toHaveTextContent('Not defensible for certification');
+    expect(focus).toHaveTextContent('Next: send');
+    expect(focus).not.toHaveTextContent('Selected Risk Object');
+    expect(focus).not.toHaveTextContent('Next best action');
     expect(focus).toHaveTextContent('Open Workbench');
     expect(focus).toHaveTextContent('Open in TerraAtlas');
     expect(screen.queryByText('Select a segment to inspect.')).not.toBeInTheDocument();

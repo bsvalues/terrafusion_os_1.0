@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
-import { ContractLineage } from './ContractLineage';
 
 // Traffic-light colors map to TerraFusion design tokens (red = error,
 // amber = warning, green = success) so the strip respects the global theme
@@ -32,52 +31,34 @@ function prdColor(prd: number | null): string {
   return STATUS_SUCCESS;
 }
 
-function metricCard(label: string, value: string, color?: string, testId?: string) {
-  return (
-    <div
-      data-testid={testId}
-      style={{
-        minWidth: 0,
-        padding: '8px 10px',
-        border: '1px solid hsl(var(--tf-border))',
-        background: 'hsl(var(--tf-surface))',
-        borderRadius: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: 1,
-          textTransform: 'uppercase',
-          color: 'hsl(var(--tf-muted))',
-        }}
-      >
-        {label}
-      </div>
-      <div
-        style={{
-          fontSize: 16,
-          fontWeight: 700,
-          color: color ?? 'hsl(var(--tf-fg))',
-          fontFeatureSettings: '"tnum"',
-        }}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
 function formatMetric(value: number | null, digits: number): string {
   return value === null ? '—' : value.toFixed(digits);
 }
 
 function isMissingActiveSegmentSet(error: string | null): boolean {
   return typeof error === 'string' && (error.startsWith('HTTP 409') || error.includes('409 Conflict'));
+}
+
+function rollPosture(summary: NonNullable<ReturnType<typeof useCountyStudioStore.getState>['healthSummary']>): string {
+  if (
+    summary.criticalCount > 0 ||
+    summary.complianceStatus === 'NonCompliant' ||
+    summary.riskScore >= 50 ||
+    (summary.cod !== null && summary.cod > 20) ||
+    (summary.prd !== null && (summary.prd < 0.98 || summary.prd > 1.03))
+  ) {
+    return 'At Risk';
+  }
+  if (summary.warningCount > 0 || summary.exceptionCount > 0 || summary.riskScore >= 35) {
+    return 'Watch';
+  }
+  return 'Ready';
+}
+
+function defensibilityPosture(summary: NonNullable<ReturnType<typeof useCountyStudioStore.getState>['healthSummary']>): string {
+  if (rollPosture(summary) === 'At Risk') return 'Weak';
+  if (rollPosture(summary) === 'Watch') return 'Review';
+  return 'Strong';
 }
 
 export function CountyCommandStrip() {
@@ -111,8 +92,8 @@ export function CountyCommandStrip() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
-        padding: '10px 16px',
+        gap: 6,
+        padding: '8px 16px',
         borderBottom: '1px solid hsl(var(--tf-border))',
         background: 'hsl(var(--tf-bg))',
         flexShrink: 0,
@@ -129,7 +110,7 @@ export function CountyCommandStrip() {
       >
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: 'hsl(var(--tf-fg))' }}>
-            County Command Strip
+            County Studio
           </span>
           <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
             {activeStudy.countyName ?? activeStudy.countyId} · {activeStudy.taxYear} · {activeStudy.studyType}
@@ -192,30 +173,45 @@ export function CountyCommandStrip() {
       )}
 
       {healthSummary && (
-        <>
-          <ContractLineage
-            operationalContractId={healthSummary.contractId}
-            correctionContractId={healthSummary.correctionPriorityContractId}
-            countyName={activeStudy.countyName}
-            countyId={activeStudy.countyId}
-            compact
-          />
-          <div
+        <div
+          data-testid="county-roll-posture-strip"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            flexWrap: 'wrap',
+            padding: '7px 10px',
+            border: '1px solid hsl(var(--tf-border))',
+            borderRadius: 4,
+            background: 'hsl(var(--tf-surface))',
+            fontSize: 12,
+            color: 'hsl(var(--tf-muted))',
+          }}
+        >
+          <strong style={{ color: 'hsl(var(--tf-fg))' }}>Roll Posture:</strong>
+          <strong style={{ color: rollPosture(healthSummary) === 'At Risk' ? STATUS_ERROR : rollPosture(healthSummary) === 'Watch' ? STATUS_WARNING : STATUS_SUCCESS }}>
+            {rollPosture(healthSummary)}
+          </strong>
+          <span>Median <strong style={{ color: ratioColor(healthSummary.medianRatio) }}>{formatMetric(healthSummary.medianRatio, 3)}</strong></span>
+          <span>COD <strong style={{ color: codColor(healthSummary.cod) }}>{formatMetric(healthSummary.cod, 1)}</strong></span>
+          <span>PRD <strong style={{ color: prdColor(healthSummary.prd) }}>{formatMetric(healthSummary.prd, 3)}</strong></span>
+          <span><strong style={{ color: healthSummary.criticalCount > 0 ? STATUS_ERROR : STATUS_SUCCESS }}>{healthSummary.criticalCount.toLocaleString()}</strong> Critical</span>
+          {needsDataCount > 0 && <span>{needsDataCount.toLocaleString()} Needs Data</span>}
+          <span>Defensibility: <strong style={{ color: defensibilityPosture(healthSummary) === 'Weak' ? STATUS_ERROR : defensibilityPosture(healthSummary) === 'Review' ? STATUS_WARNING : STATUS_SUCCESS }}>{defensibilityPosture(healthSummary)}</strong></span>
+          <span
+            data-testid="county-trust-chip"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(112px, 1fr))',
-              gap: 8,
+              marginLeft: 'auto',
+              padding: '2px 6px',
+              border: '1px solid hsl(var(--tf-border))',
+              borderRadius: 4,
+              color: 'hsl(var(--tf-muted))',
+              whiteSpace: 'nowrap',
             }}
           >
-            {metricCard('Median Ratio', formatMetric(healthSummary.medianRatio, 3), ratioColor(healthSummary.medianRatio), 'command-metric-ratio')}
-            {metricCard('COD', formatMetric(healthSummary.cod, 1), codColor(healthSummary.cod), 'command-metric-cod')}
-            {metricCard('PRD', formatMetric(healthSummary.prd, 3), prdColor(healthSummary.prd), 'command-metric-prd')}
-            {metricCard('Critical', healthSummary.criticalCount.toLocaleString(), STATUS_ERROR, 'command-metric-critical')}
-            {metricCard('Warnings', healthSummary.warningCount.toLocaleString(), STATUS_WARNING, 'command-metric-warning')}
-            {metricCard('Needs Data', needsDataCount.toLocaleString(), needsDataCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-needs-data')}
-            {metricCard('Exceptions', healthSummary.exceptionCount.toLocaleString(), healthSummary.exceptionCount > 0 ? STATUS_WARNING : STATUS_SUCCESS, 'command-metric-exceptions')}
-          </div>
-        </>
+            Trust: provisional · sync-derived · legacy-sensitive
+          </span>
+        </div>
       )}
     </div>
   );

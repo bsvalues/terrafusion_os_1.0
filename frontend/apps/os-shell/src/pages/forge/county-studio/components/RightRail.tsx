@@ -36,7 +36,7 @@ function primaryFailure(segment: CountySegmentDto): string {
 }
 
 function likelyCause(segment: CountySegmentDto): string {
-  if (segment.medianRatio !== null && segment.medianRatio < 0.90) return 'stale calibration or under-market model group';
+  if (segment.medianRatio !== null && segment.medianRatio < 0.90) return 'stale valuation model and weak sales support';
   if (segment.prd !== null && segment.prd > 1.03) return 'possible regressivity in the active value tier';
   if (segment.cod !== null && segment.cod > 20) return 'unstable neighborhood sample or weak model fit';
   if (segment.exceptionCount > 0) return 'open data quality or workflow exceptions';
@@ -62,40 +62,45 @@ function PrometheusDecisionInspector({ segment }: { segment: CountySegmentDto | 
   const derivedModelGroup = [segment.buildingType, segment.qualityGrade].filter(Boolean).join(' / ');
   const modelGroup = segment.modelGroup ?? (derivedModelGroup || 'model group pending');
   const failure = primaryFailure(segment);
+  const severityLabel = severity(segment);
+  const medianDelta = segment.medianRatio === null ? null : Math.round(Math.abs(1 - segment.medianRatio) * 100);
+  const drivingCount = Math.max(segment.exceptionCount, segment.saleCount ?? 0, 1);
+  const diagnosisTitle = `${severityLabel} equity failure`;
+  const actionTarget = modelGroup === 'model group pending' ? 'active model group' : modelGroup;
 
   return (
     <div
       data-testid="prometheus-decision-inspector"
       style={{
-        padding: '9px 12px',
+        padding: '10px 12px',
         borderBottom: '1px solid hsl(var(--tf-border))',
         background: 'hsl(var(--tf-surface))',
         color: 'hsl(var(--tf-fg))',
         fontSize: 11,
         display: 'grid',
-        gap: 5,
+        gap: 7,
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-        <span style={{ fontSize: 10, fontWeight: 900, color: 'hsl(var(--tf-muted))', textTransform: 'uppercase' }}>
-          Selected Risk Object
-        </span>
-        <span style={{ fontSize: 10, fontWeight: 900, color: 'hsl(var(--tf-warning, 38 92% 50%))' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'baseline' }}>
+        <strong style={{ fontSize: 13, color: severityLabel === 'Critical' ? 'hsl(var(--tf-danger, 0 84% 60%))' : 'hsl(var(--tf-fg))' }}>
+          {diagnosisTitle}
+        </strong>
+        <span style={{ fontSize: 10, fontWeight: 900, color: severityLabel === 'Critical' ? 'hsl(var(--tf-danger, 0 84% 60%))' : 'hsl(var(--tf-warning, 38 92% 50%))' }}>
           Risk {Math.round(segment.riskScore)}
         </span>
       </div>
-      <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
-        Operational Focus · <strong style={{ color: 'hsl(var(--tf-fg))' }}>Lens:</strong> Roll Readiness · <strong style={{ color: 'hsl(var(--tf-fg))' }}>Severity:</strong> {severity(segment)}
+      <div style={{ fontSize: 12, fontWeight: 800 }}>
+        Neighborhood {neighborhood} is under target{medianDelta !== null ? ` by ${medianDelta} points` : ''}.
       </div>
-      <div style={{ fontSize: 12, fontWeight: 900 }}>
-        Neighborhood {neighborhood}
+      <div style={{ color: 'hsl(var(--tf-muted))' }}>
+        {drivingCount.toLocaleString()} parcels are driving the failure. Primary signal: {failure}.
       </div>
-      <div><strong>Failure:</strong> {failure}</div>
-      <div><strong>Affected parcels:</strong> {segment.parcelCount.toLocaleString()}</div>
       <div><strong>Likely cause:</strong> {likelyCause(segment)} · {modelGroup}</div>
-      <div><strong>Defensibility:</strong> {defensibility(segment)}</div>
-      <div><strong>Evidence posture:</strong> {segment.exceptionCount > 0 ? `${segment.exceptionCount} exceptions require review` : 'packet can be assembled from current segment evidence'}</div>
-      <div><strong>Next best action:</strong> route calibration, sales review, parcel sample, workflow, and evidence packet.</div>
+      <div>
+        <strong>{defensibility(segment) === 'No' ? 'Not defensible for certification' : `Defensibility: ${defensibility(segment)}`}</strong>
+        {' '}· {segment.exceptionCount > 0 ? `${segment.exceptionCount} exceptions require review` : 'evidence packet can be assembled now'}
+      </div>
+      <div><strong>Next:</strong> send {actionTarget} to CostForge and open a parcel sample.</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5, marginTop: 3 }}>
         {['Open Workbench', 'Send to CostForge', 'Review Sales', 'Open in TerraAtlas', 'Create Dais Task', 'Build Dossier Packet'].map((label) => (
           <button

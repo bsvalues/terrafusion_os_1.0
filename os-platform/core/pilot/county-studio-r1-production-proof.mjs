@@ -440,7 +440,7 @@ async function runtimeCheck(options) {
       {
         mode: 'skipped',
         command: 'node os-platform/core/pilot/county-studio-r1-production-proof.mjs --runtime-url http://127.0.0.1:5175/forge/county-studio',
-        requiredVisibleSignals: ['County Studio', 'Embedded TerraAtlas GIS', 'Living County Risk Map', 'Roll Readiness', 'Operational Focus', 'Selected Risk Object', 'Unified Risk Ledger'],
+        requiredVisibleSignals: ['County Studio', 'Roll Posture', 'Embedded TerraAtlas GIS', 'Lens: Roll Readiness', 'Layers: Atlas live', 'Critical equity failure', 'Not defensible for certification', 'Unified Risk Ledger'],
       },
       ['os-platform/core/pilot/ops/june10-benton-uat-screenshot-checklist-2026-05-13.md'],
     );
@@ -513,17 +513,15 @@ async function runtimeCheck(options) {
     }
     const requiredVisibleSignals = [
       'County Studio',
+      'Roll Posture',
       'Embedded TerraAtlas GIS',
-      'TerraAtlas-owned layers',
-      'Forge-owned overlays',
-      'Living County Risk Map',
+      'Lens: Roll Readiness',
+      'Layers: Atlas live',
       'Roll Readiness',
-      'Selected Risk Object',
-      'Operational Focus',
+      'Critical equity failure',
+      'Not defensible for certification',
       'Unified Risk Ledger',
-      'Parcels',
-      'Parcel boundaries',
-      'Valuation risk',
+      'Open in TerraAtlas',
     ];
     const disallowedVisibleSignals = [
       'City Rollups',
@@ -531,6 +529,14 @@ async function runtimeCheck(options) {
       'Atlas map data unavailable',
       'map-unavailable',
       'ATLAS DISCONNECTED',
+      'Living County Risk Map',
+      'TerraAtlas-owned layers',
+      'Forge-owned overlays',
+      'Selected Risk Object',
+      'Operational Focus',
+      'Next best action',
+      'Statistics Compat',
+      'command-metric-ratio',
     ];
     await page.waitForFunction(
       (signals) => signals.some((signal) => document.body.innerText.includes(signal)),

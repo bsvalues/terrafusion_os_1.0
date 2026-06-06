@@ -303,7 +303,6 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
             position: 'absolute',
             top: 12,
             left: 12,
-            right: 12,
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
@@ -319,29 +318,17 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
               color: 'hsl(var(--tf-fg))',
               backdropFilter: 'blur(8px)',
               borderRadius: 4,
-              maxWidth: 620,
-              maxHeight: 92,
+              maxWidth: 390,
+              maxHeight: 74,
               overflow: 'hidden',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 900 }}>Living County Risk Map</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, fontWeight: 900 }}>Lens: {activeLens.mapLens}</span>
               <span style={{ fontSize: 10, fontWeight: 900, color: 'hsl(var(--tf-accent, 217 91% 60%))' }}>
-                {activeLens.mapLens}
+                Layers: Atlas live · Forge overlays read-only
               </span>
               <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Embedded TerraAtlas GIS</span>
-            </div>
-            <div
-              style={{
-                marginTop: 4,
-                fontSize: 10,
-                color: 'hsl(var(--tf-muted))',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {geometryStatus} · Atlas owns GIS truth · TerraAtlas-owned layers: Parcels · Parcel boundaries · Taxing districts · Forge-owned overlays: Valuation risk · Ratio / COD / PRD risk
             </div>
             {disconnected && (
               <div
@@ -374,25 +361,6 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
                 </span>
               ))}
             </div>
-            {scopeMessage && (
-              <div
-                data-testid="county-studio-atlas-scope-message"
-                style={{
-                  marginTop: 5,
-                  fontSize: 10,
-                  color: 'hsl(var(--tf-warning, 38 92% 50%))',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {scopeMessage}
-              </div>
-            )}
-            <div style={{ marginTop: 4, display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
-              <span title={atlasLayerSummary}>TerraAtlas owns GIS artifacts.</span>
-              <span title={forgeOverlaySummary}>Forge overlays valuation risk.</span>
-            </div>
           </div>
           <div
             data-testid="county-studio-atlas-sync-state"
@@ -414,27 +382,45 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
           <div
             key={segment.segmentId}
             data-testid="prometheus-risk-map-label"
+            data-marker-style="spatial-severity-marker"
             style={{
               position: 'absolute',
-              top: `${96 + index * 46}px`,
-              left: `${72 + index * 128}px`,
-              maxWidth: 230,
-              padding: '6px 8px',
+              top: `${126 + index * 42}px`,
+              left: `${94 + index * 154}px`,
+              maxWidth: 172,
+              padding: '4px 6px',
               border: `1px solid ${riskChromeColor(segment.riskScore)}`,
               borderRadius: 4,
-              background: 'hsl(var(--tf-bg) / 0.84)',
+              background: 'hsl(var(--tf-bg) / 0.72)',
               color: 'hsl(var(--tf-fg))',
-              boxShadow: '0 10px 24px hsl(var(--tf-bg) / 0.22)',
+              boxShadow: index === 0
+                ? `0 0 0 34px ${riskChromeColor(segment.riskScore)}16, 0 0 0 2px ${riskChromeColor(segment.riskScore)}44`
+                : `0 0 0 18px ${riskChromeColor(segment.riskScore)}10`,
               backdropFilter: 'blur(8px)',
               fontSize: 10,
               pointerEvents: 'none',
             }}
           >
-            <div style={{ fontWeight: 900, color: riskChromeColor(segment.riskScore) }}>
-              {riskLevel(segment.riskScore)} · Neighborhood {segment.geographyRef ?? 'unassigned'}
-            </div>
-            <div style={{ marginTop: 2, color: 'hsl(var(--tf-muted))' }}>
-              {activeLens.mapLens} · COD {segment.cod?.toFixed(1) ?? 'n/a'} · PRD {segment.prd?.toFixed(3) ?? 'n/a'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: '50%',
+                  background: riskChromeColor(segment.riskScore),
+                  boxShadow: `0 0 0 6px ${riskChromeColor(segment.riskScore)}30`,
+                  flexShrink: 0,
+                }}
+              />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontWeight: 900, color: riskChromeColor(segment.riskScore), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {riskLevel(segment.riskScore)} · NBHD {segment.geographyRef ?? 'unassigned'}
+                </div>
+                <div style={{ marginTop: 1, color: 'hsl(var(--tf-muted))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {activeLens.mapLens} · COD {segment.cod?.toFixed(1) ?? 'n/a'} · PRD {segment.prd?.toFixed(3) ?? 'n/a'}
+                </div>
+              </div>
             </div>
           </div>
         ))}

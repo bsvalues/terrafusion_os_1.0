@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-06T02:01:45.187Z",
+  "checkedAt": "2026-06-06T03:24:25.482Z",
   "slice": "county-studio-r1-production-proof",
   "status": "PASS",
   "decision": "COUNTY_STUDIO_R1_RUNTIME_PRODUCTION_PROOF_READY",
@@ -433,17 +433,15 @@
         "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
         "requiredVisibleSignals": [
           "County Studio",
+          "Roll Posture",
           "Embedded TerraAtlas GIS",
-          "TerraAtlas-owned layers",
-          "Forge-owned overlays",
-          "Living County Risk Map",
+          "Lens: Roll Readiness",
+          "Layers: Atlas live",
           "Roll Readiness",
-          "Selected Risk Object",
-          "Operational Focus",
+          "Critical equity failure",
+          "Not defensible for certification",
           "Unified Risk Ledger",
-          "Parcels",
-          "Parcel boundaries",
-          "Valuation risk"
+          "Open in TerraAtlas"
         ],
         "missingVisibleSignals": [],
         "disallowedVisibleSignals": [
@@ -451,7 +449,15 @@
           "Mapbox token missing",
           "Atlas map data unavailable",
           "map-unavailable",
-          "ATLAS DISCONNECTED"
+          "ATLAS DISCONNECTED",
+          "Living County Risk Map",
+          "TerraAtlas-owned layers",
+          "Forge-owned overlays",
+          "Selected Risk Object",
+          "Operational Focus",
+          "Next best action",
+          "Statistics Compat",
+          "command-metric-ratio"
         ],
         "disallowedVisibleHits": [],
         "embeddedCanvasCount": 1,
@@ -464,44 +470,44 @@
         "loadingHealthMetricsVisible": false,
         "layoutGeometry": {
           "stage": {
-            "top": 461.84375,
+            "top": 403.03125,
             "right": 1080,
-            "bottom": 792.84375,
+            "bottom": 734.03125,
             "left": 210,
             "width": 870,
             "height": 331
           },
           "analytics": {
-            "top": 792.84375,
+            "top": 734.03125,
             "right": 1080,
-            "bottom": 966.84375,
+            "bottom": 908.03125,
             "left": 210,
             "width": 870,
             "height": 174
           },
           "visibleAnalytics": {
-            "top": 792.84375,
+            "top": 734.03125,
             "right": 1080,
             "bottom": 878,
             "left": 210,
             "width": 870,
-            "height": 85.15625
+            "height": 143.96875
           },
           "rightRail": {
-            "top": 239.015625,
+            "top": 180.203125,
             "right": 1440,
             "bottom": 878,
             "left": 1080,
             "width": 360,
-            "height": 638.984375
+            "height": 697.796875
           },
           "commandSurface": {
-            "top": 275.015625,
+            "top": 216.203125,
             "right": 1080,
             "bottom": 878,
             "left": 210,
             "width": 870,
-            "height": 602.984375
+            "height": 661.796875
           },
           "dock": {
             "top": 916,
@@ -530,17 +536,15 @@
     "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
     "requiredVisibleSignals": [
       "County Studio",
+      "Roll Posture",
       "Embedded TerraAtlas GIS",
-      "TerraAtlas-owned layers",
-      "Forge-owned overlays",
-      "Living County Risk Map",
+      "Lens: Roll Readiness",
+      "Layers: Atlas live",
       "Roll Readiness",
-      "Selected Risk Object",
-      "Operational Focus",
+      "Critical equity failure",
+      "Not defensible for certification",
       "Unified Risk Ledger",
-      "Parcels",
-      "Parcel boundaries",
-      "Valuation risk"
+      "Open in TerraAtlas"
     ],
     "missingVisibleSignals": [],
     "disallowedVisibleSignals": [
@@ -548,7 +552,15 @@
       "Mapbox token missing",
       "Atlas map data unavailable",
       "map-unavailable",
-      "ATLAS DISCONNECTED"
+      "ATLAS DISCONNECTED",
+      "Living County Risk Map",
+      "TerraAtlas-owned layers",
+      "Forge-owned overlays",
+      "Selected Risk Object",
+      "Operational Focus",
+      "Next best action",
+      "Statistics Compat",
+      "command-metric-ratio"
     ],
     "disallowedVisibleHits": [],
     "embeddedCanvasCount": 1,
@@ -561,44 +573,44 @@
     "loadingHealthMetricsVisible": false,
     "layoutGeometry": {
       "stage": {
-        "top": 461.84375,
+        "top": 403.03125,
         "right": 1080,
-        "bottom": 792.84375,
+        "bottom": 734.03125,
         "left": 210,
         "width": 870,
         "height": 331
       },
       "analytics": {
-        "top": 792.84375,
+        "top": 734.03125,
         "right": 1080,
-        "bottom": 966.84375,
+        "bottom": 908.03125,
         "left": 210,
         "width": 870,
         "height": 174
       },
       "visibleAnalytics": {
-        "top": 792.84375,
+        "top": 734.03125,
         "right": 1080,
         "bottom": 878,
         "left": 210,
         "width": 870,
-        "height": 85.15625
+        "height": 143.96875
       },
       "rightRail": {
-        "top": 239.015625,
+        "top": 180.203125,
         "right": 1440,
         "bottom": 878,
         "left": 1080,
         "width": 360,
-        "height": 638.984375
+        "height": 697.796875
       },
       "commandSurface": {
-        "top": 275.015625,
+        "top": 216.203125,
         "right": 1080,
         "bottom": 878,
         "left": 210,
         "width": 870,
-        "height": 602.984375
+        "height": 661.796875
       },
       "dock": {
         "top": 916,
