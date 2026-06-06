@@ -7,6 +7,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { getToken, setToken } from '../auth/authStorage';
 import { apiFetch, buildApiUrl, getApiBase } from './apiBase';
 
 describe('apiBase governance', () => {
@@ -73,7 +74,7 @@ describe('apiBase governance', () => {
     });
 
     it('adds bearer auth from authStorage without dropping caller headers', async () => {
-      localStorage.setItem('authToken', 'owner-token');
+      setToken('owner-token');
 
       await apiFetch('/county-study/studies?countyId=benton', {
         headers: { 'x-county-id': 'benton' },
@@ -111,7 +112,7 @@ describe('apiBase governance', () => {
           },
         },
       );
-      expect(localStorage.getItem('authToken')).toBe('dev-jwt');
+      expect(getToken()).toBe('dev-jwt');
     });
   });
 });

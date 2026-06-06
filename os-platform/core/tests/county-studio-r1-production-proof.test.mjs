@@ -84,6 +84,10 @@ test('County Studio R1 production proof emits the required evidence surfaces', (
   assert.match(markdown, /Runtime Screenshot Contract/);
   assert.equal(
     packageJson.scripts['proof:county-studio:r1'],
+    'pnpm run proof:county-studio:r1-surface-runtime',
+  );
+  assert.equal(
+    packageJson.scripts['proof:county-studio:r1-surface-runtime'],
     'node os-platform/core/pilot/county-studio-r1-production-proof.mjs',
   );
 });
