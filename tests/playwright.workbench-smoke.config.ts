@@ -30,7 +30,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      'pnpm run backend:watch:cleanup && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && pnpm run dev:backend:api',
+      'pnpm run backend:watch:cleanup && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --urls http://127.0.0.1:5046 --skip-dev-seeders',
     cwd: repoRoot,
     env: {
       ...process.env,
@@ -40,7 +40,7 @@ export default defineConfig({
       TF_SKIP_DEV_SEEDERS: '1',
     },
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 240_000,
     url: `${smokeBaseURL}/api/auth/dev-token`,
   },
   use: {
