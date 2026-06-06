@@ -9,8 +9,10 @@ import { spawnSync } from "node:child_process";
 
 import {
   DB_COUNT_QUERIES,
+  LATEST_LOAD_BATCH_QUERY,
   buildBentonSyncDrainStateEvidence,
-  evidenceToReadinessSource
+  evidenceToReadinessSource,
+  makeRuntimeDbQueryRunner
 } from "./benton-sync-drain-state-evidence-adapter.mjs";
 
 const repoRoot = process.cwd();
@@ -136,4 +138,98 @@ test("CLI writes UNKNOWN evidence without psql instead of inventing counts", () 
   const evidence = JSON.parse(fs.readFileSync(outJson, "utf8"));
   assert.equal(evidence.countClassifications.legacyProperty, "UNKNOWN");
   assert.equal(evidence.decisions.realDevEvidenceReadable, false);
+});
+
+test("uses canonical Docker psql runtime when workstation psql is unavailable", async () => {
+  const calls = [];
+  const runner = makeRuntimeDbQueryRunner({
+    dbRuntime: "auto",
+    connectionString: "postgresql://postgres:postgres@localhost:5432/terrafusion",
+    dockerPath: "docker",
+    pgContainer: "terrafusion-postgres-dev",
+    pgDatabase: "terrafusion",
+    pgUser: "postgres",
+    spawn: (command, args) => {
+      calls.push([command, args]);
+      if (command === "psql") {
+        return { error: new Error("spawnSync psql ENOENT") };
+      }
+      return { status: 0, stdout: "42\n", stderr: "" };
+    }
+  });
+
+  const value = await runner("legacyProperty", DB_COUNT_QUERIES.legacyProperty);
+
+  assert.equal(value, 42);
+  assert.deepEqual(calls[1], [
+    "docker",
+    [
+      "exec",
+      "terrafusion-postgres-dev",
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "terrafusion",
+      "-X",
+      "-A",
+      "-t",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-c",
+      DB_COUNT_QUERIES.legacyProperty
+    ]
+  ]);
+});
+
+test("keeps DB evidence UNKNOWN when no direct or Docker runtime path is available", async () => {
+  const runner = makeRuntimeDbQueryRunner({
+    dbRuntime: "auto",
+    connectionString: null,
+    dockerPath: "docker",
+    spawn: () => ({ error: new Error("command unavailable") })
+  });
+
+  const value = await runner("legacyProperty", DB_COUNT_QUERIES.legacyProperty);
+
+  assert.equal(value.unavailable, true);
+  assert.match(value.reason, /No readable DB runtime path/i);
+});
+
+test("direct DB runtime without a connection string does not pass", async () => {
+  const runner = makeRuntimeDbQueryRunner({
+    dbRuntime: "direct",
+    connectionString: null,
+    spawn: () => ({ status: 0, stdout: "42\n", stderr: "" })
+  });
+
+  const value = await runner("legacyProperty", DB_COUNT_QUERIES.legacyProperty);
+
+  assert.equal(value.unavailable, true);
+  assert.match(value.reason, /No database connection string configured/i);
+});
+
+test("load batch query uses the canonical quoted Sync column contract", () => {
+  assert.match(LATEST_LOAD_BATCH_QUERY, /"LoadBatchId"/);
+  assert.match(LATEST_LOAD_BATCH_QUERY, /"Operator"/);
+  assert.match(LATEST_LOAD_BATCH_QUERY, /"Status"/);
+  assert.doesNotMatch(LATEST_LOAD_BATCH_QUERY, /COALESCE\([^)]*\bload_batch_id\b/);
+  assert.doesNotMatch(LATEST_LOAD_BATCH_QUERY, /\bfamily\b/);
+});
+
+test("Docker psql runtime uses the configured DB evidence timeout", async () => {
+  let observedOptions = null;
+  const runner = makeRuntimeDbQueryRunner({
+    dbRuntime: "docker",
+    queryTimeoutMs: 60000,
+    spawn: (_command, _args, options) => {
+      observedOptions = options;
+      return { status: 0, stdout: "42\n", stderr: "" };
+    }
+  });
+
+  const value = await runner("legacyProperty", DB_COUNT_QUERIES.legacyProperty);
+
+  assert.equal(value, 42);
+  assert.equal(observedOptions.timeout, 60000);
 });

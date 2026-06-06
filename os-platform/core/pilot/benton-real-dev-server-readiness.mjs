@@ -132,6 +132,10 @@ async function probeBackendHealth(apiBases) {
 async function collectRuntimeProbeEvidence(args) {
   const adapterEvidence = await buildBentonSyncDrainStateEvidence({
     drainPid: args.drainPid,
+    dbRuntime: args.dbRuntime,
+    pgContainer: args.pgContainer,
+    pgDatabase: args.pgDatabase,
+    pgUser: args.pgUser,
     probeBackendHealth: () => probeBackendHealth(args.apiBases)
   });
   return evidenceToReadinessSource(adapterEvidence);
@@ -184,6 +188,7 @@ function buildChecks(evidence) {
   const loadBatchStatus = String(evidence?.loadBatch?.status ?? "UNKNOWN").toUpperCase();
   const drainAlive = evidence?.activeDrain?.alive === true;
   const drainKnownDead = evidence?.activeDrain?.alive === false;
+  const dbBackedDrainStateKnown = loadBatchStatus === "IN_PROGRESS" || loadBatchStatus === "COMPLETED";
   const mapClassification = normalizeClassification(evidence?.countyStudioDependencies?.map);
   const ledgerClassification = normalizeClassification(evidence?.countyStudioDependencies?.ledger);
   const inspectorClassification = normalizeClassification(evidence?.countyStudioDependencies?.inspector);
@@ -198,10 +203,12 @@ function buildChecks(evidence) {
     ),
     makeCheck(
       "active drain process state",
-      drainAlive ? "SYNC_DERIVED" : "UNKNOWN",
-      drainAlive,
+      drainAlive || dbBackedDrainStateKnown ? "SYNC_DERIVED" : "UNKNOWN",
+      drainAlive || dbBackedDrainStateKnown,
       drainAlive
         ? `Drain process ${evidence.activeDrain?.pid ?? "unknown"} is still alive.`
+        : dbBackedDrainStateKnown
+          ? `Client drain process is not alive, but DB load_batch proves server-side state ${loadBatchStatus}.`
         : drainKnownDead
           ? "Drain process is not alive; confirm whether client timeout or backend failure occurred."
           : "Drain process state is unknown.",
@@ -449,6 +456,10 @@ function parseArgs(argv) {
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     drainPid: process.env.TF_BENTON_DRAIN_PID ?? null,
+    dbRuntime: process.env.TF_BENTON_SYNC_DB_RUNTIME ?? process.env.TF_DB_EVIDENCE_RUNTIME ?? "auto",
+    pgContainer: process.env.TF_PG_CONTAINER ?? "terrafusion-postgres-dev",
+    pgDatabase: process.env.TF_PG_DATABASE ?? process.env.TF_PG_DB ?? "terrafusion",
+    pgUser: process.env.TF_PG_USER ?? "postgres",
     apiBases: [
       process.env.TF_BENTON_DEV_API_BASE,
       process.env.TF_RUNTIME_BASE_URL,
@@ -466,6 +477,10 @@ function parseArgs(argv) {
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--drain-pid") args.drainPid = argv[++i];
     else if (arg === "--api-base") args.apiBases.unshift(argv[++i]);
+    else if (arg === "--db-runtime") args.dbRuntime = argv[++i];
+    else if (arg === "--pg-container") args.pgContainer = argv[++i];
+    else if (arg === "--pg-database") args.pgDatabase = argv[++i];
+    else if (arg === "--pg-user") args.pgUser = argv[++i];
     else if (arg === "--no-write") args.write = false;
   }
 

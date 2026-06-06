@@ -41,14 +41,13 @@ export const DB_COUNT_QUERIES = {
   gisParcelGeometry: 'SELECT count(*) FROM gis_tf.tf_parcel_geom;'
 };
 
-const LATEST_LOAD_BATCH_QUERY = `
+export const LATEST_LOAD_BATCH_QUERY = `
 SELECT
-  COALESCE("LoadBatchId"::text, load_batch_id::text, id::text) AS load_batch_id,
-  COALESCE("Operator"::text, operator::text, family::text, 'UNKNOWN') AS stage,
-  COALESCE("Status"::text, status::text, 'UNKNOWN') AS status
+  "LoadBatchId"::text AS load_batch_id,
+  COALESCE("Operator"::text, 'UNKNOWN') AS stage,
+  COALESCE("Status"::text, 'UNKNOWN') AS status
 FROM sync_bridge.load_batch
-ORDER BY
-  COALESCE("StartedAt", started_at, created_at, now()) DESC
+ORDER BY "StartedAt" DESC
 LIMIT 1;
 `;
 
@@ -109,14 +108,13 @@ function normalizeConnectionString(value) {
   return `postgresql://${auth}@${host}:${port}/${database}`;
 }
 
-function defaultConnectionString() {
+function configuredConnectionString() {
   return normalizeConnectionString(
     process.env.TF_BENTON_SYNC_DB_URL ??
       process.env.TF_SYNC_DB_URL ??
       process.env.TERRAFUSION_DB_URL ??
       process.env.DATABASE_URL ??
-      process.env.ConnectionStrings__DefaultConnection ??
-      "Host=localhost;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
+      process.env.ConnectionStrings__DefaultConnection
   );
 }
 
@@ -142,27 +140,115 @@ function parseLoadBatch(text) {
   };
 }
 
-export function makePsqlQueryRunner({ connectionString = defaultConnectionString(), psqlPath = "psql" } = {}) {
-  return async function query(name, sql) {
-    if (!connectionString) return { unavailable: true, reason: "No database connection string configured." };
+function psqlOutputToValue(name, result) {
+  if (result.error) {
+    return { unavailable: true, reason: result.error.message };
+  }
+  if (result.status !== 0) {
+    return {
+      unavailable: true,
+      reason: String(result.stderr || result.stdout || `psql exited ${result.status}`).trim()
+    };
+  }
+  if (name === "latestLoadBatch") return parseLoadBatch(result.stdout);
+  return parseScalar(result.stdout);
+}
 
-    const result = spawnSync(
-      psqlPath,
-      [connectionString, "-X", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-c", sql],
-      { encoding: "utf8", timeout: 10000 }
-    );
-    if (result.error) {
-      return { unavailable: true, reason: result.error.message };
+function directPsqlArgs(connectionString, sql) {
+  return [connectionString, "-X", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-c", sql];
+}
+
+function dockerPsqlArgs({ pgContainer, pgDatabase, pgUser, sql }) {
+  return [
+    "exec",
+    pgContainer,
+    "psql",
+    "-U",
+    pgUser,
+    "-d",
+    pgDatabase,
+    "-X",
+    "-A",
+    "-t",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-c",
+    sql
+  ];
+}
+
+function queryViaDirectPsql({ name, sql, connectionString, psqlPath, spawn }) {
+  if (!connectionString) return { unavailable: true, reason: "No database connection string configured." };
+  return psqlOutputToValue(
+    name,
+    spawn(psqlPath, directPsqlArgs(connectionString, sql), {
+      encoding: "utf8",
+      timeout: 10000
+    })
+  );
+}
+
+function queryViaDockerPsql({ name, sql, dockerPath, pgContainer, pgDatabase, pgUser, queryTimeoutMs, spawn }) {
+  return psqlOutputToValue(
+    name,
+    spawn(dockerPath, dockerPsqlArgs({ pgContainer, pgDatabase, pgUser, sql }), {
+      encoding: "utf8",
+      timeout: queryTimeoutMs
+    })
+  );
+}
+
+export function makeRuntimeDbQueryRunner({
+  dbRuntime = process.env.TF_BENTON_SYNC_DB_RUNTIME ?? process.env.TF_DB_EVIDENCE_RUNTIME ?? "auto",
+  connectionString = configuredConnectionString(),
+  psqlPath = process.env.TF_PSQL_PATH ?? "psql",
+  dockerPath = process.env.TF_DOCKER_PATH ?? "docker",
+  pgContainer = process.env.TF_PG_CONTAINER ?? "terrafusion-postgres-dev",
+  pgDatabase = process.env.TF_PG_DATABASE ?? process.env.TF_PG_DB ?? "terrafusion",
+  pgUser = process.env.TF_PG_USER ?? "postgres",
+  queryTimeoutMs = Number.parseInt(process.env.TF_DB_EVIDENCE_TIMEOUT_MS ?? "60000", 10),
+  spawn = spawnSync
+} = {}) {
+  const runtime = String(dbRuntime ?? "auto").toLowerCase();
+
+  return async function query(name, sql) {
+    if (runtime === "none") {
+      return { unavailable: true, reason: "DB runtime probing disabled." };
     }
-    if (result.status !== 0) {
+
+    const failures = [];
+    if (runtime === "direct" || (runtime === "auto" && connectionString)) {
+      const direct = queryViaDirectPsql({ name, sql, connectionString, psqlPath, spawn });
+      if (!direct?.unavailable) return direct;
+      failures.push(`direct psql: ${direct.reason}`);
+      if (runtime === "direct") return direct;
+    }
+
+    if (runtime === "docker" || runtime === "auto") {
+      const docker = queryViaDockerPsql({
+        name,
+        sql,
+        dockerPath,
+        pgContainer,
+        pgDatabase,
+        pgUser,
+        queryTimeoutMs,
+        spawn
+      });
+      if (!docker?.unavailable) return docker;
+      failures.push(`docker psql: ${docker.reason}`);
       return {
         unavailable: true,
-        reason: String(result.stderr || result.stdout || `psql exited ${result.status}`).trim()
+        reason: `No readable DB runtime path. ${failures.join(" | ")}`
       };
     }
-    if (name === "latestLoadBatch") return parseLoadBatch(result.stdout);
-    return parseScalar(result.stdout);
+
+    return { unavailable: true, reason: `Unsupported DB runtime path: ${dbRuntime}` };
   };
+}
+
+export function makePsqlQueryRunner({ connectionString = configuredConnectionString(), psqlPath = "psql" } = {}) {
+  return makeRuntimeDbQueryRunner({ dbRuntime: "direct", connectionString, psqlPath });
 }
 
 function countValue(value) {
@@ -204,6 +290,10 @@ function decisionFor(evidence) {
 
 export async function buildBentonSyncDrainStateEvidence({
   drainPid = process.env.TF_BENTON_DRAIN_PID ?? null,
+  dbRuntime = process.env.TF_BENTON_SYNC_DB_RUNTIME ?? process.env.TF_DB_EVIDENCE_RUNTIME ?? "auto",
+  pgContainer = process.env.TF_PG_CONTAINER ?? "terrafusion-postgres-dev",
+  pgDatabase = process.env.TF_PG_DATABASE ?? process.env.TF_PG_DB ?? "terrafusion",
+  pgUser = process.env.TF_PG_USER ?? "postgres",
   probeBackendHealth: backendProbe = () =>
     probeBackendHealth([
       process.env.TF_BENTON_DEV_API_BASE,
@@ -213,7 +303,7 @@ export async function buildBentonSyncDrainStateEvidence({
       "http://localhost:5046"
     ]),
   processAlive: aliveProbe = processAlive,
-  query = makePsqlQueryRunner()
+  query = makeRuntimeDbQueryRunner({ dbRuntime, pgContainer, pgDatabase, pgUser })
 } = {}) {
   const backendHealth = await backendProbe();
   const activeDrainAlive = aliveProbe(drainPid);
@@ -233,6 +323,14 @@ export async function buildBentonSyncDrainStateEvidence({
       pid: drainPid ? Number(drainPid) : null,
       alive: activeDrainAlive,
       status: activeDrainAlive === true ? "IN_PROGRESS" : activeDrainAlive === false ? "NOT_RUNNING" : "UNKNOWN"
+    },
+    runtimeDbAccess: {
+      mode: String(dbRuntime ?? "auto").toLowerCase(),
+      canonicalPath: "docker exec <TF_PG_CONTAINER> psql -U <TF_PG_USER> -d <TF_PG_DATABASE>",
+      pgContainer,
+      pgDatabase,
+      pgUser,
+      directConnectionConfigured: Boolean(configuredConnectionString())
     },
     loadBatch: {
       stage: queryResults.latestLoadBatch?.stage ?? "UNKNOWN",
@@ -340,6 +438,15 @@ function renderMarkdown(evidence) {
     `- load_batch stage: ${evidence.loadBatch.stage}`,
     `- load_batch status: ${evidence.loadBatch.status}`,
     "",
+    "## DB Runtime Access",
+    "",
+    `- Mode: ${evidence.runtimeDbAccess.mode}`,
+    `- Canonical path: \`${evidence.runtimeDbAccess.canonicalPath}\``,
+    `- Container: ${evidence.runtimeDbAccess.pgContainer}`,
+    `- Database: ${evidence.runtimeDbAccess.pgDatabase}`,
+    `- User: ${evidence.runtimeDbAccess.pgUser}`,
+    `- Direct connection configured: ${evidence.runtimeDbAccess.directConnectionConfigured}`,
+    "",
     "## Counts",
     "",
     "| Source | Classification | Count | Reason |",
@@ -364,6 +471,10 @@ function parseArgs(argv) {
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
     noBackendProbe: false,
+    dbRuntime: process.env.TF_BENTON_SYNC_DB_RUNTIME ?? process.env.TF_DB_EVIDENCE_RUNTIME ?? "auto",
+    pgContainer: process.env.TF_PG_CONTAINER ?? "terrafusion-postgres-dev",
+    pgDatabase: process.env.TF_PG_DATABASE ?? process.env.TF_PG_DB ?? "terrafusion",
+    pgUser: process.env.TF_PG_USER ?? "postgres",
     write: true
   };
 
@@ -373,6 +484,10 @@ function parseArgs(argv) {
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-backend-probe") args.noBackendProbe = true;
+    else if (arg === "--db-runtime") args.dbRuntime = argv[++i];
+    else if (arg === "--pg-container") args.pgContainer = argv[++i];
+    else if (arg === "--pg-database") args.pgDatabase = argv[++i];
+    else if (arg === "--pg-user") args.pgUser = argv[++i];
     else if (arg === "--no-write") args.write = false;
   }
 
@@ -383,6 +498,10 @@ export async function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const evidence = await buildBentonSyncDrainStateEvidence({
     drainPid: args.drainPid,
+    dbRuntime: args.dbRuntime,
+    pgContainer: args.pgContainer,
+    pgDatabase: args.pgDatabase,
+    pgUser: args.pgUser,
     probeBackendHealth: args.noBackendProbe
       ? async () => ({ status: "unknown", ok: false, reason: "Backend probe disabled." })
       : undefined

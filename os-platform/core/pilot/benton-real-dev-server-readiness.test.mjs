@@ -120,6 +120,27 @@ test("blocks real dev server when evidence is missing or fake-classified", () =>
   assert.ok(report.blockers.some((blocker) => blocker.includes("canonical parcel")));
 });
 
+test("does not block real dev readiness solely because the client drain PID is gone when DB load_batch proves state", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.activeDrain = { pid: 28503, alive: false, status: "NOT_RUNNING" };
+  evidence.loadBatch = {
+    stage: "owner-supnum-backfill",
+    status: "IN_PROGRESS",
+    loadBatchId: "batch-1"
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  const drainCheck = report.checks.find((check) => check.name === "active drain process state");
+  assert.equal(drainCheck.passed, true);
+  assert.equal(report.decisions.realDevServerAllowed, true);
+  assert.equal(report.decisions.productionProofAllowed, false);
+  assert.equal(report.decisions.operationalProofAllowed, false);
+});
+
 test("CLI writes readiness evidence and exits zero for conditional real dev state", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-benton-real-dev-"));
   const source = path.join(tmp, "source.json");

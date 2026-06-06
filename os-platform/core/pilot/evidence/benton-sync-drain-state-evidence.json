@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T21:30:07.992Z",
+  "generatedAtUtc": "2026-06-06T21:48:50.299Z",
   "adapter": "benton-sync-drain-state-evidence",
   "backendHealth": {
     "status": "healthy",
@@ -12,108 +12,81 @@
     "alive": false,
     "status": "NOT_RUNNING"
   },
+  "runtimeDbAccess": {
+    "mode": "docker",
+    "canonicalPath": "docker exec <TF_PG_CONTAINER> psql -U <TF_PG_USER> -d <TF_PG_DATABASE>",
+    "pgContainer": "terrafusion-postgres-dev",
+    "pgDatabase": "terrafusion",
+    "pgUser": "postgres",
+    "directConnectionConfigured": false
+  },
   "loadBatch": {
-    "stage": "UNKNOWN",
-    "status": "UNKNOWN",
-    "loadBatchId": null
+    "stage": "owner-supnum-backfill",
+    "status": "IN_PROGRESS",
+    "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d"
   },
   "queryResults": {
     "latestLoadBatch": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
+      "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d",
+      "stage": "owner-supnum-backfill",
+      "status": "IN_PROGRESS"
     },
-    "legacyProperty": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "legacyOwner": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "legacyPropSuppAssoc": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "legacyWashPropOwnerVal": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "legacyAccount": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "truthParcel": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "truthOwner": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "truthWsdor": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "canonicalParcel": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "canonicalOwner": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "canonicalWsdor": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    },
-    "gisParcelGeometry": {
-      "unavailable": true,
-      "reason": "spawnSync psql ENOENT"
-    }
+    "legacyProperty": 999214,
+    "legacyOwner": 7396857,
+    "legacyPropSuppAssoc": 2731351,
+    "legacyWashPropOwnerVal": 1273143,
+    "legacyAccount": 425186,
+    "truthParcel": 83682,
+    "truthOwner": 774760,
+    "truthWsdor": 774696,
+    "canonicalParcel": 3199335,
+    "canonicalOwner": 215009,
+    "canonicalWsdor": 686820,
+    "gisParcelGeometry": 80075
   },
   "counts": {
     "landingTables": {
-      "property": 0,
-      "owner": 0,
-      "propSuppAssoc": 0,
-      "washPropOwnerVal": 0
+      "property": 999214,
+      "owner": 7396857,
+      "propSuppAssoc": 2731351,
+      "washPropOwnerVal": 1273143
     },
     "truthTables": {
-      "parcel": 0,
-      "owner": 0,
-      "wsdor": 0
+      "parcel": 83682,
+      "owner": 774760,
+      "wsdor": 774696
     },
     "canonical": {
-      "parcel": 0,
-      "owner": 0,
-      "account": 0,
-      "wsdor": 0
+      "parcel": 3199335,
+      "owner": 215009,
+      "account": 425186,
+      "wsdor": 686820
     },
     "gis": {
-      "parcelGeometry": 0
+      "parcelGeometry": 80075
     }
   },
   "countClassifications": {
-    "legacyProperty": "UNKNOWN",
-    "legacyOwner": "UNKNOWN",
-    "legacyPropSuppAssoc": "UNKNOWN",
-    "legacyWashPropOwnerVal": "UNKNOWN",
-    "legacyAccount": "UNKNOWN",
-    "truthParcel": "UNKNOWN",
-    "truthOwner": "UNKNOWN",
-    "truthWsdor": "UNKNOWN",
-    "canonicalParcel": "UNKNOWN",
-    "canonicalOwner": "UNKNOWN",
-    "canonicalWsdor": "UNKNOWN",
-    "gisParcelGeometry": "UNKNOWN"
+    "legacyProperty": "PARTIAL_SEEDED",
+    "legacyOwner": "PARTIAL_SEEDED",
+    "legacyPropSuppAssoc": "PARTIAL_SEEDED",
+    "legacyWashPropOwnerVal": "PARTIAL_SEEDED",
+    "legacyAccount": "SEEDED",
+    "truthParcel": "SYNC_DERIVED",
+    "truthOwner": "SYNC_DERIVED",
+    "truthWsdor": "SYNC_DERIVED",
+    "canonicalParcel": "SEEDED",
+    "canonicalOwner": "SEEDED",
+    "canonicalWsdor": "SEEDED",
+    "gisParcelGeometry": "PARTIAL_SEEDED"
   },
   "countyStudioDependencies": {
-    "map": "UNKNOWN",
-    "ledger": "UNKNOWN",
-    "inspector": "UNKNOWN"
+    "map": "PARTIAL_SEEDED",
+    "ledger": "SYNC_DERIVED",
+    "inspector": "SYNC_DERIVED"
   },
   "decisions": {
-    "realDevEvidenceReadable": false,
+    "realDevEvidenceReadable": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },

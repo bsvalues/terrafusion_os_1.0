@@ -1,17 +1,17 @@
 {
-  "generatedAtUtc": "2026-06-06T21:30:07.962Z",
+  "generatedAtUtc": "2026-06-06T21:49:53.501Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_SERVER_BLOCKED",
+  "status": "REAL_DEV_DATA_AVAILABLE",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": false,
+    "realDevServerAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
   "maturity": {
     "DATA_TRUTH_FAIL": true,
-    "REAL_DEV_DATA_AVAILABLE": false,
-    "SYNC_DERIVED_PARTIAL": false,
+    "REAL_DEV_DATA_AVAILABLE": true,
+    "SYNC_DERIVED_PARTIAL": true,
     "SYNC_DERIVED_COMPLETE": false,
     "AUTHORITATIVE_RECONCILED": false,
     "PRODUCTION_PROOF_ALLOWED": false
@@ -48,9 +48,9 @@
     },
     {
       "name": "active drain process state",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Drain process is not alive; confirm whether client timeout or backend failure occurred.",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS.",
       "evidence": {
         "pid": 28503,
         "alive": false,
@@ -59,157 +59,142 @@
     },
     {
       "name": "load_batch current stage",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "load_batch stage is UNKNOWN (UNKNOWN).",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "load_batch stage is owner-supnum-backfill (IN_PROGRESS).",
       "evidence": {
-        "stage": "UNKNOWN",
-        "status": "UNKNOWN",
-        "loadBatchId": null
+        "stage": "owner-supnum-backfill",
+        "status": "IN_PROGRESS",
+        "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d"
       }
     },
     {
       "name": "landing table counts",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Property landing rows are missing or unknown.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "Property landing rows exist.",
       "evidence": {
-        "propertyLanding": 0,
-        "ownerLanding": 0,
-        "suppAssociation": 0,
-        "wpov": 0,
-        "truthParcel": 0,
-        "truthOwner": 0,
-        "truthWsdor": 0,
-        "canonicalParcel": 0,
-        "account": 0
+        "propertyLanding": 999214,
+        "ownerLanding": 7396857,
+        "suppAssociation": 2731351,
+        "wpov": 1273143,
+        "truthParcel": 83682,
+        "truthOwner": 774760,
+        "truthWsdor": 774696,
+        "canonicalParcel": 3199335,
+        "account": 425186
       }
     },
     {
       "name": "truth table counts",
-      "classification": "UNKNOWN",
-      "passed": false,
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
       "reason": "Truth table counts are evaluated as partial until all expected Benton counts are reconciled.",
       "evidence": {
-        "propertyLanding": 0,
-        "ownerLanding": 0,
-        "suppAssociation": 0,
-        "wpov": 0,
-        "truthParcel": 0,
-        "truthOwner": 0,
-        "truthWsdor": 0,
-        "canonicalParcel": 0,
-        "account": 0
+        "propertyLanding": 999214,
+        "ownerLanding": 7396857,
+        "suppAssociation": 2731351,
+        "wpov": 1273143,
+        "truthParcel": 83682,
+        "truthOwner": 774760,
+        "truthWsdor": 774696,
+        "canonicalParcel": 3199335,
+        "account": 425186
       }
     },
     {
       "name": "canonical parcel counts",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Canonical parcel count is missing.",
+      "classification": "SEEDED",
+      "passed": true,
+      "reason": "Canonical parcel rows exist.",
       "evidence": {
-        "canonicalParcel": 0
+        "canonicalParcel": 3199335
       }
     },
     {
       "name": "owner truth count",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Owner truth count is missing.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "Owner truth rows exist.",
       "evidence": {
-        "truthOwner": 0,
-        "ownerLanding": 0
+        "truthOwner": 774760,
+        "ownerLanding": 7396857
       }
     },
     {
       "name": "account count",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Account count is missing.",
+      "classification": "SEEDED",
+      "passed": true,
+      "reason": "Account rows exist.",
       "evidence": {
-        "account": 0
+        "account": 425186
       }
     },
     {
       "name": "supp association count",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Supplement association count is missing.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "Supplement association landing rows exist.",
       "evidence": {
-        "suppAssociation": 0
+        "suppAssociation": 2731351
       }
     },
     {
       "name": "property landing count",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Property landing count is missing.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "Property landing count is present.",
       "evidence": {
-        "propertyLanding": 0
+        "propertyLanding": 999214
       }
     },
     {
       "name": "WPOV status",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "WPOV landing status is missing.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "WPOV landing rows exist.",
       "evidence": {
-        "wpov": 0
+        "wpov": 1273143
       }
     },
     {
       "name": "WSDOR status",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "WSDOR truth status is missing.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "WSDOR truth rows exist.",
       "evidence": {
-        "truthWsdor": 0
+        "truthWsdor": 774696
       }
     },
     {
       "name": "map data dependency status",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Map dependency is classified UNKNOWN.",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "Map dependency is classified PARTIAL_SEEDED.",
       "evidence": {
-        "classification": "UNKNOWN"
+        "classification": "PARTIAL_SEEDED"
       }
     },
     {
       "name": "ledger data dependency status",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Ledger dependency is classified UNKNOWN.",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Ledger dependency is classified SYNC_DERIVED.",
       "evidence": {
-        "classification": "UNKNOWN"
+        "classification": "SYNC_DERIVED"
       }
     },
     {
       "name": "inspector data dependency status",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Inspector dependency is classified UNKNOWN.",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Inspector dependency is classified SYNC_DERIVED.",
       "evidence": {
-        "classification": "UNKNOWN"
+        "classification": "SYNC_DERIVED"
       }
     }
   ],
-  "blockers": [
-    "active drain process state: Drain process is not alive; confirm whether client timeout or backend failure occurred.",
-    "load_batch current stage: load_batch stage is UNKNOWN (UNKNOWN).",
-    "landing table counts: Property landing rows are missing or unknown.",
-    "truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.",
-    "canonical parcel counts: Canonical parcel count is missing.",
-    "owner truth count: Owner truth count is missing.",
-    "account count: Account count is missing.",
-    "supp association count: Supplement association count is missing.",
-    "property landing count: Property landing count is missing.",
-    "WPOV status: WPOV landing status is missing.",
-    "WSDOR status: WSDOR truth status is missing.",
-    "map data dependency status: Map dependency is classified UNKNOWN.",
-    "ledger data dependency status: Ledger dependency is classified UNKNOWN.",
-    "inspector data dependency status: Inspector dependency is classified UNKNOWN."
-  ],
+  "blockers": [],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

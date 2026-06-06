@@ -1,10 +1,10 @@
 # Benton Sync Drain State Evidence
 
-Generated: 2026-06-06T21:30:07.992Z
+Generated: 2026-06-06T21:48:50.299Z
 
 ## Decision
 
-- Real dev evidence readable: false
+- Real dev evidence readable: true
 - Production proof allowed: false
 - Operational proof allowed: false
 
@@ -13,31 +13,40 @@ Generated: 2026-06-06T21:30:07.992Z
 - Backend health: healthy
 - Drain PID: 28503
 - Drain alive: false
-- load_batch stage: UNKNOWN
-- load_batch status: UNKNOWN
+- load_batch stage: owner-supnum-backfill
+- load_batch status: IN_PROGRESS
+
+## DB Runtime Access
+
+- Mode: docker
+- Canonical path: `docker exec <TF_PG_CONTAINER> psql -U <TF_PG_USER> -d <TF_PG_DATABASE>`
+- Container: terrafusion-postgres-dev
+- Database: terrafusion
+- User: postgres
+- Direct connection configured: false
 
 ## Counts
 
 | Source | Classification | Count | Reason |
 | --- | --- | ---: | --- |
-| legacyProperty | UNKNOWN | 0 | spawnSync psql ENOENT |
-| legacyOwner | UNKNOWN | 0 | spawnSync psql ENOENT |
-| legacyPropSuppAssoc | UNKNOWN | 0 | spawnSync psql ENOENT |
-| legacyWashPropOwnerVal | UNKNOWN | 0 | spawnSync psql ENOENT |
-| legacyAccount | UNKNOWN | 0 | spawnSync psql ENOENT |
-| truthParcel | UNKNOWN | 0 | spawnSync psql ENOENT |
-| truthOwner | UNKNOWN | 0 | spawnSync psql ENOENT |
-| truthWsdor | UNKNOWN | 0 | spawnSync psql ENOENT |
-| canonicalParcel | UNKNOWN | 0 | spawnSync psql ENOENT |
-| canonicalOwner | UNKNOWN | 0 | spawnSync psql ENOENT |
-| canonicalWsdor | UNKNOWN | 0 | spawnSync psql ENOENT |
-| gisParcelGeometry | UNKNOWN | 0 | spawnSync psql ENOENT |
+| legacyProperty | PARTIAL_SEEDED | 999214 | count present |
+| legacyOwner | PARTIAL_SEEDED | 7396857 | count present |
+| legacyPropSuppAssoc | PARTIAL_SEEDED | 2731351 | count present |
+| legacyWashPropOwnerVal | PARTIAL_SEEDED | 1273143 | count present |
+| legacyAccount | SEEDED | 425186 | count present |
+| truthParcel | SYNC_DERIVED | 83682 | count present |
+| truthOwner | SYNC_DERIVED | 774760 | count present |
+| truthWsdor | SYNC_DERIVED | 774696 | count present |
+| canonicalParcel | SEEDED | 3199335 | count present |
+| canonicalOwner | SEEDED | 215009 | count present |
+| canonicalWsdor | SEEDED | 686820 | count present |
+| gisParcelGeometry | PARTIAL_SEEDED | 80075 | count present |
 
 ## County Studio Dependencies
 
-- Map: UNKNOWN
-- Ledger: UNKNOWN
-- Inspector: UNKNOWN
+- Map: PARTIAL_SEEDED
+- Ledger: SYNC_DERIVED
+- Inspector: SYNC_DERIVED
 
 ## Rules
 
