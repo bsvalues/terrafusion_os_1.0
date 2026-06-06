@@ -31,6 +31,14 @@ const DEFAULT_AUTHORITATIVE_MANIFEST = path.join(
   "evidence",
   "county-studio-r1-authoritative-data-manifest.json"
 );
+const DEFAULT_REAL_DEV_READINESS = path.join(
+  DEFAULT_REPO_ROOT,
+  "os-platform",
+  "core",
+  "pilot",
+  "evidence",
+  "benton-real-dev-server-readiness.json"
+);
 
 export const REQUIRED_PROOF_AREAS = [
   "study list",
@@ -394,7 +402,11 @@ export function buildCountyStudioR1DataTruthReport({
   generatedAtUtc = new Date().toISOString(),
   authoritativeManifestPath = process.env.TF_COUNTY_STUDIO_DATA_TRUTH_MANIFEST
     ? path.resolve(process.env.TF_COUNTY_STUDIO_DATA_TRUTH_MANIFEST)
-    : DEFAULT_AUTHORITATIVE_MANIFEST
+    : DEFAULT_AUTHORITATIVE_MANIFEST,
+  realDevReadinessPath = process.env.TF_COUNTY_STUDIO_REAL_DEV_READINESS
+    ? path.resolve(process.env.TF_COUNTY_STUDIO_REAL_DEV_READINESS)
+    : DEFAULT_REAL_DEV_READINESS,
+  realDevReadinessReport = readJson(realDevReadinessPath)
 } = {}) {
   const context = buildSourceContext(repoRoot, authoritativeManifestPath);
   const proofAreas = REQUIRED_PROOF_AREAS.map((area) => classifyArea(area, context));
@@ -415,6 +427,11 @@ export function buildCountyStudioR1DataTruthReport({
     status,
     claims: {
       surfaceRuntimeProofOnly: true,
+      realDevServerAllowed: realDevReadinessReport?.decisions?.realDevServerAllowed === true,
+      realDevBoundary:
+        realDevReadinessReport?.decisions?.realDevServerAllowed === true
+          ? "County Studio may run as a real Benton-backed dev surface; this is not production or operational proof."
+          : "County Studio real Benton-backed dev surface is not allowed until the real-dev readiness gate passes.",
       productionProofAllowed: status === "DATA_TRUTH_PASS",
       operationalProofAllowed: status === "DATA_TRUTH_PASS",
       rule: "No data lineage, no production proof. No provenance, no operational claim."
@@ -427,7 +444,8 @@ export function buildCountyStudioR1DataTruthReport({
       productionProof: context.productionProof ? rel(repoRoot, context.productionProofPath) : null,
       authoritativeManifest: context.authoritativeManifest
         ? rel(repoRoot, authoritativeManifestPath)
-        : null
+        : null,
+      realDevReadiness: realDevReadinessReport ? rel(repoRoot, realDevReadinessPath) : null
     },
     nextRequiredUnblock: [
       "Replace compatibility/provisional Atlas geometry with TerraAtlas-owned Benton geometry/layer contracts.",
@@ -456,8 +474,10 @@ export function renderCountyStudioR1DataTruthMarkdown(report) {
     "## Claim Boundary",
     "",
     `- Surface runtime proof only: ${report.claims.surfaceRuntimeProofOnly}`,
+    `- Real dev server allowed: ${report.claims.realDevServerAllowed}`,
     `- Production proof allowed: ${report.claims.productionProofAllowed}`,
     `- Operational proof allowed: ${report.claims.operationalProofAllowed}`,
+    `- Real dev boundary: ${report.claims.realDevBoundary}`,
     "",
     "## Required Proof Areas",
     "",
@@ -504,6 +524,9 @@ function parseArgs(argv) {
     authoritativeManifestPath: process.env.TF_COUNTY_STUDIO_DATA_TRUTH_MANIFEST
       ? path.resolve(process.env.TF_COUNTY_STUDIO_DATA_TRUTH_MANIFEST)
       : DEFAULT_AUTHORITATIVE_MANIFEST,
+    realDevReadinessPath: process.env.TF_COUNTY_STUDIO_REAL_DEV_READINESS
+      ? path.resolve(process.env.TF_COUNTY_STUDIO_REAL_DEV_READINESS)
+      : DEFAULT_REAL_DEV_READINESS,
     write: true
   };
 
@@ -513,6 +536,7 @@ function parseArgs(argv) {
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--manifest") args.authoritativeManifestPath = path.resolve(argv[++i]);
+    else if (arg === "--real-dev-readiness") args.realDevReadinessPath = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
   }
 
@@ -523,7 +547,8 @@ export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const report = buildCountyStudioR1DataTruthReport({
     repoRoot: args.repoRoot,
-    authoritativeManifestPath: args.authoritativeManifestPath
+    authoritativeManifestPath: args.authoritativeManifestPath,
+    realDevReadinessPath: args.realDevReadinessPath
   });
 
   if (args.write) {

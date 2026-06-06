@@ -71,6 +71,26 @@ test("fails current County Studio proof when Atlas geometry is compatibility/pro
   assert.match(countyId.reason, /label is present/i);
 });
 
+test("records real-dev posture without promoting production or operational proof", () => {
+  const report = buildCountyStudioR1DataTruthReport({
+    repoRoot,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z",
+    realDevReadinessReport: {
+      status: "REAL_DEV_DATA_AVAILABLE",
+      decisions: {
+        realDevServerAllowed: true,
+        productionProofAllowed: false,
+        operationalProofAllowed: false
+      }
+    }
+  });
+
+  assert.equal(report.claims.realDevServerAllowed, true);
+  assert.equal(report.claims.productionProofAllowed, false);
+  assert.equal(report.claims.operationalProofAllowed, false);
+  assert.match(report.claims.realDevBoundary, /real Benton-backed dev surface/i);
+});
+
 test("CLI writes evidence and exits non-zero while data truth is not proven", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-county-studio-data-truth-"));
   const outJson = path.join(tmp, "data-truth.json");
