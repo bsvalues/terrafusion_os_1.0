@@ -1,9 +1,9 @@
 {
-  "generatedAtUtc": "2026-06-06T22:22:26.092Z",
+  "generatedAtUtc": "2026-06-06T22:47:02.494Z",
   "gate": "county-studio-real-dev-server-activation",
-  "status": "REAL_DEV_ACTIVATION_BLOCKED",
+  "status": "REAL_DEV_ACTIVATION_READY",
   "decisions": {
-    "realDevActivationAllowed": false,
+    "realDevActivationAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -13,10 +13,43 @@
     "launchCommand": "cross-env TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton TF_COUNTY_STUDIO_PRODUCTION_PROOF=false TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false pnpm run dev"
   },
   "readinessPosture": {
-    "status": "REAL_DEV_SERVER_BLOCKED",
-    "realDevServerAllowed": false,
+    "status": "REAL_DEV_DATA_AVAILABLE",
+    "realDevServerAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
+  },
+  "forgeDevDependency": {
+    "ownerSupnumBackfill": {
+      "stage": "owner-supnum-resume",
+      "status": "IN_PROGRESS",
+      "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "requiredForCountyStudioForgeDev": false,
+      "requiredForPacketProof": true,
+      "requiredForOperationalProof": true,
+      "ownerIdentityConsumedByForgeSurfaces": false,
+      "consumedSurfaces": [],
+      "latestFailed": {
+        "loadBatchId": "581cb948-936b-40e2-b478-364b28dfd0e3",
+        "stage": "owner-supnum-resume",
+        "status": "FAILED"
+      },
+      "audit": {
+        "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume owner name, taxpayer identity, mailing identity, owner-current, or owner-supnum data.",
+        "forgeValuationSources": [
+          "parcel/property identity",
+          "property characteristics",
+          "valuation metrics",
+          "ratio-study context",
+          "risk objects",
+          "geometry/map context"
+        ],
+        "packetOpsSources": [
+          "Dossier packet owner identity",
+          "Dais/notice/appeal taxpayer identity",
+          "operational packet owner references"
+        ]
+      }
+    }
   },
   "dataTruthPosture": {
     "status": "DATA_TRUTH_FAIL",
@@ -100,11 +133,7 @@
       "reason": "County Studio live SignalR payload provenance is not proven for the selected Benton study context."
     }
   ],
-  "blockers": [
-    "Benton real-dev readiness is not allowed.",
-    "active drain process state: Drain process state is unknown.",
-    "load_batch current stage: load_batch stage is owner-supnum-backfill (FAILED)."
-  ],
+  "blockers": [],
   "rules": [
     "Real dev activation requires the Benton real-dev readiness DB gate.",
     "Mock, fixture, generated, fallback, or unknown activation dependencies cannot satisfy real dev mode.",

@@ -1,11 +1,11 @@
 # County Studio Real Dev Server Activation
 
-Generated: 2026-06-06T22:22:26.092Z
-Status: REAL_DEV_ACTIVATION_BLOCKED
+Generated: 2026-06-06T22:47:02.494Z
+Status: REAL_DEV_ACTIVATION_READY
 
 ## Decision
 
-- Real Dev Activation: BLOCKED
+- Real Dev Activation: ALLOWED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
@@ -17,10 +17,19 @@ Status: REAL_DEV_ACTIVATION_BLOCKED
 
 ## Readiness Posture
 
-- Status: REAL_DEV_SERVER_BLOCKED
-- realDevServerAllowed: false
+- Status: REAL_DEV_DATA_AVAILABLE
+- realDevServerAllowed: true
 - productionProofAllowed: false
 - operationalProofAllowed: false
+
+## Forge Dev Dependency Reclassification
+
+- ownerSupnumBackfillStatus: IN_PROGRESS
+- ownerSupnumBackfillLatestFailedStatus: FAILED
+- ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
+- ownerSupnumBackfillRequiredForForgeDev: false
+- ownerSupnumBackfillRequiredForPacketProof: true
+- ownerSupnumBackfillRequiredForOperationalProof: true
 
 ## Data Truth Posture
 
@@ -50,9 +59,7 @@ Status: REAL_DEV_ACTIVATION_BLOCKED
 
 ## Activation Blockers
 
-- Benton real-dev readiness is not allowed.
-- active drain process state: Drain process state is unknown.
-- load_batch current stage: load_batch stage is owner-supnum-backfill (FAILED).
+- None
 
 ## Rules
 

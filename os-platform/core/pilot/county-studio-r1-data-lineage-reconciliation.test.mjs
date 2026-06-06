@@ -64,6 +64,17 @@ function readinessReport(overrides = {}) {
         evidence: { classification: "SYNC_DERIVED" }
       }
     ],
+    forgeDevDependency: {
+      ownerSupnumBackfill: {
+        stage: "owner-supnum-backfill",
+        status: "FAILED",
+        classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+        requiredForCountyStudioForgeDev: false,
+        requiredForPacketProof: true,
+        requiredForOperationalProof: true,
+        ownerIdentityConsumedByForgeSurfaces: false
+      }
+    },
     ...overrides
   };
 }
@@ -193,6 +204,14 @@ test("reconciles real-dev available data without promoting production or operati
   assert.equal(geometry.ownerLane, "Atlas");
   assert.equal(geometry.observedCount, 80075);
   assert.match(geometry.failureReason, /compatibility/i);
+
+  const ownerJoins = report.inventory.find((item) => item.surface === "owner/account/supplement joins");
+  assert.equal(ownerJoins.dependencyClassification, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(ownerJoins.requiredForCountyStudioForgeDev, false);
+  assert.equal(ownerJoins.requiredForPacketProof, true);
+  assert.equal(ownerJoins.requiredForOperationalProof, true);
+  assert.equal(ownerJoins.ownerSupnumBackfillStatus, "FAILED");
+  assert.match(ownerJoins.status, /PACKET_OPS_BLOCKER/);
 });
 
 test("blocks reconciliation when real-dev activation is not ready", () => {

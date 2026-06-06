@@ -21,6 +21,15 @@ function readinessReport(overrides = {}) {
       productionProofAllowed: false,
       operationalProofAllowed: false
     },
+    forgeDevDependency: {
+      ownerSupnumBackfill: {
+        status: "FAILED",
+        classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+        requiredForCountyStudioForgeDev: false,
+        requiredForPacketProof: true,
+        requiredForOperationalProof: true
+      }
+    },
     checks: [
       { name: "backend health", classification: "SYNC_DERIVED", passed: true },
       { name: "map data dependency status", classification: "PARTIAL_SEEDED", passed: true },
@@ -75,6 +84,8 @@ test("allows real Benton dev activation only when readiness allows it", () => {
   assert.equal(report.decisions.realDevActivationAllowed, true);
   assert.equal(report.decisions.productionProofAllowed, false);
   assert.equal(report.decisions.operationalProofAllowed, false);
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.status, "FAILED");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev, false);
   assert.match(report.runPath.prerequisiteCommand, /benton-real-dev-server-readiness:db/);
   assert.match(report.runPath.launchCommand, /TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton/);
 });

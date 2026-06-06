@@ -136,6 +136,15 @@ export function buildCountyStudioRealDevServerActivationReport({
       productionProofAllowed: readinessReport?.decisions?.productionProofAllowed === true,
       operationalProofAllowed: readinessReport?.decisions?.operationalProofAllowed === true
     },
+    forgeDevDependency: readinessReport?.forgeDevDependency ?? {
+      ownerSupnumBackfill: {
+        status: "UNKNOWN",
+        classification: "UNKNOWN",
+        requiredForCountyStudioForgeDev: false,
+        requiredForPacketProof: true,
+        requiredForOperationalProof: true
+      }
+    },
     dataTruthPosture: {
       status: dataTruthReport?.status ?? "UNKNOWN",
       productionProofAllowed: dataTruthReport?.claims?.productionProofAllowed === true,
@@ -183,6 +192,15 @@ export function renderCountyStudioRealDevServerActivationMarkdown(report) {
     `- realDevServerAllowed: ${report.readinessPosture.realDevServerAllowed}`,
     `- productionProofAllowed: ${report.readinessPosture.productionProofAllowed}`,
     `- operationalProofAllowed: ${report.readinessPosture.operationalProofAllowed}`,
+    "",
+    "## Forge Dev Dependency Reclassification",
+    "",
+    `- ownerSupnumBackfillStatus: ${report.forgeDevDependency.ownerSupnumBackfill.status}`,
+    `- ownerSupnumBackfillLatestFailedStatus: ${report.forgeDevDependency.ownerSupnumBackfill.latestFailed?.status ?? "none"}`,
+    `- ownerSupnumBackfillClassification: ${report.forgeDevDependency.ownerSupnumBackfill.classification}`,
+    `- ownerSupnumBackfillRequiredForForgeDev: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev}`,
+    `- ownerSupnumBackfillRequiredForPacketProof: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForPacketProof}`,
+    `- ownerSupnumBackfillRequiredForOperationalProof: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForOperationalProof}`,
     "",
     "## Data Truth Posture",
     "",

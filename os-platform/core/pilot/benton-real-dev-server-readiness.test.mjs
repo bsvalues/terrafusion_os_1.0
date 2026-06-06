@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 
 import {
   DEV_READINESS_CLASSIFICATIONS,
+  OWNER_SUPNUM_DEPENDENCY_CLASSIFICATIONS,
   REQUIRED_READINESS_CHECKS,
   buildBentonRealDevServerReadinessReport
 } from "./benton-real-dev-server-readiness.mjs";
@@ -59,6 +60,14 @@ test("defines the staged real-dev readiness classifications and checks", () => {
     "UNKNOWN"
   ]);
 
+  assert.deepEqual(OWNER_SUPNUM_DEPENDENCY_CLASSIFICATIONS, [
+    "REQUIRED_FOR_FORGE_DEV",
+    "NOT_REQUIRED_FOR_FORGE_DEV",
+    "REQUIRED_FOR_PACKET_PROOF",
+    "REQUIRED_FOR_OPERATIONAL_PROOF",
+    "UNKNOWN"
+  ]);
+
   assert.deepEqual(REQUIRED_READINESS_CHECKS, [
     "backend health",
     "active drain process state",
@@ -72,6 +81,7 @@ test("defines the staged real-dev readiness classifications and checks", () => {
     "property landing count",
     "WPOV status",
     "WSDOR status",
+    "owner-supnum backfill dependency classification",
     "map data dependency status",
     "ledger data dependency status",
     "inspector data dependency status"
@@ -139,6 +149,98 @@ test("does not block real dev readiness solely because the client drain PID is g
   assert.equal(report.decisions.realDevServerAllowed, true);
   assert.equal(report.decisions.productionProofAllowed, false);
   assert.equal(report.decisions.operationalProofAllowed, false);
+});
+
+test("does not block Forge dev when owner-supnum backfill failed but owner identity is not consumed", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.activeDrain = { pid: null, alive: null, status: "UNKNOWN" };
+  evidence.loadBatch = {
+    stage: "owner-supnum-backfill",
+    status: "FAILED",
+    loadBatchId: "batch-owner-supnum-failed"
+  };
+  evidence.countyStudioDependencies.ownerSupnumBackfill = {
+    status: "FAILED",
+    classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: false,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    ownerIdentityConsumedByForgeSurfaces: false
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.status, "REAL_DEV_DATA_AVAILABLE");
+  assert.equal(report.decisions.realDevServerAllowed, true);
+  assert.equal(report.decisions.productionProofAllowed, false);
+  assert.equal(report.decisions.operationalProofAllowed, false);
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.status, "FAILED");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev, false);
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForPacketProof, true);
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForOperationalProof, true);
+  assert.equal(report.blockers.some((blocker) => /owner-supnum|load_batch|drain process/i.test(blocker)), false);
+});
+
+test("does not block Forge dev when owner-supnum resume failed but owner identity is not consumed", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.activeDrain = { pid: null, alive: null, status: "UNKNOWN" };
+  evidence.loadBatch = {
+    stage: "owner-supnum-resume",
+    status: "FAILED",
+    loadBatchId: "batch-owner-supnum-resume-failed"
+  };
+  evidence.countyStudioDependencies.ownerSupnumBackfill = {
+    status: "FAILED",
+    stage: "owner-supnum-resume",
+    classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: false,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    ownerIdentityConsumedByForgeSurfaces: false
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.status, "REAL_DEV_DATA_AVAILABLE");
+  assert.equal(report.decisions.realDevServerAllowed, true);
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.status, "FAILED");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev, false);
+  assert.equal(report.blockers.some((blocker) => /owner-supnum|load_batch|drain process/i.test(blocker)), false);
+});
+
+test("blocks Forge dev when owner-supnum backfill is required by a consumed owner identity surface", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.activeDrain = { pid: null, alive: null, status: "UNKNOWN" };
+  evidence.loadBatch = {
+    stage: "owner-supnum-backfill",
+    status: "FAILED",
+    loadBatchId: "batch-owner-supnum-failed"
+  };
+  evidence.countyStudioDependencies.ownerSupnumBackfill = {
+    status: "FAILED",
+    classification: "REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: true,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    ownerIdentityConsumedByForgeSurfaces: true,
+    consumedSurfaces: ["parcel owner inspector"]
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.status, "REAL_DEV_SERVER_BLOCKED");
+  assert.equal(report.decisions.realDevServerAllowed, false);
+  assert.ok(report.blockers.some((blocker) => /owner-supnum/i.test(blocker)));
 });
 
 test("CLI writes readiness evidence and exits zero for conditional real dev state", () => {

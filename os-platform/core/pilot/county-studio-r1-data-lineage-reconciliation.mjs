@@ -159,8 +159,9 @@ function areaReason(dataTruthReport, area, fallback) {
   return proofArea(dataTruthReport, area)?.reason ?? fallback;
 }
 
-function statusFor(classification, productionProofAllowed) {
+function statusFor(classification, productionProofAllowed, dependencyClassification = null) {
   if (productionProofAllowed) return "PRODUCTION_READY";
+  if (dependencyClassification === "NOT_REQUIRED_FOR_FORGE_DEV") return "PACKET_OPS_BLOCKER_NOT_FORGE_DEV";
   if (DEV_REAL_CLASSIFICATIONS.has(classification)) return "REAL_DEV_AVAILABLE_PRODUCTION_BLOCKED";
   return "PRODUCTION_BLOCKER";
 }
@@ -182,7 +183,13 @@ function inventoryEntry({
   studyId = "runtime-selected-study",
   failureReason,
   requiredProofToUpgrade,
-  productionProofAllowed = false
+  productionProofAllowed = false,
+  dependencyClassification = null,
+  requiredForCountyStudioForgeDev = null,
+  requiredForPacketProof = null,
+  requiredForOperationalProof = null,
+  ownerSupnumBackfillStatus = null,
+  ownerSupnumBackfillLatestFailedStatus = null
 }) {
   return {
     surface,
@@ -202,12 +209,27 @@ function inventoryEntry({
     failureReason,
     requiredProofToUpgrade,
     productionProofAllowed,
-    status: statusFor(normalizeClassification(classification), productionProofAllowed)
+    ...(dependencyClassification ? { dependencyClassification } : {}),
+    ...(requiredForCountyStudioForgeDev !== null ? { requiredForCountyStudioForgeDev } : {}),
+    ...(requiredForPacketProof !== null ? { requiredForPacketProof } : {}),
+    ...(requiredForOperationalProof !== null ? { requiredForOperationalProof } : {}),
+    ...(ownerSupnumBackfillStatus !== null ? { ownerSupnumBackfillStatus } : {}),
+    ...(ownerSupnumBackfillLatestFailedStatus !== null ? { ownerSupnumBackfillLatestFailedStatus } : {}),
+    status: statusFor(normalizeClassification(classification), productionProofAllowed, dependencyClassification)
   };
 }
 
 function buildInventory({ readinessReport, dataTruthReport, syncEvidenceReport }) {
   const counts = evidenceCounts(readinessReport, syncEvidenceReport);
+  const ownerSupnumDependency = readinessReport?.forgeDevDependency?.ownerSupnumBackfill
+    ?? syncEvidenceReport?.countyStudioDependencies?.ownerSupnumBackfill
+    ?? {
+      status: "UNKNOWN",
+      classification: "UNKNOWN",
+      requiredForCountyStudioForgeDev: false,
+      requiredForPacketProof: true,
+      requiredForOperationalProof: true
+    };
   const mapDependencyClassification = checkClassification(readinessReport, "map data dependency status");
   const ledgerDependencyClassification = checkClassification(readinessReport, "ledger data dependency status");
   const inspectorDependencyClassification = checkClassification(readinessReport, "inspector data dependency status");
@@ -354,7 +376,13 @@ function buildInventory({ readinessReport, dataTruthReport, syncEvidenceReport }
       joinKey: "parcelId/APN + suppNum + ownerId/accountId",
       failureReason: "Owner/account/supplement rows are readable for real dev, but owner lane reconciliation is not production-complete.",
       requiredProofToUpgrade:
-        "Complete owner/supplement association reconciliation and prove expected Benton owner/account counts before production proof."
+        "Complete owner/supplement association reconciliation and prove expected Benton owner/account counts before production proof.",
+      dependencyClassification: ownerSupnumDependency.classification,
+      requiredForCountyStudioForgeDev: ownerSupnumDependency.requiredForCountyStudioForgeDev,
+      requiredForPacketProof: ownerSupnumDependency.requiredForPacketProof,
+      requiredForOperationalProof: ownerSupnumDependency.requiredForOperationalProof,
+      ownerSupnumBackfillStatus: ownerSupnumDependency.status,
+      ownerSupnumBackfillLatestFailedStatus: ownerSupnumDependency.latestFailed?.status ?? null
     }),
     inventoryEntry({
       surface: "WPOV/WSDOR dependencies",
@@ -393,6 +421,7 @@ function summarize(reportInventory, readinessReport, dataTruthReport) {
   return {
     realDevReadinessStatus: readinessReport?.status ?? "UNKNOWN",
     dataTruthStatus: dataTruthReport?.status ?? "UNKNOWN",
+    forgeDevDependency: readinessReport?.forgeDevDependency ?? null,
     whatIsNowRealEnoughForDev: realEnoughForDev,
     whatRemainsBlockedForProductionProof: blockedForProduction,
     realEnoughForDev,
@@ -503,6 +532,21 @@ export function renderCountyStudioR1DataLineageReconciliationMarkdown(report) {
 
   lines.push("", "## What Is Now Real Enough For Dev", "");
   report.summary.whatIsNowRealEnoughForDev.forEach((item) => lines.push(`- ${item}`));
+
+  lines.push("", "## Forge Dev Dependency Reclassification", "");
+  const ownerSupnum = report.summary.forgeDevDependency?.ownerSupnumBackfill;
+  if (ownerSupnum) {
+    lines.push(
+      `- ownerSupnumBackfillStatus: ${ownerSupnum.status}`,
+      `- ownerSupnumBackfillLatestFailedStatus: ${ownerSupnum.latestFailed?.status ?? "none"}`,
+      `- ownerSupnumBackfillClassification: ${ownerSupnum.classification}`,
+      `- ownerSupnumBackfillRequiredForForgeDev: ${ownerSupnum.requiredForCountyStudioForgeDev}`,
+      `- ownerSupnumBackfillRequiredForPacketProof: ${ownerSupnum.requiredForPacketProof}`,
+      `- ownerSupnumBackfillRequiredForOperationalProof: ${ownerSupnum.requiredForOperationalProof}`
+    );
+  } else {
+    lines.push("- ownerSupnumBackfillClassification: UNKNOWN");
+  }
 
   lines.push("", "## What Remains Blocked For Production Proof", "");
   report.summary.whatRemainsBlockedForProductionProof.forEach((item) => lines.push(`- ${item}`));

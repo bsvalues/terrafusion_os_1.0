@@ -1,6 +1,6 @@
 # County Studio R1 Data Truth Gate
 
-Generated: 2026-06-06T22:22:24.751Z
+Generated: 2026-06-06T22:47:01.611Z
 Status: DATA_TRUTH_FAIL
 
 No data lineage, no production proof. No provenance, no operational claim. No canonical count comparison, no Benton truth. No geometry source, no GIS proof.
@@ -8,10 +8,10 @@ No data lineage, no production proof. No provenance, no operational claim. No ca
 ## Claim Boundary
 
 - Surface runtime proof only: true
-- Real dev server allowed: false
+- Real dev server allowed: true
 - Production proof allowed: false
 - Operational proof allowed: false
-- Real dev boundary: County Studio real Benton-backed dev surface is not allowed until the real-dev readiness gate passes.
+- Real dev boundary: County Studio may run as a real Benton-backed dev surface; this is not production or operational proof.
 
 ## Required Proof Areas
 

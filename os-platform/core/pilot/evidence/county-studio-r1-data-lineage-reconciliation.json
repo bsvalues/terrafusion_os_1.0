@@ -1,10 +1,10 @@
 {
-  "generatedAtUtc": "2026-06-06T22:24:18.941Z",
+  "generatedAtUtc": "2026-06-06T22:47:03.263Z",
   "gate": "county-studio-r1-data-lineage-reconciliation",
-  "status": "DATA_LINEAGE_RECONCILIATION_BLOCKED",
+  "status": "DATA_LINEAGE_RECONCILED_WITH_PRODUCTION_BLOCKERS",
   "decisions": {
-    "realDevActivationAllowed": false,
-    "realDevServerAllowed": false,
+    "realDevActivationAllowed": true,
+    "realDevServerAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -195,7 +195,7 @@
         "truthOwner": 774760,
         "canonicalOwner": 215009,
         "account": 425186,
-        "suppAssociation": 2731351
+        "suppAssociation": 2772351
       },
       "expectedCanonicalCount": null,
       "joinKey": "parcelId/APN + suppNum + ownerId/accountId",
@@ -205,7 +205,13 @@
       "failureReason": "Owner/account/supplement rows are readable for real dev, but owner lane reconciliation is not production-complete.",
       "requiredProofToUpgrade": "Complete owner/supplement association reconciliation and prove expected Benton owner/account counts before production proof.",
       "productionProofAllowed": false,
-      "status": "REAL_DEV_AVAILABLE_PRODUCTION_BLOCKED"
+      "dependencyClassification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "requiredForCountyStudioForgeDev": false,
+      "requiredForPacketProof": true,
+      "requiredForOperationalProof": true,
+      "ownerSupnumBackfillStatus": "IN_PROGRESS",
+      "ownerSupnumBackfillLatestFailedStatus": "FAILED",
+      "status": "PACKET_OPS_BLOCKER_NOT_FORGE_DEV"
     },
     {
       "surface": "WPOV/WSDOR dependencies",
@@ -233,8 +239,41 @@
     }
   ],
   "summary": {
-    "realDevReadinessStatus": "REAL_DEV_SERVER_BLOCKED",
+    "realDevReadinessStatus": "REAL_DEV_DATA_AVAILABLE",
     "dataTruthStatus": "DATA_TRUTH_FAIL",
+    "forgeDevDependency": {
+      "ownerSupnumBackfill": {
+        "stage": "owner-supnum-resume",
+        "status": "IN_PROGRESS",
+        "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+        "requiredForCountyStudioForgeDev": false,
+        "requiredForPacketProof": true,
+        "requiredForOperationalProof": true,
+        "ownerIdentityConsumedByForgeSurfaces": false,
+        "consumedSurfaces": [],
+        "latestFailed": {
+          "loadBatchId": "581cb948-936b-40e2-b478-364b28dfd0e3",
+          "stage": "owner-supnum-resume",
+          "status": "FAILED"
+        },
+        "audit": {
+          "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume owner name, taxpayer identity, mailing identity, owner-current, or owner-supnum data.",
+          "forgeValuationSources": [
+            "parcel/property identity",
+            "property characteristics",
+            "valuation metrics",
+            "ratio-study context",
+            "risk objects",
+            "geometry/map context"
+          ],
+          "packetOpsSources": [
+            "Dossier packet owner identity",
+            "Dais/notice/appeal taxpayer identity",
+            "operational packet owner references"
+          ]
+        }
+      }
+    },
     "whatIsNowRealEnoughForDev": [
       "map: PARTIAL_SEEDED (County Studio embedded TerraAtlas valuation-risk map)",
       "parcel/property identity: SYNC_DERIVED (Benton parcel/property identity)",
@@ -289,9 +328,7 @@
     "Evidence packet and downstream payload lineage is unknown.",
     "WPOV/WSDOR and owner/account/supplement joins are partial seeded, not reconciled."
   ],
-  "blockers": [
-    "Real dev activation is not ready; run the readiness DB and activation gates first."
-  ],
+  "blockers": [],
   "sourceArtifacts": {
     "readiness": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json",
     "dataTruth": "os-platform/core/pilot/evidence/county-studio-r1-data-truth-gate.latest.json",

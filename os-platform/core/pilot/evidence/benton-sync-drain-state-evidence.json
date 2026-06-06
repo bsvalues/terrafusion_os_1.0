@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T21:48:50.299Z",
+  "generatedAtUtc": "2026-06-06T22:46:55.503Z",
   "adapter": "benton-sync-drain-state-evidence",
   "backendHealth": {
     "status": "healthy",
@@ -8,9 +8,9 @@
     "url": "http://localhost:5000/health"
   },
   "activeDrain": {
-    "pid": 28503,
-    "alive": false,
-    "status": "NOT_RUNNING"
+    "pid": null,
+    "alive": null,
+    "status": "UNKNOWN"
   },
   "runtimeDbAccess": {
     "mode": "docker",
@@ -21,19 +21,24 @@
     "directConnectionConfigured": false
   },
   "loadBatch": {
-    "stage": "owner-supnum-backfill",
+    "stage": "owner-supnum-resume",
     "status": "IN_PROGRESS",
-    "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d"
+    "loadBatchId": "cc68d086-4125-4808-bcdd-1f96fa0a9a63"
   },
   "queryResults": {
     "latestLoadBatch": {
-      "loadBatchId": "185679de-8dbe-4c16-8cea-7f454081c77d",
-      "stage": "owner-supnum-backfill",
+      "loadBatchId": "cc68d086-4125-4808-bcdd-1f96fa0a9a63",
+      "stage": "owner-supnum-resume",
       "status": "IN_PROGRESS"
+    },
+    "latestOwnerSupnumFailure": {
+      "loadBatchId": "581cb948-936b-40e2-b478-364b28dfd0e3",
+      "stage": "owner-supnum-resume",
+      "status": "FAILED"
     },
     "legacyProperty": 999214,
     "legacyOwner": 7396857,
-    "legacyPropSuppAssoc": 2731351,
+    "legacyPropSuppAssoc": 2772351,
     "legacyWashPropOwnerVal": 1273143,
     "legacyAccount": 425186,
     "truthParcel": 83682,
@@ -48,7 +53,7 @@
     "landingTables": {
       "property": 999214,
       "owner": 7396857,
-      "propSuppAssoc": 2731351,
+      "propSuppAssoc": 2772351,
       "washPropOwnerVal": 1273143
     },
     "truthTables": {
@@ -83,7 +88,38 @@
   "countyStudioDependencies": {
     "map": "PARTIAL_SEEDED",
     "ledger": "SYNC_DERIVED",
-    "inspector": "SYNC_DERIVED"
+    "inspector": "SYNC_DERIVED",
+    "ownerSupnumBackfill": {
+      "stage": "owner-supnum-resume",
+      "status": "IN_PROGRESS",
+      "latestFailed": {
+        "loadBatchId": "581cb948-936b-40e2-b478-364b28dfd0e3",
+        "stage": "owner-supnum-resume",
+        "status": "FAILED"
+      },
+      "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "requiredForCountyStudioForgeDev": false,
+      "requiredForPacketProof": true,
+      "requiredForOperationalProof": true,
+      "ownerIdentityConsumedByForgeSurfaces": false,
+      "consumedSurfaces": [],
+      "audit": {
+        "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume owner name, taxpayer identity, mailing identity, owner-current, or owner-supnum data.",
+        "forgeValuationSources": [
+          "parcel/property identity",
+          "property characteristics",
+          "valuation metrics",
+          "ratio-study context",
+          "risk objects",
+          "geometry/map context"
+        ],
+        "packetOpsSources": [
+          "Dossier packet owner identity",
+          "Dais/notice/appeal taxpayer identity",
+          "operational packet owner references"
+        ]
+      }
+    }
   },
   "decisions": {
     "realDevEvidenceReadable": true,

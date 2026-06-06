@@ -10,6 +10,7 @@ import { spawnSync } from "node:child_process";
 import {
   DB_COUNT_QUERIES,
   LATEST_LOAD_BATCH_QUERY,
+  LATEST_OWNER_SUPNUM_FAILURE_QUERY,
   buildBentonSyncDrainStateEvidence,
   evidenceToReadinessSource,
   makeRuntimeDbQueryRunner
@@ -40,6 +41,11 @@ test("classifies populated Sync/DB evidence as partial real seed without product
       load_batch_id: "batch-1",
       stage: "Supp-S1",
       status: "IN_PROGRESS"
+    },
+    latestOwnerSupnumFailure: {
+      loadBatchId: "batch-owner-failed",
+      stage: "owner-supnum-backfill",
+      status: "FAILED"
     },
     legacyProperty: 80075,
     legacyOwner: 805000,
@@ -72,6 +78,9 @@ test("classifies populated Sync/DB evidence as partial real seed without product
   assert.equal(evidence.countyStudioDependencies.map, "PARTIAL_SEEDED");
   assert.equal(evidence.countyStudioDependencies.ledger, "SYNC_DERIVED");
   assert.equal(evidence.countyStudioDependencies.inspector, "SYNC_DERIVED");
+  assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.latestFailed.status, "FAILED");
+  assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForPacketProof, true);
   assert.equal(evidence.decisions.productionProofAllowed, false);
   assert.equal(evidence.decisions.operationalProofAllowed, false);
 });
@@ -106,6 +115,7 @@ test("converts adapter evidence into readiness-gate source payload", async () =>
   assert.equal(source.counts.landingTables.property, 10);
   assert.equal(source.counts.truthTables.owner, 10);
   assert.equal(source.countyStudioDependencies.ledger, "SYNC_DERIVED");
+  assert.equal(source.countyStudioDependencies.ownerSupnumBackfill.requiredForCountyStudioForgeDev, false);
 });
 
 test("CLI writes UNKNOWN evidence without psql instead of inventing counts", () => {
@@ -215,6 +225,8 @@ test("load batch query uses the canonical quoted Sync column contract", () => {
   assert.match(LATEST_LOAD_BATCH_QUERY, /"Status"/);
   assert.doesNotMatch(LATEST_LOAD_BATCH_QUERY, /COALESCE\([^)]*\bload_batch_id\b/);
   assert.doesNotMatch(LATEST_LOAD_BATCH_QUERY, /\bfamily\b/);
+  assert.match(LATEST_OWNER_SUPNUM_FAILURE_QUERY, /"Operator"\s+ILIKE\s+'owner-supnum%'/);
+  assert.match(LATEST_OWNER_SUPNUM_FAILURE_QUERY, /"Status"\s*=\s*'FAILED'/);
 });
 
 test("Docker psql runtime uses the configured DB evidence timeout", async () => {

@@ -51,6 +51,18 @@ ORDER BY "StartedAt" DESC
 LIMIT 1;
 `;
 
+export const LATEST_OWNER_SUPNUM_FAILURE_QUERY = `
+SELECT
+  "LoadBatchId"::text AS load_batch_id,
+  COALESCE("Operator"::text, 'UNKNOWN') AS stage,
+  COALESCE("Status"::text, 'UNKNOWN') AS status
+FROM sync_bridge.load_batch
+WHERE "Operator" ILIKE 'owner-supnum%'
+  AND "Status" = 'FAILED'
+ORDER BY "StartedAt" DESC
+LIMIT 1;
+`;
+
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, "/");
 }
@@ -150,7 +162,7 @@ function psqlOutputToValue(name, result) {
       reason: String(result.stderr || result.stdout || `psql exited ${result.status}`).trim()
     };
   }
-  if (name === "latestLoadBatch") return parseLoadBatch(result.stdout);
+  if (name === "latestLoadBatch" || name === "latestOwnerSupnumFailure") return parseLoadBatch(result.stdout);
   return parseScalar(result.stdout);
 }
 
@@ -272,6 +284,42 @@ function dependencyClassification({ geometryCount, canonicalParcel, truthParcel 
   return "UNKNOWN";
 }
 
+function ownerSupnumBackfillDependency(loadBatch, latestFailed = null) {
+  return {
+    stage: loadBatch?.stage ?? "UNKNOWN",
+    status: loadBatch?.status ?? "UNKNOWN",
+    latestFailed: latestFailed && !latestFailed.unavailable
+      ? {
+        loadBatchId: latestFailed.loadBatchId ?? null,
+        stage: latestFailed.stage ?? "UNKNOWN",
+        status: latestFailed.status ?? "UNKNOWN"
+      }
+      : null,
+    classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: false,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    ownerIdentityConsumedByForgeSurfaces: false,
+    consumedSurfaces: [],
+    audit: {
+      finding: "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume owner name, taxpayer identity, mailing identity, owner-current, or owner-supnum data.",
+      forgeValuationSources: [
+        "parcel/property identity",
+        "property characteristics",
+        "valuation metrics",
+        "ratio-study context",
+        "risk objects",
+        "geometry/map context"
+      ],
+      packetOpsSources: [
+        "Dossier packet owner identity",
+        "Dais/notice/appeal taxpayer identity",
+        "operational packet owner references"
+      ]
+    }
+  };
+}
+
 function decisionFor(evidence) {
   const requiredReadable = [
     evidence.queryResults.legacyProperty,
@@ -308,7 +356,8 @@ export async function buildBentonSyncDrainStateEvidence({
   const backendHealth = await backendProbe();
   const activeDrainAlive = aliveProbe(drainPid);
   const queryResults = {
-    latestLoadBatch: await query("latestLoadBatch", LATEST_LOAD_BATCH_QUERY)
+    latestLoadBatch: await query("latestLoadBatch", LATEST_LOAD_BATCH_QUERY),
+    latestOwnerSupnumFailure: await query("latestOwnerSupnumFailure", LATEST_OWNER_SUPNUM_FAILURE_QUERY)
   };
 
   for (const [name, sql] of Object.entries(DB_COUNT_QUERIES)) {
@@ -381,7 +430,11 @@ export async function buildBentonSyncDrainStateEvidence({
         truthParcel: queryResults.truthParcel
       }),
       ledger: countValue(queryResults.truthParcel) > 0 || countValue(queryResults.canonicalParcel) > 0 ? "SYNC_DERIVED" : "UNKNOWN",
-      inspector: countValue(queryResults.truthParcel) > 0 || countValue(queryResults.canonicalParcel) > 0 ? "SYNC_DERIVED" : "UNKNOWN"
+      inspector: countValue(queryResults.truthParcel) > 0 || countValue(queryResults.canonicalParcel) > 0 ? "SYNC_DERIVED" : "UNKNOWN",
+      ownerSupnumBackfill: ownerSupnumBackfillDependency(
+        queryResults.latestLoadBatch,
+        queryResults.latestOwnerSupnumFailure
+      )
     },
     decisions: {
       realDevEvidenceReadable: false,
@@ -458,6 +511,12 @@ function renderMarkdown(evidence) {
     `- Map: ${evidence.countyStudioDependencies.map}`,
     `- Ledger: ${evidence.countyStudioDependencies.ledger}`,
     `- Inspector: ${evidence.countyStudioDependencies.inspector}`,
+    `- Owner-supnum backfill status: ${evidence.countyStudioDependencies.ownerSupnumBackfill.status}`,
+    `- Owner-supnum latest failed stage: ${evidence.countyStudioDependencies.ownerSupnumBackfill.latestFailed?.stage ?? "none"}`,
+    `- Owner-supnum latest failed status: ${evidence.countyStudioDependencies.ownerSupnumBackfill.latestFailed?.status ?? "none"}`,
+    `- Owner-supnum required for Forge dev: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForCountyStudioForgeDev}`,
+    `- Owner-supnum required for packet proof: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForPacketProof}`,
+    `- Owner-supnum required for operational proof: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForOperationalProof}`,
     "",
     "## Rules",
     "",

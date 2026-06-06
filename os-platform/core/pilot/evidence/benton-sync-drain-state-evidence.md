@@ -1,6 +1,6 @@
 # Benton Sync Drain State Evidence
 
-Generated: 2026-06-06T21:48:50.299Z
+Generated: 2026-06-06T22:46:55.503Z
 
 ## Decision
 
@@ -11,9 +11,9 @@ Generated: 2026-06-06T21:48:50.299Z
 ## Runtime
 
 - Backend health: healthy
-- Drain PID: 28503
-- Drain alive: false
-- load_batch stage: owner-supnum-backfill
+- Drain PID: none
+- Drain alive: null
+- load_batch stage: owner-supnum-resume
 - load_batch status: IN_PROGRESS
 
 ## DB Runtime Access
@@ -31,7 +31,7 @@ Generated: 2026-06-06T21:48:50.299Z
 | --- | --- | ---: | --- |
 | legacyProperty | PARTIAL_SEEDED | 999214 | count present |
 | legacyOwner | PARTIAL_SEEDED | 7396857 | count present |
-| legacyPropSuppAssoc | PARTIAL_SEEDED | 2731351 | count present |
+| legacyPropSuppAssoc | PARTIAL_SEEDED | 2772351 | count present |
 | legacyWashPropOwnerVal | PARTIAL_SEEDED | 1273143 | count present |
 | legacyAccount | SEEDED | 425186 | count present |
 | truthParcel | SYNC_DERIVED | 83682 | count present |
@@ -47,6 +47,12 @@ Generated: 2026-06-06T21:48:50.299Z
 - Map: PARTIAL_SEEDED
 - Ledger: SYNC_DERIVED
 - Inspector: SYNC_DERIVED
+- Owner-supnum backfill status: IN_PROGRESS
+- Owner-supnum latest failed stage: owner-supnum-resume
+- Owner-supnum latest failed status: FAILED
+- Owner-supnum required for Forge dev: false
+- Owner-supnum required for packet proof: true
+- Owner-supnum required for operational proof: true
 
 ## Rules
 
