@@ -26,6 +26,7 @@ import type {
   SearchResults,
 } from '../types/domain';
 import { getDataProvider } from '../services/dataProvider';
+import { isApiFetchError } from '../services/LiveDataProvider';
 
 // ---------------------------------------------------------------------------
 // State Shape
@@ -35,6 +36,12 @@ interface PropertyState {
   // Active parcel (selected via search or navigation)
   activeParcel: Property | null;
   activeParcelLoading: boolean;
+  activeParcelError: {
+    parcelId?: string;
+    status?: number;
+    message: string;
+    path?: string;
+  } | null;
 
   // Search
   searchQuery: string;
@@ -66,6 +73,25 @@ interface PropertyState {
 // ---------------------------------------------------------------------------
 
 const MAX_RECENT = 10;
+const PARCEL_EVIDENCE_TIMEOUT_MS = 20_000;
+
+function withParcelEvidenceTimeout<T>(parcelId: string, request: Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error(`Property evidence request timed out for parcel ${parcelId}.`));
+    }, PARCEL_EVIDENCE_TIMEOUT_MS);
+
+    request
+      .then((value) => {
+        window.clearTimeout(timeoutId);
+        resolve(value);
+      })
+      .catch((error) => {
+        window.clearTimeout(timeoutId);
+        reject(error);
+      });
+  });
+}
 
 export const usePropertyStore = create<PropertyState>()(
   persist(
@@ -73,6 +99,7 @@ export const usePropertyStore = create<PropertyState>()(
       // Initial state
       activeParcel: null,
       activeParcelLoading: false,
+      activeParcelError: null,
       searchQuery: '',
       searchResults: [],
       searchTotalCount: 0,
@@ -107,12 +134,20 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
-        set({ activeParcelLoading: true });
+        set({ activeParcelLoading: true, activeParcelError: null });
         try {
           const provider = getDataProvider();
-          const parcel = await provider.getParcel(parcelId);
+          const parcel = await withParcelEvidenceTimeout(parcelId, provider.getParcel(parcelId));
           if (!parcel) {
-            set({ activeParcel: null, activeParcelLoading: false });
+            set({
+              activeParcel: null,
+              activeParcelLoading: false,
+              activeParcelError: {
+                parcelId,
+                status: 404,
+                message: `Parcel ${parcelId} was not found in the live property evidence feed.`,
+              },
+            });
             return;
           }
 
@@ -131,11 +166,15 @@ export const usePropertyStore = create<PropertyState>()(
           });
           if (recent.length > MAX_RECENT) recent.pop();
 
-          set({ activeParcel: parcel, recentParcels: recent });
+          set({
+            activeParcel: parcel,
+            recentParcels: recent,
+            activeParcelLoading: false,
+            activeParcelError: null,
+          });
 
-          // Eagerly load related data in parallel
-          const [assessments, documents, appeals, taxStatements, recordings, auditTrail, operations] =
-            await Promise.all([
+          // Eagerly load related data in parallel after the parcel shell is usable.
+          void Promise.all([
               provider.getAssessments(parcelId),
               provider.getDocuments(parcelId),
               provider.getAppeals(parcelId),
@@ -143,20 +182,54 @@ export const usePropertyStore = create<PropertyState>()(
               provider.getRecordingHistory(parcelId),
               provider.getAuditTrail(parcelId),
               provider.getRecentOperations(parcelId),
-            ]);
-
+            ])
+            .then(([assessments, documents, appeals, taxStatements, recordings, auditTrail, operations]) => {
+              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              set({
+                assessments,
+                documents,
+                appeals,
+                taxStatements,
+                recordings,
+                auditTrail,
+                operations,
+              });
+            })
+            .catch(() => {
+              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              set({
+                assessments: [],
+                documents: [],
+                appeals: [],
+                taxStatements: [],
+                recordings: [],
+                auditTrail: [],
+                operations: [],
+              });
+            });
+        } catch (error) {
           set({
-            assessments,
-            documents,
-            appeals,
-            taxStatements,
-            recordings,
-            auditTrail,
-            operations,
+            activeParcel: null,
             activeParcelLoading: false,
+            activeParcelError: isApiFetchError(error)
+              ? {
+                  parcelId,
+                  status: error.status,
+                  path: error.path,
+                  message:
+                    error.status === 401
+                      ? 'Authenticated property evidence is required before this parcel can be reviewed.'
+                      : error.status === 403
+                        ? 'Your current county/session is not authorized to review this parcel.'
+                        : `Property evidence request failed with API status ${error.status}.`,
+                }
+              : {
+                  parcelId,
+                  message: error instanceof Error
+                    ? error.message
+                    : 'Property evidence request failed before the parcel could load.',
+                },
           });
-        } catch {
-          set({ activeParcelLoading: false });
         }
       },
 
@@ -164,6 +237,7 @@ export const usePropertyStore = create<PropertyState>()(
       clearParcel: () => {
         set({
           activeParcel: null,
+          activeParcelError: null,
           assessments: [],
           documents: [],
           appeals: [],

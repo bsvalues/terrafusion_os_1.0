@@ -121,15 +121,53 @@ const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
 const LEGACY_ASSESSMENT_PROPERTIES_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/properties`;
 const LEGACY_ASSESSMENT_PROPERTY_ROUTE = `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property`;
 const LEGACY_ASSESSMENT_HEALTH_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/health`;
+const PRIMARY_PARCEL_EVIDENCE_TIMEOUT_MS = 13_500;
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export class ApiFetchError extends Error {
+  readonly status: number;
+  readonly path: string;
+
+  constructor(status: number, path: string) {
+    super(`API ${status}: ${path}`);
+    this.name = 'ApiFetchError';
+    this.status = status;
+    this.path = path;
+  }
+}
+
+export function isApiFetchError(error: unknown): error is ApiFetchError {
+  return error instanceof ApiFetchError;
+}
+
+function shouldPreserveAuthFailure(error: unknown): boolean {
+  return isApiFetchError(error) && (error.status === 401 || error.status === 403);
+}
+
+async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+  options?: { timeoutMs?: number },
+): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = { ...(init?.headers as Record<string, string> | undefined) };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(path, { ...init, headers });
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
-  return res.json();
+  const controller = options?.timeoutMs ? new AbortController() : null;
+  const timeoutId = controller
+    ? window.setTimeout(() => controller.abort(), options.timeoutMs)
+    : null;
+
+  try {
+    const res = await fetch(path, {
+      ...init,
+      headers,
+      signal: init?.signal ?? controller?.signal,
+    });
+    if (!res.ok) throw new ApiFetchError(res.status, path);
+    return res.json();
+  } finally {
+    if (timeoutId !== null) window.clearTimeout(timeoutId);
+  }
 }
 
 function mapAssessmentSourceDetailToProperty(dto: AssessmentSourcePropertyDetailDto): Property {
@@ -167,6 +205,22 @@ function mapAssessmentSourceDetailToProperty(dto: AssessmentSourcePropertyDetail
     hasAppeals: false,
     dataSource: 'live',
   };
+}
+
+function isAssessmentSourcePropertyDetailDto(dto: unknown): dto is AssessmentSourcePropertyDetailDto {
+  if (!dto || typeof dto !== 'object') return false;
+  const candidate = dto as Partial<AssessmentSourcePropertyDetailDto> & {
+    pacs?: string;
+    reason?: string;
+  };
+
+  return candidate.pacs !== 'offline'
+    && typeof candidate.geoId === 'string'
+    && candidate.geoId.trim().length > 0
+    && typeof candidate.address === 'string'
+    && typeof candidate.assessedValue === 'number'
+    && typeof candidate.marketValue === 'number'
+    && typeof candidate.propertyType === 'string';
 }
 
 function mapAssessmentSourceSummaryToSearchResult(dto: AssessmentSourceSummaryDto): PropertySearchResult {
@@ -302,7 +356,8 @@ export class LiveDataProvider implements DataProvider {
         page: data.page,
         pageSize: data.pageSize,
       };
-    } catch {
+    } catch (error) {
+      if (shouldPreserveAuthFailure(error)) throw error;
       // Compatibility fallback: legacy county assessment summary endpoint.
       const data = await apiFetch<AssessmentSourcePagedResult>(
         `${LEGACY_ASSESSMENT_PROPERTIES_ROUTE}?${params.toString()}`,
@@ -321,19 +376,24 @@ export class LiveDataProvider implements DataProvider {
     try {
       const dto = await apiFetch<PropertiesListDto>(
         `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
+        undefined,
+        { timeoutMs: PRIMARY_PARCEL_EVIDENCE_TIMEOUT_MS },
       );
       return mapPropertiesDtoToProperty(dto);
-    } catch {
+    } catch (error) {
+      if (shouldPreserveAuthFailure(error)) throw error;
       // no-op; try compatibility endpoint below.
     }
 
     // Fallback: legacy county assessment property endpoint.
     try {
-      const dto = await apiFetch<AssessmentSourcePropertyDetailDto>(
+      const dto = await apiFetch<unknown>(
         `${LEGACY_ASSESSMENT_PROPERTY_ROUTE}/${encodeURIComponent(parcelId)}`,
       );
+      if (!isAssessmentSourcePropertyDetailDto(dto)) return null;
       return mapAssessmentSourceDetailToProperty(dto);
-    } catch {
+    } catch (error) {
+      if (shouldPreserveAuthFailure(error)) throw error;
       return null;
     }
   }
