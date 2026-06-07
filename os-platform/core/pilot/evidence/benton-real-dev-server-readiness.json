@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T17:00:29.493Z",
+  "generatedAtUtc": "2026-06-07T17:34:36.001Z",
   "gate": "benton-real-dev-server-readiness",
   "status": "REAL_DEV_SERVER_BLOCKED",
   "sourcePath": null,
@@ -37,14 +37,13 @@
   "checks": [
     {
       "name": "backend health",
-      "classification": "SYNC_DERIVED",
-      "passed": true,
-      "reason": "Backend health is reported usable for dev reads.",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Backend health is not proven.",
       "evidence": {
-        "status": "healthy",
-        "ok": true,
-        "statusCode": 200,
-        "url": "http://localhost:5000/health"
+        "status": "unknown",
+        "ok": false,
+        "reason": "No backend health endpoint responded."
       }
     },
     {
@@ -78,11 +77,11 @@
         "propertyLanding": 1190834,
         "ownerLanding": 8213706,
         "suppAssociation": 4382985,
-        "wpov": 1707143,
+        "wpov": 1726143,
         "truthParcel": 83326,
         "truthOwner": 816849,
         "truthWsdor": 774696,
-        "canonicalParcel": 0,
+        "canonicalParcel": 3198979,
         "account": 535140
       }
     },
@@ -95,22 +94,28 @@
         "propertyLanding": 1190834,
         "ownerLanding": 8213706,
         "suppAssociation": 4382985,
-        "wpov": 1707143,
+        "wpov": 1726143,
         "truthParcel": 83326,
         "truthOwner": 816849,
         "truthWsdor": 774696,
-        "canonicalParcel": 0,
+        "canonicalParcel": 3198979,
         "account": 535140
       }
     },
     {
       "name": "canonical parcel counts",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Canonical parcel count is missing.",
+      "classification": "SEEDED",
+      "passed": true,
+      "reason": "Canonical parcel rows exist.",
       "evidence": {
-        "canonicalParcel": 0
-      }
+        "canonicalParcel": 3198979,
+        "propertyLanding": 1190834,
+        "truthParcel": 83326,
+        "forgeDevRequiresCanonicalParcel": false,
+        "productionProofRequiresCanonicalParcel": true
+      },
+      "blockingForForgeDev": false,
+      "productionProofRequiresCanonicalParcel": true
     },
     {
       "name": "owner truth count",
@@ -155,7 +160,7 @@
       "passed": true,
       "reason": "WPOV landing rows exist.",
       "evidence": {
-        "wpov": 1707143
+        "wpov": 1726143
       }
     },
     {
@@ -206,11 +211,11 @@
     },
     {
       "name": "map data dependency status",
-      "classification": "SYNC_DERIVED",
+      "classification": "PARTIAL_SEEDED",
       "passed": true,
-      "reason": "Map dependency is classified SYNC_DERIVED.",
+      "reason": "Map dependency is classified PARTIAL_SEEDED.",
       "evidence": {
-        "classification": "SYNC_DERIVED"
+        "classification": "PARTIAL_SEEDED"
       }
     },
     {
@@ -265,7 +270,7 @@
       }
     }
   },
-  "blockers": ["canonical parcel counts: Canonical parcel count is missing."],
+  "blockers": ["backend health: Backend health is not proven."],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

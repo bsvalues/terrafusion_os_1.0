@@ -1,6 +1,6 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T17:00:29.493Z
+Generated: 2026-06-07T17:34:36.001Z
 Status: REAL_DEV_SERVER_BLOCKED
 
 ## Decision
@@ -22,12 +22,12 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
-| backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
+| backend health | UNKNOWN | false | Backend health is not proven. |
 | active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS. |
 | load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-v2-activesupp-copy (IN_PROGRESS). |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
-| canonical parcel counts | UNKNOWN | false | Canonical parcel count is missing. |
+| canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
 | owner truth count | PARTIAL_SEEDED | true | Owner truth rows exist. |
 | account count | SEEDED | true | Account rows exist. |
 | supp association count | PARTIAL_SEEDED | true | Supplement association landing rows exist. |
@@ -35,7 +35,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 | WPOV status | PARTIAL_SEEDED | true | WPOV landing rows exist. |
 | WSDOR status | PARTIAL_SEEDED | true | WSDOR truth rows exist. |
 | owner-supnum backfill dependency classification | PARTIAL_SEEDED | true | owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked. |
-| map data dependency status | SYNC_DERIVED | true | Map dependency is classified SYNC_DERIVED. |
+| map data dependency status | PARTIAL_SEEDED | true | Map dependency is classified PARTIAL_SEEDED. |
 | ledger data dependency status | SYNC_DERIVED | true | Ledger dependency is classified SYNC_DERIVED. |
 | inspector data dependency status | SYNC_DERIVED | true | Inspector dependency is classified SYNC_DERIVED. |
 
@@ -52,7 +52,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 ## Blockers
 
-- canonical parcel counts: Canonical parcel count is missing.
+- backend health: Backend health is not proven.
 
 ## Rules
 

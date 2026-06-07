@@ -130,6 +130,33 @@ test("blocks real dev server when evidence is missing or fake-classified", () =>
   assert.ok(report.blockers.some((blocker) => blocker.includes("canonical parcel")));
 });
 
+test("does not block Forge dev solely because production canonical parcel is empty when real Forge parcel identity exists", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.counts.canonical.parcel = 0;
+  evidence.counts.canonical.account = 535140;
+  evidence.counts.landingTables.property = 1190834;
+  evidence.counts.truthTables.parcel = 83326;
+  evidence.countyStudioDependencies.map = "SYNC_DERIVED";
+  evidence.countyStudioDependencies.ledger = "SYNC_DERIVED";
+  evidence.countyStudioDependencies.inspector = "SYNC_DERIVED";
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  const canonicalCheck = report.checks.find((check) => check.name === "canonical parcel counts");
+  assert.equal(canonicalCheck.passed, false);
+  assert.equal(canonicalCheck.blockingForForgeDev, false);
+  assert.equal(canonicalCheck.evidence.forgeDevRequiresCanonicalParcel, false);
+  assert.equal(canonicalCheck.evidence.productionProofRequiresCanonicalParcel, true);
+  assert.equal(report.status, "REAL_DEV_DATA_AVAILABLE");
+  assert.equal(report.decisions.realDevServerAllowed, true);
+  assert.equal(report.decisions.productionProofAllowed, false);
+  assert.equal(report.decisions.operationalProofAllowed, false);
+  assert.equal(report.blockers.some((blocker) => blocker.includes("canonical parcel")), false);
+});
+
 test("does not block real dev readiness solely because the client drain PID is gone when DB load_batch proves state", () => {
   const evidence = partialRealSeedEvidence();
   evidence.activeDrain = { pid: 28503, alive: false, status: "NOT_RUNNING" };

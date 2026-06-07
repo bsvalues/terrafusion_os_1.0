@@ -1,9 +1,9 @@
 {
-  "generatedAtUtc": "2026-06-07T16:01:06.277Z",
+  "generatedAtUtc": "2026-06-07T17:34:36.042Z",
   "gate": "county-studio-r1-forge-dev-status",
-  "status": "COUNTY_STUDIO_R1_FORGE_DEV_READY",
+  "status": "COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED",
   "summary": {
-    "forgeDevAllowed": true,
+    "forgeDevAllowed": false,
     "realDevActivationAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
@@ -11,7 +11,7 @@
     "geometryStatus": "SYNC_DERIVED_GEOMETRY",
     "riskObjectStatus": "DEV_DERIVED_FROM_REAL_INPUTS",
     "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
-    "countyStudioMode": "REAL_BENTON_FORGE_DEV",
+    "countyStudioMode": "FORGE_DEV_BLOCKED",
     "requiredRunCommand": "pnpm run dev:county-studio:real-benton",
     "remainingProductionBlockers": [
       "Canonical Benton source/count reconciliation remains required before production proof.",
@@ -64,15 +64,19 @@
   },
   "liveReadinessRefresh": {
     "attempted": true,
-    "exitCode": 0,
+    "exitCode": 1,
     "timedOut": false,
     "timeoutMs": 240000,
     "command": "\"C:\\Program Files\\nodejs\\node.exe\" C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads\\os-platform\\core\\pilot\\benton-real-dev-server-readiness.mjs --db-runtime docker",
-    "stdout": "{\n  \"status\": \"REAL_DEV_DATA_AVAILABLE\",\n  \"realDevServerAllowed\": true,\n  \"productionProofAllowed\": false,\n  \"operationalProofAllowed\": false,\n  \"blockers\": 0,\n  \"output\": \"os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json\"\n}\n",
+    "stdout": "{\n  \"status\": \"REAL_DEV_SERVER_BLOCKED\",\n  \"realDevServerAllowed\": false,\n  \"productionProofAllowed\": false,\n  \"operationalProofAllowed\": false,\n  \"blockers\": 1,\n  \"output\": \"os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json\"\n}\n",
     "stderr": "",
-    "interpretation": "Live readiness refresh passed; consolidated status may use the refreshed readiness artifact."
+    "interpretation": "Live readiness refresh failed; stale readiness evidence cannot allow Forge dev."
   },
-  "blockers": [],
+  "blockers": [
+    "Live readiness refresh failed; stale readiness evidence cannot allow Forge dev.",
+    "Benton real dev server evidence is not allowed because live readiness refresh failed.",
+    "Benton real dev server evidence is not allowed."
+  ],
   "boundaries": [
     "This consolidation does not touch County Studio UI.",
     "This consolidation does not mutate TerraFusion Sync.",

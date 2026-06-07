@@ -1,6 +1,6 @@
 # Benton Sync Drain State Evidence
 
-Generated: 2026-06-07T15:51:02.540Z
+Generated: 2026-06-07T17:30:53.023Z
 
 ## Decision
 
@@ -32,11 +32,11 @@ Generated: 2026-06-07T15:51:02.540Z
 | legacyProperty | PARTIAL_SEEDED | 1190834 | count present |
 | legacyOwner | PARTIAL_SEEDED | 8213706 | count present |
 | legacyPropSuppAssoc | PARTIAL_SEEDED | 4382985 | count present |
-| legacyWashPropOwnerVal | PARTIAL_SEEDED | 1654143 | count present |
+| legacyWashPropOwnerVal | PARTIAL_SEEDED | 1725143 | count present |
 | legacyAccount | SEEDED | 535140 | count present |
 | truthParcel | SYNC_DERIVED | 83326 | count present |
 | truthOwner | SYNC_DERIVED | 816849 | count present |
-| truthWsdor | UNKNOWN | 0 | No readable DB runtime path. docker psql: spawnSync docker ETIMEDOUT |
+| truthWsdor | SYNC_DERIVED | 774696 | count present |
 | canonicalParcel | SEEDED | 3198979 | count present |
 | canonicalOwner | SEEDED | 312532 | count present |
 | canonicalWsdor | SEEDED | 686820 | count present |

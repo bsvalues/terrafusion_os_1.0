@@ -1,8 +1,8 @@
 {
-  "generatedAtUtc": "2026-06-07T17:01:28.435Z",
+  "generatedAtUtc": "2026-06-07T17:34:36.042Z",
   "gate": "county-studio-r1-forge-dev-smoke",
-  "status": "FORGE_DEV_SMOKE_PORT_PREFLIGHT_PASS_DB_READINESS_BLOCKED",
-  "commandInvoked": "pnpm run dev:county-studio:real-benton",
+  "status": "FORGE_DEV_SMOKE_CANONICAL_READY_BACKEND_HEALTH_BLOCKED",
+  "commandInvokedPreviously": "pnpm run dev:county-studio:real-benton",
   "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
   "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-port-conflict-resolution-smoke-20260607-095557.log",
   "preflightGates": [
@@ -18,16 +18,14 @@
       "status": "REAL_DEV_SERVER_BLOCKED",
       "exitCode": 1,
       "passed": false,
-      "blockers": [
-        "canonical parcel counts: Canonical parcel count is missing."
-      ],
+      "blockers": ["backend health: Backend health is not proven."],
       "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-activation",
-      "status": "NOT_REACHED",
+      "status": "NOT_REACHED_IN_CURRENT_PREFLIGHT_CHAIN",
       "passed": false,
-      "reason": "The DB readiness gate failed after port preflight passed."
+      "reason": "The current live readiness refresh is blocked by backend health before activation."
     }
   ],
   "devServer": {
@@ -36,38 +34,32 @@
     "frontendBoundUrls": [],
     "urlEmitted": false,
     "backendStarted": false,
-    "reason": "The real Benton Forge dev command cleared port preflight, then stopped at DB readiness before Vite, the governed pilot runtime, or the API runtime started."
+    "reason": "The current preflight chain is blocked by backend health. The canonical parcel blocker has been resolved."
   },
   "portPreflight": {
     "portPreflightPassed": true,
-    "occupiedPorts": [],
-    "resolvedPorts": [
-      {
-        "serviceName": "governed pilot runtime",
-        "port": 4317,
-        "previousProcessId": 50784,
-        "previousProcessName": "node",
-        "classification": "STALE_CONFLICTING_PROCESS"
-      },
-      {
-        "serviceName": "TerraFusion API runtime",
-        "port": 5046,
-        "previousProcessId": 42020,
-        "previousProcessName": "dotnet",
-        "classification": "STALE_CONFLICTING_PROCESS"
-      }
-    ]
+    "occupiedPorts": []
   },
   "readinessBlockers": [
     {
-      "name": "canonical parcel counts",
+      "name": "backend health",
       "classification": "UNKNOWN",
-      "reason": "Canonical parcel count is missing.",
+      "reason": "Backend health is not proven.",
       "evidence": {
-        "canonicalParcel": 0
+        "status": "unknown",
+        "ok": false,
+        "reason": "No backend health endpoint responded."
       }
     }
   ],
+  "canonicalParcelReadiness": {
+    "status": "CANONICAL_PARCEL_READINESS_CORRECTED_BACKEND_HEALTH_BLOCKED",
+    "canonicalParcel": 3198979,
+    "canonicalParcelBlocksForgeDev": false,
+    "forgeDevRequiresCanonicalParcel": false,
+    "productionProofRequiresCanonicalParcel": true,
+    "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-canonical-parcel-readiness.json"
+  },
   "modeFlags": {
     "configured": [
       "TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton",
@@ -76,7 +68,7 @@
     ],
     "appliedToFrontendStage": false,
     "appliedToCleanFullDevServer": false,
-    "reason": "The command stopped before the cross-env dev stage."
+    "reason": "The command preflight chain is blocked before the long-running dev server stage."
   },
   "postureAfterSmoke": {
     "portPreflightPassed": true,
@@ -85,17 +77,15 @@
     "operationalProofAllowed": false,
     "cleanFullDevSmokePassed": false
   },
-  "startupErrors": [
-    "REAL_DEV_SERVER_BLOCKED: canonical parcel count is missing."
-  ],
-  "interpretation": "The local port conflict is resolved and no longer blocks the real Benton Forge dev command. The next live blocker is DB readiness: canonical parcel count returned 0 during this smoke. No production or operational proof is claimed.",
+  "startupErrors": ["REAL_DEV_SERVER_BLOCKED: backend health is not proven."],
+  "interpretation": "The previous canonical parcel blocker has been resolved. The current blocker is backend health: localhost:5000 and localhost:5046 are not responding. No production or operational proof is claimed.",
   "boundaries": [
-    "This smoke did not touch County Studio UI.",
-    "This smoke did not mutate TerraFusion Sync.",
-    "This smoke did not change DB seeding.",
-    "This smoke did not weaken gates.",
-    "This smoke did not set productionProofAllowed=true.",
-    "This smoke did not set operationalProofAllowed=true.",
-    "This smoke did not hide DATA_TRUTH_FAIL."
+    "This smoke update did not touch County Studio UI.",
+    "This smoke update did not mutate TerraFusion Sync.",
+    "This smoke update did not change DB seeding.",
+    "This smoke update did not weaken gates.",
+    "This smoke update did not set productionProofAllowed=true.",
+    "This smoke update did not set operationalProofAllowed=true.",
+    "This smoke update did not hide DATA_TRUTH_FAIL."
   ]
 }

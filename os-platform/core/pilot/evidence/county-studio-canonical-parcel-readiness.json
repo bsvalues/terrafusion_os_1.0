@@ -1,0 +1,43 @@
+{
+  "generatedAtUtc": "2026-06-07T17:27:00.741Z",
+  "gate": "county-studio-canonical-parcel-readiness",
+  "status": "CANONICAL_PARCEL_READINESS_CORRECTED_BACKEND_HEALTH_BLOCKED",
+  "canonicalParcelQuery": "SELECT count(*) FROM canonical_tf.tf_parcel;",
+  "canonicalParcelTable": "canonical_tf.tf_parcel",
+  "canonicalParcelCount": 3198979,
+  "propertyIdentityTable": "legacy_pacs_raw.property + truth_pacs.parcel_spine",
+  "propertyIdentityCount": 1190834,
+  "truthParcelTable": "truth_pacs.parcel_spine",
+  "truthParcelCount": 83326,
+  "geometryTable": "gis_tf.tf_parcel_geom",
+  "geometryCount": 80075,
+  "accountTable": "legacy_pacs_raw.account",
+  "accountCount": 535140,
+  "forgeDevRequiresCanonicalParcel": false,
+  "productionProofRequiresCanonicalParcel": true,
+  "canonicalParcelBlocksForgeDev": false,
+  "suspectedCause": "The prior canonicalParcel=0 blocker was a stale or incomplete live evidence snapshot, likely caused by the long-running Docker psql evidence path returning zero/unavailable before the readiness artifact was refreshed.",
+  "confirmedCause": "canonical_tf.tf_parcel is populated in the current runtime. A direct read-only DB query and the rerun benton-real-dev-server-readiness:db gate both returned canonicalParcel=3198979. County Studio Forge dev also has real parcel identity via legacy_pacs_raw.property and truth_pacs.parcel_spine, plus real TerraAtlas geometry via gis_tf.tf_parcel_geom.",
+  "recommendedGateChange": "Keep canonical parcel counts visible and required for production proof, but do not make canonicalParcel the sole Forge-dev blocker when real property landing, truth parcel, map, ledger, and inspector dependencies are readable.",
+  "realDevServerAllowed": false,
+  "realDevServerBlocker": "backend health is not currently proven; localhost:5000 and localhost:5046 are not responding. This is separate from canonical parcel readiness.",
+  "productionProofAllowed": false,
+  "operationalProofAllowed": false,
+  "supportingEvidence": {
+    "readinessArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json",
+    "readinessStatus": "REAL_DEV_SERVER_BLOCKED",
+    "readinessBlockers": ["backend health: Backend health is not proven."],
+    "mapDependencyStatus": "PARTIAL_SEEDED",
+    "ledgerDependencyStatus": "SYNC_DERIVED",
+    "inspectorDependencyStatus": "SYNC_DERIVED",
+    "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV"
+  },
+  "boundaries": [
+    "No County Studio UI changed.",
+    "No TerraFusion Sync mutation.",
+    "No DB seeding change.",
+    "No invented parcel counts.",
+    "productionProofAllowed remains false.",
+    "operationalProofAllowed remains false."
+  ]
+}

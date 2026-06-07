@@ -85,6 +85,50 @@ test("classifies populated Sync/DB evidence as partial real seed without product
   assert.equal(evidence.decisions.operationalProofAllowed, false);
 });
 
+test("keeps Sync/DB evidence readable for Forge dev when canonical parcel is unavailable but real parcel identity exists", async () => {
+  const queryValues = {
+    latestLoadBatch: {
+      load_batch_id: "batch-1",
+      stage: "owner-supnum-v2-activesupp-copy",
+      status: "IN_PROGRESS"
+    },
+    latestOwnerSupnumFailure: {
+      loadBatchId: "batch-owner-failed",
+      stage: "owner-supnum-resume",
+      status: "FAILED"
+    },
+    legacyProperty: 1190834,
+    legacyOwner: 8213706,
+    legacyPropSuppAssoc: 4382985,
+    legacyWashPropOwnerVal: 1707143,
+    legacyAccount: 535140,
+    truthParcel: 83326,
+    truthOwner: 816849,
+    truthWsdor: 774696,
+    canonicalParcel: { unavailable: true, reason: "docker psql timeout" },
+    canonicalOwner: 312532,
+    canonicalWsdor: 686820,
+    gisParcelGeometry: 80075
+  };
+
+  const evidence = await buildBentonSyncDrainStateEvidence({
+    probeBackendHealth: async () => ({ status: "healthy", ok: true }),
+    processAlive: () => null,
+    query: async (name) => queryValues[name]
+  });
+
+  assert.equal(evidence.counts.canonical.parcel, 0);
+  assert.equal(evidence.counts.landingTables.property, 1190834);
+  assert.equal(evidence.counts.truthTables.parcel, 83326);
+  assert.equal(evidence.counts.gis.parcelGeometry, 80075);
+  assert.equal(evidence.countyStudioDependencies.map, "SYNC_DERIVED");
+  assert.equal(evidence.countyStudioDependencies.ledger, "SYNC_DERIVED");
+  assert.equal(evidence.countyStudioDependencies.inspector, "SYNC_DERIVED");
+  assert.equal(evidence.decisions.realDevEvidenceReadable, true);
+  assert.equal(evidence.decisions.productionProofAllowed, false);
+  assert.equal(evidence.decisions.operationalProofAllowed, false);
+});
+
 test("reports UNKNOWN instead of passing when DB query tooling is unavailable", async () => {
   const evidence = await buildBentonSyncDrainStateEvidence({
     drainPid: 28503,

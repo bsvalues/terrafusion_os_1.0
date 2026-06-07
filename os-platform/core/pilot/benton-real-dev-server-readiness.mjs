@@ -185,14 +185,19 @@ function classifyCounts(counts) {
   };
 }
 
-function makeCheck(name, classification, passed, reason, evidence = {}) {
+function makeCheck(name, classification, passed, reason, evidence = {}, extra = {}) {
   return {
     name,
     classification: normalizeClassification(classification),
     passed,
     reason,
-    evidence
+    evidence,
+    ...extra
   };
+}
+
+function forgeDevParcelIdentityReady(counts) {
+  return counts.propertyLanding > 0 || counts.truthParcel > 0 || counts.canonicalParcel > 0;
 }
 
 function isOwnerSupnumBackfillStage(stage) {
@@ -270,6 +275,7 @@ function buildChecks(evidence) {
   const mapClassification = normalizeClassification(evidence?.countyStudioDependencies?.map);
   const ledgerClassification = normalizeClassification(evidence?.countyStudioDependencies?.ledger);
   const inspectorClassification = normalizeClassification(evidence?.countyStudioDependencies?.inspector);
+  const parcelIdentityReadyForForgeDev = forgeDevParcelIdentityReady(counts);
 
   return [
     makeCheck(
@@ -323,8 +329,22 @@ function buildChecks(evidence) {
       "canonical parcel counts",
       counts.canonicalParcel > 0 ? "SEEDED" : "UNKNOWN",
       counts.canonicalParcel > 0,
-      counts.canonicalParcel > 0 ? "Canonical parcel rows exist." : "Canonical parcel count is missing.",
-      { canonicalParcel: counts.canonicalParcel }
+      counts.canonicalParcel > 0
+        ? "Canonical parcel rows exist."
+        : parcelIdentityReadyForForgeDev
+          ? "Canonical parcel count is missing; production proof remains blocked, but Forge dev has real parcel identity via landing/truth paths."
+          : "Canonical parcel count is missing and no alternate real Forge parcel identity path is proven.",
+      {
+        canonicalParcel: counts.canonicalParcel,
+        propertyLanding: counts.propertyLanding,
+        truthParcel: counts.truthParcel,
+        forgeDevRequiresCanonicalParcel: !parcelIdentityReadyForForgeDev,
+        productionProofRequiresCanonicalParcel: true
+      },
+      {
+        blockingForForgeDev: !parcelIdentityReadyForForgeDev,
+        productionProofRequiresCanonicalParcel: true
+      }
     ),
     makeCheck(
       "owner truth count",
@@ -403,6 +423,7 @@ function buildChecks(evidence) {
 
 function blockerFor(check) {
   if (check.passed) return null;
+  if (check.blockingForForgeDev === false) return null;
   if (DEV_BLOCKING_CLASSIFICATIONS.has(check.classification)) {
     return `${check.name}: ${check.reason}`;
   }
@@ -434,7 +455,6 @@ function buildMaturity(checks) {
     .filter((check) =>
       [
         "backend health",
-        "canonical parcel counts",
         "map data dependency status",
         "ledger data dependency status",
         "inspector data dependency status"

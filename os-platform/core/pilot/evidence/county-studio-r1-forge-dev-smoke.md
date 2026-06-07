@@ -1,10 +1,10 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T17:01:28.435Z
+Generated: 2026-06-07T17:34:36.042Z
 
-Status: `FORGE_DEV_SMOKE_PORT_PREFLIGHT_PASS_DB_READINESS_BLOCKED`
+Status: `FORGE_DEV_SMOKE_CANONICAL_READY_BACKEND_HEALTH_BLOCKED`
 
-## Command Invoked
+## Previous Command
 
 ```bash
 pnpm run dev:county-studio:real-benton
@@ -16,69 +16,50 @@ Working directory:
 C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 ```
 
-Smoke log:
+Previous smoke log:
 
 ```text
 C:\Users\bsval\AppData\Local\Temp\county-studio-port-conflict-resolution-smoke-20260607-095557.log
 ```
 
-## Port Conflict Result
+## Current Preflight Chain
 
-The prior occupied ports were identified and stopped:
+| Gate | Status | Passed |
+| --- | --- | --- |
+| Port preflight | `REAL_DEV_PORT_PREFLIGHT_PASS` | true |
+| Live DB readiness | `REAL_DEV_SERVER_BLOCKED` | false |
+| Real-dev activation | `NOT_REACHED_IN_CURRENT_PREFLIGHT_CHAIN` | false |
 
-- `4317` governed pilot runtime
-  - pid: `50784`
-  - command: `"C:\Program Files\nodejs\node.exe" os-platform/core/pilot/dev-pilot-runtime.mjs`
-  - classification: `STALE_CONFLICTING_PROCESS`
+## Canonical Parcel Readiness
 
-- `5046` TerraFusion API runtime
-  - pid: `42020`
-  - command: `dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --urls http://localhost:5046 --skip-dev-seeders`
-  - classification: `STALE_CONFLICTING_PROCESS`
-
-After resolution:
+The previous canonical blocker is resolved:
 
 ```text
-REAL_DEV_PORT_PREFLIGHT_PASS
-portPreflightPassed=true
-occupiedPorts=[]
+canonical_tf.tf_parcel=3,198,979
+canonicalParcelBlocksForgeDev=false
+forgeDevRequiresCanonicalParcel=false
+productionProofRequiresCanonicalParcel=true
 ```
+
+Canonical parcel remains production-proof relevant, but it is not the current Forge-dev blocker.
 
 ## Current Blocker
 
-The command advanced past the port preflight, then stopped at DB readiness:
+The latest live readiness refresh is blocked by backend health:
 
 ```text
-REAL_DEV_SERVER_BLOCKED
-canonical parcel counts: Canonical parcel count is missing.
-canonicalParcel=0
+backend health: Backend health is not proven.
+localhost:5000 and localhost:5046 are not responding.
 ```
 
-The command did not reach:
-
-```text
-pnpm run proof:county-studio:real-dev-activation
-cross-env ... pnpm run dev
-```
-
-So Vite, the governed pilot runtime, and the TerraFusion API runtime were not launched in this smoke.
-
-## Interpretation
-
-The local port conflict is resolved and no longer blocks the real Benton Forge dev command.
-
-The next live blocker is DB readiness: canonical parcel count returned `0` during this smoke.
-
-This is not production proof.
-
-This is not operational proof.
+So this is not a clean full dev-server smoke and does not claim production or operational proof.
 
 ## Boundaries
 
-- This smoke did not touch County Studio UI.
-- This smoke did not mutate TerraFusion Sync.
-- This smoke did not change DB seeding.
-- This smoke did not weaken gates.
-- This smoke did not set `productionProofAllowed=true`.
-- This smoke did not set `operationalProofAllowed=true`.
-- This smoke did not hide `DATA_TRUTH_FAIL`.
+- This smoke update did not touch County Studio UI.
+- This smoke update did not mutate TerraFusion Sync.
+- This smoke update did not change DB seeding.
+- This smoke update did not weaken gates.
+- This smoke update did not set `productionProofAllowed=true`.
+- This smoke update did not set `operationalProofAllowed=true`.
+- This smoke update did not hide `DATA_TRUTH_FAIL`.

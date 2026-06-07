@@ -324,13 +324,10 @@ function decisionFor(evidence) {
   const requiredReadable = [
     evidence.queryResults.legacyProperty,
     evidence.queryResults.truthParcel,
-    evidence.queryResults.canonicalParcel
-  ].every(readable);
-  const anyRealCount = Object.values(evidence.queryResults)
-    .filter((value) => typeof value !== "object" || !("status" in value))
-    .some((value) => countValue(value) > 0);
+    evidence.queryResults.gisParcelGeometry
+  ].every((value) => readable(value) && countValue(value) > 0);
   return {
-    realDevEvidenceReadable: requiredReadable && anyRealCount,
+    realDevEvidenceReadable: requiredReadable,
     productionProofAllowed: false,
     operationalProofAllowed: false
   };

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T15:51:02.540Z",
+  "generatedAtUtc": "2026-06-07T17:30:53.023Z",
   "adapter": "benton-sync-drain-state-evidence",
   "backendHealth": {
     "status": "healthy",
@@ -39,14 +39,11 @@
     "legacyProperty": 1190834,
     "legacyOwner": 8213706,
     "legacyPropSuppAssoc": 4382985,
-    "legacyWashPropOwnerVal": 1654143,
+    "legacyWashPropOwnerVal": 1725143,
     "legacyAccount": 535140,
     "truthParcel": 83326,
     "truthOwner": 816849,
-    "truthWsdor": {
-      "unavailable": true,
-      "reason": "No readable DB runtime path. docker psql: spawnSync docker ETIMEDOUT"
-    },
+    "truthWsdor": 774696,
     "canonicalParcel": 3198979,
     "canonicalOwner": 312532,
     "canonicalWsdor": 686820,
@@ -57,12 +54,12 @@
       "property": 1190834,
       "owner": 8213706,
       "propSuppAssoc": 4382985,
-      "washPropOwnerVal": 1654143
+      "washPropOwnerVal": 1725143
     },
     "truthTables": {
       "parcel": 83326,
       "owner": 816849,
-      "wsdor": 0
+      "wsdor": 774696
     },
     "canonical": {
       "parcel": 3198979,
@@ -82,7 +79,7 @@
     "legacyAccount": "SEEDED",
     "truthParcel": "SYNC_DERIVED",
     "truthOwner": "SYNC_DERIVED",
-    "truthWsdor": "UNKNOWN",
+    "truthWsdor": "SYNC_DERIVED",
     "canonicalParcel": "SEEDED",
     "canonicalOwner": "SEEDED",
     "canonicalWsdor": "SEEDED",
