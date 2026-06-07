@@ -1,0 +1,52 @@
+name: canon-gates
+
+# Advisory enforcement rail for the read-only Canon runtime.
+# Runs the Canon gate aggregator over a PR's changed files and reports findings
+# to the job summary. ADVISORY by default (never blocks) — this is the
+# "advisory-in-CI first" step of the Canon doctrine.
+#
+# To FLIP TO ENFORCEMENT later: add `--strict` to the node invocation below
+# (optionally scoped to Canon-owned paths first). Do not make this a required
+# status check until signal quality is confirmed on real PRs.
+#
+# Push-triggered (not pull_request): platform.json forbids pull_request on
+# non-constitutional workflows (PR_TRIGGER_LEAK). Runs per feature-branch push
+# and on manual dispatch; diffs changed files against origin/main.
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  advisory:
+    name: Canon Gates (advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run Canon gates (advisory, non-blocking)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          mapfile -t FILES < <(git diff --name-only origin/main...HEAD)
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No changed files to scan." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo "## Canon Gates (advisory)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Advisory: aggregator exits 0 without --strict, so the job never blocks.
+          node os-platform/core/gates/canon-gates.mjs "${FILES[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
