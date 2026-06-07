@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T18:17:39.805Z",
+  "generatedAtUtc": "2026-06-07T18:52:10.465Z",
   "gate": "county-studio-real-dev-backend-health",
   "status": "REAL_DEV_BACKEND_HEALTH_PASS",
   "expectedBackendPorts": [5046, 5000],

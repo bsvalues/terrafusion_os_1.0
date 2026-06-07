@@ -1,10 +1,10 @@
 {
-  "generatedAtUtc": "2026-06-07T18:28:02.313Z",
+  "generatedAtUtc": "2026-06-07T18:52:57.668Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_DATA_AVAILABLE",
+  "status": "REAL_DEV_SERVER_BLOCKED",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": true,
+    "realDevServerAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -49,9 +49,9 @@
     },
     {
       "name": "active drain process state",
-      "classification": "SYNC_DERIVED",
-      "passed": true,
-      "reason": "Client drain process is not alive, but DB load_batch proves server-side state COMPLETED.",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Drain process state is unknown.",
       "evidence": {
         "pid": null,
         "alive": null,
@@ -60,13 +60,13 @@
     },
     {
       "name": "load_batch current stage",
-      "classification": "SYNC_DERIVED",
-      "passed": true,
-      "reason": "load_batch stage is assessment-value-seal (COMPLETED).",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "load_batch stage is exemption-fact-seal (FAILED).",
       "evidence": {
-        "stage": "assessment-value-seal",
-        "status": "COMPLETED",
-        "loadBatchId": "613ab22a-0d42-411b-80f1-886e5df4bd97"
+        "stage": "exemption-fact-seal",
+        "status": "FAILED",
+        "loadBatchId": "7063c26e-c2f3-4dfe-ae7c-afce6a48f9d5"
       }
     },
     {
@@ -179,8 +179,8 @@
       "passed": true,
       "reason": "owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked.",
       "evidence": {
-        "stage": "assessment-value-seal",
-        "status": "COMPLETED",
+        "stage": "exemption-fact-seal",
+        "status": "FAILED",
         "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
         "requiredForCountyStudioForgeDev": false,
         "requiredForPacketProof": true,
@@ -240,8 +240,8 @@
   ],
   "forgeDevDependency": {
     "ownerSupnumBackfill": {
-      "stage": "assessment-value-seal",
-      "status": "COMPLETED",
+      "stage": "exemption-fact-seal",
+      "status": "FAILED",
       "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
       "requiredForCountyStudioForgeDev": false,
       "requiredForPacketProof": true,
@@ -271,7 +271,10 @@
       }
     }
   },
-  "blockers": [],
+  "blockers": [
+    "active drain process state: Drain process state is unknown.",
+    "load_batch current stage: load_batch stage is exemption-fact-seal (FAILED)."
+  ],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

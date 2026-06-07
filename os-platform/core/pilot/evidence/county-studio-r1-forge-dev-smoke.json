@@ -1,9 +1,14 @@
 {
-  "generatedAtUtc": "2026-06-07T18:22:05.299Z",
+  "generatedAtUtc": "2026-06-07T18:52:57.9356526Z",
   "gate": "county-studio-r1-forge-dev-smoke",
-  "status": "FORGE_DEV_SMOKE_PREFLIGHT_CHAIN_READY_FULL_DEV_NOT_RERUN",
-  "commandInvokedPreviously": "pnpm run dev:county-studio:real-benton",
+  "status": "FORGE_DEV_SMOKE_DB_READINESS_BLOCKED",
+  "command": "pnpm run dev:county-studio:real-benton",
   "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
+  "stdoutLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-115207.out.log",
+  "stderrLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-115207.err.log",
+  "exitedWithinTimeout": true,
+  "exitCode": 1,
+  "observationWindowSeconds": 50,
   "preflightGates": [
     {
       "command": "pnpm run proof:county-studio:real-dev-port-preflight",
@@ -22,52 +27,105 @@
     },
     {
       "command": "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
-      "status": "REAL_DEV_DATA_AVAILABLE",
-      "exitCode": 0,
-      "passed": true,
-      "blockers": [],
+      "status": "REAL_DEV_SERVER_BLOCKED",
+      "exitCode": 1,
+      "passed": false,
       "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-activation",
-      "status": "REAL_DEV_ACTIVATION_READY",
-      "exitCode": 0,
-      "passed": true,
+      "status": "NOT_REACHED",
+      "exitCode": null,
+      "passed": false,
       "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json"
     }
   ],
-  "devServer": {
-    "started": false,
-    "frontendStarted": false,
-    "frontendBoundUrls": [],
-    "urlEmitted": false,
-    "backendStarted": false,
-    "reason": "The long-running cross-env ... pnpm run dev stage was not rerun in this backend health bootstrap slice. The preflight chain is ready."
+  "portPreflight": {
+    "portPreflightPassed": true,
+    "occupiedPorts": [],
+    "requiredPorts": [4317, 5046]
   },
   "backendHealth": {
     "status": "REAL_DEV_BACKEND_HEALTH_PASS",
     "backendHealthy": true,
     "healthEndpoint": "http://localhost:5000/health",
     "backendLaunchCommand": "pnpm run dev:backend:api",
-    "backendStartedByDevCommand": false
+    "backendStartedByDevCommand": false,
+    "api5000Health": {
+      "ok": true,
+      "statusCode": 200,
+      "url": "http://localhost:5000/health"
+    },
+    "api5046Health": {
+      "ok": false,
+      "statusCode": null,
+      "url": "http://localhost:5046/health",
+      "error": "The request was canceled due to the configured HttpClient.Timeout of 3 seconds elapsing."
+    }
   },
-  "portPreflight": {
-    "portPreflightPassed": true,
-    "occupiedPorts": []
+  "dbReadiness": {
+    "status": "REAL_DEV_SERVER_BLOCKED",
+    "realDevServerAllowed": false,
+    "blockers": [
+      "active drain process state: Drain process state is unknown.",
+      "load_batch current stage: load_batch stage is exemption-fact-seal (FAILED)."
+    ],
+    "evidence": {
+      "activeDrainProcessState": "UNKNOWN",
+      "loadBatchStage": "exemption-fact-seal",
+      "loadBatchStatus": "FAILED",
+      "loadBatchId": "7063c26e-c2f3-4dfe-ae7c-afce6a48f9d5",
+      "propertyLanding": 1190834,
+      "truthParcel": 83326,
+      "canonicalParcel": 3198979,
+      "ownerSupnumBackfillRequiredForForgeDev": false
+    }
   },
-  "readinessBlockers": [],
+  "realDevActivation": {
+    "status": "NOT_REACHED",
+    "realDevActivationAllowed": false,
+    "reason": "The full dev command stopped at the live DB readiness gate before real-dev activation ran."
+  },
+  "forgeDevStatus": {
+    "statusGateRunInCommand": false,
+    "note": "The real-benton dev command runs port, backend, DB readiness, and activation gates before dev startup; r1-forge-dev-status remains a separate proof command."
+  },
+  "devServer": {
+    "started": false,
+    "frontendStarted": false,
+    "frontendBoundUrls": [],
+    "urlEmitted": false,
+    "backendStarted": false,
+    "pilot4317Listening": false,
+    "api5046Listening": false,
+    "apiStartupOrReuse": "not-reached",
+    "reason": "The command exited before cross-env TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton ... pnpm run dev."
+  },
+  "modeFlags": {
+    "TF_COUNTY_STUDIO_DEV_DATA_MODE": "real-benton",
+    "TF_COUNTY_STUDIO_PRODUCTION_PROOF": "false",
+    "TF_COUNTY_STUDIO_OPERATIONAL_PROOF": "false"
+  },
   "postureAfterSmoke": {
     "portPreflightPassed": true,
     "backendHealthy": true,
-    "realDevServerAllowed": true,
-    "realDevActivationAllowed": true,
-    "forgeDevAllowed": true,
+    "realDevServerAllowed": false,
+    "realDevActivationAllowed": false,
+    "forgeDevAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
     "cleanFullDevSmokePassed": false
   },
-  "startupErrors": [],
-  "interpretation": "The backend health bootstrap gate removes the vague backend-health failure from the real Benton dev command. The current preflight chain is ready, but this artifact does not claim a clean full long-running dev-server smoke because that stage was not rerun.",
+  "startupWarnings": [],
+  "startupErrors": [
+    "pnpm run proof:county-studio:benton-real-dev-server-readiness:db returned REAL_DEV_SERVER_BLOCKED",
+    "pnpm run dev:county-studio:real-benton exited with code 1"
+  ],
+  "blocker": "Live DB readiness blocks full Forge dev smoke because active drain state is UNKNOWN and load_batch stage exemption-fact-seal is FAILED.",
+  "interpretation": "The full smoke did not reach Vite, governed pilot runtime, or local API startup. Ports and backend health are not the current blocker; live DB readiness is.",
+  "productionProofAllowed": false,
+  "operationalProofAllowed": false,
+  "cleanFullDevSmokePassed": false,
   "boundaries": [
     "This smoke update did not touch County Studio UI.",
     "This smoke update did not mutate TerraFusion Sync.",

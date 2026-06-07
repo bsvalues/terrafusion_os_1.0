@@ -1,11 +1,11 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T18:28:02.313Z
-Status: REAL_DEV_DATA_AVAILABLE
+Generated: 2026-06-07T18:52:57.668Z
+Status: REAL_DEV_SERVER_BLOCKED
 
 ## Decision
 
-- Real Dev Server: ALLOWED
+- Real Dev Server: BLOCKED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
@@ -23,8 +23,8 @@ Status: REAL_DEV_DATA_AVAILABLE
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
 | backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
-| active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state COMPLETED. |
-| load_batch current stage | SYNC_DERIVED | true | load_batch stage is assessment-value-seal (COMPLETED). |
+| active drain process state | UNKNOWN | false | Drain process state is unknown. |
+| load_batch current stage | UNKNOWN | false | load_batch stage is exemption-fact-seal (FAILED). |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
 | canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
@@ -41,8 +41,8 @@ Status: REAL_DEV_DATA_AVAILABLE
 
 ## Forge Dev Dependency Reclassification
 
-- ownerSupnumBackfillStatus: COMPLETED
-- ownerSupnumBackfillStage: assessment-value-seal
+- ownerSupnumBackfillStatus: FAILED
+- ownerSupnumBackfillStage: exemption-fact-seal
 - ownerSupnumBackfillLatestFailedStage: owner-supnum-resume
 - ownerSupnumBackfillLatestFailedStatus: FAILED
 - ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
@@ -52,7 +52,8 @@ Status: REAL_DEV_DATA_AVAILABLE
 
 ## Blockers
 
-- None
+- active drain process state: Drain process state is unknown.
+- load_batch current stage: load_batch stage is exemption-fact-seal (FAILED).
 
 ## Rules
 
