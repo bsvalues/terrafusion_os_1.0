@@ -1,9 +1,9 @@
 {
-  "generatedAtUtc": "2026-06-07T08:03:40.825Z",
+  "generatedAtUtc": "2026-06-07T15:30:00.453Z",
   "gate": "county-studio-r1-forge-dev-status",
-  "status": "COUNTY_STUDIO_R1_FORGE_DEV_READY",
+  "status": "COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED",
   "summary": {
-    "forgeDevAllowed": true,
+    "forgeDevAllowed": false,
     "realDevActivationAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
@@ -11,7 +11,7 @@
     "geometryStatus": "SYNC_DERIVED_GEOMETRY",
     "riskObjectStatus": "DEV_DERIVED_FROM_REAL_INPUTS",
     "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
-    "countyStudioMode": "REAL_BENTON_FORGE_DEV",
+    "countyStudioMode": "FORGE_DEV_BLOCKED",
     "requiredRunCommand": "pnpm run dev:county-studio:real-benton",
     "remainingProductionBlockers": [
       "Canonical Benton source/count reconciliation remains required before production proof.",
@@ -62,7 +62,7 @@
     "geometry": "os-platform/core/pilot/evidence/county-studio-terraatlas-geometry-evidence.json",
     "riskAudit": "os-platform/core/pilot/evidence/county-studio-risk-object-source-audit.json"
   },
-  "blockers": [],
+  "blockers": ["Benton real dev server evidence is not allowed."],
   "boundaries": [
     "This consolidation does not touch County Studio UI.",
     "This consolidation does not mutate TerraFusion Sync.",

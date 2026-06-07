@@ -1,11 +1,11 @@
 # County Studio R1 Forge Dev Status
 
-Generated: 2026-06-07T08:03:40.825Z
-Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
+Generated: 2026-06-07T15:30:00.453Z
+Status: COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED
 
 ## Summary
 
-- forgeDevAllowed=true
+- forgeDevAllowed=false
 - realDevActivationAllowed=true
 - productionProofAllowed=false
 - operationalProofAllowed=false
@@ -13,7 +13,7 @@ Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 - geometryStatus=SYNC_DERIVED_GEOMETRY
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 - ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
-- countyStudioMode=REAL_BENTON_FORGE_DEV
+- countyStudioMode=FORGE_DEV_BLOCKED
 - requiredRunCommand=pnpm run dev:county-studio:real-benton
 
 ## Runbook
@@ -60,7 +60,7 @@ Owner-supnum remains required for packet/ops proof, not current County Studio Fo
 
 ## Blockers
 
-- None
+- Benton real dev server evidence is not allowed.
 
 ## Boundaries
 

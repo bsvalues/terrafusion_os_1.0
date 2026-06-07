@@ -1,0 +1,84 @@
+{
+  "generatedAtUtc": "2026-06-07T15:28:40.329Z",
+  "gate": "county-studio-r1-forge-dev-smoke",
+  "status": "FORGE_DEV_SMOKE_BLOCKED_BY_REAL_DEV_READINESS",
+  "commandInvoked": "pnpm run dev:county-studio:real-benton",
+  "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
+  "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-r1-forge-dev-smoke-20260607-082434.log",
+  "processCleanup": {
+    "spawnedSmokeProcessStopped": true,
+    "spawnedSmokeChildrenRemaining": false
+  },
+  "preflightGates": [
+    {
+      "command": "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
+      "status": "REAL_DEV_SERVER_BLOCKED",
+      "exitCode": 1,
+      "passed": false,
+      "blockers": 14,
+      "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
+    },
+    {
+      "command": "pnpm run proof:county-studio:real-dev-activation",
+      "status": "NOT_REACHED",
+      "passed": false,
+      "reason": "The real-dev readiness DB preflight failed before activation ran."
+    }
+  ],
+  "devServer": {
+    "started": false,
+    "boundUrls": [],
+    "urlEmitted": false,
+    "reason": "The real Benton Forge dev command stopped at the readiness DB preflight; Vite/dev server did not start."
+  },
+  "modeFlags": {
+    "configured": [
+      "TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton",
+      "TF_COUNTY_STUDIO_PRODUCTION_PROOF=false",
+      "TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false"
+    ],
+    "appliedToDevServer": false,
+    "reason": "The cross-env dev-server stage was not reached."
+  },
+  "postureAfterSmoke": {
+    "forgeDevAllowed": false,
+    "realDevActivationAllowed": true,
+    "countyStudioMode": "FORGE_DEV_BLOCKED",
+    "dataTruthStatus": "DATA_TRUTH_FAIL",
+    "geometryStatus": "SYNC_DERIVED_GEOMETRY",
+    "riskObjectStatus": "DEV_DERIVED_FROM_REAL_INPUTS",
+    "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "readinessBlockers": [
+    "active drain process state: Drain process state is unknown.",
+    "load_batch current stage: load_batch stage is UNKNOWN (UNKNOWN).",
+    "landing table counts: Property landing rows are missing or unknown.",
+    "truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.",
+    "canonical parcel counts: Canonical parcel count is missing.",
+    "owner truth count: Owner truth count is missing.",
+    "account count: Account count is missing.",
+    "supp association count: Supplement association count is missing.",
+    "property landing count: Property landing count is missing.",
+    "WPOV status: WPOV landing status is missing.",
+    "WSDOR status: WSDOR truth status is missing.",
+    "map data dependency status: Map dependency is classified UNKNOWN.",
+    "ledger data dependency status: Ledger dependency is classified UNKNOWN.",
+    "inspector data dependency status: Inspector dependency is classified UNKNOWN."
+  ],
+  "startupErrors": [
+    "REAL_DEV_SERVER_BLOCKED from pnpm run proof:county-studio:benton-real-dev-server-readiness:db"
+  ],
+  "missingEnvOrConfigWarnings": [],
+  "interpretation": "The real Benton Forge dev run path was exercised and failed correctly before launching the dev server because the runtime DB evidence path no longer reports readable real-dev data. This is not a County Studio UI failure and does not weaken production or operational proof gates.",
+  "boundaries": [
+    "This smoke did not touch County Studio UI.",
+    "This smoke did not mutate TerraFusion Sync.",
+    "This smoke did not change DB seeding.",
+    "This smoke did not weaken gates.",
+    "This smoke did not set productionProofAllowed=true.",
+    "This smoke did not set operationalProofAllowed=true.",
+    "This smoke did not hide DATA_TRUTH_FAIL."
+  ]
+}
