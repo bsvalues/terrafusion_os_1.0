@@ -132,6 +132,16 @@ public static class LaneStageOrder
                 "Land-Canonical",
             },
 
+            // assessment: ASSESSMENT-VALUE-SEAL — current-year
+            // active-supplement property_val value → assessment truth →
+            // tf_assessment canonical (parcel resolved via existing xref).
+            ["assessment"] = new[]
+            {
+                "Assessment-S1",
+                "Assessment-Truth",
+                "Assessment-Canonical",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]

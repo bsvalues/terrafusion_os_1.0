@@ -15,6 +15,7 @@ _Last updated: 2026-06-07._
 | Sales | ✅ SEALED | 29,914 qualified | QUALIFIED sales (DOR-or-county per tf_doctrine_ratio_policy); 45,764 landed-but-unqualified correctly excluded | 1.0000× | `evidence/2026-06-03-sales-lane-seal.md` |
 | Geometry | ✅ SEALED | 80,075 geom (1.0×); 79,105/80,075 = 98.8% crosswalked to tf_parcel (970 residual: 301 null-APN + 669 no-tf_parcel-match, both legitimate) | ArcGIS Parcels service = 80,076 features | 1.0000× | `evidence/2026-06-04-geometry-lane-diagnosis.md` |
 | Owner | ✅ SEALED (100%) | 816,849 / 816,849 (100%); class-2 active-supplement gap (was 34,636 stalesup) CLOSED via owner active-supplement resolution; stalesup 0, nosupp 0 | (PropId, OwnerTaxYr, OwnerId) at the ACTIVE supplement (MAX sup_num per parcel-year), not sup_num=0 | 1.0000× | `evidence/2026-06-07-owner-supnum-resolution.md` (+ prior `evidence/2026-06-06-owner-lane-seal.md`) |
+| Assessment value | ✅ SEALED (current-year) | truth 95,455 / 95,455 (100% of 2025 active-supplement universe); canonical 83,326 (spine-resolved; 12,129 outside the real-property spine); 1,041 non-zero active supplement preserved; assessed_val 100% populated | (PropId, AssessmentYear) at ACTIVE supplement (MAX sup_num); year=2025 current operational | 1.0000× (truth + canonical) | `evidence/2026-06-07-assessment-value-lane-seal.md` |
 
 ## Denominator notes (why coverage numbers differ per lane)
 - **Improvement / Land** are parcel-keyed against the current working year (2026); their active

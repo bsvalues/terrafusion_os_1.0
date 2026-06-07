@@ -28,6 +28,23 @@ public sealed class LegacyPacsRawPropertyValConfiguration
 
         builder.Property(x => x.PropInactiveDt);
 
+        // ASSESSMENT-VALUE-SEAL: nullable assessment values (NULL on the
+        // classification-only landing; populated by the active-supplement
+        // assessment landing).
+        builder.Property(x => x.AssessedVal).HasPrecision(18, 2);
+        builder.Property(x => x.AppraisedVal).HasPrecision(18, 2);
+        builder.Property(x => x.MarketVal).HasPrecision(18, 2);
+        builder.Property(x => x.LandHstdVal).HasPrecision(18, 2);
+        builder.Property(x => x.LandNonHstdVal).HasPrecision(18, 2);
+        builder.Property(x => x.ImprvHstdVal).HasPrecision(18, 2);
+        builder.Property(x => x.ImprvNonHstdVal).HasPrecision(18, 2);
+        builder.Property(x => x.AgUseVal).HasPrecision(18, 2);
+        builder.Property(x => x.AgMarketVal).HasPrecision(18, 2);
+        builder.Property(x => x.TimberUseVal).HasPrecision(18, 2);
+        builder.Property(x => x.TimberMarketVal).HasPrecision(18, 2);
+        builder.Property(x => x.HsCapNewVal).HasPrecision(18, 2);
+        builder.Property(x => x.HsCapPrevVal).HasPrecision(18, 2);
+
         builder.Property(x => x.LoadBatchId).IsRequired();
         builder.Property(x => x.SourceQueryHash).HasMaxLength(64).IsRequired();
         builder.Property(x => x.SourceRowHash).HasMaxLength(64).IsRequired();

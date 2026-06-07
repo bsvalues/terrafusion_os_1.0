@@ -309,6 +309,17 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsLandCurrent>
     TruthPacsLandCurrents { get; set; } = null!;
 
+  // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current — current
+  // operational-year assessed/market/appraised value at the ACTIVE
+  // supplement, one live row per parcel-year.
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsAssessmentCurrent>
+    TruthPacsAssessmentCurrents { get; set; } = null!;
+
+  // ASSESSMENT-VALUE-SEAL: canonical_tf.tf_assessment — parcel-keyed
+  // current assessment value rollup (distinct from tf_assessment_wsdor).
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessment>
+    TfAssessments { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1143,6 +1154,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // current land segment snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsLandCurrentConfiguration());
+
+    // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current + canonical_tf.tf_assessment.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsAssessmentCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.

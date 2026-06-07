@@ -1428,6 +1428,78 @@ public class DoctrineDrainController : ControllerBase
     }
 
     // ════════════════════════════════════════════════════════════════════
+    // ASSESSMENT drain (ASSESSMENT-VALUE-SEAL) — current-year
+    // active-supplement property_val value → assessment truth →
+    // tf_assessment canonical. Resolves the parcel against the EXISTING
+    // parcel xref (the parcel chain is already sealed), so no parcel
+    // re-drain. Default year = 2025 (current operational year).
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("assessment")]
+    public async Task<IActionResult> DrainAssessment(
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentValueLandingService assessSvc,
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCurrentTruthPromoter assessTruthPromoter,
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCanonicalProjector assessCanonProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "assessment";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var assessmentYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            _logger.LogInformation("[Drain:assessment] year={Yr} (active-supplement)", assessmentYear);
+
+            // Stage 1: Assessment-S1 — land active-supplement values.
+            var src = new SqlServerPacsAssessmentValueSource(pacsCs!, assessmentYear);
+            var s1 = await assessSvc.LandAssessmentValuesAsync(src, operatorName, cancellationToken);
+            batchIds.Add(s1.LoadBatchId);
+            if (!IsCompleted(s1.Status))
+                return await FailLaneAsync(LaneName, "Assessment-S1", s1.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = s1.RowsLanded;
+
+            // Stage 2: Assessment-Truth.
+            var truth = await assessTruthPromoter.PromoteAsync(s1.LoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(truth.PromotionLoadBatchId);
+            if (!IsCompleted(truth.Status))
+                return await FailLaneAsync(LaneName, "Assessment-Truth", truth.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsPromotedToTruth = truth.Promoted;
+
+            // Stage 3: Assessment-Canonical.
+            var canon = await assessCanonProjector.ProjectAsync(
+                truth.PromotionLoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(canon.PromotionLoadBatchId);
+            if (!IsCompleted(canon.Status))
+                return await FailLaneAsync(LaneName, "Assessment-Canonical", canon.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsCanonicalized = canon.AssessmentsProjected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:assessment] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
     // SALES drain — sale → keyed supp → sale truth → tf_sale canonical.
     // Independent of the parcel-anchored lanes; uses its own DESC-ordered
     // sale seed, then targets a parcel chain at the promoted sales' prop_ids.

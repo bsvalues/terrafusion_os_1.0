@@ -2081,6 +2081,19 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsLandCanonical.IPacsLandCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsLandCanonicalProjector>();
 
+// ASSESSMENT-VALUE-SEAL (2026-06-07): current-year active-supplement
+// property_val assessment value → truth_pacs.assessment_current →
+// canonical_tf.tf_assessment.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentValueLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsAssessmentValueLandingService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsAssessmentCurrentTruthPromoter>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsAssessmentCanonicalProjector>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

@@ -55,6 +55,25 @@ public sealed class LegacyPacsRawPropertyVal
     /// </summary>
     public DateTime? PropInactiveDt { get; set; }
 
+    // ── Assessment values (ASSESSMENT-VALUE-SEAL, 2026-06-07) ──────
+    // Nullable: the SYNC-DOCTRINE-4 classification landing leaves these
+    // NULL; the active-supplement assessment landing populates them.
+    // Verbatim from PACS property_val for the current operational year
+    // at the ACTIVE supplement (MAX sup_num per parcel-year).
+    public decimal? AssessedVal { get; set; }
+    public decimal? AppraisedVal { get; set; }
+    public decimal? MarketVal { get; set; }
+    public decimal? LandHstdVal { get; set; }
+    public decimal? LandNonHstdVal { get; set; }
+    public decimal? ImprvHstdVal { get; set; }
+    public decimal? ImprvNonHstdVal { get; set; }
+    public decimal? AgUseVal { get; set; }
+    public decimal? AgMarketVal { get; set; }
+    public decimal? TimberUseVal { get; set; }
+    public decimal? TimberMarketVal { get; set; }
+    public decimal? HsCapNewVal { get; set; }
+    public decimal? HsCapPrevVal { get; set; }
+
     // ── Provenance (the doctrine's non-negotiable surface) ────────
     public Guid LoadBatchId { get; set; }
     public string SourceQueryHash { get; set; } = string.Empty;
