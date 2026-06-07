@@ -30,8 +30,8 @@ const MOCK_CONTEXT = {
   needsReview: 730,
   detailRoute: '/launch-data/washington/counties/005.json',
   salesRoute: '/launch-data/washington/sales/by-county/005.json',
-  geometryAvailability: 'compatibility' as const,
-  geometryMessage: 'Compatibility geometry feed active.',
+  geometryAvailability: 'sync_derived' as const,
+  geometryMessage: 'TerraAtlas sync-derived geometry feed active.',
   trustTier: 'production_provisional' as const,
   trustLabel: 'Production Provisional',
   dataTrustBadges: ['Production Provisional', 'Sync-Derived', 'Converted Legacy Sensitive'],
@@ -56,14 +56,15 @@ describe('useAtlasMapData', () => {
     vi.restoreAllMocks();
   });
 
-  it('loads county context before compatibility geometry', async () => {
+  it('loads county context before TerraAtlas sync-derived geometry', async () => {
     const contextSpy = vi.spyOn(atlasApi, 'fetchAtlasCountyContext')
       .mockResolvedValue(MOCK_CONTEXT);
-    const geometrySpy = vi.spyOn(atlasApi, 'fetchAtlasCompatibilityMapData')
+    const terraAtlasGeometrySpy = vi.spyOn(atlasApi, 'fetchTerraAtlasParcelGeometryMapData')
       .mockResolvedValue({
         outlines: MOCK_OUTLINES as unknown as NbhdOutlineCollection,
         parcels: MOCK_PARCELS as unknown as ParcelTileCollection,
       });
+    const compatibilityGeometrySpy = vi.spyOn(atlasApi, 'fetchAtlasCompatibilityMapData');
 
     const { result } = renderHook(() => useAtlasMapData(MOCK_SCOPE));
 
@@ -71,7 +72,16 @@ describe('useAtlasMapData', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(contextSpy).toHaveBeenCalledWith(MOCK_SCOPE, expect.any(AbortSignal));
-    expect(geometrySpy).toHaveBeenCalledWith('005', 2026, '13011', expect.any(AbortSignal));
+    expect(terraAtlasGeometrySpy).toHaveBeenCalledWith({
+      countyId: '19190019-1919-1919-1919-191919191919',
+      taxYear: 2026,
+      studyId: 'study-1',
+      neighborhoodCode: '13011',
+      segmentId: 'seg-1',
+      limit: 5000,
+      signal: expect.any(AbortSignal),
+    });
+    expect(compatibilityGeometrySpy).not.toHaveBeenCalled();
     expect(result.current.countyContext?.countyCode).toBe('005');
     expect(result.current.outlines).not.toBeNull();
     expect(result.current.parcels).not.toBeNull();

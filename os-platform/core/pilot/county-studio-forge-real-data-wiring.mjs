@@ -77,7 +77,14 @@ export const REQUIRED_FORGE_WIRING_SURFACES = [
   "owner identity dependency scan"
 ];
 
-const REAL_DEV_CLASSIFICATIONS = new Set(["AUTHORITATIVE", "SYNC_DERIVED", "SEEDED", "PARTIAL_SEEDED"]);
+const REAL_DEV_CLASSIFICATIONS = new Set([
+  "AUTHORITATIVE",
+  "SYNC_DERIVED",
+  "SEEDED",
+  "PARTIAL_SEEDED",
+  "SYNC_DERIVED_GEOMETRY",
+  "SEEDED_GEOMETRY"
+]);
 const DISALLOWED_WIRING_CLASSIFICATIONS = new Set(["MOCK", "FIXTURE", "GENERATED", "FALLBACK", "UNKNOWN"]);
 const CORE_FORGE_SURFACES = new Set([
   "parcel/property identity source",
@@ -113,18 +120,18 @@ function findProofArea(dataTruthReport, area) {
 
 function copySource(source, overrides = {}) {
   return {
-    frontendFile: source?.frontendFile ?? overrides.frontendFile ?? "UNKNOWN",
-    apiRoute: source?.apiRoute ?? overrides.apiRoute ?? "UNKNOWN",
-    backendServiceOrController: source?.backendServiceOrController ?? overrides.backendServiceOrController ?? "UNKNOWN",
-    dbTableOrView: source?.dbTableOrView ?? overrides.dbTableOrView ?? "UNKNOWN",
-    joinKey: source?.joinKey ?? overrides.joinKey ?? "UNKNOWN",
-    countyId: source?.countyId ?? overrides.countyId ?? "19190019-1919-1919-1919-191919191919",
-    taxYear: source?.taxYear ?? overrides.taxYear ?? 2026,
-    studyId: source?.studyId ?? overrides.studyId ?? "runtime-selected-study",
-    observedCount: source?.observedCount ?? overrides.observedCount ?? null,
-    failureReason: source?.failureReason ?? overrides.failureReason ?? "Production proof remains blocked.",
+    frontendFile: overrides.frontendFile ?? source?.frontendFile ?? "UNKNOWN",
+    apiRoute: overrides.apiRoute ?? source?.apiRoute ?? "UNKNOWN",
+    backendServiceOrController: overrides.backendServiceOrController ?? source?.backendServiceOrController ?? "UNKNOWN",
+    dbTableOrView: overrides.dbTableOrView ?? source?.dbTableOrView ?? "UNKNOWN",
+    joinKey: overrides.joinKey ?? source?.joinKey ?? "UNKNOWN",
+    countyId: overrides.countyId ?? source?.countyId ?? "19190019-1919-1919-1919-191919191919",
+    taxYear: overrides.taxYear ?? source?.taxYear ?? 2026,
+    studyId: overrides.studyId ?? source?.studyId ?? "runtime-selected-study",
+    observedCount: overrides.observedCount ?? source?.observedCount ?? null,
+    failureReason: overrides.failureReason ?? source?.failureReason ?? "Production proof remains blocked.",
     requiredProofToUpgrade:
-      source?.requiredProofToUpgrade ?? overrides.requiredProofToUpgrade ?? "Canonical production reconciliation remains required."
+      overrides.requiredProofToUpgrade ?? source?.requiredProofToUpgrade ?? "Canonical production reconciliation remains required."
   };
 }
 
@@ -336,6 +343,10 @@ function buildSurfaces({ dataTruthReport, lineageReport, readinessReport, geomet
         ?? findProofArea(dataTruthReport, "Atlas layers")?.classification,
       source: geometry,
       overrides: {
+        apiRoute: geometryEvidenceReport?.sourcePath?.apiRoute,
+        backendServiceOrController: geometryEvidenceReport?.sourcePath?.backendServiceOrController,
+        dbTableOrView: geometryEvidenceReport?.sourcePath?.dbTableOrView,
+        joinKey: geometryEvidenceReport?.sourcePath?.joinKey,
         observedCount: geometryEvidenceReport?.geometryCounts?.parcelGeometry,
         failureReason: geometryEvidenceReport?.finding,
         requiredProofToUpgrade: geometryEvidenceReport?.requiredProofToUpgrade

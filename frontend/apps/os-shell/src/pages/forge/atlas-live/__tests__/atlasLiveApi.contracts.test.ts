@@ -123,7 +123,8 @@ describe('fetchAtlasCountyContext contract posture', () => {
     expect(context?.dataTrustBadges).toContain('Converted Legacy Sensitive');
     expect(context?.databasePosture).toContain('TerraFusion.Benton.Operational');
     expect(context?.productionClaimAllowed).toBe(false);
-    expect(context?.geometryAvailability).toBe('compatibility');
+    expect(context?.geometryAvailability).toBe('sync_derived');
+    expect(context?.geometryMessage).toContain('gis_tf.tf_parcel_geom');
   });
 
   it('marks non-Benton launch counties as reference/demo only', async () => {

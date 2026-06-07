@@ -6,6 +6,7 @@ import type {
 import {
   fetchAtlasCompatibilityMapData,
   fetchAtlasCountyContext,
+  fetchTerraAtlasParcelGeometryMapData,
 } from '../atlasLiveApi';
 import type {
   NbhdOutlineCollection,
@@ -70,6 +71,24 @@ export function useAtlasMapData(scope: AtlasRouteScope): AtlasMapData {
 
         setCountyContext(context);
         setScopeMessage(context.geometryMessage);
+
+        if (context.geometryAvailability === 'sync_derived' && context.countyId) {
+          const mapData = await fetchTerraAtlasParcelGeometryMapData({
+            countyId: context.countyId,
+            taxYear: context.taxYear,
+            studyId: context.studyId,
+            neighborhoodCode: context.neighborhoodCode,
+            segmentId: context.segmentId,
+            limit: 5000,
+            signal: controller.signal,
+          });
+
+          if (cancelled) return;
+
+          setOutlines(mapData.outlines);
+          setParcels(mapData.parcels);
+          return;
+        }
 
         if (context.geometryAvailability !== 'compatibility') {
           return;

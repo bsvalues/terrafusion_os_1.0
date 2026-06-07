@@ -153,6 +153,29 @@ test("classifies geometry as sync-derived when County Studio uses the real Terra
   assert.equal(report.decisions.productionProofAllowed, false);
 });
 
+test("prefers the proven active source scan path over stale compatibility lineage when geometry is wired", () => {
+  const report = buildCountyStudioTerraAtlasGeometryEvidenceReport({
+    syncEvidenceReport: syncEvidence(),
+    dataTruthReport: dataTruth(),
+    lineageReport: lineage(),
+    sourceScan: {
+      apiRoute: "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels",
+      backendServiceOrController: "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom",
+      usesCompatibilityMapData: true,
+      usesTerraAtlasParcelGeometryEndpoint: true,
+      usesTerraAtlasDbTable: true,
+      candidateTables: [
+        { table: "gis_tf.tf_parcel_geom", count: 80075, exists: true }
+      ]
+    },
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.classification, "SYNC_DERIVED_GEOMETRY");
+  assert.match(report.sourcePath.apiRoute, /atlas-live\/geometry\/parcels/);
+  assert.match(report.sourcePath.backendServiceOrController, /AtlasLiveGeometryController/);
+});
+
 test("keeps fallback geometry when no real GIS geometry is readable", () => {
   const report = buildCountyStudioTerraAtlasGeometryEvidenceReport({
     syncEvidenceReport: syncEvidence({

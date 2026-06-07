@@ -54,6 +54,7 @@ const SOURCE_FILES = {
   atlasLiveApi: "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
   useAtlasMapData: "frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts",
   geoforgeV2Api: "frontend/apps/os-shell/src/pages/forge/geo/v2/v2Api.ts",
+  atlasLiveGeometryController: "backend/src/TerraFusion.API/Controllers/AtlasLiveGeometryController.cs",
   parcelGeometryController: "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
   parcelGeometryReader: "backend/src/TerraFusion.Data/Services/GisTf/ParcelGeometryReader.cs",
   tfParcelGeomConfiguration: "backend/src/TerraFusion.Data/Configurations/GisTf/TfParcelGeomConfiguration.cs"
@@ -122,18 +123,27 @@ function buildDefaultSourceScan() {
   const atlasApi = readText(SOURCE_FILES.atlasLiveApi);
   const hook = readText(SOURCE_FILES.useAtlasMapData);
   const v2Api = readText(SOURCE_FILES.geoforgeV2Api);
+  const atlasLiveGeometryController = readText(SOURCE_FILES.atlasLiveGeometryController);
   const controller = readText(SOURCE_FILES.parcelGeometryController);
   const reader = readText(SOURCE_FILES.parcelGeometryReader);
   const config = readText(SOURCE_FILES.tfParcelGeomConfiguration);
+  const usesAtlasLiveGeometryRoute =
+    atlasApi.includes("fetchTerraAtlasParcelGeometryMapData")
+    && atlasApi.includes("/atlas-live/geometry/parcels")
+    && hook.includes("fetchTerraAtlasParcelGeometryMapData");
 
   return {
     frontendConsumer: embedded.includes("useAtlasMapData")
       ? `${SOURCE_FILES.embeddedAtlasWorkspace} -> useAtlasMapData`
       : SOURCE_FILES.embeddedAtlasWorkspace,
-    apiRoute: atlasApi.includes("fetchAtlasCompatibilityMapData")
+    apiRoute: usesAtlasLiveGeometryRoute
+      ? "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels"
+      : atlasApi.includes("fetchAtlasCompatibilityMapData")
       ? "fetchAtlasCompatibilityMapData -> /geoforge/v2/neighborhoods/outline + /geoforge/v2/parcels/tiles"
       : "UNKNOWN",
-    backendServiceOrController: controller.includes("ParcelGeometryController")
+    backendServiceOrController: atlasLiveGeometryController.includes("AtlasLiveGeometryController")
+      ? "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed"
+      : controller.includes("ParcelGeometryController")
       ? "ParcelGeometryController + ParcelGeometryReader are available as real TerraAtlas geometry read path"
       : "UNKNOWN",
     usesCompatibilityMapData:
@@ -142,15 +152,22 @@ function buildDefaultSourceScan() {
       && atlasApi.includes("fetchGeoForgeCompatibilityParcels")
       && v2Api.includes("/geoforge/v2/parcels/tiles"),
     usesTerraAtlasParcelGeometryEndpoint:
-      embedded.includes("/api/parcels/{tfParcelId}/geometry")
+      usesAtlasLiveGeometryRoute
+      || atlasLiveGeometryController.includes("api/atlas-live/geometry")
+      || atlasLiveGeometryController.includes("TfParcelGeoms")
+      || embedded.includes("/api/parcels/{tfParcelId}/geometry")
       || hook.includes("/api/parcels/{tfParcelId}/geometry")
       || atlasApi.includes("/api/parcels/{tfParcelId}/geometry"),
     usesTerraAtlasDbTable:
-      embedded.includes("gis_tf.tf_parcel_geom")
+      atlasLiveGeometryController.includes("gis_tf.tf_parcel_geom")
+      || atlasLiveGeometryController.includes("TfParcelGeoms")
+      || embedded.includes("gis_tf.tf_parcel_geom")
       || hook.includes("gis_tf.tf_parcel_geom")
       || atlasApi.includes("gis_tf.tf_parcel_geom"),
     availableRealGeometryReadPath:
-      controller.includes("GET /api/parcels/{tfParcelId}/geometry")
+      (atlasLiveGeometryController.includes("api/atlas-live/geometry")
+        && atlasLiveGeometryController.includes("TfParcelGeoms"))
+      || controller.includes("GET /api/parcels/{tfParcelId}/geometry")
       && reader.includes("TfParcelGeoms")
       && config.includes("tf_parcel_geom"),
     candidateTables: [
@@ -242,6 +259,7 @@ export function buildCountyStudioTerraAtlasGeometryEvidenceReport({
   const realGeometryExists = counts.parcelGeometry > 0;
   const countyStudioUsesRealTerraAtlasGeometry =
     classification === "SYNC_DERIVED_GEOMETRY" || classification === "SEEDED_GEOMETRY";
+  const preferActiveSourceScan = countyStudioUsesRealTerraAtlasGeometry;
 
   return {
     generatedAtUtc,
@@ -262,8 +280,12 @@ export function buildCountyStudioTerraAtlasGeometryEvidenceReport({
       frontendFile: geometryInventory?.frontendFile ?? SOURCE_FILES.atlasLiveApi,
       countyStudioConsumer: SOURCE_FILES.embeddedAtlasWorkspace,
       hook: SOURCE_FILES.useAtlasMapData,
-      apiRoute: geometryInventory?.apiRoute ?? resolvedSourceScan.apiRoute ?? "UNKNOWN",
-      backendServiceOrController: geometryInventory?.backendServiceOrController ?? resolvedSourceScan.backendServiceOrController ?? "UNKNOWN",
+      apiRoute: preferActiveSourceScan
+        ? resolvedSourceScan.apiRoute ?? geometryInventory?.apiRoute ?? "UNKNOWN"
+        : geometryInventory?.apiRoute ?? resolvedSourceScan.apiRoute ?? "UNKNOWN",
+      backendServiceOrController: preferActiveSourceScan
+        ? resolvedSourceScan.backendServiceOrController ?? geometryInventory?.backendServiceOrController ?? "UNKNOWN"
+        : geometryInventory?.backendServiceOrController ?? resolvedSourceScan.backendServiceOrController ?? "UNKNOWN",
       dbTableOrView: geometryInventory?.dbTableOrView ?? "gis_tf.tf_parcel_geom",
       joinKey: geometryInventory?.joinKey ?? "countyId + parcelId/APN + layerId",
       countyId: geometryInventory?.countyId ?? mapInventory?.countyId ?? "19190019-1919-1919-1919-191919191919",

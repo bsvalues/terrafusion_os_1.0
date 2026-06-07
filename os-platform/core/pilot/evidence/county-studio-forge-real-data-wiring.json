@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T23:47:15.927Z",
+  "generatedAtUtc": "2026-06-07T02:29:37.339Z",
   "gate": "county-studio-forge-real-data-wiring",
   "status": "FORGE_REAL_DATA_WIRING_VERIFIED_WITH_GAPS",
   "decisions": {
@@ -48,7 +48,7 @@
       "frontendFile": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
       "apiRoute": "GET /county-study/studies/{studyId}/segments + segment detail routes",
       "backendServiceOrController": "CountyStudySegmentDerivationService / CountyStudyInspectorService",
-      "dbTableOrView": "truth_pacs.parcel_spine + canonical_tf.tf_parcel",
+      "dbTableOrView": "truth_pacs.parcel_spine + CAMA characteristic columns + legacy_pacs_raw.property",
       "ownerLane": "Forge",
       "classification": "SYNC_DERIVED",
       "observedCount": 3199335,
@@ -87,7 +87,7 @@
     {
       "surface": "ratio-study context source",
       "sourceName": "County Studio ratio-study population and study context",
-      "frontendFile": "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyCommandStrip.tsx",
+      "frontendFile": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
       "apiRoute": "GET /county-study/studies/{studyId}/statistics-compat + health-summary",
       "backendServiceOrController": "CountyStudyHealthService / statistics compatibility API",
       "dbTableOrView": "PACS valuation + comparable sales ratio-study population",
@@ -130,11 +130,11 @@
       "surface": "geometry/map context source",
       "sourceName": "TerraAtlas geometry/map context consumed by County Studio",
       "frontendFile": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
-      "apiRoute": "GET /launch-data/washington/counties/status.json + Atlas compatibility map routes",
-      "backendServiceOrController": "Atlas Live compatibility API",
+      "apiRoute": "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels",
+      "backendServiceOrController": "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed",
       "dbTableOrView": "gis_tf.tf_parcel_geom",
       "ownerLane": "Atlas",
-      "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+      "classification": "SYNC_DERIVED_GEOMETRY",
       "observedCount": 80075,
       "joinKey": "countyId + parcelId/APN + layerId",
       "countyId": "19190019-1919-1919-1919-191919191919",
@@ -143,9 +143,9 @@
       "requiredForForgeDev": true,
       "productionProofAllowed": false,
       "operationalProofAllowed": false,
-      "failureReason": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
-      "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage.",
-      "status": "WIRING_GAP_IDENTIFIED"
+      "failureReason": "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.",
+      "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.",
+      "status": "REAL_DEV_WIRED_PRODUCTION_BLOCKED"
     },
     {
       "surface": "countyId/taxYear/studyId propagation",
@@ -269,12 +269,6 @@
       "classification": "GENERATED",
       "failureReason": "risk objects are derived/presented by County Studio, but their authoritative source lineage and same-study binding are not proven.",
       "requiredProofToUpgrade": "Prove risk objects are recomputed from authoritative ratio/valuation rows and align with map, ledger, and inspector in one study context."
-    },
-    {
-      "surface": "geometry/map context source",
-      "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
-      "failureReason": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
-      "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage."
     }
   ],
   "dataTruthPosture": {
@@ -288,10 +282,10 @@
     "operationalProofAllowed": false
   },
   "geometryEvidencePosture": {
-    "status": "TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED",
-    "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+    "status": "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
+    "classification": "SYNC_DERIVED_GEOMETRY",
     "realGeometryExists": true,
-    "countyStudioUsesRealTerraAtlasGeometry": false
+    "countyStudioUsesRealTerraAtlasGeometry": true
   },
   "blockers": [],
   "boundaries": [

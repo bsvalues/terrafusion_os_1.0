@@ -10,8 +10,8 @@ import type { ParcelTileProps } from '../../geo/v2/v2Api';
 import type { V2LayerId } from '../../geo/v2/LeftPanel';
 import type { CountySegmentDto } from '../types/countyStudio.types';
 
-const BENTON_COMPATIBILITY_CENTER: [number, number] = [-119.3, 46.25];
-const BENTON_COMPATIBILITY_ZOOM = 10;
+const BENTON_ATLAS_CENTER: [number, number] = [-119.3, 46.25];
+const BENTON_ATLAS_ZOOM = 10;
 
 const atlasLayerSummary = 'Parcels, Parcel boundaries, Neighborhoods, County segments, Reval areas, Taxing districts, Layer configuration';
 const forgeOverlaySummary = 'Valuation risk, Ratio / COD / PRD risk, Comparable sales clusters, Model groups, Value tiers, CAMA characteristic anomalies, Segment health';
@@ -242,13 +242,15 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
   );
   const initialViewport = useMemo(
     () => ({
-      center: BENTON_COMPATIBILITY_CENTER,
-      zoom: BENTON_COMPATIBILITY_ZOOM,
+      center: BENTON_ATLAS_CENTER,
+      zoom: BENTON_ATLAS_ZOOM,
     }),
     [],
   );
-  const geometryStatus = countyContext?.geometryAvailability === 'compatibility'
-    ? 'Atlas compatibility geometry connected'
+  const geometryStatus = countyContext?.geometryAvailability === 'sync_derived'
+    ? 'TerraAtlas sync-derived geometry connected'
+    : countyContext?.geometryAvailability === 'compatibility'
+      ? 'Atlas compatibility geometry connected'
     : countyContext
       ? 'Atlas geometry scope connected; county geometry unpublished'
       : 'Atlas geometry scope loading';
@@ -329,6 +331,7 @@ export function EmbeddedAtlasGisWorkspace({ onViewportChange, roleLens }: Embedd
                 Layers: Atlas live · Forge overlays read-only
               </span>
               <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Embedded TerraAtlas GIS</span>
+              <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>{geometryStatus}</span>
             </div>
             {disconnected && (
               <div

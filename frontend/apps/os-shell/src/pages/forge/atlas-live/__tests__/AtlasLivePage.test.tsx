@@ -29,8 +29,8 @@ vi.mock('../hooks/useAtlasMapData', () => ({
       needsReview: 730,
       detailRoute: '/launch-data/washington/counties/005.json',
       salesRoute: '/launch-data/washington/sales/by-county/005.json',
-      geometryAvailability: 'compatibility',
-      geometryMessage: 'Compatibility geometry feed active.',
+      geometryAvailability: 'sync_derived',
+      geometryMessage: 'TerraAtlas sync-derived gis_tf.tf_parcel_geom geometry feed active.',
       trustTier: 'production_provisional',
       trustLabel: 'Production Provisional',
       dataTrustBadges: ['Production Provisional', 'Sync-Derived', 'Converted Legacy Sensitive'],
@@ -43,7 +43,7 @@ vi.mock('../hooks/useAtlasMapData', () => ({
     parcels: null,
     loading: false,
     error: null,
-    scopeMessage: 'Compatibility geometry feed active.',
+    scopeMessage: 'TerraAtlas sync-derived gis_tf.tf_parcel_geom geometry feed active.',
   }),
 }));
 
@@ -100,7 +100,7 @@ describe('AtlasLivePage', () => {
 
   it('renders the scope message', () => {
     render(<AtlasLivePage />);
-    expect(screen.getByTestId('atlas-scope-message')).toHaveTextContent('Compatibility geometry feed active.');
+    expect(screen.getByTestId('atlas-scope-message')).toHaveTextContent('TerraAtlas sync-derived gis_tf.tf_parcel_geom geometry feed active.');
   });
 
   it('renders the map surface placeholder', () => {

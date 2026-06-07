@@ -246,6 +246,43 @@ test("verifies core Forge valuation wiring while identifying generated and fallb
   assert.equal(report.mockFallbackGeneratedScan.disallowedVisibleHits.length, 1);
 });
 
+test("does not count sync-derived TerraAtlas geometry as a Forge-dev wiring gap", () => {
+  const report = buildCountyStudioForgeRealDataWiringReport({
+    readinessReport: readinessReport(),
+    activationReport: activationReport(),
+    dataTruthReport: dataTruthReport(),
+    lineageReport: lineageReport(),
+    geometryEvidenceReport: geometryEvidenceReport({
+      status: "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
+      classification: "SYNC_DERIVED_GEOMETRY",
+      decisions: {
+        realGeometryExists: true,
+        countyStudioUsesRealTerraAtlasGeometry: true,
+        productionProofAllowed: false,
+        operationalProofAllowed: false
+      },
+      sourcePath: {
+        apiRoute: "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels",
+        backendServiceOrController: "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom",
+        dbTableOrView: "gis_tf.tf_parcel_geom",
+        joinKey: "countyId + parcelId/APN + layerId"
+      },
+      finding: "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev."
+    }),
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  const geometry = report.surfaces.find((surface) => surface.surface === "geometry/map context source");
+  assert.equal(geometry.classification, "SYNC_DERIVED_GEOMETRY");
+  assert.equal(geometry.status, "REAL_DEV_WIRED_PRODUCTION_BLOCKED");
+  assert.match(geometry.apiRoute, /atlas-live\/geometry\/parcels/);
+  assert.match(geometry.backendServiceOrController, /AtlasLiveGeometryController/);
+  assert.ok(report.wiringGaps.some((gap) => gap.surface === "risk object source"));
+  assert.ok(!report.wiringGaps.some((gap) => gap.surface === "geometry/map context source"));
+  assert.equal(report.decisions.productionProofAllowed, false);
+  assert.equal(report.decisions.operationalProofAllowed, false);
+});
+
 test("blocks wiring verification when real dev activation is not ready", () => {
   const report = buildCountyStudioForgeRealDataWiringReport({
     readinessReport: readinessReport({

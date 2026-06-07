@@ -1,13 +1,13 @@
 {
-  "generatedAtUtc": "2026-06-06T23:47:14.934Z",
+  "generatedAtUtc": "2026-06-07T02:29:37.085Z",
   "gate": "county-studio-terraatlas-geometry-evidence",
-  "status": "TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED",
-  "classification": "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
-  "finding": "TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.",
+  "status": "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
+  "classification": "SYNC_DERIVED_GEOMETRY",
+  "finding": "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.",
   "decisions": {
     "realGeometryExists": true,
-    "countyStudioUsesRealTerraAtlasGeometry": false,
-    "atlasLayerAvailableNotWired": true,
+    "countyStudioUsesRealTerraAtlasGeometry": true,
+    "atlasLayerAvailableNotWired": false,
     "geometryMisclassified": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
@@ -22,8 +22,8 @@
     "frontendFile": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
     "countyStudioConsumer": "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx",
     "hook": "frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts",
-    "apiRoute": "GET /launch-data/washington/counties/status.json + Atlas compatibility map routes",
-    "backendServiceOrController": "Atlas Live compatibility API",
+    "apiRoute": "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels",
+    "backendServiceOrController": "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed",
     "dbTableOrView": "gis_tf.tf_parcel_geom",
     "joinKey": "countyId + parcelId/APN + layerId",
     "countyId": "19190019-1919-1919-1919-191919191919",
@@ -54,11 +54,11 @@
   ],
   "sourceScan": {
     "frontendConsumer": "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx -> useAtlasMapData",
-    "apiRoute": "fetchAtlasCompatibilityMapData -> /geoforge/v2/neighborhoods/outline + /geoforge/v2/parcels/tiles",
-    "backendServiceOrController": "ParcelGeometryController + ParcelGeometryReader are available as real TerraAtlas geometry read path",
+    "apiRoute": "fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels",
+    "backendServiceOrController": "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed",
     "usesCompatibilityMapData": true,
-    "usesTerraAtlasParcelGeometryEndpoint": false,
-    "usesTerraAtlasDbTable": false,
+    "usesTerraAtlasParcelGeometryEndpoint": true,
+    "usesTerraAtlasDbTable": true,
     "availableRealGeometryReadPath": true,
     "candidateTables": [
       {
@@ -83,6 +83,7 @@
       "atlasLiveApi": "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts",
       "useAtlasMapData": "frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts",
       "geoforgeV2Api": "frontend/apps/os-shell/src/pages/forge/geo/v2/v2Api.ts",
+      "atlasLiveGeometryController": "backend/src/TerraFusion.API/Controllers/AtlasLiveGeometryController.cs",
       "parcelGeometryController": "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
       "parcelGeometryReader": "backend/src/TerraFusion.Data/Services/GisTf/ParcelGeometryReader.cs",
       "tfParcelGeomConfiguration": "backend/src/TerraFusion.Data/Configurations/GisTf/TfParcelGeomConfiguration.cs"
@@ -121,7 +122,7 @@
     "productionProofAllowed": false,
     "status": "PRODUCTION_BLOCKER"
   },
-  "requiredProofToUpgrade": "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage.",
+  "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.",
   "boundaries": [
     "This gate does not touch County Studio UI.",
     "This gate does not mutate TerraFusion Sync.",

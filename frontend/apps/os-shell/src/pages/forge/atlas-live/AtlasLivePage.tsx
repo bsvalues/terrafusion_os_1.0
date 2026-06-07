@@ -18,8 +18,8 @@ import type {
 
 const WASHINGTON_DEFAULT_CENTER: [number, number] = [-120.9, 47.35];
 const WASHINGTON_DEFAULT_ZOOM = 6.6;
-const BENTON_COMPATIBILITY_CENTER: [number, number] = [-119.3, 46.25];
-const BENTON_COMPATIBILITY_ZOOM = 10;
+const BENTON_ATLAS_CENTER: [number, number] = [-119.3, 46.25];
+const BENTON_ATLAS_ZOOM = 10;
 
 function useRouteScopeFromUrl(): AtlasRouteScope {
   return useMemo(() => {
@@ -126,7 +126,7 @@ export function AtlasLivePage() {
 
   const initialViewport = useMemo(() => {
     if (countyContext?.countyCode === '005') {
-      return { center: BENTON_COMPATIBILITY_CENTER, zoom: BENTON_COMPATIBILITY_ZOOM };
+      return { center: BENTON_ATLAS_CENTER, zoom: BENTON_ATLAS_ZOOM };
     }
 
     return { center: WASHINGTON_DEFAULT_CENTER, zoom: WASHINGTON_DEFAULT_ZOOM };

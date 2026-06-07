@@ -1,18 +1,18 @@
 # County Studio TerraAtlas Geometry Evidence
 
-Generated: 2026-06-06T23:47:14.934Z
-Status: TERRAATLAS_GEOMETRY_EVIDENCE_AVAILABLE_NOT_WIRED
-Classification: ATLAS_LAYER_AVAILABLE_NOT_WIRED
+Generated: 2026-06-07T02:29:37.085Z
+Status: TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED
+Classification: SYNC_DERIVED_GEOMETRY
 
 ## Finding
 
-TerraAtlas parcel geometry is available but County Studio is still wired through the compatibility map feed.
+County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.
 
 ## Decisions
 
 - realGeometryExists=true
-- countyStudioUsesRealTerraAtlasGeometry=false
-- atlasLayerAvailableNotWired=true
+- countyStudioUsesRealTerraAtlasGeometry=true
+- atlasLayerAvailableNotWired=false
 - geometryMisclassified=false
 - productionProofAllowed=false
 - operationalProofAllowed=false
@@ -29,8 +29,8 @@ TerraAtlas parcel geometry is available but County Studio is still wired through
 - frontendFile: frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts
 - countyStudioConsumer: frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx
 - hook: frontend/apps/os-shell/src/pages/forge/atlas-live/hooks/useAtlasMapData.ts
-- apiRoute: GET /launch-data/washington/counties/status.json + Atlas compatibility map routes
-- backendServiceOrController: Atlas Live compatibility API
+- apiRoute: fetchTerraAtlasParcelGeometryMapData -> GET /api/atlas-live/geometry/parcels
+- backendServiceOrController: AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed
 - dbTableOrView: gis_tf.tf_parcel_geom
 - joinKey: countyId + parcelId/APN + layerId
 
@@ -45,7 +45,7 @@ TerraAtlas parcel geometry is available but County Studio is still wired through
 
 ## Required Proof To Upgrade
 
-Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage.
+Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.
 
 ## Boundaries
 

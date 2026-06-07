@@ -59,8 +59,8 @@ vi.mock('../../atlas-live/hooks/useAtlasMapData', () => ({
       needsReview: 730,
       detailRoute: '/launch-data/washington/counties/005.json',
       salesRoute: '/launch-data/washington/sales/by-county/005.json',
-      geometryAvailability: 'compatibility',
-      geometryMessage: 'Compatibility geometry feed active.',
+      geometryAvailability: 'sync_derived',
+      geometryMessage: 'TerraAtlas sync-derived gis_tf.tf_parcel_geom geometry feed active.',
       trustTier: 'production_provisional',
       trustLabel: 'Production Provisional',
       dataTrustBadges: ['Production Provisional'],
@@ -114,7 +114,7 @@ vi.mock('../../atlas-live/hooks/useAtlasMapData', () => ({
     },
     loading: false,
     error: null,
-    scopeMessage: 'Compatibility geometry feed active.',
+    scopeMessage: 'TerraAtlas sync-derived gis_tf.tf_parcel_geom geometry feed active.',
   }),
 }));
 vi.mock('../../geo/v2/GeoForgeV2Map', () => ({
@@ -458,6 +458,7 @@ describe('CountyStudyPage', () => {
     expect(screen.getByTestId('mock-geoforge-v2-map')).toBeInTheDocument();
     expect(workspace).toHaveTextContent('Embedded TerraAtlas GIS');
     expect(workspace).toHaveTextContent('Layers: Atlas live · Forge overlays read-only');
+    expect(workspace).toHaveTextContent('TerraAtlas sync-derived geometry connected');
     expect(canvas.compareDocumentPosition(ledger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 

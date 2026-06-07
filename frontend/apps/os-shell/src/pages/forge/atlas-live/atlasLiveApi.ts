@@ -4,6 +4,7 @@ import {
   type NbhdOutlineCollection,
   type ParcelTileCollection,
 } from '../geo/v2/v2Api';
+import { apiFetchJson } from '@/lib/apiBase';
 
 const BENTON_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
 export const ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID = 'county_data_trust_launch_context_v1';
@@ -66,7 +67,7 @@ export interface AtlasRouteScope {
   taxYear: number;
 }
 
-export type AtlasGeometryAvailability = 'compatibility' | 'unpublished';
+export type AtlasGeometryAvailability = 'sync_derived' | 'compatibility' | 'unpublished';
 
 export interface AtlasCountyContext {
   contractId: typeof ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID;
@@ -100,6 +101,16 @@ export interface AtlasCompatibilityMapData {
   parcels: ParcelTileCollection | null;
 }
 
+export interface FetchTerraAtlasParcelGeometryMapDataParams {
+  countyId: string;
+  taxYear: number;
+  studyId: string | null;
+  segmentId: string | null;
+  neighborhoodCode: string | null;
+  limit?: number;
+  signal?: AbortSignal;
+}
+
 const DEFAULT_COMPATIBILITY_LAYER_TIMEOUT_MS = 12000;
 
 function normalizeCountyName(value: string): string {
@@ -130,7 +141,7 @@ function buildCountyTrustContext(countyCode: string) {
         'Converted Legacy Sensitive',
       ],
       databasePosture: 'TerraFusion.Benton.Operational + TerraFusion.Benton.LegacyBridge',
-      launchContextPosture: 'Benton operational/provisional lane with compatibility geometry during Atlas transfer.',
+      launchContextPosture: 'Benton operational/provisional lane with TerraAtlas sync-derived geometry for real dev.',
       productionClaimAllowed: false,
       dataTrustMessage: 'Benton is operational/provisional and sync-derived; 2017 conversion-sensitive sales qualification fields still require visible lineage caution.',
     };
@@ -189,7 +200,7 @@ export async function fetchAtlasCountyContext(
 
   const detail = await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal);
   const geometryAvailability: AtlasGeometryAvailability =
-    match.countyCode === '005' ? 'compatibility' : 'unpublished';
+    match.countyCode === '005' ? 'sync_derived' : 'unpublished';
   const trustContext = buildCountyTrustContext(detail.countyCode || match.countyCode);
 
   return {
@@ -210,11 +221,31 @@ export async function fetchAtlasCountyContext(
     salesRoute: detail.salesRoute ?? match.staticRoutes.salesShard,
     geometryAvailability,
     geometryMessage:
-      geometryAvailability === 'compatibility'
-        ? 'Parcel and neighborhood geometry are currently served through the Benton compatibility map feed while Atlas Live transfer completes.'
+      geometryAvailability === 'sync_derived'
+        ? 'Parcel geometry is served from TerraAtlas sync-derived gis_tf.tf_parcel_geom for Benton real dev; production GIS proof remains blocked pending canonical reconciliation.'
+        : geometryAvailability === 'compatibility'
+          ? 'Parcel and neighborhood geometry are currently served through the Benton compatibility map feed while Atlas Live transfer completes.'
         : 'County geometry is not yet published in the statewide hosted Atlas lane. County scope is real; parcel map geometry is still unavailable for this county.',
     ...trustContext,
   };
+}
+
+export async function fetchTerraAtlasParcelGeometryMapData(
+  params: FetchTerraAtlasParcelGeometryMapDataParams,
+): Promise<AtlasCompatibilityMapData> {
+  const q = new URLSearchParams({
+    countyId: params.countyId,
+    taxYear: String(params.taxYear),
+  });
+  if (params.studyId) q.set('studyId', params.studyId);
+  if (params.segmentId) q.set('segmentId', params.segmentId);
+  if (params.neighborhoodCode) q.set('neighborhoodCode', params.neighborhoodCode);
+  q.set('limit', String(params.limit ?? 5000));
+
+  return apiFetchJson<AtlasCompatibilityMapData>(
+    `/atlas-live/geometry/parcels?${q}`,
+    { signal: params.signal },
+  );
 }
 
 export async function fetchAtlasCompatibilityMapData(
