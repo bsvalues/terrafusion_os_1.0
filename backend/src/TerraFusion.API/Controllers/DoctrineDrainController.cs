@@ -1500,6 +1500,85 @@ public class DoctrineDrainController : ControllerBase
     }
 
     // ════════════════════════════════════════════════════════════════════
+    // EXEMPTION drain (EXEMPTION-FACT-SEAL) — populate dict_exemption_type
+    // from exmpt_type → current-year active-supplement property_exemption →
+    // exemption truth → tf_exemption canonical. Parcel resolved via existing
+    // parcel xref. Default year = 2025 (current operational year).
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("exemption")]
+    public async Task<IActionResult> DrainExemption(
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionDictPopulator dictPop,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionLandingService exemptSvc,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCurrentTruthPromoter exemptTruthPromoter,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCanonicalProjector exemptCanonProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "exemption";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsExemptionSource(pacsCs!, taxYear);
+            _logger.LogInformation("[Drain:exemption] year={Yr} (active-supplement)", taxYear);
+
+            // Stage 0: Exemption-Dict — populate dict_exemption_type from exmpt_type.
+            var dict = await dictPop.PopulateAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(dict.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Dict", dict.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 1: Exemption-S1 — land active-supplement exemption facts.
+            var s1 = await exemptSvc.LandExemptionsAsync(src, operatorName, cancellationToken);
+            batchIds.Add(s1.LoadBatchId);
+            if (!IsCompleted(s1.Status))
+                return await FailLaneAsync(LaneName, "Exemption-S1", s1.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = s1.RowsLanded;
+
+            // Stage 2: Exemption-Truth.
+            var truth = await exemptTruthPromoter.PromoteAsync(s1.LoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(truth.PromotionLoadBatchId);
+            if (!IsCompleted(truth.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Truth", truth.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsPromotedToTruth = truth.Promoted;
+
+            // Stage 3: Exemption-Canonical.
+            var canon = await exemptCanonProjector.ProjectAsync(
+                truth.PromotionLoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(canon.PromotionLoadBatchId);
+            if (!IsCompleted(canon.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Canonical", canon.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsCanonicalized = canon.ExemptionsProjected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:exemption] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
     // SALES drain — sale → keyed supp → sale truth → tf_sale canonical.
     // Independent of the parcel-anchored lanes; uses its own DESC-ordered
     // sale seed, then targets a parcel chain at the promoted sales' prop_ids.

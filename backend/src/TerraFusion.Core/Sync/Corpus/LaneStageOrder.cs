@@ -142,6 +142,16 @@ public static class LaneStageOrder
                 "Assessment-Canonical",
             },
 
+            // exemption: EXEMPTION-FACT-SEAL — populate dict from exmpt_type →
+            // current-year active-supplement exemption facts → tf_exemption.
+            ["exemption"] = new[]
+            {
+                "Exemption-Dict",
+                "Exemption-S1",
+                "Exemption-Truth",
+                "Exemption-Canonical",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]

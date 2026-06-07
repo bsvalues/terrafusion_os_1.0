@@ -2094,6 +2094,22 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsAssessmentCanonicalProjector>();
 
+// EXEMPTION-FACT-SEAL (2026-06-07): current-year active-supplement
+// property_exemption → truth_pacs.exemption_current → canonical_tf.tf_exemption
+// (+ dict_exemption_type populate from PACS exmpt_type).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionDictPopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsExemptionDictPopulator>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsExemptionLandingService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsExemptionCurrentTruthPromoter>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsExemptionCanonicalProjector>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

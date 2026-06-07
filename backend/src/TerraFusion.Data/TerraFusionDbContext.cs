@@ -320,6 +320,14 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessment>
     TfAssessments { get; set; } = null!;
 
+  // EXEMPTION-FACT-SEAL: current-year active-supplement exemption facts.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyExemption>
+    LegacyPacsRawPropertyExemptions { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsExemptionCurrent>
+    TruthPacsExemptionCurrents { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfExemption>
+    TfExemptions { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1160,6 +1168,15 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsAssessmentCurrentConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentConfiguration());
+
+    // EXEMPTION-FACT-SEAL: legacy_pacs_raw.property_exemption +
+    // truth_pacs.exemption_current + canonical_tf.tf_exemption.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyExemptionConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsExemptionCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfExemptionConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
