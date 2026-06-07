@@ -1,18 +1,18 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T16:01:06.247Z
-Status: REAL_DEV_DATA_AVAILABLE
+Generated: 2026-06-07T17:00:29.493Z
+Status: REAL_DEV_SERVER_BLOCKED
 
 ## Decision
 
-- Real Dev Server: ALLOWED
+- Real Dev Server: BLOCKED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
 ## Maturity
 
 - DATA_TRUTH_FAIL: true
-- REAL_DEV_DATA_AVAILABLE: true
+- REAL_DEV_DATA_AVAILABLE: false
 - SYNC_DERIVED_PARTIAL: true
 - SYNC_DERIVED_COMPLETE: false
 - AUTHORITATIVE_RECONCILED: false
@@ -27,7 +27,7 @@ Status: REAL_DEV_DATA_AVAILABLE
 | load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-v2-activesupp-copy (IN_PROGRESS). |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
-| canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
+| canonical parcel counts | UNKNOWN | false | Canonical parcel count is missing. |
 | owner truth count | PARTIAL_SEEDED | true | Owner truth rows exist. |
 | account count | SEEDED | true | Account rows exist. |
 | supp association count | PARTIAL_SEEDED | true | Supplement association landing rows exist. |
@@ -35,7 +35,7 @@ Status: REAL_DEV_DATA_AVAILABLE
 | WPOV status | PARTIAL_SEEDED | true | WPOV landing rows exist. |
 | WSDOR status | PARTIAL_SEEDED | true | WSDOR truth rows exist. |
 | owner-supnum backfill dependency classification | PARTIAL_SEEDED | true | owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked. |
-| map data dependency status | PARTIAL_SEEDED | true | Map dependency is classified PARTIAL_SEEDED. |
+| map data dependency status | SYNC_DERIVED | true | Map dependency is classified SYNC_DERIVED. |
 | ledger data dependency status | SYNC_DERIVED | true | Ledger dependency is classified SYNC_DERIVED. |
 | inspector data dependency status | SYNC_DERIVED | true | Inspector dependency is classified SYNC_DERIVED. |
 
@@ -52,7 +52,7 @@ Status: REAL_DEV_DATA_AVAILABLE
 
 ## Blockers
 
-- None
+- canonical parcel counts: Canonical parcel count is missing.
 
 ## Rules
 

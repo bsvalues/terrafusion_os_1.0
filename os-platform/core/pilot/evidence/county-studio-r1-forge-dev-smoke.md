@@ -1,8 +1,8 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T16:25:22.844Z
+Generated: 2026-06-07T17:01:28.435Z
 
-Status: `FORGE_DEV_SMOKE_BLOCKED_BY_PORT_PREFLIGHT`
+Status: `FORGE_DEV_SMOKE_PORT_PREFLIGHT_PASS_DB_READINESS_BLOCKED`
 
 ## Command Invoked
 
@@ -19,41 +19,55 @@ C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 Smoke log:
 
 ```text
-C:\Users\bsval\AppData\Local\Temp\county-studio-real-dev-port-preflight-smoke-20260607-092440.log
+C:\Users\bsval\AppData\Local\Temp\county-studio-port-conflict-resolution-smoke-20260607-095557.log
 ```
 
-## Result
+## Port Conflict Result
 
-The command now fails fast at the port preflight:
+The prior occupied ports were identified and stopped:
+
+- `4317` governed pilot runtime
+  - pid: `50784`
+  - command: `"C:\Program Files\nodejs\node.exe" os-platform/core/pilot/dev-pilot-runtime.mjs`
+  - classification: `STALE_CONFLICTING_PROCESS`
+
+- `5046` TerraFusion API runtime
+  - pid: `42020`
+  - command: `dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --urls http://localhost:5046 --skip-dev-seeders`
+  - classification: `STALE_CONFLICTING_PROCESS`
+
+After resolution:
 
 ```text
-pnpm run proof:county-studio:real-dev-port-preflight
-REAL_DEV_PORT_PREFLIGHT_BLOCKED
+REAL_DEV_PORT_PREFLIGHT_PASS
+portPreflightPassed=true
+occupiedPorts=[]
+```
+
+## Current Blocker
+
+The command advanced past the port preflight, then stopped at DB readiness:
+
+```text
+REAL_DEV_SERVER_BLOCKED
+canonical parcel counts: Canonical parcel count is missing.
+canonicalParcel=0
 ```
 
 The command did not reach:
 
 ```text
-pnpm run proof:county-studio:benton-real-dev-server-readiness:db
 pnpm run proof:county-studio:real-dev-activation
 cross-env ... pnpm run dev
 ```
 
 So Vite, the governed pilot runtime, and the TerraFusion API runtime were not launched in this smoke.
 
-## Occupied Ports
-
-- governed pilot runtime: `4317` (`TF_PILOT_PORT`)
-  - owner: `node` pid `50784`
-  - path: `C:\Program Files\nodejs\node.exe`
-
-- TerraFusion API runtime: `5046` (`TF_API_PORT`)
-  - owner: `dotnet` pid `42020`
-  - path: `C:\Program Files\dotnet\dotnet.exe`
-
 ## Interpretation
 
-The real Benton Forge dev command no longer fails late with unclear bind errors. It now stops before runtime startup with exact occupied ports, owners, and remediation evidence.
+The local port conflict is resolved and no longer blocks the real Benton Forge dev command.
+
+The next live blocker is DB readiness: canonical parcel count returned `0` during this smoke.
 
 This is not production proof.
 

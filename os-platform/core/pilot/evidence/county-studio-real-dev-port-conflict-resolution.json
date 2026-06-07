@@ -1,0 +1,67 @@
+{
+  "generatedAtUtc": "2026-06-07T17:01:28.435Z",
+  "gate": "county-studio-real-dev-port-conflict-resolution",
+  "status": "REAL_DEV_PORT_CONFLICT_RESOLVED_DB_READINESS_BLOCKED",
+  "startingBlock": {
+    "status": "REAL_DEV_PORT_PREFLIGHT_BLOCKED",
+    "occupiedPorts": [
+      {
+        "serviceName": "governed pilot runtime",
+        "port": 4317,
+        "processId": 50784,
+        "processName": "node",
+        "commandLine": "\"C:\\Program Files\\nodejs\\node.exe\" os-platform/core/pilot/dev-pilot-runtime.mjs"
+      },
+      {
+        "serviceName": "TerraFusion API runtime",
+        "port": 5046,
+        "processId": 42020,
+        "processName": "dotnet",
+        "commandLine": "dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --urls http://localhost:5046 --skip-dev-seeders"
+      }
+    ]
+  },
+  "classification": [
+    {
+      "port": 4317,
+      "serviceName": "governed pilot runtime",
+      "classification": "STALE_CONFLICTING_PROCESS",
+      "reason": "The real Benton dev command launches a fresh governed pilot runtime and does not reuse an existing 4317 listener."
+    },
+    {
+      "port": 5046,
+      "serviceName": "TerraFusion API runtime",
+      "classification": "STALE_CONFLICTING_PROCESS",
+      "reason": "The real Benton dev command launches a fresh API runtime and does not reuse an existing 5046 listener."
+    }
+  ],
+  "resolution": {
+    "action": "Stopped only the identified 4317 and 5046 TerraFusion dev runtime processes.",
+    "portPreflightAfterResolution": "REAL_DEV_PORT_PREFLIGHT_PASS",
+    "occupiedPortsAfterResolution": []
+  },
+  "smokeAfterResolution": {
+    "command": "pnpm run dev:county-studio:real-benton",
+    "status": "FORGE_DEV_SMOKE_PORT_PREFLIGHT_PASS_DB_READINESS_BLOCKED",
+    "portPreflightPassed": true,
+    "cleanFullDevSmokePassed": false,
+    "nextBlocker": {
+      "gate": "benton-real-dev-server-readiness",
+      "status": "REAL_DEV_SERVER_BLOCKED",
+      "blocker": "canonical parcel counts: Canonical parcel count is missing.",
+      "canonicalParcel": 0
+    }
+  },
+  "decisions": {
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "boundaries": [
+    "No County Studio UI changed.",
+    "No TerraFusion Sync behavior changed.",
+    "No DB seeding changed.",
+    "No proof gate weakened.",
+    "No production proof claimed.",
+    "No operational proof claimed."
+  ]
+}

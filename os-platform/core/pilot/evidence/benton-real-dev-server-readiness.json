@@ -1,16 +1,16 @@
 {
-  "generatedAtUtc": "2026-06-07T16:01:06.247Z",
+  "generatedAtUtc": "2026-06-07T17:00:29.493Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_DATA_AVAILABLE",
+  "status": "REAL_DEV_SERVER_BLOCKED",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": true,
+    "realDevServerAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
   "maturity": {
     "DATA_TRUTH_FAIL": true,
-    "REAL_DEV_DATA_AVAILABLE": true,
+    "REAL_DEV_DATA_AVAILABLE": false,
     "SYNC_DERIVED_PARTIAL": true,
     "SYNC_DERIVED_COMPLETE": false,
     "AUTHORITATIVE_RECONCILED": false,
@@ -78,11 +78,11 @@
         "propertyLanding": 1190834,
         "ownerLanding": 8213706,
         "suppAssociation": 4382985,
-        "wpov": 1658143,
+        "wpov": 1707143,
         "truthParcel": 83326,
         "truthOwner": 816849,
         "truthWsdor": 774696,
-        "canonicalParcel": 3198979,
+        "canonicalParcel": 0,
         "account": 535140
       }
     },
@@ -95,21 +95,21 @@
         "propertyLanding": 1190834,
         "ownerLanding": 8213706,
         "suppAssociation": 4382985,
-        "wpov": 1658143,
+        "wpov": 1707143,
         "truthParcel": 83326,
         "truthOwner": 816849,
         "truthWsdor": 774696,
-        "canonicalParcel": 3198979,
+        "canonicalParcel": 0,
         "account": 535140
       }
     },
     {
       "name": "canonical parcel counts",
-      "classification": "SEEDED",
-      "passed": true,
-      "reason": "Canonical parcel rows exist.",
+      "classification": "UNKNOWN",
+      "passed": false,
+      "reason": "Canonical parcel count is missing.",
       "evidence": {
-        "canonicalParcel": 3198979
+        "canonicalParcel": 0
       }
     },
     {
@@ -155,7 +155,7 @@
       "passed": true,
       "reason": "WPOV landing rows exist.",
       "evidence": {
-        "wpov": 1658143
+        "wpov": 1707143
       }
     },
     {
@@ -206,11 +206,11 @@
     },
     {
       "name": "map data dependency status",
-      "classification": "PARTIAL_SEEDED",
+      "classification": "SYNC_DERIVED",
       "passed": true,
-      "reason": "Map dependency is classified PARTIAL_SEEDED.",
+      "reason": "Map dependency is classified SYNC_DERIVED.",
       "evidence": {
-        "classification": "PARTIAL_SEEDED"
+        "classification": "SYNC_DERIVED"
       }
     },
     {
@@ -265,7 +265,7 @@
       }
     }
   },
-  "blockers": [],
+  "blockers": ["canonical parcel counts: Canonical parcel count is missing."],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

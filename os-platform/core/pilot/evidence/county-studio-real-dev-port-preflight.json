@@ -1,7 +1,7 @@
 {
-  "generatedAtUtc": "2026-06-07T16:24:45.552Z",
+  "generatedAtUtc": "2026-06-07T16:55:59.093Z",
   "gate": "county-studio-real-dev-port-preflight",
-  "status": "REAL_DEV_PORT_PREFLIGHT_BLOCKED",
+  "status": "REAL_DEV_PORT_PREFLIGHT_PASS",
   "requiredPorts": [
     {
       "serviceName": "governed pilot runtime",
@@ -18,33 +18,8 @@
       "purpose": "Local .NET API runtime used by backend:launch and Vite API proxy."
     }
   ],
-  "occupiedPorts": [
-    {
-      "serviceName": "governed pilot runtime",
-      "port": 4317,
-      "envVar": "TF_PILOT_PORT",
-      "requiredForDev": true,
-      "owningProcess": {
-        "processId": 50784,
-        "processName": "node",
-        "path": "C:\\Program Files\\nodejs\\node.exe"
-      },
-      "remediation": "Stop the conflicting process using port 4317, or run the existing cleanup command if it owns this repo. Alternatively configure an unused TF_PILOT_PORT before launching if the service supports that port."
-    },
-    {
-      "serviceName": "TerraFusion API runtime",
-      "port": 5046,
-      "envVar": "TF_API_PORT",
-      "requiredForDev": true,
-      "owningProcess": {
-        "processId": 42020,
-        "processName": "dotnet",
-        "path": "C:\\Program Files\\dotnet\\dotnet.exe"
-      },
-      "remediation": "Stop the conflicting process using port 5046, or run the existing cleanup command if it owns this repo. Alternatively configure an unused TF_API_PORT before launching if the service supports that port."
-    }
-  ],
-  "portPreflightPassed": false,
+  "occupiedPorts": [],
+  "portPreflightPassed": true,
   "productionProofAllowed": false,
   "operationalProofAllowed": false,
   "alternatePortSupport": [

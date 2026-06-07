@@ -1,29 +1,33 @@
 {
-  "generatedAtUtc": "2026-06-07T16:25:22.844Z",
+  "generatedAtUtc": "2026-06-07T17:01:28.435Z",
   "gate": "county-studio-r1-forge-dev-smoke",
-  "status": "FORGE_DEV_SMOKE_BLOCKED_BY_PORT_PREFLIGHT",
+  "status": "FORGE_DEV_SMOKE_PORT_PREFLIGHT_PASS_DB_READINESS_BLOCKED",
   "commandInvoked": "pnpm run dev:county-studio:real-benton",
   "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
-  "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-real-dev-port-preflight-smoke-20260607-092440.log",
+  "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-port-conflict-resolution-smoke-20260607-095557.log",
   "preflightGates": [
     {
       "command": "pnpm run proof:county-studio:real-dev-port-preflight",
-      "status": "REAL_DEV_PORT_PREFLIGHT_BLOCKED",
-      "exitCode": 1,
-      "passed": false,
+      "status": "REAL_DEV_PORT_PREFLIGHT_PASS",
+      "exitCode": 0,
+      "passed": true,
       "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-port-preflight.json"
     },
     {
       "command": "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
-      "status": "NOT_REACHED",
+      "status": "REAL_DEV_SERVER_BLOCKED",
+      "exitCode": 1,
       "passed": false,
-      "reason": "The port preflight failed before DB readiness ran."
+      "blockers": [
+        "canonical parcel counts: Canonical parcel count is missing."
+      ],
+      "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-activation",
       "status": "NOT_REACHED",
       "passed": false,
-      "reason": "The port preflight failed before activation ran."
+      "reason": "The DB readiness gate failed after port preflight passed."
     }
   ],
   "devServer": {
@@ -32,33 +36,38 @@
     "frontendBoundUrls": [],
     "urlEmitted": false,
     "backendStarted": false,
-    "reason": "The real Benton Forge dev command failed fast at the port preflight before Vite, the governed pilot runtime, or the API runtime started."
+    "reason": "The real Benton Forge dev command cleared port preflight, then stopped at DB readiness before Vite, the governed pilot runtime, or the API runtime started."
   },
   "portPreflight": {
-    "portPreflightPassed": false,
-    "occupiedPorts": [
+    "portPreflightPassed": true,
+    "occupiedPorts": [],
+    "resolvedPorts": [
       {
         "serviceName": "governed pilot runtime",
         "port": 4317,
-        "envVar": "TF_PILOT_PORT",
-        "owningProcess": {
-          "processId": 50784,
-          "processName": "node",
-          "path": "C:\\Program Files\\nodejs\\node.exe"
-        }
+        "previousProcessId": 50784,
+        "previousProcessName": "node",
+        "classification": "STALE_CONFLICTING_PROCESS"
       },
       {
         "serviceName": "TerraFusion API runtime",
         "port": 5046,
-        "envVar": "TF_API_PORT",
-        "owningProcess": {
-          "processId": 42020,
-          "processName": "dotnet",
-          "path": "C:\\Program Files\\dotnet\\dotnet.exe"
-        }
+        "previousProcessId": 42020,
+        "previousProcessName": "dotnet",
+        "classification": "STALE_CONFLICTING_PROCESS"
       }
     ]
   },
+  "readinessBlockers": [
+    {
+      "name": "canonical parcel counts",
+      "classification": "UNKNOWN",
+      "reason": "Canonical parcel count is missing.",
+      "evidence": {
+        "canonicalParcel": 0
+      }
+    }
+  ],
   "modeFlags": {
     "configured": [
       "TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton",
@@ -70,15 +79,16 @@
     "reason": "The command stopped before the cross-env dev stage."
   },
   "postureAfterSmoke": {
+    "portPreflightPassed": true,
+    "realDevServerAllowed": false,
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
     "cleanFullDevSmokePassed": false
   },
   "startupErrors": [
-    "REAL_DEV_PORT_PREFLIGHT_BLOCKED: governed pilot runtime port 4317 is occupied by node pid 50784",
-    "REAL_DEV_PORT_PREFLIGHT_BLOCKED: TerraFusion API runtime port 5046 is occupied by dotnet pid 42020"
+    "REAL_DEV_SERVER_BLOCKED: canonical parcel count is missing."
   ],
-  "interpretation": "The real Benton Forge dev command no longer fails late with unclear runtime bind errors. It now stops at the port preflight with exact occupied ports, owners, and remediation evidence. This does not claim production proof or operational proof.",
+  "interpretation": "The local port conflict is resolved and no longer blocks the real Benton Forge dev command. The next live blocker is DB readiness: canonical parcel count returned 0 during this smoke. No production or operational proof is claimed.",
   "boundaries": [
     "This smoke did not touch County Studio UI.",
     "This smoke did not mutate TerraFusion Sync.",
