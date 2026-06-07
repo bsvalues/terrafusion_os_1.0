@@ -1,6 +1,6 @@
 # County Studio R1 Forge Dev Status
 
-Generated: 2026-06-07T18:28:02.344Z
+Generated: 2026-06-07T20:01:00.617Z
 Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 
 ## Summary
@@ -13,6 +13,11 @@ Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 - geometryStatus=SYNC_DERIVED_GEOMETRY
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 - ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
+- exemptionFactStatus=NOT_REQUIRED_FOR_FORGE_DEV
+- exemptionFactRequiredForForgeDev=false
+- exemptionFactRequiredForProductionProof=true
+- exemptionFactRequiredForPacketProof=true
+- exemptionFactRequiredForOperationalProof=true
 - countyStudioMode=REAL_BENTON_FORGE_DEV
 - requiredRunCommand=pnpm run dev:county-studio:real-benton
 
@@ -38,16 +43,20 @@ This is not operational proof. Packet, Dais, Dossier, Trace, owner identity, and
 
 Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev.
 
+Exemption facts remain required for production/ops proof, not current County Studio Forge valuation dev.
+
 ## Remaining Production Blockers
 
 - Canonical Benton source/count reconciliation remains required before production proof.
 - CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.
 - TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.
 - Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.
+- Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof.
 
 ## Remaining Operational Blockers
 
 - Owner-supnum remains required for packet/ops proof, Dossier packets, Dais/notice/appeal identity, and operational owner references.
+- Exemption facts remain required for Dais exemption administration, Dossier packet proof, notices, tax relief workflows, and operational roll proof.
 - Production proof must pass before operational proof can be claimed.
 - Dossier evidence packets, Dais workflow creation, TerraTrace decision chain, and parcel/workbench handoff evidence remain operational proof requirements.
 

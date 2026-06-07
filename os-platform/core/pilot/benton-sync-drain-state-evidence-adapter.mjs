@@ -285,9 +285,14 @@ function dependencyClassification({ geometryCount, canonicalParcel, truthParcel 
 }
 
 function ownerSupnumBackfillDependency(loadBatch, latestFailed = null) {
+  const currentStage = loadBatch?.stage ?? null;
+  const currentStageIsOwnerSupnum = String(currentStage ?? "").trim().toLowerCase().startsWith("owner-supnum");
+  const latestFailedStage = latestFailed && !latestFailed.unavailable ? latestFailed.stage : null;
+  const latestFailedStatus = latestFailed && !latestFailed.unavailable ? latestFailed.status : null;
+
   return {
-    stage: loadBatch?.stage ?? "UNKNOWN",
-    status: loadBatch?.status ?? "UNKNOWN",
+    stage: currentStageIsOwnerSupnum ? currentStage : latestFailedStage ?? "UNKNOWN",
+    status: currentStageIsOwnerSupnum ? loadBatch?.status ?? "UNKNOWN" : latestFailedStatus ?? "UNKNOWN",
     latestFailed: latestFailed && !latestFailed.unavailable
       ? {
         loadBatchId: latestFailed.loadBatchId ?? null,
@@ -315,6 +320,41 @@ function ownerSupnumBackfillDependency(loadBatch, latestFailed = null) {
         "Dossier packet owner identity",
         "Dais/notice/appeal taxpayer identity",
         "operational packet owner references"
+      ]
+    }
+  };
+}
+
+function exemptionFactSealDependency(loadBatch) {
+  const stage = loadBatch?.stage ?? "UNKNOWN";
+  const status = loadBatch?.status ?? "UNKNOWN";
+  const isExemptionFactStage = String(stage).trim().toLowerCase().startsWith("exemption-fact");
+
+  return {
+    stage,
+    status,
+    classification: isExemptionFactStage ? "NOT_REQUIRED_FOR_FORGE_DEV" : "UNKNOWN",
+    requiredForCountyStudioForgeDev: false,
+    requiredForProductionProof: true,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    exemptionFactsConsumedByForgeSurfaces: false,
+    consumedSurfaces: [],
+    audit: {
+      finding: "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+      forgeValuationSources: [
+        "parcel/property identity",
+        "property characteristics",
+        "valuation metrics",
+        "ratio-study context",
+        "risk objects",
+        "geometry/map context"
+      ],
+      packetOpsSources: [
+        "Dais exemption administration",
+        "tax/notice context",
+        "Dossier packet exemption proof",
+        "operational roll packet references"
       ]
     }
   };
@@ -431,7 +471,8 @@ export async function buildBentonSyncDrainStateEvidence({
       ownerSupnumBackfill: ownerSupnumBackfillDependency(
         queryResults.latestLoadBatch,
         queryResults.latestOwnerSupnumFailure
-      )
+      ),
+      exemptionFactSeal: exemptionFactSealDependency(queryResults.latestLoadBatch)
     },
     decisions: {
       realDevEvidenceReadable: false,
@@ -514,6 +555,12 @@ function renderMarkdown(evidence) {
     `- Owner-supnum required for Forge dev: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForCountyStudioForgeDev}`,
     `- Owner-supnum required for packet proof: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForPacketProof}`,
     `- Owner-supnum required for operational proof: ${evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForOperationalProof}`,
+    `- Exemption fact seal status: ${evidence.countyStudioDependencies.exemptionFactSeal.status}`,
+    `- Exemption fact seal classification: ${evidence.countyStudioDependencies.exemptionFactSeal.classification}`,
+    `- Exemption fact required for Forge dev: ${evidence.countyStudioDependencies.exemptionFactSeal.requiredForCountyStudioForgeDev}`,
+    `- Exemption fact required for production proof: ${evidence.countyStudioDependencies.exemptionFactSeal.requiredForProductionProof}`,
+    `- Exemption fact required for packet proof: ${evidence.countyStudioDependencies.exemptionFactSeal.requiredForPacketProof}`,
+    `- Exemption fact required for operational proof: ${evidence.countyStudioDependencies.exemptionFactSeal.requiredForOperationalProof}`,
     "",
     "## Rules",
     "",

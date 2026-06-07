@@ -1,10 +1,10 @@
 {
-  "generatedAtUtc": "2026-06-07T18:52:57.668Z",
+  "generatedAtUtc": "2026-06-07T20:02:25.766Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_SERVER_BLOCKED",
+  "status": "REAL_DEV_DATA_AVAILABLE",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": false,
+    "realDevServerAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
@@ -30,6 +30,7 @@
     "WPOV status",
     "WSDOR status",
     "owner-supnum backfill dependency classification",
+    "exemption fact seal dependency classification",
     "map data dependency status",
     "ledger data dependency status",
     "inspector data dependency status"
@@ -49,9 +50,9 @@
     },
     {
       "name": "active drain process state",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Drain process state is unknown.",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Client drain process is not alive/known, but the failed owner-supnum stage is not required for County Studio Forge valuation dev.",
       "evidence": {
         "pid": null,
         "alive": null,
@@ -60,13 +61,13 @@
     },
     {
       "name": "load_batch current stage",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "load_batch stage is exemption-fact-seal (FAILED).",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "load_batch stage is owner-supnum-backfill (FAILED), retained as packet/ops blocker but not a County Studio Forge dev blocker.",
       "evidence": {
         "stage": "exemption-fact-seal",
-        "status": "FAILED",
-        "loadBatchId": "7063c26e-c2f3-4dfe-ae7c-afce6a48f9d5"
+        "status": "COMPLETED",
+        "loadBatchId": "e21e20ea-4bfb-402e-8496-4506f6829922"
       }
     },
     {
@@ -179,7 +180,7 @@
       "passed": true,
       "reason": "owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked.",
       "evidence": {
-        "stage": "exemption-fact-seal",
+        "stage": "owner-supnum-resume",
         "status": "FAILED",
         "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
         "requiredForCountyStudioForgeDev": false,
@@ -206,6 +207,40 @@
             "Dossier packet owner identity",
             "Dais/notice/appeal taxpayer identity",
             "operational packet owner references"
+          ]
+        }
+      }
+    },
+    {
+      "name": "exemption fact seal dependency classification",
+      "classification": "PARTIAL_SEEDED",
+      "passed": true,
+      "reason": "exemption-fact-seal is not required for County Studio Forge valuation dev; production, packet, and operational proof remain blocked.",
+      "evidence": {
+        "stage": "exemption-fact-seal",
+        "status": "COMPLETED",
+        "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+        "requiredForCountyStudioForgeDev": false,
+        "requiredForPacketProof": true,
+        "requiredForProductionProof": true,
+        "requiredForOperationalProof": true,
+        "exemptionFactsConsumedByForgeSurfaces": false,
+        "consumedSurfaces": [],
+        "audit": {
+          "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+          "forgeValuationSources": [
+            "parcel/property identity",
+            "property characteristics",
+            "valuation metrics",
+            "ratio-study context",
+            "risk objects",
+            "geometry/map context"
+          ],
+          "packetOpsSources": [
+            "Dais exemption administration",
+            "tax/notice context",
+            "Dossier packet exemption proof",
+            "operational roll packet references"
           ]
         }
       }
@@ -240,7 +275,7 @@
   ],
   "forgeDevDependency": {
     "ownerSupnumBackfill": {
-      "stage": "exemption-fact-seal",
+      "stage": "owner-supnum-resume",
       "status": "FAILED",
       "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
       "requiredForCountyStudioForgeDev": false,
@@ -269,12 +304,37 @@
           "operational packet owner references"
         ]
       }
+    },
+    "exemptionFactSeal": {
+      "stage": "exemption-fact-seal",
+      "status": "COMPLETED",
+      "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "requiredForCountyStudioForgeDev": false,
+      "requiredForPacketProof": true,
+      "requiredForProductionProof": true,
+      "requiredForOperationalProof": true,
+      "exemptionFactsConsumedByForgeSurfaces": false,
+      "consumedSurfaces": [],
+      "audit": {
+        "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+        "forgeValuationSources": [
+          "parcel/property identity",
+          "property characteristics",
+          "valuation metrics",
+          "ratio-study context",
+          "risk objects",
+          "geometry/map context"
+        ],
+        "packetOpsSources": [
+          "Dais exemption administration",
+          "tax/notice context",
+          "Dossier packet exemption proof",
+          "operational roll packet references"
+        ]
+      }
     }
   },
-  "blockers": [
-    "active drain process state: Drain process state is unknown.",
-    "load_batch current stage: load_batch stage is exemption-fact-seal (FAILED)."
-  ],
+  "blockers": [],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",
@@ -292,6 +352,7 @@
     "Stage stagnation without inserts is investigation.",
     "Partial landing is usable for dev evidence, not production proof.",
     "Owner-supnum backfill failure blocks packet and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes owner identity.",
+    "Exemption fact seal failure blocks production, packet, and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes exemption facts.",
     "Do not relabel partial seed as authoritative."
   ],
   "boundaries": [

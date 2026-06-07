@@ -115,6 +115,19 @@ function ownerSupnumStatus(readinessReport, activationReport, forgeWiringReport)
   return "UNKNOWN";
 }
 
+function exemptionDependency(readinessReport, activationReport) {
+  return activationReport?.forgeDevDependency?.exemptionFactSeal
+    ?? readinessReport?.forgeDevDependency?.exemptionFactSeal
+    ?? null;
+}
+
+function exemptionFactStatus(readinessReport, activationReport) {
+  const dependency = exemptionDependency(readinessReport, activationReport);
+  if (dependency?.classification) return dependency.classification;
+  if (dependency?.requiredForCountyStudioForgeDev === false) return "NOT_REQUIRED_FOR_FORGE_DEV";
+  return "UNKNOWN";
+}
+
 function dataTruthStatus(activationReport, forgeWiringReport) {
   return activationReport?.dataTruthPosture?.status
     ?? forgeWiringReport?.dataTruthPosture?.status
@@ -143,12 +156,13 @@ function riskReady(riskAuditReport) {
   return READY_RISK_CLASSIFICATIONS.has(riskObjectStatus(riskAuditReport));
 }
 
-function productionBlockers({ dataTruth, geometry, risk, owner }) {
+function productionBlockers({ dataTruth, geometry, risk, owner, exemption }) {
   const blockers = [
     "Canonical Benton source/count reconciliation remains required before production proof.",
     "CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.",
     "TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.",
-    "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment."
+    "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.",
+    "Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof."
   ];
 
   if (dataTruth !== "DATA_TRUTH_FAIL") {
@@ -163,6 +177,9 @@ function productionBlockers({ dataTruth, geometry, risk, owner }) {
   if (owner !== "NOT_REQUIRED_FOR_FORGE_DEV") {
     blockers.push(`Owner-supnum status is ${owner}; owner identity must remain visible as a packet/ops dependency.`);
   }
+  if (exemption !== "NOT_REQUIRED_FOR_FORGE_DEV") {
+    blockers.push(`Exemption fact status is ${exemption}; exemption facts must remain visible as production/ops dependencies.`);
+  }
 
   return blockers;
 }
@@ -170,6 +187,7 @@ function productionBlockers({ dataTruth, geometry, risk, owner }) {
 function operationalBlockers() {
   return [
     "Owner-supnum remains required for packet/ops proof, Dossier packets, Dais/notice/appeal identity, and operational owner references.",
+    "Exemption facts remain required for Dais exemption administration, Dossier packet proof, notices, tax relief workflows, and operational roll proof.",
     "Production proof must pass before operational proof can be claimed.",
     "Dossier evidence packets, Dais workflow creation, TerraTrace decision chain, and parcel/workbench handoff evidence remain operational proof requirements."
   ];
@@ -182,6 +200,7 @@ function buildBlockers({
   geometryIsReady,
   riskIsReady,
   ownerStatus,
+  exemptionStatus,
   liveReadinessRefresh
 }) {
   const blockers = [];
@@ -196,6 +215,9 @@ function buildBlockers({
   if (!riskIsReady) blockers.push("Risk objects are not dev-derived or real-sourced.");
   if (ownerStatus !== "NOT_REQUIRED_FOR_FORGE_DEV") {
     blockers.push("Owner-supnum dependency is not classified as NOT_REQUIRED_FOR_FORGE_DEV.");
+  }
+  if (exemptionStatus !== "NOT_REQUIRED_FOR_FORGE_DEV") {
+    blockers.push("Exemption fact dependency is not classified as NOT_REQUIRED_FOR_FORGE_DEV.");
   }
   return blockers;
 }
@@ -215,6 +237,8 @@ export function buildCountyStudioR1ForgeDevStatusReport({
   const geometry = geometryStatus(geometryReport, forgeWiringReport);
   const risk = riskObjectStatus(riskAuditReport);
   const owner = ownerSupnumStatus(readinessReport, activationReport, forgeWiringReport);
+  const exemption = exemptionFactStatus(readinessReport, activationReport);
+  const exemptionDependencyReport = exemptionDependency(readinessReport, activationReport);
   const dataTruth = dataTruthStatus(activationReport, forgeWiringReport);
   const geometryIsReady = geometryReady(geometryReport, forgeWiringReport);
   const riskIsReady = riskReady(riskAuditReport);
@@ -226,6 +250,7 @@ export function buildCountyStudioR1ForgeDevStatusReport({
     geometryIsReady,
     riskIsReady,
     ownerStatus: owner,
+    exemptionStatus: exemption,
     liveReadinessRefresh
   });
   const forgeDevAllowed = blockers.length === 0;
@@ -243,14 +268,19 @@ export function buildCountyStudioR1ForgeDevStatusReport({
       geometryStatus: geometry,
       riskObjectStatus: risk,
       ownerSupnumStatus: owner,
+      exemptionFactStatus: exemption,
+      exemptionFactRequiredForForgeDev: exemptionDependencyReport?.requiredForCountyStudioForgeDev ?? null,
+      exemptionFactRequiredForProductionProof: exemptionDependencyReport?.requiredForProductionProof ?? null,
+      exemptionFactRequiredForPacketProof: exemptionDependencyReport?.requiredForPacketProof ?? null,
+      exemptionFactRequiredForOperationalProof: exemptionDependencyReport?.requiredForOperationalProof ?? null,
       countyStudioMode: forgeDevAllowed ? "REAL_BENTON_FORGE_DEV" : "FORGE_DEV_BLOCKED",
       requiredRunCommand: REQUIRED_RUN_COMMAND,
-      remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner }),
+      remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner, exemption }),
       remainingOperationalBlockers: operationalBlockers()
     },
     requiredRunCommand: REQUIRED_RUN_COMMAND,
     preflightChain: REQUIRED_FORGE_DEV_PREFLIGHT_CHAIN,
-    remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner }),
+    remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner, exemption }),
     remainingOperationalBlockers: operationalBlockers(),
     runbook: {
       startRealBentonForgeDev: REQUIRED_RUN_COMMAND,
@@ -260,7 +290,9 @@ export function buildCountyStudioR1ForgeDevStatusReport({
       notOperationalProof:
         "This is not operational proof. Packet, Dais, Dossier, Trace, owner identity, and workflow evidence remain blocked.",
       ownerSupnumPosture:
-        "Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev."
+        "Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev.",
+      exemptionFactPosture:
+        "Exemption facts remain required for production/ops proof, not current County Studio Forge valuation dev."
     },
     sourceArtifacts: {
       backendHealth: "os-platform/core/pilot/evidence/county-studio-real-dev-backend-health.json",
@@ -306,6 +338,11 @@ export function renderCountyStudioR1ForgeDevStatusMarkdown(report) {
     `- geometryStatus=${report.summary.geometryStatus}`,
     `- riskObjectStatus=${report.summary.riskObjectStatus}`,
     `- ownerSupnumStatus=${report.summary.ownerSupnumStatus}`,
+    `- exemptionFactStatus=${report.summary.exemptionFactStatus}`,
+    `- exemptionFactRequiredForForgeDev=${report.summary.exemptionFactRequiredForForgeDev}`,
+    `- exemptionFactRequiredForProductionProof=${report.summary.exemptionFactRequiredForProductionProof}`,
+    `- exemptionFactRequiredForPacketProof=${report.summary.exemptionFactRequiredForPacketProof}`,
+    `- exemptionFactRequiredForOperationalProof=${report.summary.exemptionFactRequiredForOperationalProof}`,
     `- countyStudioMode=${report.summary.countyStudioMode}`,
     `- requiredRunCommand=${report.summary.requiredRunCommand}`,
     "",
@@ -330,6 +367,8 @@ export function renderCountyStudioR1ForgeDevStatusMarkdown(report) {
     report.runbook.notOperationalProof,
     "",
     report.runbook.ownerSupnumPosture,
+    "",
+    report.runbook.exemptionFactPosture,
     "",
     "## Remaining Production Blockers",
     ""

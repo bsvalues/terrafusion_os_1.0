@@ -35,6 +35,17 @@ function readinessReport(overrides = {}) {
           stage: "owner-supnum-resume",
           status: "FAILED"
         }
+      },
+      exemptionFactSeal: {
+        stage: "exemption-fact-seal",
+        status: "FAILED",
+        classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+        requiredForCountyStudioForgeDev: false,
+        requiredForProductionProof: true,
+        requiredForPacketProof: true,
+        requiredForOperationalProof: true,
+        exemptionFactsConsumedByForgeSurfaces: false,
+        consumedSurfaces: []
       }
     },
     ...overrides
@@ -151,6 +162,10 @@ test("summarizes County Studio R1 as real Benton Forge dev while blocking produc
   assert.equal(report.summary.geometryStatus, "SYNC_DERIVED_GEOMETRY");
   assert.equal(report.summary.riskObjectStatus, "DEV_DERIVED_FROM_REAL_INPUTS");
   assert.equal(report.summary.ownerSupnumStatus, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(report.summary.exemptionFactStatus, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(report.summary.exemptionFactRequiredForForgeDev, false);
+  assert.equal(report.summary.exemptionFactRequiredForProductionProof, true);
+  assert.equal(report.summary.exemptionFactRequiredForOperationalProof, true);
   assert.equal(report.summary.countyStudioMode, "REAL_BENTON_FORGE_DEV");
   assert.equal(report.summary.requiredRunCommand, "pnpm run dev:county-studio:real-benton");
   assert.ok(report.remainingProductionBlockers.some((item) => /canonical Benton/i.test(item)));

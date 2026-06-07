@@ -64,6 +64,7 @@ test("defines the staged real-dev readiness classifications and checks", () => {
     "REQUIRED_FOR_FORGE_DEV",
     "NOT_REQUIRED_FOR_FORGE_DEV",
     "REQUIRED_FOR_PACKET_PROOF",
+    "REQUIRED_FOR_PRODUCTION_PROOF",
     "REQUIRED_FOR_OPERATIONAL_PROOF",
     "UNKNOWN"
   ]);
@@ -82,6 +83,7 @@ test("defines the staged real-dev readiness classifications and checks", () => {
     "WPOV status",
     "WSDOR status",
     "owner-supnum backfill dependency classification",
+    "exemption fact seal dependency classification",
     "map data dependency status",
     "ledger data dependency status",
     "inspector data dependency status"
@@ -240,6 +242,72 @@ test("does not block Forge dev when owner-supnum resume failed but owner identit
   assert.equal(report.forgeDevDependency.ownerSupnumBackfill.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
   assert.equal(report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev, false);
   assert.equal(report.blockers.some((blocker) => /owner-supnum|load_batch|drain process/i.test(blocker)), false);
+});
+
+test("does not relabel owner-supnum latest failure with an unrelated current load_batch stage", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.loadBatch = {
+    stage: "exemption-fact-seal",
+    status: "COMPLETED",
+    loadBatchId: "batch-exemption-complete"
+  };
+  evidence.countyStudioDependencies.ownerSupnumBackfill = {
+    latestFailed: {
+      stage: "owner-supnum-resume",
+      status: "FAILED",
+      loadBatchId: "batch-owner-supnum-failed"
+    },
+    classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: false,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    ownerIdentityConsumedByForgeSurfaces: false
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.stage, "owner-supnum-resume");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.status, "FAILED");
+  assert.equal(report.forgeDevDependency.ownerSupnumBackfill.latestFailed.stage, "owner-supnum-resume");
+  assert.equal(report.decisions.realDevServerAllowed, true);
+});
+
+test("does not block Forge dev when exemption fact seal failed but exemptions are not consumed", () => {
+  const evidence = partialRealSeedEvidence();
+  evidence.activeDrain = { pid: null, alive: null, status: "UNKNOWN" };
+  evidence.loadBatch = {
+    stage: "exemption-fact-seal",
+    status: "FAILED",
+    loadBatchId: "batch-exemption-fact-failed"
+  };
+  evidence.countyStudioDependencies.exemptionFactSeal = {
+    status: "FAILED",
+    stage: "exemption-fact-seal",
+    classification: "NOT_REQUIRED_FOR_FORGE_DEV",
+    requiredForCountyStudioForgeDev: false,
+    requiredForPacketProof: true,
+    requiredForOperationalProof: true,
+    exemptionFactsConsumedByForgeSurfaces: false
+  };
+
+  const report = buildBentonRealDevServerReadinessReport({
+    evidence,
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.status, "REAL_DEV_DATA_AVAILABLE");
+  assert.equal(report.decisions.realDevServerAllowed, true);
+  assert.equal(report.decisions.productionProofAllowed, false);
+  assert.equal(report.decisions.operationalProofAllowed, false);
+  assert.equal(report.forgeDevDependency.exemptionFactSeal.status, "FAILED");
+  assert.equal(report.forgeDevDependency.exemptionFactSeal.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(report.forgeDevDependency.exemptionFactSeal.requiredForCountyStudioForgeDev, false);
+  assert.equal(report.forgeDevDependency.exemptionFactSeal.requiredForProductionProof, true);
+  assert.equal(report.forgeDevDependency.exemptionFactSeal.requiredForOperationalProof, true);
+  assert.equal(report.blockers.some((blocker) => /exemption|load_batch|drain process/i.test(blocker)), false);
 });
 
 test("blocks Forge dev when owner-supnum backfill is required by a consumed owner identity surface", () => {

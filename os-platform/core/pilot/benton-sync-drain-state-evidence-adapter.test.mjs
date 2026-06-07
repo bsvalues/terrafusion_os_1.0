@@ -81,6 +81,54 @@ test("classifies populated Sync/DB evidence as partial real seed without product
   assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
   assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.latestFailed.status, "FAILED");
   assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.requiredForPacketProof, true);
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.classification, "UNKNOWN");
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.requiredForCountyStudioForgeDev, false);
+  assert.equal(evidence.decisions.productionProofAllowed, false);
+  assert.equal(evidence.decisions.operationalProofAllowed, false);
+});
+
+test("classifies exemption fact seal failure as not required for Forge dev", async () => {
+  const queryValues = {
+    latestLoadBatch: {
+      loadBatchId: "batch-exemption-failed",
+      stage: "exemption-fact-seal",
+      status: "FAILED"
+    },
+    latestOwnerSupnumFailure: {
+      loadBatchId: "batch-owner-failed",
+      stage: "owner-supnum-resume",
+      status: "FAILED"
+    },
+    legacyProperty: 1190834,
+    legacyOwner: 8213706,
+    legacyPropSuppAssoc: 4382985,
+    legacyWashPropOwnerVal: 1707143,
+    legacyAccount: 535140,
+    truthParcel: 83326,
+    truthOwner: 816849,
+    truthWsdor: 774696,
+    canonicalParcel: 3198979,
+    canonicalOwner: 312532,
+    canonicalWsdor: 686820,
+    gisParcelGeometry: 80075
+  };
+
+  const evidence = await buildBentonSyncDrainStateEvidence({
+    probeBackendHealth: async () => ({ status: "healthy", ok: true }),
+    processAlive: () => null,
+    query: async (name) => queryValues[name]
+  });
+
+  assert.equal(evidence.loadBatch.stage, "exemption-fact-seal");
+  assert.equal(evidence.loadBatch.status, "FAILED");
+  assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.stage, "owner-supnum-resume");
+  assert.equal(evidence.countyStudioDependencies.ownerSupnumBackfill.status, "FAILED");
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.status, "FAILED");
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.classification, "NOT_REQUIRED_FOR_FORGE_DEV");
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.requiredForCountyStudioForgeDev, false);
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.requiredForProductionProof, true);
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.requiredForPacketProof, true);
+  assert.equal(evidence.countyStudioDependencies.exemptionFactSeal.requiredForOperationalProof, true);
   assert.equal(evidence.decisions.productionProofAllowed, false);
   assert.equal(evidence.decisions.operationalProofAllowed, false);
 });

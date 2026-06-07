@@ -1,0 +1,66 @@
+{
+  "generatedAtUtc": "2026-06-07T19:46:58.1016756Z",
+  "gate": "county-studio-exemption-fact-dependency",
+  "status": "NOT_REQUIRED_FOR_FORGE_DEV",
+  "startingPoint": {
+    "source": "PR #919 full Forge dev smoke",
+    "observedBlockedStage": "exemption-fact-seal",
+    "observedBlockedStatus": "FAILED",
+    "correction": "Do not globally block County Studio Forge dev on exemption-fact-seal unless a Forge surface consumes exemption facts."
+  },
+  "currentRuntime": {
+    "loadBatchStage": "exemption-fact-seal",
+    "loadBatchStatus": "COMPLETED",
+    "loadBatchId": "e21e20ea-4bfb-402e-8496-4506f6829922"
+  },
+  "classification": {
+    "exemptionFactStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
+    "exemptionFactRequiredForForgeDev": false,
+    "exemptionFactRequiredForProductionProof": true,
+    "exemptionFactRequiredForPacketProof": true,
+    "exemptionFactRequiredForOperationalProof": true,
+    "exemptionFactsConsumedByForgeSurfaces": false,
+    "consumedSurfaces": []
+  },
+  "audit": {
+    "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+    "forgeValuationDependencies": [
+      "parcel/property identity",
+      "property characteristics",
+      "valuation metrics",
+      "ratio-study context",
+      "risk objects",
+      "geometry/map context",
+      "countyId",
+      "taxYear",
+      "studyId"
+    ],
+    "nonForgeOrProofDependencies": [
+      "Dais exemption administration",
+      "tax relief workflow",
+      "notice/tax liability context",
+      "Dossier packet exemption proof",
+      "operational roll packet references"
+    ],
+    "searchConclusion": "No current County Studio Forge valuation dependency was found that requires exemption facts for real Benton Forge dev activation."
+  },
+  "decision": {
+    "forgeDevAllowed": true,
+    "realDevServerAllowed": true,
+    "realDevActivationAllowed": true,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "tests": [
+    "benton-real-dev-server-readiness.test.mjs: does not block Forge dev when exemption fact seal failed but exemptions are not consumed",
+    "benton-sync-drain-state-evidence-adapter.test.mjs: classifies exemption fact seal failure as not required for Forge dev"
+  ],
+  "boundaries": [
+    "This evidence does not touch County Studio UI.",
+    "This evidence does not mutate TerraFusion Sync.",
+    "This evidence does not change DB seeding.",
+    "This evidence does not weaken production proof.",
+    "This evidence does not weaken operational proof.",
+    "This evidence does not hide exemption-fact-seal state."
+  ]
+}

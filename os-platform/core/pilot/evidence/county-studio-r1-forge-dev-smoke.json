@@ -1,131 +1,121 @@
 {
-  "generatedAtUtc": "2026-06-07T18:52:57.9356526Z",
+  "generatedAtUtc": "2026-06-07T19:46:58.1016756Z",
   "gate": "county-studio-r1-forge-dev-smoke",
-  "status": "FORGE_DEV_SMOKE_DB_READINESS_BLOCKED",
+  "status": "FORGE_DEV_SMOKE_PASS",
   "command": "pnpm run dev:county-studio:real-benton",
   "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
-  "stdoutLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-115207.out.log",
-  "stderrLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-115207.err.log",
-  "exitedWithinTimeout": true,
-  "exitCode": 1,
-  "observationWindowSeconds": 50,
+  "stdoutLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-124435.out.log",
+  "stderrLogPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-full-forge-dev-smoke-20260607-124435.err.log",
+  "rootPid": 55764,
+  "rootAliveAtCapture": true,
+  "observationWindowSeconds": 141,
+  "requiredStableSeconds": 60,
+  "stableSecondsObserved": 75,
+  "firstReadyAtUtc": "2026-06-07T19:45:43.0451073Z",
   "preflightGates": [
     {
       "command": "pnpm run proof:county-studio:real-dev-port-preflight",
       "status": "REAL_DEV_PORT_PREFLIGHT_PASS",
-      "exitCode": 0,
       "passed": true,
       "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-port-preflight.json"
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-backend-health",
       "status": "REAL_DEV_BACKEND_HEALTH_PASS",
-      "exitCode": 0,
       "passed": true,
       "healthEndpoint": "http://localhost:5000/health",
       "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-backend-health.json"
     },
     {
       "command": "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
-      "status": "REAL_DEV_SERVER_BLOCKED",
-      "exitCode": 1,
-      "passed": false,
+      "status": "REAL_DEV_DATA_AVAILABLE",
+      "passed": true,
       "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-activation",
-      "status": "NOT_REACHED",
-      "exitCode": null,
-      "passed": false,
+      "status": "REAL_DEV_ACTIVATION_READY",
+      "passed": true,
       "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json"
     }
   ],
   "portPreflight": {
     "portPreflightPassed": true,
-    "occupiedPorts": [],
+    "initial4317Occupied": false,
+    "initial5046Occupied": false,
     "requiredPorts": [4317, 5046]
   },
   "backendHealth": {
     "status": "REAL_DEV_BACKEND_HEALTH_PASS",
     "backendHealthy": true,
-    "healthEndpoint": "http://localhost:5000/health",
-    "backendLaunchCommand": "pnpm run dev:backend:api",
-    "backendStartedByDevCommand": false,
     "api5000Health": {
       "ok": true,
       "statusCode": 200,
       "url": "http://localhost:5000/health"
     },
     "api5046Health": {
-      "ok": false,
-      "statusCode": null,
-      "url": "http://localhost:5046/health",
-      "error": "The request was canceled due to the configured HttpClient.Timeout of 3 seconds elapsing."
+      "ok": true,
+      "statusCode": 200,
+      "url": "http://localhost:5046/health"
     }
   },
   "dbReadiness": {
-    "status": "REAL_DEV_SERVER_BLOCKED",
-    "realDevServerAllowed": false,
-    "blockers": [
-      "active drain process state: Drain process state is unknown.",
-      "load_batch current stage: load_batch stage is exemption-fact-seal (FAILED)."
-    ],
-    "evidence": {
-      "activeDrainProcessState": "UNKNOWN",
-      "loadBatchStage": "exemption-fact-seal",
-      "loadBatchStatus": "FAILED",
-      "loadBatchId": "7063c26e-c2f3-4dfe-ae7c-afce6a48f9d5",
-      "propertyLanding": 1190834,
-      "truthParcel": 83326,
-      "canonicalParcel": 3198979,
-      "ownerSupnumBackfillRequiredForForgeDev": false
-    }
+    "status": "REAL_DEV_DATA_AVAILABLE",
+    "realDevServerAllowed": true,
+    "blockers": [],
+    "loadBatchStage": "exemption-fact-seal",
+    "loadBatchStatus": "COMPLETED",
+    "exemptionFactRequiredForForgeDev": false,
+    "exemptionFactRequiredForProductionProof": true,
+    "exemptionFactRequiredForOperationalProof": true
   },
   "realDevActivation": {
-    "status": "NOT_REACHED",
-    "realDevActivationAllowed": false,
-    "reason": "The full dev command stopped at the live DB readiness gate before real-dev activation ran."
-  },
-  "forgeDevStatus": {
-    "statusGateRunInCommand": false,
-    "note": "The real-benton dev command runs port, backend, DB readiness, and activation gates before dev startup; r1-forge-dev-status remains a separate proof command."
+    "status": "REAL_DEV_ACTIVATION_READY",
+    "realDevActivationAllowed": true
   },
   "devServer": {
-    "started": false,
-    "frontendStarted": false,
-    "frontendBoundUrls": [],
-    "urlEmitted": false,
-    "backendStarted": false,
-    "pilot4317Listening": false,
-    "api5046Listening": false,
-    "apiStartupOrReuse": "not-reached",
-    "reason": "The command exited before cross-env TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton ... pnpm run dev."
+    "started": true,
+    "frontendStarted": true,
+    "frontendBoundUrls": ["http://localhost:5174/"],
+    "viteUrl": "http://localhost:5174/",
+    "vitePort": 5174,
+    "frontendListening": true,
+    "pilot4317Listening": true,
+    "api5046Listening": true,
+    "apiStartupOrReuse": "started-local-5046"
   },
   "modeFlags": {
     "TF_COUNTY_STUDIO_DEV_DATA_MODE": "real-benton",
     "TF_COUNTY_STUDIO_PRODUCTION_PROOF": "false",
     "TF_COUNTY_STUDIO_OPERATIONAL_PROOF": "false"
   },
+  "startupWarnings": [
+    "Redis not configured - using NoOp cache",
+    "Port 5173 is in use, trying another one",
+    "Modules directory not found",
+    "UI directory not found",
+    "Harris PACS sync skipped for Benton",
+    "System health degraded: Unknown issue"
+  ],
+  "startupErrors": [],
+  "postCleanup": {
+    "smokeProcessTreeStopped": true,
+    "port4317StillListening": false,
+    "port5046StillListening": false
+  },
   "postureAfterSmoke": {
     "portPreflightPassed": true,
     "backendHealthy": true,
-    "realDevServerAllowed": false,
-    "realDevActivationAllowed": false,
-    "forgeDevAllowed": false,
+    "realDevServerAllowed": true,
+    "realDevActivationAllowed": true,
+    "forgeDevAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
-    "cleanFullDevSmokePassed": false
+    "cleanFullDevSmokePassed": true
   },
-  "startupWarnings": [],
-  "startupErrors": [
-    "pnpm run proof:county-studio:benton-real-dev-server-readiness:db returned REAL_DEV_SERVER_BLOCKED",
-    "pnpm run dev:county-studio:real-benton exited with code 1"
-  ],
-  "blocker": "Live DB readiness blocks full Forge dev smoke because active drain state is UNKNOWN and load_batch stage exemption-fact-seal is FAILED.",
-  "interpretation": "The full smoke did not reach Vite, governed pilot runtime, or local API startup. Ports and backend health are not the current blocker; live DB readiness is.",
   "productionProofAllowed": false,
   "operationalProofAllowed": false,
-  "cleanFullDevSmokePassed": false,
+  "cleanFullDevSmokePassed": true,
   "boundaries": [
     "This smoke update did not touch County Studio UI.",
     "This smoke update did not mutate TerraFusion Sync.",

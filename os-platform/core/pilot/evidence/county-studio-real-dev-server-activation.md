@@ -1,6 +1,6 @@
 # County Studio Real Dev Server Activation
 
-Generated: 2026-06-07T18:21:19.190Z
+Generated: 2026-06-07T20:02:26.565Z
 Status: REAL_DEV_ACTIVATION_READY
 
 ## Decision
@@ -24,7 +24,7 @@ Status: REAL_DEV_ACTIVATION_READY
 
 ## Forge Dev Dependency Reclassification
 
-- ownerSupnumBackfillStatus: COMPLETED
+- ownerSupnumBackfillStatus: FAILED
 - ownerSupnumBackfillLatestFailedStatus: FAILED
 - ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
 - ownerSupnumBackfillRequiredForForgeDev: false

@@ -1,11 +1,11 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T18:52:57.668Z
-Status: REAL_DEV_SERVER_BLOCKED
+Generated: 2026-06-07T20:02:25.766Z
+Status: REAL_DEV_DATA_AVAILABLE
 
 ## Decision
 
-- Real Dev Server: BLOCKED
+- Real Dev Server: ALLOWED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
@@ -23,8 +23,8 @@ Status: REAL_DEV_SERVER_BLOCKED
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
 | backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
-| active drain process state | UNKNOWN | false | Drain process state is unknown. |
-| load_batch current stage | UNKNOWN | false | load_batch stage is exemption-fact-seal (FAILED). |
+| active drain process state | SYNC_DERIVED | true | Client drain process is not alive/known, but the failed owner-supnum stage is not required for County Studio Forge valuation dev. |
+| load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-backfill (FAILED), retained as packet/ops blocker but not a County Studio Forge dev blocker. |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
 | canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
@@ -35,6 +35,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 | WPOV status | PARTIAL_SEEDED | true | WPOV landing rows exist. |
 | WSDOR status | PARTIAL_SEEDED | true | WSDOR truth rows exist. |
 | owner-supnum backfill dependency classification | PARTIAL_SEEDED | true | owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked. |
+| exemption fact seal dependency classification | PARTIAL_SEEDED | true | exemption-fact-seal is not required for County Studio Forge valuation dev; production, packet, and operational proof remain blocked. |
 | map data dependency status | PARTIAL_SEEDED | true | Map dependency is classified PARTIAL_SEEDED. |
 | ledger data dependency status | SYNC_DERIVED | true | Ledger dependency is classified SYNC_DERIVED. |
 | inspector data dependency status | SYNC_DERIVED | true | Inspector dependency is classified SYNC_DERIVED. |
@@ -42,18 +43,24 @@ Status: REAL_DEV_SERVER_BLOCKED
 ## Forge Dev Dependency Reclassification
 
 - ownerSupnumBackfillStatus: FAILED
-- ownerSupnumBackfillStage: exemption-fact-seal
+- ownerSupnumBackfillStage: owner-supnum-resume
 - ownerSupnumBackfillLatestFailedStage: owner-supnum-resume
 - ownerSupnumBackfillLatestFailedStatus: FAILED
 - ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
 - ownerSupnumBackfillRequiredForForgeDev: false
 - ownerSupnumBackfillRequiredForPacketProof: true
 - ownerSupnumBackfillRequiredForOperationalProof: true
+- exemptionFactSealStatus: COMPLETED
+- exemptionFactSealStage: exemption-fact-seal
+- exemptionFactSealClassification: NOT_REQUIRED_FOR_FORGE_DEV
+- exemptionFactSealRequiredForForgeDev: false
+- exemptionFactSealRequiredForProductionProof: true
+- exemptionFactSealRequiredForPacketProof: true
+- exemptionFactSealRequiredForOperationalProof: true
 
 ## Blockers
 
-- active drain process state: Drain process state is unknown.
-- load_batch current stage: load_batch stage is exemption-fact-seal (FAILED).
+- None
 
 ## Rules
 
@@ -62,6 +69,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 - Stage stagnation without inserts is investigation.
 - Partial landing is usable for dev evidence, not production proof.
 - Owner-supnum backfill failure blocks packet and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes owner identity.
+- Exemption fact seal failure blocks production, packet, and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes exemption facts.
 - Do not relabel partial seed as authoritative.
 
 ## Boundaries

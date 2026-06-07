@@ -63,6 +63,7 @@ export const REQUIRED_READINESS_CHECKS = [
   "WPOV status",
   "WSDOR status",
   "owner-supnum backfill dependency classification",
+  "exemption fact seal dependency classification",
   "map data dependency status",
   "ledger data dependency status",
   "inspector data dependency status"
@@ -72,6 +73,7 @@ export const OWNER_SUPNUM_DEPENDENCY_CLASSIFICATIONS = [
   "REQUIRED_FOR_FORGE_DEV",
   "NOT_REQUIRED_FOR_FORGE_DEV",
   "REQUIRED_FOR_PACKET_PROOF",
+  "REQUIRED_FOR_PRODUCTION_PROOF",
   "REQUIRED_FOR_OPERATIONAL_PROOF",
   "UNKNOWN"
 ];
@@ -204,14 +206,25 @@ function isOwnerSupnumBackfillStage(stage) {
   return String(stage ?? "").trim().toLowerCase().startsWith("owner-supnum");
 }
 
+function isExemptionFactSealStage(stage) {
+  return String(stage ?? "").trim().toLowerCase().startsWith("exemption-fact");
+}
+
 function isFailed(status) {
   return String(status ?? "").trim().toUpperCase() === "FAILED";
 }
 
 function buildOwnerSupnumDependency(evidence) {
   const source = evidence?.countyStudioDependencies?.ownerSupnumBackfill ?? {};
-  const stage = source.stage ?? evidence?.loadBatch?.stage ?? "UNKNOWN";
-  const status = source.status ?? evidence?.loadBatch?.status ?? "UNKNOWN";
+  const currentLoadBatchIsOwnerSupnum = isOwnerSupnumBackfillStage(evidence?.loadBatch?.stage);
+  const stage = source.stage
+    ?? source.latestFailed?.stage
+    ?? (currentLoadBatchIsOwnerSupnum ? evidence?.loadBatch?.stage : null)
+    ?? "UNKNOWN";
+  const status = source.status
+    ?? source.latestFailed?.status
+    ?? (currentLoadBatchIsOwnerSupnum ? evidence?.loadBatch?.status : null)
+    ?? "UNKNOWN";
   const consumedByForge = source.ownerIdentityConsumedByForgeSurfaces === true;
   const requiredForForgeDev = source.requiredForCountyStudioForgeDev === true || consumedByForge;
   const classification = normalizeOwnerSupnumDependencyClassification(
@@ -256,22 +269,74 @@ function buildOwnerSupnumDependency(evidence) {
   };
 }
 
+function buildExemptionFactDependency(evidence) {
+  const source = evidence?.countyStudioDependencies?.exemptionFactSeal ?? {};
+  const stage = source.stage ?? evidence?.loadBatch?.stage ?? "UNKNOWN";
+  const status = source.status ?? evidence?.loadBatch?.status ?? "UNKNOWN";
+  const consumedByForge = source.exemptionFactsConsumedByForgeSurfaces === true;
+  const requiredForForgeDev = source.requiredForCountyStudioForgeDev === true || consumedByForge;
+  const classification = normalizeOwnerSupnumDependencyClassification(
+    source.classification,
+    requiredForForgeDev
+      ? "REQUIRED_FOR_FORGE_DEV"
+      : isExemptionFactSealStage(stage)
+        ? "NOT_REQUIRED_FOR_FORGE_DEV"
+        : "UNKNOWN"
+  );
+
+  return {
+    stage,
+    status,
+    classification,
+    requiredForCountyStudioForgeDev: classification === "REQUIRED_FOR_FORGE_DEV" || requiredForForgeDev,
+    requiredForPacketProof: source.requiredForPacketProof !== false,
+    requiredForProductionProof: source.requiredForProductionProof !== false,
+    requiredForOperationalProof: source.requiredForOperationalProof !== false,
+    exemptionFactsConsumedByForgeSurfaces: consumedByForge,
+    consumedSurfaces: Array.isArray(source.consumedSurfaces) ? source.consumedSurfaces : [],
+    audit: source.audit ?? {
+      finding: "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+      forgeValuationSources: [
+        "parcel/property identity",
+        "property characteristics",
+        "valuation metrics",
+        "ratio-study context",
+        "risk objects",
+        "geometry/map context"
+      ],
+      packetOperationalSurfaces: [
+        "tax relief workflow",
+        "notice/tax liability context",
+        "Dais exemption administration",
+        "Dossier packet exemption proof",
+        "operational roll packet references"
+      ]
+    }
+  };
+}
+
 function buildChecks(evidence) {
   const counts = countRows(evidence);
   const countClass = classifyCounts(counts);
   const backendHealthy = healthOk(evidence?.backendHealth);
   const loadBatchStatus = String(evidence?.loadBatch?.status ?? "UNKNOWN").toUpperCase();
   const ownerSupnumDependency = buildOwnerSupnumDependency(evidence);
+  const exemptionFactDependency = buildExemptionFactDependency(evidence);
   const ownerSupnumFailedButNotForgeDevRequired =
     isOwnerSupnumBackfillStage(ownerSupnumDependency.stage)
     && isFailed(ownerSupnumDependency.status)
     && ownerSupnumDependency.requiredForCountyStudioForgeDev !== true;
+  const exemptionFactFailedButNotForgeDevRequired =
+    isExemptionFactSealStage(exemptionFactDependency.stage)
+    && isFailed(exemptionFactDependency.status)
+    && exemptionFactDependency.requiredForCountyStudioForgeDev !== true;
   const drainAlive = evidence?.activeDrain?.alive === true;
   const drainKnownDead = evidence?.activeDrain?.alive === false;
   const dbBackedDrainStateKnown =
     loadBatchStatus === "IN_PROGRESS"
     || loadBatchStatus === "COMPLETED"
-    || ownerSupnumFailedButNotForgeDevRequired;
+    || ownerSupnumFailedButNotForgeDevRequired
+    || exemptionFactFailedButNotForgeDevRequired;
   const mapClassification = normalizeClassification(evidence?.countyStudioDependencies?.map);
   const ledgerClassification = normalizeClassification(evidence?.countyStudioDependencies?.ledger);
   const inspectorClassification = normalizeClassification(evidence?.countyStudioDependencies?.inspector);
@@ -294,6 +359,8 @@ function buildChecks(evidence) {
         : dbBackedDrainStateKnown
           ? ownerSupnumFailedButNotForgeDevRequired
             ? "Client drain process is not alive/known, but the failed owner-supnum stage is not required for County Studio Forge valuation dev."
+            : exemptionFactFailedButNotForgeDevRequired
+              ? "Client drain process is not alive/known, but the failed exemption-fact stage is not required for County Studio Forge valuation dev."
             : `Client drain process is not alive, but DB load_batch proves server-side state ${loadBatchStatus}.`
         : drainKnownDead
           ? "Drain process is not alive; confirm whether client timeout or backend failure occurred."
@@ -302,11 +369,13 @@ function buildChecks(evidence) {
     ),
     makeCheck(
       "load_batch current stage",
-      loadBatchStatus === "IN_PROGRESS" || loadBatchStatus === "COMPLETED" || ownerSupnumFailedButNotForgeDevRequired ? "SYNC_DERIVED" : "UNKNOWN",
-      loadBatchStatus === "IN_PROGRESS" || loadBatchStatus === "COMPLETED" || ownerSupnumFailedButNotForgeDevRequired,
+      loadBatchStatus === "IN_PROGRESS" || loadBatchStatus === "COMPLETED" || ownerSupnumFailedButNotForgeDevRequired || exemptionFactFailedButNotForgeDevRequired ? "SYNC_DERIVED" : "UNKNOWN",
+      loadBatchStatus === "IN_PROGRESS" || loadBatchStatus === "COMPLETED" || ownerSupnumFailedButNotForgeDevRequired || exemptionFactFailedButNotForgeDevRequired,
       evidence?.loadBatch?.stage
         ? ownerSupnumFailedButNotForgeDevRequired
           ? "load_batch stage is owner-supnum-backfill (FAILED), retained as packet/ops blocker but not a County Studio Forge dev blocker."
+          : exemptionFactFailedButNotForgeDevRequired
+            ? "load_batch stage is exemption-fact-seal (FAILED), retained as production/ops blocker but not a County Studio Forge dev blocker."
           : `load_batch stage is ${evidence.loadBatch.stage} (${loadBatchStatus}).`
         : "load_batch stage is not proven.",
       evidence?.loadBatch ?? {}
@@ -398,6 +467,15 @@ function buildChecks(evidence) {
       ownerSupnumDependency
     ),
     makeCheck(
+      "exemption fact seal dependency classification",
+      exemptionFactDependency.requiredForCountyStudioForgeDev ? "UNKNOWN" : "PARTIAL_SEEDED",
+      exemptionFactDependency.requiredForCountyStudioForgeDev !== true || !isFailed(exemptionFactDependency.status),
+      exemptionFactDependency.requiredForCountyStudioForgeDev
+        ? "exemption-fact-seal is required for a consumed County Studio Forge exemption surface."
+        : "exemption-fact-seal is not required for County Studio Forge valuation dev; production, packet, and operational proof remain blocked.",
+      exemptionFactDependency
+    ),
+    makeCheck(
       "map data dependency status",
       mapClassification,
       REAL_DEV_ALLOWED_CLASSIFICATIONS.has(mapClassification),
@@ -481,7 +559,8 @@ export function buildBentonRealDevServerReadinessReport({
   const blockers = checks.map(blockerFor).filter(Boolean);
   const maturity = buildMaturity(checks);
   const forgeDevDependency = {
-    ownerSupnumBackfill: buildOwnerSupnumDependency(evidence ?? {})
+    ownerSupnumBackfill: buildOwnerSupnumDependency(evidence ?? {}),
+    exemptionFactSeal: buildExemptionFactDependency(evidence ?? {})
   };
   const realDevServerAllowed = maturity.REAL_DEV_DATA_AVAILABLE && blockers.length === 0;
   const status = realDevServerAllowed ? "REAL_DEV_DATA_AVAILABLE" : "REAL_DEV_SERVER_BLOCKED";
@@ -508,6 +587,7 @@ export function buildBentonRealDevServerReadinessReport({
       "Stage stagnation without inserts is investigation.",
       "Partial landing is usable for dev evidence, not production proof.",
       "Owner-supnum backfill failure blocks packet and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes owner identity.",
+      "Exemption fact seal failure blocks production, packet, and operational proof, but only blocks County Studio Forge dev when a Forge surface consumes exemption facts.",
       "Do not relabel partial seed as authoritative."
     ],
     boundaries: [
@@ -559,7 +639,14 @@ export function renderBentonRealDevServerReadinessMarkdown(report) {
     `- ownerSupnumBackfillClassification: ${report.forgeDevDependency.ownerSupnumBackfill.classification}`,
     `- ownerSupnumBackfillRequiredForForgeDev: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForCountyStudioForgeDev}`,
     `- ownerSupnumBackfillRequiredForPacketProof: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForPacketProof}`,
-    `- ownerSupnumBackfillRequiredForOperationalProof: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForOperationalProof}`
+    `- ownerSupnumBackfillRequiredForOperationalProof: ${report.forgeDevDependency.ownerSupnumBackfill.requiredForOperationalProof}`,
+    `- exemptionFactSealStatus: ${report.forgeDevDependency.exemptionFactSeal.status}`,
+    `- exemptionFactSealStage: ${report.forgeDevDependency.exemptionFactSeal.stage}`,
+    `- exemptionFactSealClassification: ${report.forgeDevDependency.exemptionFactSeal.classification}`,
+    `- exemptionFactSealRequiredForForgeDev: ${report.forgeDevDependency.exemptionFactSeal.requiredForCountyStudioForgeDev}`,
+    `- exemptionFactSealRequiredForProductionProof: ${report.forgeDevDependency.exemptionFactSeal.requiredForProductionProof}`,
+    `- exemptionFactSealRequiredForPacketProof: ${report.forgeDevDependency.exemptionFactSeal.requiredForPacketProof}`,
+    `- exemptionFactSealRequiredForOperationalProof: ${report.forgeDevDependency.exemptionFactSeal.requiredForOperationalProof}`
   );
 
   lines.push("", "## Blockers", "");

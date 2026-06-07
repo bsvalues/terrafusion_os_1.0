@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T18:21:19.190Z",
+  "generatedAtUtc": "2026-06-07T20:02:26.565Z",
   "gate": "county-studio-real-dev-server-activation",
   "status": "REAL_DEV_ACTIVATION_READY",
   "decisions": {
@@ -20,8 +20,8 @@
   },
   "forgeDevDependency": {
     "ownerSupnumBackfill": {
-      "stage": "assessment-value-seal",
-      "status": "COMPLETED",
+      "stage": "owner-supnum-resume",
+      "status": "FAILED",
       "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
       "requiredForCountyStudioForgeDev": false,
       "requiredForPacketProof": true,
@@ -47,6 +47,34 @@
           "Dossier packet owner identity",
           "Dais/notice/appeal taxpayer identity",
           "operational packet owner references"
+        ]
+      }
+    },
+    "exemptionFactSeal": {
+      "stage": "exemption-fact-seal",
+      "status": "COMPLETED",
+      "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "requiredForCountyStudioForgeDev": false,
+      "requiredForPacketProof": true,
+      "requiredForProductionProof": true,
+      "requiredForOperationalProof": true,
+      "exemptionFactsConsumedByForgeSurfaces": false,
+      "consumedSurfaces": [],
+      "audit": {
+        "finding": "County Studio is a TerraForge valuation surface; current Forge valuation paths do not consume exemption facts.",
+        "forgeValuationSources": [
+          "parcel/property identity",
+          "property characteristics",
+          "valuation metrics",
+          "ratio-study context",
+          "risk objects",
+          "geometry/map context"
+        ],
+        "packetOpsSources": [
+          "Dais exemption administration",
+          "tax/notice context",
+          "Dossier packet exemption proof",
+          "operational roll packet references"
         ]
       }
     }

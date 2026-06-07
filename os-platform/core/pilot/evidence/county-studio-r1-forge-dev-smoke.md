@@ -1,8 +1,8 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T18:52:57.9356526Z
+Generated: 2026-06-07T19:46:58.1016756Z
 
-Status: `FORGE_DEV_SMOKE_DB_READINESS_BLOCKED`
+Status: `FORGE_DEV_SMOKE_PASS`
 
 ## Command
 
@@ -19,91 +19,85 @@ C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 Result:
 
 ```text
-exitCode=1
-observationWindowSeconds=50
-cleanFullDevSmokePassed=false
+cleanFullDevSmokePassed=true
+observationWindowSeconds=141
+stableSecondsObserved=75
+requiredStableSeconds=60
 ```
 
-## Current Preflight Chain
+## Preflight Chain
 
 | Gate | Status | Passed |
 | --- | --- | --- |
 | Port preflight | `REAL_DEV_PORT_PREFLIGHT_PASS` | true |
 | Backend health | `REAL_DEV_BACKEND_HEALTH_PASS` | true |
-| Live DB readiness | `REAL_DEV_SERVER_BLOCKED` | false |
-| Real-dev activation | `NOT_REACHED` | false |
+| Live DB readiness | `REAL_DEV_DATA_AVAILABLE` | true |
+| Real-dev activation | `REAL_DEV_ACTIVATION_READY` | true |
+
+## Runtime
+
+```text
+Vite URL: http://localhost:5174/
+frontendListening=true
+pilot4317Listening=true
+api5046Listening=true
+apiStartupOrReuse=started-local-5046
+```
 
 Backend health:
 
 ```text
-healthEndpoint=http://localhost:5000/health
-backendLaunchCommand=pnpm run dev:backend:api
-backendStartedByDevCommand=false
+http://localhost:5000/health = 200
+http://localhost:5046/health = 200
 ```
 
-## Blocker
-
-The full real Benton Forge dev smoke did not reach the long-running dev server stage. The command stopped at:
-
-```bash
-pnpm run proof:county-studio:benton-real-dev-server-readiness:db
-```
-
-The live DB readiness gate reported:
+DB readiness:
 
 ```text
-status=REAL_DEV_SERVER_BLOCKED
-realDevServerAllowed=false
+loadBatchStage=exemption-fact-seal
+loadBatchStatus=COMPLETED
+exemptionFactRequiredForForgeDev=false
+exemptionFactRequiredForProductionProof=true
+exemptionFactRequiredForOperationalProof=true
 ```
 
-Current blockers:
+Mode flags:
 
 ```text
-active drain process state: Drain process state is unknown.
-load_batch current stage: load_batch stage is exemption-fact-seal (FAILED).
+TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton
+TF_COUNTY_STUDIO_PRODUCTION_PROOF=false
+TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false
 ```
 
-Observed DB evidence at the blocked gate:
+## Cleanup
+
+The smoke-owned process tree was stopped after capture.
 
 ```text
-propertyLanding=1,190,834
-truthParcel=83,326
-canonicalParcel=3,198,979
-ownerSupnumBackfillRequiredForForgeDev=false
-loadBatchId=7063c26e-c2f3-4dfe-ae7c-afce6a48f9d5
+port4317StillListening=false
+port5046StillListening=false
 ```
 
-## Dev Server State
+## Startup Warnings
 
-The command exited before:
+- Redis not configured - using NoOp cache.
+- Port 5173 was already in use, so Vite selected 5174.
+- Modules directory not found.
+- UI directory not found.
+- Harris PACS sync skipped for Benton because `pacscontract.v1` is read-only.
+- System health degraded warning appeared in backend logs.
 
-```bash
-cross-env TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton TF_COUNTY_STUDIO_PRODUCTION_PROOF=false TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false pnpm run dev
-```
-
-Therefore:
-
-```text
-frontendStarted=false
-frontendBoundUrls=[]
-backendStarted=false
-pilot4317Listening=false
-api5046Listening=false
-```
-
-## Interpretation
-
-Ports and backend health are no longer the active smoke blocker. The active blocker is live DB readiness: the readiness gate now refuses to allow the full dev server while the drain state is unknown and the current `load_batch` stage is failed.
+No startup error signal was observed by the smoke harness.
 
 ## Proof Posture
 
 ```text
-forgeDevAllowed=false
-realDevServerAllowed=false
-realDevActivationAllowed=false
+forgeDevAllowed=true
+realDevServerAllowed=true
+realDevActivationAllowed=true
 productionProofAllowed=false
 operationalProofAllowed=false
-cleanFullDevSmokePassed=false
+cleanFullDevSmokePassed=true
 ```
 
 ## Boundaries

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T18:28:02.344Z",
+  "generatedAtUtc": "2026-06-07T20:01:00.617Z",
   "gate": "county-studio-r1-forge-dev-status",
   "status": "COUNTY_STUDIO_R1_FORGE_DEV_READY",
   "summary": {
@@ -11,16 +11,23 @@
     "geometryStatus": "SYNC_DERIVED_GEOMETRY",
     "riskObjectStatus": "DEV_DERIVED_FROM_REAL_INPUTS",
     "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
+    "exemptionFactStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
+    "exemptionFactRequiredForForgeDev": false,
+    "exemptionFactRequiredForProductionProof": true,
+    "exemptionFactRequiredForPacketProof": true,
+    "exemptionFactRequiredForOperationalProof": true,
     "countyStudioMode": "REAL_BENTON_FORGE_DEV",
     "requiredRunCommand": "pnpm run dev:county-studio:real-benton",
     "remainingProductionBlockers": [
       "Canonical Benton source/count reconciliation remains required before production proof.",
       "CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.",
       "TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.",
-      "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment."
+      "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.",
+      "Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof."
     ],
     "remainingOperationalBlockers": [
       "Owner-supnum remains required for packet/ops proof, Dossier packets, Dais/notice/appeal identity, and operational owner references.",
+      "Exemption facts remain required for Dais exemption administration, Dossier packet proof, notices, tax relief workflows, and operational roll proof.",
       "Production proof must pass before operational proof can be claimed.",
       "Dossier evidence packets, Dais workflow creation, TerraTrace decision chain, and parcel/workbench handoff evidence remain operational proof requirements."
     ]
@@ -37,10 +44,12 @@
     "Canonical Benton source/count reconciliation remains required before production proof.",
     "CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.",
     "TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.",
-    "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment."
+    "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.",
+    "Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof."
   ],
   "remainingOperationalBlockers": [
     "Owner-supnum remains required for packet/ops proof, Dossier packets, Dais/notice/appeal identity, and operational owner references.",
+    "Exemption facts remain required for Dais exemption administration, Dossier packet proof, notices, tax relief workflows, and operational roll proof.",
     "Production proof must pass before operational proof can be claimed.",
     "Dossier evidence packets, Dais workflow creation, TerraTrace decision chain, and parcel/workbench handoff evidence remain operational proof requirements."
   ],
@@ -55,7 +64,8 @@
     ],
     "notProductionProof": "This is not production proof. It allows County Studio R1 to run as a real Benton-backed TerraForge valuation development surface only.",
     "notOperationalProof": "This is not operational proof. Packet, Dais, Dossier, Trace, owner identity, and workflow evidence remain blocked.",
-    "ownerSupnumPosture": "Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev."
+    "ownerSupnumPosture": "Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev.",
+    "exemptionFactPosture": "Exemption facts remain required for production/ops proof, not current County Studio Forge valuation dev."
   },
   "sourceArtifacts": {
     "backendHealth": "os-platform/core/pilot/evidence/county-studio-real-dev-backend-health.json",
