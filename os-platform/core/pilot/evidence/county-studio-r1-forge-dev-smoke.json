@@ -1,39 +1,63 @@
 {
-  "generatedAtUtc": "2026-06-07T15:57:14.591Z",
+  "generatedAtUtc": "2026-06-07T16:25:22.844Z",
   "gate": "county-studio-r1-forge-dev-smoke",
-  "status": "FORGE_DEV_SMOKE_FRONTEND_STARTED_BACKEND_PORT_BLOCKED",
+  "status": "FORGE_DEV_SMOKE_BLOCKED_BY_PORT_PREFLIGHT",
   "commandInvoked": "pnpm run dev:county-studio:real-benton",
   "workingDirectory": "C:\\Users\\bsval\\.codex-worktrees\\county-studio-r1-packet-payloads",
-  "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-r1-forge-dev-smoke-20260607-085321.log",
-  "processCleanup": {
-    "spawnedSmokeProcessStopped": true,
-    "spawnedSmokeChildrenRemaining": false
-  },
+  "smokeLog": "C:\\Users\\bsval\\AppData\\Local\\Temp\\county-studio-real-dev-port-preflight-smoke-20260607-092440.log",
   "preflightGates": [
     {
+      "command": "pnpm run proof:county-studio:real-dev-port-preflight",
+      "status": "REAL_DEV_PORT_PREFLIGHT_BLOCKED",
+      "exitCode": 1,
+      "passed": false,
+      "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-port-preflight.json"
+    },
+    {
       "command": "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
-      "status": "REAL_DEV_DATA_AVAILABLE",
-      "exitCode": 0,
-      "passed": true,
-      "blockers": 0,
-      "evidenceArtifact": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json"
+      "status": "NOT_REACHED",
+      "passed": false,
+      "reason": "The port preflight failed before DB readiness ran."
     },
     {
       "command": "pnpm run proof:county-studio:real-dev-activation",
-      "status": "REAL_DEV_ACTIVATION_READY",
-      "exitCode": 0,
-      "passed": true,
-      "blockers": 0,
-      "evidenceArtifact": "os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json"
+      "status": "NOT_REACHED",
+      "passed": false,
+      "reason": "The port preflight failed before activation ran."
     }
   ],
   "devServer": {
     "started": false,
-    "frontendStarted": true,
-    "frontendBoundUrls": ["http://localhost:5174/"],
-    "urlEmitted": true,
+    "frontendStarted": false,
+    "frontendBoundUrls": [],
+    "urlEmitted": false,
     "backendStarted": false,
-    "reason": "The real Benton Forge dev command passed readiness and activation, and Vite emitted http://localhost:5174/, but the governed pilot/backend runtime failed because ports 4317 and 5046 were already in use."
+    "reason": "The real Benton Forge dev command failed fast at the port preflight before Vite, the governed pilot runtime, or the API runtime started."
+  },
+  "portPreflight": {
+    "portPreflightPassed": false,
+    "occupiedPorts": [
+      {
+        "serviceName": "governed pilot runtime",
+        "port": 4317,
+        "envVar": "TF_PILOT_PORT",
+        "owningProcess": {
+          "processId": 50784,
+          "processName": "node",
+          "path": "C:\\Program Files\\nodejs\\node.exe"
+        }
+      },
+      {
+        "serviceName": "TerraFusion API runtime",
+        "port": 5046,
+        "envVar": "TF_API_PORT",
+        "owningProcess": {
+          "processId": 42020,
+          "processName": "dotnet",
+          "path": "C:\\Program Files\\dotnet\\dotnet.exe"
+        }
+      }
+    ]
   },
   "modeFlags": {
     "configured": [
@@ -41,29 +65,20 @@
       "TF_COUNTY_STUDIO_PRODUCTION_PROOF=false",
       "TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false"
     ],
-    "appliedToFrontendStage": true,
+    "appliedToFrontendStage": false,
     "appliedToCleanFullDevServer": false,
-    "reason": "The command reached the cross-env dev stage and Vite started, but the full dev runtime exited on port conflicts before a clean end-to-end server state could be accepted."
+    "reason": "The command stopped before the cross-env dev stage."
   },
   "postureAfterSmoke": {
-    "forgeDevAllowed": true,
-    "realDevServerAllowed": true,
-    "realDevActivationAllowed": true,
-    "countyStudioMode": "REAL_BENTON_FORGE_DEV",
-    "dataTruthStatus": "DATA_TRUTH_FAIL",
-    "geometryStatus": "SYNC_DERIVED_GEOMETRY",
-    "riskObjectStatus": "DEV_DERIVED_FROM_REAL_INPUTS",
-    "ownerSupnumStatus": "NOT_REQUIRED_FOR_FORGE_DEV",
     "productionProofAllowed": false,
-    "operationalProofAllowed": false
+    "operationalProofAllowed": false,
+    "cleanFullDevSmokePassed": false
   },
-  "readinessBlockers": [],
   "startupErrors": [
-    "Governed pilot runtime: EADDRINUSE 127.0.0.1:4317",
-    "TerraFusion API runtime: failed to bind http://127.0.0.1:5046 because the address was already in use"
+    "REAL_DEV_PORT_PREFLIGHT_BLOCKED: governed pilot runtime port 4317 is occupied by node pid 50784",
+    "REAL_DEV_PORT_PREFLIGHT_BLOCKED: TerraFusion API runtime port 5046 is occupied by dotnet pid 42020"
   ],
-  "missingEnvOrConfigWarnings": [],
-  "interpretation": "The prior readiness-blocked smoke evidence was stale after the live DB adapter was refreshed. Current live readiness and activation pass, so County Studio Forge dev mode is allowed again. The smoke still does not prove a clean full dev launch because the local runtime had occupied pilot/API ports. This is runtime environment drift, not a County Studio UI failure, and it does not unlock production or operational proof.",
+  "interpretation": "The real Benton Forge dev command no longer fails late with unclear runtime bind errors. It now stops at the port preflight with exact occupied ports, owners, and remediation evidence. This does not claim production proof or operational proof.",
   "boundaries": [
     "This smoke did not touch County Studio UI.",
     "This smoke did not mutate TerraFusion Sync.",

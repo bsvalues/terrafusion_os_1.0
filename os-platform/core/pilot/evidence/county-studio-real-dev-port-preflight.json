@@ -1,0 +1,75 @@
+{
+  "generatedAtUtc": "2026-06-07T16:24:45.552Z",
+  "gate": "county-studio-real-dev-port-preflight",
+  "status": "REAL_DEV_PORT_PREFLIGHT_BLOCKED",
+  "requiredPorts": [
+    {
+      "serviceName": "governed pilot runtime",
+      "port": 4317,
+      "envVar": "TF_PILOT_PORT",
+      "requiredForDev": true,
+      "purpose": "Local governed pilot runtime used by dev:pilot:governed."
+    },
+    {
+      "serviceName": "TerraFusion API runtime",
+      "port": 5046,
+      "envVar": "TF_API_PORT",
+      "requiredForDev": true,
+      "purpose": "Local .NET API runtime used by backend:launch and Vite API proxy."
+    }
+  ],
+  "occupiedPorts": [
+    {
+      "serviceName": "governed pilot runtime",
+      "port": 4317,
+      "envVar": "TF_PILOT_PORT",
+      "requiredForDev": true,
+      "owningProcess": {
+        "processId": 50784,
+        "processName": "node",
+        "path": "C:\\Program Files\\nodejs\\node.exe"
+      },
+      "remediation": "Stop the conflicting process using port 4317, or run the existing cleanup command if it owns this repo. Alternatively configure an unused TF_PILOT_PORT before launching if the service supports that port."
+    },
+    {
+      "serviceName": "TerraFusion API runtime",
+      "port": 5046,
+      "envVar": "TF_API_PORT",
+      "requiredForDev": true,
+      "owningProcess": {
+        "processId": 42020,
+        "processName": "dotnet",
+        "path": "C:\\Program Files\\dotnet\\dotnet.exe"
+      },
+      "remediation": "Stop the conflicting process using port 5046, or run the existing cleanup command if it owns this repo. Alternatively configure an unused TF_API_PORT before launching if the service supports that port."
+    }
+  ],
+  "portPreflightPassed": false,
+  "productionProofAllowed": false,
+  "operationalProofAllowed": false,
+  "alternatePortSupport": [
+    {
+      "serviceName": "governed pilot runtime",
+      "envVar": "TF_PILOT_PORT",
+      "supported": true
+    },
+    {
+      "serviceName": "TerraFusion API runtime",
+      "envVar": "TF_API_PORT",
+      "supported": true
+    }
+  ],
+  "reuseExistingHealthyServices": {
+    "supportedByDevCommand": false,
+    "reason": "pnpm run dev:county-studio:real-benton launches fresh governed pilot/API processes, so occupied required ports must be cleared or moved before this command can cleanly launch."
+  },
+  "boundaries": [
+    "This preflight does not touch County Studio UI.",
+    "This preflight does not mutate TerraFusion Sync.",
+    "This preflight does not change DB seeding.",
+    "This preflight does not weaken gates.",
+    "This preflight does not set productionProofAllowed=true.",
+    "This preflight does not set operationalProofAllowed=true.",
+    "This preflight does not hide DATA_TRUTH_FAIL."
+  ]
+}

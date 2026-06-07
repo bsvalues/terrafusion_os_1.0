@@ -1,8 +1,8 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T15:57:14.591Z
+Generated: 2026-06-07T16:25:22.844Z
 
-Status: `FORGE_DEV_SMOKE_FRONTEND_STARTED_BACKEND_PORT_BLOCKED`
+Status: `FORGE_DEV_SMOKE_BLOCKED_BY_PORT_PREFLIGHT`
 
 ## Command Invoked
 
@@ -19,70 +19,41 @@ C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 Smoke log:
 
 ```text
-C:\Users\bsval\AppData\Local\Temp\county-studio-r1-forge-dev-smoke-20260607-085321.log
+C:\Users\bsval\AppData\Local\Temp\county-studio-real-dev-port-preflight-smoke-20260607-092440.log
 ```
 
 ## Result
 
-The real Benton Forge dev command reached the live dev stage:
+The command now fails fast at the port preflight:
+
+```text
+pnpm run proof:county-studio:real-dev-port-preflight
+REAL_DEV_PORT_PREFLIGHT_BLOCKED
+```
+
+The command did not reach:
 
 ```text
 pnpm run proof:county-studio:benton-real-dev-server-readiness:db
-REAL_DEV_DATA_AVAILABLE
-
 pnpm run proof:county-studio:real-dev-activation
-REAL_DEV_ACTIVATION_READY
-
-Vite emitted:
-http://localhost:5174/
+cross-env ... pnpm run dev
 ```
 
-The full dev command still cannot be accepted as a clean launch because local runtime ports were already occupied:
+So Vite, the governed pilot runtime, and the TerraFusion API runtime were not launched in this smoke.
 
-```text
-Governed pilot runtime: EADDRINUSE 127.0.0.1:4317
-TerraFusion API runtime: failed to bind http://127.0.0.1:5046
-```
+## Occupied Ports
 
-So this smoke proves the readiness drift is reconciled, but it does not claim a clean full dev server startup.
+- governed pilot runtime: `4317` (`TF_PILOT_PORT`)
+  - owner: `node` pid `50784`
+  - path: `C:\Program Files\nodejs\node.exe`
 
-## Mode Flags
-
-Configured by the run command:
-
-- `TF_COUNTY_STUDIO_DEV_DATA_MODE=real-benton`
-- `TF_COUNTY_STUDIO_PRODUCTION_PROOF=false`
-- `TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false`
-
-Applied to frontend stage: `true`
-
-Applied to clean full dev server: `false`
-
-Reason: the command reached the `cross-env ... pnpm run dev` stage and Vite started, but the governed pilot/API runtime exited on port conflicts.
-
-## Posture After Smoke
-
-- forgeDevAllowed=true
-- realDevServerAllowed=true
-- realDevActivationAllowed=true
-- countyStudioMode=REAL_BENTON_FORGE_DEV
-- dataTruthStatus=DATA_TRUTH_FAIL
-- geometryStatus=SYNC_DERIVED_GEOMETRY
-- riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
-- ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
-- productionProofAllowed=false
-- operationalProofAllowed=false
-
-## Startup Errors
-
-- Governed pilot runtime: `EADDRINUSE 127.0.0.1:4317`
-- TerraFusion API runtime: `Failed to bind to address http://127.0.0.1:5046`
+- TerraFusion API runtime: `5046` (`TF_API_PORT`)
+  - owner: `dotnet` pid `42020`
+  - path: `C:\Program Files\dotnet\dotnet.exe`
 
 ## Interpretation
 
-The prior readiness-blocked smoke evidence was stale after the live DB adapter was refreshed. Current live readiness and activation pass, so County Studio Forge dev mode is allowed again.
-
-The smoke still does not prove a clean full dev launch because the local runtime had occupied pilot/API ports. This is runtime environment drift, not a County Studio UI failure.
+The real Benton Forge dev command no longer fails late with unclear bind errors. It now stops before runtime startup with exact occupied ports, owners, and remediation evidence.
 
 This is not production proof.
 
