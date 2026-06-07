@@ -460,8 +460,13 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full}, afterPropId={Cur})", ownerTopN, fullCorpus, afterPropId);
-                var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN, afterPropId: afterPropId);
+                _logger.LogInformation("[Drain:owner-wsdor] Owner S1 (TopN={Top}, FullCorpus={Full}, afterPropId={Cur}, activeSupp=true)", ownerTopN, fullCorpus, afterPropId);
+                // OWNER-SUPNUM-RESOLUTION (2026-06-06): land the ACTIVE-supplement
+                // owner record per (prop_id, owner_tax_yr), not the sup=0 base. The
+                // owner-current truth promoter requires owner.sup_num == active
+                // supplement; without this, ~34.6K class-2 (non-zero active supp)
+                // parcel-years are rejected as stale and never promote.
+                var ownerSrc = new SqlServerPacsOwnerSource(pacsCs!, topN: ownerTopN, afterPropId: afterPropId, activeSupp: true);
                 var ownerS1 = await ownerSvc.LandOwnersAsync(ownerSrc, operatorName, cancellationToken);
                 batchIds.Add(ownerS1.LoadBatchId);
                 if (!IsCompleted(ownerS1.Status))

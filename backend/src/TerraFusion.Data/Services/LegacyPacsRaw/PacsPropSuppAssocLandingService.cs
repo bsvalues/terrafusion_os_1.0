@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using NpgsqlTypes;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Sync.PacsPropSuppAssoc;
@@ -64,58 +66,56 @@ public sealed class PacsPropSuppAssocLandingService : IPacsPropSuppAssocLandingS
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var rowsLanded = 0;
-        var pending = 0;
         var yearHistogram = new Dictionary<short, int>();
         var keyCounts = new Dictionary<(int PropId, short PropValYr), int>();
 
         try
         {
-            // SYNC-COMPLETE-2: bulk-insert optimization. See BulkInsertScope.
-            // Validated 1.58× speedup at N=20k (89→141 rows/sec) via
-            // /api/debug/perf-test/bulk-insert-synthetic. Effect compounds
-            // at full-corpus N=95k+. Scoped to the streaming loop only —
-            // post-loop batch.Status = "COMPLETED" modifications run with
-            // AutoDetectChanges restored so the LoadBatch update is captured.
-            using (var _bulkScope = BulkInsertScope.Begin(_db))
+            // OWNER-SUPNUM-RESOLUTION (2026-06-06): full-corpus supp landing is
+            // ~810K rows. The prior EF Add/SaveChanges path round-tripped per row
+            // (~30-75 rows/sec → hours). Replace it with a PostgreSQL binary COPY
+            // stream into legacy_pacs_raw.prop_supp_assoc — orders of magnitude
+            // faster. Uniqueness/distribution gates still come from the in-memory
+            // accumulators; the provenance gate re-reads the table (COPY commits
+            // real, fully-provenanced rows). A fresh NpgsqlConnection keeps COPY
+            // off the EF DbContext connection that owns the LoadBatch row.
+            var connString = _db.Database.GetConnectionString();
+            await using (var copyConn = new NpgsqlConnection(connString))
             {
-            await foreach (var src in source
-                .StreamPropSuppAssocsAsync(cancellationToken)
-                .ConfigureAwait(false))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+                await copyConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await using var importer = await copyConn.BeginBinaryImportAsync(
+                    "COPY legacy_pacs_raw.prop_supp_assoc (\"LandedRowId\", \"PropValYr\", \"PropId\", " +
+                    "\"SupNum\", \"LoadBatchId\", \"SourceQueryHash\", \"SourceRowHash\", \"LandedAt\") " +
+                    "FROM STDIN (FORMAT BINARY)",
+                    cancellationToken).ConfigureAwait(false);
 
-                var landed = new LegacyPacsRawPropSuppAssoc
+                await foreach (var src in source
+                    .StreamPropSuppAssocsAsync(cancellationToken)
+                    .ConfigureAwait(false))
                 {
-                    PropValYr = src.PropValYr,
-                    PropId = src.PropId,
-                    SupNum = src.SupNum,
-                    LoadBatchId = batch.LoadBatchId,
-                    SourceQueryHash = queryHash,
-                    SourceRowHash = ComputeRowHash(src),
-                    LandedAt = DateTime.UtcNow,
-                };
-                _db.LegacyPacsRawPropSuppAssocs.Add(landed);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                yearHistogram[src.PropValYr] =
-                    yearHistogram.TryGetValue(src.PropValYr, out var yc) ? yc + 1 : 1;
-                var key = (src.PropId, src.PropValYr);
-                keyCounts[key] =
-                    keyCounts.TryGetValue(key, out var kc) ? kc + 1 : 1;
+                    await importer.StartRowAsync(cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(Guid.NewGuid(), NpgsqlDbType.Uuid, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.PropValYr, NpgsqlDbType.Smallint, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.PropId, NpgsqlDbType.Integer, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.SupNum, NpgsqlDbType.Smallint, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(batch.LoadBatchId, NpgsqlDbType.Uuid, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(queryHash, NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(ComputeRowHash(src), NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(DateTime.UtcNow, NpgsqlDbType.TimestampTz, cancellationToken).ConfigureAwait(false);
 
-                rowsLanded++;
-                pending++;
-                if (pending >= BatchSize)
-                {
-                    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                    pending = 0;
+                    yearHistogram[src.PropValYr] =
+                        yearHistogram.TryGetValue(src.PropValYr, out var yc) ? yc + 1 : 1;
+                    var key = (src.PropId, src.PropValYr);
+                    keyCounts[key] =
+                        keyCounts.TryGetValue(key, out var kc) ? kc + 1 : 1;
+
+                    rowsLanded++;
                 }
-            }
 
-            if (pending > 0)
-            {
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                await importer.CompleteAsync(cancellationToken).ConfigureAwait(false);
             }
-            } // end BulkInsertScope — AutoDetectChanges restored here so post-loop SaveChanges captures batch.Status updates
 
             var duplicateKeyViolations = keyCounts.Values.Count(c => c > 1);
 

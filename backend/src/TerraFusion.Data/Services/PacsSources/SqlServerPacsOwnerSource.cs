@@ -20,12 +20,26 @@ namespace TerraFusion.Data.Services.PacsSources;
 /// <c>sup_num = 0</c> (active supplement) so proof rows align with
 /// the modern data shape. Production landing relaxes both filters
 /// for full-corpus drains.</para>
+///
+/// <para>OWNER-SUPNUM-RESOLUTION (2026-06-06): the default
+/// <c>sup_num = 0</c> filter lands only the BASE owner record, which is
+/// wrong for parcel-years whose active supplement is non-zero (~34.6K
+/// Benton class-2 keys). The owner-current truth promoter requires
+/// <c>owner.sup_num == active supplement</c> (= MAX(prop_supp_assoc.sup_num)
+/// for the key), so base records get rejected as stale and never promote.
+/// When <paramref name="activeSupp"/> is true the source instead lands the
+/// owner record at the ACTIVE supplement per (prop_id, owner_tax_yr), joining
+/// <c>dbo.prop_supp_assoc</c> MAX(sup_num). Live PACS verification: 100% of
+/// class-2 keys (42,089) have an owner record at the active supplement.
+/// Opt-in keeps the sealed land/improvement/parcel seed lanes (which only
+/// need distinct prop_ids) on the original sup=0 behavior.</para>
 /// </summary>
 public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
 {
     private readonly string _connectionString;
     private readonly int? _topN;
     private readonly int? _afterPropId;
+    private readonly bool _activeSupp;
 
     /// <param name="afterPropId">
     /// ADVANCEMENT CURSOR (2026-05-27). When set, the stream returns only owners
@@ -35,13 +49,22 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
     /// (owner_tax_yr DESC, prop_id, owner_id) ordering is preserved unchanged so
     /// other lanes are unaffected.
     /// </param>
-    public SqlServerPacsOwnerSource(string connectionString, int? topN = null, int? afterPropId = null)
+    /// <param name="activeSupp">
+    /// OWNER-SUPNUM-RESOLUTION (2026-06-06). When false (default), filter
+    /// <c>sup_num = 0</c> exactly as before (sealed lanes' seed behavior). When
+    /// true, land the ACTIVE-supplement owner record per (prop_id, owner_tax_yr)
+    /// = the row whose sup_num matches MAX(prop_supp_assoc.sup_num) for that key,
+    /// so class-2 (non-zero active supplement) owners promote.
+    /// </param>
+    public SqlServerPacsOwnerSource(
+        string connectionString, int? topN = null, int? afterPropId = null, bool activeSupp = false)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("PACS connection string is required.", nameof(connectionString));
         _connectionString = connectionString;
         _topN = topN;
         _afterPropId = afterPropId;
+        _activeSupp = activeSupp;
     }
 
     public string SourceSystem => "JCHARRISPACS";
@@ -55,21 +78,40 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
     //   - We alias type_of_int AS type_of_owner. udi_status comes back
     //     as NULL — the entity tolerates this and downstream truth/
     //     canonical layers do not consult it for promotion gates.
-    public string SourceQueryText =>
-        "SELECT CAST(owner_tax_yr AS smallint) AS owner_tax_yr, " +
-        "CAST(sup_num AS smallint) AS sup_num, " +
-        "prop_id, owner_id, pct_ownership, " +
-        "type_of_int AS type_of_owner, " +
-        "CAST(NULL AS varchar(8)) AS udi_status, " +
-        "birth_dt " +
-        "FROM dbo.owner " +
-        "WHERE sup_num = 0 AND owner_tax_yr >= 2018 " +
-        "ORDER BY owner_tax_yr DESC, prop_id, owner_id";
+    public string SourceQueryText => _activeSupp
+        ? "SELECT owner_tax_yr, sup_num, prop_id, owner_id, pct_ownership, " +
+          "type_of_int AS type_of_owner, NULL AS udi_status, birth_dt " +
+          "FROM dbo.owner o JOIN (SELECT prop_id, owner_tax_yr, MAX(sup_num) active_sup " +
+          "FROM dbo.prop_supp_assoc WHERE owner_tax_yr >= 2018 GROUP BY prop_id, owner_tax_yr) sa " +
+          "ON o.prop_id=sa.prop_id AND o.owner_tax_yr=sa.owner_tax_yr AND o.sup_num=sa.active_sup " +
+          "WHERE o.owner_tax_yr >= 2018 (active-supplement resolution)"
+        : "SELECT CAST(owner_tax_yr AS smallint) AS owner_tax_yr, " +
+          "CAST(sup_num AS smallint) AS sup_num, " +
+          "prop_id, owner_id, pct_ownership, " +
+          "type_of_int AS type_of_owner, " +
+          "CAST(NULL AS varchar(8)) AS udi_status, " +
+          "birth_dt " +
+          "FROM dbo.owner " +
+          "WHERE sup_num = 0 AND owner_tax_yr >= 2018 " +
+          "ORDER BY owner_tax_yr DESC, prop_id, owner_id";
 
     public async IAsyncEnumerable<PacsSourceOwner> StreamOwnersAsync(
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var topClause = _topN.HasValue ? $"TOP {_topN.Value} " : "";
+
+        // OWNER-SUPNUM-RESOLUTION: the per-key supplement filter. activeSupp
+        // joins dbo.prop_supp_assoc MAX(sup_num) so the landed owner row's
+        // sup_num equals the active supplement the truth promoter expects.
+        // Default reproduces the original sup_num = 0 base-record filter.
+        var ownerSupFilter = _activeSupp
+            ? "JOIN (SELECT prop_id, owner_tax_yr, MAX(sup_num) AS active_sup " +
+              "      FROM dbo.prop_supp_assoc WHERE owner_tax_yr >= 2018 " +
+              "      GROUP BY prop_id, owner_tax_yr) sa " +
+              "  ON o.prop_id = sa.prop_id AND o.owner_tax_yr = sa.owner_tax_yr " +
+              "     AND o.sup_num = sa.active_sup "
+            : null;
+
         string sql;
         if (_afterPropId.HasValue)
         {
@@ -78,7 +120,25 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
             // per (prop_id, tax_year); to make TOP N ≈ N DISTINCT parcels (not N
             // owner-rows spread thin across years), collapse to the latest year
             // per prop_id via ROW_NUMBER before applying TOP N.
-            sql = $@"
+            sql = _activeSupp
+                ? $@"
+                WITH ranked AS (
+                    SELECT CAST(o.owner_tax_yr AS smallint) AS owner_tax_yr,
+                           CAST(o.sup_num AS smallint) AS sup_num,
+                           o.prop_id, o.owner_id, o.pct_ownership,
+                           o.type_of_int AS type_of_owner,
+                           CAST(NULL AS varchar(8)) AS udi_status,
+                           o.birth_dt,
+                           ROW_NUMBER() OVER (PARTITION BY o.prop_id
+                                              ORDER BY o.owner_tax_yr DESC, o.owner_id) AS rn
+                    FROM dbo.owner o
+                    {ownerSupFilter}
+                    WHERE o.owner_tax_yr >= 2018 AND o.prop_id > @afterPropId)
+                SELECT {topClause}owner_tax_yr, sup_num, prop_id, owner_id, pct_ownership,
+                       type_of_owner, udi_status, birth_dt
+                FROM ranked WHERE rn = 1
+                ORDER BY prop_id"
+                : $@"
                 WITH ranked AS (
                     SELECT CAST(owner_tax_yr AS smallint) AS owner_tax_yr,
                            CAST(sup_num AS smallint) AS sup_num,
@@ -97,8 +157,21 @@ public sealed class SqlServerPacsOwnerSource : IPacsOwnerSource
         }
         else
         {
-            // Original ordering preserved exactly (other lanes rely on it).
-            sql = $@"
+            sql = _activeSupp
+                ? $@"
+                SELECT {topClause}CAST(o.owner_tax_yr AS smallint) AS owner_tax_yr,
+                       CAST(o.sup_num AS smallint) AS sup_num,
+                       o.prop_id,
+                       o.owner_id,
+                       o.pct_ownership,
+                       o.type_of_int AS type_of_owner,
+                       CAST(NULL AS varchar(8)) AS udi_status,
+                       o.birth_dt
+                FROM dbo.owner o
+                {ownerSupFilter}
+                WHERE o.owner_tax_yr >= 2018
+                ORDER BY o.owner_tax_yr DESC, o.prop_id, o.owner_id"
+                : $@"
                 SELECT {topClause}CAST(owner_tax_yr AS smallint) AS owner_tax_yr,
                        CAST(sup_num AS smallint) AS sup_num,
                        prop_id,

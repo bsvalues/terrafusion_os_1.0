@@ -63,11 +63,14 @@ public sealed class KeyedSqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSo
     /// Audit-anchor text. Hash includes the key count so re-runs with
     /// different sale batches produce different audit anchors.
     /// </summary>
-    public string SourceQueryText =>
-        $"SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr, prop_id, " +
-        $"CAST(sup_num AS smallint) AS sup_num " +
-        $"FROM dbo.prop_supp_assoc " +
-        $"WHERE sup_num = 0 AND (prop_id, owner_tax_yr) IN ({_keys.Count} keyed pairs from sale batch)";
+    public string SourceQueryText => _activeSupp
+        ? $"SELECT owner_tax_yr, prop_id, MAX(sup_num) FROM dbo.prop_supp_assoc " +
+          $"WHERE owner_tax_yr BETWEEN @minYr AND @maxYr GROUP BY owner_tax_yr, prop_id " +
+          $"(active-supplement grouped scan; {_keys.Count} keyed pairs in window)"
+        : $"SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr, prop_id, " +
+          $"CAST(sup_num AS smallint) AS sup_num " +
+          $"FROM dbo.prop_supp_assoc " +
+          $"WHERE sup_num = 0 AND (prop_id, owner_tax_yr) IN ({_keys.Count} keyed pairs from sale batch)";
 
     public async IAsyncEnumerable<PacsSourcePropSuppAssoc> StreamPropSuppAssocsAsync(
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -78,34 +81,36 @@ public sealed class KeyedSqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSo
         await using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-        // Stream chunked queries. Each chunk uses parameterized OR'd
-        // (prop_id = @p AND owner_tax_yr = @y) groups.
+        // OWNER-SUPNUM-RESOLUTION (2026-06-06): the active-supplement path
+        // resolves MAX(sup_num) per (prop_id, owner_tax_yr) via ONE clean
+        // grouped scan over prop_supp_assoc bounded to the key set's year
+        // window — NOT 810 OR-heavy chunk scans, and NOT a 809K-key
+        // nested-loop temp-table join (both forced repeated/poorly-planned
+        // scans at ~30-50 rows/sec). A single hash aggregate over the
+        // bounded year window returns one row per key in one pass. The
+        // result is a superset of the requested keys (every parcel-year with
+        // a supplement in range); the truth promoter matches only owner keys
+        // so extra rows are harmless.
+        if (_activeSupp)
+        {
+            await foreach (var row in StreamActiveSuppSetBasedAsync(conn, cancellationToken).ConfigureAwait(false))
+                yield return row;
+            yield break;
+        }
+
+        // activeSupp=false (sup_num=0 only) path — UNCHANGED. Used by the
+        // sealed current-year land/improvement lanes whose active supplement
+        // is 0; preserves exact prior OR-chunk behavior and output.
         foreach (var chunk in Chunk(_keys, KeyChunkSize))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var sb = new StringBuilder();
-            if (_activeSupp)
-            {
-                // SALES mode: resolve the ACTIVE supplement per (prop_id, owner_tax_yr)
-                // = MAX(sup_num). PACS keeps one row per (prop_id, owner_tax_yr, sup_num);
-                // the highest sup_num is the current/active supplement for that year.
-                // This replaces the sup=0-only filter so historical-year sales (whose
-                // active supplement is frequently non-zero) can resolve + promote.
-                sb.AppendLine("SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr,");
-                sb.AppendLine("       prop_id,");
-                sb.AppendLine("       CAST(MAX(sup_num) AS smallint) AS sup_num");
-                sb.AppendLine("FROM dbo.prop_supp_assoc");
-                sb.AppendLine("WHERE (");
-            }
-            else
-            {
-                sb.AppendLine("SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr,");
-                sb.AppendLine("       prop_id,");
-                sb.AppendLine("       CAST(sup_num AS smallint) AS sup_num");
-                sb.AppendLine("FROM dbo.prop_supp_assoc");
-                sb.AppendLine("WHERE sup_num = 0 AND (");
-            }
+            sb.AppendLine("SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr,");
+            sb.AppendLine("       prop_id,");
+            sb.AppendLine("       CAST(sup_num AS smallint) AS sup_num");
+            sb.AppendLine("FROM dbo.prop_supp_assoc");
+            sb.AppendLine("WHERE sup_num = 0 AND (");
 
             await using var cmd = new SqlCommand { Connection = conn, CommandTimeout = 600 };
             for (var i = 0; i < chunk.Count; i++)
@@ -116,8 +121,6 @@ public sealed class KeyedSqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSo
                 cmd.Parameters.AddWithValue($"@y{i}", (int)chunk[i].PropValYr);
             }
             sb.AppendLine(")");
-            if (_activeSupp)
-                sb.AppendLine("GROUP BY owner_tax_yr, prop_id");
 
             cmd.CommandText = sb.ToString();
 
@@ -134,6 +137,57 @@ public sealed class KeyedSqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSo
                     PropId:    rdr.GetInt32(oPropId),
                     SupNum:    rdr.GetInt16(oSupNum));
             }
+        }
+    }
+
+    /// <summary>
+    /// OWNER-SUPNUM-RESOLUTION active-supplement loader. Resolves
+    /// <c>MAX(sup_num)</c> (the active supplement) per
+    /// <c>(prop_id, owner_tax_yr)</c> with a SINGLE grouped scan over
+    /// <c>prop_supp_assoc</c>, bounded to the requested key set's year window.
+    /// One hash aggregate in one pass — replacing both the 810 OR-chunk
+    /// re-scans and the 809K-key nested-loop temp-table join that each stalled
+    /// the owner FullCorpus drain. Returns a superset of the requested keys
+    /// (every parcel-year with a supplement in the window); the owner truth
+    /// promoter matches only owner keys, so extra rows are inert. Output for
+    /// any requested key is identical to the prior OR-chunk activeSupp path.
+    /// </summary>
+    private async IAsyncEnumerable<PacsSourcePropSuppAssoc> StreamActiveSuppSetBasedAsync(
+        SqlConnection conn,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        // Bound the scan to the requested key set's year window.
+        short minYr = short.MaxValue, maxYr = short.MinValue;
+        foreach (var k in _keys)
+        {
+            if (k.PropValYr < minYr) minYr = k.PropValYr;
+            if (k.PropValYr > maxYr) maxYr = k.PropValYr;
+        }
+
+        const string sql =
+            "SELECT CAST(owner_tax_yr AS smallint) AS prop_val_yr, " +
+            "       prop_id, " +
+            "       CAST(MAX(sup_num) AS smallint) AS sup_num " +
+            "FROM dbo.prop_supp_assoc " +
+            "WHERE owner_tax_yr BETWEEN @minYr AND @maxYr " +
+            "GROUP BY owner_tax_yr, prop_id";
+
+        await using var cmd = new SqlCommand(sql, conn) { CommandTimeout = 1800 };
+        cmd.Parameters.AddWithValue("@minYr", (int)minYr);
+        cmd.Parameters.AddWithValue("@maxYr", (int)maxYr);
+
+        await using var rdr = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var oPropValYr = rdr.GetOrdinal("prop_val_yr");
+        var oPropId    = rdr.GetOrdinal("prop_id");
+        var oSupNum    = rdr.GetOrdinal("sup_num");
+
+        while (await rdr.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return new PacsSourcePropSuppAssoc(
+                PropValYr: rdr.GetInt16(oPropValYr),
+                PropId:    rdr.GetInt32(oPropId),
+                SupNum:    rdr.GetInt16(oSupNum));
         }
     }
 
