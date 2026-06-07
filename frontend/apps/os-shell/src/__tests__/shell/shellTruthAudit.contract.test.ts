@@ -57,6 +57,35 @@ describe('Phase 21: Shell Truth Audit', () => {
       const src = readShellFile('shell/desktop/Desktop.tsx');
       expect(src).toMatch(/DesktopTopSystemBar|TopBar|system.*bar/i);
     });
+
+    it('DesktopTopSystemBar frames June 10 as Benton runtime pilot county context', () => {
+      const src = readShellFile('shell/desktop/Desktop.tsx');
+      expect(src).toContain('Statewide county operating model');
+      expect(src).toContain('Benton County');
+      expect(src).toContain("Assessor's Office");
+      expect(src).toContain('Runtime Pilot');
+      expect(src).not.toContain('Benton absent by design');
+      expect(src).not.toContain('38-county runtime preview');
+    });
+
+    it('LoginPage frames June 10 as Benton runtime pilot plus county onboarding posture', () => {
+      const src = readShellFile('pages/LoginPage.tsx');
+      expect(src).toContain('Statewide county operating model');
+      expect(src).toContain('Benton Runtime Pilot');
+      expect(src).toContain('onboarding');
+      expect(src).not.toContain('Your session has expired');
+      expect(src).not.toContain('38-county runtime preview');
+    });
+
+    it('TerraForge suite entry does not present unfinished surfaces as Benton operations', () => {
+      const src = readShellFile('pages/suites/ForgeSuiteHome.tsx');
+      expect(src).toContain('Benton Runtime Pilot');
+      expect(src).toContain('TerraFusion DB/API-backed Benton proof path');
+      expect(src).not.toContain('Controlled Statewide Runtime Preview');
+      expect(src).not.toContain('38-county runtime preview');
+      expect(src).not.toContain('dev39 runtime preview');
+      expect(src).not.toContain('recommended next tool for Benton County');
+    });
   });
 
   // Q4: Do suite windows open near-full-stage?

@@ -121,13 +121,34 @@ const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
 const LEGACY_ASSESSMENT_PROPERTIES_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/properties`;
 const LEGACY_ASSESSMENT_PROPERTY_ROUTE = `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property`;
 const LEGACY_ASSESSMENT_HEALTH_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/health`;
+const LOCAL_BACKEND_ORIGIN = 'http://localhost:5000';
+
+function shouldTryLocalBackendFallback(path: string, status: number): boolean {
+  if (status < 500) return false;
+  if (!path.startsWith('/api/') && !path.startsWith('/ops/')) return false;
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname === 'localhost' && ['5173', '5174'].includes(window.location.port);
+}
+
+async function fetchWithLocalBackendFallback(
+  path: string,
+  init: RequestInit | undefined,
+  headers: Record<string, string>,
+): Promise<Response> {
+  const res = await fetch(path, { ...init, headers });
+  if (res.ok || !shouldTryLocalBackendFallback(path, res.status)) {
+    return res;
+  }
+
+  return fetch(`${LOCAL_BACKEND_ORIGIN}${path}`, { ...init, headers });
+}
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = { ...(init?.headers as Record<string, string> | undefined) };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(path, { ...init, headers });
+  const res = await fetchWithLocalBackendFallback(path, init, headers);
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
   return res.json();
 }

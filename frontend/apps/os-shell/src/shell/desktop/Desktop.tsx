@@ -106,9 +106,19 @@ const DesktopTopSystemBar: React.FC<{
         </span>
       </div>
 
-      {/* Zone B: County + Department Context (center) */}
+      {/* Zone B: June 10 county operating context (center) */}
       <div className='absolute left-1/2 -translate-x-1/2 flex items-center gap-2'>
         <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+          Statewide county operating model
+        </span>
+        <div
+          style={{
+            width: 1,
+            height: 12,
+            background: 'hsl(var(--tf-border) / 0.5)',
+          }}
+        />
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
           Benton County
         </span>
         <div
@@ -119,7 +129,17 @@ const DesktopTopSystemBar: React.FC<{
           }}
         />
         <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
-          Assessor&apos;s Office
+          Assessor's Office
+        </span>
+        <div
+          style={{
+            width: 1,
+            height: 12,
+            background: 'hsl(var(--tf-border) / 0.5)',
+          }}
+        />
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+          Runtime Pilot
         </span>
       </div>
 
@@ -581,10 +601,8 @@ export function Desktop({ className = '', children }: DesktopProps) {
             <DesktopIconGrid className='absolute top-12 left-4' />
           )}
 
-          {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
-          {surfaces.recentWork !== 'hidden' && (
-            <StageZeroState id='desktop-main-content' />
-          )}
+          {/* Layer 0.5: Stage Zero-State — June 10 launch posture is always visible on shell home */}
+          <StageZeroState id='desktop-main-content' />
         </>
       ) : (
         <div

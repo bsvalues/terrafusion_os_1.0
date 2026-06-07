@@ -10,6 +10,33 @@ export type ProbeResult = {
   systemComponents: Record<string, boolean> | null;
 };
 
+const LOCAL_BACKEND_HEALTH = 'http://localhost:5000/health';
+
+function shouldTryLocalHealthFallback(endpoint: string, responseStatus?: number): boolean {
+  if (responseStatus && responseStatus < 500) return false;
+  if (endpoint !== '/health' && endpoint !== '/api/system/health') return false;
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname === 'localhost' && ['5173', '5174'].includes(window.location.port);
+}
+
+async function fetchHealth(endpoint: string, signal: AbortSignal): Promise<Response> {
+  const response = await fetch(endpoint, {
+    method: 'GET',
+    signal,
+    headers: { 'Accept': 'application/json' },
+  });
+
+  if (!response.ok && shouldTryLocalHealthFallback(endpoint, response.status)) {
+    return fetch(LOCAL_BACKEND_HEALTH, {
+      method: 'GET',
+      signal,
+      headers: { 'Accept': 'application/json' },
+    });
+  }
+
+  return response;
+}
+
 export async function probeHealth(endpoint: string, timeoutMs = 1500): Promise<ProbeResult> {
   const warnings: string[] = [];
   const controller = new AbortController();
@@ -22,11 +49,7 @@ export async function probeHealth(endpoint: string, timeoutMs = 1500): Promise<P
   let systemComponents: Record<string, boolean> | null = null;
 
   try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
-    });
+    const response = await fetchHealth(endpoint, controller.signal);
 
     const latencyMs = Math.round(performance.now() - start);
 

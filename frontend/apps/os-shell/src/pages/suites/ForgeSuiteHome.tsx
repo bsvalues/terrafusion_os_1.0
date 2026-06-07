@@ -355,9 +355,9 @@ export default function ForgeSuiteHome() {
         <div className="forge-workspace__stage">
           <header className="forge-workspace__header">
             <div>
-              <p className="forge-workspace__eyebrow">Suite-Forge · County-Wide Workspace</p>
+              <p className="forge-workspace__eyebrow">Suite-Forge · Benton Runtime Pilot</p>
               <h1 className="forge-workspace__title">TerraForge</h1>
-              <p className="forge-workspace__subtitle">Property Valuation &amp; Cost Analysis Engine</p>
+              <p className="forge-workspace__subtitle">TerraFusion DB/API-backed Benton proof path</p>
             </div>
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
@@ -405,7 +405,7 @@ export default function ForgeSuiteHome() {
                 <div className="forge-ops-card__head">
                   <div>
                     <div className="forge-ops-card__title">Morning Brief</div>
-                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for Benton County.</div>
+                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for the Benton Runtime Pilot.</div>
                   </div>
                   <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
                     {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}

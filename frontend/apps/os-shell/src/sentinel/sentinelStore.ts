@@ -38,7 +38,7 @@ type SentinelState = {
 // Use centralized apiBase module for governance-compliant URL resolution
 const env = getViteEnv();
 const defaultApiBase = '/api';
-const defaultEndpoint = buildApiUrl('/system/health');
+const defaultEndpoint = '/health';
 
 export const useSentinelStore = create<SentinelState>((set) => ({
   status: 'degraded',
