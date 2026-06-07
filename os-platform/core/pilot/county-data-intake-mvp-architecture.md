@@ -6,6 +6,48 @@ Generated: 2026-05-27
 
 This is a design-only lane for assessor-provided governed exports. It is separate from the current June 10 39-county repair path, TerraFusion Sync, Benton DB drain work, and production DB binding. It does not authorize database mutation or canonical import.
 
+## June 10 Launch Posture
+
+County Data Intake is part of the June 10 story as a governed onboarding lane, not as a runtime claim.
+
+The June 10 four-lane model is:
+
+```text
+Lane 1 - Runtime Lane
+Benton County
+TerraFusion DB/API-backed operational snapshot
+Runtime Pilot
+
+Lane 2 - Sovereignty Lane
+All 39 WA counties
+county identity, role context, source posture, readiness state
+
+Lane 3 - Provenance / Onboarding Lane
+38 non-Benton counties
+source discovery, public/ArcGIS posture, readiness inventory
+
+Lane 4 - County Data Intake Lane
+assessor-provided exports and governed upload packages
+receipt, validation, rejected rows, dry-run report, approval boundary
+```
+
+For June 10, the intake lane status is `Design MVP / governed intake model`.
+
+It may show how a county starts onboarding without direct legacy database access. It must not claim production import, runtime enablement, TerraFusion Sync productization, production DB mutation, or canonical import.
+
+The launch rule is:
+
+```text
+No county becomes runtime-enabled until validated data is promoted into TerraFusion DB
+and passes TerraFusion API proof gates.
+```
+
+The MVP hard boundary is:
+
+```text
+canonicalImportAllowed: false
+```
+
 The MVP is a governed upload workspace:
 
 ```text
