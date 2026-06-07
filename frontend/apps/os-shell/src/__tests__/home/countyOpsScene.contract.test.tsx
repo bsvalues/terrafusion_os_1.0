@@ -222,7 +222,7 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
     expect(stageZero).toHaveTextContent('Onboarding / Provenance Inventory');
     expect(stageZero).toHaveTextContent('Not Runtime Enabled');
     expect(stageZero).toHaveTextContent('County Data Intake');
-    expect(stageZero).toHaveTextContent('canonical import disabled');
+    expect(stageZero).toHaveTextContent('canonicalImportAllowed: false');
   });
 
   it('7. Search is NOT the hero surface — no prominent search bar', () => {

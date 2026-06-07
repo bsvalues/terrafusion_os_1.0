@@ -298,7 +298,7 @@ const CountyMapOverview: React.FC<{
                 </div>
                 <div className='mt-2 text-sm font-semibold'>Not Runtime Enabled</div>
                 <div className='mt-1 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Runtime parcel actions are blocked until county-specific TerraFusion DB/API proof exists. County Data Intake is available as a governed onboarding path with canonical import disabled.
+                  Runtime parcel actions are blocked until county-specific TerraFusion DB/API proof exists. County Data Intake is available as a governed onboarding path with canonicalImportAllowed: false.
                 </div>
               </div>
             )}
