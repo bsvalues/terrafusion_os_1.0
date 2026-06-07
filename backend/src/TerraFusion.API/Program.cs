@@ -2110,6 +2110,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsExemptionCanonicalProjector>();
 
+// JURISDICTION-SPINE (2026-06-07): tax-area/district dicts + parcel→tax-area
+// assignment + TCA→district map.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsJurisdiction.IPacsJurisdictionService,
+    TerraFusion.Data.Services.CanonicalTf.PacsJurisdictionService>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

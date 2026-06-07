@@ -328,6 +328,18 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfExemption>
     TfExemptions { get; set; } = null!;
 
+  // JURISDICTION-SPINE: parcel→tax-area assignment + tax-area/district dicts + TCA→district map.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyTaxArea>
+    LegacyPacsRawPropertyTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxArea>
+    TfTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxDistrict>
+    TfTaxDistricts { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfParcelTaxArea>
+    TfParcelTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxAreaDistrict>
+    TfTaxAreaDistricts { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1177,6 +1189,18 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsExemptionCurrentConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.TfExemptionConfiguration());
+
+    // JURISDICTION-SPINE: tax-area/district dicts + parcel assignment + TCA→district map.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxDistrictConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfParcelTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaDistrictConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.

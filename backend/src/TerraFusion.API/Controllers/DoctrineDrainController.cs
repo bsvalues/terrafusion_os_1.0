@@ -1579,6 +1579,78 @@ public class DoctrineDrainController : ControllerBase
     }
 
     // ════════════════════════════════════════════════════════════════════
+    // JURISDICTION drain (JURISDICTION-SPINE) — tax_area + tax_district dicts
+    // → TCA→district map → current-year active-supplement parcel→tax-area
+    // assignment (parcel resolved via existing parcel xref). Revenue concepts
+    // (levy/fund/rate/bill) excluded. Default year = 2025.
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("jurisdiction")]
+    public async Task<IActionResult> DrainJurisdiction(
+        [FromServices] TerraFusion.Core.Sync.PacsJurisdiction.IPacsJurisdictionService jurisSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "jurisdiction";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsJurisdictionSource(pacsCs!);
+            _logger.LogInformation("[Drain:jurisdiction] year={Yr} (active-supplement)", taxYear);
+
+            // Stage 1: TaxArea-Dict.
+            var ta = await jurisSvc.PopulateTaxAreaDictAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(ta.Status))
+                return await FailLaneAsync(LaneName, "TaxArea-Dict", ta.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 2: TaxDistrict-Dict.
+            var td = await jurisSvc.PopulateTaxDistrictDictAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(td.Status))
+                return await FailLaneAsync(LaneName, "TaxDistrict-Dict", td.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 3: TaxAreaDistrict-Map.
+            var tad = await jurisSvc.PopulateTaxAreaDistrictAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            if (!IsCompleted(tad.Status))
+                return await FailLaneAsync(LaneName, "TaxAreaDistrict-Map", tad.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 4: ParcelTaxArea.
+            var pta = await jurisSvc.ProjectParcelTaxAreaAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            batchIds.Add(pta.PromotionLoadBatchId);
+            if (!IsCompleted(pta.Status))
+                return await FailLaneAsync(LaneName, "ParcelTaxArea", pta.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = pta.Landed;
+            rowsCanonicalized = pta.Projected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:jurisdiction] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
     // SALES drain — sale → keyed supp → sale truth → tf_sale canonical.
     // Independent of the parcel-anchored lanes; uses its own DESC-ordered
     // sale seed, then targets a parcel chain at the promoted sales' prop_ids.

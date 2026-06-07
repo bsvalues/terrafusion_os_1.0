@@ -152,6 +152,16 @@ public static class LaneStageOrder
                 "Exemption-Canonical",
             },
 
+            // jurisdiction: JURISDICTION-SPINE — tax-area + tax-district dicts
+            // → TCA→district map → parcel→tax-area assignment (active-supp).
+            ["jurisdiction"] = new[]
+            {
+                "TaxArea-Dict",
+                "TaxDistrict-Dict",
+                "TaxAreaDistrict-Map",
+                "ParcelTaxArea",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]

@@ -17,6 +17,12 @@ _Last updated: 2026-06-07._
 | Owner | ✅ SEALED (100%) | 816,849 / 816,849 (100%); class-2 active-supplement gap (was 34,636 stalesup) CLOSED via owner active-supplement resolution; stalesup 0, nosupp 0 | (PropId, OwnerTaxYr, OwnerId) at the ACTIVE supplement (MAX sup_num per parcel-year), not sup_num=0 | 1.0000× | `evidence/2026-06-07-owner-supnum-resolution.md` (+ prior `evidence/2026-06-06-owner-lane-seal.md`) |
 | Assessment value | ✅ SEALED (current-year) | truth 95,455 / 95,455 (100% of 2025 active-supplement universe); canonical 83,326 (spine-resolved; 12,129 outside the real-property spine); 1,041 non-zero active supplement preserved; assessed_val 100% populated | (PropId, AssessmentYear) at ACTIVE supplement (MAX sup_num); year=2025 current operational | 1.0000× (truth + canonical) | `evidence/2026-06-07-assessment-value-lane-seal.md` |
 | Exemption fact | ✅ SEALED (current-year) | truth 6,487 / 6,487 (2025 active-supplement); canonical 5,643 (spine-resolved; 844 outside real-property spine); dict_exemption_type populated (6 types, 0 unbacked); 126 non-zero active supplement preserved; exemption_pct 4,268 | (PropId, OwnerId, exmpt_tax_yr, exmpt_type_cd) at ACTIVE supplement; year=2025 | 1.0000× (truth + canonical) | `evidence/2026-06-07-exemption-fact-lane-seal.md` |
+| Jurisdiction (tax area/district) | ✅ SEALED (current-year) | landed 95,455 (2025 active-supp, 1,041 nonzero); tf_parcel_tax_area 83,326 (spine-resolved; 12,129 outside spine); tf_tax_area dict 109; tf_tax_district dict 37; tf_tax_area_district 487 TCA→district pairs; parcel→district chain proven; levy/fund excluded (Revenue boundary) | parcel→TCA at ACTIVE supplement (MAX sup_num); TCA→district from tax_area_fund_assoc (district id only); year=2025 | 1.0000× (parcel assignment) | `evidence/2026-06-07-jurisdiction-spine-seal.md` |
+
+## Spine boundary
+- **Valuation Spine** (sealed): parcel · owner · land · improvement · sales · geometry · assessment value · exemption.
+- **Jurisdiction Spine** (sealed): parcel → tax area → tax district.
+- **Revenue Spine** (deferred, separate mission): district → levy / fund / rate / bill / payment / distribution.
 
 ## Denominator notes (why coverage numbers differ per lane)
 - **Improvement / Land** are parcel-keyed against the current working year (2026); their active
