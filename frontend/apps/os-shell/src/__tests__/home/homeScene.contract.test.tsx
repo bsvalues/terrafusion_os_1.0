@@ -27,6 +27,8 @@ import { vi } from 'vitest';
 // Mocks
 // ---------------------------------------------------------------------------
 
+const mockUseParcelCount = vi.hoisted(() => vi.fn());
+
 // Mock zustand stores used by StageZeroState
 vi.mock('../../stores/commandPaletteStore', () => {
   const openFn = vi.fn();
@@ -138,7 +140,7 @@ vi.mock('../../hooks/useTodaysWork', () => ({
 // Mock useParcelCount — no QueryClientProvider in this test tree
 vi.mock('../../hooks/useParcelCount', () => ({
   __esModule: true,
-  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
+  useParcelCount: () => mockUseParcelCount(),
 }));
 
 // Import the REAL StageZeroState (with mocked dependencies above)
@@ -196,6 +198,10 @@ const Phase7Router: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
 // ---------------------------------------------------------------------------
 
 describe('Phase 7: Home Scene Contract', () => {
+  beforeEach(() => {
+    mockUseParcelCount.mockReturnValue({ data: undefined, isLoading: false, error: null });
+  });
+
   /**
    * Test 1: /home redirects to /
    *
@@ -322,5 +328,28 @@ describe('Phase 7: Home Scene Contract', () => {
     // Verify the store's open function is accessible
     const { _openFn } = await import('../../stores/commandPaletteStore') as any;
     expect(typeof _openFn).toBe('function');
+  });
+
+  it('renders an operational Benton runtime launch board without unverified statewide runtime counts', async () => {
+    mockUseParcelCount.mockReturnValue({
+      data: { totalParcels: 128788, dataSource: 'LIVE_DB', stubbed: false },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText(/Benton County Runtime Pilot/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Runtime verified from TerraFusion DB\/API/i)).toBeInTheDocument();
+    expect(screen.getByText(/Demo parcel: 101040000000000/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Open Benton Property Workbench/i })).toBeInTheDocument();
+
+    expect(screen.queryByText(/Washington County Runtime/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/128,788 parcels/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Washington County Operating Model/i)).toBeInTheDocument();
   });
 });

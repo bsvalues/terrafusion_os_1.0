@@ -13,7 +13,9 @@
  *
  * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
  * - Recent Work: live parcel browsing history from OS session state.
- * - Parcel count: from useParcelCount() API data; unavailable stays unavailable.
+ * - Parcel count: not rendered on the June 10 shell unless owned by a verified
+ *   Benton runtime proof endpoint. /api/government/stats is intentionally not
+ *   used here because it is not the launch proof contract.
  * - Today's Work: TerraDais queue API data only; unavailable state renders
  *   explicitly and never falls back to seeded sample tasks.
  * - County status strip: Last sync, appeal count, and system status fields render
@@ -44,7 +46,6 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
-import { useParcelCount } from '../../hooks/useParcelCount';
 import { LiquidPanel } from '../../ui/materials';
 import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
@@ -224,7 +225,8 @@ function parseToolOutput<T>(output: unknown): T | null {
 // ============================================================================
 const CountyMapOverview: React.FC<{
   onOpenAtlas: () => void;
-}> = ({ onOpenAtlas }) => {
+  onOpenWorkbench: () => void;
+}> = ({ onOpenAtlas, onOpenWorkbench }) => {
   const [selectedCounty, setSelectedCounty] = useState<'benton' | 'yakima'>('benton');
   const isBenton = selectedCounty === 'benton';
 
@@ -245,15 +247,15 @@ const CountyMapOverview: React.FC<{
       <div className='flex h-full flex-col justify-between'>
         <div>
           <div className='text-[10px] font-semibold uppercase tracking-[0.18em]' style={{ color: 'hsl(var(--tf-muted))' }}>
-            TerraFusion OS
+            June 10 launch board
           </div>
           <div className='mt-3 text-3xl font-semibold leading-tight'>
-            Statewide county operating model
+            Benton County Runtime Pilot
           </div>
-          <div className='mt-4 max-w-xl text-sm leading-6' style={{ color: 'hsl(var(--tf-muted))' }}>
-            Benton is the first runtime-proven county. The other Washington counties are represented as sovereign onboarding, provenance, and intake workspaces until TerraFusion DB/API proof promotes them.
+          <div className='mt-4 max-w-2xl text-sm leading-6' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Runtime verified from TerraFusion DB/API. PACS-derived Benton data is the June 10 proof path. The other Washington counties stay in onboarding, provenance, and intake posture until county-specific DB/API proof promotes them.
           </div>
-          <div className='mt-5 flex gap-2'>
+          <div className='mt-5 flex flex-wrap gap-2'>
             <button
               type='button'
               onClick={() => setSelectedCounty('benton')}
@@ -276,6 +278,18 @@ const CountyMapOverview: React.FC<{
             >
               Yakima County
             </button>
+            <button
+              type='button'
+              onClick={onOpenWorkbench}
+              className='rounded-lg px-3 py-2 text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+              style={{
+                border: '1px solid hsl(var(--tf-success-hs) 45% / 0.65)',
+                background: 'hsl(var(--tf-success-hs) 35% / 0.18)',
+                color: 'hsl(var(--tf-success-hs) 60%)',
+              }}
+            >
+              Open Benton Property Workbench
+            </button>
           </div>
           <div
             className='mt-5 rounded-xl p-4'
@@ -284,11 +298,11 @@ const CountyMapOverview: React.FC<{
             {isBenton ? (
               <div>
                 <div className='text-xs font-semibold tracking-[0.08em]' style={{ color: 'hsl(var(--tf-success-hs) 42%)' }}>
-                  Benton Runtime Pilot
+                  Runtime proof path
                 </div>
-                <div className='mt-2 text-sm font-semibold'>TerraFusion DB/API-backed</div>
+                <div className='mt-2 text-sm font-semibold'>TerraFusion DB/API-backed Benton property data</div>
                 <div className='mt-1 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  PACS-derived Benton data is loaded into TerraFusion DB and served through TerraFusion API for the June 10 runtime proof path.
+                  Demo parcel: 101040000000000. Provenance: PACS-derived, loaded into TerraFusion DB, served through TerraFusion API. Parcel aggregate counts are not shown here unless the verified proof endpoint owns them.
                 </div>
               </div>
             ) : (
@@ -303,12 +317,34 @@ const CountyMapOverview: React.FC<{
               </div>
             )}
           </div>
+          <div className='mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3'>
+            <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
+              <div className='text-[10px] font-semibold uppercase tracking-[0.12em]' style={{ color: 'hsl(var(--tf-muted))' }}>County</div>
+              <div className='mt-2 text-sm font-semibold'>Benton County</div>
+              <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>Assessor's Office · Runtime Pilot</div>
+            </div>
+            <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
+              <div className='text-[10px] font-semibold uppercase tracking-[0.12em]' style={{ color: 'hsl(var(--tf-muted))' }}>Runtime source</div>
+              <div className='mt-2 text-sm font-semibold'>TerraFusion DB/API</div>
+              <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>No live Hostinger PACS dependency</div>
+            </div>
+            <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
+              <div className='text-[10px] font-semibold uppercase tracking-[0.12em]' style={{ color: 'hsl(var(--tf-muted))' }}>Provenance</div>
+              <div className='mt-2 text-sm font-semibold'>PACS-derived</div>
+              <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>Evidence packet required for claims</div>
+            </div>
+            <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
+              <div className='text-[10px] font-semibold uppercase tracking-[0.12em]' style={{ color: 'hsl(var(--tf-muted))' }}>Health</div>
+              <div className='mt-2 text-sm font-semibold'>/health gate</div>
+              <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>Use top bar health for live status</div>
+            </div>
+          </div>
         </div>
         <div className='grid grid-cols-3 gap-3'>
           <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
             <Database className='h-4 w-4 mb-2 opacity-60' />
             <div className='text-xs font-semibold'>Benton Runtime</div>
-            <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>DB/API proof path</div>
+            <div className='mt-1 text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>Workbench proof path</div>
           </div>
           <div className='rounded-xl p-3' style={{ border: '1px solid hsl(var(--tf-border) / 0.55)' }}>
             <Map className='h-4 w-4 mb-2 opacity-60' />
@@ -328,7 +364,7 @@ const CountyMapOverview: React.FC<{
         className='absolute bottom-8 right-8 rounded-lg px-3 py-2 text-xs font-semibold transition-all hover:bg-[hsl(var(--tf-text)_/_0.07)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
         style={{ border: '1px solid hsl(var(--tf-border) / 0.65)' }}
       >
-        Open TerraAtlas
+        View County Intake / Onboarding
       </button>
     </div>
   </div>
@@ -343,10 +379,6 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
-  const { data: statsData } = useParcelCount();
-  const parcelCountLabel = typeof statsData?.totalParcels === 'number'
-    ? `${statsData.totalParcels.toLocaleString()} parcels`
-    : 'Parcel count unavailable';
   const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
     dais: { status: 'idle' },
     forge: { status: 'idle' },
@@ -551,7 +583,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           {/* ═══ Center: County Overview ═══ */}
           <div data-testid='county-map-center' className='flex-1 min-w-0'>
             <GlassCard className='h-full p-2'>
-              <CountyMapOverview onOpenAtlas={handleOpenAtlas} />
+              <CountyMapOverview onOpenAtlas={handleOpenAtlas} onOpenWorkbench={handleOpenWorkbench} />
             </GlassCard>
           </div>
 
@@ -697,11 +729,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
           <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
             <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
-              Washington County Runtime
+              Washington County Operating Model
             </span>
             <span>Benton Runtime Pilot</span>
             <span>38 counties Onboarding / Provenance / Intake</span>
-            <span>{parcelCountLabel}</span>
+            <span>Parcel count: proof path only</span>
             <span>Last sync: –</span>
             <span>Appeals: –</span>
             <span className='flex items-center gap-1'>
