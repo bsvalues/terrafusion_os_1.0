@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-06-07T16:20:26.621Z",
+  "name": "Benton Owner Runtime Proof",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "activeSyncTouched": false,
+  "runtimeProven": true,
+  "verdict": "BENTON_OWNER_RUNTIME_TRUTH_PROVEN",
+  "scope": "Benton canonical owner-current read runtime",
+  "metrics": {
+    "truthOwnerRows": 816849,
+    "truthOwnerDistinctRows": 816849,
+    "truthOwnerDuplication": "1.0000x",
+    "canonicalOwnerRows": 312532,
+    "canonicalOwnerDistinctIds": 312532,
+    "canonicalOwnerNullAcctId": 0,
+    "canonicalOwnerBlankDisplayName": 0,
+    "ownerLinkRows": 2111805,
+    "wsdorTruthRows": 774696,
+    "wsdorTruthDistinctRows": 774696,
+    "wsdorTruthDuplication": "1.0000x",
+    "wsdorCanonicalRows": 686820,
+    "failedBatches": 0
+  },
+  "ownerReadiness": {
+    "status": "OWNER_CURRENT_RUNTIME_PROVEN",
+    "readReady": true,
+    "sealStatus": "SEALED_OWNER_CURRENT_TRUTH",
+    "explanation": "Owner-current truth is complete and duplicate-free; canonical owner and parcel-owner link runtime rows are present."
+  },
+  "wsdorStatus": "WSDOR_CANONICAL_CONTINUING",
+  "wsdorExplanation": "WSDOR truth is duplicate-free, but canonical WSDOR projection is still below truth count; this does not block owner-current runtime proof.",
+  "statusCounts": {
+    "COMPLETED": 148,
+    "IN_PROGRESS": 2
+  },
+  "blockedProbes": [],
+  "probeErrors": {},
+  "blockers": [],
+  "forbiddenClaims": [
+    "production readiness",
+    "full statewide certification",
+    "WSDOR canonical completion unless WSDOR counts match",
+    "owner write readiness"
+  ],
+  "nextAction": "update_benton_board_owner_sealed_runtime_proven",
+  "packetHash": "5bdcba9948373c471b6df81d84bf7e375028c1b3a4a78bb783656c86bd1a1659"
+}
