@@ -1,19 +1,19 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T15:27:49.772Z
-Status: REAL_DEV_SERVER_BLOCKED
+Generated: 2026-06-07T16:01:06.247Z
+Status: REAL_DEV_DATA_AVAILABLE
 
 ## Decision
 
-- Real Dev Server: BLOCKED
+- Real Dev Server: ALLOWED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
 ## Maturity
 
 - DATA_TRUTH_FAIL: true
-- REAL_DEV_DATA_AVAILABLE: false
-- SYNC_DERIVED_PARTIAL: false
+- REAL_DEV_DATA_AVAILABLE: true
+- SYNC_DERIVED_PARTIAL: true
 - SYNC_DERIVED_COMPLETE: false
 - AUTHORITATIVE_RECONCILED: false
 - PRODUCTION_PROOF_ALLOWED: false
@@ -23,26 +23,26 @@ Status: REAL_DEV_SERVER_BLOCKED
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
 | backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
-| active drain process state | UNKNOWN | false | Drain process state is unknown. |
-| load_batch current stage | UNKNOWN | false | load_batch stage is UNKNOWN (UNKNOWN). |
-| landing table counts | UNKNOWN | false | Property landing rows are missing or unknown. |
-| truth table counts | UNKNOWN | false | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
-| canonical parcel counts | UNKNOWN | false | Canonical parcel count is missing. |
-| owner truth count | UNKNOWN | false | Owner truth count is missing. |
-| account count | UNKNOWN | false | Account count is missing. |
-| supp association count | UNKNOWN | false | Supplement association count is missing. |
-| property landing count | UNKNOWN | false | Property landing count is missing. |
-| WPOV status | UNKNOWN | false | WPOV landing status is missing. |
-| WSDOR status | UNKNOWN | false | WSDOR truth status is missing. |
+| active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS. |
+| load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-v2-activesupp-copy (IN_PROGRESS). |
+| landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
+| truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
+| canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
+| owner truth count | PARTIAL_SEEDED | true | Owner truth rows exist. |
+| account count | SEEDED | true | Account rows exist. |
+| supp association count | PARTIAL_SEEDED | true | Supplement association landing rows exist. |
+| property landing count | PARTIAL_SEEDED | true | Property landing count is present. |
+| WPOV status | PARTIAL_SEEDED | true | WPOV landing rows exist. |
+| WSDOR status | PARTIAL_SEEDED | true | WSDOR truth rows exist. |
 | owner-supnum backfill dependency classification | PARTIAL_SEEDED | true | owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked. |
-| map data dependency status | UNKNOWN | false | Map dependency is classified UNKNOWN. |
-| ledger data dependency status | UNKNOWN | false | Ledger dependency is classified UNKNOWN. |
-| inspector data dependency status | UNKNOWN | false | Inspector dependency is classified UNKNOWN. |
+| map data dependency status | PARTIAL_SEEDED | true | Map dependency is classified PARTIAL_SEEDED. |
+| ledger data dependency status | SYNC_DERIVED | true | Ledger dependency is classified SYNC_DERIVED. |
+| inspector data dependency status | SYNC_DERIVED | true | Inspector dependency is classified SYNC_DERIVED. |
 
 ## Forge Dev Dependency Reclassification
 
-- ownerSupnumBackfillStatus: UNKNOWN
-- ownerSupnumBackfillStage: UNKNOWN
+- ownerSupnumBackfillStatus: IN_PROGRESS
+- ownerSupnumBackfillStage: owner-supnum-v2-activesupp-copy
 - ownerSupnumBackfillLatestFailedStage: owner-supnum-resume
 - ownerSupnumBackfillLatestFailedStatus: FAILED
 - ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
@@ -52,20 +52,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 ## Blockers
 
-- active drain process state: Drain process state is unknown.
-- load_batch current stage: load_batch stage is UNKNOWN (UNKNOWN).
-- landing table counts: Property landing rows are missing or unknown.
-- truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.
-- canonical parcel counts: Canonical parcel count is missing.
-- owner truth count: Owner truth count is missing.
-- account count: Account count is missing.
-- supp association count: Supplement association count is missing.
-- property landing count: Property landing count is missing.
-- WPOV status: WPOV landing status is missing.
-- WSDOR status: WSDOR truth status is missing.
-- map data dependency status: Map dependency is classified UNKNOWN.
-- ledger data dependency status: Ledger dependency is classified UNKNOWN.
-- inspector data dependency status: Inspector dependency is classified UNKNOWN.
+- None
 
 ## Rules
 

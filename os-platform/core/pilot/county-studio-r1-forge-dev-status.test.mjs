@@ -247,6 +247,7 @@ test("CLI writes consolidated Forge-dev status JSON and markdown runbook", () =>
       geometry,
       "--risk-audit",
       riskAudit,
+      "--no-refresh-readiness",
       "--out-json",
       outJson,
       "--out-md",
@@ -268,4 +269,79 @@ test("CLI writes consolidated Forge-dev status JSON and markdown runbook", () =>
   assert.match(markdown, /pnpm run dev:county-studio:real-benton/);
   assert.match(markdown, /This is not production proof/);
   assert.match(markdown, /This is not operational proof/);
+});
+
+test("CLI refreshes live readiness before status so stale ready evidence cannot override blocked runtime evidence", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "tf-r1-forge-dev-live-status-"));
+  const readiness = path.join(tmp, "readiness.json");
+  const activation = path.join(tmp, "activation.json");
+  const forgeWiring = path.join(tmp, "forge-wiring.json");
+  const geometry = path.join(tmp, "geometry.json");
+  const riskAudit = path.join(tmp, "risk-audit.json");
+  const refreshScript = path.join(tmp, "refresh-readiness.mjs");
+  const outJson = path.join(tmp, "status.json");
+  const outMd = path.join(tmp, "status.md");
+
+  fs.writeFileSync(readiness, `${JSON.stringify(readinessReport(), null, 2)}\n`);
+  fs.writeFileSync(activation, `${JSON.stringify(activationReport(), null, 2)}\n`);
+  fs.writeFileSync(forgeWiring, `${JSON.stringify(forgeWiringReport(), null, 2)}\n`);
+  fs.writeFileSync(geometry, `${JSON.stringify(geometryReport(), null, 2)}\n`);
+  fs.writeFileSync(riskAudit, `${JSON.stringify(riskAuditReport(), null, 2)}\n`);
+  fs.writeFileSync(
+    refreshScript,
+    `
+      import fs from 'node:fs';
+      const readinessPath = process.argv[2];
+      const blocked = {
+        status: 'REAL_DEV_SERVER_BLOCKED',
+        decisions: {
+          realDevServerAllowed: false,
+          productionProofAllowed: false,
+          operationalProofAllowed: false
+        },
+        forgeDevDependency: ${JSON.stringify(readinessReport().forgeDevDependency)},
+        blockers: ['live DB counts are UNKNOWN/zero']
+      };
+      fs.writeFileSync(readinessPath, JSON.stringify(blocked, null, 2) + '\\n');
+      process.exit(1);
+    `
+  );
+
+  const result = spawnSync(
+    "node",
+    [
+      "os-platform/core/pilot/county-studio-r1-forge-dev-status.mjs",
+      "--readiness",
+      readiness,
+      "--activation",
+      activation,
+      "--forge-wiring",
+      forgeWiring,
+      "--geometry",
+      geometry,
+      "--risk-audit",
+      riskAudit,
+      "--refresh-readiness-command",
+      `${JSON.stringify(process.execPath)} ${JSON.stringify(refreshScript)} ${JSON.stringify(readiness)}`,
+      "--out-json",
+      outJson,
+      "--out-md",
+      outMd
+    ],
+    { cwd: repoRoot, encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stdout, /COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED/);
+
+  const report = JSON.parse(fs.readFileSync(outJson, "utf8"));
+  assert.equal(report.status, "COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED");
+  assert.equal(report.summary.forgeDevAllowed, false);
+  assert.equal(report.summary.countyStudioMode, "FORGE_DEV_BLOCKED");
+  assert.equal(report.liveReadinessRefresh.attempted, true);
+  assert.equal(report.liveReadinessRefresh.exitCode, 1);
+  assert.match(report.liveReadinessRefresh.interpretation, /Live readiness refresh failed/i);
+  assert.ok(report.blockers.some((item) => /real dev server evidence/i.test(item)));
+  assert.equal(report.summary.productionProofAllowed, false);
+  assert.equal(report.summary.operationalProofAllowed, false);
 });

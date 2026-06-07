@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-06T23:47:05.120Z",
+  "generatedAtUtc": "2026-06-07T15:51:02.540Z",
   "adapter": "benton-sync-drain-state-evidence",
   "backendHealth": {
     "status": "healthy",
@@ -21,14 +21,14 @@
     "directConnectionConfigured": false
   },
   "loadBatch": {
-    "stage": "owner-supnum-resume",
+    "stage": "owner-supnum-v2-activesupp-copy",
     "status": "IN_PROGRESS",
-    "loadBatchId": "cc68d086-4125-4808-bcdd-1f96fa0a9a63"
+    "loadBatchId": "a0fd1bdc-11c5-475f-b700-3ecd73f7e7e1"
   },
   "queryResults": {
     "latestLoadBatch": {
-      "loadBatchId": "cc68d086-4125-4808-bcdd-1f96fa0a9a63",
-      "stage": "owner-supnum-resume",
+      "loadBatchId": "a0fd1bdc-11c5-475f-b700-3ecd73f7e7e1",
+      "stage": "owner-supnum-v2-activesupp-copy",
       "status": "IN_PROGRESS"
     },
     "latestOwnerSupnumFailure": {
@@ -36,35 +36,38 @@
       "stage": "owner-supnum-resume",
       "status": "FAILED"
     },
-    "legacyProperty": 999214,
-    "legacyOwner": 7396857,
-    "legacyPropSuppAssoc": 2887351,
-    "legacyWashPropOwnerVal": 1273143,
-    "legacyAccount": 425186,
-    "truthParcel": 83682,
-    "truthOwner": 774760,
-    "truthWsdor": 774696,
-    "canonicalParcel": 3199335,
-    "canonicalOwner": 215009,
+    "legacyProperty": 1190834,
+    "legacyOwner": 8213706,
+    "legacyPropSuppAssoc": 4382985,
+    "legacyWashPropOwnerVal": 1654143,
+    "legacyAccount": 535140,
+    "truthParcel": 83326,
+    "truthOwner": 816849,
+    "truthWsdor": {
+      "unavailable": true,
+      "reason": "No readable DB runtime path. docker psql: spawnSync docker ETIMEDOUT"
+    },
+    "canonicalParcel": 3198979,
+    "canonicalOwner": 312532,
     "canonicalWsdor": 686820,
     "gisParcelGeometry": 80075
   },
   "counts": {
     "landingTables": {
-      "property": 999214,
-      "owner": 7396857,
-      "propSuppAssoc": 2887351,
-      "washPropOwnerVal": 1273143
+      "property": 1190834,
+      "owner": 8213706,
+      "propSuppAssoc": 4382985,
+      "washPropOwnerVal": 1654143
     },
     "truthTables": {
-      "parcel": 83682,
-      "owner": 774760,
-      "wsdor": 774696
+      "parcel": 83326,
+      "owner": 816849,
+      "wsdor": 0
     },
     "canonical": {
-      "parcel": 3199335,
-      "owner": 215009,
-      "account": 425186,
+      "parcel": 3198979,
+      "owner": 312532,
+      "account": 535140,
       "wsdor": 686820
     },
     "gis": {
@@ -79,7 +82,7 @@
     "legacyAccount": "SEEDED",
     "truthParcel": "SYNC_DERIVED",
     "truthOwner": "SYNC_DERIVED",
-    "truthWsdor": "SYNC_DERIVED",
+    "truthWsdor": "UNKNOWN",
     "canonicalParcel": "SEEDED",
     "canonicalOwner": "SEEDED",
     "canonicalWsdor": "SEEDED",
@@ -90,7 +93,7 @@
     "ledger": "SYNC_DERIVED",
     "inspector": "SYNC_DERIVED",
     "ownerSupnumBackfill": {
-      "stage": "owner-supnum-resume",
+      "stage": "owner-supnum-v2-activesupp-copy",
       "status": "IN_PROGRESS",
       "latestFailed": {
         "loadBatchId": "581cb948-936b-40e2-b478-364b28dfd0e3",

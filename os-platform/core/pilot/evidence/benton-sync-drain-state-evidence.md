@@ -1,6 +1,6 @@
 # Benton Sync Drain State Evidence
 
-Generated: 2026-06-06T23:47:05.120Z
+Generated: 2026-06-07T15:51:02.540Z
 
 ## Decision
 
@@ -13,7 +13,7 @@ Generated: 2026-06-06T23:47:05.120Z
 - Backend health: healthy
 - Drain PID: none
 - Drain alive: null
-- load_batch stage: owner-supnum-resume
+- load_batch stage: owner-supnum-v2-activesupp-copy
 - load_batch status: IN_PROGRESS
 
 ## DB Runtime Access
@@ -29,16 +29,16 @@ Generated: 2026-06-06T23:47:05.120Z
 
 | Source | Classification | Count | Reason |
 | --- | --- | ---: | --- |
-| legacyProperty | PARTIAL_SEEDED | 999214 | count present |
-| legacyOwner | PARTIAL_SEEDED | 7396857 | count present |
-| legacyPropSuppAssoc | PARTIAL_SEEDED | 2887351 | count present |
-| legacyWashPropOwnerVal | PARTIAL_SEEDED | 1273143 | count present |
-| legacyAccount | SEEDED | 425186 | count present |
-| truthParcel | SYNC_DERIVED | 83682 | count present |
-| truthOwner | SYNC_DERIVED | 774760 | count present |
-| truthWsdor | SYNC_DERIVED | 774696 | count present |
-| canonicalParcel | SEEDED | 3199335 | count present |
-| canonicalOwner | SEEDED | 215009 | count present |
+| legacyProperty | PARTIAL_SEEDED | 1190834 | count present |
+| legacyOwner | PARTIAL_SEEDED | 8213706 | count present |
+| legacyPropSuppAssoc | PARTIAL_SEEDED | 4382985 | count present |
+| legacyWashPropOwnerVal | PARTIAL_SEEDED | 1654143 | count present |
+| legacyAccount | SEEDED | 535140 | count present |
+| truthParcel | SYNC_DERIVED | 83326 | count present |
+| truthOwner | SYNC_DERIVED | 816849 | count present |
+| truthWsdor | UNKNOWN | 0 | No readable DB runtime path. docker psql: spawnSync docker ETIMEDOUT |
+| canonicalParcel | SEEDED | 3198979 | count present |
+| canonicalOwner | SEEDED | 312532 | count present |
 | canonicalWsdor | SEEDED | 686820 | count present |
 | gisParcelGeometry | PARTIAL_SEEDED | 80075 | count present |
 

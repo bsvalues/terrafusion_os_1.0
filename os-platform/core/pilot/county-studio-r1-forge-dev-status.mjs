@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -64,6 +65,12 @@ const DEFAULT_OUT_MD = path.join(
   "evidence",
   "county-studio-r1-forge-dev-status.md"
 );
+const DEFAULT_REFRESH_READINESS_COMMAND = [
+  process.execPath,
+  path.join(repoRoot, "os-platform", "core", "pilot", "benton-real-dev-server-readiness.mjs"),
+  "--db-runtime",
+  "docker"
+];
 
 export const REQUIRED_FORGE_DEV_PREFLIGHT_CHAIN = [
   "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
@@ -167,8 +174,20 @@ function operationalBlockers() {
   ];
 }
 
-function buildBlockers({ realDevServerAllowed, realDevActivationAllowed, coreForgeValuationWiringReady, geometryIsReady, riskIsReady, ownerStatus }) {
+function buildBlockers({
+  realDevServerAllowed,
+  realDevActivationAllowed,
+  coreForgeValuationWiringReady,
+  geometryIsReady,
+  riskIsReady,
+  ownerStatus,
+  liveReadinessRefresh
+}) {
   const blockers = [];
+  if (liveReadinessRefresh?.attempted === true && liveReadinessRefresh.exitCode !== 0) {
+    blockers.push("Live readiness refresh failed; stale readiness evidence cannot allow Forge dev.");
+    blockers.push("Benton real dev server evidence is not allowed because live readiness refresh failed.");
+  }
   if (!realDevServerAllowed) blockers.push("Benton real dev server evidence is not allowed.");
   if (!realDevActivationAllowed) blockers.push("County Studio real dev activation is not ready.");
   if (!coreForgeValuationWiringReady) blockers.push("Core Forge valuation wiring is not ready.");
@@ -186,6 +205,7 @@ export function buildCountyStudioR1ForgeDevStatusReport({
   forgeWiringReport = null,
   geometryReport = null,
   riskAuditReport = null,
+  liveReadinessRefresh = null,
   generatedAtUtc = new Date().toISOString()
 } = {}) {
   const realDevServerAllowed = readinessReport?.decisions?.realDevServerAllowed === true;
@@ -204,7 +224,8 @@ export function buildCountyStudioR1ForgeDevStatusReport({
     coreForgeValuationWiringReady,
     geometryIsReady,
     riskIsReady,
-    ownerStatus: owner
+    ownerStatus: owner,
+    liveReadinessRefresh
   });
   const forgeDevAllowed = blockers.length === 0;
 
@@ -246,6 +267,12 @@ export function buildCountyStudioR1ForgeDevStatusReport({
       forgeWiring: "os-platform/core/pilot/evidence/county-studio-forge-real-data-wiring.json",
       geometry: "os-platform/core/pilot/evidence/county-studio-terraatlas-geometry-evidence.json",
       riskAudit: "os-platform/core/pilot/evidence/county-studio-risk-object-source-audit.json"
+    },
+    liveReadinessRefresh: liveReadinessRefresh ?? {
+      attempted: false,
+      exitCode: null,
+      command: null,
+      interpretation: "Live readiness refresh was not requested for this in-memory report."
     },
     blockers,
     boundaries: [
@@ -313,6 +340,16 @@ export function renderCountyStudioR1ForgeDevStatusMarkdown(report) {
   lines.push("", "## Source Artifacts", "");
   Object.entries(report.sourceArtifacts).forEach(([key, value]) => lines.push(`- ${key}: ${value}`));
 
+  lines.push(
+    "",
+    "## Live Readiness Refresh",
+    "",
+    `- attempted: ${report.liveReadinessRefresh.attempted}`,
+    `- exitCode: ${report.liveReadinessRefresh.exitCode ?? "n/a"}`,
+    `- command: ${report.liveReadinessRefresh.command ?? "n/a"}`,
+    `- interpretation: ${report.liveReadinessRefresh.interpretation}`
+  );
+
   lines.push("", "## Blockers", "");
   if (report.blockers.length === 0) {
     lines.push("- None");
@@ -335,6 +372,9 @@ function parseArgs(argv) {
     riskAudit: DEFAULT_RISK_AUDIT_JSON,
     outJson: DEFAULT_OUT_JSON,
     outMd: DEFAULT_OUT_MD,
+    refreshReadiness: true,
+    refreshReadinessCommand: null,
+    refreshReadinessTimeoutMs: 240000,
     write: true
   };
 
@@ -345,6 +385,9 @@ function parseArgs(argv) {
     else if (arg === "--forge-wiring") args.forgeWiring = path.resolve(argv[++i]);
     else if (arg === "--geometry") args.geometry = path.resolve(argv[++i]);
     else if (arg === "--risk-audit") args.riskAudit = path.resolve(argv[++i]);
+    else if (arg === "--refresh-readiness-command") args.refreshReadinessCommand = argv[++i];
+    else if (arg === "--refresh-readiness-timeout-ms") args.refreshReadinessTimeoutMs = Number(argv[++i]);
+    else if (arg === "--no-refresh-readiness") args.refreshReadiness = false;
     else if (arg === "--out-json") args.outJson = path.resolve(argv[++i]);
     else if (arg === "--out-md") args.outMd = path.resolve(argv[++i]);
     else if (arg === "--no-write") args.write = false;
@@ -353,14 +396,61 @@ function parseArgs(argv) {
   return args;
 }
 
+function refreshReadinessEvidence(args) {
+  if (!args.refreshReadiness) {
+    return {
+      attempted: false,
+      exitCode: null,
+      command: null,
+      stdout: "",
+      stderr: "",
+      interpretation: "Live readiness refresh was skipped by --no-refresh-readiness."
+    };
+  }
+
+  const commandLabel = args.refreshReadinessCommand
+    ?? DEFAULT_REFRESH_READINESS_COMMAND.map((part) => part.includes(" ") ? `"${part}"` : part).join(" ");
+  const result = args.refreshReadinessCommand
+    ? spawnSync(args.refreshReadinessCommand, {
+        cwd: repoRoot,
+        encoding: "utf8",
+        shell: true,
+        timeout: args.refreshReadinessTimeoutMs,
+        killSignal: "SIGKILL"
+      })
+    : spawnSync(DEFAULT_REFRESH_READINESS_COMMAND[0], DEFAULT_REFRESH_READINESS_COMMAND.slice(1), {
+        cwd: repoRoot,
+        encoding: "utf8",
+        timeout: args.refreshReadinessTimeoutMs,
+        killSignal: "SIGKILL"
+      });
+  const exitCode = result.status ?? 1;
+  return {
+    attempted: true,
+    exitCode,
+    timedOut: result.error?.code === "ETIMEDOUT",
+    timeoutMs: args.refreshReadinessTimeoutMs,
+    command: commandLabel,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+    interpretation: result.error?.code === "ETIMEDOUT"
+      ? "Live readiness refresh timed out; stale readiness evidence cannot allow Forge dev."
+      : exitCode === 0
+      ? "Live readiness refresh passed; consolidated status may use the refreshed readiness artifact."
+      : "Live readiness refresh failed; stale readiness evidence cannot allow Forge dev."
+  };
+}
+
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
+  const liveReadinessRefresh = refreshReadinessEvidence(args);
   const report = buildCountyStudioR1ForgeDevStatusReport({
     readinessReport: readJson(args.readiness),
     activationReport: readJson(args.activation),
     forgeWiringReport: readJson(args.forgeWiring),
     geometryReport: readJson(args.geometry),
-    riskAuditReport: readJson(args.riskAudit)
+    riskAuditReport: readJson(args.riskAudit),
+    liveReadinessRefresh
   });
 
   if (args.write) {

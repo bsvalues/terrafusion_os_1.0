@@ -1,11 +1,11 @@
 # County Studio R1 Forge Dev Status
 
-Generated: 2026-06-07T15:30:00.453Z
-Status: COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED
+Generated: 2026-06-07T16:01:06.277Z
+Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 
 ## Summary
 
-- forgeDevAllowed=false
+- forgeDevAllowed=true
 - realDevActivationAllowed=true
 - productionProofAllowed=false
 - operationalProofAllowed=false
@@ -13,7 +13,7 @@ Status: COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED
 - geometryStatus=SYNC_DERIVED_GEOMETRY
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 - ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
-- countyStudioMode=FORGE_DEV_BLOCKED
+- countyStudioMode=REAL_BENTON_FORGE_DEV
 - requiredRunCommand=pnpm run dev:county-studio:real-benton
 
 ## Runbook
@@ -58,9 +58,16 @@ Owner-supnum remains required for packet/ops proof, not current County Studio Fo
 - geometry: os-platform/core/pilot/evidence/county-studio-terraatlas-geometry-evidence.json
 - riskAudit: os-platform/core/pilot/evidence/county-studio-risk-object-source-audit.json
 
+## Live Readiness Refresh
+
+- attempted: true
+- exitCode: 0
+- command: "C:\Program Files\nodejs\node.exe" C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads\os-platform\core\pilot\benton-real-dev-server-readiness.mjs --db-runtime docker
+- interpretation: Live readiness refresh passed; consolidated status may use the refreshed readiness artifact.
+
 ## Blockers
 
-- Benton real dev server evidence is not allowed.
+- None
 
 ## Boundaries
 

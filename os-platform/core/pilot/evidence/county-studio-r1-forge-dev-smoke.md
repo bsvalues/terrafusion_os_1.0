@@ -1,8 +1,8 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T15:28:40.329Z
+Generated: 2026-06-07T15:57:14.591Z
 
-Status: `FORGE_DEV_SMOKE_BLOCKED_BY_REAL_DEV_READINESS`
+Status: `FORGE_DEV_SMOKE_FRONTEND_STARTED_BACKEND_PORT_BLOCKED`
 
 ## Command Invoked
 
@@ -19,28 +19,32 @@ C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 Smoke log:
 
 ```text
-C:\Users\bsval\AppData\Local\Temp\county-studio-r1-forge-dev-smoke-20260607-082434.log
+C:\Users\bsval\AppData\Local\Temp\county-studio-r1-forge-dev-smoke-20260607-085321.log
 ```
 
 ## Result
 
-The command was exercised, but the dev server did not start. The run stopped at the first preflight:
+The real Benton Forge dev command reached the live dev stage:
 
 ```text
 pnpm run proof:county-studio:benton-real-dev-server-readiness:db
+REAL_DEV_DATA_AVAILABLE
+
+pnpm run proof:county-studio:real-dev-activation
+REAL_DEV_ACTIVATION_READY
+
+Vite emitted:
+http://localhost:5174/
 ```
 
-That preflight returned:
+The full dev command still cannot be accepted as a clean launch because local runtime ports were already occupied:
 
 ```text
-REAL_DEV_SERVER_BLOCKED
-realDevServerAllowed=false
-productionProofAllowed=false
-operationalProofAllowed=false
-blockers=14
+Governed pilot runtime: EADDRINUSE 127.0.0.1:4317
+TerraFusion API runtime: failed to bind http://127.0.0.1:5046
 ```
 
-The `cross-env ... pnpm run dev` stage was not reached, so no Vite URL or bound port was emitted.
+So this smoke proves the readiness drift is reconciled, but it does not claim a clean full dev server startup.
 
 ## Mode Flags
 
@@ -50,15 +54,18 @@ Configured by the run command:
 - `TF_COUNTY_STUDIO_PRODUCTION_PROOF=false`
 - `TF_COUNTY_STUDIO_OPERATIONAL_PROOF=false`
 
-Applied to dev server: `false`
+Applied to frontend stage: `true`
 
-Reason: the real-dev readiness DB preflight failed before the dev-server stage.
+Applied to clean full dev server: `false`
+
+Reason: the command reached the `cross-env ... pnpm run dev` stage and Vite started, but the governed pilot/API runtime exited on port conflicts.
 
 ## Posture After Smoke
 
-- forgeDevAllowed=false
+- forgeDevAllowed=true
+- realDevServerAllowed=true
 - realDevActivationAllowed=true
-- countyStudioMode=FORGE_DEV_BLOCKED
+- countyStudioMode=REAL_BENTON_FORGE_DEV
 - dataTruthStatus=DATA_TRUTH_FAIL
 - geometryStatus=SYNC_DERIVED_GEOMETRY
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
@@ -66,28 +73,16 @@ Reason: the real-dev readiness DB preflight failed before the dev-server stage.
 - productionProofAllowed=false
 - operationalProofAllowed=false
 
-## Readiness Blockers
+## Startup Errors
 
-- active drain process state: Drain process state is unknown.
-- load_batch current stage: load_batch stage is UNKNOWN (UNKNOWN).
-- landing table counts: Property landing rows are missing or unknown.
-- truth table counts: Truth table counts are evaluated as partial until all expected Benton counts are reconciled.
-- canonical parcel counts: Canonical parcel count is missing.
-- owner truth count: Owner truth count is missing.
-- account count: Account count is missing.
-- supp association count: Supplement association count is missing.
-- property landing count: Property landing count is missing.
-- WPOV status: WPOV landing status is missing.
-- WSDOR status: WSDOR truth status is missing.
-- map data dependency status: Map dependency is classified UNKNOWN.
-- ledger data dependency status: Ledger dependency is classified UNKNOWN.
-- inspector data dependency status: Inspector dependency is classified UNKNOWN.
+- Governed pilot runtime: `EADDRINUSE 127.0.0.1:4317`
+- TerraFusion API runtime: `Failed to bind to address http://127.0.0.1:5046`
 
 ## Interpretation
 
-The real Benton Forge dev run path was exercised and failed correctly before launching the dev server because the runtime DB evidence path no longer reports readable real-dev data.
+The prior readiness-blocked smoke evidence was stale after the live DB adapter was refreshed. Current live readiness and activation pass, so County Studio Forge dev mode is allowed again.
 
-This is not a County Studio UI failure.
+The smoke still does not prove a clean full dev launch because the local runtime had occupied pilot/API ports. This is runtime environment drift, not a County Studio UI failure.
 
 This is not production proof.
 

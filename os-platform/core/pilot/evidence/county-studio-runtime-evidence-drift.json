@@ -1,0 +1,77 @@
+{
+  "generatedAtUtc": "2026-06-07T15:57:14.591Z",
+  "gate": "county-studio-runtime-evidence-drift",
+  "status": "RUNTIME_EVIDENCE_DRIFT_RECONCILED",
+  "drift": {
+    "priorConsolidatedEvidence": {
+      "source": "os-platform/core/pilot/evidence/county-studio-r1-forge-dev-status.json",
+      "claim": "forgeDevAllowed=true",
+      "problem": "The prior consolidated status could be derived from stored readiness evidence without forcing a live DB readiness refresh."
+    },
+    "priorSmokeEvidence": {
+      "source": "os-platform/core/pilot/evidence/county-studio-r1-forge-dev-smoke.json",
+      "claim": "REAL_DEV_SERVER_BLOCKED",
+      "problem": "The smoke caught a live preflight contradiction where readiness returned unknown/zero DB state."
+    },
+    "currentLiveReadiness": {
+      "source": "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json",
+      "status": "REAL_DEV_DATA_AVAILABLE",
+      "realDevServerAllowed": true,
+      "blockers": 0
+    },
+    "currentStatusGate": {
+      "source": "os-platform/core/pilot/evidence/county-studio-r1-forge-dev-status.json",
+      "status": "COUNTY_STUDIO_R1_FORGE_DEV_READY",
+      "forgeDevAllowed": true,
+      "liveReadinessRefreshRequired": true
+    },
+    "currentSmoke": {
+      "source": "os-platform/core/pilot/evidence/county-studio-r1-forge-dev-smoke.json",
+      "status": "FORGE_DEV_SMOKE_FRONTEND_STARTED_BACKEND_PORT_BLOCKED",
+      "preflightPassed": true,
+      "frontendUrlEmitted": "http://localhost:5174/",
+      "cleanFullDevLaunch": false
+    }
+  },
+  "confirmedFindings": [
+    {
+      "finding": "Stale readiness evidence could previously carry a ready claim.",
+      "resolution": "The consolidated Forge dev status CLI now refreshes live Benton DB readiness by default before reading readiness-dependent status."
+    },
+    {
+      "finding": "Live DB evidence collection can exceed a short status refresh timeout.",
+      "resolution": "The status gate refresh timeout is 240000 ms so the docker DB evidence path can complete instead of leaving stale or unknown readiness in place."
+    },
+    {
+      "finding": "The unknown/zero DB readiness record was not confirmed empty DB state.",
+      "resolution": "Direct read-only DB evidence later returned nonzero Benton counts and the readiness gate returned REAL_DEV_DATA_AVAILABLE."
+    },
+    {
+      "finding": "The latest smoke reached Vite but did not complete a clean full dev launch.",
+      "resolution": "The smoke is recorded as blocked by occupied local ports 4317 and 5046, not by DB readiness."
+    }
+  ],
+  "rootCause": {
+    "primary": "Consolidated Forge dev status did not require live readiness refresh before reporting forgeDevAllowed=true.",
+    "secondary": "The runtime DB evidence path is slower than the original short refresh window, creating false blocked/unknown evidence when the collection path was interrupted or stale.",
+    "currentRuntimeBlocker": "Local port conflicts on 127.0.0.1:4317 and http://127.0.0.1:5046 prevent a clean full dev smoke launch."
+  },
+  "enforcedRule": "No live DB readiness, no Forge dev ready claim.",
+  "finalStatuses": {
+    "countyStudioMode": "REAL_BENTON_FORGE_DEV",
+    "forgeDevAllowed": true,
+    "realDevServerAllowed": true,
+    "realDevActivationAllowed": true,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false,
+    "cleanFullDevSmokePassed": false
+  },
+  "boundaries": [
+    "No County Studio UI changed.",
+    "No TerraFusion Sync behavior changed.",
+    "No DB seeding changed.",
+    "No proof gate weakened.",
+    "productionProofAllowed remains false.",
+    "operationalProofAllowed remains false."
+  ]
+}
