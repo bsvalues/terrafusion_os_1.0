@@ -1,11 +1,11 @@
 # County Studio R1 Forge Dev Status
 
-Generated: 2026-06-07T17:34:36.042Z
-Status: COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED
+Generated: 2026-06-07T18:28:02.344Z
+Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 
 ## Summary
 
-- forgeDevAllowed=false
+- forgeDevAllowed=true
 - realDevActivationAllowed=true
 - productionProofAllowed=false
 - operationalProofAllowed=false
@@ -13,7 +13,7 @@ Status: COUNTY_STUDIO_R1_FORGE_DEV_BLOCKED
 - geometryStatus=SYNC_DERIVED_GEOMETRY
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 - ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
-- countyStudioMode=FORGE_DEV_BLOCKED
+- countyStudioMode=REAL_BENTON_FORGE_DEV
 - requiredRunCommand=pnpm run dev:county-studio:real-benton
 
 ## Runbook
@@ -26,6 +26,7 @@ pnpm run dev:county-studio:real-benton
 
 Required preflight chain:
 
+- `pnpm run proof:county-studio:real-dev-backend-health`
 - `pnpm run proof:county-studio:benton-real-dev-server-readiness:db`
 - `pnpm run proof:county-studio:real-dev-activation`
 - `pnpm run proof:county-studio:forge-real-data-wiring`
@@ -52,6 +53,7 @@ Owner-supnum remains required for packet/ops proof, not current County Studio Fo
 
 ## Source Artifacts
 
+- backendHealth: os-platform/core/pilot/evidence/county-studio-real-dev-backend-health.json
 - readiness: os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json
 - activation: os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json
 - forgeWiring: os-platform/core/pilot/evidence/county-studio-forge-real-data-wiring.json
@@ -61,15 +63,13 @@ Owner-supnum remains required for packet/ops proof, not current County Studio Fo
 ## Live Readiness Refresh
 
 - attempted: true
-- exitCode: 1
+- exitCode: 0
 - command: "C:\Program Files\nodejs\node.exe" C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads\os-platform\core\pilot\benton-real-dev-server-readiness.mjs --db-runtime docker
-- interpretation: Live readiness refresh failed; stale readiness evidence cannot allow Forge dev.
+- interpretation: Live readiness refresh passed; consolidated status may use the refreshed readiness artifact.
 
 ## Blockers
 
-- Live readiness refresh failed; stale readiness evidence cannot allow Forge dev.
-- Benton real dev server evidence is not allowed because live readiness refresh failed.
-- Benton real dev server evidence is not allowed.
+- None
 
 ## Boundaries
 

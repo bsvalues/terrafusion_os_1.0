@@ -1,18 +1,18 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T17:34:36.001Z
-Status: REAL_DEV_SERVER_BLOCKED
+Generated: 2026-06-07T18:28:02.313Z
+Status: REAL_DEV_DATA_AVAILABLE
 
 ## Decision
 
-- Real Dev Server: BLOCKED
+- Real Dev Server: ALLOWED
 - Production Proof: BLOCKED
 - Operational Proof: BLOCKED
 
 ## Maturity
 
 - DATA_TRUTH_FAIL: true
-- REAL_DEV_DATA_AVAILABLE: false
+- REAL_DEV_DATA_AVAILABLE: true
 - SYNC_DERIVED_PARTIAL: true
 - SYNC_DERIVED_COMPLETE: false
 - AUTHORITATIVE_RECONCILED: false
@@ -22,9 +22,9 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 | Check | Classification | Passed | Reason |
 | --- | --- | --- | --- |
-| backend health | UNKNOWN | false | Backend health is not proven. |
-| active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS. |
-| load_batch current stage | SYNC_DERIVED | true | load_batch stage is owner-supnum-v2-activesupp-copy (IN_PROGRESS). |
+| backend health | SYNC_DERIVED | true | Backend health is reported usable for dev reads. |
+| active drain process state | SYNC_DERIVED | true | Client drain process is not alive, but DB load_batch proves server-side state COMPLETED. |
+| load_batch current stage | SYNC_DERIVED | true | load_batch stage is assessment-value-seal (COMPLETED). |
 | landing table counts | PARTIAL_SEEDED | true | Property landing rows exist. |
 | truth table counts | PARTIAL_SEEDED | true | Truth table counts are evaluated as partial until all expected Benton counts are reconciled. |
 | canonical parcel counts | SEEDED | true | Canonical parcel rows exist. |
@@ -41,8 +41,8 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 ## Forge Dev Dependency Reclassification
 
-- ownerSupnumBackfillStatus: IN_PROGRESS
-- ownerSupnumBackfillStage: owner-supnum-v2-activesupp-copy
+- ownerSupnumBackfillStatus: COMPLETED
+- ownerSupnumBackfillStage: assessment-value-seal
 - ownerSupnumBackfillLatestFailedStage: owner-supnum-resume
 - ownerSupnumBackfillLatestFailedStatus: FAILED
 - ownerSupnumBackfillClassification: NOT_REQUIRED_FOR_FORGE_DEV
@@ -52,7 +52,7 @@ Status: REAL_DEV_SERVER_BLOCKED
 
 ## Blockers
 
-- backend health: Backend health is not proven.
+- None
 
 ## Rules
 

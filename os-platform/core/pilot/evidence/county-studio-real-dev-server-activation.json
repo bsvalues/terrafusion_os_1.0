@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T17:31:22.361Z",
+  "generatedAtUtc": "2026-06-07T18:21:19.190Z",
   "gate": "county-studio-real-dev-server-activation",
   "status": "REAL_DEV_ACTIVATION_READY",
   "decisions": {
@@ -20,8 +20,8 @@
   },
   "forgeDevDependency": {
     "ownerSupnumBackfill": {
-      "stage": "owner-supnum-v2-activesupp-copy",
-      "status": "IN_PROGRESS",
+      "stage": "assessment-value-seal",
+      "status": "COMPLETED",
       "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
       "requiredForCountyStudioForgeDev": false,
       "requiredForPacketProof": true,

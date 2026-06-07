@@ -73,6 +73,7 @@ const DEFAULT_REFRESH_READINESS_COMMAND = [
 ];
 
 export const REQUIRED_FORGE_DEV_PREFLIGHT_CHAIN = [
+  "pnpm run proof:county-studio:real-dev-backend-health",
   "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
   "pnpm run proof:county-studio:real-dev-activation",
   "pnpm run proof:county-studio:forge-real-data-wiring",
@@ -262,6 +263,7 @@ export function buildCountyStudioR1ForgeDevStatusReport({
         "Owner-supnum remains required for packet/ops proof, not current County Studio Forge valuation dev."
     },
     sourceArtifacts: {
+      backendHealth: "os-platform/core/pilot/evidence/county-studio-real-dev-backend-health.json",
       readiness: "os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json",
       activation: "os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json",
       forgeWiring: "os-platform/core/pilot/evidence/county-studio-forge-real-data-wiring.json",

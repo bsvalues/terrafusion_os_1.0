@@ -1,0 +1,49 @@
+{
+  "generatedAtUtc": "2026-06-07T18:17:39.805Z",
+  "gate": "county-studio-real-dev-backend-health",
+  "status": "REAL_DEV_BACKEND_HEALTH_PASS",
+  "expectedBackendPorts": [5046, 5000],
+  "backendLaunchCommand": "pnpm run dev:backend:api",
+  "healthEndpoint": "http://localhost:5000/health",
+  "backendStartedByDevCommand": false,
+  "backendHealthy": true,
+  "healthChecks": [
+    {
+      "url": "http://localhost:5046/health",
+      "port": 5046,
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://localhost:5046/api/health",
+      "port": 5046,
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://localhost:5000/health",
+      "port": 5000,
+      "ok": true,
+      "statusCode": 200
+    },
+    {
+      "url": "http://localhost:5000/api/health",
+      "port": 5000,
+      "ok": false,
+      "statusCode": 401
+    }
+  ],
+  "failureReason": null,
+  "remediation": null,
+  "productionProofAllowed": false,
+  "operationalProofAllowed": false,
+  "boundaries": [
+    "This backend health gate does not touch County Studio UI.",
+    "This backend health gate does not mutate TerraFusion Sync.",
+    "This backend health gate does not change DB seeding.",
+    "This backend health gate does not weaken evidence gates.",
+    "This backend health gate does not set productionProofAllowed=true.",
+    "This backend health gate does not set operationalProofAllowed=true.",
+    "This backend health gate does not hide DATA_TRUTH_FAIL."
+  ]
+}

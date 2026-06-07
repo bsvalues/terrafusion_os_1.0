@@ -1,16 +1,16 @@
 {
-  "generatedAtUtc": "2026-06-07T17:34:36.001Z",
+  "generatedAtUtc": "2026-06-07T18:28:02.313Z",
   "gate": "benton-real-dev-server-readiness",
-  "status": "REAL_DEV_SERVER_BLOCKED",
+  "status": "REAL_DEV_DATA_AVAILABLE",
   "sourcePath": null,
   "decisions": {
-    "realDevServerAllowed": false,
+    "realDevServerAllowed": true,
     "productionProofAllowed": false,
     "operationalProofAllowed": false
   },
   "maturity": {
     "DATA_TRUTH_FAIL": true,
-    "REAL_DEV_DATA_AVAILABLE": false,
+    "REAL_DEV_DATA_AVAILABLE": true,
     "SYNC_DERIVED_PARTIAL": true,
     "SYNC_DERIVED_COMPLETE": false,
     "AUTHORITATIVE_RECONCILED": false,
@@ -37,20 +37,21 @@
   "checks": [
     {
       "name": "backend health",
-      "classification": "UNKNOWN",
-      "passed": false,
-      "reason": "Backend health is not proven.",
+      "classification": "SYNC_DERIVED",
+      "passed": true,
+      "reason": "Backend health is reported usable for dev reads.",
       "evidence": {
-        "status": "unknown",
-        "ok": false,
-        "reason": "No backend health endpoint responded."
+        "status": "healthy",
+        "ok": true,
+        "statusCode": 200,
+        "url": "http://localhost:5000/health"
       }
     },
     {
       "name": "active drain process state",
       "classification": "SYNC_DERIVED",
       "passed": true,
-      "reason": "Client drain process is not alive, but DB load_batch proves server-side state IN_PROGRESS.",
+      "reason": "Client drain process is not alive, but DB load_batch proves server-side state COMPLETED.",
       "evidence": {
         "pid": null,
         "alive": null,
@@ -61,11 +62,11 @@
       "name": "load_batch current stage",
       "classification": "SYNC_DERIVED",
       "passed": true,
-      "reason": "load_batch stage is owner-supnum-v2-activesupp-copy (IN_PROGRESS).",
+      "reason": "load_batch stage is assessment-value-seal (COMPLETED).",
       "evidence": {
-        "stage": "owner-supnum-v2-activesupp-copy",
-        "status": "IN_PROGRESS",
-        "loadBatchId": "a0fd1bdc-11c5-475f-b700-3ecd73f7e7e1"
+        "stage": "assessment-value-seal",
+        "status": "COMPLETED",
+        "loadBatchId": "613ab22a-0d42-411b-80f1-886e5df4bd97"
       }
     },
     {
@@ -178,8 +179,8 @@
       "passed": true,
       "reason": "owner-supnum backfill is not required for County Studio Forge valuation dev; packet and operational proof remain blocked.",
       "evidence": {
-        "stage": "owner-supnum-v2-activesupp-copy",
-        "status": "IN_PROGRESS",
+        "stage": "assessment-value-seal",
+        "status": "COMPLETED",
         "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
         "requiredForCountyStudioForgeDev": false,
         "requiredForPacketProof": true,
@@ -239,8 +240,8 @@
   ],
   "forgeDevDependency": {
     "ownerSupnumBackfill": {
-      "stage": "owner-supnum-v2-activesupp-copy",
-      "status": "IN_PROGRESS",
+      "stage": "assessment-value-seal",
+      "status": "COMPLETED",
       "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
       "requiredForCountyStudioForgeDev": false,
       "requiredForPacketProof": true,
@@ -270,7 +271,7 @@
       }
     }
   },
-  "blockers": ["backend health: Backend health is not proven."],
+  "blockers": [],
   "classifications": [
     "AUTHORITATIVE",
     "SYNC_DERIVED",

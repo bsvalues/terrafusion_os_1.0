@@ -124,6 +124,7 @@ function riskAuditReport(overrides = {}) {
 
 test("defines the required County Studio Forge-dev preflight chain", () => {
   assert.deepEqual(REQUIRED_FORGE_DEV_PREFLIGHT_CHAIN, [
+    "pnpm run proof:county-studio:real-dev-backend-health",
     "pnpm run proof:county-studio:benton-real-dev-server-readiness:db",
     "pnpm run proof:county-studio:real-dev-activation",
     "pnpm run proof:county-studio:forge-real-data-wiring",
