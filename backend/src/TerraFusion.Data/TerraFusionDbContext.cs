@@ -340,6 +340,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxAreaDistrict>
     TfTaxAreaDistricts { get; set; } = null!;
 
+  // REVENUE-SPINE Stage 1: current-year levy tax bill explanation read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawTaxBillLine>
+    LegacyPacsRawTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfLevyRate>
+    TfLevyRates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillLine>
+    TfTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillCurrent>
+    TfTaxBillCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1201,6 +1211,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfParcelTaxAreaConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaDistrictConfiguration());
+
+    // REVENUE-SPINE Stage 1: levy tax bill explanation read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfLevyRateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillCurrentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.

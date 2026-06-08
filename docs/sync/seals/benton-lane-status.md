@@ -18,11 +18,13 @@ _Last updated: 2026-06-07._
 | Assessment value | ✅ SEALED (current-year) | truth 95,455 / 95,455 (100% of 2025 active-supplement universe); canonical 83,326 (spine-resolved; 12,129 outside the real-property spine); 1,041 non-zero active supplement preserved; assessed_val 100% populated | (PropId, AssessmentYear) at ACTIVE supplement (MAX sup_num); year=2025 current operational | 1.0000× (truth + canonical) | `evidence/2026-06-07-assessment-value-lane-seal.md` |
 | Exemption fact | ✅ SEALED (current-year) | truth 6,487 / 6,487 (2025 active-supplement); canonical 5,643 (spine-resolved; 844 outside real-property spine); dict_exemption_type populated (6 types, 0 unbacked); 126 non-zero active supplement preserved; exemption_pct 4,268 | (PropId, OwnerId, exmpt_tax_yr, exmpt_type_cd) at ACTIVE supplement; year=2025 | 1.0000× (truth + canonical) | `evidence/2026-06-07-exemption-fact-lane-seal.md` |
 | Jurisdiction (tax area/district) | ✅ SEALED (current-year) | landed 95,455 (2025 active-supp, 1,041 nonzero); tf_parcel_tax_area 83,326 (spine-resolved; 12,129 outside spine); tf_tax_area dict 109; tf_tax_district dict 37; tf_tax_area_district 487 TCA→district pairs; parcel→district chain proven; levy/fund excluded (Revenue boundary) | parcel→TCA at ACTIVE supplement (MAX sup_num); TCA→district from tax_area_fund_assoc (district id only); year=2025 | 1.0000× (parcel assignment) | `evidence/2026-06-07-jurisdiction-spine-seal.md` |
+| Revenue — levy tax bill (Stage 1) | ✅ SEALED (current-year, read-only) | landed 1,104,507 (2025 active L bills); tf_tax_bill_line 990,665 (parcel-resolved; 113,842 outside real-property spine); 79,767 distinct parcels; tf_levy_rate 49; tf_tax_bill_current 79,767 rollup (SUM BillCount = 990,665); district-backed 100% (0 NULL); rate-backed 100% (0 NULL); due/paid/balance line↔rollup exact; fund/distribution/delinquency/payment-txn excluded (boundary held) | `bill ⋈ levy_bill` where year=2025, is_active=1, bill_type='L' (1:1 levy_bill); PACS-recorded amounts verbatim, balance = due − paid | 1.0000× (line + rollup) | `evidence/2026-06-07-revenue-spine-stage1-seal.md` |
 
 ## Spine boundary
 - **Valuation Spine** (sealed): parcel · owner · land · improvement · sales · geometry · assessment value · exemption.
 - **Jurisdiction Spine** (sealed): parcel → tax area → tax district.
-- **Revenue Spine** (deferred, separate mission): district → levy / fund / rate / bill / payment / distribution.
+- **Revenue Spine — Stage 1** (sealed, current-year read-only): district → levy rate → current-year active **levy** tax bill (due / paid / balance, PACS verbatim).
+- **Revenue Spine — later stages** (deferred, separate mission): payment-transaction reconciliation · 'A' assessment bills · fund / distribution / delinquency · prior-year history.
 
 ## Denominator notes (why coverage numbers differ per lane)
 - **Improvement / Land** are parcel-keyed against the current working year (2026); their active
@@ -39,6 +41,7 @@ _Last updated: 2026-06-07._
 - **Sales:** `7f635489f` (truth idem) · `9d893f667` (cursor) · `83664a4a7` (landing idem) ·
   `769bf800c` (SupNum-resolution) · seal `8c62d8304`.
 - **Owner:** `9c925516d` (natural-key idempotency truth+WSDOR) · `bd45b60e3` (advancement cursor) · seal `1e49f13cb` (95.72% ceiling) · `f1a733c76` (supp activeSupp) · `d90b2b200` (**owner active-supplement resolution + COPY landing → 100%**).
+- **Revenue (Stage 1):** levy tax bill explanation seal — `tf_levy_rate` / `tf_tax_bill_line` / `tf_tax_bill_current`; PACS-verbatim amounts; seal evidence `evidence/2026-06-07-revenue-spine-stage1-seal.md`.
 
 ## Recurring pattern (apply to every remaining lane)
 1. **Idempotency bug class:** truth promoters cleared priors by LoadBatchId (batch-scoped) → re-drains

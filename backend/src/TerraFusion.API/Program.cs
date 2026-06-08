@@ -2116,6 +2116,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsJurisdiction.IPacsJurisdictionService,
     TerraFusion.Data.Services.CanonicalTf.PacsJurisdictionService>();
 
+// REVENUE-SPINE Stage 1 (2026-06-07): levy rate + current-year levy tax bill
+// explanation read model (tf_levy_rate / tf_tax_bill_line / tf_tax_bill_current).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsBill.IPacsBillService,
+    TerraFusion.Data.Services.CanonicalTf.PacsBillService>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

@@ -162,6 +162,14 @@ public static class LaneStageOrder
                 "ParcelTaxArea",
             },
 
+            // revenue: REVENUE-SPINE Stage 1 — levy rate populate → current-year
+            // active levy tax bill line (+ parcel rollup). Read-only.
+            ["revenue"] = new[]
+            {
+                "LevyRate",
+                "TaxBillLine",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]
