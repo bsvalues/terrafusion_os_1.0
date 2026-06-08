@@ -26,7 +26,8 @@ _Last updated: 2026-06-07._
 - **Jurisdiction Spine** (sealed): parcel → tax area → tax district.
 - **Revenue Spine — Stage 1** (sealed, current-year read-only): district → levy rate → current-year active **levy** tax bill (due / paid / balance, PACS verbatim).
 - **Revenue Spine — Stage 2B** (sealed, current-year read-only): special-assessment agency → current-year active **'A' assessment** bill (due / paid / balance, PACS verbatim, agency-backed, rate-free).
-- **Revenue Spine — later stages** (deferred, separate mission): payment-transaction reconciliation · fund / distribution / delinquency · prior-year history.
+- **Revenue Spine — Stage 3A/3B** (payment doctrine discovered + attested, no model built): `bill.amount_paid` ≡ `SUM(coll_transaction.base_amount_pd)` proven **penny-exact corpus-wide** ($32,941.46 over 1,417,646 active 2025 bills); bill-grain **net paid / balance** is therefore already carried by the sealed bill models. Cash ledger (receipt/tender/void history) NOT built.
+- **Revenue Spine — later stages** (deferred, separate mission): receipt/tender/void ledger · penalty-interest paid breakdown · fund / distribution / delinquency · prior-year history.
 
 ## Denominator notes (why coverage numbers differ per lane)
 - **Improvement / Land** are parcel-keyed against the current working year (2026); their active
