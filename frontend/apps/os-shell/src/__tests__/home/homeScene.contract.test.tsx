@@ -277,8 +277,8 @@ describe('Phase 7: Home Scene Contract', () => {
     // Quick Actions section header
     expect(screen.getByText('Quick Actions')).toBeInTheDocument();
 
-    // County map SVG — check for the Benton County map elements
-    expect(screen.getByLabelText('Open TerraAtlas for full county map')).toBeInTheDocument();
+    // County workspace — the default home surface for the active county
+    expect(screen.getByLabelText('Active county workspace')).toBeInTheDocument();
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
   });
 
@@ -335,7 +335,7 @@ describe('Phase 7: Home Scene Contract', () => {
     expect(typeof _openFn).toBe('function');
   });
 
-  it('renders an operational Benton runtime launch board without unverified statewide runtime counts', async () => {
+  it('renders Benton operational workspace by default without launch-board or unverified count language', async () => {
     mockUseParcelCount.mockReturnValue({
       data: { totalParcels: 128788, dataSource: 'LIVE_DB', stubbed: false },
       isLoading: false,
@@ -348,33 +348,25 @@ describe('Phase 7: Home Scene Contract', () => {
       expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText(/Benton County Runtime Pilot/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Runtime verified from TerraFusion DB\/API/i)).toBeInTheDocument();
-    expect(screen.getByText(/Demo parcel: 101040000000000/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Open Benton Property Workbench/i })).toBeInTheDocument();
+    expect(screen.getByText(/Benton County Operations/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Benton County/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Assessor's Office/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Runtime Pilot/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/TerraFusion DB\/API-backed property work/i)).toBeInTheDocument();
+    const center = screen.getByTestId('county-map-center');
+    expect(center).toHaveTextContent(/Open Benton Property Workbench/i);
+    expect(center).toHaveTextContent(/Search Parcel/i);
 
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Continue to Desktop/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/June 10 Launch Briefing/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Statewide county operating model/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Washington County Runtime/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/128,788 parcels/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Washington County Operating Model/i)).toBeInTheDocument();
   });
 
-  it('lets the user dismiss the June 10 launch board and return to an operational desktop for the session', async () => {
-    render(<Phase7Router initialRoute="/" />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText(/June 10 launch board/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Continue to Desktop/i }));
-
-    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /June 10 Launch Briefing/i })).toBeInTheDocument();
-    expect(sessionStorage.getItem('tf:j10-launch-board-dismissed')).toBe('1');
-  });
-
-  it('opens the Benton Property Workbench from the launch board without leaving the board as a trap', async () => {
+  it('opens the Benton Property Workbench from the default Benton workspace', async () => {
     render(<Phase7Router initialRoute="/" />);
 
     await waitFor(() => {
@@ -387,23 +379,26 @@ describe('Phase 7: Home Scene Contract', () => {
       expect(mockOpenWorkbenchWindow).toHaveBeenCalled();
     });
     expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
+    expect(screen.getByText(/Benton County Operations/i)).toBeInTheDocument();
   });
 
-  it('keeps the launch board dismissed across a same-session remount and exposes a deliberate reopen control', async () => {
-    sessionStorage.setItem('tf:j10-launch-board-dismissed', '1');
-
+  it('shows a sovereign non-Benton source workspace without enabling runtime parcel operations', async () => {
     render(<Phase7Router initialRoute="/" />);
 
     await waitFor(() => {
       expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
     });
 
+    const center = screen.getByTestId('county-map-center');
+    fireEvent.click(screen.getByRole('button', { name: /Yakima County/i }));
+
     expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /June 10 Launch Briefing/i }));
-
-    expect(screen.getByText(/June 10 launch board/i)).toBeInTheDocument();
+    expect(center).toHaveTextContent(/Yakima County Source \/ Onboarding Workspace/i);
+    expect(center).toHaveTextContent(/Runtime: Not Runtime Enabled/i);
+    expect(center).toHaveTextContent(/public \/ ArcGIS/i);
+    expect(center).toHaveTextContent(/County Data Intake/i);
+    expect(center).toHaveTextContent(/canonicalImportAllowed: false/i);
+    expect(center).toHaveTextContent(/Runtime parcel operations blocked/i);
+    expect(center).not.toHaveTextContent(/Open Benton Property Workbench/i);
   });
 });
