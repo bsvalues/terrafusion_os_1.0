@@ -91,20 +91,6 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
   return tabPathMap[pathAfterBase] ?? 'summary';
 }
 
-function hasUsableWorkbenchToken(token: string | null): boolean {
-  if (!token || token === 'dev-preview-token') return false;
-  try {
-    const [, payload] = token.split('.');
-    if (!payload) return false;
-    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = JSON.parse(atob(normalized)) as { exp?: unknown };
-    if (typeof decoded.exp !== 'number') return false;
-    return decoded.exp * 1000 > Date.now() + 10_000;
-  } catch {
-    return false;
-  }
-}
-
 // ============================================================================
 // Tab Configuration (Locked Order)
 // ============================================================================
@@ -186,27 +172,28 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const activeParcelLoadingParcelId = usePropertyStore((s) => s.activeParcelLoadingParcelId);
   const activeParcelError = usePropertyStore((s) => s.activeParcelError);
   const selectParcel = usePropertyStore((s) => s.selectParcel);
-  const hasWorkbenchAuth = hasUsableWorkbenchToken(auth.token);
-  const [authWaitExpired, setAuthWaitExpired] = useState(false);
 
+  // Guards: never duplicate an in-flight load for the same parcel, and never
+  // retry a parcel that already failed (until parcelId changes).
+  const isTargetParcelLoading = Boolean(parcelId && activeParcelLoadingParcelId === parcelId);
+  const isCurrentParcelBlocked = Boolean(
+    activeParcelError && (!activeParcelError.parcelId || activeParcelError.parcelId === parcelId)
+  );
+
+  // Load parcel via store when parcelId changes. Fix C: the API/auth layer is
+  // the AUTHORITY for authorization — a client-side token heuristic must NOT
+  // suppress the first load attempt. The prior `hasWorkbenchAuth` gate produced
+  // a silent dead-end (0 parcel API calls, Loading forever, no 401/403). Now
+  // selectParcel always fires for a fresh/unloaded parcel; a 401/403 from the
+  // API surfaces an explicit, observable error state instead.
   useEffect(() => {
-    if (!parcelId || hasWorkbenchAuth) {
-      setAuthWaitExpired(false);
-      return;
-    }
-
-    const timer = window.setTimeout(() => setAuthWaitExpired(true), 8_000);
-    return () => window.clearTimeout(timer);
-  }, [hasWorkbenchAuth, parcelId]);
-
-  // Load parcel via store when parcelId changes (if not already loaded)
-  useEffect(() => {
-    if (parcelId && hasWorkbenchAuth && activeParcel?.parcelId !== parcelId) {
+    if (parcelId && activeParcel?.parcelId !== parcelId && !isTargetParcelLoading && !isCurrentParcelBlocked) {
       selectParcel(parcelId);
     }
-  }, [parcelId, hasWorkbenchAuth, activeParcel?.parcelId, selectParcel]);
+  }, [parcelId, activeParcel?.parcelId, isTargetParcelLoading, isCurrentParcelBlocked, selectParcel]);
 
   const propertyData = useMemo(
     () => ({
@@ -361,32 +348,6 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     );
   }
 
-  if (!hasWorkbenchAuth) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center h-full gap-4 p-8"
-        style={{ color: 'hsl(var(--tf-text) / 0.72)', background: 'hsl(var(--tf-bg))' }}
-        data-testid={authWaitExpired ? 'workbench-auth-error' : 'workbench-auth-bootstrap'}
-        role={authWaitExpired ? 'alert' : undefined}
-      >
-        <div
-          className="text-[11px] uppercase tracking-[0.22em]"
-          style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}
-        >
-          Property Workbench
-        </div>
-        <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-          {authWaitExpired ? 'Workbench authentication unavailable' : 'Preparing authenticated Workbench session'}
-        </h2>
-        <p className="text-sm text-center max-w-lg">
-          {authWaitExpired
-            ? 'A valid Workbench auth token was not available, so parcel data was not requested.'
-            : `Waiting for a valid Benton Workbench token before loading parcel ${parcelId}.`}
-        </p>
-      </div>
-    );
-  }
-
   const parcelLoadPending = Boolean(
     parcelId && activeParcel?.parcelId !== parcelId && !activeParcelError
   );
@@ -433,7 +394,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           Parcel data unavailable
         </h2>
         <p className="text-sm text-center max-w-lg">
-          {activeParcelError}
+          {activeParcelError.message}
         </p>
         <div className="flex gap-2">
           <button
