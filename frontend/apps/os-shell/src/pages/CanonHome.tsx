@@ -87,6 +87,7 @@ import CanonGoToSymbol from '../canon/CanonGoToSymbol';
 import { CanonSearchPanel } from '../canon/CanonSearchPanel';
 import { CanonStatusBar } from '../canon/CanonStatusBar';
 import { CanonRuntimeStatusPanel } from '../canon/CanonRuntimeStatusPanel';
+import { CanonTaskConsole } from '../canon/CanonTaskConsole';
 import CanonTerminal from '../canon/CanonTerminal';
 import { GoToLineDialog } from '../canon/GoToLineDialog';
 import { useCanonConnection } from '../canon/useCanonConnection';
@@ -636,13 +637,14 @@ function loadLastClosed(): Workspace | null {
 let workspaceCounter = 0;
 
 // ─── Bottom panel tabs (WAI-ARIA tabs pattern) ───────────────────────────────
-type BottomTabKey = 'gates' | 'terminal' | 'problems' | 'runtime';
+type BottomTabKey = 'gates' | 'terminal' | 'problems' | 'runtime' | 'console';
 
 const BOTTOM_TABS: ReadonlyArray<{ key: BottomTabKey; label: string }> = [
   { key: 'gates', label: 'Gates' },
   { key: 'terminal', label: 'Terminal' },
   { key: 'problems', label: 'Problems' },
   { key: 'runtime', label: 'Runtime' },
+  { key: 'console', label: 'Console' },
 ];
 
 const bottomTabId = (key: BottomTabKey): string => `canon-bottom-tab-${key}`;
@@ -2187,6 +2189,15 @@ function CanonContent(): React.ReactElement {
                 aria-labelledby={bottomTabId('terminal')}
               >
                 <CanonTerminal />
+              </div>
+            )}
+            {bottomTab === 'console' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('console')}
+                aria-labelledby={bottomTabId('console')}
+              >
+                <CanonTaskConsole />
               </div>
             )}
             {bottomTab === 'problems' && (

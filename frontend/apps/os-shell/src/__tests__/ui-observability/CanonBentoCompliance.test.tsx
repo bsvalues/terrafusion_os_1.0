@@ -163,16 +163,26 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     localStorage.clear();
   });
 
-  it('exposes a labelled tablist wrapping all four role=tab buttons', () => {
+  it('exposes a labelled tablist wrapping all five role=tab buttons', () => {
     render(<CanonHome />);
     const tablist = screen.getByRole('tablist', { name: /bottom panel/i });
     const tabs = within(tablist).getAllByRole('tab');
-    // Gates / Terminal / Problems / Runtime (Runtime added in #924)
-    expect(tabs).toHaveLength(4);
+    // Gates / Terminal / Problems / Runtime (#924) / Console (#928)
+    expect(tabs).toHaveLength(5);
     expect(within(tablist).getByRole('tab', { name: 'Gates' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Problems' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Runtime' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Console' })).toBeInTheDocument();
+  });
+
+  it('applies the ARIA tab attributes to the Console tab too', () => {
+    render(<CanonHome />);
+    const consoleTab = screen.getByRole('tab', { name: 'Console' });
+    expect(consoleTab).toHaveAttribute('aria-selected', 'false');
+    expect(consoleTab).toHaveAttribute('aria-controls');
+    expect(consoleTab).toHaveAttribute('tabindex', '-1');
+    expect(consoleTab.id).toBeTruthy();
   });
 
   it('applies the ARIA tab attributes to the Runtime tab too', () => {
