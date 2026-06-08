@@ -49,4 +49,11 @@ describe('CanonRuntimeStatusPanel', () => {
     expect(container.querySelectorAll('button').length).toBe(0);
     expect(container.querySelectorAll('input, textarea, select').length).toBe(0);
   });
+
+  it('states honestly that it shows configured posture, not live CI state', () => {
+    render(<CanonRuntimeStatusPanel />);
+    const txt = screen.getByTestId('terracanon-runtime-status').textContent ?? '';
+    expect(txt).toMatch(/canon-gates/); // points to the real health source
+    expect(txt).toMatch(/not live|configured.*posture|posture.*not live/i);
+  });
 });

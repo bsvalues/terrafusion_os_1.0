@@ -22,11 +22,15 @@ import React from 'react';
 /** Canon runtime modules present on main (os-platform/core/canon). */
 const RUNTIME_MODULES = ['query', 'risk', 'loader', 'evidence', 'trace-seal', 'task'] as const;
 
-/** Paths under strict (blocking) enforcement — mirrors CANON_OWNED_PATTERNS. */
-const CANON_OWNED_PATHS = ['os-platform/core/canon/**', 'os-platform/core/gates/**'] as const;
+/**
+ * Paths under strict (blocking) enforcement — mirrors CANON_OWNED_PATTERNS and
+ * the canon-runtime + canon-gates write-lane owners. Exported so a drift
+ * contract test can assert this list stays in sync with the runtime source.
+ */
+export const CANON_OWNED_PATHS = ['os-platform/core/canon/**', 'os-platform/core/gates/**'] as const;
 
-/** Advisory gates (os-platform/core/gates). */
-const GATES = ['write-lane', 'protected-paths', 'hardcoded-ports'] as const;
+/** Advisory gates (os-platform/core/gates). Exported for the drift contract test. */
+export const GATES = ['write-lane', 'protected-paths', 'hardcoded-ports'] as const;
 
 /** Headless CLI commands (tf-canon.mjs). */
 const CLI_COMMANDS = ['query', 'risk', 'rules', 'gates'] as const;
@@ -91,6 +95,12 @@ export function CanonRuntimeStatusPanel(): React.ReactElement {
 
       <Row label='CLI'>
         <span className={codeClass}>{CLI_COMMANDS.map((c) => `tf canon ${c}`).join('  ·  ')}</span>
+      </Row>
+
+      <Row label='Health'>
+        Configured enforcement posture (not live CI). Live gate status comes from the{' '}
+        <span className={codeClass}>canon-gates</span> workflow and{' '}
+        <span className={codeClass}>tf canon gates</span>.
       </Row>
 
       <p className='text-xs italic tf-text-dim'>
