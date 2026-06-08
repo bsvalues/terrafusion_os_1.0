@@ -21,7 +21,7 @@
  */
 
 import { create } from 'zustand';
-import { useDesktopStore } from '../stores/desktopStore';
+import { navigateToCanonicalWorkbenchRoute } from '../navigation/workbenchRoute';
 
 // ============================================================================
 // Types
@@ -426,44 +426,18 @@ export function recordRecentParcelMeta(parcelId: string, meta: RecentParcelMeta)
 }
 
 // ============================================================================
-// Workbench Window Opener (Phase A)
+// Canonical Workbench Route Opener
 // ============================================================================
 
 /**
- * Open the Property Workbench as a desktop window for a given parcel.
- *
- * If a workbench window for this parcel is already open, it will be focused.
- * Otherwise a new window is created with the parcel ID in metadata.
+ * Open the canonical Property Workbench route for a given parcel.
  *
  * @param parcelId - The parcel to open
  * @param tabId - Optional tab to focus (defaults to 'summary')
  */
 export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
-  // useDesktopStore imported at module top level (no circular dep exists)
-  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
-
-  // If no parcelId, open a blank workbench (shows NoParcelSelected state)
   if (!parcelId) {
-    const blankExisting = windows.find(
-      (w) => w.moduleId === 'property-workbench' && !w.metadata?.parcelId
-    );
-    if (blankExisting) {
-      focusWindow(blankExisting.id);
-      return;
-    }
-    openWindow('property-workbench', 'Property Workbench', '🏠', { defaultMaximized: true });
-    return;
-  }
-
-  // Check if a workbench window for this parcel already exists
-  const existing = windows.find(
-    (w) =>
-      w.moduleId === 'property-workbench' &&
-      w.metadata?.parcelId === parcelId
-  );
-
-  if (existing) {
-    focusWindow(existing.id);
+    navigateToCanonicalWorkbenchRoute(null, tabId);
     return;
   }
 
@@ -477,17 +451,5 @@ export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
     useCompanionStore.getState().setActiveParcel(parcelId!);
   });
 
-  // Pre-load parcel data via property store (DataProvider-backed)
-  import('../stores/propertyStore').then(({ usePropertyStore }) => {
-    usePropertyStore.getState().selectParcel(parcelId!);
-  });
-
-  // Open new workbench window
-  const truncatedId = parcelId.length > 20 ? parcelId.slice(0, 20) + '…' : parcelId;
-  openWindow(
-    'property-workbench',
-    `Property: ${truncatedId}`,
-    '🏠',
-    { parcelId, tabId: tabId ?? 'summary', defaultMaximized: true }
-  );
+  navigateToCanonicalWorkbenchRoute(parcelId, tabId);
 }

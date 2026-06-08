@@ -27,6 +27,7 @@ import { useModuleLoaderStore } from '../stores/moduleLoaderStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import { telemetry } from '../services/telemetry';
 import type { OsActor } from '../auth/useAuthContext';
+import { navigateToCanonicalWorkbenchRoute } from '../navigation/workbenchRoute';
 
 // ============================================================================
 // Types
@@ -284,6 +285,18 @@ export async function activateModule(
   // Step 1: Normalize alias → canonical ID
   // -------------------------------------------------------------------------
   const canonicalId = normalizeModuleId(moduleId);
+
+  if (canonicalId === 'property-workbench') {
+    navigateToCanonicalWorkbenchRoute(
+      typeof metadata?.parcelId === 'string' ? metadata.parcelId : null,
+      typeof metadata?.tabId === 'string'
+        ? metadata.tabId
+        : typeof metadata?.tab === 'string'
+          ? metadata.tab
+          : null
+    );
+    return;
+  }
 
   // -------------------------------------------------------------------------
   // Step 2: Check if module is registered

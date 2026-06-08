@@ -17,8 +17,8 @@
  *   - Unclassified IDs (e.g. 'gpt','settings') spawn standalone (graceful).
  *
  * Contract surface:
- *   1. Codex routing: parcel-scoped → workbench, suite-workspace → standalone
- *   2. Workbench carries _routedTab metadata for the original suite
+ *   1. Codex routing: parcel-scoped → canonical /property route, suite-workspace → standalone
+ *   2. Workbench routing carries the original suite as the URL tab
  *   3. Standalone modules match taskbar isRunning/isActive predicates
  *   4. focusWindow toggles minimized (taskbar click behavior)
  *   5. Non-pinned standalone windows appear in RunningApps zone
@@ -53,6 +53,7 @@ beforeEach(() => {
     nextZIndex: 1,
     snapPreview: null,
   });
+  window.history.pushState({}, '', '/');
   events = [];
   shellEventBus.clear();
   unsubscribe = shellEventBus.subscribe((e) => events.push(e));
@@ -107,34 +108,33 @@ describe('codex routing for parcel-scoped suite IDs', () => {
     }
   );
 
-  it('openWindow("forge") routes to property-workbench window', () => {
+  it('openWindow("forge") routes to the canonical Workbench route', () => {
     const { openWindow } = useDesktopStore.getState();
-    openWindow('forge', 'TerraForge', '🔨');
+    openWindow('forge', 'TerraForge', '🔨', { parcelId: '101040000000000' });
 
     const { windows } = useDesktopStore.getState();
-    expect(windows).toHaveLength(1);
-    expect(windows[0].moduleId).toBe('property-workbench');
+    expect(windows).toHaveLength(0);
+    expect(window.location.pathname).toBe('/property/101040000000000/forge');
   });
 
-  it('routed window carries _routedTab metadata', () => {
+  it('routed no-parcel intent lands on Property Search with the requested tab', () => {
     const { openWindow } = useDesktopStore.getState();
     openWindow('forge', 'TerraForge', '🔨');
 
     const { windows } = useDesktopStore.getState();
-    expect(windows[0].metadata).toMatchObject({ _routedTab: 'forge' });
+    expect(windows).toHaveLength(0);
+    expect(window.location.pathname).toBe('/property');
+    expect(window.location.search).toBe('?openTab=forge');
   });
 
-  it('second parcel-scoped suite reuses existing workbench window', () => {
+  it('second parcel-scoped suite replaces the route tab without opening a window', () => {
     const { openWindow } = useDesktopStore.getState();
-    openWindow('forge', 'TerraForge', '🔨');
-    openWindow('atlas', 'TerraAtlas', '🗺️');
+    openWindow('forge', 'TerraForge', '🔨', { parcelId: '101040000000000' });
+    openWindow('atlas', 'TerraAtlas', '🗺️', { parcelId: '101040000000000' });
 
     const { windows } = useDesktopStore.getState();
-    // Only one workbench window, not two
-    const workbenches = windows.filter((w) => w.moduleId === 'property-workbench');
-    expect(workbenches).toHaveLength(1);
-    // Metadata updated to the latest routed tab
-    expect(workbenches[0].metadata).toMatchObject({ _routedTab: 'atlas' });
+    expect(windows).toHaveLength(0);
+    expect(window.location.pathname).toBe('/property/101040000000000/atlas');
   });
 });
 
@@ -191,10 +191,10 @@ describe('taskbar isRunning predicate (standalone windows)', () => {
     expect(isRunning('suite-forge')).toBe(false);
   });
 
-  it('workbench shows as running for property-workbench moduleId', () => {
+  it('parcel-scoped suite routing does not create a taskbar window', () => {
     const { openWindow } = useDesktopStore.getState();
-    openWindow('forge', 'TerraForge', '🔨'); // routes to workbench
-    expect(isRunning('property-workbench')).toBe(true);
+    openWindow('forge', 'TerraForge', '🔨', { parcelId: '101040000000000' });
+    expect(isRunning('property-workbench')).toBe(false);
     expect(isRunning('forge')).toBe(false); // parcel-scoped ID not in windows
   });
 });
@@ -289,11 +289,10 @@ describe('taskbar click handler (focusWindow binding)', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe('RunningApps zone (non-pinned overflow)', () => {
-  it('workbench-routed window appears in overflow (moduleId=property-workbench)', () => {
+  it('workbench-routed parcel scope does not appear in overflow', () => {
     const { openWindow } = useDesktopStore.getState();
-    openWindow('forge', 'TerraForge', '🔨'); // routes to workbench
-    // Workbench is not a constitutional suite ID → it overflows
-    expect(nonPinnedWindows()).toContain('property-workbench');
+    openWindow('forge', 'TerraForge', '🔨', { parcelId: '101040000000000' });
+    expect(nonPinnedWindows()).not.toContain('property-workbench');
   });
 
   it('suite-workspace window appears in overflow when not in PINNED_SET', () => {
@@ -376,22 +375,19 @@ describe('full lifecycle trail (open → close)', () => {
     ]);
   });
 
-  it('workbench lifecycle: route → focus → close', () => {
+  it('workbench lifecycle: route changes without window lifecycle', () => {
     const { openWindow } = useDesktopStore.getState();
 
-    // Route forge to workbench
-    openWindow('forge', 'TerraForge', '🔨');
-    expect(isRunning('property-workbench')).toBe(true);
+    // Route forge to canonical Workbench URL
+    openWindow('forge', 'TerraForge', '🔨', { parcelId: '101040000000000' });
+    expect(window.location.pathname).toBe('/property/101040000000000/forge');
+    expect(isRunning('property-workbench')).toBe(false);
 
-    // Route atlas → reuses workbench, refocuses it
-    openWindow('atlas', 'TerraAtlas', '🗺️');
+    // Route atlas → changes route, still no adapter window
+    openWindow('atlas', 'TerraAtlas', '🗺️', { parcelId: '101040000000000' });
     const { windows } = useDesktopStore.getState();
-    const wbs = windows.filter((w) => w.moduleId === 'property-workbench');
-    expect(wbs).toHaveLength(1);
-
-    // Close workbench → all routed suites gone
-    const { closeWindow } = useDesktopStore.getState();
-    closeWindow(wbs[0].id);
+    expect(windows.filter((w) => w.moduleId === 'property-workbench')).toHaveLength(0);
+    expect(window.location.pathname).toBe('/property/101040000000000/atlas');
     expect(isRunning('property-workbench')).toBe(false);
   });
 });

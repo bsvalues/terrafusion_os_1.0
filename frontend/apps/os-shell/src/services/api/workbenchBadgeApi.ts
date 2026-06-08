@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════════════════════
  *
  * Shared fetch layer for badge providers. Fetches parcel data from the
- * county assessment endpoint and returns a structured response that badge
+ * canonical TerraFusion Properties API and returns a structured response that badge
  * providers use to derive real-time badges.
  *
  * Includes a simple TTL cache so all 4 providers (forge, atlas, dais,
@@ -12,8 +12,9 @@
  * Falls back gracefully when the API is unavailable (returns null).
  *
  * @see services/badges/ — Individual badge providers consume this
- * @see hooks/usePropertyLookup.ts — Uses the same county assessment property endpoint
  */
+
+import { getToken } from '../../auth/authStorage';
 
 // ============================================================================
 // Types
@@ -38,8 +39,6 @@ export interface PropertyBadgeData {
 // ============================================================================
 
 const CACHE_TTL_MS = 30_000; // 30 seconds
-const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
-const LEGACY_SOURCE_STATUS_KEY = LEGACY_ASSESSMENT_SEGMENT;
 
 interface CacheEntry {
   data: PropertyBadgeData;
@@ -71,12 +70,17 @@ function setCache(parcelId: string, data: PropertyBadgeData): void {
 
 async function doFetch(parcelId: string): Promise<PropertyBadgeData | null> {
   try {
-    const res = await fetch(`/ops/${LEGACY_ASSESSMENT_SEGMENT}/property/${encodeURIComponent(parcelId)}`);
+    const token = getToken();
+    if (!token) return null;
+
+    const res = await fetch(
+      `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
     if (!res.ok) return null;
     const json = await res.json();
-    if (json[LEGACY_SOURCE_STATUS_KEY] === 'offline') return null;
     const data: PropertyBadgeData = {
-      geoId: json.geoId ?? json.geo_id ?? parcelId,
+      geoId: json.parcelNumber ?? parcelId,
       address: json.address ?? '',
       ownerName: json.ownerName ?? json.owner_name ?? '',
       assessedValue: json.assessedValue ?? json.assessed_value ?? 0,
@@ -84,9 +88,9 @@ async function doFetch(parcelId: string): Promise<PropertyBadgeData | null> {
       landValue: json.landValue ?? json.land_value ?? 0,
       improvementValue: json.improvementValue ?? json.improvement_value ?? 0,
       propertyType: json.propertyType ?? json.property_type ?? '',
-      appraisalYear: json.appraisalYear ?? json.appraisal_year ?? null,
-      lastModified: json.lastModified ?? json.last_modified ?? null,
-      source: json.source ?? '',
+      appraisalYear: json.taxYear ?? null,
+      lastModified: json.assessmentDate ?? null,
+      source: 'TerraFusion DB/API-backed',
     };
     setCache(parcelId, data);
     return data;

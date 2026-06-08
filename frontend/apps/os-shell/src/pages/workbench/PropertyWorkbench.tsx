@@ -91,6 +91,20 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
   return tabPathMap[pathAfterBase] ?? 'summary';
 }
 
+function hasUsableWorkbenchToken(token: string | null): boolean {
+  if (!token || token === 'dev-preview-token') return false;
+  try {
+    const [, payload] = token.split('.');
+    if (!payload) return false;
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = JSON.parse(atob(normalized)) as { exp?: unknown };
+    if (typeof decoded.exp !== 'number') return false;
+    return decoded.exp * 1000 > Date.now() + 10_000;
+  } catch {
+    return false;
+  }
+}
+
 // ============================================================================
 // Tab Configuration (Locked Order)
 // ============================================================================
@@ -172,14 +186,27 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const activeParcelError = usePropertyStore((s) => s.activeParcelError);
   const selectParcel = usePropertyStore((s) => s.selectParcel);
+  const hasWorkbenchAuth = hasUsableWorkbenchToken(auth.token);
+  const [authWaitExpired, setAuthWaitExpired] = useState(false);
+
+  useEffect(() => {
+    if (!parcelId || hasWorkbenchAuth) {
+      setAuthWaitExpired(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => setAuthWaitExpired(true), 8_000);
+    return () => window.clearTimeout(timer);
+  }, [hasWorkbenchAuth, parcelId]);
 
   // Load parcel via store when parcelId changes (if not already loaded)
   useEffect(() => {
-    if (parcelId && activeParcel?.parcelId !== parcelId) {
+    if (parcelId && hasWorkbenchAuth && activeParcel?.parcelId !== parcelId) {
       selectParcel(parcelId);
     }
-  }, [parcelId, activeParcel?.parcelId, selectParcel]);
+  }, [parcelId, hasWorkbenchAuth, activeParcel?.parcelId, selectParcel]);
 
   const propertyData = useMemo(
     () => ({
@@ -334,8 +361,38 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     );
   }
 
+  if (!hasWorkbenchAuth) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center h-full gap-4 p-8"
+        style={{ color: 'hsl(var(--tf-text) / 0.72)', background: 'hsl(var(--tf-bg))' }}
+        data-testid={authWaitExpired ? 'workbench-auth-error' : 'workbench-auth-bootstrap'}
+        role={authWaitExpired ? 'alert' : undefined}
+      >
+        <div
+          className="text-[11px] uppercase tracking-[0.22em]"
+          style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}
+        >
+          Property Workbench
+        </div>
+        <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+          {authWaitExpired ? 'Workbench authentication unavailable' : 'Preparing authenticated Workbench session'}
+        </h2>
+        <p className="text-sm text-center max-w-lg">
+          {authWaitExpired
+            ? 'A valid Workbench auth token was not available, so parcel data was not requested.'
+            : `Waiting for a valid Benton Workbench token before loading parcel ${parcelId}.`}
+        </p>
+      </div>
+    );
+  }
+
+  const parcelLoadPending = Boolean(
+    parcelId && activeParcel?.parcelId !== parcelId && !activeParcelError
+  );
+
   // ── Loading ──
-  if (propertyLoading) {
+  if (propertyLoading || parcelLoadPending) {
     return (
       <div
         className="flex items-center justify-center h-full"
@@ -352,6 +409,54 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
             }}
           />
           <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading property {parcelId}…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Failed parcel load ──
+  if (activeParcelError) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center h-full gap-4 p-8"
+        style={{ color: 'hsl(var(--tf-text) / 0.72)', background: 'hsl(var(--tf-bg))' }}
+        data-testid="workbench-parcel-load-error"
+        role="alert"
+      >
+        <div
+          className="text-[11px] uppercase tracking-[0.22em]"
+          style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}
+        >
+          Property Workbench
+        </div>
+        <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+          Parcel data unavailable
+        </h2>
+        <p className="text-sm text-center max-w-lg">
+          {activeParcelError}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate('/property')}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              background: 'hsl(var(--tf-accent))',
+              color: 'hsl(var(--tf-text))',
+            }}
+          >
+            Search Properties
+          </button>
+          <button
+            onClick={handleBack}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              background: 'hsl(var(--tf-surface))',
+              color: 'hsl(var(--tf-text))',
+              border: '1px solid hsl(var(--tf-border) / 0.45)',
+            }}
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );
