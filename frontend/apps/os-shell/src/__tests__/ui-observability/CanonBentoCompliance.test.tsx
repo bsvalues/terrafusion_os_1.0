@@ -163,17 +163,27 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     localStorage.clear();
   });
 
-  it('exposes a labelled tablist wrapping all five role=tab buttons', () => {
+  it('exposes a labelled tablist wrapping all six role=tab buttons', () => {
     render(<CanonHome />);
     const tablist = screen.getByRole('tablist', { name: /bottom panel/i });
     const tabs = within(tablist).getAllByRole('tab');
-    // Gates / Terminal / Problems / Runtime (#924) / Console (#928)
-    expect(tabs).toHaveLength(5);
+    // Gates / Terminal / Problems / Runtime (#924) / Console (#928) / Evidence
+    expect(tabs).toHaveLength(6);
     expect(within(tablist).getByRole('tab', { name: 'Gates' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Problems' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Runtime' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Console' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Evidence' })).toBeInTheDocument();
+  });
+
+  it('applies the ARIA tab attributes to the Evidence tab too', () => {
+    render(<CanonHome />);
+    const evidenceTab = screen.getByRole('tab', { name: 'Evidence' });
+    expect(evidenceTab).toHaveAttribute('aria-selected', 'false');
+    expect(evidenceTab).toHaveAttribute('aria-controls');
+    expect(evidenceTab).toHaveAttribute('tabindex', '-1');
+    expect(evidenceTab.id).toBeTruthy();
   });
 
   it('applies the ARIA tab attributes to the Console tab too', () => {
