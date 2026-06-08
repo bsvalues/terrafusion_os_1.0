@@ -171,6 +171,10 @@ function parseDeeplinkQuery(raw: unknown): {
 }
 
 export default function CostForge({ metadata }: CostForgeProps = {}) {
+  const isTerraForgeSuiteRuntime =
+    metadata?.launchContext === 'terraforge-suite'
+    && metadata?.dataSource === 'terrafusion-api'
+    && metadata?.runtimePath === 'costforge-triage';
   const countyBadgeLabel = getCostForgeCountyBadgeLabel();
   const activeTab    = useCostForgeWorkspaceStore((s) => s.activeTab);
   const setActiveTab = useCostForgeWorkspaceStore((s) => s.setActiveTab);
@@ -195,6 +199,12 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
     const label = handoff.segmentLabel;
 
     if (year !== null) setTaxYear(year);
+    if (isTerraForgeSuiteRuntime) {
+      setHandoffContext(null, null);
+      setSelectedHood(null);
+      setActiveTab('triage');
+      return;
+    }
     if (stratum || segmentId) {
       setHandoffContext(stratum, segmentId, label);
     }
@@ -214,6 +224,7 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
     handoff.segmentLabel,
     handoff.stratumKey,
     handoff.taxYear,
+    isTerraForgeSuiteRuntime,
     metadata,
     setActiveTab,
     setHandoffContext,
@@ -274,6 +285,11 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
               <span className="forge-chip">
                 Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
                 {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
+              </span>
+            )}
+            {isTerraForgeSuiteRuntime && (
+              <span className="forge-chip" data-testid="costforge-suite-runtime-badge">
+                TerraForge Suite · Benton CostForge triage API
               </span>
             )}
             {/* Tax year selector */}

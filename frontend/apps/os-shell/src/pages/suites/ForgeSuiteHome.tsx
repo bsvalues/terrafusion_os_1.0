@@ -25,7 +25,7 @@
  */
 import { useCallback, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
-import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
+import { getSession } from '../../auth/session';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
@@ -38,8 +38,12 @@ type LaunchMode = 'standalone' | 'workbench';
 type TruthState = 'live' | 'queued';
 
 const JUNE_10_PROOF_FREEZE = true;
+const JUNE_10_RUNTIME_PANELS_ENABLED = true;
+const JUNE_10_COMMAND_ACTIONS_ENABLED = true;
 const JUNE_10_FORGE_NOTICE =
-  'TerraForge is part of the Benton operating model. Suite-wide metrics and standalone Forge modules are preview-locked until separately verified; use Property Workbench for DB/API-backed parcel-level Forge proof.';
+  'TerraForge is part of the Benton operating model. Suite-wide KPI rollups and unverified standalone Forge modules are preview-locked until separately verified; SalesForge, CostForge triage, and verified runtime panels read TerraFusion API through Benton county scope.';
+const JUNE_10_FORGE_ACTION_LOCK_NOTICE =
+  'Unverified TerraForge suite action locked for June 10 proof freeze.';
 
 interface ForgeModuleDef {
   id: string;
@@ -69,6 +73,11 @@ interface MorningBriefSummary {
   readyToAct: boolean;
   blockingDependencies: string[];
   findings: CountyFindingSummary[];
+}
+
+interface MorningBriefToolOutput extends Partial<MorningBriefSummary> {
+  brief?: Omit<MorningBriefSummary, 'findings'>;
+  findings?: CountyFindingSummary[];
 }
 
 interface CountyImpactPreview {
@@ -187,6 +196,10 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
+function isJune10RuntimeForgeModule(mod: ForgeModuleDef): boolean {
+  return mod.id === 'sales-forge' || mod.id === 'costforge';
+}
+
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
   if (JUNE_10_PROOF_FREEZE) {
     return JUNE_10_FORGE_NOTICE;
@@ -201,8 +214,14 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
 }
 
 function getLaunchLabel(mod: ForgeModuleDef): string {
-  if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone') {
+  if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) {
     return 'Standalone preview locked';
+  }
+  if (mod.id === 'costforge') {
+    return 'Benton CostForge triage API';
+  }
+  if (isJune10RuntimeForgeModule(mod)) {
+    return 'Benton sale qualification API';
   }
   if (mod.truthState === 'queued') {
     return 'Queued surface';
@@ -217,6 +236,7 @@ export default function ForgeSuiteHome() {
   const { stats, loading, error, source } = useCountyStats();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
+  const runtimeCountyId = getSession()?.countyId ?? 'benton';
   const sourceDisclosure = getSourceDisclosure(source);
   const showForgeMetrics = !JUNE_10_PROOF_FREEZE;
   const displayedStats = showForgeMetrics ? stats : null;
@@ -241,7 +261,7 @@ export default function ForgeSuiteHome() {
   ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
-    if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone') {
+    if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) {
       return;
     }
 
@@ -262,7 +282,23 @@ export default function ForgeSuiteHome() {
     }
 
     const targetId = mod.moduleId ?? mod.id;
-    void activateModule(targetId, { source: 'system' });
+    const metadata = mod.id === 'costforge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'costforge-triage',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'sales-forge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : undefined;
+    void activateModule(targetId, { source: 'system', ...(metadata ? { metadata } : {}) });
   };
 
   const handleParcelOpen = (parcelId: string) => {
@@ -280,25 +316,51 @@ export default function ForgeSuiteHome() {
     }
   };
 
+  const normalizeMorningBrief = (output: unknown): MorningBriefSummary => {
+    const parsed = parseToolOutput<MorningBriefToolOutput>(output, {
+      role: 'chief_appraiser',
+      queueType: 'calibration_review',
+      priority: 'medium',
+      dueWindow: 'next business day',
+      recommendedTool: 'rerun_ratio_study',
+      readyToAct: false,
+      blockingDependencies: [],
+      findings: [],
+    });
+
+    if (parsed.brief) {
+      return {
+        ...parsed.brief,
+        findings: parsed.findings ?? [],
+      };
+    }
+
+    return {
+      role: parsed.role ?? 'chief_appraiser',
+      queueType: parsed.queueType ?? 'calibration_review',
+      priority: parsed.priority ?? 'medium',
+      dueWindow: parsed.dueWindow ?? 'next business day',
+      recommendedTool: parsed.recommendedTool ?? 'rerun_ratio_study',
+      readyToAct: parsed.readyToAct ?? false,
+      blockingDependencies: parsed.blockingDependencies ?? [],
+      findings: parsed.findings ?? [],
+    };
+  };
+
   const handleRefreshBrief = useCallback(async () => {
+    if (!JUNE_10_COMMAND_ACTIONS_ENABLED) {
+      return;
+    }
+
     setBriefState({ status: 'loading' });
     try {
       const response = await invokeTool({
         toolId: 'generate_morning_brief',
-        params: { county: 'benton', taxYear: 2026, role: 'chief_appraiser' },
+        mode: 'muse',
+        params: { county: runtimeCountyId, taxYear: 2026, role: 'chief_appraiser' },
       });
       if (response.success && response.result) {
-        const parsed = parseToolOutput<MorningBriefSummary>(response.result.output, {
-          role: 'chief_appraiser',
-          queueType: 'calibration_review',
-          priority: 'medium',
-          dueWindow: 'next business day',
-          recommendedTool: 'propose_rate_adjustment',
-          readyToAct: false,
-          blockingDependencies: [],
-          findings: [],
-        });
-        setBriefState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setBriefState({ status: 'success', result: normalizeMorningBrief(response.result.output), correlationId: response.correlationId });
       } else {
         setBriefState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to load county briefing.' });
       }
@@ -309,14 +371,19 @@ export default function ForgeSuiteHome() {
         error: toolError instanceof Error ? toolError.message : 'Failed to load county briefing.',
       });
     }
-  }, []);
+  }, [runtimeCountyId]);
 
   const handleRunDiagnostics = useCallback(async () => {
+    if (!JUNE_10_COMMAND_ACTIONS_ENABLED) {
+      return;
+    }
+
     setDiagnosticsState({ status: 'loading' });
     try {
       const response = await invokeTool({
         toolId: 'rerun_ratio_study',
-        params: { county: 'benton', taxYear: 2026, draftVersion: 'benton-2026-working', scope: 'county' },
+        mode: 'pilot',
+        params: { county: runtimeCountyId, taxYear: 2026, draftVersion: 'benton-2026-working', scope: 'county' },
       });
       if (response.success && response.result) {
         const parsed = parseToolOutput<CountyDiagnosticsSummary>(response.result.output, {
@@ -335,14 +402,19 @@ export default function ForgeSuiteHome() {
         error: toolError instanceof Error ? toolError.message : 'Failed to run county diagnostics.',
       });
     }
-  }, []);
+  }, [runtimeCountyId]);
 
   const handleDraftBoardMemo = useCallback(async () => {
+    if (!JUNE_10_COMMAND_ACTIONS_ENABLED) {
+      return;
+    }
+
     setMemoState({ status: 'loading' });
     try {
       const response = await invokeTool({
         toolId: 'generate_calibration_memo',
-        params: { county: 'benton', draftVersion: 'benton-2026-working', audience: 'board', reasonCode: 'annual_certification' },
+        mode: 'muse',
+        params: { county: runtimeCountyId, draftVersion: 'benton-2026-working', audience: 'board', reasonCode: 'annual_certification' },
         confirmation: { confirmed: true, reasonCode: 'annual_certification' },
       });
       if (response.success && response.result) {
@@ -362,19 +434,17 @@ export default function ForgeSuiteHome() {
         error: toolError instanceof Error ? toolError.message : 'Failed to draft board memo.',
       });
     }
-  }, []);
+  }, [runtimeCountyId]);
 
   return (
     <div data-testid="suite-forge-root" className="forge-workspace h-full flex flex-col">
-      <ParcelContextBanner suiteTabId="forge" />
-
       <main className="forge-workspace__viewport">
         <div className="forge-workspace__stage">
           <header className="forge-workspace__header">
             <div>
               <p className="forge-workspace__eyebrow">Suite-Forge · Benton operating model</p>
               <h1 className="forge-workspace__title">TerraForge</h1>
-              <p className="forge-workspace__subtitle">Valuation suite available in Benton context; standalone workflows stay preview-locked until separately verified.</p>
+              <p className="forge-workspace__subtitle">Valuation suite available in Benton context; unverified standalone workflows stay preview-locked until separately verified.</p>
             </div>
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
@@ -389,6 +459,21 @@ export default function ForgeSuiteHome() {
               {sourceDisclosure}
             </div>
           )}
+          <section className="forge-panel forge-runtime-status" data-testid="forge-runtime-status">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">TerraForge Runtime Status</p>
+                <h2 className="forge-panel__title">One verified app at a time</h2>
+              </div>
+            </div>
+            <div className="forge-ops-tags">
+              <span className="forge-chip forge-chip--success">SalesForge runtime</span>
+              <span className="forge-chip forge-chip--success">CostForge live triage path</span>
+              <span className="forge-chip forge-chip--neutral">CompsForge preview-locked</span>
+              <span className="forge-chip forge-chip--neutral">IncomeForge preview-locked</span>
+              <span className="forge-chip forge-chip--warn">Metrics not runtime-backed</span>
+            </div>
+          </section>
           {showForgeMetrics && loading && !stats && (
             <div data-testid="forge-loading" role="status" className="forge-workspace__notice">
               Loading county metrics…
@@ -424,7 +509,13 @@ export default function ForgeSuiteHome() {
                     <div className="forge-ops-card__title">Morning Brief</div>
                     <div className="forge-ops-card__sub">Ranked findings and recommended next tool for the Benton Runtime Pilot.</div>
                   </div>
-                  <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
+                  <button
+                    type="button"
+                    className="forge-ops-btn"
+                    onClick={handleRefreshBrief}
+                    disabled={!JUNE_10_COMMAND_ACTIONS_ENABLED || briefState.status === 'loading'}
+                    title={!JUNE_10_COMMAND_ACTIONS_ENABLED ? JUNE_10_FORGE_ACTION_LOCK_NOTICE : undefined}
+                  >
                     {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}
                   </button>
                 </div>
@@ -468,7 +559,13 @@ export default function ForgeSuiteHome() {
                     <div className="forge-ops-card__title">County Diagnostics Sweep</div>
                     <div className="forge-ops-card__sub">Refresh PRD, COD, AV delta, and signoff posture for the working draft.</div>
                   </div>
-                  <button type="button" className="forge-ops-btn" onClick={handleRunDiagnostics} disabled={diagnosticsState.status === 'loading'}>
+                  <button
+                    type="button"
+                    className="forge-ops-btn"
+                    onClick={handleRunDiagnostics}
+                    disabled={!JUNE_10_COMMAND_ACTIONS_ENABLED || diagnosticsState.status === 'loading'}
+                    title={!JUNE_10_COMMAND_ACTIONS_ENABLED ? JUNE_10_FORGE_ACTION_LOCK_NOTICE : undefined}
+                  >
                     {diagnosticsState.status === 'loading' ? 'Running…' : 'Run Sweep'}
                   </button>
                 </div>
@@ -505,17 +602,21 @@ export default function ForgeSuiteHome() {
                     <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo after Forge applications are separately verified.</div>
                   </div>
                   <div className="forge-ops-actions">
-                    <button type="button" className="forge-ops-btn" onClick={handleDraftBoardMemo} disabled={memoState.status === 'loading'}>
+                    <button
+                      type="button"
+                      className="forge-ops-btn"
+                      onClick={handleDraftBoardMemo}
+                      disabled={!JUNE_10_COMMAND_ACTIONS_ENABLED || memoState.status === 'loading'}
+                      title={!JUNE_10_COMMAND_ACTIONS_ENABLED ? JUNE_10_FORGE_ACTION_LOCK_NOTICE : undefined}
+                    >
                       {memoState.status === 'loading' ? 'Drafting…' : 'Draft Memo'}
                     </button>
                     <button
                       type="button"
                       className="forge-ops-btn forge-ops-btn--ghost"
                       onClick={() => handleModuleLaunch(PRIMARY_MODULES[0])}
-                      disabled={JUNE_10_PROOF_FREEZE}
-                      title={JUNE_10_FORGE_NOTICE}
                     >
-                      CostForge preview locked
+                      Open CostForge
                     </button>
                     <button
                       type="button"
@@ -568,8 +669,8 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--primary"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' || mod.truthState === 'queued'}
-                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={(JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) || mod.truthState === 'queued'}
+                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
                 >
                   <div className="forge-card__rail">
                     {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
@@ -597,8 +698,8 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--secondary"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' || mod.truthState === 'queued'}
-                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={(JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) || mod.truthState === 'queued'}
+                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
                 >
                   <div className="forge-card__rail">
                     {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
@@ -641,7 +742,7 @@ export default function ForgeSuiteHome() {
             </button>
           </section>
 
-          {!JUNE_10_PROOF_FREEZE && (
+          {JUNE_10_RUNTIME_PANELS_ENABLED && (
             <>
               {/* Slice 1.4 — county-wide sale qualification queue */}
               <SaleQualificationQueue />
