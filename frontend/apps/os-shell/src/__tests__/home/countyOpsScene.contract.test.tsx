@@ -21,6 +21,7 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { WASHINGTON_COUNTY_RUNTIME_POSTURES } from '../../config/countyRuntimePosture';
 
 // ---------------------------------------------------------------------------
 // Mocks — match patterns from homeScene.contract.test.tsx
@@ -146,12 +147,28 @@ vi.mock('../../hooks/useParcelCount', () => ({
   useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
 }));
 
+vi.mock('../../shell/desktop/BentonCountyMap', () => ({
+  __esModule: true,
+  default: ({ onParcelSelect, className }: { onParcelSelect?: (parcelId: string) => void; className?: string }) => (
+    <div
+      data-testid="benton-county-map"
+      className={className}
+      aria-label="Benton County GIS map"
+    >
+      <span>Benton County GIS Orientation</span>
+      <span>Parcel layer status: TerraFusion DB/API proof path</span>
+      <button type="button" onClick={() => onParcelSelect?.('10-1234-001')}>
+        Select mapped parcel
+      </button>
+    </div>
+  ),
+}));
+
 // Import the REAL components/stores after mocks
 import { StageZeroState } from '../../shell/desktop/StageZeroState';
 import { useSceneStore, SCENE_LIBRARY } from '../../stores/sceneStore';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { selectRecentParcel } from '../../context/parcelContext';
-import { WASHINGTON_COUNTY_RUNTIME_POSTURES } from '../../config/countyRuntimePosture';
 
 // Get mock references
 const mockActivateModule = activateModule as ReturnType<typeof vi.fn>;
@@ -169,8 +186,8 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
   it('1. county map area renders', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('county-map-center')).toBeInTheDocument();
-    // The SVG map button has an aria-label
-    expect(screen.getByLabelText('Open TerraAtlas for full county map')).toBeInTheDocument();
+    expect(screen.getByLabelText('Benton County GIS map')).toBeInTheDocument();
+    expect(screen.getByText('Benton County GIS Orientation')).toBeInTheDocument();
   });
 
   it('2. Recent Work panel renders', () => {
@@ -191,7 +208,8 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
   it('4. County status info renders', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
-    expect(screen.getByText('Cross-suite county posture')).toBeInTheDocument();
+    expect(screen.getByText('County operations command surface')).toBeInTheDocument();
+    expect(screen.queryByText('Statewide county operating model')).not.toBeInTheDocument();
   });
 
   it('4b. runtime posture summary exposes the 39-county source/runtime boundary', () => {
@@ -213,11 +231,26 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
   it('5. County status info renders', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('county-status-strip')).toBeInTheDocument();
-    expect(screen.getByText('Benton County, WA')).toBeInTheDocument();
-    expect(screen.getByText('Parcel count unavailable')).toBeInTheDocument();
+    expect(screen.getByText('Washington County Operating Model')).toBeInTheDocument();
+    expect(screen.getAllByText('Benton Runtime Pilot').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('38 counties Onboarding / Provenance / Intake').length).toBeGreaterThan(0);
+    expect(screen.getByText('Parcel count: proof path only')).toBeInTheDocument();
   });
 
-  it('6. Search is NOT the hero surface — no prominent search bar', () => {
+  it('6. June 10 shell frames Benton runtime proof without statewide runtime overclaim', () => {
+    render(<StageZeroState />);
+    const stageZero = screen.getByTestId('stage-zero-state');
+
+    expect(stageZero).toHaveTextContent('Benton Runtime Pilot');
+    expect(stageZero).toHaveTextContent('Benton County GIS Orientation');
+    expect(stageZero).toHaveTextContent('38 counties Onboarding / Provenance / Intake');
+    expect(stageZero).not.toHaveTextContent('Benton absent by design');
+    expect(stageZero).not.toHaveTextContent('38-county runtime preview');
+    expect(stageZero).not.toHaveTextContent('Washington County Runtime');
+    expect(stageZero).not.toHaveTextContent('128,788 parcels');
+  });
+
+  it('7. Search is NOT the hero surface — no prominent search bar', () => {
     render(<StageZeroState />);
     const stageZero = screen.getByTestId('stage-zero-state');
     // No search input elements on the home surface

@@ -18,7 +18,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, lazy } from 'react';
 import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -26,6 +26,10 @@ import { vi } from 'vitest';
 // ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
+
+const mockUseParcelCount = vi.hoisted(() => vi.fn());
+const mockOpenWorkbenchWindow = vi.hoisted(() => vi.fn());
+const mockSelectRecentParcel = vi.hoisted(() => vi.fn());
 
 // Mock zustand stores used by StageZeroState
 vi.mock('../../stores/commandPaletteStore', () => {
@@ -55,8 +59,8 @@ vi.mock('../../stores/commandPaletteStore', () => {
 vi.mock('../../context/parcelContext', () => ({
   __esModule: true,
   useRecentParcels: () => [],
-  openWorkbenchWindow: vi.fn(),
-  selectRecentParcel: vi.fn(),
+  openWorkbenchWindow: mockOpenWorkbenchWindow,
+  selectRecentParcel: mockSelectRecentParcel,
 }));
 
 // Mock module activation
@@ -135,15 +139,33 @@ vi.mock('../../hooks/useTodaysWork', () => ({
   useTodaysWork: () => ({ tasks: [], loading: false, error: null, readState: 'live' }),
 }));
 
+vi.mock('../../shell/desktop/BentonCountyMap', () => ({
+  __esModule: true,
+  default: ({ onParcelSelect, className }: { onParcelSelect?: (parcelId: string) => void; className?: string }) => (
+    <div
+      data-testid="benton-county-map"
+      className={className}
+      aria-label="Benton County GIS map"
+    >
+      <span>Benton County GIS Orientation</span>
+      <span>Parcel layer status: TerraFusion DB/API proof path</span>
+      <button type="button" onClick={() => onParcelSelect?.('101040000000000')}>
+        Select proof parcel
+      </button>
+    </div>
+  ),
+}));
+
 // Mock useParcelCount — no QueryClientProvider in this test tree
 vi.mock('../../hooks/useParcelCount', () => ({
   __esModule: true,
-  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
+  useParcelCount: () => mockUseParcelCount(),
 }));
 
 // Import the REAL StageZeroState (with mocked dependencies above)
 // so we test actual rendered structure
 import { StageZeroState } from '../../shell/desktop/StageZeroState';
+import { invokeTool } from '../../api/pilotApi';
 
 // Mock App (Desktop) to include StageZeroState inside it
 vi.mock('../../App', () => ({
@@ -196,6 +218,13 @@ const Phase7Router: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
 // ---------------------------------------------------------------------------
 
 describe('Phase 7: Home Scene Contract', () => {
+  beforeEach(() => {
+    mockUseParcelCount.mockReturnValue({ data: undefined, isLoading: false, error: null });
+    mockOpenWorkbenchWindow.mockClear();
+    mockSelectRecentParcel.mockClear();
+    sessionStorage.clear();
+  });
+
   /**
    * Test 1: /home redirects to /
    *
@@ -266,8 +295,8 @@ describe('Phase 7: Home Scene Contract', () => {
     // Quick Actions section header
     expect(screen.getByText('Quick Actions')).toBeInTheDocument();
 
-    // County map SVG — check for the Benton County map elements
-    expect(screen.getByLabelText('Open TerraAtlas for full county map')).toBeInTheDocument();
+    // County GIS map — the default home surface for the active county
+    expect(screen.getByLabelText('Benton County GIS map')).toBeInTheDocument();
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
   });
 
@@ -322,5 +351,79 @@ describe('Phase 7: Home Scene Contract', () => {
     // Verify the store's open function is accessible
     const { _openFn } = await import('../../stores/commandPaletteStore') as any;
     expect(typeof _openFn).toBe('function');
+  });
+
+  it('renders Benton GIS home scene by default without launch-board or unverified count language', async () => {
+    mockUseParcelCount.mockReturnValue({
+      data: { totalParcels: 128788, dataSource: 'LIVE_DB', stubbed: false },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    const center = screen.getByTestId('county-map-center');
+    expect(center).toHaveTextContent(/Benton County GIS Orientation/i);
+    expect(center).toHaveTextContent(/Parcel layer status/i);
+    expect(screen.getByTestId('benton-county-map')).toBeInTheDocument();
+    expect(screen.getAllByText(/Benton County/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Runtime Pilot/i).length).toBeGreaterThan(0);
+    expect(center.querySelectorAll('[aria-label="Active county workspace"]')).toHaveLength(0);
+
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Continue to Desktop/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/June 10 Launch Briefing/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Statewide county operating model/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Benton County Operations/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Washington County Runtime/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/128,788 parcels/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Washington County Operating Model/i)).toBeInTheDocument();
+  });
+
+  it('does not invoke TerraPilot briefing tools from the Home Scene automatically', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    expect(invokeTool).not.toHaveBeenCalled();
+  });
+
+  it('opens the Benton Property Workbench from the default Benton workspace', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Open Workbench/i }));
+
+    await waitFor(() => {
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalled();
+    });
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Benton County GIS Orientation/i)).toBeInTheDocument();
+  });
+
+  it('selecting a map parcel opens the workbench without replacing the GIS home scene', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    const center = screen.getByTestId('county-map-center');
+    fireEvent.click(screen.getByRole('button', { name: /Select proof parcel/i }));
+
+    await waitFor(() => {
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalledWith('101040000000000');
+    });
+    expect(center).toHaveTextContent(/Benton County GIS Orientation/i);
+    expect(center).not.toHaveTextContent(/Open Benton Property Workbench/i);
   });
 });
