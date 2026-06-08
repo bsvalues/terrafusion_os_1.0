@@ -220,13 +220,36 @@ function parseToolOutput<T>(output: unknown): T | null {
   }
 }
 
+const J10_LAUNCH_BOARD_DISMISSED_KEY = 'tf:j10-launch-board-dismissed';
+
+function readLaunchBoardDismissed(): boolean {
+  try {
+    return window.sessionStorage.getItem(J10_LAUNCH_BOARD_DISMISSED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeLaunchBoardDismissed(dismissed: boolean): void {
+  try {
+    if (dismissed) {
+      window.sessionStorage.setItem(J10_LAUNCH_BOARD_DISMISSED_KEY, '1');
+    } else {
+      window.sessionStorage.removeItem(J10_LAUNCH_BOARD_DISMISSED_KEY);
+    }
+  } catch {
+    // Session persistence is a convenience; the UI state still updates.
+  }
+}
+
 // ============================================================================
 // June 10 County Operating Model Overview
 // ============================================================================
 const CountyMapOverview: React.FC<{
   onOpenAtlas: () => void;
   onOpenWorkbench: () => void;
-}> = ({ onOpenAtlas, onOpenWorkbench }) => {
+  onContinueToDesktop: () => void;
+}> = ({ onOpenAtlas, onOpenWorkbench, onContinueToDesktop }) => {
   const [selectedCounty, setSelectedCounty] = useState<'benton' | 'yakima'>('benton');
   const isBenton = selectedCounty === 'benton';
 
@@ -289,6 +312,17 @@ const CountyMapOverview: React.FC<{
               }}
             >
               Open Benton Property Workbench
+            </button>
+            <button
+              type='button'
+              onClick={onContinueToDesktop}
+              className='rounded-lg px-3 py-2 text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+              style={{
+                border: '1px solid hsl(var(--tf-border) / 0.65)',
+                background: 'hsl(var(--tf-text) / 0.04)',
+              }}
+            >
+              Continue to Desktop
             </button>
           </div>
           <div
@@ -371,6 +405,92 @@ const CountyMapOverview: React.FC<{
   );
 };
 
+const OperationalDesktopOverview: React.FC<{
+  onOpenAtlas: () => void;
+  onOpenWorkbench: () => void;
+  onOpenLaunchBoard: () => void;
+}> = ({ onOpenAtlas, onOpenWorkbench, onOpenLaunchBoard }) => (
+  <div
+    className='relative w-full h-full rounded-xl overflow-hidden'
+    aria-label='Benton operational desktop'
+  >
+    <div
+      className='w-full h-full p-6 text-left'
+      style={{
+        color: 'hsl(var(--tf-text))',
+        background: 'hsl(var(--tf-surface-1) / 0.24)',
+      }}
+    >
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <div className='text-[10px] font-semibold uppercase tracking-[0.18em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Benton operational desktop
+          </div>
+          <div className='mt-2 text-2xl font-semibold leading-tight'>
+            Open the work surface
+          </div>
+          <div className='mt-3 max-w-xl text-sm leading-6' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Use Property Workbench for the June 10 Benton DB/API proof path. Non-Benton runtime actions remain blocked until county-specific proof exists.
+          </div>
+        </div>
+        <button
+          type='button'
+          onClick={onOpenLaunchBoard}
+          className='rounded-lg px-3 py-2 text-xs font-semibold transition-all hover:bg-[hsl(var(--tf-text)_/_0.07)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+          style={{ border: '1px solid hsl(var(--tf-border) / 0.65)' }}
+        >
+          June 10 Launch Briefing
+        </button>
+      </div>
+
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-3 gap-3'>
+        <button
+          type='button'
+          onClick={onOpenWorkbench}
+          className='rounded-xl p-4 text-left transition-all hover:bg-[hsl(var(--tf-text)_/_0.05)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+          style={{ border: '1px solid hsl(var(--tf-success-hs) 45% / 0.65)', background: 'hsl(var(--tf-success-hs) 35% / 0.12)' }}
+        >
+          <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-success-hs) 55%)' }}>
+            Primary
+          </div>
+          <div className='mt-3 text-base font-semibold'>Open Benton Property Workbench</div>
+          <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Parcel 101040000000000 is the proof-path demo parcel.
+          </div>
+        </button>
+
+        <button
+          type='button'
+          onClick={onOpenAtlas}
+          className='rounded-xl p-4 text-left transition-all hover:bg-[hsl(var(--tf-text)_/_0.05)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+          style={{ border: '1px solid hsl(var(--tf-border) / 0.65)' }}
+        >
+          <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Onboarding
+          </div>
+          <div className='mt-3 text-base font-semibold'>View County Intake / Onboarding</div>
+          <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+            38 counties remain provenance/intake posture only.
+          </div>
+        </button>
+
+        <div
+          className='rounded-xl p-4'
+          style={{ border: '1px solid hsl(var(--tf-border) / 0.65)', background: 'hsl(var(--tf-text) / 0.025)' }}
+        >
+          <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Boundary
+          </div>
+          <div className='mt-3 text-base font-semibold'>Runtime proof required</div>
+          <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+            No statewide runtime claim. No unverified aggregate counts.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -379,6 +499,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
+  const [launchBoardDismissed, setLaunchBoardDismissed] = useState(readLaunchBoardDismissed);
   const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
     dais: { status: 'idle' },
     forge: { status: 'idle' },
@@ -395,6 +516,21 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
       openWorkbenchWindow();
     });
   }, []);
+
+  const handleContinueToDesktop = useCallback(() => {
+    writeLaunchBoardDismissed(true);
+    setLaunchBoardDismissed(true);
+  }, []);
+
+  const handleOpenLaunchBoard = useCallback(() => {
+    writeLaunchBoardDismissed(false);
+    setLaunchBoardDismissed(false);
+  }, []);
+
+  const handleOpenWorkbenchFromLaunch = useCallback(() => {
+    handleContinueToDesktop();
+    handleOpenWorkbench();
+  }, [handleContinueToDesktop, handleOpenWorkbench]);
 
   const handleSelectParcel = useCallback((parcelId: string) => {
     import('../../context/parcelContext').then(({ selectRecentParcel, openWorkbenchWindow }) => {
@@ -583,7 +719,19 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           {/* ═══ Center: County Overview ═══ */}
           <div data-testid='county-map-center' className='flex-1 min-w-0'>
             <GlassCard className='h-full p-2'>
-              <CountyMapOverview onOpenAtlas={handleOpenAtlas} onOpenWorkbench={handleOpenWorkbench} />
+              {launchBoardDismissed ? (
+                <OperationalDesktopOverview
+                  onOpenAtlas={handleOpenAtlas}
+                  onOpenWorkbench={handleOpenWorkbench}
+                  onOpenLaunchBoard={handleOpenLaunchBoard}
+                />
+              ) : (
+                <CountyMapOverview
+                  onOpenAtlas={handleOpenAtlas}
+                  onOpenWorkbench={handleOpenWorkbenchFromLaunch}
+                  onContinueToDesktop={handleContinueToDesktop}
+                />
+              )}
             </GlassCard>
           </div>
 

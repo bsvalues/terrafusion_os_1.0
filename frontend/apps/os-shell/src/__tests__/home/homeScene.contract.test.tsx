@@ -18,7 +18,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, lazy } from 'react';
 import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -28,6 +28,8 @@ import { vi } from 'vitest';
 // ---------------------------------------------------------------------------
 
 const mockUseParcelCount = vi.hoisted(() => vi.fn());
+const mockOpenWorkbenchWindow = vi.hoisted(() => vi.fn());
+const mockSelectRecentParcel = vi.hoisted(() => vi.fn());
 
 // Mock zustand stores used by StageZeroState
 vi.mock('../../stores/commandPaletteStore', () => {
@@ -57,8 +59,8 @@ vi.mock('../../stores/commandPaletteStore', () => {
 vi.mock('../../context/parcelContext', () => ({
   __esModule: true,
   useRecentParcels: () => [],
-  openWorkbenchWindow: vi.fn(),
-  selectRecentParcel: vi.fn(),
+  openWorkbenchWindow: mockOpenWorkbenchWindow,
+  selectRecentParcel: mockSelectRecentParcel,
 }));
 
 // Mock module activation
@@ -200,6 +202,9 @@ const Phase7Router: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
 describe('Phase 7: Home Scene Contract', () => {
   beforeEach(() => {
     mockUseParcelCount.mockReturnValue({ data: undefined, isLoading: false, error: null });
+    mockOpenWorkbenchWindow.mockClear();
+    mockSelectRecentParcel.mockClear();
+    sessionStorage.clear();
   });
 
   /**
@@ -351,5 +356,54 @@ describe('Phase 7: Home Scene Contract', () => {
     expect(screen.queryByText(/Washington County Runtime/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/128,788 parcels/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Washington County Operating Model/i)).toBeInTheDocument();
+  });
+
+  it('lets the user dismiss the June 10 launch board and return to an operational desktop for the session', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/June 10 launch board/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Continue to Desktop/i }));
+
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /June 10 Launch Briefing/i })).toBeInTheDocument();
+    expect(sessionStorage.getItem('tf:j10-launch-board-dismissed')).toBe('1');
+  });
+
+  it('opens the Benton Property Workbench from the launch board without leaving the board as a trap', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Open Benton Property Workbench/i }));
+
+    await waitFor(() => {
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalled();
+    });
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
+  });
+
+  it('keeps the launch board dismissed across a same-session remount and exposes a deliberate reopen control', async () => {
+    sessionStorage.setItem('tf:j10-launch-board-dismissed', '1');
+
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Benton operational desktop/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /June 10 Launch Briefing/i }));
+
+    expect(screen.getByText(/June 10 launch board/i)).toBeInTheDocument();
   });
 });
