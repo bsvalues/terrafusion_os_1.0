@@ -359,6 +359,24 @@ describe('Desktop', () => {
       expect(screen.queryByTestId('stage-zero-state')).not.toBeInTheDocument();
       expect(screen.getByTestId('desktop-icon-grid')).toBeInTheDocument();
     });
+
+    it('does not auto-spawn TerraPilot on initial mount', () => {
+      act(() => {
+        useDesktopStore.setState({
+          shellMode: 'home',
+          previousShellMode: null,
+          windows: [],
+          activeWindowId: null,
+          nextZIndex: 1,
+        });
+      });
+
+      render(<Desktop />, { wrapper: desktopWrapper });
+
+      expect(useDesktopStore.getState().shellMode).toBe('home');
+      expect(useDesktopStore.getState().windows.some((w) => w.moduleId === 'os-pilot')).toBe(false);
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
   });
 
   // ============================================================================

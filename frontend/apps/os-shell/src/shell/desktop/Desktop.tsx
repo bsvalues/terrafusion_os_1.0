@@ -23,7 +23,7 @@ import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
-import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
+import { useDesktopStore } from '../../stores/desktopStore';
 import { useCompanionStore } from '../../stores/companionStore';
 import { useDevContext } from '../../hooks/useDevContext';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
@@ -336,13 +336,6 @@ export function Desktop({ className = '', children }: DesktopProps) {
     }
     prevStartMenuOpen.current = isStartMenuOpen;
   }, [isStartMenuOpen]);
-
-  // ============================================================================
-  // TerraPilot Companion — auto-spawn on desktop mount as floating window
-  // ============================================================================
-  useEffect(() => {
-    openCompanionWindow();
-  }, []);
 
   // ============================================================================
   // Dev context bus — wire engineering signals (buildStatus, branch, file)
