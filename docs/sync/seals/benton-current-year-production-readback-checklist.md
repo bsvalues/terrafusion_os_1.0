@@ -9,11 +9,23 @@ handoff. Source of truth: live Harris PACS → TerraFusion canonical._
 
 ## How to use
 
-Pick a representative active Benton parcel (and ideally a few: a plain residential, an ag parcel, an
-exempt parcel, and one carrying special assessments). For each, walk the steps below in County Studio
-and confirm the displayed value resolves from the named canonical source. A step **passes** when the
-parcel's value is present and correct; the negative checks (§ End) **pass** when the unsafe surfaces
-do **not** appear.
+For each parcel in the acceptance set below, walk the steps in County Studio and confirm the displayed
+value resolves from the named canonical source. A step **passes** when the parcel's value is present
+and correct; the negative checks (§ End) **pass** when the unsafe surfaces do **not** appear.
+
+## Acceptance set (concrete, resolved from sealed canonical 2026-06-08)
+
+Six representative active parcels, one per profile. `prop_id` is the PACS identifier to open in County
+Studio. (Selected read-only from canonical; substitute any equivalent parcel if these are unsuitable.)
+
+| Profile | prop_id | Why it exercises the substrate |
+|---------|--------:|--------------------------------|
+| 1 · normal residential | **321209** | assessment sup=0, no exemption, no special assessment — the plain path |
+| 2 · with exemption | **10009** | exercises `tf_exemption` + dict-backed type/pct (step 5) |
+| 3 · non-zero active supplement | **87621** | proves active-supplement resolution surfaces (not sup=0) |
+| 4 · with special-assessment bill | **23199** | 6 agencies — exercises `tf_assessment_bill_*` (step 8) |
+| 5 · paid amount > 0 | **10881** | paid $1,132.26 — exercises due/paid/balance rollup + net-paid attestation (step 9) |
+| 6 · complex district set | **56444** | 8 districts — exercises jurisdiction + levy bill breadth (steps 6–7) |
 
 ---
 
