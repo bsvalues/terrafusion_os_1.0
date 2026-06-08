@@ -1,6 +1,6 @@
 # Benton Real Dev Server Readiness
 
-Generated: 2026-06-07T20:02:25.766Z
+Generated: 2026-06-08T00:11:15.526Z
 Status: REAL_DEV_DATA_AVAILABLE
 
 ## Decision
@@ -50,9 +50,9 @@ Status: REAL_DEV_DATA_AVAILABLE
 - ownerSupnumBackfillRequiredForForgeDev: false
 - ownerSupnumBackfillRequiredForPacketProof: true
 - ownerSupnumBackfillRequiredForOperationalProof: true
-- exemptionFactSealStatus: COMPLETED
-- exemptionFactSealStage: exemption-fact-seal
-- exemptionFactSealClassification: NOT_REQUIRED_FOR_FORGE_DEV
+- exemptionFactSealStatus: IN_PROGRESS
+- exemptionFactSealStage: jurisdiction-spine-seal
+- exemptionFactSealClassification: UNKNOWN
 - exemptionFactSealRequiredForForgeDev: false
 - exemptionFactSealRequiredForProductionProof: true
 - exemptionFactSealRequiredForPacketProof: true

@@ -13,6 +13,11 @@ realDevActivationAllowed=true
 cleanFullDevSmokePassed=true
 countyStudioMode=REAL_BENTON_FORGE_DEV
 dataTruthStatus=DATA_TRUTH_FAIL
+geometryStatus=PARTIAL_GIS_TRUTH
+parcelGeometryStatus=SYNC_DERIVED_PARCEL_GEOMETRY
+fullGisLayerTruthStatus=GIS_LAYER_TRUTH_NOT_PROVEN
+mapOverlayStatus=FALLBACK_MAP_OVERLAY
+riskOverlayAnchoring=NOT_GIS_ANCHORED
 productionProofAllowed=false
 operationalProofAllowed=false
 ```
@@ -34,7 +39,8 @@ pnpm run dev:county-studio:real-benton
 | DB readiness | `REAL_DEV_DATA_AVAILABLE` | os-platform/core/pilot/evidence/benton-real-dev-server-readiness.json |
 | real dev activation | `REAL_DEV_ACTIVATION_READY` | os-platform/core/pilot/evidence/county-studio-real-dev-server-activation.json |
 | Forge real data wiring | `FORGE_REAL_DATA_WIRING_VERIFIED_WITH_GAPS` | os-platform/core/pilot/evidence/county-studio-forge-real-data-wiring.json |
-| TerraAtlas geometry wiring | `TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED` | os-platform/core/pilot/evidence/county-studio-terraatlas-geometry-evidence.json |
+| TerraAtlas GIS truth correction | `TERRAATLAS_GIS_TRUTH_PARTIAL` | os-platform/core/pilot/evidence/county-studio-terraatlas-geometry-evidence.json |
+| TerraAtlas GIS truth correction detail | `PARTIAL_GIS_TRUTH` | os-platform/core/pilot/evidence/county-studio-terraatlas-gis-truth-correction.json |
 | risk object source audit | `RISK_OBJECT_SOURCE_AUDITED_DEV_DERIVED` | os-platform/core/pilot/evidence/county-studio-risk-object-source-audit.json |
 | dependency reclassification | `NOT_REQUIRED_FOR_FORGE_DEV` | os-platform/core/pilot/evidence/county-studio-exemption-fact-dependency.json |
 | full smoke | `FORGE_DEV_SMOKE_PASS` | os-platform/core/pilot/evidence/county-studio-r1-forge-dev-smoke.json |
@@ -46,13 +52,18 @@ pnpm run dev:county-studio:real-benton
 - real property characteristics path for Forge dev
 - real valuation metrics path for Forge dev
 - real ratio-study context path for Forge dev
-- real TerraAtlas geometry wired for Forge dev
+- real TerraAtlas parcel geometry wired for Forge dev
+- full TerraAtlas GIS layer truth is not proven
+- map/risk overlays remain fallback or unproven
 - risk objects dev-derived from real Benton inputs
 - clean full Forge dev smoke under Forge-dev scope
 
 ## What Is Not Production Proof
 
 - DATA_TRUTH_FAIL remains the data truth posture
+- full TerraAtlas GIS layer truth is not proven
+- risk overlay labels are not GIS-anchored production overlays
+- neighborhoods, segments, reval areas, taxing districts, outlines, attributes, and symbology lineage remain unproven
 - owner-supnum remains required for packet/ops proof
 - exemption facts remain required for production/packet/ops proof
 - canonical Benton source/count reconciliation is not complete
@@ -70,11 +81,17 @@ Do not represent this R1 Forge-dev handoff as any of the following:
 - Dais/Dossier/Trace operational proof complete
 - productionProofAllowed=true
 - operationalProofAllowed=true
+- full TerraAtlas GIS proof
+- production GIS overlay proof
 
 ## Dependency Posture
 
 ```text
-geometryStatus=SYNC_DERIVED_GEOMETRY
+geometryStatus=PARTIAL_GIS_TRUTH
+parcelGeometryStatus=SYNC_DERIVED_PARCEL_GEOMETRY
+fullGisLayerTruthStatus=GIS_LAYER_TRUTH_NOT_PROVEN
+mapOverlayStatus=FALLBACK_MAP_OVERLAY
+riskOverlayAnchoring=NOT_GIS_ANCHORED
 riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
 exemptionFactStatus=NOT_REQUIRED_FOR_FORGE_DEV
@@ -85,6 +102,8 @@ exemptionFactRequiredForOperationalProof=true
 ```
 
 Owner-supnum and exemption facts remain visible as packet/ops or production dependencies. They are not Forge-dev blockers unless a County Studio Forge surface consumes those facts.
+
+Real parcel polygons from `gis_tf.tf_parcel_geom` are available for Forge dev, but that does not prove full TerraAtlas GIS truth. The current map endpoint returns parcel polygons only, `outlines` is null, several map attributes are hardcoded/null/zero, `neighborhoodCode` is query-scoped rather than per-parcel sourced, and visible risk labels are UI-positioned rather than GIS-anchored.
 
 ## Next Lanes
 

@@ -1,6 +1,6 @@
 # County Studio R1 Forge Dev Status
 
-Generated: 2026-06-07T20:01:00.617Z
+Generated: 2026-06-08T00:11:15.574Z
 Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 
 ## Summary
@@ -10,7 +10,11 @@ Status: COUNTY_STUDIO_R1_FORGE_DEV_READY
 - productionProofAllowed=false
 - operationalProofAllowed=false
 - dataTruthStatus=DATA_TRUTH_FAIL
-- geometryStatus=SYNC_DERIVED_GEOMETRY
+- geometryStatus=PARTIAL_GIS_TRUTH
+- parcelGeometryStatus=SYNC_DERIVED_PARCEL_GEOMETRY
+- fullGisLayerTruthStatus=GIS_LAYER_TRUTH_NOT_PROVEN
+- mapOverlayStatus=FALLBACK_MAP_OVERLAY
+- riskOverlayAnchoring=NOT_GIS_ANCHORED
 - riskObjectStatus=DEV_DERIVED_FROM_REAL_INPUTS
 - ownerSupnumStatus=NOT_REQUIRED_FOR_FORGE_DEV
 - exemptionFactStatus=NOT_REQUIRED_FOR_FORGE_DEV
@@ -49,9 +53,12 @@ Exemption facts remain required for production/ops proof, not current County Stu
 
 - Canonical Benton source/count reconciliation remains required before production proof.
 - CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.
-- TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.
+- TerraAtlas parcel geometry is wired for real dev, but full GIS layer truth is not proven; production GIS proof still requires canonical TerraAtlas layer registry, boundaries, neighborhoods, segments, reval areas, taxing districts, outlines, attributes, overlays, and symbology lineage.
 - Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.
 - Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof.
+- Full GIS layer truth status is GIS_LAYER_TRUTH_NOT_PROVEN; parcel geometry proof does not prove neighborhoods, segments, taxing districts, or layer registry truth.
+- Map overlay status is FALLBACK_MAP_OVERLAY; valuation/risk overlays are not production GIS proof.
+- Risk overlay anchoring is NOT_GIS_ANCHORED; visible risk labels are UI-positioned, not GIS-anchored production overlays.
 
 ## Remaining Operational Blockers
 

@@ -140,10 +140,36 @@ function geometryStatus(geometryReport, forgeWiringReport) {
     ?? "UNKNOWN";
 }
 
+function parcelGeometryStatus(geometryReport, forgeWiringReport) {
+  return geometryReport?.parcelGeometryStatus
+    ?? forgeWiringReport?.geometryEvidencePosture?.parcelGeometryStatus
+    ?? (geometryStatus(geometryReport, forgeWiringReport) === "SYNC_DERIVED_GEOMETRY" ? "SYNC_DERIVED_PARCEL_GEOMETRY" : "UNKNOWN");
+}
+
+function fullGisLayerTruthStatus(geometryReport, forgeWiringReport) {
+  return geometryReport?.fullGisLayerTruthStatus
+    ?? forgeWiringReport?.geometryEvidencePosture?.fullGisLayerTruthStatus
+    ?? "UNKNOWN";
+}
+
+function mapOverlayStatus(geometryReport, forgeWiringReport) {
+  return geometryReport?.mapOverlayStatus
+    ?? forgeWiringReport?.geometryEvidencePosture?.mapOverlayStatus
+    ?? "UNKNOWN";
+}
+
+function riskOverlayAnchoring(geometryReport, forgeWiringReport) {
+  return geometryReport?.riskOverlayAnchoring
+    ?? forgeWiringReport?.geometryEvidencePosture?.riskOverlayAnchoring
+    ?? "UNKNOWN";
+}
+
 function geometryReady(geometryReport, forgeWiringReport) {
-  return geometryStatus(geometryReport, forgeWiringReport) === "SYNC_DERIVED_GEOMETRY"
+  return parcelGeometryStatus(geometryReport, forgeWiringReport) === "SYNC_DERIVED_PARCEL_GEOMETRY"
     && (
-      geometryReport?.decisions?.countyStudioUsesRealTerraAtlasGeometry === true
+      geometryReport?.decisions?.countyStudioUsesRealParcelGeometry === true
+      || forgeWiringReport?.geometryEvidencePosture?.countyStudioUsesRealParcelGeometry === true
+      || geometryReport?.decisions?.countyStudioUsesRealTerraAtlasGeometry === true
       || forgeWiringReport?.geometryEvidencePosture?.countyStudioUsesRealTerraAtlasGeometry === true
     );
 }
@@ -156,11 +182,11 @@ function riskReady(riskAuditReport) {
   return READY_RISK_CLASSIFICATIONS.has(riskObjectStatus(riskAuditReport));
 }
 
-function productionBlockers({ dataTruth, geometry, risk, owner, exemption }) {
+function productionBlockers({ dataTruth, geometry, parcelGeometry, fullGisTruth, mapOverlay, riskAnchoring, risk, owner, exemption }) {
   const blockers = [
     "Canonical Benton source/count reconciliation remains required before production proof.",
     "CountyId, taxYear, studyId, parcel/property, valuation, ratio-study, and same-study map/ledger/inspector lineage must be reconciled against authoritative manifests.",
-    "TerraAtlas geometry is wired for real dev, but production GIS proof still requires canonical TerraAtlas layer, boundary, neighborhood, segment, reval, taxing-district, and symbology lineage.",
+    "TerraAtlas parcel geometry is wired for real dev, but full GIS layer truth is not proven; production GIS proof still requires canonical TerraAtlas layer registry, boundaries, neighborhoods, segments, reval areas, taxing districts, outlines, attributes, overlays, and symbology lineage.",
     "Risk objects are acceptable for Forge dev only; production proof requires recomputation from canonical Benton source rows and same-study alignment.",
     "Exemption facts are not required for Forge dev, but exemption/tax relief lineage remains required before production packet or roll proof."
   ];
@@ -168,8 +194,20 @@ function productionBlockers({ dataTruth, geometry, risk, owner, exemption }) {
   if (dataTruth !== "DATA_TRUTH_FAIL") {
     blockers.push(`Data truth status is ${dataTruth}; this consolidated artifact still does not promote production proof.`);
   }
-  if (geometry !== "SYNC_DERIVED_GEOMETRY") {
-    blockers.push(`Geometry status is ${geometry}; real TerraAtlas geometry must be wired before Forge dev readiness can be claimed.`);
+  if (parcelGeometry !== "SYNC_DERIVED_PARCEL_GEOMETRY") {
+    blockers.push(`Parcel geometry status is ${parcelGeometry}; real TerraAtlas parcel geometry must be wired before Forge dev readiness can be claimed.`);
+  }
+  if (fullGisTruth !== "GIS_LAYER_TRUTH_NOT_PROVEN" && fullGisTruth !== "SYNC_DERIVED_GEOMETRY" && fullGisTruth !== "SEEDED_GEOMETRY") {
+    blockers.push(`Full GIS layer truth status is ${fullGisTruth}; GIS layer evidence remains unresolved.`);
+  }
+  if (fullGisTruth === "GIS_LAYER_TRUTH_NOT_PROVEN") {
+    blockers.push(`Full GIS layer truth status is ${fullGisTruth}; parcel geometry proof does not prove neighborhoods, segments, taxing districts, or layer registry truth.`);
+  }
+  if (mapOverlay === "FALLBACK_MAP_OVERLAY") {
+    blockers.push("Map overlay status is FALLBACK_MAP_OVERLAY; valuation/risk overlays are not production GIS proof.");
+  }
+  if (riskAnchoring === "NOT_GIS_ANCHORED") {
+    blockers.push("Risk overlay anchoring is NOT_GIS_ANCHORED; visible risk labels are UI-positioned, not GIS-anchored production overlays.");
   }
   if (!READY_RISK_CLASSIFICATIONS.has(risk)) {
     blockers.push(`Risk object status is ${risk}; risk objects must be dev-derived or real-sourced for Forge dev readiness.`);
@@ -235,6 +273,10 @@ export function buildCountyStudioR1ForgeDevStatusReport({
   const realDevActivationAllowed = activationReport?.decisions?.realDevActivationAllowed === true;
   const coreForgeValuationWiringReady = forgeWiringReport?.decisions?.coreForgeValuationWiringReady === true;
   const geometry = geometryStatus(geometryReport, forgeWiringReport);
+  const parcelGeometry = parcelGeometryStatus(geometryReport, forgeWiringReport);
+  const fullGisTruth = fullGisLayerTruthStatus(geometryReport, forgeWiringReport);
+  const mapOverlay = mapOverlayStatus(geometryReport, forgeWiringReport);
+  const riskAnchoring = riskOverlayAnchoring(geometryReport, forgeWiringReport);
   const risk = riskObjectStatus(riskAuditReport);
   const owner = ownerSupnumStatus(readinessReport, activationReport, forgeWiringReport);
   const exemption = exemptionFactStatus(readinessReport, activationReport);
@@ -266,6 +308,10 @@ export function buildCountyStudioR1ForgeDevStatusReport({
       operationalProofAllowed: false,
       dataTruthStatus: dataTruth,
       geometryStatus: geometry,
+      parcelGeometryStatus: parcelGeometry,
+      fullGisLayerTruthStatus: fullGisTruth,
+      mapOverlayStatus: mapOverlay,
+      riskOverlayAnchoring: riskAnchoring,
       riskObjectStatus: risk,
       ownerSupnumStatus: owner,
       exemptionFactStatus: exemption,
@@ -275,12 +321,32 @@ export function buildCountyStudioR1ForgeDevStatusReport({
       exemptionFactRequiredForOperationalProof: exemptionDependencyReport?.requiredForOperationalProof ?? null,
       countyStudioMode: forgeDevAllowed ? "REAL_BENTON_FORGE_DEV" : "FORGE_DEV_BLOCKED",
       requiredRunCommand: REQUIRED_RUN_COMMAND,
-      remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner, exemption }),
+      remainingProductionBlockers: productionBlockers({
+        dataTruth,
+        geometry,
+        parcelGeometry,
+        fullGisTruth,
+        mapOverlay,
+        riskAnchoring,
+        risk,
+        owner,
+        exemption
+      }),
       remainingOperationalBlockers: operationalBlockers()
     },
     requiredRunCommand: REQUIRED_RUN_COMMAND,
     preflightChain: REQUIRED_FORGE_DEV_PREFLIGHT_CHAIN,
-    remainingProductionBlockers: productionBlockers({ dataTruth, geometry, risk, owner, exemption }),
+    remainingProductionBlockers: productionBlockers({
+      dataTruth,
+      geometry,
+      parcelGeometry,
+      fullGisTruth,
+      mapOverlay,
+      riskAnchoring,
+      risk,
+      owner,
+      exemption
+    }),
     remainingOperationalBlockers: operationalBlockers(),
     runbook: {
       startRealBentonForgeDev: REQUIRED_RUN_COMMAND,
@@ -336,6 +402,10 @@ export function renderCountyStudioR1ForgeDevStatusMarkdown(report) {
     `- operationalProofAllowed=${report.summary.operationalProofAllowed}`,
     `- dataTruthStatus=${report.summary.dataTruthStatus}`,
     `- geometryStatus=${report.summary.geometryStatus}`,
+    `- parcelGeometryStatus=${report.summary.parcelGeometryStatus}`,
+    `- fullGisLayerTruthStatus=${report.summary.fullGisLayerTruthStatus}`,
+    `- mapOverlayStatus=${report.summary.mapOverlayStatus}`,
+    `- riskOverlayAnchoring=${report.summary.riskOverlayAnchoring}`,
     `- riskObjectStatus=${report.summary.riskObjectStatus}`,
     `- ownerSupnumStatus=${report.summary.ownerSupnumStatus}`,
     `- exemptionFactStatus=${report.summary.exemptionFactStatus}`,

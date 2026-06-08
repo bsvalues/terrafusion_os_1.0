@@ -246,18 +246,24 @@ test("verifies core Forge valuation wiring while identifying generated and fallb
   assert.equal(report.mockFallbackGeneratedScan.disallowedVisibleHits.length, 1);
 });
 
-test("does not count sync-derived TerraAtlas geometry as a Forge-dev wiring gap", () => {
+test("does not count sync-derived parcel geometry as a Forge-dev gap while full GIS truth remains unproven", () => {
   const report = buildCountyStudioForgeRealDataWiringReport({
     readinessReport: readinessReport(),
     activationReport: activationReport(),
     dataTruthReport: dataTruthReport(),
     lineageReport: lineageReport(),
     geometryEvidenceReport: geometryEvidenceReport({
-      status: "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
-      classification: "SYNC_DERIVED_GEOMETRY",
+      status: "TERRAATLAS_GIS_TRUTH_PARTIAL",
+      classification: "PARTIAL_GIS_TRUTH",
+      parcelGeometryStatus: "SYNC_DERIVED_PARCEL_GEOMETRY",
+      fullGisLayerTruthStatus: "GIS_LAYER_TRUTH_NOT_PROVEN",
+      mapOverlayStatus: "FALLBACK_MAP_OVERLAY",
+      riskOverlayAnchoring: "NOT_GIS_ANCHORED",
       decisions: {
         realGeometryExists: true,
-        countyStudioUsesRealTerraAtlasGeometry: true,
+        countyStudioUsesRealParcelGeometry: true,
+        countyStudioUsesRealTerraAtlasGeometry: false,
+        countyStudioUsesFullTerraAtlasGisLayerTruth: false,
         productionProofAllowed: false,
         operationalProofAllowed: false
       },
@@ -267,16 +273,20 @@ test("does not count sync-derived TerraAtlas geometry as a Forge-dev wiring gap"
         dbTableOrView: "gis_tf.tf_parcel_geom",
         joinKey: "countyId + parcelId/APN + layerId"
       },
-      finding: "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev."
+      finding: "County Studio uses real TerraAtlas sync-derived parcel geometry for Forge dev, but full GIS layer truth is not proven."
     }),
     generatedAtUtc: "2026-06-06T00:00:00.000Z"
   });
 
   const geometry = report.surfaces.find((surface) => surface.surface === "geometry/map context source");
-  assert.equal(geometry.classification, "SYNC_DERIVED_GEOMETRY");
+  assert.equal(geometry.classification, "SYNC_DERIVED_PARCEL_GEOMETRY");
   assert.equal(geometry.status, "REAL_DEV_WIRED_PRODUCTION_BLOCKED");
   assert.match(geometry.apiRoute, /atlas-live\/geometry\/parcels/);
   assert.match(geometry.backendServiceOrController, /AtlasLiveGeometryController/);
+  assert.equal(report.geometryEvidencePosture.classification, "PARTIAL_GIS_TRUTH");
+  assert.equal(report.geometryEvidencePosture.parcelGeometryStatus, "SYNC_DERIVED_PARCEL_GEOMETRY");
+  assert.equal(report.geometryEvidencePosture.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
+  assert.equal(report.geometryEvidencePosture.riskOverlayAnchoring, "NOT_GIS_ANCHORED");
   assert.ok(report.wiringGaps.some((gap) => gap.surface === "risk object source"));
   assert.ok(!report.wiringGaps.some((gap) => gap.surface === "geometry/map context source"));
   assert.equal(report.decisions.productionProofAllowed, false);

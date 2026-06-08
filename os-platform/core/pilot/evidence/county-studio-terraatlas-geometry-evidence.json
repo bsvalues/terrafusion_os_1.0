@@ -1,12 +1,22 @@
 {
-  "generatedAtUtc": "2026-06-07T02:29:37.085Z",
+  "generatedAtUtc": "2026-06-08T00:10:15.981Z",
   "gate": "county-studio-terraatlas-geometry-evidence",
-  "status": "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
-  "classification": "SYNC_DERIVED_GEOMETRY",
-  "finding": "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.",
+  "status": "TERRAATLAS_GIS_TRUTH_PARTIAL",
+  "classification": "PARTIAL_GIS_TRUTH",
+  "parcelGeometryStatus": "SYNC_DERIVED_PARCEL_GEOMETRY",
+  "fullGisLayerTruthStatus": "GIS_LAYER_TRUTH_NOT_PROVEN",
+  "mapOverlayStatus": "FALLBACK_MAP_OVERLAY",
+  "attributeOverlayStatus": "UNPROVEN_ATTRIBUTE_OVERLAY",
+  "riskOverlayAnchoring": "NOT_GIS_ANCHORED",
+  "riskOverlayAnchoringClassification": "UI_ABSOLUTE_RISK_LABELS",
+  "finding": "County Studio uses real TerraAtlas sync-derived parcel geometry for Forge dev, but full GIS layer truth, GIS attributes, outlines, neighborhoods/segments/district layers, and risk overlay anchoring are not proven.",
   "decisions": {
     "realGeometryExists": true,
-    "countyStudioUsesRealTerraAtlasGeometry": true,
+    "countyStudioUsesRealParcelGeometry": true,
+    "countyStudioUsesRealTerraAtlasGeometry": false,
+    "countyStudioUsesFullTerraAtlasGisLayerTruth": false,
+    "fullGisLayerTruthProven": false,
+    "riskOverlayGisAnchored": false,
     "atlasLayerAvailableNotWired": false,
     "geometryMisclassified": false,
     "productionProofAllowed": false,
@@ -14,7 +24,7 @@
   },
   "geometryCounts": {
     "parcelGeometry": 80075,
-    "canonicalParcel": 3199335,
+    "canonicalParcel": 3198979,
     "geometryInventoryObservedCount": 80075,
     "mapInventoryObservedCount": 80075
   },
@@ -60,6 +70,19 @@
     "usesTerraAtlasParcelGeometryEndpoint": true,
     "usesTerraAtlasDbTable": true,
     "availableRealGeometryReadPath": true,
+    "returnsParcelPolygonsOnly": true,
+    "outlinesReturnedFromEndpoint": false,
+    "hardcodedOrNullAttributeFields": [
+      "assessedValue",
+      "propertyClass",
+      "salePrice",
+      "ratio",
+      "ratioDeviation",
+      "nbhdMedianRatio"
+    ],
+    "neighborhoodCodeFromQueryScope": true,
+    "riskOverlayUsesFeatureNeighborhoodCode": true,
+    "riskLabelsScreenPositioned": true,
     "candidateTables": [
       {
         "table": "gis_tf.tf_parcel_geom",
@@ -122,7 +145,7 @@
     "productionProofAllowed": false,
     "status": "PRODUCTION_BLOCKER"
   },
-  "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.",
+  "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton neighborhoods, segments, reval areas, taxing districts, layer registry, outlines, per-parcel GIS attributes, and GIS-anchored overlays before full GIS or production proof.",
   "boundaries": [
     "This gate does not touch County Studio UI.",
     "This gate does not mutate TerraFusion Sync.",

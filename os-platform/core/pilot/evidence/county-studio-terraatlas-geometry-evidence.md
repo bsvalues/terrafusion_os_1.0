@@ -1,17 +1,26 @@
 # County Studio TerraAtlas Geometry Evidence
 
-Generated: 2026-06-07T02:29:37.085Z
-Status: TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED
-Classification: SYNC_DERIVED_GEOMETRY
+Generated: 2026-06-08T00:10:15.981Z
+Status: TERRAATLAS_GIS_TRUTH_PARTIAL
+Classification: PARTIAL_GIS_TRUTH
+Parcel Geometry Status: SYNC_DERIVED_PARCEL_GEOMETRY
+Full GIS Layer Truth Status: GIS_LAYER_TRUTH_NOT_PROVEN
+Map Overlay Status: FALLBACK_MAP_OVERLAY
+Attribute Overlay Status: UNPROVEN_ATTRIBUTE_OVERLAY
+Risk Overlay Anchoring: NOT_GIS_ANCHORED
 
 ## Finding
 
-County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.
+County Studio uses real TerraAtlas sync-derived parcel geometry for Forge dev, but full GIS layer truth, GIS attributes, outlines, neighborhoods/segments/district layers, and risk overlay anchoring are not proven.
 
 ## Decisions
 
 - realGeometryExists=true
-- countyStudioUsesRealTerraAtlasGeometry=true
+- countyStudioUsesRealParcelGeometry=true
+- countyStudioUsesRealTerraAtlasGeometry=false
+- countyStudioUsesFullTerraAtlasGisLayerTruth=false
+- fullGisLayerTruthProven=false
+- riskOverlayGisAnchored=false
 - atlasLayerAvailableNotWired=false
 - geometryMisclassified=false
 - productionProofAllowed=false
@@ -20,7 +29,7 @@ County Studio geometry/map context is wired to a real TerraAtlas sync-derived ge
 ## Geometry Counts
 
 - parcelGeometry=80075
-- canonicalParcel=3199335
+- canonicalParcel=3198979
 - geometryInventoryObservedCount=80075
 - mapInventoryObservedCount=80075
 
@@ -45,7 +54,7 @@ County Studio geometry/map context is wired to a real TerraAtlas sync-derived ge
 
 ## Required Proof To Upgrade
 
-Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.
+Prove TerraAtlas-owned Benton neighborhoods, segments, reval areas, taxing districts, layer registry, outlines, per-parcel GIS attributes, and GIS-anchored overlays before full GIS or production proof.
 
 ## Boundaries
 

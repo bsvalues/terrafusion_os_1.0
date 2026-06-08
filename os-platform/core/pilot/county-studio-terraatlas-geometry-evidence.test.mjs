@@ -81,6 +81,13 @@ function lineage(overrides = {}) {
 
 test("defines TerraAtlas geometry evidence classifications", () => {
   assert.deepEqual(TERRAFUSION_GEOMETRY_CLASSIFICATIONS, [
+    "SYNC_DERIVED_PARCEL_GEOMETRY",
+    "PARTIAL_GIS_TRUTH",
+    "GIS_LAYER_TRUTH_NOT_PROVEN",
+    "FALLBACK_MAP_OVERLAY",
+    "UNPROVEN_ATTRIBUTE_OVERLAY",
+    "UI_ABSOLUTE_RISK_LABELS",
+    "REQUIRED_FOR_PRODUCTION_GIS_PROOF",
     "SYNC_DERIVED_GEOMETRY",
     "SEEDED_GEOMETRY",
     "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
@@ -120,7 +127,7 @@ test("classifies real TerraAtlas geometry as available but not wired when County
   assert.match(report.finding, /available but County Studio is still wired/i);
 });
 
-test("classifies geometry as sync-derived when County Studio uses the real TerraAtlas parcel geometry endpoint", () => {
+test("classifies real parcel geometry separately from unproven full GIS layer truth", () => {
   const report = buildCountyStudioTerraAtlasGeometryEvidenceReport({
     syncEvidenceReport: syncEvidence(),
     dataTruthReport: dataTruth(),
@@ -142,18 +149,39 @@ test("classifies geometry as sync-derived when County Studio uses the real Terra
     sourceScan: {
       usesCompatibilityMapData: false,
       usesTerraAtlasParcelGeometryEndpoint: true,
-      usesTerraAtlasDbTable: true
+      usesTerraAtlasDbTable: true,
+      returnsParcelPolygonsOnly: true,
+      outlinesReturnedFromEndpoint: false,
+      hardcodedOrNullAttributeFields: [
+        "assessedValue",
+        "propertyClass",
+        "salePrice",
+        "ratio",
+        "ratioDeviation",
+        "nbhdMedianRatio"
+      ],
+      neighborhoodCodeFromQueryScope: true,
+      riskOverlayUsesFeatureNeighborhoodCode: true,
+      riskLabelsScreenPositioned: true
     },
     generatedAtUtc: "2026-06-06T00:00:00.000Z"
   });
 
-  assert.equal(report.status, "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED");
-  assert.equal(report.classification, "SYNC_DERIVED_GEOMETRY");
-  assert.equal(report.decisions.countyStudioUsesRealTerraAtlasGeometry, true);
+  assert.equal(report.status, "TERRAATLAS_GIS_TRUTH_PARTIAL");
+  assert.equal(report.classification, "PARTIAL_GIS_TRUTH");
+  assert.equal(report.parcelGeometryStatus, "SYNC_DERIVED_PARCEL_GEOMETRY");
+  assert.equal(report.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
+  assert.equal(report.mapOverlayStatus, "FALLBACK_MAP_OVERLAY");
+  assert.equal(report.attributeOverlayStatus, "UNPROVEN_ATTRIBUTE_OVERLAY");
+  assert.equal(report.riskOverlayAnchoring, "NOT_GIS_ANCHORED");
+  assert.equal(report.riskOverlayAnchoringClassification, "UI_ABSOLUTE_RISK_LABELS");
+  assert.equal(report.decisions.countyStudioUsesRealParcelGeometry, true);
+  assert.equal(report.decisions.countyStudioUsesFullTerraAtlasGisLayerTruth, false);
+  assert.equal(report.decisions.riskOverlayGisAnchored, false);
   assert.equal(report.decisions.productionProofAllowed, false);
 });
 
-test("prefers the proven active source scan path over stale compatibility lineage when geometry is wired", () => {
+test("does not let the parcel endpoint override stale compatibility lineage into full GIS proof", () => {
   const report = buildCountyStudioTerraAtlasGeometryEvidenceReport({
     syncEvidenceReport: syncEvidence(),
     dataTruthReport: dataTruth(),
@@ -164,6 +192,12 @@ test("prefers the proven active source scan path over stale compatibility lineag
       usesCompatibilityMapData: true,
       usesTerraAtlasParcelGeometryEndpoint: true,
       usesTerraAtlasDbTable: true,
+      returnsParcelPolygonsOnly: true,
+      outlinesReturnedFromEndpoint: false,
+      hardcodedOrNullAttributeFields: ["assessedValue", "ratio", "nbhdMedianRatio"],
+      neighborhoodCodeFromQueryScope: true,
+      riskOverlayUsesFeatureNeighborhoodCode: true,
+      riskLabelsScreenPositioned: true,
       candidateTables: [
         { table: "gis_tf.tf_parcel_geom", count: 80075, exists: true }
       ]
@@ -171,9 +205,36 @@ test("prefers the proven active source scan path over stale compatibility lineag
     generatedAtUtc: "2026-06-06T00:00:00.000Z"
   });
 
-  assert.equal(report.classification, "SYNC_DERIVED_GEOMETRY");
+  assert.equal(report.classification, "PARTIAL_GIS_TRUTH");
+  assert.equal(report.parcelGeometryStatus, "SYNC_DERIVED_PARCEL_GEOMETRY");
+  assert.equal(report.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
   assert.match(report.sourcePath.apiRoute, /atlas-live\/geometry\/parcels/);
   assert.match(report.sourcePath.backendServiceOrController, /AtlasLiveGeometryController/);
+});
+
+test("default source scan detects parcel-only payloads and non-GIS-anchored risk labels", () => {
+  const report = buildCountyStudioTerraAtlasGeometryEvidenceReport({
+    syncEvidenceReport: syncEvidence(),
+    dataTruthReport: dataTruth(),
+    lineageReport: lineage(),
+    generatedAtUtc: "2026-06-06T00:00:00.000Z"
+  });
+
+  assert.equal(report.sourceScan.returnsParcelPolygonsOnly, true);
+  assert.equal(report.sourceScan.outlinesReturnedFromEndpoint, false);
+  assert.deepEqual(report.sourceScan.hardcodedOrNullAttributeFields, [
+    "assessedValue",
+    "propertyClass",
+    "salePrice",
+    "ratio",
+    "ratioDeviation",
+    "nbhdMedianRatio"
+  ]);
+  assert.equal(report.sourceScan.neighborhoodCodeFromQueryScope, true);
+  assert.equal(report.sourceScan.riskOverlayUsesFeatureNeighborhoodCode, true);
+  assert.equal(report.sourceScan.riskLabelsScreenPositioned, true);
+  assert.equal(report.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
+  assert.equal(report.riskOverlayAnchoring, "NOT_GIS_ANCHORED");
 });
 
 test("keeps fallback geometry when no real GIS geometry is readable", () => {
@@ -258,6 +319,7 @@ test("CLI writes TerraAtlas geometry evidence JSON and markdown", () => {
   const report = JSON.parse(fs.readFileSync(outJson, "utf8"));
   const markdown = fs.readFileSync(outMd, "utf8");
   assert.equal(report.classification, "ATLAS_LAYER_AVAILABLE_NOT_WIRED");
+  assert.equal(report.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
   assert.equal(report.decisions.productionProofAllowed, false);
   assert.equal(report.decisions.operationalProofAllowed, false);
   assert.match(markdown, /TerraAtlas Geometry Evidence/);

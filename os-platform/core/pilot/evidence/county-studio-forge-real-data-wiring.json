@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T02:29:37.339Z",
+  "generatedAtUtc": "2026-06-08T00:10:17.103Z",
   "gate": "county-studio-forge-real-data-wiring",
   "status": "FORGE_REAL_DATA_WIRING_VERIFIED_WITH_GAPS",
   "decisions": {
@@ -134,7 +134,7 @@
       "backendServiceOrController": "AtlasLiveGeometryController reads gis_tf.tf_parcel_geom as the County Studio bulk map feed",
       "dbTableOrView": "gis_tf.tf_parcel_geom",
       "ownerLane": "Atlas",
-      "classification": "SYNC_DERIVED_GEOMETRY",
+      "classification": "SYNC_DERIVED_PARCEL_GEOMETRY",
       "observedCount": 80075,
       "joinKey": "countyId + parcelId/APN + layerId",
       "countyId": "19190019-1919-1919-1919-191919191919",
@@ -143,8 +143,8 @@
       "requiredForForgeDev": true,
       "productionProofAllowed": false,
       "operationalProofAllowed": false,
-      "failureReason": "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.",
-      "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.",
+      "failureReason": "County Studio uses real TerraAtlas sync-derived parcel geometry for Forge dev, but full GIS layer truth, GIS attributes, outlines, neighborhoods/segments/district layers, and risk overlay anchoring are not proven.",
+      "requiredProofToUpgrade": "Prove TerraAtlas-owned Benton neighborhoods, segments, reval areas, taxing districts, layer registry, outlines, per-parcel GIS attributes, and GIS-anchored overlays before full GIS or production proof.",
       "status": "REAL_DEV_WIRED_PRODUCTION_BLOCKED"
     },
     {
@@ -209,7 +209,7 @@
       "requiredForOperationalProof": true,
       "ownerIdentityConsumedByForgeSurfaces": false,
       "consumedSurfaces": [],
-      "ownerSupnumBackfillStatus": "IN_PROGRESS",
+      "ownerSupnumBackfillStatus": "FAILED",
       "ownerSupnumBackfillLatestFailedStatus": "FAILED",
       "productionProofAllowed": false,
       "operationalProofAllowed": false,
@@ -238,7 +238,7 @@
     "requiredForOperationalProof": true,
     "ownerIdentityConsumedByForgeSurfaces": false,
     "consumedSurfaces": [],
-    "ownerSupnumBackfillStatus": "IN_PROGRESS",
+    "ownerSupnumBackfillStatus": "FAILED",
     "ownerSupnumBackfillLatestFailedStatus": "FAILED",
     "productionProofAllowed": false,
     "operationalProofAllowed": false,
@@ -282,10 +282,16 @@
     "operationalProofAllowed": false
   },
   "geometryEvidencePosture": {
-    "status": "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
-    "classification": "SYNC_DERIVED_GEOMETRY",
+    "status": "TERRAATLAS_GIS_TRUTH_PARTIAL",
+    "classification": "PARTIAL_GIS_TRUTH",
+    "parcelGeometryStatus": "SYNC_DERIVED_PARCEL_GEOMETRY",
+    "fullGisLayerTruthStatus": "GIS_LAYER_TRUTH_NOT_PROVEN",
+    "mapOverlayStatus": "FALLBACK_MAP_OVERLAY",
+    "attributeOverlayStatus": "UNPROVEN_ATTRIBUTE_OVERLAY",
+    "riskOverlayAnchoring": "NOT_GIS_ANCHORED",
     "realGeometryExists": true,
-    "countyStudioUsesRealTerraAtlasGeometry": true
+    "countyStudioUsesRealParcelGeometry": true,
+    "countyStudioUsesRealTerraAtlasGeometry": false
   },
   "blockers": [],
   "boundaries": [

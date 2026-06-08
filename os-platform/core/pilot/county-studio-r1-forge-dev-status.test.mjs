@@ -81,10 +81,15 @@ function forgeWiringReport(overrides = {}) {
       operationalProofAllowed: false
     },
     geometryEvidencePosture: {
-      status: "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
-      classification: "SYNC_DERIVED_GEOMETRY",
+      status: "TERRAATLAS_GIS_TRUTH_PARTIAL",
+      classification: "PARTIAL_GIS_TRUTH",
+      parcelGeometryStatus: "SYNC_DERIVED_PARCEL_GEOMETRY",
+      fullGisLayerTruthStatus: "GIS_LAYER_TRUTH_NOT_PROVEN",
+      mapOverlayStatus: "FALLBACK_MAP_OVERLAY",
+      riskOverlayAnchoring: "NOT_GIS_ANCHORED",
       realGeometryExists: true,
-      countyStudioUsesRealTerraAtlasGeometry: true
+      countyStudioUsesRealParcelGeometry: true,
+      countyStudioUsesRealTerraAtlasGeometry: false
     },
     ownerIdentityDependency: {
       classification: "NOT_REQUIRED_FOR_FORGE_DEV",
@@ -106,11 +111,17 @@ function forgeWiringReport(overrides = {}) {
 
 function geometryReport(overrides = {}) {
   return {
-    status: "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED",
-    classification: "SYNC_DERIVED_GEOMETRY",
+    status: "TERRAATLAS_GIS_TRUTH_PARTIAL",
+    classification: "PARTIAL_GIS_TRUTH",
+    parcelGeometryStatus: "SYNC_DERIVED_PARCEL_GEOMETRY",
+    fullGisLayerTruthStatus: "GIS_LAYER_TRUTH_NOT_PROVEN",
+    mapOverlayStatus: "FALLBACK_MAP_OVERLAY",
+    riskOverlayAnchoring: "NOT_GIS_ANCHORED",
     decisions: {
       realGeometryExists: true,
-      countyStudioUsesRealTerraAtlasGeometry: true,
+      countyStudioUsesRealParcelGeometry: true,
+      countyStudioUsesRealTerraAtlasGeometry: false,
+      countyStudioUsesFullTerraAtlasGisLayerTruth: false,
       productionProofAllowed: false,
       operationalProofAllowed: false
     },
@@ -159,7 +170,11 @@ test("summarizes County Studio R1 as real Benton Forge dev while blocking produc
   assert.equal(report.summary.productionProofAllowed, false);
   assert.equal(report.summary.operationalProofAllowed, false);
   assert.equal(report.summary.dataTruthStatus, "DATA_TRUTH_FAIL");
-  assert.equal(report.summary.geometryStatus, "SYNC_DERIVED_GEOMETRY");
+  assert.equal(report.summary.geometryStatus, "PARTIAL_GIS_TRUTH");
+  assert.equal(report.summary.parcelGeometryStatus, "SYNC_DERIVED_PARCEL_GEOMETRY");
+  assert.equal(report.summary.fullGisLayerTruthStatus, "GIS_LAYER_TRUTH_NOT_PROVEN");
+  assert.equal(report.summary.mapOverlayStatus, "FALLBACK_MAP_OVERLAY");
+  assert.equal(report.summary.riskOverlayAnchoring, "NOT_GIS_ANCHORED");
   assert.equal(report.summary.riskObjectStatus, "DEV_DERIVED_FROM_REAL_INPUTS");
   assert.equal(report.summary.ownerSupnumStatus, "NOT_REQUIRED_FOR_FORGE_DEV");
   assert.equal(report.summary.exemptionFactStatus, "NOT_REQUIRED_FOR_FORGE_DEV");

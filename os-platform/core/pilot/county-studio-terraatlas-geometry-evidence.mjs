@@ -61,6 +61,13 @@ const SOURCE_FILES = {
 };
 
 export const TERRAFUSION_GEOMETRY_CLASSIFICATIONS = [
+  "SYNC_DERIVED_PARCEL_GEOMETRY",
+  "PARTIAL_GIS_TRUTH",
+  "GIS_LAYER_TRUTH_NOT_PROVEN",
+  "FALLBACK_MAP_OVERLAY",
+  "UNPROVEN_ATTRIBUTE_OVERLAY",
+  "UI_ABSOLUTE_RISK_LABELS",
+  "REQUIRED_FOR_PRODUCTION_GIS_PROOF",
   "SYNC_DERIVED_GEOMETRY",
   "SEEDED_GEOMETRY",
   "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
@@ -170,6 +177,29 @@ function buildDefaultSourceScan() {
       || controller.includes("GET /api/parcels/{tfParcelId}/geometry")
       && reader.includes("TfParcelGeoms")
       && config.includes("tf_parcel_geom"),
+    returnsParcelPolygonsOnly:
+      atlasLiveGeometryController.includes("TfParcelGeoms")
+      && atlasLiveGeometryController.includes("outlines = (object?)null"),
+    outlinesReturnedFromEndpoint:
+      !atlasLiveGeometryController.includes("outlines = (object?)null"),
+    hardcodedOrNullAttributeFields: [
+      atlasLiveGeometryController.includes("assessedValue = 0") ? "assessedValue" : null,
+      atlasLiveGeometryController.includes("propertyClass = (string?)null") ? "propertyClass" : null,
+      atlasLiveGeometryController.includes("salePrice = 0") ? "salePrice" : null,
+      atlasLiveGeometryController.includes("ratio = (double?)null") ? "ratio" : null,
+      atlasLiveGeometryController.includes("ratioDeviation = (double?)null") ? "ratioDeviation" : null,
+      atlasLiveGeometryController.includes("nbhdMedianRatio = (double?)null") ? "nbhdMedianRatio" : null
+    ].filter(Boolean),
+    neighborhoodCodeFromQueryScope:
+      atlasLiveGeometryController.includes("[FromQuery] string? neighborhoodCode")
+      && atlasLiveGeometryController.includes("neighborhoodCode,"),
+    riskOverlayUsesFeatureNeighborhoodCode:
+      embedded.includes("feature.properties.neighborhoodCode"),
+    riskLabelsScreenPositioned:
+      embedded.includes("data-testid=\"prometheus-risk-map-label\"")
+      && embedded.includes("position: 'absolute'")
+      && embedded.includes("top:")
+      && embedded.includes("left:"),
     candidateTables: [
       { table: "gis_tf.tf_parcel_geom", exists: config.includes("tf_parcel_geom") },
       { table: "canonical_tf.tf_parcel", exists: reader.includes("TfParcels") },
@@ -178,6 +208,21 @@ function buildDefaultSourceScan() {
     ],
     sourceFiles: SOURCE_FILES
   };
+}
+
+function hasUnprovenFullGisTruth({ sourceScan, geometryInventory, atlasProof }) {
+  const atlasProofFallback = String(atlasProof?.classification ?? "").toUpperCase() === "FALLBACK";
+  const geometryInventoryFallback = String(geometryInventory?.classification ?? "").toUpperCase() === "FALLBACK";
+  const unprovenAttributes = Array.isArray(sourceScan?.hardcodedOrNullAttributeFields)
+    && sourceScan.hardcodedOrNullAttributeFields.length > 0;
+  return atlasProofFallback
+    || geometryInventoryFallback
+    || sourceScan?.returnsParcelPolygonsOnly === true
+    || sourceScan?.outlinesReturnedFromEndpoint === false
+    || unprovenAttributes
+    || sourceScan?.neighborhoodCodeFromQueryScope === true
+    || sourceScan?.riskOverlayUsesFeatureNeighborhoodCode === true
+    || sourceScan?.riskLabelsScreenPositioned === true;
 }
 
 function classifyGeometry({ counts, sourceScan, geometryInventory, atlasProof }) {
@@ -190,7 +235,9 @@ function classifyGeometry({ counts, sourceScan, geometryInventory, atlasProof })
   const lineageClaimsFallback = String(geometryInventory?.classification ?? atlasProof?.classification ?? "").toUpperCase() === "FALLBACK";
 
   if (realGeometryExists && (usesRealEndpoint || usesRealTable)) {
-    return "SYNC_DERIVED_GEOMETRY";
+    return hasUnprovenFullGisTruth({ sourceScan, geometryInventory, atlasProof })
+      ? "PARTIAL_GIS_TRUTH"
+      : "SYNC_DERIVED_GEOMETRY";
   }
   if (realGeometryExists && usesCompatibility) {
     return "ATLAS_LAYER_AVAILABLE_NOT_WIRED";
@@ -206,6 +253,8 @@ function classifyGeometry({ counts, sourceScan, geometryInventory, atlasProof })
 
 function statusFor(classification) {
   switch (classification) {
+    case "PARTIAL_GIS_TRUTH":
+      return "TERRAATLAS_GIS_TRUTH_PARTIAL";
     case "SYNC_DERIVED_GEOMETRY":
     case "SEEDED_GEOMETRY":
       return "TERRAATLAS_GEOMETRY_EVIDENCE_REAL_DEV_WIRED";
@@ -222,6 +271,8 @@ function statusFor(classification) {
 
 function findingFor(classification) {
   switch (classification) {
+    case "PARTIAL_GIS_TRUTH":
+      return "County Studio uses real TerraAtlas sync-derived parcel geometry for Forge dev, but full GIS layer truth, GIS attributes, outlines, neighborhoods/segments/district layers, and risk overlay anchoring are not proven.";
     case "SYNC_DERIVED_GEOMETRY":
       return "County Studio geometry/map context is wired to a real TerraAtlas sync-derived geometry path for real dev; production GIS proof remains blocked pending canonical reconciliation.";
     case "SEEDED_GEOMETRY":
@@ -257,19 +308,60 @@ export function buildCountyStudioTerraAtlasGeometryEvidenceReport({
   });
   const status = statusFor(classification);
   const realGeometryExists = counts.parcelGeometry > 0;
+  const parcelGeometryStatus = realGeometryExists
+    && (
+      resolvedSourceScan?.usesTerraAtlasParcelGeometryEndpoint === true
+      || resolvedSourceScan?.usesTerraAtlasDbTable === true
+    )
+    ? "SYNC_DERIVED_PARCEL_GEOMETRY"
+    : classification === "FALLBACK_GEOMETRY"
+    ? "FALLBACK_GEOMETRY"
+    : "GEOMETRY_UNKNOWN";
+  const fullGisLayerTruthStatus =
+    classification === "SYNC_DERIVED_GEOMETRY" || classification === "SEEDED_GEOMETRY"
+      ? classification
+      : "GIS_LAYER_TRUTH_NOT_PROVEN";
+  const mapOverlayStatus = classification === "PARTIAL_GIS_TRUTH" || classification === "ATLAS_LAYER_AVAILABLE_NOT_WIRED"
+    ? "FALLBACK_MAP_OVERLAY"
+    : classification === "FALLBACK_GEOMETRY"
+    ? "FALLBACK_MAP_OVERLAY"
+    : "GEOMETRY_UNKNOWN";
+  const attributeOverlayStatus =
+    Array.isArray(resolvedSourceScan?.hardcodedOrNullAttributeFields)
+    && resolvedSourceScan.hardcodedOrNullAttributeFields.length > 0
+      ? "UNPROVEN_ATTRIBUTE_OVERLAY"
+      : "GEOMETRY_UNKNOWN";
+  const riskOverlayAnchoring = resolvedSourceScan?.riskLabelsScreenPositioned === true
+    || resolvedSourceScan?.riskOverlayUsesFeatureNeighborhoodCode === true
+    ? "NOT_GIS_ANCHORED"
+    : "UNKNOWN";
+  const riskOverlayAnchoringClassification = riskOverlayAnchoring === "NOT_GIS_ANCHORED"
+    ? "UI_ABSOLUTE_RISK_LABELS"
+    : "GEOMETRY_UNKNOWN";
   const countyStudioUsesRealTerraAtlasGeometry =
     classification === "SYNC_DERIVED_GEOMETRY" || classification === "SEEDED_GEOMETRY";
-  const preferActiveSourceScan = countyStudioUsesRealTerraAtlasGeometry;
+  const countyStudioUsesRealParcelGeometry = parcelGeometryStatus === "SYNC_DERIVED_PARCEL_GEOMETRY";
+  const preferActiveSourceScan = countyStudioUsesRealTerraAtlasGeometry || countyStudioUsesRealParcelGeometry;
 
   return {
     generatedAtUtc,
     gate: "county-studio-terraatlas-geometry-evidence",
     status,
     classification,
+    parcelGeometryStatus,
+    fullGisLayerTruthStatus,
+    mapOverlayStatus,
+    attributeOverlayStatus,
+    riskOverlayAnchoring,
+    riskOverlayAnchoringClassification,
     finding: findingFor(classification),
     decisions: {
       realGeometryExists,
+      countyStudioUsesRealParcelGeometry,
       countyStudioUsesRealTerraAtlasGeometry,
+      countyStudioUsesFullTerraAtlasGisLayerTruth: countyStudioUsesRealTerraAtlasGeometry,
+      fullGisLayerTruthProven: countyStudioUsesRealTerraAtlasGeometry,
+      riskOverlayGisAnchored: riskOverlayAnchoring !== "NOT_GIS_ANCHORED",
       atlasLayerAvailableNotWired: classification === "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
       geometryMisclassified: classification === "GEOMETRY_MISCLASSIFIED",
       productionProofAllowed: false,
@@ -300,7 +392,9 @@ export function buildCountyStudioTerraAtlasGeometryEvidenceReport({
     atlasProof: atlasProof ?? null,
     lineageGeometryInventory: geometryInventory ?? null,
     requiredProofToUpgrade:
-      classification === "ATLAS_LAYER_AVAILABLE_NOT_WIRED"
+      classification === "PARTIAL_GIS_TRUTH"
+        ? "Prove TerraAtlas-owned Benton neighborhoods, segments, reval areas, taxing districts, layer registry, outlines, per-parcel GIS attributes, and GIS-anchored overlays before full GIS or production proof."
+        : classification === "ATLAS_LAYER_AVAILABLE_NOT_WIRED"
         ? "Wire County Studio embedded map context to TerraAtlas-owned geometry/layer service or prove the compatibility feed is backed by gis_tf.tf_parcel_geom with source-row lineage."
         : "Prove TerraAtlas-owned Benton parcel geometry, neighborhoods, segments, reval areas, taxing districts, layer registry, and map overlays by countyId/taxYear/studyId before production proof.",
     boundaries: [
@@ -321,6 +415,11 @@ export function renderCountyStudioTerraAtlasGeometryEvidenceMarkdown(report) {
     `Generated: ${report.generatedAtUtc}`,
     `Status: ${report.status}`,
     `Classification: ${report.classification}`,
+    `Parcel Geometry Status: ${report.parcelGeometryStatus}`,
+    `Full GIS Layer Truth Status: ${report.fullGisLayerTruthStatus}`,
+    `Map Overlay Status: ${report.mapOverlayStatus}`,
+    `Attribute Overlay Status: ${report.attributeOverlayStatus}`,
+    `Risk Overlay Anchoring: ${report.riskOverlayAnchoring}`,
     "",
     "## Finding",
     "",
@@ -329,7 +428,11 @@ export function renderCountyStudioTerraAtlasGeometryEvidenceMarkdown(report) {
     "## Decisions",
     "",
     `- realGeometryExists=${report.decisions.realGeometryExists}`,
+    `- countyStudioUsesRealParcelGeometry=${report.decisions.countyStudioUsesRealParcelGeometry}`,
     `- countyStudioUsesRealTerraAtlasGeometry=${report.decisions.countyStudioUsesRealTerraAtlasGeometry}`,
+    `- countyStudioUsesFullTerraAtlasGisLayerTruth=${report.decisions.countyStudioUsesFullTerraAtlasGisLayerTruth}`,
+    `- fullGisLayerTruthProven=${report.decisions.fullGisLayerTruthProven}`,
+    `- riskOverlayGisAnchored=${report.decisions.riskOverlayGisAnchored}`,
     `- atlasLayerAvailableNotWired=${report.decisions.atlasLayerAvailableNotWired}`,
     `- geometryMisclassified=${report.decisions.geometryMisclassified}`,
     `- productionProofAllowed=${report.decisions.productionProofAllowed}`,
@@ -421,7 +524,12 @@ export function main(argv = process.argv.slice(2)) {
       {
         status: report.status,
         classification: report.classification,
+        parcelGeometryStatus: report.parcelGeometryStatus,
+        fullGisLayerTruthStatus: report.fullGisLayerTruthStatus,
+        mapOverlayStatus: report.mapOverlayStatus,
+        riskOverlayAnchoring: report.riskOverlayAnchoring,
         realGeometryExists: report.decisions.realGeometryExists,
+        countyStudioUsesRealParcelGeometry: report.decisions.countyStudioUsesRealParcelGeometry,
         countyStudioUsesRealTerraAtlasGeometry: report.decisions.countyStudioUsesRealTerraAtlasGeometry,
         productionProofAllowed: report.decisions.productionProofAllowed,
         operationalProofAllowed: report.decisions.operationalProofAllowed,

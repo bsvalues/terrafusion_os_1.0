@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-06-07T20:02:25.766Z",
+  "generatedAtUtc": "2026-06-08T00:11:15.526Z",
   "gate": "benton-real-dev-server-readiness",
   "status": "REAL_DEV_DATA_AVAILABLE",
   "sourcePath": null,
@@ -65,9 +65,9 @@
       "passed": true,
       "reason": "load_batch stage is owner-supnum-backfill (FAILED), retained as packet/ops blocker but not a County Studio Forge dev blocker.",
       "evidence": {
-        "stage": "exemption-fact-seal",
-        "status": "COMPLETED",
-        "loadBatchId": "e21e20ea-4bfb-402e-8496-4506f6829922"
+        "stage": "jurisdiction-spine-seal",
+        "status": "IN_PROGRESS",
+        "loadBatchId": "4a7b6319-f360-433c-abef-0b9004dc0a37"
       }
     },
     {
@@ -217,9 +217,9 @@
       "passed": true,
       "reason": "exemption-fact-seal is not required for County Studio Forge valuation dev; production, packet, and operational proof remain blocked.",
       "evidence": {
-        "stage": "exemption-fact-seal",
-        "status": "COMPLETED",
-        "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+        "stage": "jurisdiction-spine-seal",
+        "status": "IN_PROGRESS",
+        "classification": "UNKNOWN",
         "requiredForCountyStudioForgeDev": false,
         "requiredForPacketProof": true,
         "requiredForProductionProof": true,
@@ -306,9 +306,9 @@
       }
     },
     "exemptionFactSeal": {
-      "stage": "exemption-fact-seal",
-      "status": "COMPLETED",
-      "classification": "NOT_REQUIRED_FOR_FORGE_DEV",
+      "stage": "jurisdiction-spine-seal",
+      "status": "IN_PROGRESS",
+      "classification": "UNKNOWN",
       "requiredForCountyStudioForgeDev": false,
       "requiredForPacketProof": true,
       "requiredForProductionProof": true,

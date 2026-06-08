@@ -82,6 +82,7 @@ const REAL_DEV_CLASSIFICATIONS = new Set([
   "SYNC_DERIVED",
   "SEEDED",
   "PARTIAL_SEEDED",
+  "SYNC_DERIVED_PARCEL_GEOMETRY",
   "SYNC_DERIVED_GEOMETRY",
   "SEEDED_GEOMETRY"
 ]);
@@ -338,7 +339,8 @@ function buildSurfaces({ dataTruthReport, lineageReport, readinessReport, geomet
       surface: "geometry/map context source",
       sourceName: "TerraAtlas geometry/map context consumed by County Studio",
       ownerLane: "Atlas",
-      classification: geometryEvidenceReport?.classification
+      classification: geometryEvidenceReport?.parcelGeometryStatus
+        ?? geometryEvidenceReport?.classification
         ?? geometry?.classification
         ?? findProofArea(dataTruthReport, "Atlas layers")?.classification,
       source: geometry,
@@ -446,7 +448,14 @@ export function buildCountyStudioForgeRealDataWiringReport({
     geometryEvidencePosture: {
       status: geometryEvidenceReport?.status ?? "UNKNOWN",
       classification: geometryEvidenceReport?.classification ?? "UNKNOWN",
+      parcelGeometryStatus: geometryEvidenceReport?.parcelGeometryStatus ?? "UNKNOWN",
+      fullGisLayerTruthStatus: geometryEvidenceReport?.fullGisLayerTruthStatus ?? "UNKNOWN",
+      mapOverlayStatus: geometryEvidenceReport?.mapOverlayStatus ?? "UNKNOWN",
+      attributeOverlayStatus: geometryEvidenceReport?.attributeOverlayStatus ?? "UNKNOWN",
+      riskOverlayAnchoring: geometryEvidenceReport?.riskOverlayAnchoring ?? "UNKNOWN",
       realGeometryExists: geometryEvidenceReport?.decisions?.realGeometryExists === true,
+      countyStudioUsesRealParcelGeometry:
+        geometryEvidenceReport?.decisions?.countyStudioUsesRealParcelGeometry === true,
       countyStudioUsesRealTerraAtlasGeometry:
         geometryEvidenceReport?.decisions?.countyStudioUsesRealTerraAtlasGeometry === true
     },
@@ -496,7 +505,13 @@ export function renderCountyStudioForgeRealDataWiringMarkdown(report) {
     "",
     `- status: ${report.geometryEvidencePosture.status}`,
     `- classification: ${report.geometryEvidencePosture.classification}`,
+    `- parcelGeometryStatus: ${report.geometryEvidencePosture.parcelGeometryStatus}`,
+    `- fullGisLayerTruthStatus: ${report.geometryEvidencePosture.fullGisLayerTruthStatus}`,
+    `- mapOverlayStatus: ${report.geometryEvidencePosture.mapOverlayStatus}`,
+    `- attributeOverlayStatus: ${report.geometryEvidencePosture.attributeOverlayStatus}`,
+    `- riskOverlayAnchoring: ${report.geometryEvidencePosture.riskOverlayAnchoring}`,
     `- realGeometryExists: ${report.geometryEvidencePosture.realGeometryExists}`,
+    `- countyStudioUsesRealParcelGeometry: ${report.geometryEvidencePosture.countyStudioUsesRealParcelGeometry}`,
     `- countyStudioUsesRealTerraAtlasGeometry: ${report.geometryEvidencePosture.countyStudioUsesRealTerraAtlasGeometry}`
   );
 

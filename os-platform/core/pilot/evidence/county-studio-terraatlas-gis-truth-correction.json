@@ -1,0 +1,75 @@
+{
+  "generatedAtUtc": "2026-06-08T00:06:00.000Z",
+  "status": "PARTIAL_GIS_TRUTH",
+  "parcelGeometryStatus": "SYNC_DERIVED_PARCEL_GEOMETRY",
+  "fullGisLayerTruthStatus": "GIS_LAYER_TRUTH_NOT_PROVEN",
+  "mapOverlayStatus": "FALLBACK_MAP_OVERLAY",
+  "attributeOverlayStatus": "UNPROVEN_ATTRIBUTE_OVERLAY",
+  "riskOverlayAnchoring": "NOT_GIS_ANCHORED",
+  "classifications": [
+    "SYNC_DERIVED_PARCEL_GEOMETRY",
+    "PARTIAL_GIS_TRUTH",
+    "GIS_LAYER_TRUTH_NOT_PROVEN",
+    "FALLBACK_MAP_OVERLAY",
+    "UNPROVEN_ATTRIBUTE_OVERLAY",
+    "UI_ABSOLUTE_RISK_LABELS",
+    "ATLAS_LAYER_AVAILABLE_NOT_WIRED",
+    "REQUIRED_FOR_PRODUCTION_GIS_PROOF"
+  ],
+  "proven": {
+    "parcelGeometryTable": "gis_tf.tf_parcel_geom",
+    "activeParcelGeometryCount": 80075,
+    "activeCrosswalkedToTfParcelId": 79105,
+    "countyStudioParcelGeometryEndpoint": "GET /api/atlas-live/geometry/parcels",
+    "countyStudioUsesRealParcelGeometry": true
+  },
+  "notProven": {
+    "fullAtlasLayerRegistryTruth": true,
+    "neighborhoodLayerGeometry": true,
+    "segmentLayerGeometry": true,
+    "revalAreaGeometry": true,
+    "taxingDistrictGeometry": true,
+    "realOutlineLayerSource": true,
+    "perParcelMapAttributes": true,
+    "gisAnchoredRiskOverlayLabels": true,
+    "productionGisSymbologyOrLayerConfiguration": true
+  },
+  "attributeFindings": {
+    "outlines": "null",
+    "assessedValue": "hardcoded_or_zero",
+    "propertyClass": "null",
+    "salePrice": "hardcoded_or_zero",
+    "ratio": "null",
+    "ratioDeviation": "null",
+    "nbhdMedianRatio": "null",
+    "neighborhoodCode": "query_scoped_not_per_parcel_sourced"
+  },
+  "overlayFindings": {
+    "riskOverlayJoin": "feature.properties.neighborhoodCode",
+    "riskOverlayJoinTrustworthy": false,
+    "riskLabels": "UI_ABSOLUTE_RISK_LABELS",
+    "riskOverlayProductionProofAllowed": false
+  },
+  "requiredProofToUpgrade": [
+    "TerraAtlas-owned Benton layer registry lineage",
+    "neighborhood geometry source and join key",
+    "segment geometry source and join key",
+    "reval area geometry source and join key",
+    "taxing district geometry source and join key",
+    "real outline layer source",
+    "per-parcel map attributes sourced from DB rows",
+    "GIS-anchored risk overlays and labels",
+    "countyId/taxYear/study context alignment"
+  ],
+  "forgeDevAllowedInDegradedGisMode": true,
+  "productionProofAllowed": false,
+  "operationalProofAllowed": false,
+  "boundaries": {
+    "uiChanged": false,
+    "gisAttributesInvented": false,
+    "syncMutated": false,
+    "dbSeedingChanged": false,
+    "productionProofWeakened": false,
+    "operationalProofWeakened": false
+  }
+}
