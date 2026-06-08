@@ -1711,6 +1711,68 @@ public class DoctrineDrainController : ControllerBase
     }
 
     // ════════════════════════════════════════════════════════════════════
+    // ASSESSMENT-BILL drain (REVENUE-SPINE Stage 2B) — special-assessment agency
+    // dict populate → current-year active special-assessment bill line
+    // (bill ⋈ assessment_bill, bill_type='A', is_active=1) + parcel rollup.
+    // Agency-backed, rate-free. Read-only PACS amounts; balance = due − paid.
+    // No payment transactions / fund / distribution / delinquency / history.
+    // Default year=2025.
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("assessment-bill")]
+    public async Task<IActionResult> DrainAssessmentBill(
+        [FromServices] TerraFusion.Core.Sync.PacsAssessmentBill.IPacsAssessmentBillService asmtSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "assessment-bill";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsAssessmentBillSource(pacsCs!);
+            _logger.LogInformation("[Drain:assessment-bill] year={Yr} (active A bills)", taxYear);
+
+            // Stage 1: Agency dict.
+            var ag = await asmtSvc.PopulateAgencyAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            if (!IsCompleted(ag.Status))
+                return await FailLaneAsync(LaneName, "Agency", ag.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 2: AssessmentBillLine (+ parcel rollup).
+            var bl = await asmtSvc.ProjectAssessmentBillLineAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            batchIds.Add(bl.PromotionLoadBatchId);
+            if (!IsCompleted(bl.Status))
+                return await FailLaneAsync(LaneName, "AssessmentBillLine", bl.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = bl.Landed;
+            rowsCanonicalized = bl.Projected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:assessment-bill] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
     // SALES drain — sale → keyed supp → sale truth → tf_sale canonical.
     // Independent of the parcel-anchored lanes; uses its own DESC-ordered
     // sale seed, then targets a parcel chain at the promoted sales' prop_ids.

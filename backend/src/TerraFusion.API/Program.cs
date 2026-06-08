@@ -2122,6 +2122,12 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsBill.IPacsBillService,
     TerraFusion.Data.Services.CanonicalTf.PacsBillService>();
 
+// REVENUE-SPINE Stage 2B (2026-06-07): special-assessment bill read model
+// (tf_assessment_agency / tf_assessment_bill_line / tf_assessment_bill_current).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessmentBill.IPacsAssessmentBillService,
+    TerraFusion.Data.Services.CanonicalTf.PacsAssessmentBillService>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

@@ -170,6 +170,15 @@ public static class LaneStageOrder
                 "TaxBillLine",
             },
 
+            // assessment-bill: REVENUE-SPINE Stage 2B — special-assessment agency
+            // dict populate → current-year active 'A' assessment bill line
+            // (+ parcel rollup). Agency-backed, rate-free. Read-only.
+            ["assessment-bill"] = new[]
+            {
+                "Agency",
+                "AssessmentBillLine",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]

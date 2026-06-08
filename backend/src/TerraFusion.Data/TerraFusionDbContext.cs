@@ -350,6 +350,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillCurrent>
     TfTaxBillCurrents { get; set; } = null!;
 
+  // REVENUE-SPINE Stage 2B: current-year special-assessment bill read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAssessmentBillLine>
+    LegacyPacsRawAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentAgency>
+    TfAssessmentAgencies { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillLine>
+    TfAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillCurrent>
+    TfAssessmentBillCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1221,6 +1231,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillLineConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillCurrentConfiguration());
+
+    // REVENUE-SPINE Stage 2B: special-assessment bill read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentAgencyConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillCurrentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
