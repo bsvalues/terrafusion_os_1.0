@@ -344,6 +344,21 @@ describe('Desktop', () => {
       // Note: With mock, we verify the handler is set up correctly
       expect(screen.getByTestId('start-menu')).toBeInTheDocument();
     });
+
+    it('does not leave Home Scene mounted after shell mode leaves home', () => {
+      act(() => {
+        useDesktopStore.setState({ shellMode: 'home', previousShellMode: null });
+      });
+
+      render(<Desktop />, { wrapper: desktopWrapper });
+
+      act(() => {
+        useDesktopStore.getState().enterDesktop();
+      });
+
+      expect(screen.queryByTestId('stage-zero-state')).not.toBeInTheDocument();
+      expect(screen.getByTestId('desktop-icon-grid')).toBeInTheDocument();
+    });
   });
 
   // ============================================================================

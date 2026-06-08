@@ -287,6 +287,11 @@ export function Desktop({ className = '', children }: DesktopProps) {
   const shellMode = useShellMode();
   const surfaces = useShellSurfaces();
   const { enterDesktop: transitionToDesktop } = useShellModeActions();
+  const showHomeScene =
+    surfaces.recentWork === 'visible' ||
+    surfaces.quickActions === 'visible' ||
+    surfaces.countyMap === 'visible';
+  const showDesktopWorkspace = surfaces.desktop !== 'hidden';
 
   // Scene Selector state (Phase 8)
   const [isSceneSelectorOpen, setSceneSelectorOpen] = useState(false);
@@ -597,12 +602,12 @@ export function Desktop({ className = '', children }: DesktopProps) {
       {isHome ? (
         <>
           {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
-          {surfaces.desktop !== 'hidden' && (
+          {showDesktopWorkspace && (
             <DesktopIconGrid className='absolute top-12 left-4' />
           )}
 
-          {/* Layer 0.5: Stage Zero-State — June 10 launch posture is always visible on shell home */}
-          <StageZeroState id='desktop-main-content' />
+          {/* Layer 0.5: Stage Zero-State — visible only while the shell is in Home mode */}
+          {showHomeScene && <StageZeroState id='desktop-main-content' />}
         </>
       ) : (
         <div
