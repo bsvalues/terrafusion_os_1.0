@@ -3,6 +3,11 @@
 _Date: 2026-06-07 · Source of truth: live Harris PACS (`pacs_oltp`) · Target: TerraFusion DB
 (`legacy_pacs_raw` → `truth_pacs` → `canonical_tf` / `gis_tf`)_
 
+> **Amended 2026-06-07 — Mission 2 Addendum:** Revenue Spine **Stage 1** (current-year levy tax
+> bill explanation) is now **sealed** (commit `5845c5360`). The "Revenue Spine deferred" disposition
+> below is superseded for Stage 1 only; payment transactions, 'A' assessment bills, fund/distribution,
+> delinquency, and history remain deferred. See `docs/sync/seals/benton-revenue-spine-stage1-addendum.md`.
+
 ---
 
 ## 1. Executive Seal Statement
@@ -102,7 +107,8 @@ corrected during the Assessment Value seal. Always verify the payload, not just 
 
 | Boundary | Disposition |
 |---|---|
-| Revenue Spine (levy / fund / rate / bill / payment / distribution) | **Deferred** — separate treasurer-grade mission. `levy_cd` / `fund_id` deliberately excluded from canonical jurisdiction entities. |
+| Revenue Spine — current-year **levy** tax bill (due / paid / balance, district, rate) | **✅ Stage 1 sealed** 2026-06-07 (`5845c5360`, read-only PACS-verbatim). See addendum. |
+| Revenue Spine — payment txn / 'A' bills / fund / distribution / delinquency / history | **Deferred** — separate treasurer-grade stages. `fund_id` deliberately excluded from canonical revenue/jurisdiction entities. |
 | Historical lanes (assessment 1968–, exemption 1994–, tax-area 1968–) | **Deferred** — current-year only sealed; history is a follow-on. |
 | WSDOR `wash_prop_owner_val` re-drive | **Non-blocking** — owner-current truth seal does not depend on it; re-drive is an optional EF tail. |
 | `tax_district_id` vs levy/fund | Jurisdiction stops at `tax_district_id`; no rates/bills/payments/levy amounts introduced. |
