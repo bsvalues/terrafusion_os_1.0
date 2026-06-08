@@ -1,13 +1,13 @@
 name: canon-gates
 
-# Advisory enforcement rail for the read-only Canon runtime.
-# Runs the Canon gate aggregator over a PR's changed files and reports findings
-# to the job summary. ADVISORY by default (never blocks) — this is the
-# "advisory-in-CI first" step of the Canon doctrine.
+# Enforcement rail for the read-only Canon runtime.
+#  - ADVISORY (non-blocking) for ALL changed files: full report to job summary.
+#  - STRICT (blocking) but SCOPED to canon-owned paths only
+#    (os-platform/core/canon/**, os-platform/core/gates/**): a violation in the
+#    Canon runtime itself fails this job. Non-canon paths NEVER block here.
 #
-# To FLIP TO ENFORCEMENT later: add `--strict` to the node invocation below
-# (optionally scoped to Canon-owned paths first). Do not make this a required
-# status check until signal quality is confirmed on real PRs.
+# Deliberately NOT global. To widen enforcement later, drop --canon-owned-only
+# (and only then consider making this a required status check).
 #
 # Push-triggered (not pull_request): platform.json forbids pull_request on
 # non-constitutional workflows (PR_TRIGGER_LEAK). Runs per feature-branch push
@@ -23,8 +23,8 @@ permissions:
   contents: read
 
 jobs:
-  advisory:
-    name: Canon Gates (advisory)
+  canon-gates:
+    name: Canon Gates
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Run Canon gates (advisory, non-blocking)
+      - name: Advisory report (all changed files, non-blocking)
         shell: bash
         run: |
           set -euo pipefail
@@ -47,6 +47,24 @@ jobs:
             echo "## Canon Gates (advisory)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # Advisory: aggregator exits 0 without --strict, so the job never blocks.
+          # Advisory: aggregator exits 0 without --strict, so this step never blocks.
           node os-platform/core/gates/canon-gates.mjs "${FILES[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Strict enforcement (canon-owned paths only, BLOCKING)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          mapfile -t FILES < <(git diff --name-only origin/main...HEAD)
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No changed files." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo "## Canon Gates (strict — canon-owned paths)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Strict + scoped: exits 1 only if a CANON-OWNED path has a blocking finding.
+          node os-platform/core/gates/canon-gates.mjs --strict --canon-owned-only "${FILES[@]}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"

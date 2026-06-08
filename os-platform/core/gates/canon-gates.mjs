@@ -20,6 +20,7 @@
 import { checkProtectedPaths } from './check-protected-paths.mjs';
 import { checkHardcodedPorts } from './check-hardcoded-ports.mjs';
 import { checkWriteLanes } from './canon-write-lane-check.mjs';
+import { pathMatchesPattern } from '../canon/canon-query.mjs';
 import { printReport, runMain } from './gate-runtime.mjs';
 
 /**
@@ -30,13 +31,47 @@ import { printReport, runMain } from './gate-runtime.mjs';
 const CODE_LIKE = /\.(ts|tsx|js|jsx|mjs|cjs|cs|json|ya?ml)$/i;
 
 /**
- * Run all Canon gates over the given paths and classify findings. Never throws.
+ * Canon-owned / runtime-governance path globs. Strict (blocking) enforcement is
+ * scoped to these; everything else stays advisory. Deliberately NOT global.
+ * @type {ReadonlyArray<string>}
+ */
+export const CANON_OWNED_PATTERNS = Object.freeze([
+  'os-platform/core/canon/**',
+  'os-platform/core/gates/**',
+]);
+
+/** @param {unknown} path @returns {boolean} */
+export function isCanonOwnedPath(path) {
+  if (typeof path !== 'string' || path.length === 0) return false;
+  return CANON_OWNED_PATTERNS.some((p) => pathMatchesPattern(path, p));
+}
+
+/**
+ * Split paths into canon-owned vs the rest. Never throws.
  * @param {ReadonlyArray<string>} paths
- * @param {{ strict?: boolean }} [opts]
+ * @returns {Readonly<{ owned: ReadonlyArray<string>, rest: ReadonlyArray<string> }>}
+ */
+export function partitionByCanonOwnership(paths) {
+  const owned = [];
+  const rest = [];
+  for (const p of Array.isArray(paths) ? paths : []) {
+    if (typeof p !== 'string' || p.length === 0) continue;
+    (isCanonOwnedPath(p) ? owned : rest).push(p);
+  }
+  return Object.freeze({ owned: Object.freeze(owned), rest: Object.freeze(rest) });
+}
+
+/**
+ * Run all Canon gates over the given paths and classify findings. Never throws.
+ * When `canonOwnedOnly` is set, only canon-owned paths are scanned — this is how
+ * strict enforcement stays scoped to the Canon runtime instead of going global.
+ * @param {ReadonlyArray<string>} paths
+ * @param {{ strict?: boolean, canonOwnedOnly?: boolean }} [opts]
  * @returns {CanonGatesResult}
  */
 export function runCanonGates(paths, opts) {
-  const list = Array.isArray(paths) ? paths.filter((p) => typeof p === 'string' && p.length > 0) : [];
+  const all = Array.isArray(paths) ? paths.filter((p) => typeof p === 'string' && p.length > 0) : [];
+  const list = opts && opts.canonOwnedOnly ? all.filter(isCanonOwnedPath) : all;
   const strict = !!(opts && opts.strict);
 
   /** @type {GateFinding[]} */
@@ -77,7 +112,7 @@ export function runCanonGates(paths, opts) {
 }
 
 runMain(import.meta.url, (o) => {
-  const res = runCanonGates(o.paths, { strict: o.strict });
+  const res = runCanonGates(o.paths, { strict: o.strict, canonOwnedOnly: o.flags.has('canon-owned-only') });
   // Surface blocking findings as the report's "findings" (so --strict fails on them);
   // advisory findings are appended to the message but never affect exit code.
   const result = printReport({
