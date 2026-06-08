@@ -76,11 +76,20 @@ delinquency, prior-year history.
 
 ---
 
-## E. Stage 3B reconciliation attestation
+## E. Stage 3B reconciliation attestation — DONE (corpus, penny-exact)
 
-> _Filled in when the read-only corpus attestation runs; see
-> `evidence/2026-06-07-revenue-spine-stage3b-reconciliation-attestation.md` if present. Verification
-> only — no schema change, no new table, no drain, no canonical model._
+Read-only corpus attestation executed (no schema change, no new table, no drain, no canonical model):
+
+```
+bill.amount_paid total (1,417,646 active 2025 bills)        = $32,941.46
+SUM(coll_transaction.base_amount_pd) (1,418,142 txns)        = $32,941.46
+Δ = $0.00 — penny-exact corpus-wide
+```
+
+Plus the Stage 3A per-bill sample: 0 / 496 paid bills mismatched, 0 paid bills without a collection
+transaction. The Stage 3A doctrine is **confirmed at corpus scale** — `bill.amount_paid` is the
+PACS-authoritative bill-grain net paid and the sealed bill models carry it verbatim. Evidence:
+`evidence/2026-06-07-revenue-spine-stage3b-reconciliation-attestation.md`.
 
 ---
 
