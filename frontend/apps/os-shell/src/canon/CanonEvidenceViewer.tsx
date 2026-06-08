@@ -48,9 +48,12 @@ const labelClass = 'text-xs font-semibold uppercase tracking-wider text-terra-cy
 const mutedClass = 'text-xs tf-text-tertiary';
 const codeClass = 'font-mono text-xs tf-text-secondary';
 
+// Status colors use canonical TerraFusion tokens: `terra-accent` maps to
+// --tf-success (tailwind.config.js); fail/warning reuse the palette already
+// established in sibling canon panels (CanonAgentsPanel, CanonTaskConsole).
 const STATUS_CLASS: Record<EvidenceGateStatus, string> = {
-  pass: 'text-emerald-300',
-  fail: 'text-rose-300',
+  pass: 'text-terra-accent',
+  fail: 'text-red-400',
   warning: 'text-amber-300',
   skipped: 'tf-text-dim',
 };
@@ -109,8 +112,7 @@ export function CanonEvidenceViewer({
 }): React.ReactElement {
   return (
     <section
-      className='canon-evidence-viewer liquid-panel--infrastructure flex flex-col gap-3 p-3'
-      style={{ background: 'hsl(var(--tf-surface))' }}
+      className='canon-evidence-viewer liquid-panel--infrastructure bg-terra-slate flex flex-col gap-3 p-3'
       data-testid='terracanon-evidence-viewer'
       aria-label='Canon evidence bundle viewer'
     >
@@ -162,7 +164,7 @@ export function CanonEvidenceViewer({
           <div className='flex flex-col gap-1' data-testid='terracanon-evidence-seal'>
             <span className={labelClass}>Trace seal</span>
             <span
-              className={`text-xs font-semibold ${bundle.sealed ? 'text-emerald-300' : 'text-amber-300'}`}
+              className={`text-xs font-semibold ${bundle.sealed ? 'text-terra-accent' : 'text-amber-300'}`}
             >
               {bundle.sealed ? 'Sealed' : 'Not sealed'}
             </span>
