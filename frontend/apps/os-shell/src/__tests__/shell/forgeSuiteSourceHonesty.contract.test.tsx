@@ -9,6 +9,9 @@ const mockUseCountyStats = vi.fn();
 const mockSuiteModuleGrid = vi.fn(() => <div data-testid="mock-module-grid" />);
 const invokeToolMock = vi.fn();
 const activateModuleMock = vi.fn();
+const apiFetchMock = vi.fn();
+const getTokenMock = vi.fn();
+const persistTokenMock = vi.fn();
 
 vi.mock('../../hooks/useCountyStats', () => ({
   useCountyStats: () => mockUseCountyStats(),
@@ -16,6 +19,15 @@ vi.mock('../../hooks/useCountyStats', () => ({
 
 vi.mock('../../api/pilotApi', () => ({
   invokeTool: (...args: unknown[]) => invokeToolMock(...args),
+}));
+
+vi.mock('../../lib/apiBase', () => ({
+  apiFetch: (...args: unknown[]) => apiFetchMock(...args),
+}));
+
+vi.mock('../../auth/authStorage', () => ({
+  getToken: () => getTokenMock(),
+  setToken: (token: string) => persistTokenMock(token),
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -62,6 +74,14 @@ const MOCK_STATS = {
 describe('ForgeSuiteHome source honesty contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getTokenMock.mockReturnValue('dev-token');
+    apiFetchMock.mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 503,
+        json: () => Promise.resolve({}),
+      }),
+    );
   });
 
   it('includes TerraForge while disclosing suite metrics and standalone modules are preview-locked', () => {
@@ -134,7 +154,334 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(screen.queryByText('$342,100')).not.toBeInTheDocument();
   });
 
-  it('opens SalesForge from TerraForge Suite while keeping unverified standalone Forge apps locked', () => {
+  it('binds TerraForge suite metrics to proven app runtime data while blocking unaccepted county rollup values', async () => {
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+    apiFetchMock.mockImplementation((path: string) => {
+      if (path.startsWith('/terraforge/sale-qualification?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 52, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/terraforge/comps-pool?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 36, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/cost-matrix/benton')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ count: 42, entries: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/income-approach/cap-rates')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ capRates: [{ propertyType: 'commercial' }, { propertyType: 'industrial' }, { propertyType: 'multi-family' }, { propertyType: 'office' }, { propertyType: 'retail' }] }),
+        });
+      }
+      if (path.startsWith('/terraforge/county-stats?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({
+            taxYear: 2026,
+            totalParcels: 128784,
+            averageAssessedValue: 469564.7,
+            assessedThisYear: 128784,
+            pendingAssessments: 95758,
+            assessmentCompletionPercent: 71.4,
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve({}),
+      });
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    const runtimeStatus = screen.getByTestId('forge-runtime-status');
+    await waitFor(() => expect(runtimeStatus).toHaveTextContent(/Metrics app-backed; county rollup blocked/i));
+
+    const stats = screen.getByTestId('forge-stats');
+    await waitFor(() => expect(stats).toHaveTextContent(/county-stats returned unaccepted stale rollup values/i));
+    expect(stats).toHaveTextContent(/SALE QUEUE/i);
+    expect(stats).toHaveTextContent(/52/);
+    expect(stats).toHaveTextContent(/COMPS POOL/i);
+    expect(stats).toHaveTextContent(/36/);
+    expect(stats).toHaveTextContent(/COST MATRIX/i);
+    expect(stats).toHaveTextContent(/42/);
+    expect(stats).toHaveTextContent(/INCOME REFS/i);
+    expect(stats).toHaveTextContent(/5/);
+    expect(stats).toHaveTextContent(/COUNTY ROLLUP/i);
+    expect(stats).toHaveTextContent(/Unavailable/i);
+    expect(stats).toHaveTextContent(/county-stats returned unaccepted stale rollup values/i);
+    expect(screen.queryByText('120,850')).not.toBeInTheDocument();
+    expect(screen.queryByText('$342,100')).not.toBeInTheDocument();
+    expect(screen.queryByText('128,784')).not.toBeInTheDocument();
+    expect(screen.queryByText('$469,565')).not.toBeInTheDocument();
+    expect(screen.queryByText('95,758')).not.toBeInTheDocument();
+    expect(screen.queryByText('71.4%')).not.toBeInTheDocument();
+  });
+
+  it('hydrates a missing dev auth token before reading TerraForge runtime metrics', async () => {
+    getTokenMock.mockReturnValue(null);
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+    apiFetchMock.mockImplementation((path: string) => {
+      if (path === '/auth/dev-token') {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ token: 'fresh-dev-token' }),
+        });
+      }
+      if (path.startsWith('/terraforge/sale-qualification?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 36, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/terraforge/comps-pool?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 36, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/cost-matrix/benton')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ count: 66, entries: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/income-approach/cap-rates')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ capRates: Array.from({ length: 5 }, (_, index) => ({ propertyType: `type-${index}` })) }),
+        });
+      }
+      if (path.startsWith('/terraforge/county-stats?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({
+            totalParcels: 128784,
+            averageAssessedValue: 469564.7,
+            pendingAssessments: 95758,
+            assessmentCompletionPercent: 71.4,
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve({}),
+      });
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => expect(apiFetchMock).toHaveBeenCalledWith('/auth/dev-token', expect.anything()));
+    await waitFor(() => expect(persistTokenMock).toHaveBeenCalledWith('fresh-dev-token'));
+    await waitFor(() => {
+      expect(apiFetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/terraforge/sale-qualification?'),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Authorization: 'Bearer fresh-dev-token' }),
+        }),
+      );
+    });
+    await waitFor(() => expect(screen.getByTestId('forge-stats')).toHaveTextContent(/SALE QUEUE36/i));
+    expect(screen.queryByText(/HTTP 500/i)).not.toBeInTheDocument();
+  });
+
+  it('retries TerraForge runtime metrics with a fresh dev token when stored auth is stale', async () => {
+    getTokenMock.mockReturnValue('stale-dev-token');
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+    const staleSaleResponse = vi.fn();
+    const freshSaleResponse = vi.fn();
+    apiFetchMock.mockImplementation((path: string, init?: RequestInit) => {
+      const auth = init?.headers && !Array.isArray(init.headers)
+        ? (init.headers as Record<string, string>).Authorization
+        : undefined;
+      if (path === '/auth/dev-token') {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ token: 'fresh-dev-token' }),
+        });
+      }
+      if (path.startsWith('/terraforge/sale-qualification?')) {
+        if (auth === 'Bearer stale-dev-token') {
+          staleSaleResponse();
+          return Promise.resolve({
+            ok: false,
+            status: 500,
+            json: () => Promise.resolve({}),
+          });
+        }
+        if (auth === 'Bearer fresh-dev-token') {
+          freshSaleResponse();
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: () => Promise.resolve({ total: 36, page: 1, pageSize: 1, items: [] }),
+          });
+        }
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ total: 1, page: 1, pageSize: 1, items: [], count: 1, capRates: [{}] }),
+      });
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => expect(staleSaleResponse).toHaveBeenCalled());
+    await waitFor(() => expect(apiFetchMock).toHaveBeenCalledWith('/auth/dev-token', expect.anything()));
+    await waitFor(() => expect(freshSaleResponse).toHaveBeenCalled());
+    expect(persistTokenMock).toHaveBeenCalledWith('fresh-dev-token');
+    await waitFor(() => expect(screen.getByTestId('forge-stats')).toHaveTextContent(/SALE QUEUE36/i));
+    expect(screen.queryByText(/HTTP 500/i)).not.toBeInTheDocument();
+  });
+
+  it('keeps the runtime board bounded after the five landed TerraForge paths', async () => {
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+    apiFetchMock.mockImplementation((path: string) => {
+      if (path.startsWith('/terraforge/sale-qualification?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 52, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/terraforge/comps-pool?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ total: 36, page: 1, pageSize: 1, items: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/cost-matrix/benton')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ count: 66, entries: [] }),
+        });
+      }
+      if (path.startsWith('/costforge/income-approach/cap-rates')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ capRates: Array.from({ length: 5 }, (_, index) => ({ propertyType: `type-${index}` })) }),
+        });
+      }
+      if (path.startsWith('/terraforge/county-stats?')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({
+            totalParcels: 128784,
+            averageAssessedValue: 469564.7,
+            pendingAssessments: 95758,
+            assessmentCompletionPercent: 71.4,
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve({}),
+      });
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    const runtimeStatus = screen.getByTestId('forge-runtime-status');
+    await waitFor(() => expect(runtimeStatus).toHaveTextContent(/Metrics app-backed; county rollup blocked/i));
+    expect(runtimeStatus).toHaveTextContent(/SalesForge runtime/i);
+    expect(runtimeStatus).toHaveTextContent(/CostForge live triage path/i);
+    expect(runtimeStatus).toHaveTextContent(/CompsForge runtime comps pool/i);
+    expect(runtimeStatus).toHaveTextContent(/IncomeForge runtime income approach/i);
+    expect(runtimeStatus).toHaveTextContent(/County Studio runtime studies/i);
+    expect(runtimeStatus).toHaveTextContent(/Full TerraForge not done/i);
+    expect(runtimeStatus).toHaveTextContent(/CUForge\/specialists locked/i);
+    expect(runtimeStatus).toHaveTextContent(/County Studio health not rollup proof/i);
+
+    const primaryApps = within(screen.getByTestId('forge-primary-applications'));
+    expect(primaryApps.getByRole('button', { name: /SalesForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /CostForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /CompsForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /IncomeForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /CUForge/i })).toBeDisabled();
+
+    const countyApps = within(screen.getByTestId('forge-county-applications'));
+    expect(countyApps.getByRole('button', { name: /County Studio/i })).toBeEnabled();
+
+    const secondaryApps = within(screen.getByTestId('forge-secondary-applications'));
+    expect(secondaryApps.getByRole('button', { name: /Batch Cost Runs/i })).toBeDisabled();
+    expect(secondaryApps.getByRole('button', { name: /Regression Studio/i })).toBeDisabled();
+    expect(secondaryApps.getByRole('button', { name: /TerraGAMA/i })).toBeDisabled();
+    expect(secondaryApps.getByRole('button', { name: /Coefficient Preview/i })).toBeDisabled();
+
+    expect(screen.queryByText(/Full TerraForge is done/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Suite metrics are fully runtime-backed/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/County Rollup.*runtime-backed proof/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('128,784')).not.toBeInTheDocument();
+    expect(screen.queryByText('$469,565')).not.toBeInTheDocument();
+    expect(screen.queryByText('95,758')).not.toBeInTheDocument();
+    expect(screen.queryByText('71.4%')).not.toBeInTheDocument();
+  });
+
+  it('opens SalesForge, CompsForge, and IncomeForge from TerraForge Suite while keeping unverified standalone Forge apps locked', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -149,9 +496,14 @@ describe('ForgeSuiteHome source honesty contract', () => {
     );
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
-    expect(primaryApps.getByRole('button', { name: /CompsForge/i })).toBeDisabled();
-    expect(primaryApps.getByRole('button', { name: /IncomeForge/i })).toBeDisabled();
     expect(primaryApps.getByRole('button', { name: /CostForge/i })).toBeEnabled();
+    const compsForgeCard = primaryApps.getByRole('button', { name: /CompsForge/i });
+    expect(compsForgeCard).toBeEnabled();
+    expect(compsForgeCard).toHaveTextContent(/Statewide sales comp search/i);
+    expect(compsForgeCard).not.toHaveTextContent(/Benton comps pool API/i);
+    const incomeForgeCard = primaryApps.getByRole('button', { name: /IncomeForge/i });
+    expect(incomeForgeCard).toBeEnabled();
+    expect(incomeForgeCard).toHaveTextContent(/Benton income approach API/i);
 
     const salesForgeCard = primaryApps.getByRole('button', { name: /SalesForge/i });
     expect(salesForgeCard).toBeEnabled();
@@ -165,6 +517,32 @@ describe('ForgeSuiteHome source honesty contract', () => {
       metadata: {
         launchContext: 'terraforge-suite',
         dataSource: 'terrafusion-api',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        taxYear: 2026,
+      },
+    });
+
+    fireEvent.click(compsForgeCard);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('comps-forge', {
+      source: 'system',
+      metadata: {
+        launchContext: 'terraforge-suite',
+        dataSource: 'terrafusion-api',
+        runtimePath: 'compsforge-comps-pool',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        taxYear: 2026,
+      },
+    });
+
+    fireEvent.click(incomeForgeCard);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('income-forge', {
+      source: 'system',
+      metadata: {
+        launchContext: 'terraforge-suite',
+        dataSource: 'terrafusion-api',
+        runtimePath: 'income-approach',
         countyId: '19190019-1919-1919-1919-191919191919',
         taxYear: 2026,
       },
@@ -188,9 +566,9 @@ describe('ForgeSuiteHome source honesty contract', () => {
     const runtimeStatus = screen.getByTestId('forge-runtime-status');
     expect(runtimeStatus).toHaveTextContent(/SalesForge\s+runtime/i);
     expect(runtimeStatus).toHaveTextContent(/CostForge\s+live triage path/i);
-    expect(runtimeStatus).toHaveTextContent(/CompsForge\s+preview-locked/i);
-    expect(runtimeStatus).toHaveTextContent(/IncomeForge\s+preview-locked/i);
-    expect(runtimeStatus).toHaveTextContent(/Metrics\s+not runtime-backed/i);
+    expect(runtimeStatus).toHaveTextContent(/CompsForge\s+runtime comps pool/i);
+    expect(runtimeStatus).toHaveTextContent(/IncomeForge\s+runtime income approach/i);
+    expect(runtimeStatus).toHaveTextContent(/Metrics app-backed/i);
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
     const costForgeCard = primaryApps.getByRole('button', { name: /CostForge/i });
@@ -205,6 +583,43 @@ describe('ForgeSuiteHome source honesty contract', () => {
         launchContext: 'terraforge-suite',
         dataSource: 'terrafusion-api',
         runtimePath: 'costforge-triage',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        taxYear: 2026,
+      },
+    });
+  });
+
+  it('opens County Studio from TerraForge Suite on the Benton study runtime path', () => {
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    const runtimeStatus = screen.getByTestId('forge-runtime-status');
+    expect(runtimeStatus).toHaveTextContent(/County Studio\s+runtime studies/i);
+
+    const countyApps = within(screen.getByTestId('forge-county-applications'));
+    const countyStudioCard = countyApps.getByRole('button', { name: /County Studio/i });
+    expect(countyStudioCard).toBeEnabled();
+    expect(countyStudioCard).toHaveTextContent(/Benton County Studio studies API/i);
+    expect(screen.queryByRole('button', { name: /County Studio preview locked/i })).not.toBeInTheDocument();
+
+    fireEvent.click(countyStudioCard);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('county-studio', {
+      source: 'system',
+      metadata: {
+        launchContext: 'terraforge-suite',
+        dataSource: 'terrafusion-api',
+        runtimePath: 'county-studio-studies',
         countyId: '19190019-1919-1919-1919-191919191919',
         taxYear: 2026,
       },

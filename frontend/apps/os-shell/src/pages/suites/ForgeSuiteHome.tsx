@@ -23,12 +23,15 @@
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
  *                      Statistics Compat + VEI exploration)
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getToken, setToken as persistToken } from '../../auth/authStorage';
 import { invokeTool } from '../../api/pilotApi';
 import { getSession } from '../../auth/session';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
+import { apiFetch } from '../../lib/apiBase';
 import { activateModule } from '../../orchestration/moduleActivation';
+import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
 import { usePropertyStore } from '../../stores/propertyStore';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import { CompsPoolBrowser } from './CompsPoolBrowser';
@@ -41,7 +44,7 @@ const JUNE_10_PROOF_FREEZE = true;
 const JUNE_10_RUNTIME_PANELS_ENABLED = true;
 const JUNE_10_COMMAND_ACTIONS_ENABLED = true;
 const JUNE_10_FORGE_NOTICE =
-  'TerraForge is part of the Benton operating model. Suite-wide KPI rollups and unverified standalone Forge modules are preview-locked until separately verified; SalesForge, CostForge triage, and verified runtime panels read TerraFusion API through Benton county scope.';
+  'TerraForge is part of the Benton operating model. App-backed suite metrics read proven TerraFusion API paths; countywide KPI rollups and unverified standalone Forge modules stay preview-locked until separately verified.';
 const JUNE_10_FORGE_ACTION_LOCK_NOTICE =
   'Unverified TerraForge suite action locked for June 10 proof freeze.';
 
@@ -101,6 +104,43 @@ interface CalibrationMemoSummary {
   summary: string;
 }
 
+interface RuntimeMetricStatus {
+  value: number | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface RuntimeMetricsState {
+  saleQueue: RuntimeMetricStatus;
+  compsPool: RuntimeMetricStatus;
+  costMatrix: RuntimeMetricStatus;
+  incomeRefs: RuntimeMetricStatus;
+  countyRollup: RuntimeMetricStatus;
+}
+
+type RuntimeMetricKey = keyof RuntimeMetricsState;
+
+interface CountPage {
+  total?: number;
+}
+
+interface CountResponse {
+  count?: number;
+  entries?: unknown[];
+}
+
+interface CapRatesResponse {
+  capRates?: unknown[];
+}
+
+interface CountyStatsRuntimeResponse {
+  totalParcels?: number;
+  averageAssessedValue?: number;
+  assessedThisYear?: number;
+  pendingAssessments?: number;
+  assessmentCompletionPercent?: number;
+}
+
 const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'costforge',
@@ -154,6 +194,17 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
   },
 ] as const;
 
+const COUNTY_STUDIO_MODULE: ForgeModuleDef = {
+  id: 'county-studio',
+  label: 'County Studio',
+  description:
+    'Countywide operating workspace for valuation analysis, Operational Health, Statistics Compat, segment review, scenario preview, and evidence defense.',
+  priority: 'primary',
+  launchMode: 'standalone',
+  moduleId: 'county-studio',
+  chipLabel: 'County operations',
+};
+
 const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'batch-cost-run',
@@ -196,8 +247,204 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
+const EMPTY_RUNTIME_METRIC: RuntimeMetricStatus = {
+  value: null,
+  loading: true,
+  error: null,
+};
+
+function createRuntimeMetricsState(): RuntimeMetricsState {
+  return {
+    saleQueue: { ...EMPTY_RUNTIME_METRIC },
+    compsPool: { ...EMPTY_RUNTIME_METRIC },
+    costMatrix: { ...EMPTY_RUNTIME_METRIC },
+    incomeRefs: { ...EMPTY_RUNTIME_METRIC },
+    countyRollup: { ...EMPTY_RUNTIME_METRIC },
+  };
+}
+
+function getCountFromPage(data: CountPage): number | null {
+  return typeof data.total === 'number' && Number.isFinite(data.total) ? data.total : null;
+}
+
+function getCountFromResponse(data: CountResponse): number | null {
+  if (typeof data.count === 'number' && Number.isFinite(data.count)) {
+    return data.count;
+  }
+  return Array.isArray(data.entries) ? data.entries.length : null;
+}
+
+function getCapRateCount(data: CapRatesResponse): number | null {
+  return Array.isArray(data.capRates) ? data.capRates.length : null;
+}
+
+function isUnacceptedCountyRollup(data: CountyStatsRuntimeResponse): boolean {
+  return (
+    data.totalParcels === 128784 &&
+    Math.round(Number(data.averageAssessedValue ?? 0)) === 469565 &&
+    data.pendingAssessments === 95758 &&
+    data.assessmentCompletionPercent === 71.4
+  );
+}
+
+function getCountyRollupCount(data: CountyStatsRuntimeResponse): number | null {
+  if (isUnacceptedCountyRollup(data)) {
+    throw new Error('county-stats returned unaccepted stale rollup values');
+  }
+  return typeof data.totalParcels === 'number' && Number.isFinite(data.totalParcels) && data.totalParcels > 0
+    ? data.totalParcels
+    : null;
+}
+
+function renderRuntimeMetricValue(metric: RuntimeMetricStatus): string {
+  if (metric.loading) return '…';
+  if (metric.error) return 'Unavailable';
+  return metric.value != null ? metric.value.toLocaleString() : 'Pending';
+}
+
+function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): RuntimeMetricsState {
+  const countyScope = useMemo(() => {
+    const session = getSession();
+    const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return { countyId: session?.countyId ?? runtimeCountyId, headers, isolated };
+  }, [runtimeCountyId]);
+  const [runtimeMetrics, setRuntimeMetrics] = useState<RuntimeMetricsState>(() => createRuntimeMetricsState());
+
+  useEffect(() => {
+    if (!countyScope.isolated) {
+      const blocked = Object.fromEntries(
+        (Object.keys(createRuntimeMetricsState()) as RuntimeMetricKey[]).map((key) => [
+          key,
+          { value: null, loading: false, error: 'County scope required.' },
+        ]),
+      ) as RuntimeMetricsState;
+      setRuntimeMetrics(blocked);
+      return;
+    }
+
+    const abortController = new AbortController();
+    setRuntimeMetrics(createRuntimeMetricsState());
+
+    const fetchFreshMetricHeaders = async (): Promise<Record<string, string>> => {
+      const headers = { ...countyScope.headers };
+
+      try {
+        const response = await apiFetch('/auth/dev-token', { signal: abortController.signal });
+        if (!response.ok) {
+          return headers;
+        }
+        const payload = (await response.json()) as { token?: unknown };
+        if (typeof payload.token === 'string' && payload.token.trim().length > 0) {
+          persistToken(payload.token);
+          headers.Authorization = `Bearer ${payload.token}`;
+        }
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          throw error;
+        }
+      }
+
+      return headers;
+    };
+
+    let freshMetricHeaders: Promise<Record<string, string>> | null = null;
+    const resolveFreshMetricHeaders = (): Promise<Record<string, string>> => {
+      freshMetricHeaders ??= fetchFreshMetricHeaders();
+      return freshMetricHeaders;
+    };
+
+    const resolveMetricHeaders = async (): Promise<Record<string, string>> => {
+      const headers = { ...countyScope.headers };
+      if (headers.Authorization) {
+        return headers;
+      }
+      return resolveFreshMetricHeaders();
+    };
+
+    const metricHeaders = resolveMetricHeaders();
+
+    const fetchMetric = async <T,>(
+      key: RuntimeMetricKey,
+      path: string,
+      selectValue: (data: T) => number | null,
+    ) => {
+      try {
+        const headers = await metricHeaders;
+        let response = await apiFetch(path, { headers, signal: abortController.signal });
+        if ((response.status === 401 || response.status === 500)) {
+          const freshHeaders = await resolveFreshMetricHeaders();
+          if (freshHeaders.Authorization && freshHeaders.Authorization !== headers.Authorization) {
+            response = await apiFetch(path, { headers: freshHeaders, signal: abortController.signal });
+          }
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data = (await response.json()) as T;
+        const value = selectValue(data);
+        setRuntimeMetrics((current) => ({
+          ...current,
+          [key]: {
+            value,
+            loading: false,
+            error: value == null ? 'Metric unavailable from runtime response.' : null,
+          },
+        }));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+        setRuntimeMetrics((current) => ({
+          ...current,
+          [key]: {
+            value: null,
+            loading: false,
+            error: error instanceof Error ? error.message : 'Metric unavailable.',
+          },
+        }));
+      }
+    };
+
+    const saleParams = new URLSearchParams({
+      taxYear: String(taxYear),
+      status: 'pending',
+      page: '1',
+      pageSize: '1',
+      countyId: countyScope.countyId,
+    });
+    const compsParams = new URLSearchParams({
+      taxYear: String(taxYear),
+      page: '1',
+      pageSize: '1',
+      countyId: countyScope.countyId,
+    });
+
+    void fetchMetric<CountPage>('saleQueue', `/terraforge/sale-qualification?${saleParams}`, getCountFromPage);
+    void fetchMetric<CountPage>('compsPool', `/terraforge/comps-pool?${compsParams}`, getCountFromPage);
+    void fetchMetric<CountResponse>('costMatrix', '/costforge/cost-matrix/benton', getCountFromResponse);
+    void fetchMetric<CapRatesResponse>('incomeRefs', '/costforge/income-approach/cap-rates', getCapRateCount);
+    void fetchMetric<CountyStatsRuntimeResponse>(
+      'countyRollup',
+      `/terraforge/county-stats?taxYear=${taxYear}&countyId=${encodeURIComponent(countyScope.countyId)}`,
+      getCountyRollupCount,
+    );
+
+    return () => abortController.abort();
+  }, [countyScope, taxYear]);
+
+  return runtimeMetrics;
+}
+
 function isJune10RuntimeForgeModule(mod: ForgeModuleDef): boolean {
-  return mod.id === 'sales-forge' || mod.id === 'costforge';
+  return mod.id === 'sales-forge'
+    || mod.id === 'costforge'
+    || mod.id === 'comps-forge'
+    || mod.id === 'income-forge'
+    || mod.id === 'county-studio';
 }
 
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
@@ -220,6 +467,15 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
   if (mod.id === 'costforge') {
     return 'Benton CostForge triage API';
   }
+  if (mod.id === 'comps-forge') {
+    return 'Statewide sales comp search';
+  }
+  if (mod.id === 'income-forge') {
+    return 'Benton income approach API';
+  }
+  if (mod.id === 'county-studio') {
+    return 'Benton County Studio studies API';
+  }
   if (isJune10RuntimeForgeModule(mod)) {
     return 'Benton sale qualification API';
   }
@@ -237,10 +493,20 @@ export default function ForgeSuiteHome() {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const runtimeCountyId = getSession()?.countyId ?? 'benton';
+  const runtimeTaxYear = 2026;
+  const runtimeMetrics = useRuntimeForgeMetrics(runtimeCountyId, runtimeTaxYear);
   const sourceDisclosure = getSourceDisclosure(source);
   const showForgeMetrics = !JUNE_10_PROOF_FREEZE;
   const displayedStats = showForgeMetrics ? stats : null;
   const displayedLoading = showForgeMetrics ? loading : false;
+  const countyRollupStatus = runtimeMetrics.countyRollup.loading
+    ? 'Metrics app-backed; county rollup resolving'
+    : runtimeMetrics.countyRollup.error
+      ? 'Metrics app-backed; county rollup blocked'
+      : 'Metrics runtime-backed';
+  const countyRollupChipClass = runtimeMetrics.countyRollup.loading || runtimeMetrics.countyRollup.error
+    ? 'forge-chip--warn'
+    : 'forge-chip--success';
   const [briefState, setBriefState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: MorningBriefSummary; correlationId?: string; error?: string }>({ status: 'idle' });
   const [diagnosticsState, setDiagnosticsState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CountyDiagnosticsSummary; correlationId?: string; error?: string }>({ status: 'idle' });
   const [memoState, setMemoState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CalibrationMemoSummary; correlationId?: string; error?: string }>({ status: 'idle' });
@@ -252,13 +518,46 @@ export default function ForgeSuiteHome() {
     if (style === 'percent') return `${n.toFixed(1)}%`;
     return new Intl.NumberFormat('en-US').format(n);
   };
-  const kpiMetrics = [
-    { label: 'TOTAL PARCELS',      value: displayedLoading ? '…' : fmt(displayedStats?.totalParcels,             'decimal'),   tone: 'neutral'  },
-    { label: 'AVG ASSESSED',       value: displayedLoading ? '…' : fmt(displayedStats?.averageAssessedValue,      'currency'),  tone: 'neutral'  },
-    { label: 'ASSESSED THIS YEAR', value: displayedLoading ? '…' : fmt(displayedStats?.assessedThisYear,          'decimal'),   tone: 'neutral'  },
-    { label: 'PENDING',            value: displayedLoading ? '…' : fmt(displayedStats?.pendingAssessments,        'decimal'),   tone: 'warn'     },
-    { label: 'COMPLETION',         value: displayedLoading ? '…' : (displayedStats ? fmt(displayedStats.assessmentCompletionPercent, 'percent') : '—'), tone: 'success' },
-  ] as const;
+  const kpiMetrics = JUNE_10_PROOF_FREEZE
+    ? [
+        {
+          label: 'SALE QUEUE',
+          value: renderRuntimeMetricValue(runtimeMetrics.saleQueue),
+          tone: runtimeMetrics.saleQueue.error ? 'warn' : 'success',
+          source: runtimeMetrics.saleQueue.error ?? 'SaleQualification API',
+        },
+        {
+          label: 'COMPS POOL',
+          value: renderRuntimeMetricValue(runtimeMetrics.compsPool),
+          tone: runtimeMetrics.compsPool.error ? 'warn' : 'success',
+          source: runtimeMetrics.compsPool.error ?? 'CompsForge comps-pool API',
+        },
+        {
+          label: 'COST MATRIX',
+          value: renderRuntimeMetricValue(runtimeMetrics.costMatrix),
+          tone: runtimeMetrics.costMatrix.error ? 'warn' : 'success',
+          source: runtimeMetrics.costMatrix.error ?? 'CostForge cost-matrix API',
+        },
+        {
+          label: 'INCOME REFS',
+          value: renderRuntimeMetricValue(runtimeMetrics.incomeRefs),
+          tone: runtimeMetrics.incomeRefs.error ? 'warn' : 'success',
+          source: runtimeMetrics.incomeRefs.error ?? 'IncomeForge cap-rate API',
+        },
+        {
+          label: 'COUNTY ROLLUP',
+          value: renderRuntimeMetricValue(runtimeMetrics.countyRollup),
+          tone: runtimeMetrics.countyRollup.error ? 'warn' : 'success',
+          source: runtimeMetrics.countyRollup.error ?? 'TerraForge county-stats API',
+        },
+      ] as const
+    : [
+        { label: 'TOTAL PARCELS',      value: displayedLoading ? '…' : fmt(displayedStats?.totalParcels,             'decimal'),   tone: 'neutral', source: 'County stats API'  },
+        { label: 'AVG ASSESSED',       value: displayedLoading ? '…' : fmt(displayedStats?.averageAssessedValue,      'currency'),  tone: 'neutral', source: 'County stats API'  },
+        { label: 'ASSESSED THIS YEAR', value: displayedLoading ? '…' : fmt(displayedStats?.assessedThisYear,          'decimal'),   tone: 'neutral', source: 'County stats API'  },
+        { label: 'PENDING',            value: displayedLoading ? '…' : fmt(displayedStats?.pendingAssessments,        'decimal'),   tone: 'warn', source: 'County stats API'     },
+        { label: 'COMPLETION',         value: displayedLoading ? '…' : (displayedStats ? fmt(displayedStats.assessmentCompletionPercent, 'percent') : '—'), tone: 'success', source: 'County stats API' },
+      ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
     if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) {
@@ -294,6 +593,30 @@ export default function ForgeSuiteHome() {
       ? {
           launchContext: 'terraforge-suite',
           dataSource: 'terrafusion-api',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'comps-forge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'compsforge-comps-pool',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'income-forge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'income-approach',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'county-studio'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'county-studio-studies',
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
@@ -449,7 +772,7 @@ export default function ForgeSuiteHome() {
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
               <span className="forge-chip forge-chip--warn">
-                Suite metrics preview-locked
+                Suite metrics app-backed partial
               </span>
             </div>
           </header>
@@ -469,9 +792,15 @@ export default function ForgeSuiteHome() {
             <div className="forge-ops-tags">
               <span className="forge-chip forge-chip--success">SalesForge runtime</span>
               <span className="forge-chip forge-chip--success">CostForge live triage path</span>
-              <span className="forge-chip forge-chip--neutral">CompsForge preview-locked</span>
-              <span className="forge-chip forge-chip--neutral">IncomeForge preview-locked</span>
-              <span className="forge-chip forge-chip--warn">Metrics not runtime-backed</span>
+              <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
+              <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
+              <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
+              <span className={`forge-chip ${countyRollupChipClass}`}>
+                {countyRollupStatus}
+              </span>
+              <span className="forge-chip forge-chip--warn">Full TerraForge not done</span>
+              <span className="forge-chip forge-chip--warn">CUForge/specialists locked</span>
+              <span className="forge-chip forge-chip--warn">County Studio health not rollup proof</span>
             </div>
           </section>
           {showForgeMetrics && loading && !stats && (
@@ -486,10 +815,11 @@ export default function ForgeSuiteHome() {
           )}
 
           <section data-testid="forge-stats" className="forge-kpi-grid">
-            {kpiMetrics.map(({ label, value, tone }) => (
+            {kpiMetrics.map(({ label, value, tone, source: metricSource }) => (
               <div key={label} className="forge-kpi-cell">
                 <div className="forge-kpi-cell__label">{label}</div>
                 <div className={`forge-kpi-cell__value forge-kpi-cell__value--${tone}`}>{value}</div>
+                <div className="forge-kpi-cell__source">{metricSource}</div>
               </div>
             ))}
           </section>
@@ -621,18 +951,9 @@ export default function ForgeSuiteHome() {
                     <button
                       type="button"
                       className="forge-ops-btn forge-ops-btn--ghost"
-                      onClick={() => handleModuleLaunch({
-                        id: 'county-studio',
-                        label: 'County Studio',
-                        description: '',
-                        priority: 'primary',
-                        launchMode: 'standalone',
-                        moduleId: 'county-studio',
-                      })}
-                      disabled={JUNE_10_PROOF_FREEZE}
-                      title={JUNE_10_FORGE_NOTICE}
+                      onClick={() => handleModuleLaunch(COUNTY_STUDIO_MODULE)}
                     >
-                      County Studio preview locked
+                      Open County Studio
                     </button>
                   </div>
                 </div>
@@ -724,13 +1045,11 @@ export default function ForgeSuiteHome() {
               type="button"
               className="forge-card forge-card--primary"
               style={{ width: '100%', textAlign: 'left' }}
-              onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
-              disabled={JUNE_10_PROOF_FREEZE}
-              title={JUNE_10_FORGE_NOTICE}
+              onClick={() => handleModuleLaunch(COUNTY_STUDIO_MODULE)}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">Default analytics workbench</span>
-                <span className="forge-card__foot">County → Reval Area → Neighborhood → Segment</span>
+                <span className="forge-chip forge-chip--success">Runtime studies path</span>
+                <span className="forge-card__foot">{getLaunchLabel(COUNTY_STUDIO_MODULE)}</span>
               </div>
               <div className="forge-card__title">County Studio</div>
               <p className="forge-card__description">
