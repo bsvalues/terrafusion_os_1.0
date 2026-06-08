@@ -86,6 +86,7 @@ import CanonQuickOpen from '../canon/CanonQuickOpen';
 import CanonGoToSymbol from '../canon/CanonGoToSymbol';
 import { CanonSearchPanel } from '../canon/CanonSearchPanel';
 import { CanonStatusBar } from '../canon/CanonStatusBar';
+import { CanonRuntimeStatusPanel } from '../canon/CanonRuntimeStatusPanel';
 import CanonTerminal from '../canon/CanonTerminal';
 import { GoToLineDialog } from '../canon/GoToLineDialog';
 import { useCanonConnection } from '../canon/useCanonConnection';
@@ -688,7 +689,7 @@ function CanonContent(): React.ReactElement {
   });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'search' | 'outline' | 'bookmarks' | 'snippets' | 'settings'>('explorer');
-  const [bottomTab, setBottomTab] = useState<'gates' | 'terminal' | 'problems'>('gates');
+  const [bottomTab, setBottomTab] = useState<'gates' | 'terminal' | 'problems' | 'runtime'>('gates');
   const [cursorPos, setCursorPos] = useState<CursorPosition | null>(null);
   const [goToLineOpen, setGoToLineOpen] = useState(false);
   const [newFileOpen, setNewFileOpen] = useState(false);
@@ -2124,8 +2125,15 @@ function CanonContent(): React.ReactElement {
               >
                 Problems
               </button>
+              <button
+                className={`canon-ide__bottom-tab ${bottomTab === 'runtime' ? 'canon-ide__bottom-tab--active' : ''}`}
+                onClick={() => setBottomTab('runtime')}
+              >
+                Runtime
+              </button>
             </div>
             {bottomTab === 'gates' && <GateRunnerPanel ref={gateRunnerRef} />}
+            {bottomTab === 'runtime' && <CanonRuntimeStatusPanel />}
             {bottomTab === 'terminal' && <CanonTerminal />}
             {bottomTab === 'problems' && (
               <CanonProblemsPanel
