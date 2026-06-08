@@ -44,7 +44,12 @@ Launch/Surface Contract, design-token rules, or the honesty rules.
 
 Do not use this skill to justify product-architecture changes.
 
-## Running the generator (read-only)
+## Running the generator
+The queries below are **read-only** — they read the bundled CSV datasets and
+print to stdout. The upstream CLI also exposes a `--persist` flag that *writes* a
+`design-system/**` folder (to `--output-dir`, default: current directory). Omit
+`--persist` for advisory use; if you do persist, target a scratch directory —
+never write into a TerraFusion source surface.
 ```bash
 # full design system (ASCII)
 python3 .terrafusion/skills/ui-ux-pro-max/scripts/search.py "saas dashboard" --design-system -p "MyApp"
