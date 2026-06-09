@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TerraFusion Sync — Doctor Panel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-title">
+      <span class="brand">TerraFusion Sync</span>
+      <span class="sep">—</span>
+      <span class="page">Doctor Panel</span>
+    </div>
+    <button id="run-btn" class="run-btn">Run Doctor</button>
+  </header>
+
+  <main>
+    <div id="meta" class="meta hidden"></div>
+
+    <div id="overall" class="overall-banner hidden" role="status" aria-live="polite"></div>
+
+    <section id="steps" class="steps" aria-label="Step results">
+      <div class="empty-state">
+        <p>Click <strong>Run Doctor</strong> to check the Sync substrate.</p>
+        <p class="hint">
+          Expected Benton state:
+          <span class="verdict-badge warn">⚠ WARN</span>
+          — substrate clean, safe to work.
+        </p>
+        <p class="hint">Run time is typically 30–60 seconds.</p>
+      </div>
+    </section>
+
+    <section id="pack-validator" class="pack-validator hidden" aria-label="Source pack fit">
+    </section>
+
+    <section id="identity-spine" class="identity-spine hidden" aria-label="Identity spine health">
+    </section>
+
+    <section id="dry-run-preview" class="dry-run-preview" aria-label="Dry-run preview">
+    </section>
+
+    <section id="seal-check" class="seal-check hidden" aria-label="Lane seal gates">
+    </section>
+
+    <section id="domain-coverage" class="domain-coverage hidden" aria-label="Domain coverage">
+    </section>
+
+    <section id="readback-set" class="readback-set" aria-label="Production readback set">
+    </section>
+
+    <section id="evidence-browser" class="evidence-browser" aria-label="Evidence artifacts">
+    </section>
+
+    <details id="raw-output" class="raw-output hidden">
+      <summary>View raw output</summary>
+      <pre id="raw-pre" aria-label="Raw doctor output"></pre>
+    </details>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
