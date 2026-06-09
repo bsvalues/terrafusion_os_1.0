@@ -90,6 +90,7 @@ import { CanonRuntimeStatusPanel } from '../canon/CanonRuntimeStatusPanel';
 import { CanonTaskConsole } from '../canon/CanonTaskConsole';
 import { CanonEvidenceViewer } from '../canon/CanonEvidenceViewer';
 import { CanonGateRunnerPanel } from '../canon/CanonGateRunnerPanel';
+import { CanonDiffRiskViewer } from '../canon/CanonDiffRiskViewer';
 import CanonTerminal from '../canon/CanonTerminal';
 import { GoToLineDialog } from '../canon/GoToLineDialog';
 import { useCanonConnection } from '../canon/useCanonConnection';
@@ -646,7 +647,8 @@ type BottomTabKey =
   | 'runtime'
   | 'console'
   | 'evidence'
-  | 'gaterunner';
+  | 'gaterunner'
+  | 'diffrisk';
 
 const BOTTOM_TABS: ReadonlyArray<{ key: BottomTabKey; label: string }> = [
   { key: 'gates', label: 'Gates' },
@@ -656,6 +658,7 @@ const BOTTOM_TABS: ReadonlyArray<{ key: BottomTabKey; label: string }> = [
   { key: 'console', label: 'Console' },
   { key: 'evidence', label: 'Evidence' },
   { key: 'gaterunner', label: 'Gate Runner' },
+  { key: 'diffrisk', label: 'Diff & Risk' },
 ];
 
 const bottomTabId = (key: BottomTabKey): string => `canon-bottom-tab-${key}`;
@@ -2227,6 +2230,15 @@ function CanonContent(): React.ReactElement {
                 aria-labelledby={bottomTabId('gaterunner')}
               >
                 <CanonGateRunnerPanel />
+              </div>
+            )}
+            {bottomTab === 'diffrisk' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('diffrisk')}
+                aria-labelledby={bottomTabId('diffrisk')}
+              >
+                <CanonDiffRiskViewer />
               </div>
             )}
             {bottomTab === 'problems' && (
