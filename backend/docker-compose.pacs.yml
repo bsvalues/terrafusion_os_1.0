@@ -1,0 +1,48 @@
+# ============================================================================
+# TerraFusion OS - Harris PACS Clone (tf-mssql) Compose
+# ============================================================================
+# Purpose: Promote the ad-hoc `docker run` PACS clone into a supervised,
+#          restart-on-reboot, healthchecked service. Kept isolated from the
+#          main backend compose so PACS lifecycle is independent.
+#
+# Usage (one-time migration from ad-hoc container):
+#   1. Stop existing container:   docker stop tf-mssql && docker rm tf-mssql
+#   2. Ensure backup volume:      docker volume create tf_mssql_baks
+#   3. Set password env var:      $env:TF_PACS_SA_PASSWORD = "<existing-sa-pwd>"
+#   4. Start under compose:       docker compose -f docker-compose.pacs.yml up -d
+#
+# See: backend/docs/pacs/compose-setup.md
+# ============================================================================
+
+version: '3.8'
+
+services:
+  tf-mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: tf-mssql
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:1433:1433' # bind localhost only; not 0.0.0.0
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: ${TF_PACS_SA_PASSWORD:?TF_PACS_SA_PASSWORD env var required}
+      MSSQL_PID: Developer
+    volumes:
+      - tf_mssql_data:/var/opt/mssql
+      - tf_mssql_baks:/var/opt/mssql/backup
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -C -Q ''SELECT 1'' || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  tf_mssql_data:
+    external: true # existing volume; do NOT recreate
+  tf_mssql_baks:
+    external: true # existing volume; do NOT recreate

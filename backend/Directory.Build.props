@@ -1,0 +1,31 @@
+<Project>
+  <!--
+    CI-HYGIENE-1: per-advisory NuGet audit suppressions.
+
+    Three OpenTelemetry packages emit moderate-severity NU1902 CVE
+    warnings at restore time. The packages are pinned in
+    Directory.Packages.props (Api 1.9.0, Exporter.OpenTelemetryProtocol
+    1.9.0, Exporter.Jaeger 1.6.0-rc.1). The Snyk Drift Guard CI job
+    remains the authoritative CVE tracker for these dependencies; this
+    file only silences the per-build warning so the WarningGate (0
+    warnings tolerance, /warnaserror in CI) stays green.
+
+    Per-advisory suppressions (not a blanket NoWarn=NU1902) ensure any
+    NEW CVE on any other package still trips the WarningGate. To
+    re-introduce a tracked CVE here you must explicitly add its
+    advisory URL — silent drift is impossible by construction.
+
+    Lift these once the underlying OpenTelemetry packages are bumped
+    to non-vulnerable versions in Directory.Packages.props. Tracked
+    under CI-HYGIENE-1 (#724); the cleanup of this file IS the close
+    signal for that issue.
+  -->
+  <ItemGroup>
+    <!-- OpenTelemetry.Api 1.9.0 — moderate. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-g94r-2vxg-569j" />
+    <!-- OpenTelemetry.Exporter.Jaeger 1.6.0-rc.1 — moderate. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-38h3-2333-qx47" />
+    <!-- OpenTelemetry.Exporter.OpenTelemetryProtocol 1.9.0 — moderate. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-4625-4j76-fww9" />
+  </ItemGroup>
+</Project>
