@@ -41,9 +41,10 @@ public sealed class LegacyTfUnprovenOwnerCurrent
     public Guid PromotionLoadBatchId { get; set; }
 
     /// <summary>
-    /// Closed vocabulary: <c>"NO_PARCEL_XREF"</c> |
-    /// <c>"AMBIGUOUS_PARCEL_XREF"</c> | <c>"PARCEL_XREF_INACTIVE"</c>.
-    /// B3 v1 emits only the first.
+    /// Closed vocabulary defined in
+    /// <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons"/>.
+    /// B3 currently emits only
+    /// <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons.NoParcelXref"/>.
     /// </summary>
     public string QuarantineReason { get; set; } = string.Empty;
 

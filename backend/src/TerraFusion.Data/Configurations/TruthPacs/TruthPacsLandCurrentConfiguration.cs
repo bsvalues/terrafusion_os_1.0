@@ -61,5 +61,10 @@ public sealed class TruthPacsLandCurrentConfiguration
             .HasDatabaseName("ix_truth_pacs_land_type");
         builder.HasIndex(x => x.LandSegUseCd)
             .HasDatabaseName("ix_truth_pacs_land_use");
+
+        // G1 (v1.10): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_truth_pacs_land_conversion_era");
     }
 }

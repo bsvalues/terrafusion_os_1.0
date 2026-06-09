@@ -12,10 +12,12 @@ namespace TerraFusion.Core.Entities.LegacyTfUnproven;
 /// canonical entity. The row is preserved (not discarded) so a
 /// future slice that closes the parcel-side gap can re-promote.</para>
 ///
-/// <para><see cref="QuarantineReason"/> is a closed vocabulary:
-/// <c>"NO_PARCEL_XREF"</c> | <c>"AMBIGUOUS_PARCEL_XREF"</c> |
-/// <c>"PARCEL_XREF_INACTIVE"</c>. The S3 projector emits only the
-/// first today; the others are reserved for future precision.</para>
+/// <para><see cref="QuarantineReason"/> is a closed vocabulary
+/// defined in
+/// <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons"/>.
+/// The S3 projector emits only
+/// <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons.NoParcelXref"/>
+/// today.</para>
 /// </summary>
 public sealed class LegacyTfUnprovenSale
 {
@@ -41,8 +43,8 @@ public sealed class LegacyTfUnprovenSale
     public Guid PromotionLoadBatchId { get; set; }
 
     /// <summary>
-    /// Closed vocabulary: <c>"NO_PARCEL_XREF"</c> |
-    /// <c>"AMBIGUOUS_PARCEL_XREF"</c> | <c>"PARCEL_XREF_INACTIVE"</c>.
+    /// Closed vocabulary defined in
+    /// <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons"/>.
     /// </summary>
     public string QuarantineReason { get; set; } = string.Empty;
 

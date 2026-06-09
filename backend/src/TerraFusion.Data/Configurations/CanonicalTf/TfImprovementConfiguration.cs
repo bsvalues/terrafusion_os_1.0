@@ -37,5 +37,18 @@ public sealed class TfImprovementConfiguration : IEntityTypeConfiguration<TfImpr
             .HasDatabaseName("ix_tf_improvement_promotion_batch");
         builder.HasIndex(x => x.ImprvTypeCd)
             .HasDatabaseName("ix_tf_improvement_type");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_improvement_conversion_era");
+
+        // SYNC-DOCTRINE-4: universe classification (forwarded from truth).
+        builder.Property(x => x.UniverseCode).HasMaxLength(50);
+        builder.Property(x => x.UniverseRuleId);
+        builder.Property(x => x.UniverseConfidence).HasMaxLength(8);
+        builder.Property(x => x.UniverseReason).HasMaxLength(1024);
+        builder.HasIndex(x => x.UniverseCode)
+            .HasDatabaseName("ix_tf_improvement_universe");
     }
 }
