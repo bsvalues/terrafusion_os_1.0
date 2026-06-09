@@ -1,0 +1,9 @@
+# This vendored skill ships its static CSV datasets under data/. The repo-root
+# .gitignore excludes every `data/` directory; re-include THIS skill's data
+# (it is required at runtime by scripts/search.py). Deliberate, scoped override.
+!data/
+!data/**
+
+# Never vendor Python bytecode.
+__pycache__/
+*.pyc
