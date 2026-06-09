@@ -179,6 +179,15 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     expect(within(tablist).getByRole('tab', { name: 'Diff & Risk' })).toBeInTheDocument();
   });
 
+  it('applies the ARIA tab attributes to the Gate Runner tab too', () => {
+    render(<CanonHome />);
+    const gateRunnerTab = screen.getByRole('tab', { name: 'Gate Runner' });
+    expect(gateRunnerTab).toHaveAttribute('aria-selected', 'false');
+    expect(gateRunnerTab).toHaveAttribute('aria-controls');
+    expect(gateRunnerTab).toHaveAttribute('tabindex', '-1');
+    expect(gateRunnerTab.id).toBeTruthy();
+  });
+
   it('applies the ARIA tab attributes to the Diff & Risk tab too', () => {
     render(<CanonHome />);
     const diffRiskTab = screen.getByRole('tab', { name: 'Diff & Risk' });

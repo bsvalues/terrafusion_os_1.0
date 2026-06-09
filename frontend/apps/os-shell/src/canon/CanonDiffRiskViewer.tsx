@@ -87,8 +87,8 @@ function FileRiskRow({ file }: { file: FileRisk }): React.ReactElement {
           <span className='ml-auto text-xs font-semibold text-amber-300'>manual review</span>
         ) : null}
       </div>
-      {(file.reasons ?? []).map((r) => (
-        <span key={r} className={mutedClass}>
+      {(file.reasons ?? []).map((r, i) => (
+        <span key={`${file.path}-reason-${i}`} className={mutedClass}>
           • {r}
         </span>
       ))}
