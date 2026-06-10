@@ -61,6 +61,25 @@ Every payload is redacted before it leaves the module; sink failures never break
 mutable business state (append-only). RAG/diagnostic event helpers exist as the **contract** only —
 their producers land in WO-LOCALOPS-004/005.
 
+## Local KB / source-grounded retrieval (WO-LOCALOPS-004)
+
+`os-platform/core/pilot/local-agent/localOpsKb.ts` (`createLocalOpsKb`) is a minimal, **local-only**
+markdown retrieval interface — no vector store, no embeddings, no external/web search, no cloud. It
+returns **source references** (`sourceFile`, `heading`, redacted `snippet`, `score`, `matchReason`),
+not answers.
+
+- **County-data safe by construction:** only roots under the `docs/` allowlist are scanned. A
+  configured `AI_LOCAL_KB_PATH`/`AI_RUNBOOK_PATH` outside the allowlist (or escaping the repo) is
+  **excluded and reported** — there is no path that indexes county production documents.
+- **Honest grounding:** when `AI_REQUIRE_SOURCES=true` and nothing matches, `grounded:false` and
+  `canAnswer:false` — the caller must not produce an unsupported confident answer.
+- Emits `localops.rag.retrieved` through the WO-003 trace adapter when one is supplied (optional;
+  retrieval works with no sink).
+- `status()` reports roots, excluded roots, file count, and the require-sources flag.
+
+Retrieval consumers (e.g. an answer surface) are **not** built here — this is the interface + grounding
+contract only.
+
 ## Existing seams (context, not commitment)
 
 A governance-controlled local agent already exists at `os-platform/core/pilot/local-agent/`

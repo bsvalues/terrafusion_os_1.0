@@ -374,3 +374,13 @@ export {
   type RecordingLocalOpsTraceSink,
   type LocalOpsTraceOptions,
 } from './localOpsTrace.js';
+
+export {
+  KB_ALLOWED_ROOT_PREFIXES,
+  LocalOpsKb,
+  createLocalOpsKb,
+  type KbSourceRef,
+  type KbRetrieveResult,
+  type KbStatus,
+  type CreateLocalOpsKbOptions,
+} from './localOpsKb.js';
