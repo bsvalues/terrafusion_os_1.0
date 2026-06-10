@@ -66,6 +66,24 @@ public sealed class LegacyPacsRawLandDetail
     /// <summary>Effective age (depreciation/accrual basis).</summary>
     public short? LandSegEffAge { get; set; }
 
+    // ── SYNC-DOCTRINE-4-IMPL-V3: ag-program participation ────────
+    /// <summary>
+    /// PACS <c>dbo.land_detail.ag_apply</c> column. Y/T or F/N
+    /// (PACS character coding for boolean). Indicates whether this
+    /// land segment participates in the agricultural / current-use /
+    /// open-space valuation program. Used by SYNC-DOCTRINE-4
+    /// AG_CURRENT_USE rule.
+    /// </summary>
+    public string? AgApply { get; set; }
+
+    /// <summary>
+    /// PACS <c>dbo.land_detail.ag_use_cd</c>. Closed vocabulary:
+    /// 'AG' (agriculture), 'OSP' (open space), 'CNV' (current-use
+    /// converted), etc. Used to subdivide AG_CURRENT_USE into
+    /// AG/OSP/CNV in a future doctrine slice.
+    /// </summary>
+    public string? AgUseCd { get; set; }
+
     // ── Provenance (the doctrine's non-negotiable surface) ────────
     public Guid LoadBatchId { get; set; }
     public string SourceQueryHash { get; set; } = string.Empty;

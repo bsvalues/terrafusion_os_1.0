@@ -18,6 +18,7 @@
  */
 
 import * as assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { beforeEach, describe, it } from 'node:test';
 
 // ============================================================================
@@ -117,6 +118,14 @@ function createMockRegistration(overrides: Partial<ServiceRegistration> = {}): S
     created_at: new Date().toISOString(),
     ...overrides,
   };
+}
+
+function toOpaqueId(value: string): string {
+  if (value.startsWith('sha256:')) {
+    return value;
+  }
+
+  return `sha256:${createHash('sha256').update(value, 'utf8').digest('hex')}`;
 }
 
 function createMockValidation(
@@ -254,8 +263,8 @@ function createMockSelfServeOnboardingService(): SelfServeOnboardingService {
     async createRegistration(serviceName, ownerId, teamId, tier) {
       const registration = createMockRegistration({
         service_name: serviceName,
-        owner_id: ownerId,
-        team_id: teamId,
+        owner_id: toOpaqueId(ownerId),
+        team_id: toOpaqueId(teamId),
         tier,
       });
       registrations.set(registration.registration_id, registration);

@@ -44,5 +44,14 @@ public sealed class LegacyTfUnprovenImprvAttrConfiguration
 
         builder.HasIndex(x => x.LandingLoadBatchId)
             .HasDatabaseName("ix_legacy_tf_unproven_imprv_attr_landingbatch");
+
+        // SYNC-DOCTRINE-4: universe-aware quarantine context.
+        builder.Property(x => x.UniverseCode).HasMaxLength(50);
+        builder.Property(x => x.UniverseRuleId);
+        builder.Property(x => x.QuarantineReasonDetail).HasMaxLength(50);
+        builder.HasIndex(x => x.UniverseCode)
+            .HasDatabaseName("ix_legacy_tf_unproven_imprv_attr_universe");
+        builder.HasIndex(x => x.QuarantineReasonDetail)
+            .HasDatabaseName("ix_legacy_tf_unproven_imprv_attr_reason_detail");
     }
 }

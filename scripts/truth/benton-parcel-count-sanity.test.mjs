@@ -45,6 +45,29 @@ test('Benton parcel sanity fails when endpoint returns unfiltered raw rows', asy
     nullCountyRows: 0,
     nonBentonRows: 0,
     propertyStatusColumns: [],
+    sourceMirror: {
+      pacsParcelRows: 128950,
+      pacsParcelDistinctRows: 128950,
+      propertyRowsMinusPacsParcelRows: -162,
+    },
+    topPropertyTypes: [{ propertyType: 'R', rows: 96716 }],
+    topPropertyUseCodes: [{ propertyUseCode: '11', rows: 56312 }],
+    topSitusCities: [{ situsCity: 'KENNEWICK', rows: 43846 }],
+    fieldCompleteness: {
+      totalRows: 128788,
+      missingPropertyUseCodeRows: 33948,
+      missingSitusCityRows: 28766,
+      zeroMarketValueRows: 36840,
+      zeroAssessedValueRows: 36840,
+      zeroLandValueRows: 52084,
+      zeroImprovementValueRows: 53349,
+      missingYearBuiltRows: 33026,
+      missingNeighborhoodRows: 41204,
+    },
+    temporalRange: {
+      earliestLastUpdated: '2026-04-18T04:09:37Z',
+      latestLastUpdated: '2026-04-28T05:27:22Z',
+    },
     endpointBehavior: {
       endpoint: '/api/counties/benton/parcels',
       endpointStatus: 200,
@@ -76,6 +99,8 @@ test('Benton parcel sanity fails when endpoint returns unfiltered raw rows', asy
   assert.ok(report.blockers.some(blocker => blocker.includes('active/current parcel filtering')));
   assert.ok(report.blockers.some(blocker => blocker.includes('unknown active/inactive status')));
   assert.ok(report.blockers.some(blocker => blocker.includes('current-year Benton parcel count')));
+  assert.equal(report.sourceMirror.pacsParcelRows, 128950);
+  assert.equal(report.fieldCompleteness.missingPropertyUseCodeRows, 33948);
 });
 
 test('Benton parcel sanity passes for sane active parcel shape', async () => {
@@ -100,6 +125,29 @@ test('Benton parcel sanity passes for sane active parcel shape', async () => {
     nullCountyRows: 0,
     nonBentonRows: 0,
     propertyStatusColumns: ['Status'],
+    sourceMirror: {
+      pacsParcelRows: 89447,
+      pacsParcelDistinctRows: 89447,
+      propertyRowsMinusPacsParcelRows: 0,
+    },
+    topPropertyTypes: [{ propertyType: 'R', rows: 89447 }],
+    topPropertyUseCodes: [{ propertyUseCode: '11', rows: 89447 }],
+    topSitusCities: [{ situsCity: 'KENNEWICK', rows: 89447 }],
+    fieldCompleteness: {
+      totalRows: 89447,
+      missingPropertyUseCodeRows: 0,
+      missingSitusCityRows: 0,
+      zeroMarketValueRows: 0,
+      zeroAssessedValueRows: 0,
+      zeroLandValueRows: 0,
+      zeroImprovementValueRows: 0,
+      missingYearBuiltRows: 0,
+      missingNeighborhoodRows: 0,
+    },
+    temporalRange: {
+      earliestLastUpdated: '2026-05-04T00:00:00Z',
+      latestLastUpdated: '2026-05-04T00:00:00Z',
+    },
     endpointBehavior: {
       endpoint: '/api/counties/benton/parcels',
       endpointStatus: 200,
@@ -127,4 +175,74 @@ test('Benton parcel sanity passes for sane active parcel shape', async () => {
 
   assert.equal(report.passed, true);
   assert.equal(report.distinctActiveParcelNumbers, 89447);
+});
+
+test('Benton parcel sanity accepts canonical runtime semantics without raw Properties status columns', async () => {
+  const root = makeTempRepo('tf-benton-parcel-sanity-canonical-');
+  const fixturePath = writeFixture(root, {
+    generatedAt: '2026-05-13T00:00:00.000Z',
+    runtimeBaseUrl: 'fixture',
+    runtimeTable: 'canonical_tf.tf_parcel',
+    totalPropertyRows: 3197521,
+    bentonRowsByCountyId: 89447,
+    bentonRowsByCountyName: 89447,
+    bentonRowsByCountyToken: 89447,
+    activeRows: 89447,
+    inactiveRows: 0,
+    unknownStatusRows: 0,
+    distinctParcelNumbers: 89447,
+    distinctActiveParcelNumbers: 89447,
+    distinctCurrentYearParcelNumbers: 89447,
+    currentTaxYear: null,
+    rowsByTaxYear: [{ taxYear: null, rows: 89447, distinctParcels: 89447 }],
+    rowsByPropertyStatus: [{ status: 'ACTIVE', rows: 89447 }],
+    rowsByCounty: [{ countyId: 'benton', countyName: 'Benton County', rows: 89447 }],
+    nullCountyRows: 0,
+    nonBentonRows: 3108074,
+    propertyStatusColumns: ['ParcelStatus'],
+    sourceMirror: {
+      pacsParcelRows: null,
+      pacsParcelDistinctRows: null,
+      propertyRowsMinusPacsParcelRows: null,
+    },
+    topPropertyTypes: [],
+    topPropertyUseCodes: [],
+    topSitusCities: [],
+    fieldCompleteness: { totalRows: 89447 },
+    temporalRange: {
+      earliestUpdatedAt: '2026-05-13T00:00:00Z',
+      latestUpdatedAt: '2026-05-13T00:00:00Z',
+    },
+    endpointBehavior: {
+      endpoint: '/api/counties/benton/parcels',
+      endpointStatus: 200,
+      returnedTotal: 89447,
+      selectedCountyEchoed: true,
+      activeCurrentSemanticsProven: true,
+      semantics: {
+        countyScoped: true,
+        activeOnly: true,
+        currentParcelVersion: true,
+        duplicateParcelVersionsCollapsed: true,
+        source: 'wa_initial_seed_deduped_import',
+      },
+    },
+    expectedActiveParcelRange: { min: 1, max: 100000, source: 'operator_expectation' },
+  });
+
+  await execFileAsync('node', [scriptPath, root], {
+    cwd: process.cwd(),
+    env: { ...process.env, TF_BENTON_PARCEL_SANITY_FIXTURE: fixturePath },
+  });
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'benton-parcel-count-sanity.json'),
+      'utf8'
+    )
+  );
+
+  assert.equal(report.passed, true);
+  assert.equal(report.endpointBehavior.activeCurrentSemanticsProven, true);
+  assert.equal(report.endpointBehavior.semantics.source, 'wa_initial_seed_deduped_import');
 });

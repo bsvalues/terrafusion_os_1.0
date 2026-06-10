@@ -45,5 +45,25 @@ public sealed class TfSaleConfiguration : IEntityTypeConfiguration<TfSale>
         // Identity lookup.
         builder.HasIndex(x => x.ChgOfOwnerId)
             .HasDatabaseName("ix_tf_sale_chgofowner");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_sale_conversion_era");
+
+        // SYNC-DOCTRINE-2 (B2): dual-surface qualification fields.
+        // SaleQualified is a derived back-compat column (DOR OR County).
+        builder.Property(x => x.SaleQualified).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.DorRatioQualified).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.CountyRatioReviewed).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.CountyRatioQualified).IsRequired().HasDefaultValue(false);
+        builder.Property(x => x.CountyRatioCode).HasMaxLength(8);
+        builder.Property(x => x.CountyRatioDescription).HasMaxLength(64);
+
+        // Qualification-aware reads.
+        builder.HasIndex(x => x.DorRatioQualified)
+            .HasDatabaseName("ix_tf_sale_dor_qualified");
+        builder.HasIndex(x => new { x.CountyRatioReviewed, x.CountyRatioQualified })
+            .HasDatabaseName("ix_tf_sale_county_review_qual");
     }
 }

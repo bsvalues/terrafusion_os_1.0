@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.TerraForge;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
 using TerraFusion.Core.Entities.Sync.Mapping;
@@ -10,6 +11,7 @@ using TerraFusion.Core.Entities.Sync.Profile;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
+using TerraFusion.Data.Configurations.TerraForge;
 using TerraFusion.Data.Configurations.Sync;
 using TerraFusion.Data.Configurations.Sync.Mapping;
 using TerraFusion.Data.Configurations.Sync.Profile;
@@ -166,6 +168,21 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.SyncBridge.PromotionGateResult>
     SyncBridgePromotionGateResults { get; set; } = null!;
 
+  // SLICE-H (Workbench v0.2): append-only audit log for dry-run preview calls.
+  // Records that a preview ran — does NOT authorize execution or mutate county data.
+  // is_preview = true enforced via DB check constraint. No UpdatedAt (append-only).
+  // Per docs/sync/workbench/SLICE_H_DRY_RUN_PREVIEW_CONTRACT.md §3 + §12.
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.DryRunLog>
+    SyncBridgeDryRunLogs { get; set; } = null!;
+
+  // SLICE-I (Workbench v0.2): append-only operator disposition log for quarantine review.
+  // Records ACCEPT_AS_IS | REJECT_PERMANENTLY | NEEDS_RESEARCH annotations per quarantine row.
+  // Does NOT modify quarantine source rows; does NOT release, promote, or delete county data.
+  // Current disposition = most recent row for (QuarantineId, Lane) by CreatedAt DESC.
+  // Per docs/sync/workbench/SLICE_I_QUARANTINE_REVIEW_CONTRACT.md §3 + §7.
+  public DbSet<TerraFusion.Core.Entities.SyncBridge.QuarantineReviewDecision>
+    SyncBridgeQuarantineReviewDecisions { get; set; } = null!;
+
   // ── GIS canonical mesh (Slice G1-A) ─────────────────────────────────
   // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block D.
   // Parcel polygons sourced from county ArcGIS REST feature services;
@@ -186,6 +203,20 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // pointer required by the truth_pacs.sale promoter (S2-B).
   public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropSuppAssoc>
     LegacyPacsRawPropSuppAssocs { get; set; } = null!;
+
+  // Slice S1 (SYNC-POP-4a): property/parcel master landing — the
+  // identity table that anchors every downstream sale, owner,
+  // improvement, land, and value record. Required by the upcoming
+  // truth_pacs.parcel_spine promoter (SYNC-POP-4b) and the
+  // canonical_tf.tf_parcel projector (SYNC-POP-4c).
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawProperty>
+    LegacyPacsRawProperties { get; set; } = null!;
+
+  // SYNC-DOCTRINE-4-IMPL-V4: legacy_pacs_raw.property_val. Per-year
+  // per-supplement valuation rows; carries property_use_cd that
+  // SYNC-DOCTRINE-4 REAL_COMMERCIAL EXCLUDE rule reads.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyVal>
+    LegacyPacsRawPropertyVals { get; set; } = null!;
 
   // Slice B1-A: account landing — the global party/entity identity
   // record with the rich PII surface. Block B's first stop.
@@ -225,6 +256,34 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvAttr>
     LegacyTfUnprovenImprvAttrs { get; set; } = null!;
 
+  // SYNC-WORKBENCH-F: operator-decision sibling for
+  // legacy_tf_unproven.unresolved_imprv_attr. One row per triage
+  // decision (route or dismiss); doctrine-immutable quarantine row
+  // remains untouched.
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.UnprovenImprvAttrTriage>
+    UnprovenImprvAttrTriages { get; set; } = null!;
+
+  // SYNC-WORKBENCH-G: atomic decision-commit ledger. One row per
+  // operator-issued commit (workbench_commit) plus a link table
+  // (workbench_commit_decision_link) binding each Routed/Dismissed
+  // triage row to its committing snapshot. Decision-log + gate-
+  // snapshot only; DOES NOT mutate truth_pacs.* or canonical_tf.*.
+  public DbSet<TerraFusion.Core.Entities.Workbench.WorkbenchCommit>
+    WorkbenchCommits { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.WorkbenchCommitDecisionLink>
+    WorkbenchCommitDecisionLinks { get; set; } = null!;
+
+  // SYNC-COMPLETE-2: durable full-corpus sync runner. One row per
+  // operator-issued run + 6 pre-created lane-result rows + 6
+  // reconciliation rows after the run completes. Hosted background
+  // worker advances queued runs through the lane sequence.
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusRun>
+    FullCorpusRuns { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusLaneResult>
+    FullCorpusLaneResults { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.Workbench.FullCorpusReconciliation>
+    FullCorpusReconciliations { get; set; } = null!;
+
   // Slice L1: land_detail landing — per-segment land breakdown
   // (homesite, ag, pasture, timber, etc). 4-key composite. Required
   // by the truth_pacs.land_current promoter (future).
@@ -236,6 +295,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Stepping stone toward canonical_tf.tf_sale (S3).
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsSale>
     TruthPacsSales { get; set; } = null!;
+
+  // Slice S2-B (SYNC-POP-4b): truth_pacs.parcel_spine — real-property-
+  // filtered projection of the raw property landing tier. Stepping
+  // stone toward canonical_tf.tf_parcel (SYNC-POP-4c).
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsParcelSpine>
+    TruthPacsParcelSpines { get; set; } = null!;
 
   // Slice B2-A: truth_pacs.owner_current — supp-aware-validated
   // current owner snapshot per (prop_id, owner_tax_yr) joined to
@@ -260,6 +325,57 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // canonical_tf.tf_land (L3).
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsLandCurrent>
     TruthPacsLandCurrents { get; set; } = null!;
+
+  // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current — current
+  // operational-year assessed/market/appraised value at the ACTIVE
+  // supplement, one live row per parcel-year.
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsAssessmentCurrent>
+    TruthPacsAssessmentCurrents { get; set; } = null!;
+
+  // ASSESSMENT-VALUE-SEAL: canonical_tf.tf_assessment — parcel-keyed
+  // current assessment value rollup (distinct from tf_assessment_wsdor).
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessment>
+    TfAssessments { get; set; } = null!;
+
+  // EXEMPTION-FACT-SEAL: current-year active-supplement exemption facts.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyExemption>
+    LegacyPacsRawPropertyExemptions { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsExemptionCurrent>
+    TruthPacsExemptionCurrents { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfExemption>
+    TfExemptions { get; set; } = null!;
+
+  // JURISDICTION-SPINE: parcel→tax-area assignment + tax-area/district dicts + TCA→district map.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyTaxArea>
+    LegacyPacsRawPropertyTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxArea>
+    TfTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxDistrict>
+    TfTaxDistricts { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfParcelTaxArea>
+    TfParcelTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxAreaDistrict>
+    TfTaxAreaDistricts { get; set; } = null!;
+
+  // REVENUE-SPINE Stage 1: current-year levy tax bill explanation read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawTaxBillLine>
+    LegacyPacsRawTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfLevyRate>
+    TfLevyRates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillLine>
+    TfTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillCurrent>
+    TfTaxBillCurrents { get; set; } = null!;
+
+  // REVENUE-SPINE Stage 2B: current-year special-assessment bill read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAssessmentBillLine>
+    LegacyPacsRawAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentAgency>
+    TfAssessmentAgencies { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillLine>
+    TfAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillCurrent>
+    TfAssessmentBillCurrents { get; set; } = null!;
 
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
@@ -296,6 +412,95 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     TfImprovementFeatures { get; set; } = null!;
   public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenImprvCurrent>
     LegacyTfUnprovenImprvCurrents { get; set; } = null!;
+
+  // Slice L3: canonical_tf.tf_land projection. Land segments whose
+  // parcel cannot be resolved are quarantined to
+  // legacy_tf_unproven.land_current.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfLand>
+    TfLands { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.LegacyTfUnproven.LegacyTfUnprovenLandCurrent>
+    LegacyTfUnprovenLandCurrents { get; set; } = null!;
+
+  // Slice E1: canonical_tf.dict_neighborhood — first canonical
+  // dictionary table. hood_cd domain (operator's truth). Per
+  // Block-C contract v1.1 (docs/pacs/block-c-contract-v1.1.md).
+  // No projector consumes this yet; E1 is a schema lock, not a
+  // runtime gate.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictNeighborhood>
+    DictNeighborhoods { get; set; } = null!;
+
+  // Slice E1 (Phase 2 closure): the remaining six canonical
+  // dictionary tables called out in
+  // docs/pacs/blocks-d-through-h-design.md §E. All six mirror
+  // dict_neighborhood exactly. No projector consumes any of them
+  // yet; this is schema lock, not a runtime gate. Operator-driven
+  // seeding is a separate slice.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictLandUse>
+    DictLandUses { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictLandState>
+    DictLandStates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictImprvType>
+    DictImprvTypes { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictImprvState>
+    DictImprvStates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictExemptionType>
+    DictExemptionTypes { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.DictSitusLegal>
+    DictSitusLegals { get; set; } = null!;
+
+  // Slice E2: canonical_tf.attribute_definition — i_attr_id
+  // mapping spine. Per Block-C contract v1.2
+  // (docs/pacs/block-c-contract-v1.2.md). E3 wires
+  // tf_improvement_feature.AttributeId / tf_land.AttributeId FKs
+  // onto this; E4 adds the UNKNOWN_ATTRIBUTE quarantine path.
+  // E2 itself is schema-only.
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.AttributeDefinition>
+    AttributeDefinitions { get; set; } = null!;
+
+  // SYNC-DOCTRINE-1 (B1): doctrine_tf.tf_doctrine_ratio_policy.
+  // Year-aware, source-aware, evidence-backed sales-ratio
+  // qualification rules. Replaces hardcoded ratio constants in
+  // promoters with rows scoped by county + study + sale-year window.
+  // Per the operator-pushback corrections of 2026-05-06.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineRatioPolicy>
+    TfDoctrineRatioPolicies { get; set; } = null!;
+
+  // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_property_universe.
+  // Year-aware, evidence-backed property-universe classification
+  // rules. Six universes + UNKNOWN sentinel.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrinePropertyUniverse>
+    TfDoctrinePropertyUniverses { get; set; } = null!;
+
+  // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_attribute_dictionary.
+  // Per-universe imprv_attr code dictionary. Replaces the global
+  // RefreshableImprvAttrDictionary for universe-aware lookups.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineAttributeDictionary>
+    TfDoctrineAttributeDictionaries { get; set; } = null!;
+
+  // SYNC-DOCTRINE-5: doctrine_tf.tf_doctrine_sales_qualification_codes.
+  // Year-aware, evidence-backed sales qualification codes indexed by
+  // doctrine vocabulary surface (DOR_RATIO | COUNTY_RATIO) and the
+  // underlying PACS column (sl_county_ratio_cd | sl_ratio_type_cd).
+  // Companion to tf_doctrine_ratio_policy; powers the audit endpoint
+  // that compares promoter behavior against doctrine.
+  public DbSet<TerraFusion.Core.Entities.DoctrineTf.TfDoctrineSalesQualificationCode>
+    TfDoctrineSalesQualificationCodes { get; set; } = null!;
+
+  // Slice D1: legacy_arcgis_raw.parcel_geom — first stop in the
+  // 5-schema doctrine for ArcGIS-sourced geometry. Per Block-D
+  // execution plan (docs/pacs/block-d-execution-plan.md §3.1).
+  // Verbatim REST-response landing with full provenance; truth
+  // promotion at D2, canonical projection at D3.
+  public DbSet<TerraFusion.Core.Entities.LegacyArcGisRaw.LegacyArcGisRawParcelGeom>
+    LegacyArcGisRawParcelGeoms { get; set; } = null!;
+
+  // Slice D2: truth_arcgis.parcel_geom_current — supp-aware-
+  // validated current ArcGIS polygon, latest-per-(CountyId,
+  // ArcGisObjectId). Per docs/pacs/block-d-execution-plan.md §3.2.
+  // Geometry validity gate filters malformed WKT before D3
+  // projects to canonical_tf via APN crosswalk.
+  public DbSet<TerraFusion.Core.Entities.TruthArcGis.TruthArcGisParcelGeomCurrent>
+    TruthArcGisParcelGeomCurrents { get; set; } = null!;
 
   // Slice C41-B: per-county pointer naming the operator-active
   // Mapped workbook. Singleton per county (PK = CountyId). See
@@ -446,6 +651,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CountyExceptionSet> CountyExceptionSets { get; set; } = null!;
   public DbSet<CountyDownstreamClosureReceipt> CountyDownstreamClosureReceipts { get; set; } = null!;
   public DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; } = null!;
+
+  // TerraForge comp-set work products
+  public DbSet<CompSet> CompSets { get; set; } = null!;
+  public DbSet<CompSetCandidate> CompSetCandidates { get; set; } = null!;
+  public DbSet<CompSetCandidateReview> CompSetCandidateReviews { get; set; } = null!;
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
@@ -898,6 +1108,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.SyncBridge.RollbackPackageConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.SyncBridge.PromotionGateResultConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.DryRunLogConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.SyncBridge.QuarantineReviewDecisionConfiguration());
 
     // ── GIS canonical mesh (Slice G1-A) ──────────────────────────────
     // Per docs/plans/terrafusion-90-day-execution-plan.md §4 Block D.
@@ -912,6 +1126,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Slice S2-A: prop_supp_assoc landing — supp-aware-join pointer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropSuppAssocConfiguration());
+
+    // Slice S1 (SYNC-POP-4a): property/parcel master landing — the
+    // identity table for the doctrine parcel pipeline.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyConfiguration());
+
+    // SYNC-DOCTRINE-4-IMPL-V4: per-year property_val landing. Provides
+    // property_use_cd to the universe classifier.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyValConfiguration());
 
     // Slice B1-A: account landing — Block B's PII-rich identity table.
     modelBuilder.ApplyConfiguration(
@@ -938,6 +1162,25 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawImprvAttrConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvAttrConfiguration());
+    // SYNC-WORKBENCH-F: triage sibling table.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.UnprovenImprvAttrTriageConfiguration());
+
+    // SYNC-WORKBENCH-G: atomic decision-commit ledger (commit row +
+    // per-decision link rows). Schema tf_workbench.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.WorkbenchCommitDecisionLinkConfiguration());
+
+    // SYNC-COMPLETE-2: durable full-corpus runner (run + per-lane
+    // result + per-lane reconciliation). Schema tf_workbench.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusRunConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusLaneResultConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.Workbench.FullCorpusReconciliationConfiguration());
 
     // Slice L1: land_detail landing — per-segment land breakdown.
     modelBuilder.ApplyConfiguration(
@@ -947,6 +1190,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // supp-aware-validated truth layer.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsSaleConfiguration());
+
+    // Slice S2-B (SYNC-POP-4b): truth_pacs.parcel_spine — real-
+    // property-filtered identity layer for the parcel pipeline.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsParcelSpineConfiguration());
 
     // Slice S3: canonical_tf.tf_sale + legacy_tf_unproven.sale.
     modelBuilder.ApplyConfiguration(
@@ -973,6 +1221,53 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsLandCurrentConfiguration());
 
+    // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current + canonical_tf.tf_assessment.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsAssessmentCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentConfiguration());
+
+    // EXEMPTION-FACT-SEAL: legacy_pacs_raw.property_exemption +
+    // truth_pacs.exemption_current + canonical_tf.tf_exemption.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyExemptionConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsExemptionCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfExemptionConfiguration());
+
+    // JURISDICTION-SPINE: tax-area/district dicts + parcel assignment + TCA→district map.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxDistrictConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfParcelTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaDistrictConfiguration());
+
+    // REVENUE-SPINE Stage 1: levy tax bill explanation read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfLevyRateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillCurrentConfiguration());
+
+    // REVENUE-SPINE Stage 2B: special-assessment bill read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentAgencyConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillCurrentConfiguration());
+
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.
     modelBuilder.ApplyConfiguration(
@@ -996,6 +1291,66 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       new TerraFusion.Data.Configurations.CanonicalTf.TfImprovementFeatureConfiguration());
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenImprvCurrentConfiguration());
+
+    // Slice L3: canonical_tf.tf_land + legacy_tf_unproven.land_current.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfLandConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyTfUnproven.LegacyTfUnprovenLandCurrentConfiguration());
+
+    // Slice E1: canonical_tf.dict_neighborhood — first canonical
+    // dictionary table. Per docs/pacs/block-c-contract-v1.1.md.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictNeighborhoodConfiguration());
+
+    // Slice E1 (Phase 2 closure): the remaining six dict_*
+    // tables. Per docs/pacs/blocks-d-through-h-design.md §E.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictLandUseConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictLandStateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictImprvTypeConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictImprvStateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictExemptionTypeConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.DictSitusLegalConfiguration());
+
+    // Slice E2: canonical_tf.attribute_definition — i_attr_id
+    // mapping spine. Per docs/pacs/block-c-contract-v1.2.md.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.AttributeDefinitionConfiguration());
+
+    // SYNC-DOCTRINE-1 (B1): doctrine_tf.tf_doctrine_ratio_policy.
+    // Year-aware sales-ratio qualification rule rows.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineRatioPolicyConfiguration());
+
+    // SYNC-DOCTRINE-4: doctrine_tf.tf_doctrine_property_universe and
+    // doctrine_tf.tf_doctrine_attribute_dictionary. Six-universe
+    // classification + per-universe code dictionary.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrinePropertyUniverseConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineAttributeDictionaryConfiguration());
+
+    // SYNC-DOCTRINE-5: doctrine_tf.tf_doctrine_sales_qualification_codes.
+    // Year-aware sales qualification codes by surface + source column.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.DoctrineTf.TfDoctrineSalesQualificationCodeConfiguration());
+
+    // Slice D1: legacy_arcgis_raw.parcel_geom — raw FeatureService
+    // landing. Per docs/pacs/block-d-execution-plan.md §3.1.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyArcGisRaw.LegacyArcGisRawParcelGeomConfiguration());
+
+    // Slice D2: truth_arcgis.parcel_geom_current — latest-per-
+    // (CountyId, ArcGisObjectId) truth promotion.
+    // Per docs/pacs/block-d-execution-plan.md §3.2.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthArcGis.TruthArcGisParcelGeomCurrentConfiguration());
 
     // Sync Bridge v1 — Phase 0 field_authority seed for the parcel
     // domain. Per docs/pacs/pacs-sync-bridge-v1-spec.md §4.
@@ -1258,6 +1613,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CountyExceptionSetConfiguration());
     modelBuilder.ApplyConfiguration(new CountyDownstreamClosureReceiptConfiguration());
     modelBuilder.ApplyConfiguration(new CountySpatialArtifactConfiguration());
+    modelBuilder.ApplyConfiguration(new CompSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CompSetCandidateConfiguration());
+    modelBuilder.ApplyConfiguration(new CompSetCandidateReviewConfiguration());
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
     // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
@@ -1335,8 +1693,22 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     }
   }
 
+  /// <summary>
+  /// PERF (2026-05-27): when true, SaveChangesAsync skips per-row audit-log
+  /// creation + JSON change serialization + the second audit SaveChanges.
+  /// Bulk sync drains (e.g. the canonical improvement projector inserting
+  /// thousands of features per chunk) do NOT need per-row audit — provenance
+  /// is captured by sync_bridge.load_batch + source_xref + PromotionLoadBatchId.
+  /// Leaving audit on doubled write volume and serialized every entity to JSON,
+  /// which made the projector ~9 min/chunk. Off by default; set around bulk ops.
+  /// </summary>
+  public bool SuppressAuditLogging { get; set; }
+
   public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
   {
+    if (SuppressAuditLogging)
+      return await base.SaveChangesAsync(cancellationToken);
+
     // Add audit logging for all changes
     var auditEntries = CreateAuditEntries();
 

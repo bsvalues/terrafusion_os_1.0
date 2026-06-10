@@ -63,5 +63,10 @@ public sealed class TruthPacsWashPropOwnerValConfiguration
         // BOE status scans.
         builder.HasIndex(x => x.BoeStatus)
             .HasDatabaseName("ix_truth_pacs_wpov_boe_status");
+
+        // G1 (v1.10): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_truth_pacs_wpov_conversion_era");
     }
 }

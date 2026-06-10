@@ -1,0 +1,147 @@
+import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+const mockRuntime = vi.hoisted(() => ({
+  countyScope: {
+    countyId: '19190019-1919-1919-1919-191919191919',
+    supported: true,
+    message: null as string | null,
+  },
+}));
+
+vi.mock('../incomeForgeStore', () => {
+  const mockStore = vi.fn((selector?: (s: unknown) => unknown) => {
+    const state = {
+      capRates: [
+        { propertyType: 'commercial', label: 'Commercial', min: 5.25, typical: 6.25, max: 7.25 },
+        { propertyType: 'industrial', label: 'Industrial', min: 6.0, typical: 7.0, max: 8.0 },
+      ],
+      marketData: {
+        county: 'Benton',
+        state: 'WA',
+        medianHouseholdIncome: 82500,
+        unemploymentRate: 4.2,
+        populationGrowthRate: 1.6,
+        medianHomePrice: 485000,
+        medianPricePerSqft: 255,
+        medianDaysOnMarket: 24,
+        monthsOfInventory: 2.1,
+        employmentSectors: [{ sector: 'Health Care', jobs: 24500, share: 18.4 }],
+        effectiveDate: '2025-01-01',
+        source: 'US Census ACS 2024, WA ESD, Benton-Franklin Trends',
+      },
+      expenseRatios: [
+        { propertyType: 'commercial', label: 'Commercial', lowPct: 25, typicalPct: 35, highPct: 45 },
+      ],
+      expenseCategories: ['propertyTaxes', 'insurance'],
+      locationPremiums: [
+        { location: 'Richland', multiplier: 1.1 },
+        { location: 'Kennewick', multiplier: 1.05 },
+      ],
+      valuationResult: {
+        netOperatingIncome: 82000,
+        capRate: 6.25,
+        location: 'Richland',
+        locationMultiplier: 1.1,
+        propertyType: 'Commercial',
+        rawValuation: 1312000,
+        adjustedValuation: 1443200,
+        grossIncomeMultiplier: 12.0,
+        cashOnCashReturn: 6.25,
+        riskClassification: 'medium',
+        effectiveDate: '2025-01-01',
+        source: 'Benton County Assessor - Income Approach Valuation FY 2025',
+      },
+      stats: {
+        propertyTypes: 2,
+        locations: 2,
+        marketCapRate: 6.25,
+        medianHomePrice: 485000,
+        medianIncome: 82500,
+      },
+      countyScope: mockRuntime.countyScope,
+      referenceSource: 'Benton County Assessor - Income Approach Market Study FY 2025',
+      capRatesLoading: false,
+      marketLoading: false,
+      expensesLoading: false,
+      locationsLoading: false,
+      valuationLoading: false,
+      capRatesError: null,
+      marketError: null,
+      expensesError: null,
+      locationsError: null,
+      valuationError: null,
+      fetchReferenceData: vi.fn(),
+      calculateValuation: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  });
+
+  return { useIncomeForgeStore: mockStore };
+});
+
+import IncomeForge from '../IncomeForge';
+
+describe('IncomeForge', () => {
+  afterEach(() => {
+    mockRuntime.countyScope = {
+      countyId: '19190019-1919-1919-1919-191919191919',
+      supported: true,
+      message: null,
+    };
+  });
+
+  it('renders the live API workspace with stats and provenance', () => {
+    render(<IncomeForge />);
+
+    expect(screen.getByTestId('income-forge')).toBeInTheDocument();
+    expect(screen.getByText('IncomeForge')).toBeInTheDocument();
+    expect(screen.getByText('Live API')).toBeInTheDocument();
+    expect(screen.getByText('Property Types')).toBeInTheDocument();
+    expect(screen.getAllByText('2').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Benton County Assessor/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders the five production income tabs', () => {
+    render(<IncomeForge />);
+
+    expect(screen.getByText('Valuation')).toBeInTheDocument();
+    expect(screen.getByText('Cap Rates')).toBeInTheDocument();
+    expect(screen.getByText('Market Data')).toBeInTheDocument();
+    expect(screen.getByText('Expenses')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Locations' })).toBeInTheDocument();
+  });
+
+  it('renders Suite-launched runtime source boundary for Benton IncomeForge', () => {
+    render(
+      <IncomeForge
+        metadata={{
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'income-approach',
+          countyId: '19190019-1919-1919-1919-191919191919',
+          taxYear: 2026,
+        }}
+      />,
+    );
+
+    expect(screen.getByText(/TerraForge Suite · Benton income approach API/i)).toBeInTheDocument();
+    expect(screen.getByText(/Environment: Benton County/i)).toBeInTheDocument();
+    expect(screen.getByText(/Runtime source: CostForge income-approach endpoints/i)).toBeInTheDocument();
+    expect(screen.getByText(/Benton-certified until additional county income references are separately proven/i)).toBeInTheDocument();
+    expect(screen.queryByText(/sample|fixture|fallback/i)).not.toBeInTheDocument();
+  });
+
+  it('shows a county availability guard for unsupported county scopes', () => {
+    mockRuntime.countyScope = {
+      countyId: 'cowlitz',
+      supported: false,
+      message: 'IncomeForge live income-approach references are currently certified for Benton County only.',
+    };
+
+    render(<IncomeForge />);
+
+    expect(screen.getByText('Benton-certified data required')).toBeInTheDocument();
+    expect(screen.getByText(/Active county: cowlitz/i)).toBeInTheDocument();
+  });
+});

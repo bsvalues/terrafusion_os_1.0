@@ -41,6 +41,18 @@ public sealed class TfParcel
     public Guid? CurrentOwnerId { get; set; }
     public Guid? CurrentAssessmentId { get; set; }
 
+    /// <summary>
+    /// Slice G2 (Phase 2 closure): conversion-era marker derived
+    /// via
+    /// <see cref="TerraFusion.Core.Entities.TruthPacs.ConversionEras.MajorityOfTruth"/>
+    /// over the contributing truth row(s). Closes the parity gap
+    /// where every other canonical_tf entity (TfImprovement,
+    /// TfSale, TfLand, TfOwner, TfAssessmentWsdor,
+    /// TfImprovementFeature) already carries this column. Nullable
+    /// for back-compat with rows projected before this slice.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

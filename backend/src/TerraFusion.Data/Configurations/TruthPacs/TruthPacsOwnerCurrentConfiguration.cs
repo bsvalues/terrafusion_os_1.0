@@ -57,5 +57,10 @@ public sealed class TruthPacsOwnerCurrentConfiguration
         // Lineage lookup.
         builder.HasIndex(x => x.PromotionLoadBatchId)
             .HasDatabaseName("ix_truth_pacs_owner_current_promotion_batch");
+
+        // G1 (v1.10): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_truth_pacs_owner_conversion_era");
     }
 }

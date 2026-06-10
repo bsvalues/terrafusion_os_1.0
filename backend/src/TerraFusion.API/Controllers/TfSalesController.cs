@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Helpers;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 
 namespace TerraFusion.API.Controllers;
@@ -12,21 +13,24 @@ namespace TerraFusion.API.Controllers;
 /// Slice S4: read-only paginated endpoint for the canonical sales
 /// corpus.
 ///
-/// <para><c>GET /api/sales?countyId={id}&amp;page&amp;pageSize</c></para>
+/// <para><c>GET /api/sales?countyId={id}&amp;page&amp;pageSize&amp;era</c></para>
 ///
 /// <para>Contract:
 /// <list type="bullet">
 ///   <item>401 if unauthenticated (handled by <c>[Authorize]</c>).</item>
-///   <item>400 on missing <c>countyId</c>, or pagination violations.</item>
+///   <item>400 on missing <c>countyId</c>, pagination violations, or
+///   invalid <c>era</c> token.</item>
 ///   <item>403 when the caller's <c>countyId</c> claim doesn't match.</item>
 ///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.PagedTfSaleResponse"/>
 ///   on success — empty envelope when no rows qualify.</item>
 /// </list>
 /// </para>
 ///
-/// <para>Defaults: <c>page=1</c>, <c>pageSize=100</c>. Maximum
-/// <c>pageSize=500</c> (server refuses, never silently truncates,
-/// per the C39-A pagination contract).</para>
+/// <para>Defaults: <c>page=1</c>, <c>pageSize=100</c>, <c>era=POST_CONVERSION</c>.
+/// Maximum <c>pageSize=500</c> (server refuses, never silently truncates,
+/// per the C39-A pagination contract). The <c>era</c> default is the
+/// doctrine-frozen v1.10 §3 value; <c>era=ALL</c> bypasses the filter
+/// for audit / migration sweeps.</para>
 ///
 /// <para>Read-only: no DbContext writes, no audit-table mutations.
 /// Deterministic ordering by <c>(SlDt DESC, ChgOfOwnerId DESC)</c>
@@ -57,6 +61,7 @@ public sealed class TfSalesController : ControllerBase
         [FromQuery] Guid countyId,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
+        [FromQuery] string? era = null,
         CancellationToken ct = default)
     {
         if (countyId == Guid.Empty)
@@ -97,6 +102,14 @@ public sealed class TfSalesController : ControllerBase
             });
         }
 
+        // G3 (v1.12): normalize era query param. Null → POST_CONVERSION;
+        // unknown tokens → 400 with the valid-values list.
+        if (!EraQueryHelper.TryNormalizeEra(era, out var resolvedEra, out var eraFail))
+        {
+            _logger.LogWarning("[TfSales] invalid era token: {Era}", era);
+            return eraFail!;
+        }
+
         var principalCountyId = ResolveCountyClaim();
         if (principalCountyId is null || principalCountyId.Value != countyId)
         {
@@ -110,12 +123,12 @@ public sealed class TfSalesController : ControllerBase
         var effectivePageSize = pageSize ?? DefaultPageSize;
 
         var result = await _reader
-            .ReadAsync(countyId, effectivePage, effectivePageSize, ct)
+            .ReadAsync(countyId, effectivePage, effectivePageSize, resolvedEra, ct)
             .ConfigureAwait(false);
 
         _logger.LogInformation(
-            "[TfSales] county={CountyId} page={Page} pageSize={PageSize} rows={Rows} total={Total}",
-            countyId, effectivePage, effectivePageSize,
+            "[TfSales] county={CountyId} page={Page} pageSize={PageSize} era={Era} rows={Rows} total={Total}",
+            countyId, effectivePage, effectivePageSize, resolvedEra,
             result.Items.Count, result.TotalCount);
 
         return Ok(result);

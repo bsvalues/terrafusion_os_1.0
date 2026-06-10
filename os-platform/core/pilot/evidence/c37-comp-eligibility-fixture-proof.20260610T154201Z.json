@@ -1,0 +1,57 @@
+{
+  "slice": "C37-B",
+  "kind": "fixture-proof",
+  "generatedAtUtc": "20260610T154201Z",
+  "countyId": "915641e8-15b6-4920-a707-d5fdc7d0512e",
+  "countyName": "Benton",
+  "sourceWorkbookId": "323a5947-16e9-4af7-8350-ab8c642ce5eb",
+  "sourceWorkbookLockedAt": "2026-04-28T21:00:00Z",
+  "run": {
+    "rowsRead": 9,
+    "qualified": 3,
+    "excluded": 2,
+    "inconclusive": 3,
+    "skippedNoIdentifier": 1,
+    "rowsPersisted": 8
+  },
+  "compPool": {
+    "size": 3,
+    "ids": [100, 101, 102]
+  },
+  "reconciliation": {
+    "rowsReadEqualsSumOfBuckets": true,
+    "compPoolEqualsQualified": true
+  },
+  "wacCdContainment": {
+    "operatorTaggedExcludedSamples": [
+      {
+        "ChgOfOwnerId": 200,
+        "WacCode": "458-61A-217(1)",
+        "TransformStatus": 1,
+        "Persisted": true
+      },
+      {
+        "ChgOfOwnerId": 201,
+        "WacCode": "458-61A-217(1)",
+        "TransformStatus": 1,
+        "Persisted": true
+      }
+    ],
+    "workbookSilentInconclusiveSamples": [
+      {
+        "ChgOfOwnerId": 400,
+        "WacCode": "PRE-2017-CODE",
+        "TransformStatus": 3,
+        "Persisted": true,
+        "SkipReason": null
+      },
+      {
+        "ChgOfOwnerId": 500,
+        "WacCode": null,
+        "TransformStatus": 4,
+        "Persisted": true,
+        "SkipReason": null
+      }
+    ]
+  }
+}

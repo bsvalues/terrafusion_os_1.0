@@ -62,5 +62,12 @@ public sealed class TruthPacsWashPropOwnerVal
     /// <summary>Truth-promotion LoadBatch (the B2-B batch).</summary>
     public Guid PromotionLoadBatchId { get; set; }
 
+    /// <summary>
+    /// Slice G1 (v1.10): conversion-era marker derived from
+    /// <see cref="PropValYr"/> at promotion time. See
+    /// <see cref="ConversionEras"/>. Nullable for back-compat.
+    /// </summary>
+    public string? ConversionEra { get; set; }
+
     public DateTime PromotedAt { get; set; } = DateTime.UtcNow;
 }

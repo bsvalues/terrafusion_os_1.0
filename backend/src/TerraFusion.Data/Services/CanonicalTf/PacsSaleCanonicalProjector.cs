@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsSaleCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -37,7 +38,8 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
 {
     private const string SaleEntityType = "sale";
     private const string ParcelEntityType = "parcel";
-    private const string QuarantineNoParcelXref = "NO_PARCEL_XREF";
+    // E4a (v1.4): quarantine reasons live in QuarantineReasons —
+    // see docs/pacs/block-c-contract-v1.4.md.
 
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<PacsSaleCanonicalProjector> _logger;
@@ -174,7 +176,7 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
                         AdjSlPrice = truth.AdjSlPrice,
                         SourceTruthSaleId = truth.TruthSaleId,
                         PromotionLoadBatchId = batch.LoadBatchId,
-                        QuarantineReason = QuarantineNoParcelXref,
+                        QuarantineReason = QuarantineReasons.NoParcelXref,
                         CreatedAt = now,
                     });
                     quarantined++;
@@ -189,8 +191,23 @@ public sealed class PacsSaleCanonicalProjector : IPacsSaleCanonicalProjector
                     SlDt = truth.SlDt,
                     SlPrice = truth.SlPrice,
                     AdjSlPrice = truth.AdjSlPrice,
-                    SaleQualified = true,
+                    // SYNC-DOCTRINE-2 (B2): forward the dual-surface
+                    // qualification fields verbatim from truth.
+                    DorRatioQualified = truth.DorRatioQualified,
+                    CountyRatioReviewed = truth.CountyRatioReviewed,
+                    CountyRatioQualified = truth.CountyRatioQualified,
+                    CountyRatioCode = truth.CountyRatioCode,
+                    CountyRatioDescription = truth.CountyRatioDescription,
+                    // Legacy single-bool: derived as
+                    // DorRatioQualified || CountyRatioQualified.
+                    // Existing canonical consumers can keep reading
+                    // SaleQualified; new consumers should read the
+                    // two surface booleans directly.
+                    SaleQualified = truth.DorRatioQualified || truth.CountyRatioQualified,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G2 (v1.11): era resolved via majority-of-truth.
+                    // Single contributor → verbatim copy.
+                    ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                     CreatedAt = now,
                     UpdatedAt = now,
                 };

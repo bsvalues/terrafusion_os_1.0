@@ -61,7 +61,7 @@ const COMMANDS = {
     load: () => import("./commands/assessor.mjs"),
   },
   forge: {
-    desc: "Forge audit, calibration, ratios, and memo workflows",
+    desc: "TerraForge CLI — cuforge, levy, sales, cost (batch + Rust kernel)",
     load: () => import("./commands/forge.mjs"),
   },
   atlas: {

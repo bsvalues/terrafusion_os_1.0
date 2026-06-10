@@ -38,11 +38,50 @@ public sealed class LegacyTfUnprovenImprvAttr
     public Guid LandingLoadBatchId { get; set; }
 
     /// <summary>
-    /// Closed vocabulary: <c>"UNKNOWN_I_ATTR_VAL_CD"</c> — the only
-    /// reason emitted today. Reserved for future precision (e.g.
-    /// <c>"DICTIONARY_REFRESH_REQUIRED"</c>).
+    /// Closed vocabulary across two layers per Block-C contract
+    /// v1.6 (<c>docs/pacs/block-c-contract-v1.6.md</c>):
+    /// <list type="bullet">
+    ///   <item>Landing-layer reasons live in
+    ///     <see cref="TerraFusion.Core.Entities.LegacyPacsRaw.LandingQuarantineReasons"/>
+    ///     (e.g. <c>UNKNOWN_I_ATTR_VAL_CD</c> from
+    ///     <c>PacsImprvAttrLandingService</c>).</item>
+    ///   <item>Canonical-layer reasons live in
+    ///     <see cref="TerraFusion.Core.Entities.SyncBridge.QuarantineReasons"/>
+    ///     (e.g. <c>UNKNOWN_ATTRIBUTE</c> from
+    ///     <c>PacsImprvCanonicalProjector</c> v1.5 §2.2).</item>
+    /// </list>
+    /// The two vocabularies are disjoint by doctrine. Cleanup
+    /// passes filter by reason to avoid cross-layer interference.
     /// </summary>
     public string QuarantineReason { get; set; } = string.Empty;
+
+    // ── SYNC-DOCTRINE-4: universe-aware quarantine context ──────────
+    /// <summary>
+    /// The universe classification for the parent improvement at the
+    /// time this row was quarantined. One of
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseCodes"/>.
+    /// Nullable for back-compat with rows quarantined before
+    /// SYNC-DOCTRINE-4-IMPL.
+    /// </summary>
+    public string? UniverseCode { get; set; }
+
+    /// <summary>
+    /// FK to <c>doctrine_tf.tf_doctrine_property_universe.rule_id</c>
+    /// — the rule that produced <see cref="UniverseCode"/>. NULL when
+    /// the universe is <c>UNKNOWN</c> or unclassified.
+    /// </summary>
+    public Guid? UniverseRuleId { get; set; }
+
+    /// <summary>
+    /// One of
+    /// <see cref="TerraFusion.Core.Sync.Doctrine.UniverseQuarantineReasons"/>.
+    /// Replaces the muddier
+    /// <see cref="QuarantineReason"/> = <c>UNKNOWN_ATTRIBUTE</c> with
+    /// a five-named-reason taxonomy that distinguishes classification
+    /// failure from dictionary-load failure from genuine unknown
+    /// code-within-known-universe.
+    /// </summary>
+    public string? QuarantineReasonDetail { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

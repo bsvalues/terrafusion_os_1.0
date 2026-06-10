@@ -167,6 +167,100 @@ export function containsMutableRef(value: string): RegExp | null {
   return null;
 }
 
+function extractUrlCandidates(value: string): string[] {
+  return (value.match(/https?:\/\/[^\s"'<>)]+/gi) ?? []).map(candidate =>
+    candidate.replace(/[.,;:!?]+$/g, '')
+  );
+}
+
+const MUTABLE_ARTIFACT_URL_FIELDS = new Set([
+  'ledgerUrl',
+  'releaseUrl',
+  'bundleDownloadUrl',
+  'dashboardUrl',
+  'custodyUrl',
+]);
+
+function isMutableArtifactUrlField(pathParts: string[]): boolean {
+  const key = pathParts[pathParts.length - 1];
+  return MUTABLE_ARTIFACT_URL_FIELDS.has(key);
+}
+
+function extractArtifactFieldCandidates(value: string): string[] {
+  const candidates: string[] = [];
+  const fieldPattern =
+    /["']?(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)["']?\s*:\s*["']([^"']+)["']/gi;
+
+  let match: RegExpExecArray | null;
+  while ((match = fieldPattern.exec(value)) !== null) {
+    candidates.push(match[2].replace(/[.,;:!?]+$/g, ''));
+  }
+
+  return candidates;
+}
+
+function isSignatureIdentityField(pathParts: string[], value: string): boolean {
+  const key = pathParts[pathParts.length - 1];
+  const parent = pathParts[pathParts.length - 2];
+  const looksLikeGitHubOidcIdentity =
+    value.startsWith('https://github.com/') &&
+    value.includes('/.github/workflows/') &&
+    value.includes('@refs/heads/');
+
+  return (
+    looksLikeGitHubOidcIdentity &&
+    ((parent === 'expectedSignaturePolicy' && key === 'identity') || key === 'signingIdentity')
+  );
+}
+
+function validateJsonValueNoMutableUrls(value: unknown, pathParts: string[] = []): AttestError[] {
+  const errors: AttestError[] = [];
+
+  if (typeof value === 'string') {
+    if (isSignatureIdentityField(pathParts, value)) {
+      return errors;
+    }
+
+    if (isMutableArtifactUrlField(pathParts)) {
+      const mutablePattern = containsMutableRef(value);
+      if (mutablePattern) {
+        errors.push({
+          type: 'mutable_url',
+          artifact: value,
+          message: `Mutable URL detected: "${value}" matches ${mutablePattern}`,
+        });
+      }
+    }
+
+    for (const urlCandidate of extractUrlCandidates(value)) {
+      const mutablePattern = containsMutableRef(urlCandidate);
+      if (mutablePattern) {
+        errors.push({
+          type: 'mutable_url',
+          artifact: urlCandidate,
+          message: `Mutable URL detected: "${urlCandidate}" matches ${mutablePattern}`,
+        });
+      }
+    }
+    return errors;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      errors.push(...validateJsonValueNoMutableUrls(item, [...pathParts, String(index)]));
+    });
+    return errors;
+  }
+
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      errors.push(...validateJsonValueNoMutableUrls(child, [...pathParts, key]));
+    }
+  }
+
+  return errors;
+}
+
 /**
  * Extract manifest.json SHA256 from inside a ZIP bundle.
  */
@@ -326,26 +420,36 @@ function createEmptyAttestation(opts: BuildAttestOptions): CustodyAttestation {
  */
 export function validateNoMutableUrls(content: string | object): AttestError[] {
   const errors: AttestError[] = [];
-  const text = typeof content === 'string' ? content : JSON.stringify(content);
 
-  // Find all URL-like strings
-  const urlPatterns = [
-    /https?:\/\/[^\s"'<>]+/g,
-    /"(ledgerUrl|releaseUrl|bundleDownloadUrl|dashboardUrl|custodyUrl)":\s*"([^"]+)"/g,
-  ];
+  if (typeof content !== 'string') {
+    return validateJsonValueNoMutableUrls(content);
+  }
 
-  for (const pattern of urlPatterns) {
-    let match;
-    while ((match = pattern.exec(text)) !== null) {
-      const url = match[2] ?? match[0];
-      const mutablePattern = containsMutableRef(url);
-      if (mutablePattern) {
-        errors.push({
-          type: 'mutable_url',
-          artifact: url,
-          message: `Mutable URL detected: "${url}" matches ${mutablePattern}`,
-        });
-      }
+  try {
+    return validateJsonValueNoMutableUrls(JSON.parse(content));
+  } catch {
+    // Non-JSON evidence such as HTML falls back to URL scanning below.
+  }
+
+  const text = content;
+  const scannedCandidates = new Set<string>();
+
+  for (const urlCandidate of [
+    ...extractArtifactFieldCandidates(text),
+    ...extractUrlCandidates(text),
+  ]) {
+    if (scannedCandidates.has(urlCandidate)) {
+      continue;
+    }
+    scannedCandidates.add(urlCandidate);
+
+    const mutablePattern = containsMutableRef(urlCandidate);
+    if (mutablePattern) {
+      errors.push({
+        type: 'mutable_url',
+        artifact: urlCandidate,
+        message: `Mutable URL detected: "${urlCandidate}" matches ${mutablePattern}`,
+      });
     }
   }
 

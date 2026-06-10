@@ -44,5 +44,10 @@ public sealed class TfOwnerConfiguration : IEntityTypeConfiguration<TfOwner>
         // Confidentiality scans (audit surface).
         builder.HasIndex(x => x.ConfidentialFlag)
             .HasDatabaseName("ix_tf_owner_confidential");
+
+        // G2 (v1.11): conversion-era marker.
+        builder.Property(x => x.ConversionEra).HasMaxLength(20);
+        builder.HasIndex(x => x.ConversionEra)
+            .HasDatabaseName("ix_tf_owner_conversion_era");
     }
 }

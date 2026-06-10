@@ -135,6 +135,92 @@ test('workbench sync readiness facade is classified as admin proof, not product 
   assert.equal(report.summary.syncAdminEndpointsScanned, 1);
 });
 
+test('canonical debug controller is allowed only when Program gates it to development', async () => {
+  const root = makeTempRepo('tf-boundary-canonical-debug-gated-');
+  fs.writeFileSync(
+    path.join(root, 'backend', 'src', 'TerraFusion.API', 'Program.cs'),
+    `
+      builder.Services.AddControllers()
+        .ConfigureApplicationPartManager(manager =>
+        {
+          manager.FeatureProviders.Add(
+            new NamespaceExcludingControllerFeatureProvider(
+              "TerraFusion.AI.Controllers",
+              new[] { "Codex369Controller" },
+              builder.Environment.IsDevelopment()
+                ? Array.Empty<string>()
+                : new[] { "CanonicalDebugController" }));
+        });
+    `
+  );
+  fs.writeFileSync(
+    path.join(
+      root,
+      'backend',
+      'src',
+      'TerraFusion.API',
+      'Controllers',
+      'CanonicalDebugController.cs'
+    ),
+    `
+      [Route("api/debug")]
+      public class CanonicalDebugController : ControllerBase
+      {
+        public IActionResult Counts() {
+          using var connection = new SqlConnection("Server=tf-mssql;Database=pacs_oltp");
+          return Ok(new { canonical = true });
+        }
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('CanonicalDebugController.cs')
+  );
+  assert.equal(endpoint.zone, 'allowed_admin_proof');
+  assert.equal(endpoint.dataSourceClass, 'mixed_canonical_and_legacy');
+  assert.deepEqual(endpoint.blockers, []);
+  assert.equal(report.summary.productLegacyViolations, 0);
+});
+
+test('ungated canonical debug controller is blocked as product runtime', async () => {
+  const root = makeTempRepo('tf-boundary-canonical-debug-ungated-');
+  fs.writeFileSync(
+    path.join(
+      root,
+      'backend',
+      'src',
+      'TerraFusion.API',
+      'Controllers',
+      'CanonicalDebugController.cs'
+    ),
+    `
+      [Route("api/debug")]
+      public class CanonicalDebugController : ControllerBase
+      {
+        public IActionResult Counts() {
+          using var connection = new SqlConnection("Server=tf-mssql;Database=pacs_oltp");
+          return Ok(new { canonical = true });
+        }
+      }
+    `
+  );
+
+  const report = await runAudit(root);
+  const endpoint = report.backendEndpoints.find(item =>
+    item.filePath.endsWith('CanonicalDebugController.cs')
+  );
+  assert.equal(endpoint.zone, 'forbidden_product_runtime');
+  assert.equal(endpoint.dataSourceClass, 'mixed_canonical_and_legacy');
+  assert.ok(
+    endpoint.blockers.includes(
+      'Product runtime endpoint has direct legacy source dependency evidence.'
+    )
+  );
+  assert.equal(report.summary.productLegacyViolations, 1);
+});
+
 test('debug-only test controller is not counted as production product runtime', async () => {
   const root = makeTempRepo('tf-boundary-debug-test-controller-');
   fs.writeFileSync(
