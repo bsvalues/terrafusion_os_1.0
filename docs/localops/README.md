@@ -44,6 +44,23 @@ production repair. No property-record or valuation mutation by AI.
 - Path routing: [`brain/router/path-router.yaml`](../../brain/router/path-router.yaml)
   (`docs/localops/**` is registered as an `R0` planning-docs route)
 
+## LocalOps trace events (WO-LOCALOPS-003)
+
+LocalOps emits an append-only, **TerraTrace-compatible** event stream via
+`os-platform/core/pilot/local-agent/localOpsTrace.ts` (`createLocalOpsTrace`). Events carry the
+load-bearing trace fields (`type`, `correlationId`, `schemaVersion`, `summary`, redacted `data`) so a
+future bridge can map them 1:1 onto the canonical Postgres trace store — but v1 does **not** write to
+that store (it needs DB + county context). Sinks are pluggable; the **default is a safe no-op**, and a
+JSONL sink reuses the existing append-only, auto-redacting `.terrafusion/agent-events.jsonl` log.
+
+Canonical event types: `localops.ai.requested`, `localops.ai.responded`,
+`localops.provider.status_checked`, `localops.policy.refused`, `localops.approval.required`,
+`localops.rag.retrieved`, `localops.tool.diagnostic.started`, `localops.tool.diagnostic.completed`.
+
+Every payload is redacted before it leaves the module; sink failures never break the operator path; no
+mutable business state (append-only). RAG/diagnostic event helpers exist as the **contract** only —
+their producers land in WO-LOCALOPS-004/005.
+
 ## Existing seams (context, not commitment)
 
 A governance-controlled local agent already exists at `os-platform/core/pilot/local-agent/`
