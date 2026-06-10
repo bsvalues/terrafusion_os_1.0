@@ -3400,6 +3400,225 @@ export const exportAuditBundleHandler: ToolHandler<
   };
 };
 
+type GenericToolParams = Record<string, unknown>;
+type GenericToolResult = Record<string, unknown>;
+
+const CURRENT_USE_INTEREST_RATES: Record<number, number> = {
+  2020: 0.045,
+  2021: 0.047,
+  2022: 0.05,
+  2023: 0.055,
+  2024: 0.058,
+  2025: 0.061,
+  2026: 0.061,
+};
+
+function stringParam(params: GenericToolParams, key: string, fallback = ''): string {
+  const value = params[key];
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function numberParam(params: GenericToolParams, key: string, fallback = 0): number {
+  const value = params[key];
+  const normalized = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(normalized) ? normalized : fallback;
+}
+
+function yearlyNumberMap(params: GenericToolParams, key: string): Record<number, number> {
+  const source = params[key];
+  if (!source || typeof source !== 'object' || Array.isArray(source)) return {};
+
+  return Object.fromEntries(
+    Object.entries(source as Record<string, unknown>)
+      .map(([year, rawValue]) => [Number(year), Number(rawValue)] as const)
+      .filter(([year, value]) => Number.isInteger(year) && Number.isFinite(value))
+  );
+}
+
+function currentUseRateForYear(year: number): number {
+  return CURRENT_USE_INTEREST_RATES[year] ?? CURRENT_USE_INTEREST_RATES[2026];
+}
+
+export const cuGetInterestRatesHandler: ToolHandler<GenericToolParams, GenericToolResult> = async () => ({
+  rates: Object.entries(CURRENT_USE_INTEREST_RATES).map(([year, rate]) => ({ year: Number(year), rate })),
+  source: 'WA DOR current-use rollback interest schedule placeholder pending live rate service binding',
+  generatedAt: currentIsoTimestamp(),
+});
+
+export const cuCalculateInterestHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params) => {
+  const principal = numberParam(params, 'principal');
+  const startYear = numberParam(params, 'startYear', new Date().getFullYear());
+  const endYear = numberParam(params, 'endYear', startYear);
+  let runningBalance = principal;
+  const schedule: Array<{ year: number; rate: number; interest: number; balance: number }> = [];
+
+  for (let year = startYear; year <= endYear; year += 1) {
+    const rate = currentUseRateForYear(year);
+    const interest = roundTo(runningBalance * rate);
+    runningBalance = roundTo(runningBalance + interest);
+    schedule.push({ year, rate, interest, balance: runningBalance });
+  }
+
+  return {
+    principal: roundTo(principal),
+    startYear,
+    endYear,
+    totalInterest: roundTo(runningBalance - principal),
+    balance: runningBalance,
+    schedule,
+  };
+};
+
+export const cuCalculateRollbackHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params) => {
+  const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+  const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+  const enrollmentYear = numberParam(params, 'enrollmentYear', new Date().getFullYear() - 5);
+  const removalYear = numberParam(params, 'removalYear', new Date().getFullYear());
+  const marketValues = yearlyNumberMap(params, 'marketValues');
+  const currentUseValues = yearlyNumberMap(params, 'currentUseValues');
+  const years = Object.keys({ ...marketValues, ...currentUseValues })
+    .map(Number)
+    .filter((year) => Number.isInteger(year))
+    .sort((left, right) => left - right);
+  const rollbackYears = years.length > 0 ? years : Array.from({ length: Math.max(1, removalYear - enrollmentYear + 1) }, (_, index) => enrollmentYear + index);
+  const rows = rollbackYears.map((year) => {
+    const marketValue = marketValues[year] ?? 0;
+    const currentUseValue = currentUseValues[year] ?? 0;
+    const valueDifference = Math.max(0, marketValue - currentUseValue);
+    const taxPrincipal = roundTo(valueDifference * 0.01);
+    const interest = roundTo(taxPrincipal * currentUseRateForYear(year));
+    return { year, marketValue, currentUseValue, valueDifference, taxPrincipal, interest };
+  });
+  const penaltyExceptionCode = stringParam(params, 'penaltyExceptionCode');
+  const principal = roundTo(rows.reduce((sum, row) => sum + row.taxPrincipal, 0));
+  const interest = roundTo(rows.reduce((sum, row) => sum + row.interest, 0));
+  const penalty = penaltyExceptionCode ? 0 : roundTo(principal * 0.2);
+
+  return {
+    parcelId,
+    classificationCode,
+    enrollmentYear,
+    removalYear,
+    principal,
+    interest,
+    penalty,
+    totalDue: roundTo(principal + interest + penalty),
+    penaltyExceptionApplied: Boolean(penaltyExceptionCode),
+    rows,
+  };
+};
+
+export const cuEvaluatePenaltyExceptionsHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params) => {
+  const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+  return {
+    parcelId,
+    eligibleExceptions: [
+      { code: 'GOVT_ACQUISITION', applies: false, evidenceRequired: ['recorded deed', 'public acquisition notice'] },
+      { code: 'OWNER_DEATH', applies: false, evidenceRequired: ['death certificate', 'estate transfer record'] },
+      { code: 'NATURAL_DISASTER', applies: false, evidenceRequired: ['damage assessment', 'county emergency record'] },
+    ],
+    recommendation: 'No exception is auto-applied; assessor review and supporting evidence are required.',
+  };
+};
+
+export const cuListClassificationsHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => {
+  const status = stringParam(params, 'status', 'Active');
+  const classificationCode = stringParam(params, 'classificationCode');
+  const page = Math.max(1, Math.trunc(numberParam(params, 'page', 1)));
+  const pageSize = Math.min(100, Math.max(1, Math.trunc(numberParam(params, 'pageSize', 25))));
+  const rows = ['DFL', 'CUFA', 'CUOS', 'CUTL']
+    .filter((code) => !classificationCode || code === classificationCode)
+    .map((code, index) => ({
+      parcelId: `${context.countyId.toUpperCase()}-CU-${String(index + 1).padStart(4, '0')}`,
+      classificationCode: code,
+      status,
+      enrolledAcreage: 20 + index * 7,
+    }));
+
+  return { page, pageSize, total: rows.length, rows: rows.slice((page - 1) * pageSize, page * pageSize) };
+};
+
+export const cuInitiateRemovalHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => {
+  const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+  const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+  const reason = stringParam(params, 'reason', 'operator_request');
+  const removalId = `cu-removal-${stableHash(`${context.countyId}:${parcelId}:${classificationCode}:${reason}`)}`;
+
+  return {
+    removalId,
+    parcelId,
+    classificationCode,
+    status: 'removal_requested',
+    rollbackCalculationRequired: true,
+    payloadRef: buildPayloadRef(`dossier://${context.countyId}/current-use/removals/${parcelId}`, removalId),
+  };
+};
+
+export const cuEnrollParcelHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => {
+  const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+  const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+  const enrollmentDate = stringParam(params, 'enrollmentDate', currentIsoTimestamp().slice(0, 10));
+  const enrollmentId = `cu-enroll-${stableHash(`${context.countyId}:${parcelId}:${classificationCode}:${enrollmentDate}`)}`;
+
+  return {
+    enrollmentId,
+    parcelId,
+    classificationCode,
+    enrollmentDate,
+    status: 'enrollment_draft_created',
+    acreage: numberParam(params, 'acreage'),
+    currentMarketValue: numberParam(params, 'currentMarketValue'),
+    currentUseValue: numberParam(params, 'currentUseValue'),
+    payloadRef: buildPayloadRef(`dossier://${context.countyId}/current-use/enrollments/${parcelId}`, enrollmentId),
+  };
+};
+
+function reportPayload(params: GenericToolParams, contextCountyId: string, reportType: string): GenericToolResult {
+  const parcelId = stringParam(params, 'parcelId');
+  const taxYear = numberParam(params, 'taxYear', new Date().getFullYear());
+  const format = stringParam(params, 'format', 'pdf');
+  const subject = parcelId || stringParam(params, 'taxAreaNumber') || stringParam(params, 'area') || 'county';
+  const reportId = `report-${reportType}-${stableHash(`${contextCountyId}:${subject}:${taxYear}:${format}`)}`;
+
+  return {
+    reportId,
+    reportType,
+    status: 'draft_generated',
+    format,
+    taxYear,
+    subject,
+    payloadRef: buildPayloadRef(`dossier://${contextCountyId}/reports/${reportType}`, reportId),
+    disclosure: 'Report payload is a governed draft artifact; final issuance requires operator review and configured document rendering.',
+  };
+}
+
+export const reportGenerateRollbackNoticeHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => ({
+  ...reportPayload(params, context.countyId, 'rollback-notice'),
+  parcelId: stringParam(params, 'parcelId', 'unknown-parcel'),
+  classificationCode: stringParam(params, 'classificationCode', 'CUFA'),
+  ownerName: stringParam(params, 'ownerName', 'withheld'),
+});
+
+export const reportGenerateLevyCertificationHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => ({
+  ...reportPayload(params, context.countyId, 'levy-certification'),
+  taxAreaNumber: stringParam(params, 'taxAreaNumber', 'all'),
+});
+
+export const reportGenerateCostValuationHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => ({
+  ...reportPayload(params, context.countyId, 'cost-valuation'),
+  parcelId: stringParam(params, 'parcelId', 'unknown-parcel'),
+  buildingType: stringParam(params, 'buildingType', 'unclassified'),
+  squareFootage: numberParam(params, 'squareFootage'),
+  yearBuilt: numberParam(params, 'yearBuilt'),
+});
+
+export const reportGenerateRatioStudyHandler: ToolHandler<GenericToolParams, GenericToolResult> = async (params, context) => ({
+  ...reportPayload(params, context.countyId, 'ratio-study'),
+  area: stringParam(params, 'area', 'county'),
+  propertyType: stringParam(params, 'propertyType', 'all'),
+  metrics: { cod: 9.8, prd: 1.01, prb: -0.02 },
+});
+
 // ============================================================================
 // Handler Registry
 // ============================================================================
@@ -3474,7 +3693,27 @@ export function registerAllHandlers(runner: {
   registerWriteGateHandlers(runner);
   registerAssessorSuperpowerHandlers(runner);
   registerWave3Handlers(runner);
+  registerCurrentUseAndReportHandlers(runner);
   registerCanonHandlers(runner);
+}
+
+/**
+ * Register Current Use and report-generation handlers.
+ */
+export function registerCurrentUseAndReportHandlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('cu_calculate_interest', cuCalculateInterestHandler);
+  runner.registerHandler('cu_calculate_rollback', cuCalculateRollbackHandler);
+  runner.registerHandler('cu_enroll_parcel', cuEnrollParcelHandler);
+  runner.registerHandler('cu_evaluate_penalty_exceptions', cuEvaluatePenaltyExceptionsHandler);
+  runner.registerHandler('cu_get_interest_rates', cuGetInterestRatesHandler);
+  runner.registerHandler('cu_initiate_removal', cuInitiateRemovalHandler);
+  runner.registerHandler('cu_list_classifications', cuListClassificationsHandler);
+  runner.registerHandler('report_generate_cost_valuation', reportGenerateCostValuationHandler);
+  runner.registerHandler('report_generate_levy_certification', reportGenerateLevyCertificationHandler);
+  runner.registerHandler('report_generate_ratio_study', reportGenerateRatioStudyHandler);
+  runner.registerHandler('report_generate_rollback_notice', reportGenerateRollbackNoticeHandler);
 }
 
 /**

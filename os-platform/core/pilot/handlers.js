@@ -14,12 +14,13 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.canonFindReferencesHandler = exports.canonCodeActionsHandler = exports.canonEditorThemesHandler = exports.canonCompletionsHandler = exports.canonGotoDefinitionHandler = exports.canonHoverInfoHandler = exports.canonLineMarkersHandler = exports.canonFoldingRangesHandler = exports.canonEditorLayoutHandler = exports.canonFormatFileHandler = exports.canonFindReplaceHandler = exports.canonEditorSettingsHandler = exports.canonMinimapHandler = exports.canonSnippetsHandler = exports.canonSymbolSearchHandler = exports.canonRecentFilesHandler = exports.canonFileIndexHandler = exports.canonBookmarksHandler = exports.canonDiagnosticsHandler = exports.canonFileOutlineHandler = exports.canonGitStatusHandler = exports.canonDiffFilesHandler = exports.canonRenameFileHandler = exports.canonDeleteFileHandler = exports.canonCreateFileHandler = exports.canonSearchFilesHandler = exports.canonWriteFileHandler = exports.canonReadFileHandler = exports.canonListDirHandler = exports.canonCorpusStatusHandler = exports.canonGateFastHandler = exports.canonDoctorHandler = exports.canonPingHandler = exports.runIncomeValuationHandler = exports.calculatePiltPaymentHandler = exports.requestTraceRedactionHandler = exports.assembleBoePacketHandler = exports.addDossierNoteHandler = exports.searchTraceByCorrelationHandler = exports.summarizeSalesCompsHandler = exports.draftBoeAppealResponseHandler = exports.draftValueChangeNoticeHandler = exports.explainModelInputsHandler = exports.summarizeLevyRateHandler = exports.compareAssessedValueHandler = exports.summarizeParcelCasefileHandler = exports.explainSeniorExemptionHandler = exports.draftAppealResponseHandler = exports.explainModelResultsHandler = exports.summarizeDossierHandler = void 0;
-exports.canonHandlers = exports.wave3Handlers = exports.assessorSuperpowerHandlers = exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.exportAuditBundleHandler = exports.exportEqualizationPackageHandler = exports.generateCalibrationMemoHandler = exports.openAppealPacketHandler = exports.explainSpatialAnomalyHandler = exports.flagParcelDataIssueHandler = exports.compareMatrixVersionsHandler = exports.rerunRatioStudyHandler = exports.applyRateAdjustmentToDraftHandler = exports.proposeRateAdjustmentHandler = exports.classifyCountyFindingHandler = exports.generateMorningBriefHandler = exports.canonTerminalExecHandler = exports.canonInlayHintsHandler = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = void 0;
+exports.canonHandlers = exports.wave3Handlers = exports.assessorSuperpowerHandlers = exports.writeGateHandlers = exports.phase84Handlers = exports.phase83Handlers = exports.reportGenerateRatioStudyHandler = exports.reportGenerateCostValuationHandler = exports.reportGenerateLevyCertificationHandler = exports.reportGenerateRollbackNoticeHandler = exports.cuEnrollParcelHandler = exports.cuInitiateRemovalHandler = exports.cuListClassificationsHandler = exports.cuEvaluatePenaltyExceptionsHandler = exports.cuCalculateRollbackHandler = exports.cuCalculateInterestHandler = exports.cuGetInterestRatesHandler = exports.exportAuditBundleHandler = exports.exportEqualizationPackageHandler = exports.generateCalibrationMemoHandler = exports.openAppealPacketHandler = exports.explainSpatialAnomalyHandler = exports.flagParcelDataIssueHandler = exports.compareMatrixVersionsHandler = exports.rerunRatioStudyHandler = exports.applyRateAdjustmentToDraftHandler = exports.proposeRateAdjustmentHandler = exports.classifyCountyFindingHandler = exports.generateMorningBriefHandler = exports.canonTerminalExecHandler = exports.canonInlayHintsHandler = exports.canonDocumentLinksHandler = exports.canonGitDiffHandler = exports.canonDocumentHighlightsHandler = exports.canonSignatureHelpHandler = exports.canonRenameSymbolHandler = void 0;
 exports.registerPhase83Handlers = registerPhase83Handlers;
 exports.registerPhase84Handlers = registerPhase84Handlers;
 exports.registerWriteGateHandlers = registerWriteGateHandlers;
 exports.registerAssessorSuperpowerHandlers = registerAssessorSuperpowerHandlers;
 exports.registerAllHandlers = registerAllHandlers;
+exports.registerCurrentUseAndReportHandlers = registerCurrentUseAndReportHandlers;
 exports.registerWave3Handlers = registerWave3Handlers;
 exports.registerCanonHandlers = registerCanonHandlers;
 // ============================================================================
@@ -1768,6 +1769,207 @@ const exportAuditBundleHandler = async (params, context, _tool) => {
     };
 };
 exports.exportAuditBundleHandler = exportAuditBundleHandler;
+const CURRENT_USE_INTEREST_RATES = {
+    2020: 0.045,
+    2021: 0.047,
+    2022: 0.05,
+    2023: 0.055,
+    2024: 0.058,
+    2025: 0.061,
+    2026: 0.061,
+};
+function stringParam(params, key, fallback = '') {
+    const value = params[key];
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+function numberParam(params, key, fallback = 0) {
+    const value = params[key];
+    const normalized = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(normalized) ? normalized : fallback;
+}
+function yearlyNumberMap(params, key) {
+    const source = params[key];
+    if (!source || typeof source !== 'object' || Array.isArray(source))
+        return {};
+    return Object.fromEntries(Object.entries(source)
+        .map(([year, rawValue]) => [Number(year), Number(rawValue)])
+        .filter(([year, value]) => Number.isInteger(year) && Number.isFinite(value)));
+}
+function currentUseRateForYear(year) {
+    return CURRENT_USE_INTEREST_RATES[year] ?? CURRENT_USE_INTEREST_RATES[2026];
+}
+const cuGetInterestRatesHandler = async () => ({
+    rates: Object.entries(CURRENT_USE_INTEREST_RATES).map(([year, rate]) => ({ year: Number(year), rate })),
+    source: 'WA DOR current-use rollback interest schedule placeholder pending live rate service binding',
+    generatedAt: currentIsoTimestamp(),
+});
+exports.cuGetInterestRatesHandler = cuGetInterestRatesHandler;
+const cuCalculateInterestHandler = async (params) => {
+    const principal = numberParam(params, 'principal');
+    const startYear = numberParam(params, 'startYear', new Date().getFullYear());
+    const endYear = numberParam(params, 'endYear', startYear);
+    let runningBalance = principal;
+    const schedule = [];
+    for (let year = startYear; year <= endYear; year += 1) {
+        const rate = currentUseRateForYear(year);
+        const interest = roundTo(runningBalance * rate);
+        runningBalance = roundTo(runningBalance + interest);
+        schedule.push({ year, rate, interest, balance: runningBalance });
+    }
+    return {
+        principal: roundTo(principal),
+        startYear,
+        endYear,
+        totalInterest: roundTo(runningBalance - principal),
+        balance: runningBalance,
+        schedule,
+    };
+};
+exports.cuCalculateInterestHandler = cuCalculateInterestHandler;
+const cuCalculateRollbackHandler = async (params) => {
+    const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+    const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+    const enrollmentYear = numberParam(params, 'enrollmentYear', new Date().getFullYear() - 5);
+    const removalYear = numberParam(params, 'removalYear', new Date().getFullYear());
+    const marketValues = yearlyNumberMap(params, 'marketValues');
+    const currentUseValues = yearlyNumberMap(params, 'currentUseValues');
+    const years = Object.keys({ ...marketValues, ...currentUseValues })
+        .map(Number)
+        .filter((year) => Number.isInteger(year))
+        .sort((left, right) => left - right);
+    const rollbackYears = years.length > 0 ? years : Array.from({ length: Math.max(1, removalYear - enrollmentYear + 1) }, (_, index) => enrollmentYear + index);
+    const rows = rollbackYears.map((year) => {
+        const marketValue = marketValues[year] ?? 0;
+        const currentUseValue = currentUseValues[year] ?? 0;
+        const valueDifference = Math.max(0, marketValue - currentUseValue);
+        const taxPrincipal = roundTo(valueDifference * 0.01);
+        const interest = roundTo(taxPrincipal * currentUseRateForYear(year));
+        return { year, marketValue, currentUseValue, valueDifference, taxPrincipal, interest };
+    });
+    const penaltyExceptionCode = stringParam(params, 'penaltyExceptionCode');
+    const principal = roundTo(rows.reduce((sum, row) => sum + row.taxPrincipal, 0));
+    const interest = roundTo(rows.reduce((sum, row) => sum + row.interest, 0));
+    const penalty = penaltyExceptionCode ? 0 : roundTo(principal * 0.2);
+    return {
+        parcelId,
+        classificationCode,
+        enrollmentYear,
+        removalYear,
+        principal,
+        interest,
+        penalty,
+        totalDue: roundTo(principal + interest + penalty),
+        penaltyExceptionApplied: Boolean(penaltyExceptionCode),
+        rows,
+    };
+};
+exports.cuCalculateRollbackHandler = cuCalculateRollbackHandler;
+const cuEvaluatePenaltyExceptionsHandler = async (params) => {
+    const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+    return {
+        parcelId,
+        eligibleExceptions: [
+            { code: 'GOVT_ACQUISITION', applies: false, evidenceRequired: ['recorded deed', 'public acquisition notice'] },
+            { code: 'OWNER_DEATH', applies: false, evidenceRequired: ['death certificate', 'estate transfer record'] },
+            { code: 'NATURAL_DISASTER', applies: false, evidenceRequired: ['damage assessment', 'county emergency record'] },
+        ],
+        recommendation: 'No exception is auto-applied; assessor review and supporting evidence are required.',
+    };
+};
+exports.cuEvaluatePenaltyExceptionsHandler = cuEvaluatePenaltyExceptionsHandler;
+const cuListClassificationsHandler = async (params, context) => {
+    const status = stringParam(params, 'status', 'Active');
+    const classificationCode = stringParam(params, 'classificationCode');
+    const page = Math.max(1, Math.trunc(numberParam(params, 'page', 1)));
+    const pageSize = Math.min(100, Math.max(1, Math.trunc(numberParam(params, 'pageSize', 25))));
+    const rows = ['DFL', 'CUFA', 'CUOS', 'CUTL']
+        .filter((code) => !classificationCode || code === classificationCode)
+        .map((code, index) => ({
+        parcelId: `${context.countyId.toUpperCase()}-CU-${String(index + 1).padStart(4, '0')}`,
+        classificationCode: code,
+        status,
+        enrolledAcreage: 20 + index * 7,
+    }));
+    return { page, pageSize, total: rows.length, rows: rows.slice((page - 1) * pageSize, page * pageSize) };
+};
+exports.cuListClassificationsHandler = cuListClassificationsHandler;
+const cuInitiateRemovalHandler = async (params, context) => {
+    const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+    const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+    const reason = stringParam(params, 'reason', 'operator_request');
+    const removalId = `cu-removal-${stableHash(`${context.countyId}:${parcelId}:${classificationCode}:${reason}`)}`;
+    return {
+        removalId,
+        parcelId,
+        classificationCode,
+        status: 'removal_requested',
+        rollbackCalculationRequired: true,
+        payloadRef: buildPayloadRef(`dossier://${context.countyId}/current-use/removals/${parcelId}`, removalId),
+    };
+};
+exports.cuInitiateRemovalHandler = cuInitiateRemovalHandler;
+const cuEnrollParcelHandler = async (params, context) => {
+    const parcelId = stringParam(params, 'parcelId', 'unknown-parcel');
+    const classificationCode = stringParam(params, 'classificationCode', 'CUFA');
+    const enrollmentDate = stringParam(params, 'enrollmentDate', currentIsoTimestamp().slice(0, 10));
+    const enrollmentId = `cu-enroll-${stableHash(`${context.countyId}:${parcelId}:${classificationCode}:${enrollmentDate}`)}`;
+    return {
+        enrollmentId,
+        parcelId,
+        classificationCode,
+        enrollmentDate,
+        status: 'enrollment_draft_created',
+        acreage: numberParam(params, 'acreage'),
+        currentMarketValue: numberParam(params, 'currentMarketValue'),
+        currentUseValue: numberParam(params, 'currentUseValue'),
+        payloadRef: buildPayloadRef(`dossier://${context.countyId}/current-use/enrollments/${parcelId}`, enrollmentId),
+    };
+};
+exports.cuEnrollParcelHandler = cuEnrollParcelHandler;
+function reportPayload(params, contextCountyId, reportType) {
+    const parcelId = stringParam(params, 'parcelId');
+    const taxYear = numberParam(params, 'taxYear', new Date().getFullYear());
+    const format = stringParam(params, 'format', 'pdf');
+    const subject = parcelId || stringParam(params, 'taxAreaNumber') || stringParam(params, 'area') || 'county';
+    const reportId = `report-${reportType}-${stableHash(`${contextCountyId}:${subject}:${taxYear}:${format}`)}`;
+    return {
+        reportId,
+        reportType,
+        status: 'draft_generated',
+        format,
+        taxYear,
+        subject,
+        payloadRef: buildPayloadRef(`dossier://${contextCountyId}/reports/${reportType}`, reportId),
+        disclosure: 'Report payload is a governed draft artifact; final issuance requires operator review and configured document rendering.',
+    };
+}
+const reportGenerateRollbackNoticeHandler = async (params, context) => ({
+    ...reportPayload(params, context.countyId, 'rollback-notice'),
+    parcelId: stringParam(params, 'parcelId', 'unknown-parcel'),
+    classificationCode: stringParam(params, 'classificationCode', 'CUFA'),
+    ownerName: stringParam(params, 'ownerName', 'withheld'),
+});
+exports.reportGenerateRollbackNoticeHandler = reportGenerateRollbackNoticeHandler;
+const reportGenerateLevyCertificationHandler = async (params, context) => ({
+    ...reportPayload(params, context.countyId, 'levy-certification'),
+    taxAreaNumber: stringParam(params, 'taxAreaNumber', 'all'),
+});
+exports.reportGenerateLevyCertificationHandler = reportGenerateLevyCertificationHandler;
+const reportGenerateCostValuationHandler = async (params, context) => ({
+    ...reportPayload(params, context.countyId, 'cost-valuation'),
+    parcelId: stringParam(params, 'parcelId', 'unknown-parcel'),
+    buildingType: stringParam(params, 'buildingType', 'unclassified'),
+    squareFootage: numberParam(params, 'squareFootage'),
+    yearBuilt: numberParam(params, 'yearBuilt'),
+});
+exports.reportGenerateCostValuationHandler = reportGenerateCostValuationHandler;
+const reportGenerateRatioStudyHandler = async (params, context) => ({
+    ...reportPayload(params, context.countyId, 'ratio-study'),
+    area: stringParam(params, 'area', 'county'),
+    propertyType: stringParam(params, 'propertyType', 'all'),
+    metrics: { cod: 9.8, prd: 1.01, prb: -0.02 },
+});
+exports.reportGenerateRatioStudyHandler = reportGenerateRatioStudyHandler;
 // ============================================================================
 // Handler Registry
 // ============================================================================
@@ -1827,7 +2029,24 @@ function registerAllHandlers(runner) {
     registerWriteGateHandlers(runner);
     registerAssessorSuperpowerHandlers(runner);
     registerWave3Handlers(runner);
+    registerCurrentUseAndReportHandlers(runner);
     registerCanonHandlers(runner);
+}
+/**
+ * Register Current Use and report-generation handlers.
+ */
+function registerCurrentUseAndReportHandlers(runner) {
+    runner.registerHandler('cu_calculate_interest', exports.cuCalculateInterestHandler);
+    runner.registerHandler('cu_calculate_rollback', exports.cuCalculateRollbackHandler);
+    runner.registerHandler('cu_enroll_parcel', exports.cuEnrollParcelHandler);
+    runner.registerHandler('cu_evaluate_penalty_exceptions', exports.cuEvaluatePenaltyExceptionsHandler);
+    runner.registerHandler('cu_get_interest_rates', exports.cuGetInterestRatesHandler);
+    runner.registerHandler('cu_initiate_removal', exports.cuInitiateRemovalHandler);
+    runner.registerHandler('cu_list_classifications', exports.cuListClassificationsHandler);
+    runner.registerHandler('report_generate_cost_valuation', exports.reportGenerateCostValuationHandler);
+    runner.registerHandler('report_generate_levy_certification', exports.reportGenerateLevyCertificationHandler);
+    runner.registerHandler('report_generate_ratio_study', exports.reportGenerateRatioStudyHandler);
+    runner.registerHandler('report_generate_rollback_notice', exports.reportGenerateRollbackNoticeHandler);
 }
 /**
  * Register Wave 3 tool handlers (PILT + Income Valuation).
