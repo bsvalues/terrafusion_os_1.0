@@ -43,11 +43,31 @@ public class ServiceRegistry
     }
 
     /// <summary>
+    /// Locates platform.json for seeding: checks the registry file's directory, then up to
+    /// four ancestor directories. The registry file lives under backend/ while the canonical
+    /// platform.json lives at the repo root, so the sibling alone is not enough.
+    /// Falls back to the sibling path so the "not found" warning names the conventional location.
+    /// </summary>
+    private string FindPlatformJsonPath()
+    {
+        var dir = Path.GetDirectoryName(Path.GetFullPath(_registryPath));
+        var sibling = dir is null ? "platform.json" : Path.Combine(dir, "platform.json");
+        for (var level = 0; level < 5 && dir is not null; level++)
+        {
+            var candidate = Path.Combine(dir, "platform.json");
+            if (File.Exists(candidate))
+                return candidate;
+            dir = Path.GetDirectoryName(dir);
+        }
+        return sibling;
+    }
+
+    /// <summary>
     /// Seeds service-registry.json from platform.json if it does not already exist.
     /// Idempotent — returns immediately if the file is already present.
     /// </summary>
     /// <param name="platformJsonPath">
-    /// Explicit path to platform.json. When null, derived as the sibling of _registryPath.
+    /// Explicit path to platform.json. When null, resolved via <see cref="FindPlatformJsonPath"/>.
     /// </param>
     public async Task EnsureSeededAsync(string? platformJsonPath = null)
     {
@@ -55,8 +75,7 @@ public class ServiceRegistry
         if (File.Exists(_registryPath))
             return;
 
-        var platformPath = platformJsonPath
-            ?? Path.Combine(Path.GetDirectoryName(_registryPath)!, "platform.json");
+        var platformPath = platformJsonPath ?? FindPlatformJsonPath();
 
         if (!File.Exists(platformPath))
         {

@@ -6,48 +6,25 @@
     "Shell-Contract verification — DONE 2026-06-09 (WO-0005 verify + WO-0006 D-012 bridge 9207893a3 + WO-0008 D-011 retarget f81a8efa6; suites 45/45 + 33/33)",
     "UI honesty sweep (full) — DONE 2026-06-09 (WO-0009, 09710b215; battery 105/106, scanner 0 hits; D-013 residual = fleet lane)",
     "Brain production readiness + commit-race hardening — DONE 2026-06-09 (WO-0011, bc7f375d7; 24/24)",
-    "D-009 token nit — RESOLVED 2026-06-09 (WO-0012; 3 lines tracking-[0.22em] → tracking-widest; token-police CLEAN, type-check clean, gating tests 6/6)"
+    "D-009 token nit — RESOLVED 2026-06-09 (WO-0012; 3 lines tracking-[0.22em] → tracking-widest; token-police CLEAN, type-check clean, gating tests 6/6)",
+    "ServiceRegistry activation gate — VERIFIED 2026-06-10 (WO-0013): PARTIALLY ACTIVE — loop LIVE + 8 tests; seed path mismatch → D-015",
+    "D-015 seed path — RESOLVED 2026-06-10 (WO-0014): ancestor walk; LIVE-PROVEN 1→10 registry entries; regression test added (run blocked by fleet WIP compile)",
+    "Dais live-DB migration gate — VERIFIED 2026-06-10 (WO-0015): AddDaisEntities APPLIED, all 5 Dais tables live; out-of-order pending Revenue migration → D-016",
+    "Dock/top-bar deep sweep — DONE 2026-06-10 (WO-0016): 403/408 green; failures classified (D-013 fleet + D-018 stale assertion); G2 MISALIGNED → D-017. NOTE: WO-0013..0016 originally landed on fix/projector lineage; restored after June-10 branch rebuild."
   ],
   "_external_lane": [
     "D-013 (P2): ForgeSuiteHome dropped 'DB/API-backed Benton proof path' disclosure phrase — FLEET-owned file (DO-NOT-EDIT header); fleet restores phrase or retargets the pinned-prose assertion. Not in this lane's queue."
   ],
   "queue": [
     {
-      "title": "Product gate: ServiceRegistry activation verification",
-      "why_now": "Listed P1 in the 1.0 priority stack; never measured this cycle.",
-      "risk": "R2",
-      "files": ["read-only inspection + existing tests; evidence note"],
-      "stop_conditions": [
-        "activation requires backend behavior change (own WO + operator approval)"
-      ],
-      "proof": ["evidence artifact: active or honestly not + gap list"]
-    },
-    {
-      "title": "Product gate: live-DB migration verify (Dais)",
-      "why_now": "D-002 verified behavior on the in-memory provider; live-DB apply unverified.",
-      "risk": "R2",
+      "title": "D-017: moduleId↔service-key naming contract (AppFrame native-app discovery)",
+      "why_now": "WO-0016 found zero overlap between AppFrame moduleIds, registry keys, and generatedModules ids — native-app frames always notFound. Needs a naming-contract DECISION before code.",
+      "risk": "R3 (naming contract = operator/architect decision first)",
       "files": [
-        "dotnet ef migrations list/apply against terrafusion dev DB; evidence note"
+        "decision: platform.json alias map vs AppFrame mapping vs key rename; then small WO"
       ],
-      "stop_conditions": [
-        "any migration would mutate schema unexpectedly (stop + operator)",
-        "dev DB contention with fleet"
-      ],
-      "proof": [
-        "migrations list clean; AddDaisEntities applied; evidence artifact"
-      ]
-    },
-    {
-      "title": "Product gate: dock/top-bar deep sweep (launch-surface truth table)",
-      "why_now": "WO-0005 deferred the frontend launchSurface/shellTruthAudit deep batch; D-013's one failure is known.",
-      "risk": "R2",
-      "files": [
-        "run frontend launch-surface + shell-truth vitest batches; evidence note"
-      ],
-      "stop_conditions": ["fixes require shell routing changes (R4)"],
-      "proof": [
-        "batch results recorded; failures classified mine-vs-fleet-vs-stale"
-      ]
+      "stop_conditions": ["operator has not chosen the contract shape"],
+      "proof": ["one moduleId (terra-levy) resolves end-to-end via AppFrame"]
     },
     {
       "title": "TF-LOCALOPS-001 chain head: execute WO-LOCALOPS-000 (planning envelope)",

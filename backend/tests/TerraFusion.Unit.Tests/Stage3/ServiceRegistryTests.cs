@@ -122,6 +122,35 @@ public sealed class ServiceRegistryTests : IDisposable
     }
 
     [Fact]
+    public async Task EnsureSeededAsync_FindsPlatformJsonInAncestorDirectory_WhenNoExplicitPath()
+    {
+        // Arrange — repo-root layout: platform.json at the root, registry one level
+        // down under backend/ (the real deployment shape; regression for D-015 where
+        // the seeder only checked the registry file's sibling and warn-skipped).
+        var backendDir = Path.Combine(_tempDir, "backend");
+        Directory.CreateDirectory(backendDir);
+        await File.WriteAllTextAsync(PlatformPath, MinimalPlatformJson);
+
+        var nestedRegistryPath = Path.Combine(backendDir, "service-registry.json");
+        var registry = new ServiceRegistry(NullLogger<ServiceRegistry>.Instance, nestedRegistryPath);
+
+        // Act — no explicit platform.json path
+        await registry.EnsureSeededAsync();
+
+        // Assert — seeded from the ancestor platform.json
+        File.Exists(nestedRegistryPath).Should().BeTrue(
+            "registry should be seeded from the repo-root platform.json found by ancestor walk");
+
+        var json = await File.ReadAllTextAsync(nestedRegistryPath);
+        var model = JsonSerializer.Deserialize<ServiceRegistryModel>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        model.Services.Should().ContainKey("api");
+        model.Services.Should().ContainKey("frontend");
+        model.Services.Should().ContainKey("consciousness");
+    }
+
+    [Fact]
     public async Task RegisterServiceAsync_AddsNewServiceIfNotInRegistry()
     {
         // Arrange — seed registry without "backend"
