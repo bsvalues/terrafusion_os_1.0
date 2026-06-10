@@ -80,6 +80,26 @@ not answers.
 Retrieval consumers (e.g. an answer surface) are **not** built here — this is the interface + grounding
 contract only.
 
+## Read-only diagnostics (WO-LOCALOPS-005)
+
+`os-platform/core/pilot/local-agent/localOpsDiagnostics.ts` (`createLocalOpsDiagnostics`) exposes a
+**fixed allowlist of read-only diagnostics** built on the prior seams:
+
+- `ai.profile` — active profile/provider (redacted)
+- `config.summary` — redacted AI profile configuration
+- `provider.status` — provider readiness (a non-ready provider is `warn`, not `error`)
+- `kb.status` — local KB health (roots, excluded roots, file count)
+
+Every result is `readonly: true` — diagnostics **observe only**: no mutation, no shell, no service
+restart, no DB write, no migration, no network I/O. `request(name)` is the gated entry point: any name
+outside the allowlist, or that names a mutating/operational action (`restart`, `migrate`, `write`,
+`shell`, `exec`, …), is **refused** with a structured, redaction-safe `DiagnosticRefusal`
+(`UNSAFE_DIAGNOSTIC` vs `UNKNOWN_DIAGNOSTIC`). Runs emit `localops.tool.diagnostic.started/.completed`
+and refusals emit `localops.policy.refused` through the optional trace adapter.
+
+App/service-health, DB-connectivity, and log-summary diagnostics are **deferred** — there is no existing
+safe read-only seam to reuse, so they are not guessed.
+
 ## Existing seams (context, not commitment)
 
 A governance-controlled local agent already exists at `os-platform/core/pilot/local-agent/`

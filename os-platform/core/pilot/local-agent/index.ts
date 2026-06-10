@@ -384,3 +384,18 @@ export {
   type KbStatus,
   type CreateLocalOpsKbOptions,
 } from './localOpsKb.js';
+
+export {
+  READONLY_DIAGNOSTICS,
+  LocalOpsDiagnostics,
+  createLocalOpsDiagnostics,
+  isDiagnosticRefusal,
+  isDiagnosticName,
+  type DiagnosticName,
+  type DiagnosticStatus,
+  type DiagnosticResult,
+  type DiagnosticRefusal,
+  type DiagnosticReasonCode,
+  type DiagnosticOutcome,
+  type CreateLocalOpsDiagnosticsOptions,
+} from './localOpsDiagnostics.js';
