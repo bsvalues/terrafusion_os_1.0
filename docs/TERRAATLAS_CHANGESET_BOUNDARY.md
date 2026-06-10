@@ -52,7 +52,7 @@ or Property Workbench data stores were mutated.
 Do not claim:
 
 - `FULL RUNTIME PROVEN PRODUCTION`, because Mapbox, FEMA, and zoning enrichments remain external/configuration gaps.
-- Snyk completion, because Snyk credentials/tooling are unavailable in this Codex session.
+- A clean Snyk finding slate; the pre-push Snyk Code scan completed with findings in governed code targets and did not block the push.
 - Placeholder parcel proof from `00AA00001129049` or `12345-001`.
 - Any Current Use, report-generation, Forge, Dais, Dossier, or Cortex functionality as TerraAtlas production proof.
 
@@ -61,4 +61,4 @@ Do not claim:
 `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS`
 
 The core TerraAtlas runtime is proven with live Benton County GIS data for parcel
-`119802030006001`. External gaps are documented instead of hidden.
+`119802030006001`. External Mapbox/FEMA/zoning gaps are documented instead of hidden.

@@ -74,11 +74,10 @@ gate then passed.
 | Mapbox live satellite/canvas rendering | `EXTERNAL-ONLY`: `VITE_MAPBOX_ACCESS_TOKEN` is not configured. The Atlas Workbench route still renders a stable map container and honest geometry disclosure. |
 | FEMA flood enrichment | `EXTERNAL-ONLY`: backend returns flood data as `source: stub`. |
 | Zoning enrichment | `EXTERNAL-ONLY`: backend returns zoning as `null`; the Workbench displays property-store zoning context without claiming live zoning GIS enrichment. |
-| Snyk scan | `EXTERNAL-ONLY`: no Snyk tool/credentials are available in this Codex session. No Snyk completion is claimed. |
+| Snyk scan | Pre-push hook ran `pnpm run security:scan`; Snyk Code completed with findings for `tools/registry`, `os-platform/core/pilot`, and `os-platform/core/types`. The hook did not block the push. |
 
 ## Final Classification
 
 The core TerraAtlas runtime is production-ready for the proven parcel path and live Benton
 County GIS boundary/layer contract. Full production status is limited only by external
-enrichment/configuration gaps: Mapbox token, FEMA flood enrichment, zoning enrichment, and
-optional Snyk credentialed scanning.
+enrichment/configuration gaps: Mapbox token, FEMA flood enrichment, and zoning enrichment.
