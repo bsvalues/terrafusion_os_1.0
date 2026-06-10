@@ -162,8 +162,17 @@ This scaffold is **documentation only** and changes no production code. The rele
   (exit 0). This confirms the canon tool surface is healthy; it does not assert anything about these
   docs beyond "governance plumbing works."
 
-## Next work order (not in scope here)
+## Path Router (WO-BRAIN-0014)
 
-**WO-BRAIN-0014 — Brain Path Router**: given a changed file path or work order, Brain identifies the
-domain pack, risk class, required proof, forbidden boundaries, and escalation triggers. Do **not** build
-that yet — this work order lands the pack scaffold first.
+Given a changed file path or work-order scope, the **Path Router** resolves the owning domain pack,
+risk floor, forbidden boundaries, required proof, and escalation triggers — so agents route correctly
+without asking the human. It is a **file-backed manifest** (data only, no runtime):
+
+- [`brain/router/path-router.yaml`](../router/path-router.yaml) — the route table (real paths
+  authoritative; uncertain/anticipated paths flagged `candidate`).
+- [`brain/router/README.md`](../router/README.md) — how to resolve a path, risk-floor taxonomy, and
+  why v1 is manifest-first (no `pnpm brain` command — it does not exist; an executable resolver is a
+  deferred optional follow-up).
+
+The router **points at** these packs; it is a lookup table, **not** a queue and **not** a second
+authority. One Brain, many packs.
