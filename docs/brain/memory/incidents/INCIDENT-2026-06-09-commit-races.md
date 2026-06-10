@@ -31,3 +31,18 @@ Lightweight staged-file guard across the Brain loop:
 The guard makes the hazard visible and blocking at every loop step, but cannot physically prevent
 another agent's commit from absorbing a staged index. Full elimination requires **per-agent worktree
 isolation** (or a cooperative commit lock) — deferred as its own future slice.
+
+## 2026-06-10 — THIRD absorption (deferral condition MET)
+Race #3, plus a reverse-absorption earlier the same day:
+- **Reverse:** recovery commit `c5664ff31` (mine) swallowed the fleet's staged
+  `docs/branching/WS1B_RUNTIME_TRUTH_ARCHITECTURE_DECISION.md`.
+- **#3 proper:** fleet commit `edcc58ef9` "fix(atlas): tighten TerraAtlas Workbench proof surface"
+  absorbed my staged honesty restores (`CLAUDE.md` 26 hunks + `backend/CLAUDE.md` 6 hunks, restored
+  from `3f3dbc0e6` for D-019) while I edited the drift ledger between checkout and commit. My
+  follow-up commit `1e05f8033` landed only the ledger row. Content correct in HEAD; attribution mixed.
+Context: the cloud session "TerraFusion OS June 10 production" is committing concurrently in the SAME
+worktree; same day it rebuilt the branch (stranding WO-0013..0016, regressing write-lanes + honesty docs).
+
+**Status change: the deferral rule ("build isolation only if the race bites a third time") has FIRED.**
+The queued hardening item "per-agent worktree isolation (commit-race full fix)" is now justified for
+elevation. Interim discipline tightened: stage+commit in ONE Bash invocation, never edit between.
