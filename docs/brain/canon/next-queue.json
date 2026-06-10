@@ -10,21 +10,30 @@
     "ServiceRegistry activation gate — VERIFIED 2026-06-10 (WO-0013): PARTIALLY ACTIVE — loop LIVE + 8 tests; seed path mismatch → D-015",
     "D-015 seed path — RESOLVED 2026-06-10 (WO-0014): ancestor walk; LIVE-PROVEN 1→10 registry entries; regression test added (run blocked by fleet WIP compile)",
     "Dais live-DB migration gate — VERIFIED 2026-06-10 (WO-0015): AddDaisEntities APPLIED, all 5 Dais tables live; out-of-order pending Revenue migration → D-016",
-    "Dock/top-bar deep sweep — DONE 2026-06-10 (WO-0016): 403/408 green; failures classified (D-013 fleet + D-018 stale assertion); G2 MISALIGNED → D-017. NOTE: WO-0013..0016 originally landed on fix/projector lineage; restored after June-10 branch rebuild."
+    "Dock/top-bar deep sweep — DONE 2026-06-10 (WO-0016): 403/408 green; failures classified (D-013 fleet + D-018 stale assertion); G2 MISALIGNED → D-017. NOTE: WO-0013..0016 originally landed on fix/projector lineage; restored after June-10 branch rebuild.",
+    "D-020 / WO-BRAIN-0021 — Per-agent worktree isolation MANDATED 2026-06-10 (operator executive decision after race #3): policy + recovery + branching docs + AGENTS.md rule; executed in isolated worktree tf-agent-brain-0021; shared-tree feature freeze lifted on land"
   ],
   "_external_lane": [
     "D-013 (P2): ForgeSuiteHome dropped 'DB/API-backed Benton proof path' disclosure phrase — FLEET-owned file (DO-NOT-EDIT header); fleet restores phrase or retargets the pinned-prose assertion. Not in this lane's queue."
   ],
   "queue": [
     {
-      "title": "D-017: moduleId↔service-key naming contract (AppFrame native-app discovery)",
-      "why_now": "WO-0016 found zero overlap between AppFrame moduleIds, registry keys, and generatedModules ids — native-app frames always notFound. Needs a naming-contract DECISION before code.",
-      "risk": "R3 (naming contract = operator/architect decision first)",
+      "title": "D-017 IMPLEMENT: moduleId→service-key alias map in platform.json (DECIDED 2026-06-10)",
+      "why_now": "OPERATOR DECISION 2026-06-10: explicit alias map in platform.json (registry/source-of-truth boundary). Do NOT rename service keys; do NOT bury mapping inside AppFrame — AppFrame consumes resolved identity. Reversible, testable, low blast radius. Execute only from a dedicated worktree per WO-BRAIN-0021.",
+      "risk": "R2 (decision made; small implementation slice)",
       "files": [
-        "decision: platform.json alias map vs AppFrame mapping vs key rename; then small WO"
+        "platform.json (alias map, e.g. terra-levy->levy)",
+        "backend ServiceRegistry seeding honors aliases OR AppFrame resolves via registry contract",
+        "regression: AppFrame resolves moduleId aliases"
       ],
-      "stop_conditions": ["operator has not chosen the contract shape"],
-      "proof": ["one moduleId (terra-levy) resolves end-to-end via AppFrame"]
+      "stop_conditions": [
+        "alias map requires platform.json schema change beyond additive aliases",
+        "must run in dedicated worktree (shared-tree work forbidden)"
+      ],
+      "proof": [
+        "one moduleId (terra-levy) resolves end-to-end via AppFrame",
+        "alias regression test green"
+      ]
     },
     {
       "title": "TF-LOCALOPS-001 chain: execute WO-LOCALOPS-001 (AI profile config contract) — 000 planning envelope DONE 2026-06-10",
@@ -40,16 +49,6 @@
       "proof": [
         "per-WO required_proof blocks; chain done-definition = WO-LOCALOPS-008 runtime proof report"
       ]
-    },
-    {
-      "title": "Hardening: per-agent worktree isolation (commit-race full fix)",
-      "why_now": "Deferred unless the race bites a third time or becomes cheap; guard (WO-0011) currently mitigates.",
-      "risk": "R2",
-      "files": ["docs/brain process doctrine + possibly git worktree tooling"],
-      "stop_conditions": [
-        "requires changing other agents' workflows without operator sign-off"
-      ],
-      "proof": ["isolation procedure documented + trialed on one slice"]
     }
   ]
 }

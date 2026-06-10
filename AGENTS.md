@@ -3,6 +3,20 @@
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.
 
+## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021, D-020)
+
+**No two agents may operate in the same working tree.**
+Each agent must use a dedicated git worktree tied to exactly one work order.
+The shared/main working tree is for human-controlled sync only.
+Agents must not stage, commit, checkout, reset, clean, stash, or format across another agent's worktree.
+
+- One worktree = one work order = one branch = one PR. Naming: `tf-agent-<lane>-<wo>`.
+- Before the first write, every agent runs and reports: `pwd` · `git branch --show-current` · `git rev-parse --show-toplevel` · `git status --short` · `git worktree list`. If toplevel = main repo root → STOP and create/enter a worktree. If foreign staged/unstaged files are present → STOP and report.
+- No `git add -A` unless the work order explicitly authorizes full-tree docs-only scope. No `git reset --hard` / `git clean` / force checkout / broad stash without human approval. Stage+commit in one step.
+- Contamination detected → recovery mode: `docs/agents/SHARED_WORKTREE_RECOVERY.md`.
+- Full policy: `docs/agents/AGENT_WORKTREE_ISOLATION.md` · `docs/branching/BRANCH_AND_WORKTREE_POLICY.md`. Justification: 3 commit-race events (`docs/brain/memory/incidents/INCIDENT-2026-06-09-commit-races.md`).
+- Per-agent worktrees are the PRIMARY fix; a cooperative commit lock is a possible future secondary layer only.
+
 ## CORE GOVERNANCE SURFACE (ALLOWED SCOPE)
 Only modify files under:
 - os-platform/core/pilot/**
