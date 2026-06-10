@@ -17,6 +17,7 @@
 
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { loadStagedException, isStagedException } from './reserved-staging-exception.mjs';
 
 // ============================================================================
 // Configuration
@@ -159,13 +160,36 @@ console.log('');
 console.log('Validating tool declarations...');
 console.log('');
 
-// Validate all tools
+// FU-2C / ADR-0014: exact, gated exemption for forward-staged reserved-office tools.
+// Only the precise tool IDs in docs/brain/canon/reserved-staging.json are exempt, and only while the
+// register proves both exposure gates (UI + runtime) are in place and the suites are forward-staged.
+const staged = loadStagedException(process.cwd());
+
+// Validate all tools (skip exact, active staged exceptions — reported transparently below)
 const allViolations = [];
+const exempted = [];
 const tools = manifest.tools || [];
 
 for (let i = 0; i < tools.length; i++) {
+  if (isStagedException(tools[i], staged)) {
+    exempted.push(tools[i].toolId);
+    continue;
+  }
   const violations = validateTool(tools[i], i);
   allViolations.push(...violations);
+}
+
+if (exempted.length > 0) {
+  console.log(
+    `ℹ️  ${exempted.length} forward-staged reserved-office tool(s) exempted (docs/brain/canon/reserved-staging.json;`
+  );
+  console.log(
+    '   UI + runtime exposure gated off by default — ADR-0012/0013). These suite/trace declarations are NOT'
+  );
+  console.log(
+    '   validated while staged; they MUST be re-validated when the office is activated (R5/TF-052).'
+  );
+  console.log('');
 }
 
 // Check for duplicate toolIds
@@ -203,7 +227,9 @@ if (allViolations.length > 0) {
   process.exit(1);
 } else {
   console.log('✅ Write-Lane Assertions PASSED');
-  console.log(`   ${tools.length} tools validated`);
+  console.log(
+    `   ${tools.length - exempted.length} tools validated${exempted.length ? `, ${exempted.length} forward-staged exempted` : ''}`
+  );
   console.log('   No cross-lane writes detected');
   console.log('   All risk/confirmation requirements satisfied');
   process.exit(0);

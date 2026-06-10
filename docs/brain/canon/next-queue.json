@@ -27,7 +27,7 @@
       "proof": ["one moduleId (terra-levy) resolves end-to-end via AppFrame"]
     },
     {
-      "title": "TF-LOCALOPS-001 chain head: execute WO-LOCALOPS-000 (planning envelope)",
+      "title": "TF-LOCALOPS-001 chain: execute WO-LOCALOPS-001 (AI profile config contract) — 000 planning envelope DONE 2026-06-10",
       "why_now": "Benton server survival infrastructure: TerraPilot LocalOps Mode (local-only AI, no cloud fallback, local RAG, read-only diagnostics, trace events, in-shell UI). Chain WO-LOCALOPS-000..008 created 2026-06-09 under docs/brain/workorders/active/; execute strictly in order, one WO per slice. Operator approved the goal; WO-LOCALOPS-006 (shell UI, R4) still requires explicit architect sign-off at dispatch.",
       "risk": "R1 (chain head; later WOs R2-R4 per their files)",
       "files": [
