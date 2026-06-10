@@ -34,7 +34,16 @@ public interface IPacsImprvCanonicalProjector
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>Slice C3: outcome of one projection run.</summary>
+/// <summary>
+/// Slice C3: outcome of one projection run.
+///
+/// <para>v1.5 (E4b): added attribute-resolution counters
+/// (<see cref="AttributesConsidered"/>,
+/// <see cref="AttributesResolved"/>,
+/// <see cref="AttributesQuarantined"/>,
+/// <see cref="PriorAttrQuarantineRowsRemoved"/>). See
+/// <c>docs/pacs/block-c-contract-v1.5.md</c>.</para>
+/// </summary>
 public sealed record PacsImprvCanonicalResult
 {
     public required Guid PromotionLoadBatchId { get; init; }
@@ -50,6 +59,37 @@ public sealed record PacsImprvCanonicalResult
     public required int PriorImprovementsRemoved { get; init; }
     public required int PriorFeaturesRemoved { get; init; }
     public required int PriorQuarantineRowsRemoved { get; init; }
+
+    // ── v1.5 (E4b) attribute-resolution counters ─────────────────
+    /// <summary>
+    /// Raw <c>imprv_attr</c> rows that were in scope for
+    /// resolution (i.e. their 4-key parent improvement was
+    /// successfully projected to <c>tf_improvement</c>).
+    /// </summary>
+    public required int AttributesConsidered { get; init; }
+
+    /// <summary>
+    /// Attributes whose <c>i_attr_val_id</c> resolved to a
+    /// <c>canonical_tf.attribute_definition</c> row in the same
+    /// county and produced a <c>tf_improvement_feature</c> row
+    /// with non-null <c>AttributeId</c>.
+    /// </summary>
+    public required int AttributesResolved { get; init; }
+
+    /// <summary>
+    /// Attributes that did not resolve and were quarantined to
+    /// <c>legacy_tf_unproven.imprv_attr</c> with
+    /// <c>QuarantineReasons.UnknownAttribute</c>.
+    /// </summary>
+    public required int AttributesQuarantined { get; init; }
+
+    /// <summary>
+    /// Prior canonical-layer <c>legacy_tf_unproven.imprv_attr</c>
+    /// rows removed by the idempotency cleanup at the start of
+    /// this run. Distinct from landing-layer quarantine rows
+    /// (which use a different <c>QuarantineReason</c>).
+    /// </summary>
+    public required int PriorAttrQuarantineRowsRemoved { get; init; }
 
     public string? ErrorSummary { get; init; }
 }

@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using NpgsqlTypes;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
 using TerraFusion.Core.Entities.SyncBridge;
 using TerraFusion.Core.Sync.PacsOwner;
@@ -68,7 +70,6 @@ public sealed class PacsOwnerLandingService : IPacsOwnerLandingService
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var rowsLanded = 0;
-        var pending = 0;
         var keyCounts = new Dictionary<(short Year, short Sup, int PropId, long OwnerId), int>();
         var yearHistogram = new Dictionary<short, int>();
         var typeHistogram = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -76,70 +77,94 @@ public sealed class PacsOwnerLandingService : IPacsOwnerLandingService
 
         try
         {
-            await foreach (var src in source
-                .StreamOwnersAsync(cancellationToken)
-                .ConfigureAwait(false))
+            // OWNER-SUPNUM-RESOLUTION (2026-06-06): full-corpus owner landing is
+            // ~809K rows. The prior EF Add/SaveChanges path round-tripped per row
+            // (~30-75 rows/sec → hours, degrading). Replace it with a PostgreSQL
+            // binary COPY stream — one bulk pipe into legacy_pacs_raw.owner — which
+            // lands the same rows orders of magnitude faster. The
+            // uniqueness/distribution/pct gates still come from the in-memory
+            // accumulators below; the provenance gate re-reads the table (COPY
+            // commits real, fully-provenanced rows). A fresh NpgsqlConnection is
+            // used so COPY never contends with the EF DbContext connection that
+            // owns the LoadBatch row + the post-loop status update.
+            var connString = _db.Database.GetConnectionString();
+            await using (var copyConn = new NpgsqlConnection(connString))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                await copyConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await using var importer = await copyConn.BeginBinaryImportAsync(
+                    "COPY legacy_pacs_raw.owner (\"LandedRowId\", \"OwnerTaxYr\", \"SupNum\", " +
+                    "\"PropId\", \"OwnerId\", \"PctOwnership\", \"TypeOfOwner\", \"UdiStatus\", " +
+                    "\"BirthDt\", \"LoadBatchId\", \"SourceQueryHash\", \"SourceRowHash\", \"LandedAt\") " +
+                    "FROM STDIN (FORMAT BINARY)",
+                    cancellationToken).ConfigureAwait(false);
 
-                _db.LegacyPacsRawOwners.Add(new LegacyPacsRawOwner
+                await foreach (var src in source
+                    .StreamOwnersAsync(cancellationToken)
+                    .ConfigureAwait(false))
                 {
-                    OwnerTaxYr = src.OwnerTaxYr,
-                    SupNum = src.SupNum,
-                    PropId = src.PropId,
-                    OwnerId = src.OwnerId,
-                    PctOwnership = src.PctOwnership,
-                    TypeOfOwner = src.TypeOfOwner,
-                    UdiStatus = src.UdiStatus,
-                    BirthDt = src.BirthDt,
-                    LoadBatchId = batch.LoadBatchId,
-                    SourceQueryHash = queryHash,
-                    SourceRowHash = ComputeRowHash(src),
-                    LandedAt = DateTime.UtcNow,
-                });
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                // 4-key counter for uniqueness gate.
-                var key = (src.OwnerTaxYr, src.SupNum, src.PropId, src.OwnerId);
-                keyCounts[key] = keyCounts.TryGetValue(key, out var c) ? c + 1 : 1;
+                    await importer.StartRowAsync(cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(Guid.NewGuid(), NpgsqlDbType.Uuid, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.OwnerTaxYr, NpgsqlDbType.Smallint, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.SupNum, NpgsqlDbType.Smallint, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.PropId, NpgsqlDbType.Integer, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(src.OwnerId, NpgsqlDbType.Bigint, cancellationToken).ConfigureAwait(false);
+                    if (src.PctOwnership.HasValue)
+                        await importer.WriteAsync(src.PctOwnership.Value, NpgsqlDbType.Numeric, cancellationToken).ConfigureAwait(false);
+                    else
+                        await importer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    if (src.TypeOfOwner is not null)
+                        await importer.WriteAsync(src.TypeOfOwner, NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    else
+                        await importer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    if (src.UdiStatus is not null)
+                        await importer.WriteAsync(src.UdiStatus, NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    else
+                        await importer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    if (src.BirthDt.HasValue)
+                        await importer.WriteAsync(DateTime.SpecifyKind(src.BirthDt.Value, DateTimeKind.Utc), NpgsqlDbType.TimestampTz, cancellationToken).ConfigureAwait(false);
+                    else
+                        await importer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(batch.LoadBatchId, NpgsqlDbType.Uuid, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(queryHash, NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(ComputeRowHash(src), NpgsqlDbType.Varchar, cancellationToken).ConfigureAwait(false);
+                    await importer.WriteAsync(DateTime.UtcNow, NpgsqlDbType.TimestampTz, cancellationToken).ConfigureAwait(false);
 
-                // Informational histograms.
-                yearHistogram[src.OwnerTaxYr] =
-                    yearHistogram.TryGetValue(src.OwnerTaxYr, out var yc) ? yc + 1 : 1;
-                if (!string.IsNullOrEmpty(src.TypeOfOwner))
-                {
-                    typeHistogram[src.TypeOfOwner] =
-                        typeHistogram.TryGetValue(src.TypeOfOwner, out var tc) ? tc + 1 : 1;
+                    // 4-key counter for uniqueness gate.
+                    var key = (src.OwnerTaxYr, src.SupNum, src.PropId, src.OwnerId);
+                    keyCounts[key] = keyCounts.TryGetValue(key, out var c) ? c + 1 : 1;
+
+                    // Informational histograms.
+                    yearHistogram[src.OwnerTaxYr] =
+                        yearHistogram.TryGetValue(src.OwnerTaxYr, out var yc) ? yc + 1 : 1;
+                    if (!string.IsNullOrEmpty(src.TypeOfOwner))
+                    {
+                        typeHistogram[src.TypeOfOwner] =
+                            typeHistogram.TryGetValue(src.TypeOfOwner, out var tc) ? tc + 1 : 1;
+                    }
+
+                    // Per-group pct accumulator (NULL marker propagates).
+                    var groupKey = (src.PropId, src.OwnerTaxYr, src.SupNum);
+                    if (!groupPctSums.TryGetValue(groupKey, out var existing))
+                    {
+                        groupPctSums[groupKey] = src.PctOwnership;
+                    }
+                    else if (existing.HasValue && src.PctOwnership.HasValue)
+                    {
+                        groupPctSums[groupKey] = existing.Value + src.PctOwnership.Value;
+                    }
+                    else
+                    {
+                        // Once any row in the group is NULL, the group's
+                        // sum is considered partial.
+                        groupPctSums[groupKey] = null;
+                    }
+
+                    rowsLanded++;
                 }
 
-                // Per-group pct accumulator (NULL marker propagates).
-                var groupKey = (src.PropId, src.OwnerTaxYr, src.SupNum);
-                if (!groupPctSums.TryGetValue(groupKey, out var existing))
-                {
-                    groupPctSums[groupKey] = src.PctOwnership;
-                }
-                else if (existing.HasValue && src.PctOwnership.HasValue)
-                {
-                    groupPctSums[groupKey] = existing.Value + src.PctOwnership.Value;
-                }
-                else
-                {
-                    // Once any row in the group is NULL, the group's
-                    // sum is considered partial.
-                    groupPctSums[groupKey] = null;
-                }
-
-                rowsLanded++;
-                pending++;
-                if (pending >= BatchSize)
-                {
-                    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                    pending = 0;
-                }
-            }
-
-            if (pending > 0)
-            {
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                await importer.CompleteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             var duplicateKeyViolations = keyCounts.Values.Count(c => c > 1);

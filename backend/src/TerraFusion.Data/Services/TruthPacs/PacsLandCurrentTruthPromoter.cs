@@ -88,15 +88,27 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
             await RecordSourceBatchGateAsync(batch, "PASS",
                 "both source batches COMPLETED", cancellationToken).ConfigureAwait(false);
 
-            // Idempotency: clear prior truth rows for this land batch.
-            var priorRows = await _db.TruthPacsLandCurrents
-                .Where(t => t.LandLoadBatchId == landLoadBatchId)
+            // Iterate land_detail rows.
+            var landRows = await _db.LegacyPacsRawLandDetails
+                .Where(l => l.LoadBatchId == landLoadBatchId)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
-            var priorRowsRemoved = priorRows.Count;
-            if (priorRowsRemoved > 0)
+
+            // Idempotency: clear prior truth rows by NATURAL KEY (the parcel-years
+            // being promoted this batch), NOT by LandLoadBatchId. Batch-scoped
+            // clearing never removed rows promoted under a DIFFERENT (earlier)
+            // batch id, so re-draining the same parcels duplicated truth rows
+            // (observed 2.70x on land_current before this fix). Same root cause +
+            // fix as the improvement truth promoter (76027e412). Clearing by the
+            // (PropId, PropValYr) set the current batch covers makes re-drains
+            // idempotent regardless of which batch first promoted them.
+            var batchPropIds = landRows.Select(l => l.PropId).Distinct().ToList();
+            var batchYears = landRows.Select(l => l.PropValYr).Distinct().ToList();
+            var priorRowsRemoved = 0;
+            if (batchPropIds.Count > 0)
             {
-                _db.TruthPacsLandCurrents.RemoveRange(priorRows);
-                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                priorRowsRemoved = await _db.TruthPacsLandCurrents
+                    .Where(t => batchPropIds.Contains(t.PropId) && batchYears.Contains(t.PropValYr))
+                    .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             // Build supp pointer index from supp batch.
@@ -109,15 +121,12 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     g => g.Key,
                     g => g.OrderBy(r => r.LandedAt).First());
 
-            // Iterate land_detail rows.
-            var landRows = await _db.LegacyPacsRawLandDetails
-                .Where(l => l.LoadBatchId == landLoadBatchId)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
-
             var considered = landRows.Count;
             var promoted = 0;
             var rejectedNoSupp = 0;
             var rejectedStaleSup = 0;
+            // G4 (v1.13): pre-conversion-share gate counter.
+            var preConversionPromoted = 0;
             decimal acresSum = 0m;
             decimal marketValSum = 0m;
             var now = DateTime.UtcNow;
@@ -136,6 +145,10 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     rejectedStaleSup++;
                     continue;
                 }
+
+                // G1 (v1.10): conversion-era marker derived from PropValYr.
+                var era = ConversionEras.FromYear(land.PropValYr);
+                if (era == ConversionEras.PreConversion2017) preConversionPromoted++;
 
                 _db.TruthPacsLandCurrents.Add(new TruthPacsLandCurrent
                 {
@@ -160,6 +173,7 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                     LandLoadBatchId = landLoadBatchId,
                     SuppAssocLoadBatchId = suppAssocLoadBatchId,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    ConversionEra = era,
                     PromotedAt = now,
                 });
                 promoted++;
@@ -168,6 +182,11 @@ public sealed class PacsLandCurrentTruthPromoter : IPacsLandCurrentTruthPromoter
                 if (land.LandSegMarketVal.HasValue) marketValSum += land.LandSegMarketVal.Value;
             }
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // G4 (v1.13): pre-conversion-share gate.
+            ConversionEraGate.AddShareGate(
+                _db, batch, ConversionEraGate.Lanes.Land,
+                promoted, preConversionPromoted);
 
             await WriteRemainingGatesAsync(batch, considered, promoted,
                 rejectedNoSupp, rejectedStaleSup, acresSum, marketValSum,

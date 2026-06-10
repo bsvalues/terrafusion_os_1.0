@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -35,9 +36,8 @@ public sealed class PacsWsdorCanonicalProjector : IPacsWsdorCanonicalProjector
     private const string EntityType = "assessment_wsdor";
     private const string ParcelEntityType = "parcel";
     private const string OwnerEntityType = "owner";
-    private const string QuarantineNoParcel = "NO_PARCEL_XREF";
-    private const string QuarantineNoOwner = "NO_OWNER_XREF";
-    private const string QuarantineBothMissing = "BOTH_MISSING";
+    // E4a (v1.4): quarantine reasons live in QuarantineReasons —
+    // see docs/pacs/block-c-contract-v1.4.md.
 
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<PacsWsdorCanonicalProjector> _logger;
@@ -207,9 +207,9 @@ public sealed class PacsWsdorCanonicalProjector : IPacsWsdorCanonicalProjector
                 if (!hasParcel || !hasOwner)
                 {
                     string reason;
-                    if (!hasParcel && !hasOwner) { rejectedBoth++; reason = QuarantineBothMissing; }
-                    else if (!hasParcel) { rejectedNoParcel++; reason = QuarantineNoParcel; }
-                    else { rejectedNoOwner++; reason = QuarantineNoOwner; }
+                    if (!hasParcel && !hasOwner) { rejectedBoth++; reason = QuarantineReasons.BothMissing; }
+                    else if (!hasParcel) { rejectedNoParcel++; reason = QuarantineReasons.NoParcelXref; }
+                    else { rejectedNoOwner++; reason = QuarantineReasons.NoOwnerXref; }
 
                     _db.LegacyTfUnprovenWashPropOwnerVals.Add(new LegacyTfUnprovenWashPropOwnerVal
                     {
@@ -252,6 +252,9 @@ public sealed class PacsWsdorCanonicalProjector : IPacsWsdorCanonicalProjector
                     SnrFrzImprvHs = truth.SnrFrzImprvHs,
                     SnrFrzLandHs = truth.SnrFrzLandHs,
                     PromotionLoadBatchId = batch.LoadBatchId,
+                    // G2 (v1.11): era resolved via majority-of-truth.
+                    // Single contributor → verbatim copy.
+                    ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                     CreatedAt = now,
                     UpdatedAt = now,
                 };

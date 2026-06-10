@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyTfUnproven;
 using TerraFusion.Core.Entities.SyncBridge;
+using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsOwnerCanonical;
 
 namespace TerraFusion.Data.Services.CanonicalTf;
@@ -48,7 +49,8 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
 {
     private const string OwnerEntityType = "owner";
     private const string ParcelEntityType = "parcel";
-    private const string QuarantineNoParcelXref = "NO_PARCEL_XREF";
+    // E4a (v1.4): quarantine reasons live in QuarantineReasons —
+    // see docs/pacs/block-c-contract-v1.4.md.
     private const string ConfidentialDisplayName = "[Confidential]";
     private const decimal PrimaryOwnershipThreshold = 50m;
 
@@ -191,7 +193,7 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
                         WebSuppression = truth.WebSuppression,
                         SourceTruthOwnerCurrentId = truth.TruthOwnerCurrentId,
                         PromotionLoadBatchId = batch.LoadBatchId,
-                        QuarantineReason = QuarantineNoParcelXref,
+                        QuarantineReason = QuarantineReasons.NoParcelXref,
                         CreatedAt = now,
                     });
                     quarantined++;
@@ -318,6 +320,9 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
                 WebSuppression = truth.WebSuppression,
                 TypeOfOwner = truth.TypeOfOwner,
                 PromotionLoadBatchId = promotionBatchId,
+                // G2 (v1.11): era resolved via majority-of-truth.
+                // Single contributor → verbatim copy.
+                ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
                 CreatedAt = now,
                 UpdatedAt = now,
             };
@@ -334,6 +339,9 @@ public sealed class PacsOwnerCanonicalProjector : IPacsOwnerCanonicalProjector
             WebSuppression = truth.WebSuppression,
             TypeOfOwner = truth.TypeOfOwner,
             PromotionLoadBatchId = promotionBatchId,
+            // G2 (v1.11): era resolved via majority-of-truth.
+            // Single contributor → verbatim copy.
+            ConversionEra = ConversionEras.MajorityOfTruth(new[] { truth.ConversionEra }),
             CreatedAt = now,
             UpdatedAt = now,
         };
