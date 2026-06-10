@@ -52,6 +52,7 @@ no hardcoded z-index. **Asserts I8** (Tier-1 UI Harness + shell-contract).
 | AI profile contract (WO-001) | `node --test os-platform/core/tests/local-agent-ai-profile.test.mjs` |
 | Provider abstraction (WO-002) | `node --test os-platform/core/tests/local-agent-localops-provider.test.mjs` |
 | Trace event adapter (WO-003) | `node --test os-platform/core/tests/local-agent-localops-trace.test.mjs` |
+| Local KB/RAG interface (WO-004) | `node --test os-platform/core/tests/local-agent-localops-kb.test.mjs` |
 | Core tool tests | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 | Governance gate | `pnpm canon:gatefast` |
 | Canon health | `pnpm canon:ping` |
