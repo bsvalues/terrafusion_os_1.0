@@ -1,8 +1,8 @@
 # C37-B Comp-Eligibility Fixture Proof
 
-- **Generated (UTC):** 20260610T154201Z
-- **County:** Benton (`915641e8-15b6-4920-a707-d5fdc7d0512e`)
-- **Source workbook:** `323a5947-16e9-4af7-8350-ab8c642ce5eb`
+- **Generated (UTC):** 20260610T153323Z
+- **County:** Benton (`6dd16e59-fc15-4f98-b11f-56ddd6455f00`)
+- **Source workbook:** `e2e52dfa-0b61-4cf3-8a7a-bd89e0592d41`
 - **Workbook locked at (UTC):** 2026-04-28T21:00:00.0000000Z
 
 ## C36 run counts
