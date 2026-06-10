@@ -8,6 +8,7 @@
   "dirs": [
     "apps",
     "backend",
+    "brain",
     "compose",
     "config",
     "configs",
