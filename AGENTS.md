@@ -17,6 +17,16 @@ Agents must not stage, commit, checkout, reset, clean, stash, or format across a
 - Full policy: `docs/agents/AGENT_WORKTREE_ISOLATION.md` · `docs/branching/BRANCH_AND_WORKTREE_POLICY.md`. Justification: 3 commit-race events (`docs/brain/memory/incidents/INCIDENT-2026-06-09-commit-races.md`).
 - Per-agent worktrees are the PRIMARY fix; a cooperative commit lock is a possible future secondary layer only.
 
+## COMPLETION DOCTRINE (MANDATORY — locked 2026-06-10)
+
+**Agent says "complete" means "ready to verify," not "done."**
+An agent's completion report is a claim, not a fact. Status language is three-state:
+`CLAIMED complete by agent` → `independent runtime verification` → `USER-VERIFIED complete`.
+Phase/gate advancement requires the verified state, never the claimed state. Independent
+verification means the actual running product (browser/runtime), from the exact worktree/SHA
+under test — agent-reported runtimes must be identity-checked (process path + serving tree),
+not trusted.
+
 ## CORE GOVERNANCE SURFACE (ALLOWED SCOPE)
 Only modify files under:
 - os-platform/core/pilot/**

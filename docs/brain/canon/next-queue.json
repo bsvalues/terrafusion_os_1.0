@@ -18,6 +18,35 @@
   ],
   "queue": [
     {
+      "title": "WO-BRAIN-0023 MERGE-BACK execution: six Phase-3 commits -> integration branch (operator approves merge-vs-cherry-pick)",
+      "why_now": "Phase 3 runtime-verified PASS w/ 3 flags (evidence/PHASE3-runtime-verification-2026-06-10.md); the six commits exist ONLY on loop/benton-cama-gla-gap. Phase 4 stays blocked until owner acceptance.",
+      "risk": "R3 (branch/merge = operator approval class)",
+      "files": [
+        "per WO-BRAIN-0023 plan"
+      ],
+      "stop_conditions": [
+        "operator has not approved merge shape",
+        "fleet file conflicts unresolved"
+      ],
+      "proof": [
+        "post-merge runtime checklist re-run from integration branch"
+      ]
+    },
+    {
+      "title": "FLAG-1: POST /api/trace/events 401 from Workbench (trace ingestion auth)",
+      "why_now": "Only auth failure in Phase-3 verification; workbench trace events silently dropped = audit-spine gap. Violates the literal no-401 acceptance gate.",
+      "risk": "R2",
+      "files": [
+        "frontend trace client auth header OR backend trace endpoint policy (investigate first)"
+      ],
+      "stop_conditions": [
+        "touches frozen TraceStore.ts (adapter-only)"
+      ],
+      "proof": [
+        "POST /api/trace/events 2xx from workbench session; event visible in trace store"
+      ]
+    },
+    {
       "title": "D-017 IMPLEMENT: moduleId→service-key alias map in platform.json (DECIDED 2026-06-10)",
       "why_now": "OPERATOR DECISION 2026-06-10: explicit alias map in platform.json (registry/source-of-truth boundary). Do NOT rename service keys; do NOT bury mapping inside AppFrame — AppFrame consumes resolved identity. Reversible, testable, low blast radius. Execute only from a dedicated worktree per WO-BRAIN-0021.",
       "risk": "R2 (decision made; small implementation slice)",
