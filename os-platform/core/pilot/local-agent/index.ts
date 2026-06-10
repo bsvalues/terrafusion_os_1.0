@@ -328,3 +328,17 @@ export {
   type LocalAgentReleaseRunbook,
   type LocalAgentRunbookArtifact,
 } from './releaseRunbook.js';
+
+export {
+  AI_PROFILE_ENV,
+  AI_PROFILES,
+  DEFAULT_AI_PROFILE,
+  DEFAULT_LOCAL_KB_PATH,
+  DEFAULT_RUNBOOK_PATH,
+  AiProfileError,
+  isAiProfileName,
+  resolveAiProfile,
+  redactedAiProfileSummary,
+  type AiProfileName,
+  type AiProfileConfig,
+} from './aiProfile.js';

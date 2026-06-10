@@ -49,6 +49,7 @@ no hardcoded z-index. **Asserts I8** (Tier-1 UI Harness + shell-contract).
 | Purpose | Command |
 |---------|---------|
 | Type safety | `pnpm run type-check` |
+| AI profile contract (WO-001) | `node --test os-platform/core/tests/local-agent-ai-profile.test.mjs` |
 | Core tool tests | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 | Governance gate | `pnpm canon:gatefast` |
 | Canon health | `pnpm canon:ping` |
