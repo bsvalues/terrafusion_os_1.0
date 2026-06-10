@@ -94,3 +94,4 @@ Stop and get human approval when a change would:
 - `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (§1.2 TerraPilot/TerraTrace as OS features; Article VII modes)
 - `AGENTS.md` (root — Core Governance Surface; allowed scope `os-platform/core/pilot/**`)
 - Implementation: `os-platform/core/pilot/local-agent/` (`cli.ts`, `adapterRegistry.ts`, `commandRegistry.ts`, `doctorMode.ts`, `controlCenter.ts`)
+- Planning envelope (WO-LOCALOPS-000): `docs/localops/` (doctrine, work-order plan, Benton runbooks/profile/IT-questions, acceptance test)
