@@ -5,6 +5,7 @@
 | Directory | Purpose |
 |-----------|---------|
 | `backend/` | .NET 8 microservices (Iron, Cortex, Gateway, Consciousness) |
+| `brain/` | TerraFusion Brain governance: domain knowledge packs (`brain/packs/`) and the path router (`brain/router/`). Docs/data only. |
 | `compose/` | Docker compose overrides |
 | `config/` | Shared configuration |
 | `data/` | Local data directory (SQLite DBs, etc.) |

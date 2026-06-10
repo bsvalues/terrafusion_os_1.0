@@ -1,0 +1,404 @@
+# TerraFusion Brain — Path Router Manifest (v1)
+#
+# Work Order: WO-BRAIN-0014 — Brain Path Router
+# Type: file-backed routing manifest. Data only. No runtime behavior.
+#
+# Purpose:
+#   Given a changed file path (or a work-order scope), an agent resolves the
+#   owning domain pack, the risk floor, the forbidden boundaries, the proof
+#   commands to run, and the escalation triggers — WITHOUT asking the human.
+#
+# Doctrine (inherited from brain/packs/README.md and root AGENTS.md):
+#   One TerraFusion Brain. Many packs. No competing brains. The Brain owns
+#   queue / sequencing / work orders / risk / proof / review-diff / commit-plan.
+#   This manifest is local knowledge that points AT packs; it is NOT a queue
+#   and NOT a second authority.
+#
+# How an agent uses this file:
+#   1. Take the path you are about to modify.
+#   2. Find the MOST SPECIFIC matching route (longest glob wins; a file route
+#      beats a directory glob).
+#   3. If multiple equally-specific routes match, the higher risk_floor wins.
+#   4. If nothing matches, use `fallback` (escalate to human).
+#   5. Read the route's `pack`, honor `forbidden`, run `proof`, and stop on any
+#      `escalate` condition.
+#
+# IMPORTANT: routes use ONLY real, verified repository paths. Routes whose
+# ownership is uncertain or whose path is anticipated-but-unconfirmed are marked
+# `status: candidate` and MUST NOT be treated as authoritative — confirm with a
+# human before relying on them.
+
+version: 1
+workorder: WO-BRAIN-0014
+
+# ---------------------------------------------------------------------------
+# Risk floor taxonomy
+#   The MINIMUM risk class for any change matching a route. A specific change
+#   may be HIGHER (then escalate); it is never lower. Aligned with the
+#   TerraPilot risk classes (read_only / write_low / write_high / irreversible)
+#   defined in docs/architecture/specs/terrafusion/02_TERRAPILOT_SPEC_v3.1.md.
+# ---------------------------------------------------------------------------
+risk_levels:
+  R0: 'read_only — docs / data / governance text. No code mutation.'
+  R1: 'write_low — local, reversible, not county-scoped (e.g. shell chrome, pack docs).'
+  R2: 'write_high — county-scoped persistence, write-lane writes, suite domain data, core-governance-surface edits. CountyId isolation + TerraTrace emission required.'
+  R3: 'irreversible / constitutional / production — tab order, z-index hierarchy, write-lane boundary changes, certification logic, deploys, secrets. Always human-approved.'
+
+# ---------------------------------------------------------------------------
+# Proof command vocabulary (REAL commands only — `pnpm brain` does not exist)
+#   See brain/packs/README.md "Verification Notes" for the full mapping.
+# ---------------------------------------------------------------------------
+proof_commands:
+  type_check: 'pnpm run type-check'
+  canon: 'pnpm canon'
+  canon_gatefast: 'pnpm canon:gatefast'
+  canon_ping: 'pnpm canon:ping'
+  core_tools_test: 'node --test os-platform/core/tests/phase83-tools.test.mjs'
+  trace_query: 'pnpm run trace:query --correlation <id>'
+  prettier_check: 'pnpm exec prettier --check <changed.md>'
+
+# ---------------------------------------------------------------------------
+# Routes (most-specific match wins)
+# ---------------------------------------------------------------------------
+routes:
+  # --- Governance / Brain docs themselves -------------------------------
+  - match: 'brain/router/**'
+    domain: brain-governance
+    pack: brain/packs/README.md
+    risk_floor: R0
+    status: authoritative
+    forbidden:
+      - 'turning this manifest into a queue or a second authority'
+      - 'routes to non-existent paths presented as authoritative'
+    proof:
+      - prettier_check
+    escalate:
+      - 'changing the routing contract or risk taxonomy'
+
+  - match: 'brain/packs/**'
+    domain: brain-governance
+    pack: brain/packs/README.md
+    risk_floor: R0
+    status: authoritative
+    forbidden:
+      - 'creating a separate suite brain or suite-local queue'
+      - "weakening a pack's Forbidden Writes without canon backing"
+    proof:
+      - prettier_check
+    escalate:
+      - 'changing the authority hierarchy or one-Brain doctrine'
+
+  - match: 'AGENTS.md'
+    domain: brain-governance
+    pack: brain/packs/README.md
+    risk_floor: R0
+    status: authoritative
+    forbidden:
+      - 'removing the authority hierarchy or human-approval triggers'
+    proof:
+      - prettier_check
+    escalate:
+      - 'constitutional decision / changing Core Governance Surface scope'
+
+  - match: '**/AGENTS.md'
+    domain: brain-governance
+    pack: brain/packs/README.md
+    risk_floor: R0
+    status: authoritative
+    forbidden:
+      - 'directory-local AGENTS.md overriding higher canon'
+    proof:
+      - prettier_check
+    escalate:
+      - 'introducing a rule that conflicts with a domain pack or the constitution'
+
+  # --- Constitution / specs (canon) -------------------------------------
+  - match: 'docs/architecture/**'
+    domain: canon
+    pack: brain/packs/README.md
+    risk_floor: R3
+    status: authoritative
+    forbidden:
+      - 'editing TF-052 or write-lane matrix without the amendment process'
+    proof:
+      - prettier_check
+    escalate:
+      - 'any constitutional change (Article amendment, write-lane change, tab-order change)'
+
+  # --- Shell (OS surface) -----------------------------------------------
+  - match: 'frontend/apps/os-shell/src/shell/desktop/zIndex.ts'
+    domain: shell
+    pack: brain/packs/shell/README.md
+    risk_floor: R3
+    status: authoritative
+    forbidden:
+      - 'hardcoded z-index values elsewhere; this file is the single authority'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'restructuring the z-index layer hierarchy'
+
+  - match: 'frontend/apps/os-shell/src/config/suiteRegistry.ts'
+    domain: shell
+    pack: brain/packs/shell/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'ad hoc suite registration outside this registry'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'adding/removing a suite or changing activation semantics'
+
+  - match: 'frontend/apps/os-shell/**'
+    domain: shell
+    pack: brain/packs/shell/README.md
+    risk_floor: R1
+    status: authoritative
+    forbidden:
+      - 'suite business logic in the shell'
+      - 'route escape — standalone parcel windows instead of the Property Workbench'
+      - 'hardcoded z-index (use src/shell/desktop/zIndex.ts)'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'Workbench tab order/rename (constitutional)'
+      - 'global routing model changes'
+
+  # --- Suite home pages live INSIDE the shell (dual ownership) -----------
+  - match: 'frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx'
+    domain: forge
+    pack: brain/packs/forge/README.md
+    risk_floor: R1
+    status: candidate
+    note: 'Shell-rendered page presenting Forge-domain content. Shell routing rules AND Forge write-lane rules both apply; confirm owner before non-trivial change.'
+    forbidden:
+      - 'writing workflow/docs/GIS data (cross-lane)'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'valuation methodology or write-lane changes'
+
+  - match: 'frontend/apps/os-shell/src/pages/suites/AtlasSuiteHome.tsx'
+    domain: atlas
+    pack: brain/packs/atlas/README.md
+    risk_floor: R1
+    status: candidate
+    note: 'Shell-rendered page presenting Atlas-domain content; dual shell/suite ownership.'
+    forbidden:
+      - 'writing valuation/workflow/docs data (cross-lane)'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'parcel-geometry semantics or write-lane changes'
+
+  - match: 'frontend/apps/os-shell/src/pages/suites/DaisSuiteHome.tsx'
+    domain: dais
+    pack: brain/packs/dais/README.md
+    risk_floor: R1
+    status: candidate
+    note: 'Shell-rendered page presenting Dais-domain content; dual shell/suite ownership.'
+    forbidden:
+      - 'writing valuation/GIS/docs data (cross-lane)'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'certification logic, statutory deadlines, or write-lane changes'
+
+  - match: 'frontend/apps/os-shell/src/pages/suites/DossierSuiteHome.tsx'
+    domain: dossier
+    pack: brain/packs/dossier/README.md
+    risk_floor: R1
+    status: candidate
+    note: 'Shell-rendered page presenting Dossier-domain content; dual shell/suite ownership.'
+    forbidden:
+      - 'initiating workflows or writing valuation/GIS data (cross-lane)'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'evidence/chain-of-custody semantics'
+
+  - match: 'frontend/apps/os-shell/src/pages/suites/GptSuiteHome.tsx'
+    domain: gpt
+    pack: brain/packs/gpt/README.md
+    risk_floor: R1
+    status: candidate
+    note: 'Shell-rendered page presenting GPT-domain content; dual shell/suite ownership.'
+    forbidden:
+      - 'direct cross-suite writes; AI acts through TerraPilot tools'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'new write_high/irreversible AI tool or grounding/PII behavior change'
+
+  # --- Forge (valuation) -------------------------------------------------
+  - match: 'packages/terrabuild/**'
+    domain: forge
+    pack: brain/packs/forge/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'workflow state (Dais), documents (Dossier), GIS geometry (Atlas)'
+      - 'persistence not isolated by CountyId'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'valuation methodology / calibration change'
+      - 'CAMA single-writer boundary change'
+
+  # --- Atlas (GIS) -------------------------------------------------------
+  - match: 'packages/gis-pro/**'
+    domain: atlas
+    pack: brain/packs/atlas/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'valuation (Forge), workflow (Dais), documents (Dossier)'
+      - 'persistence not isolated by CountyId'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'parcel-geometry semantics or authoritative boundary source change'
+
+  # --- Dais (assessor admin modules) ------------------------------------
+  - match: 'packages/terra-levy/**'
+    domain: dais
+    pack: brain/packs/dais/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'valuation (Forge), GIS (Atlas), direct document writes (use Dossier service)'
+      - 'persistence not isolated by CountyId'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'certification logic or statutory deadline change'
+
+  - match: 'packages/terra-pilt/**'
+    domain: dais
+    pack: brain/packs/dais/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'valuation (Forge), GIS (Atlas), direct document writes (use Dossier service)'
+      - 'persistence not isolated by CountyId'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'PILT reconciliation/forecasting semantics change'
+
+  - match: 'packages/terra-permit/**'
+    domain: dais
+    pack: brain/packs/dais/README.md
+    risk_floor: R2
+    status: authoritative
+    forbidden:
+      - 'valuation (Forge), GIS (Atlas), direct document writes (use Dossier service)'
+      - 'persistence not isolated by CountyId'
+    proof:
+      - type_check
+      - canon_gatefast
+    escalate:
+      - 'permit lifecycle / inspection workflow change'
+
+  # --- LocalOps (TerraPilot inside shell) -------------------------------
+  - match: 'os-platform/core/pilot/local-agent/**'
+    domain: localops
+    pack: brain/packs/localops/README.md
+    risk_floor: R3
+    status: authoritative
+    forbidden:
+      - 'property/valuation mutation by AI'
+      - 'silent cloud fallback'
+      - 'unrestricted shell / arbitrary command execution'
+      - 'autonomous production repair'
+    proof:
+      - type_check
+      - core_tools_test
+      - canon_gatefast
+    escalate:
+      - 'any new mutation capability (v1 is read-only diagnostic)'
+      - 'any cloud-fallback path or command-registry expansion'
+
+  # --- Brain / control-plane orchestration (Core Governance Surface) ----
+  - match: 'os-platform/core/pilot/**'
+    domain: brain-core
+    pack: brain/packs/README.md
+    risk_floor: R3
+    status: authoritative
+    note: "Core Governance Surface (see root AGENTS.md). This is the Brain's own orchestration (work-order pack, wave planner, control plane, command queue)."
+    forbidden:
+      - 'destabilizing the Core Governance Surface'
+      - 'hand-editing generated .js (regen via pnpm run build:core-js)'
+    proof:
+      - type_check
+      - core_tools_test
+    escalate:
+      - 'any change to queue/sequencing/work-order/risk/proof authority'
+
+# ---------------------------------------------------------------------------
+# Candidate routes — anticipated paths that DO NOT yet exist in the repo.
+# Listed so future work routes correctly, but they are NOT authoritative.
+# Do not assume these directories exist; confirm with a human first.
+# ---------------------------------------------------------------------------
+candidate_routes:
+  - match: 'packages/<dossier-package>/**'
+    domain: dossier
+    pack: brain/packs/dossier/README.md
+    risk_floor: R2
+    status: candidate
+    note: 'No confirmed standalone Dossier package today; only DossierSuiteHome.tsx exists. Update when a records package lands.'
+
+  - match: 'packages/<gpt-package>/**'
+    domain: gpt
+    pack: brain/packs/gpt/README.md
+    risk_floor: R2
+    status: candidate
+    note: 'No confirmed standalone TerraGPT package today; only GptSuiteHome.tsx exists. ADR-005 charters the suite.'
+
+  - match: '<terratrace-store>/**'
+    domain: trace
+    pack: brain/packs/trace/README.md
+    risk_floor: R3
+    status: candidate
+    note: 'TerraTrace is cross-cutting OS-core with no single dedicated directory. Trace concerns (append-only, emit-on-write) apply across ALL write routes above, not just one path.'
+
+  # The original WO-BRAIN-0013 work order assumed these paths; they DO NOT exist.
+  - match: 'apps/terrafusion-shell/**'
+    domain: shell
+    pack: brain/packs/shell/README.md
+    status: candidate
+    note: 'Assumed by the original work order. Real shell is frontend/apps/os-shell/**. Kept only to redirect stale references.'
+  - match: 'suites/**'
+    domain: unknown
+    pack: brain/packs/README.md
+    status: candidate
+    note: 'No suites/ directory exists. Suites live as os-shell pages + scattered packages/terra-*. See brain/packs/README.md path map.'
+  - match: 'services/terrapilot/**'
+    domain: localops
+    pack: brain/packs/localops/README.md
+    status: candidate
+    note: 'No services/ directory. TerraPilot is an OS feature routed through OS Core; LocalOps lives at os-platform/core/pilot/local-agent/**.'
+
+# ---------------------------------------------------------------------------
+# Fallback — when no route matches
+# ---------------------------------------------------------------------------
+fallback:
+  domain: unknown
+  pack: brain/packs/README.md
+  risk_floor: R2
+  action: 'No route matched. Read brain/packs/README.md, identify the domain from the path map, and ESCALATE to the human before writing (human-approval trigger: conflicting/unknown canon).'
+  escalate:
+    - 'unmapped path touched by a write'
