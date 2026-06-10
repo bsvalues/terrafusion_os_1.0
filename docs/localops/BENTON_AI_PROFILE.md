@@ -1,10 +1,47 @@
 # Benton AI Profile (LocalOps)
 
-> **Status:** PLANNING — documented profile *shape*. This is the source material for the config
-> contract that **WO-LOCALOPS-001** will implement and validate. It is **not** a live config and binds
-> nothing at runtime today.
+> **Status:** CONTRACT IMPLEMENTED (WO-LOCALOPS-001) — the config contract now exists at
+> `os-platform/core/pilot/local-agent/aiProfile.ts` (`resolveAiProfile`, `redactedAiProfileSummary`),
+> with tests in `os-platform/core/tests/local-agent-ai-profile.test.mjs` and the env template in
+> `.env.example`. Provider calls, RAG, diagnostics, and UI remain **unimplemented** (later WOs).
 > **Rule:** the default posture is **local-only, no silent fallback**. Anything that loosens this must
 > be an explicit, auditable flag with a documented approval record.
+
+## Implemented contract (WO-LOCALOPS-001)
+
+| Env flag | Field | Notes |
+|----------|-------|-------|
+| `AI_PROFILE` | `profile` | `cloud-dev` \| `hybrid-approved` \| `localops` \| `disabled`. **Unset → `disabled`** (opt-in). Unknown values are **rejected**, not coerced. |
+| `AI_PROVIDER` | `provider` | Provider id (e.g. `ollama`). Empty = unset. |
+| `AI_BASE_URL` | `baseUrl` | Endpoint URL. Empty = unset; **no hardcoded port defaults**. |
+| `AI_MODEL` | `model` | Model name. |
+| `AI_EXTERNAL_CALLS` | `externalCalls` | `localops`/`disabled`: `false`, **cannot be set true** (tighten-only). |
+| `AI_ALLOW_WEB` | `allowWeb` | Same tighten-only rule. |
+| `AI_ALLOW_SHELL` | `allowShell` | Default `false` in **every** profile; tighten-only under `localops`/`disabled`. |
+| `AI_ALLOW_MUTATION` | `allowMutation` | Default `false` in **every** profile; tighten-only under `localops`/`disabled`. |
+| `AI_REQUIRE_TRACE` | `requireTrace` | Default `true`; `localops`/`disabled` **cannot set false**. |
+| `AI_REQUIRE_SOURCES` | `requireSources` | `localops`: `true`, cannot set false. `cloud-dev` default `false`. |
+| `AI_LOCAL_KB_PATH` | `localKbPath` | Default `docs/localops`. |
+| `AI_RUNBOOK_PATH` | `runbookPath` | Default `docs/localops/BENTON_SERVER_RUNBOOK.md`. |
+
+Profile permission defaults:
+
+| Profile | external | web | shell | mutation | trace | sources |
+|---------|----------|-----|-------|----------|-------|---------|
+| `cloud-dev` | true | true | false | false | true | false |
+| `hybrid-approved` | true | false | false | false | true | true |
+| `localops` | **false** | **false** | **false** | **false** | **true** | **true** |
+| `disabled` | **false** | **false** | **false** | **false** | **true** | **true** |
+
+Validation guarantees (enforced by `resolveAiProfile`, proven by tests):
+
+- The contract **cannot express** "localops with cloud fallback": `AI_EXTERNAL_CALLS=true` under
+  `localops`/`disabled` throws `AiProfileError` directing the operator to `hybrid-approved` (which
+  requires a documented approval record per county policy).
+- Malformed booleans (anything other than `1/0/true/false`) are rejected — a typo never silently
+  becomes `false`.
+- `redactedAiProfileSummary` strips URL credentials and routes every string through the local-agent
+  redactor (API keys, tokens, emails, SSNs, user paths) before display.
 
 ## Purpose
 
@@ -79,13 +116,21 @@ trace:
   retention_category: '<county-configured>'
 ```
 
-## Validation expectations (for WO-LOCALOPS-001)
+## Validation expectations — disposition after WO-LOCALOPS-001
 
-- A profile with `egress.cloud_allowed: true` **and** `approval_record: null` is **invalid**.
-- A profile with `fallback_policy` other than `none` requires `egress.cloud_allowed: true` + approval.
-- `indexable_sources` may not include county-document or PII paths unless an explicit approval rule
-  names them.
-- Missing `county_id` on a county-scoped profile is **invalid**.
+WO-LOCALOPS-001 implemented the contract as **env flags** (table above) rather than the richer YAML
+document sketched earlier in this file. Disposition of the original expectations:
+
+- *"cloud allowed requires an approval record"* → **Implemented as profile structure:** cloud egress
+  is only expressible via the `hybrid-approved`/`cloud-dev` profiles; `localops`/`disabled` reject
+  `AI_EXTERNAL_CALLS=true` outright. The machine-readable `approval_record` pointer is **deferred**
+  (revisit when Benton IT answers the egress questions).
+- *"fallback_policy other than none requires approval"* → **Implemented:** there is no fallback flag
+  at all; a provider may only be external if the profile itself permits external calls.
+- *"indexable_sources approval rules"* → **Deferred to WO-LOCALOPS-004** (`AI_LOCAL_KB_PATH` exists,
+  but indexing approval gates are the KB work order's contract).
+- *"missing county_id is invalid"* → **Deferred:** county scoping rides on the existing Sovereign
+  County mechanisms; a profile-level `county_id` field is revisited with WO-LOCALOPS-003/004.
 
 ## Open questions
 
