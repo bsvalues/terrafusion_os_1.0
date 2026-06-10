@@ -2231,6 +2231,65 @@ else
 // Phase 11 — Sovereign Guard: verify sovereign.yaml manifest at startup
 builder.Services.AddSingleton<SovereignGuard>();
 
+// SYNC-WORKBENCH-F: improvement-attr quarantine triage
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IQuarantineTriageService,
+    TerraFusion.Data.Services.Workbench.QuarantineTriageService>();
+
+// SYNC-WORKBENCH-G: atomic decision-commit
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IWorkbenchCommitService,
+    TerraFusion.Data.Services.Workbench.WorkbenchCommitService>();
+
+// SYNC-WORKBENCH-H: evidence-packet exporter (HMAC-signed ZIP)
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IEvidencePacketService,
+    TerraFusion.Data.Services.Workbench.EvidencePacketService>();
+
+// WORKBENCH-V0.2 SLICE-H STEP-2: dry-run preview
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IDryRunPreviewService,
+    TerraFusion.Data.Services.Workbench.DryRunPreviewService>();
+
+// SYNC-WORKBENCH-I: quarantine review dispositions
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Workbench.IQuarantineReviewService,
+    TerraFusion.Data.Services.Workbench.QuarantineReviewService>();
+
+// WORKBENCH-V0.3 SLICE-J: OS Shell Doctor Panel (singleton — owns 409 guard)
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Workbench.IProcessRunner,
+    TerraFusion.API.Services.Workbench.SystemProcessRunner>();
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Workbench.IDoctorRunnerService,
+    TerraFusion.API.Services.Workbench.DoctorRunnerService>();
+
+// WORKBENCH-V0.3 SLICE-K: OS Shell Source Pack Fit Panel (singleton)
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Workbench.IPackValidatorRunnerService,
+    TerraFusion.API.Services.Workbench.PackValidatorRunnerService>();
+
+// WORKBENCH-V0.3 SLICE-L: OS Shell Identity Spine Panel (singleton)
+builder.Services.AddSingleton<
+    TerraFusion.Core.Sync.Workbench.IIdentityRunnerService,
+    TerraFusion.API.Services.Workbench.IdentityRunnerService>();
+
+// SYNC-COMPLETE-2: durable full-corpus runner
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.IFullCorpusOrchestrator,
+    TerraFusion.Data.Services.Workbench.Corpus.FullCorpusOrchestrator>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.ICorpusLaneRunner,
+    TerraFusion.Data.Services.Workbench.Corpus.HttpCorpusLaneRunner>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.IPacsBaselineReconciler,
+    TerraFusion.Data.Services.Workbench.Corpus.PacsBaselineReconciler>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.Corpus.ICorpusEvidencePacketService,
+    TerraFusion.Data.Services.Workbench.Corpus.CorpusEvidencePacketService>();
+builder.Services.AddHostedService<
+    TerraFusion.Data.Services.Workbench.Corpus.FullCorpusOrchestratorHostedService>();
+
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
