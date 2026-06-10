@@ -14,6 +14,9 @@ Chain map: each work order, its real repo anchors (grounded in the 2026-06-09 re
 | 007 | Benton runbooks | R1 | `docs/localops/{BENTON_SERVER_RUNBOOK,BENTON_AI_PROFILE,LOCALOPS_ACCEPTANCE_TEST}.md` | operator-runnable numbered steps; doubles as WO-004 KB corpus |
 | 008 | Runtime proof harness | R2 | `docs/localops/LOCALOPS_RUNTIME_PROOF.md` | every checkbox backed by command + output; refusal payloads shown; go/no-go verdict |
 
+
+> **GOVERNANCE BLOCKER (2026-06-10, WO-BRAIN-0021 / D-020):** chain execution paused after commit-race #3 until per-agent worktree isolation landed. ON LAND: every WO-LOCALOPS slice executes in its own dedicated worktree (e.g. `tf-agent-localops-001`) per `docs/agents/AGENT_WORKTREE_ISOLATION.md` — never in the shared tree.
+
 ## Dependency notes
 - 001 is the root: 002 (policy gate), 003 (AI_REQUIRE_TRACE), 004 (AI_REQUIRE_SOURCES), 005 (redacted config) all consume the profile contract.
 - 003's events are emitted by 002/004/005; build 003 before wiring those emissions or stub via the no-op sink.
