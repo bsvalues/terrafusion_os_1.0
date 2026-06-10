@@ -1,13 +1,17 @@
 # TerraAtlas Final Production Report
 **Branch**: feat/june10-dev39-runtime-truth  
 **Date**: 2026-06-10  
-**Verdict**: CODE/TEST PROVEN — RUNTIME MOUNTED. Live GIS and auth blockers documented.
+**Verdict**: ✅ **PROVEN CORE RUNTIME** — TerraAtlas core API runtime is proven with **live Benton County GIS data**.
 
 ---
 
 ## Executive Status
 
-TerraAtlas is wired into TerraFusion OS as the third canonical Property Workbench tab. The component renders, shows honest GIS unavailable states, uses only semantic design tokens, and passes all required gates. Live full-geometry rendering is blocked by a backend GIS route gap (404) and requires a Mapbox token — both are documented limitations, not crashes or regressions.
+TerraAtlas is wired into TerraFusion OS as the third canonical Property Workbench tab **and** its GIS core API is **proven at runtime against the live Postgres `terrafusion` database**. The Atlas GIS endpoints return real Benton County parcel geometry (`source: live`) — real `RingJson` polygon, centroid, situs, owner, area, and live tax/land-class layers.
+
+The earlier `404` verdict was a **runtime launch truth** defect (stale API binary + placeholder parcel ID + Production DB-host misconfig), **not** a TerraAtlas architecture gap. Once the API was rebuilt and launched in `Development` against local Postgres, and a real parcel ID was used, the GIS API proved live end-to-end.
+
+**Canonical runtime smoke parcel**: `119802030006001` — **203 E 47TH PL, KENNEWICK, WA 99337** (owner *COX DONNA M*).
 
 ---
 
@@ -61,14 +65,35 @@ These were confirmed in-scope and already in place — not touched during this s
 
 | Check | Result |
 |-------|--------|
-| API health `GET /health` | `200 Healthy` — TerraFusion OS API, v1.0.0, Development |
-| OS shell rendering | Confirmed — header, SENTINEL, HEALTH indicator, launcher bar visible |
-| `/property/00AA00001129049/atlas` mounted | Confirmed earlier this session — `property-atlas-tab`, `map-container`, honest GIS error states |
-| Tab order in Workbench | Summary → Forge → **Atlas (3rd)** → Dais → Dossier → Pilot |
-| Design tokens in changed file | Clean — no `text-white/*` or `bg-white` in changed lines |
-| Cross-suite writes | None — `query_parcel_layers` and `explain_spatial_anomaly` are read-only |
-| Hardcoded ports | None — all references env-driven |
-| Cortex advisory | Advisory-only — `explain_spatial_anomaly` returns recommendation, no action executed |
+| API health `GET /health` | ✅ `200 Healthy` — TerraFusion OS API, v1.0.0, Development |
+| Real Postgres `terrafusion` DB via `localhost:5432` | ✅ container `terrafusion-postgres-dev` (pgvector pg16) |
+| `GisParcelGeometries` rows | ✅ **80,014** (all sampled have `RingJson` + centroids) |
+| `PacsParcel` rows | ✅ **128,950** |
+| `GET /api/atlas/gis/parcels/119802030006001/boundary` | ✅ **200**, `source: live` |
+| `GET /api/atlas/gis/parcels/119802030006001` (combined) | ✅ **200**, `source: live` |
+| Live response payload | ✅ real `RingJson` (15-pt polygon), centroid `46.16697,-119.11561`, situs `203 E 47TH PL`, owner `COX DONNA M`, `0.3271 ac` |
+| Live layers | ✅ `taxArea: K1`, `landClass.primaryUseCd: 11` (`source: live`); flood `stub`, zoning `null` (honest enrichment gaps) |
+| OS shell rendering | ✅ header, SENTINEL, HEALTH indicator, launcher bar visible |
+| Tab order in Workbench | ✅ Summary → Forge → **Atlas (3rd)** → Dais → Dossier → Pilot |
+| Design tokens in changed file | ✅ Clean — no `text-white/*` or `bg-white` in changed lines |
+| Cross-suite writes | ✅ None — `query_parcel_layers` and `explain_spatial_anomaly` are read-only |
+| Hardcoded ports | ✅ None — all references env-driven |
+| Cortex advisory | ✅ Advisory-only — `explain_spatial_anomaly` returns recommendation, no action executed |
+
+**Placeholder-ID correction:** `00AA00001129049` and `12345-001` are placeholder/demo IDs with no geometry and must **not** be used as runtime proof. The canonical real smoke parcel is **`119802030006001`**.
+
+---
+
+## Runtime Launch Truth
+
+| Defect | Cause | Fix |
+|--------|-------|-----|
+| `401` on `[AllowAnonymous]` GIS routes | **Stale API binary** predating the `[AllowAnonymous]` attribute | Rebuilt + restarted API; `401` → `200` |
+| "Missing" endpoint | Mislabeled — `parcels/{id}/boundary`, `/layers`, combined `/{id}` already exist in `AtlasGisController.cs` | Confirmed via `401` (route registered), not `404` |
+| DB DNS failure (`SocketException 11001`) | `--no-launch-profile` defaulted to **Production**, whose `appsettings.Production.json` uses unsubstituted `Host=${TF_DB_HOST}` | Relaunched `ASPNETCORE_ENVIRONMENT=Development` + explicit `ConnectionStrings__DefaultConnection=Host=localhost;...;Port=5432` |
+| GIS data "missing" | **Wrong parcel ID** (`00AA00001129049` placeholder) | Used real GeoId `119802030006001` |
+
+**Launch contract:** Production launch must explicitly set `ASPNETCORE_ENVIRONMENT=Development` **or** provide a valid `TF_DB_HOST` / `ConnectionStrings__DefaultConnection`. Do **not** use `--no-launch-profile` without an explicit environment/connection-string override for local runtime proof.
 
 ---
 
@@ -79,10 +104,10 @@ These were confirmed in-scope and already in place — not touched during this s
 | `PropertyAtlas` (Workbench Atlas tab) | ✅ Mounted, renders honest states |
 | `LayerWorks` (layer selection in Atlas tab) | ✅ Layer toggle buttons render, `aria-pressed` correct |
 | `ParcelMapVisualization` (SVG preview) | ✅ Deterministic preview renders when query succeeds |
-| `atlas-map-canvas` (Mapbox GL) | ⚠️ Not rendered — requires `VITE_MAPBOX_ACCESS_TOKEN` and live centroid |
-| Live GIS boundary (`/api/atlas/gis/...`) | ❌ 404 — backend route not wired. Honest error state shown, no crash |
-| `query_parcel_layers` tool | ⚠️ Invocable, returns error (Pilot route auth/handler gap). Honest ErrorDisplay shown |
-| `explain_spatial_anomaly` tool | ⚠️ Same as above |
+| `atlas-map-canvas` (Mapbox GL) | ⚠️ Not rendered — requires `VITE_MAPBOX_ACCESS_TOKEN` (external/config-dependent) |
+| Live GIS boundary (`/api/atlas/gis/...`) | ✅ **PROVEN 200, `source: live`** for real parcel `119802030006001`. Routes exist in `AtlasGisController.cs` (`[AllowAnonymous]`). |
+| `query_parcel_layers` tool | ⚠️ Invocable; Pilot tool route auth/handler is separate from the GIS API (which is proven). Honest ErrorDisplay shown on failure. |
+| `explain_spatial_anomaly` tool | ⚠️ Same as above — advisory-only |
 | `InvocationHistory` | ✅ Query history entries created on both success and error |
 
 ---
@@ -132,11 +157,12 @@ fix(atlas): tighten TerraAtlas Workbench proof surface
 
 ## Known Limitations (Not Regressions)
 
-1. **Live Atlas GIS endpoints** — `/api/atlas/gis/parcels/{id}/boundary` and `/layers` return 404. The Atlas Workbench tab renders an honest "Boundary endpoint: Not Found" message and does not crash. This is a backend wiring gap, not a frontend issue.
-2. **Mapbox token** — `VITE_MAPBOX_ACCESS_TOKEN` not set in dev env. `atlas-map-canvas` does not render. `map-container` is always present as a stable mount point.
-3. **Dev auth session expiry** — Parcel data requires a valid JWT. If the dev session token expires, the Workbench shows "Parcel data unavailable." This is expected behavior, not a regression.
-4. **`pnpm run check:generated`** — Fails due to `.tmp/worktrees/` ToolRegistry artifacts from unrelated worktrees. Pre-existing, not introduced by this sprint.
-5. **Snyk scan** — Not available in this session. Must be run manually.
+1. **Mapbox live satellite rendering** — `VITE_MAPBOX_ACCESS_TOKEN` not set. `atlas-map-canvas` does not render; `map-container` is always present as a stable mount. **External/config-dependent**, not a core runtime blocker.
+2. **FEMA flood layer** — returns `source: stub`. Enrichment/config gap, not a core runtime blocker.
+3. **Zoning layer** — returns `null`. Enrichment/config gap, not a core runtime blocker.
+4. **Browser visual smoke** — pending **only** if the browser session/JWT is expired. The GIS API itself is `[AllowAnonymous]` and proven independent of JWT. Use real GeoId `/property/119802030006001/atlas`, not a placeholder.
+5. **`pnpm run check:generated`** — Fails due to `.tmp/worktrees/` ToolRegistry artifacts from unrelated worktrees. Pre-existing, not introduced by this sprint.
+6. **Snyk scan** — Not available in this session. Must be run manually before merge.
 
 ---
 
