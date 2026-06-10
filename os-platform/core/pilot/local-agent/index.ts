@@ -359,3 +359,18 @@ export {
   type LocalOpsRefusalCode,
   type CreateLocalOpsProviderOptions,
 } from './localOpsProvider.js';
+
+export {
+  LOCALOPS_EVENT_TYPES,
+  LOCALOPS_TRACE_SCHEMA_VERSION,
+  LocalOpsTrace,
+  createLocalOpsTrace,
+  noopLocalOpsTraceSink,
+  createJsonlLocalOpsTraceSink,
+  createRecordingLocalOpsTraceSink,
+  type LocalOpsEventType,
+  type LocalOpsTraceEvent,
+  type LocalOpsTraceSink,
+  type RecordingLocalOpsTraceSink,
+  type LocalOpsTraceOptions,
+} from './localOpsTrace.js';
