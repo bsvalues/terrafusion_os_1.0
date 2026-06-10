@@ -107,7 +107,19 @@ test('ledger classifies runtime-proven county and evidence-backed 404 county', a
     response.setHeader('content-type', 'application/json');
 
     if (request.url === '/api/counties/benton/parcels?limit=5') {
-      response.end(JSON.stringify({ county: 'Benton County', rows: [{ id: 1 }, { id: 2 }] }));
+      response.end(
+        JSON.stringify({
+          county: 'Benton County',
+          total: 241,
+          semantics: {
+            countyScoped: true,
+            activeOnly: true,
+            duplicateParcelVersionsCollapsed: true,
+            currentParcelVersion: true,
+          },
+          rows: [{ id: 1 }, { id: 2 }],
+        })
+      );
       return;
     }
     if (request.url === '/api/counties/benton/sales?limit=5') {
@@ -131,7 +143,9 @@ test('ledger classifies runtime-proven county and evidence-backed 404 county', a
 
     assert.equal(benton.readinessClass, 'runtime_proven');
     assert.equal(benton.recommendedAction, 'keep_runtime_candidate');
-    assert.equal(benton.parcels.runtimeRows, 2);
+    assert.equal(benton.parcels.runtimeRows, 241);
+    assert.equal(benton.parcels.activeCurrentSemanticsProven, true);
+    assert.equal(benton.activeCurrentSemanticsProven, true);
     assert.equal(benton.sales.runtimeRows, 1);
 
     assert.equal(pacific.readinessClass, 'not_registered');
@@ -195,6 +209,52 @@ test('ledger detects silent Benton fallback for non-Benton county', async () => 
     assert.equal(yakima.recommendedAction, 'investigate_endpoint_error');
     assert.equal(yakima.silentBentonFallbackDetected, true);
     assert.equal(report.summary.fallbackViolations, 1);
+  } finally {
+    await server.close();
+  }
+});
+
+test('ledger tolerates slow but valid county parcel endpoints by default', async () => {
+  const root = makeTempRepo('tf-county-ledger-slow-parcel-');
+  const server = await startServer((request, response) => {
+    response.setHeader('content-type', 'application/json');
+
+    if (request.url === '/api/counties/clark/parcels?limit=5') {
+      setTimeout(() => {
+        response.end(
+          JSON.stringify({
+            county: 'Clark County',
+            total: 194316,
+            semantics: {
+              countyScoped: true,
+              activeOnly: true,
+              duplicateParcelVersionsCollapsed: true,
+              currentParcelVersion: true,
+            },
+            rows: [{ id: 1 }],
+          })
+        );
+      }, 5500);
+      return;
+    }
+    if (request.url === '/api/counties/clark/sales?limit=5') {
+      response.end(JSON.stringify({ county: 'Clark County', rows: [] }));
+      return;
+    }
+
+    response.statusCode = 500;
+    response.end(JSON.stringify({ error: 'unexpected' }));
+  });
+
+  try {
+    const report = await runLedger(root, server.baseUrl, ['Clark']);
+    const clark = report.rows.find(row => row.county === 'Clark');
+
+    assert.equal(clark.readinessClass, 'runtime_proven');
+    assert.equal(clark.recommendedAction, 'keep_runtime_candidate');
+    assert.equal(clark.parcels.runtimeRows, 194316);
+    assert.equal(clark.parcels.activeCurrentSemanticsProven, true);
+    assert.equal(report.summary.endpointErrors, 0);
   } finally {
     await server.close();
   }

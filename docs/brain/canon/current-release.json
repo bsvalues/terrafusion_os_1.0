@@ -1,0 +1,20 @@
+{
+  "_note": "The release Cortex is currently serving. Keep in sync with docs/brain/memory/release-gates.md.",
+  "name": "TerraFusion OS 1.0",
+  "branch": "fix/projector-delete-insert-atomicity",
+  "active_gate": "TerraDais persistence verification (WO-001) + write-lane manifest drift (D-004)",
+  "must_ship": [
+    "green build",
+    "TerraDais persistence verified (CountyId isolation)",
+    "Property Workbench routing intact",
+    "visible honesty (no unlabeled mock on governed paths)",
+    "no open P0/P1 governance drift"
+  ],
+  "explicitly_deferred": [
+    "new county-office suites (Clerk/Treasury/Audit/Recorder)",
+    "marketplace monetization",
+    "advanced AI swarm expansion",
+    "statewide interoperability",
+    "full self-healing OS"
+  ]
+}

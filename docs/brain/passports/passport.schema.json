@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "terrafusion-brain/agent-passport",
+  "title": "TerraFusion Agent Passport",
+  "description": "An agent's declared license to operate on a task. No passport, no commit (when enforcement is enabled). Validated by scripts/brain/check-agent-passport.mjs.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "agent",
+    "mode",
+    "work_order",
+    "risk",
+    "affected_suite",
+    "write_lane",
+    "allowed_files",
+    "required_checks",
+    "status"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "task_id": { "type": "string", "pattern": "^TFB-[0-9]{4}-[0-9]{4}$" },
+    "agent": {
+      "type": "string",
+      "enum": ["architect", "graph", "builder", "reviewer", "qa", "docs"]
+    },
+    "mode": { "type": "string", "enum": ["pilot", "muse"] },
+    "work_order": {
+      "type": "string",
+      "description": "path to the work-order file under docs/brain/workorders/"
+    },
+    "risk": { "type": "string", "enum": ["R0", "R1", "R2", "R3", "R4", "R5"] },
+    "affected_layer": { "type": "string" },
+    "affected_suite": {
+      "type": "string",
+      "enum": ["forge", "atlas", "dais", "dossier", "gpt", "os", "pilot"]
+    },
+    "write_lane": { "type": "string" },
+    "allowed_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "forbidden_domains": { "type": "array", "items": { "type": "string" } },
+    "required_checks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "graphify_report_hash": { "type": "string" },
+    "entrypoint_hash": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready_for_review", "approved", "applied", "rejected"]
+    }
+  }
+}

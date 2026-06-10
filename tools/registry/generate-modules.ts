@@ -307,6 +307,32 @@ async function main() {
   const args = parseArgs(process.argv);
   const opts: GeneratorOptions = { ...DEFAULTS, ...args };
 
+  // D-010 tolerate (WO-0004): `applications/` was deliberately quarantined (a5f902389, batch-01
+  // QUARANTINE move). Its absence is an ACCEPTED state, not repo corruption. When absent: verify the
+  // committed generated output is present/sane, warn-skip generation, exit 0. When present, behavior
+  // below is unchanged. Restoring applications/ would reverse the quarantine — do not "fix" that way.
+  if (!fs.existsSync(opts.applicationsDir)) {
+    if (!fs.existsSync(opts.outFile)) {
+      fail(
+        `Applications dir is absent (quarantined) AND generated output is missing: ${opts.outFile}. ` +
+          `Cannot regenerate without sources — restore the committed generatedModules.ts.`
+      );
+    }
+    const existing = fs.readFileSync(opts.outFile, 'utf8');
+    if (!existing.includes('AUTO-GENERATED FILE') || !existing.includes('generate-modules.ts')) {
+      fail(
+        `Applications dir is absent (quarantined) and ${opts.outFile} does not look like a valid ` +
+          `generated module registry. Restore the committed file.`
+      );
+    }
+    console.warn(
+      `[generate-modules] SKIP: applications/ is absent (deliberately quarantined in a5f902389). ` +
+        `Generation skipped; committed ${path.relative(process.cwd(), opts.outFile)} verified present. ` +
+        `Set up the applications/ tree only if intentionally reversing the quarantine.`
+    );
+    return;
+  }
+
   const manifestPaths = findManifests(opts.applicationsDir);
   if (manifestPaths.length === 0) {
     fail(`No terrafusion.app.json found under: ${opts.applicationsDir}`);

@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { runtimeFetch } from './runtime-auth.mjs';
 
 const repoRoot = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 const truthDir = path.join(repoRoot, 'generated', 'truth');
@@ -19,6 +20,12 @@ const runtimeBaseUrl =
   process.env.TF_RUNTIME_BASE_URL ??
   process.env.TERRAFUSION_RUNTIME_BASE_URL ??
   'http://localhost:5046';
+const configSearchFiles = [
+  'backend/src/TerraFusion.API/appsettings.Development.json',
+  'backend/src/TerraFusion.API/appsettings.BentonCounty.json',
+  'backend/src/TerraFusion.API/appsettings.json',
+];
+const bentonParcelSanityPath = path.join(truthDir, 'benton-parcel-count-sanity.json');
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll(path.sep, '/');
@@ -26,7 +33,7 @@ function rel(filePath) {
 
 async function getJson(endpoint) {
   try {
-    const response = await fetch(endpoint, { headers: { accept: 'application/json' } });
+    const response = await runtimeFetch(endpoint, { headers: { accept: 'application/json' } });
     const text = await response.text();
     let payload = null;
     if (
@@ -60,9 +67,28 @@ function pick(object, ...names) {
 function normalizePayload(payload) {
   const rowCounts = pick(payload, 'rowCounts', 'RowCounts') ?? {};
   const migrationState = pick(payload, 'migrationState', 'MigrationState') ?? {};
+  const contentRootPath = pick(payload, 'contentRootPath', 'ContentRootPath') ?? null;
+  const expectedContentRootPath = path.join(repoRoot, 'backend', 'src', 'TerraFusion.API');
+  const isExpectedWorkspace =
+    typeof contentRootPath === 'string' &&
+    path.resolve(contentRootPath).toLowerCase() ===
+      path.resolve(expectedContentRootPath).toLowerCase();
+
+  const derivedBentonExpectation = readBentonParcelSanityExpectation();
+  const runtimeExpectedBentonParcelCount =
+    pick(payload, 'expectedBentonParcelCount', 'ExpectedBentonParcelCount') ?? null;
+  const expectedBentonParcelCount =
+    runtimeExpectedBentonParcelCount ?? derivedBentonExpectation?.expectedBentonParcelCount ?? null;
+  const isBentonParcelCountExpected =
+    Boolean(pick(payload, 'isBentonParcelCountExpected', 'IsBentonParcelCountExpected')) ||
+    Boolean(derivedBentonExpectation?.isBentonParcelCountExpected);
+
   return {
     apiBaseUrl: pick(payload, 'apiBaseUrl', 'ApiBaseUrl') ?? null,
     environment: pick(payload, 'environment', 'Environment') ?? null,
+    contentRootPath,
+    expectedContentRootPath,
+    isExpectedWorkspace,
     provider: pick(payload, 'provider', 'Provider') ?? null,
     connectionStringName: pick(payload, 'connectionStringName', 'ConnectionStringName') ?? null,
     serverRedacted: pick(payload, 'serverRedacted', 'ServerRedacted') ?? null,
@@ -72,11 +98,12 @@ function normalizePayload(payload) {
     isExpectedJune10RuntimeDb: Boolean(
       pick(payload, 'isExpectedJune10RuntimeDb', 'IsExpectedJune10RuntimeDb')
     ),
-    expectedBentonParcelCount:
-      pick(payload, 'expectedBentonParcelCount', 'ExpectedBentonParcelCount') ?? null,
-    isBentonParcelCountExpected: Boolean(
-      pick(payload, 'isBentonParcelCountExpected', 'IsBentonParcelCountExpected')
-    ),
+    expectedBentonParcelCount,
+    expectedBentonParcelCountSource:
+      runtimeExpectedBentonParcelCount !== null && runtimeExpectedBentonParcelCount !== undefined
+        ? 'runtime_config'
+        : (derivedBentonExpectation?.source ?? null),
+    isBentonParcelCountExpected,
     migrationState: {
       appliedCount: pick(migrationState, 'appliedCount', 'AppliedCount') ?? null,
       pendingCount: pick(migrationState, 'pendingCount', 'PendingCount') ?? null,
@@ -86,6 +113,8 @@ function normalizePayload(payload) {
       counties: pick(rowCounts, 'counties', 'Counties') ?? null,
       properties: pick(rowCounts, 'properties', 'Properties') ?? null,
       comparableSales: pick(rowCounts, 'comparableSales', 'ComparableSales') ?? null,
+      tfParcels: pick(rowCounts, 'tfParcels', 'TfParcels') ?? null,
+      tfSales: pick(rowCounts, 'tfSales', 'TfSales') ?? null,
       canonicalSaleQualifications:
         pick(rowCounts, 'canonicalSaleQualifications', 'CanonicalSaleQualifications') ?? null,
     },
@@ -93,6 +122,105 @@ function normalizePayload(payload) {
     blockers: pick(payload, 'blockers', 'Blockers') ?? [],
     warnings: pick(payload, 'warnings', 'Warnings') ?? [],
   };
+}
+
+function readBentonParcelSanityExpectation() {
+  if (!fs.existsSync(bentonParcelSanityPath)) return null;
+  try {
+    const proof = JSON.parse(fs.readFileSync(bentonParcelSanityPath, 'utf8'));
+    const expectedBentonParcelCount = Number.parseInt(
+      String(proof.distinctActiveParcelNumbers ?? ''),
+      10
+    );
+    if (
+      proof.passed === true &&
+      proof.endpointBehavior?.activeCurrentSemanticsProven === true &&
+      Number.isFinite(expectedBentonParcelCount) &&
+      expectedBentonParcelCount > 0
+    ) {
+      return {
+        expectedBentonParcelCount,
+        isBentonParcelCountExpected: true,
+        source: 'benton_parcel_count_sanity',
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function readConfigExpectationSources(identity) {
+  const expectedCount = identity?.expectedBentonParcelCount;
+  const expectedDb = identity?.expectedJune10Database;
+  const sources = [];
+  const derivedBentonExpectation = readBentonParcelSanityExpectation();
+
+  if (derivedBentonExpectation) {
+    sources.push({
+      path: rel(bentonParcelSanityPath),
+      key: 'BentonParcelSanity.distinctActiveParcelNumbers',
+      value: derivedBentonExpectation.expectedBentonParcelCount,
+      matchesRuntimeExpectation:
+        expectedCount !== null &&
+        expectedCount !== undefined &&
+        String(derivedBentonExpectation.expectedBentonParcelCount) === String(expectedCount),
+    });
+  }
+
+  for (const relativePath of configSearchFiles) {
+    const filePath = path.join(repoRoot, relativePath);
+    if (!fs.existsSync(filePath)) continue;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+      continue;
+    }
+
+    const values = [
+      {
+        key: 'RuntimeTruth.ExpectedJune10Database',
+        value: parsed.RuntimeTruth?.ExpectedJune10Database,
+      },
+      {
+        key: 'RuntimeTruth.ExpectedBentonParcelCount',
+        value: parsed.RuntimeTruth?.ExpectedBentonParcelCount,
+      },
+    ];
+
+    if (expectedCount !== null && expectedCount !== undefined) {
+      values.push(
+        {
+          key: 'BentonCounty.ParcelCount',
+          value: parsed.BentonCounty?.ParcelCount,
+        },
+        {
+          key: 'County.PropertyCount',
+          value: parsed.County?.PropertyCount,
+        }
+      );
+    }
+
+    for (const entry of values) {
+      if (entry.value === undefined || entry.value === null) continue;
+      const valueText = String(entry.value);
+      const matchesExpected =
+        (expectedCount !== null &&
+          expectedCount !== undefined &&
+          valueText === String(expectedCount)) ||
+        (expectedDb && valueText.toLowerCase() === String(expectedDb).toLowerCase());
+      sources.push({
+        path: rel(filePath),
+        key: entry.key,
+        value: entry.value,
+        matchesRuntimeExpectation: Boolean(matchesExpected),
+      });
+    }
+  }
+
+  return sources;
 }
 
 function evaluate(probe) {
@@ -110,6 +238,13 @@ function evaluate(probe) {
     if (!identity.passed) {
       blockers.push(...identity.blockers);
     }
+    if (!identity.contentRootPath) {
+      blockers.push('Runtime API did not report a content root path.');
+    } else if (!identity.isExpectedWorkspace) {
+      blockers.push(
+        `Runtime API content root belongs to a different workspace: ${identity.contentRootPath}.`
+      );
+    }
     warnings.push(...identity.warnings);
   }
 
@@ -119,6 +254,7 @@ function evaluate(probe) {
     blockers: [...new Set(blockers)],
     warnings: [...new Set(warnings)],
     identity,
+    configExpectationSources: readConfigExpectationSources(identity),
   };
 }
 
@@ -138,6 +274,9 @@ function renderMarkdown(report) {
     `- Endpoint status: ${report.endpointStatus ?? 'unreachable'}`,
     `- API base URL: ${identity.apiBaseUrl ?? '-'}`,
     `- Environment: ${identity.environment ?? '-'}`,
+    `- Content root: ${identity.contentRootPath ?? '-'}`,
+    `- Expected content root: ${identity.expectedContentRootPath ?? '-'}`,
+    `- Expected workspace: ${identity.isExpectedWorkspace ? 'yes' : 'no'}`,
     `- Provider: ${identity.provider ?? '-'}`,
     `- Connection string name: ${identity.connectionStringName ?? '-'}`,
     `- Server/host: ${identity.serverRedacted ?? '-'}`,
@@ -145,7 +284,23 @@ function renderMarkdown(report) {
     `- Expected June 10 DB: ${identity.expectedJune10Database ?? '-'}`,
     `- Expected runtime DB: ${identity.isExpectedJune10RuntimeDb ? 'yes' : 'no'}`,
     `- Expected Benton parcel count: ${identity.expectedBentonParcelCount ?? '-'}`,
+    `- Expected Benton parcel count source: ${identity.expectedBentonParcelCountSource ?? '-'}`,
     `- Benton parcel count expected: ${identity.isBentonParcelCountExpected ? 'yes' : 'no'}`,
+    '',
+    '## Config Expectation Sources',
+    '',
+    '| Path | Key | Value | Matches Runtime Expectation |',
+    '|---|---|---:|---|',
+    ...(report.configExpectationSources?.length
+      ? report.configExpectationSources.map(source =>
+          [
+            `\`${source.path}\``,
+            source.key,
+            String(source.value),
+            source.matchesRuntimeExpectation ? 'yes' : 'no',
+          ].join(' | ')
+        )
+      : ['| - | - | - | - |']),
     '',
     '## Migration State',
     '',
@@ -158,6 +313,8 @@ function renderMarkdown(report) {
     `- Counties: ${rowCounts.counties ?? '-'}`,
     `- Properties: ${rowCounts.properties ?? '-'}`,
     `- ComparableSales: ${rowCounts.comparableSales ?? '-'}`,
+    `- canonical_tf.tf_parcel: ${rowCounts.tfParcels ?? '-'}`,
+    `- canonical_tf.tf_sale: ${rowCounts.tfSales ?? '-'}`,
     `- CanonicalSaleQualifications: ${rowCounts.canonicalSaleQualifications ?? '-'}`,
     '',
     '## Blockers',

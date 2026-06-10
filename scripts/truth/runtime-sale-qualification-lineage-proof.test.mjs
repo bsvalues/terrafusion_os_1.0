@@ -33,6 +33,12 @@ function makeTempRepo(prefix) {
   return root;
 }
 
+function makeEmptyTempRepo(prefix) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  fs.mkdirSync(path.join(root, 'generated', 'truth'), { recursive: true });
+  return root;
+}
+
 function writeSourceLineage(root, proof) {
   fs.writeFileSync(
     path.join(root, 'generated', 'truth', 'runtime-row-source-lineage-proof.json'),
@@ -76,15 +82,12 @@ test('runtime sale qualification proof passes recommendation-backed qualified po
       writeJson(response, {
         county: 'Benton County',
         countyId,
-        runtimeLineageClassification: 'pacs_mirror_projected_runtime_partial',
+        runtimeLineageClassification: 'terrafusion_canonical_runtime_partial',
         runtimeMockDataEnabled: false,
         eliteOperationsMockDataEnabled: true,
         canonicalRuntime: {
-          comparableSales: 259102,
+          tfSales: 259102,
           canonicalSaleQualifications: 0,
-        },
-        sourceMirror: {
-          pacsSales: 440274,
         },
       });
       return;
@@ -148,7 +151,7 @@ test('runtime sale qualification proof fails when source-lineage proof is not tr
     county: 'Benton',
     passed: false,
     blockers: [
-      'Runtime DB identity proof is not trusted: Runtime Properties count 128788 does not match configured Benton parcel count 89447.',
+      'Runtime DB identity proof is not trusted: Runtime canonical_tf.tf_parcel count 128788 does not match configured Benton parcel count 89447.',
     ],
   });
   const countyId = '19190019-1919-1919-1919-191919191919';
@@ -159,11 +162,8 @@ test('runtime sale qualification proof fails when source-lineage proof is not tr
         countyId,
         runtimeMockDataEnabled: false,
         canonicalRuntime: {
-          comparableSales: 259102,
+          tfSales: 259102,
           canonicalSaleQualifications: 0,
-        },
-        sourceMirror: {
-          pacsSales: 440274,
         },
       });
       return;
@@ -209,6 +209,11 @@ test('runtime sale qualification proof fails when source-lineage proof is not tr
         blocker.includes('Runtime source-lineage proof is not trusted')
       )
     );
+    assert.ok(
+      report.summary.blockers.some(blocker =>
+        blocker.includes('Runtime source-lineage proof is not trusted')
+      )
+    );
   } finally {
     await server.close();
   }
@@ -224,11 +229,8 @@ test('runtime sale qualification proof fails when no qualified runtime pool exis
         countyId,
         runtimeMockDataEnabled: false,
         canonicalRuntime: {
-          comparableSales: 5,
+          tfSales: 5,
           canonicalSaleQualifications: 0,
-        },
-        sourceMirror: {
-          pacsSales: 5,
         },
       });
       return;
@@ -279,4 +281,26 @@ test('runtime sale qualification proof fails when no qualified runtime pool exis
   } finally {
     await server.close();
   }
+});
+
+test('runtime sale qualification proof fails closed when no candidates are available', async () => {
+  const root = makeEmptyTempRepo('tf-sale-qual-no-candidates-');
+  await assert.rejects(
+    execFileAsync('node', [scriptPath, root], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+      },
+    })
+  );
+
+  const report = JSON.parse(
+    fs.readFileSync(
+      path.join(root, 'generated', 'truth', 'runtime-sale-qualification-lineage-proof.json'),
+      'utf8'
+    )
+  );
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.summary.candidatesChecked, 0);
+  assert.ok(report.summary.blockers.some(blocker => blocker.includes('No runtime sale')));
 });

@@ -477,7 +477,7 @@
       "risk": "write_low",
       "writeLane": "dais",
       "touches": ["notice", "dossier"],
-      "description": "Drafts an initial appeal response narrative (position-aware) for BOE review—facts, rationale, and recommended resolution.",
+      "description": "Drafts an initial appeal response narrative (position-aware) for BOE review\u2014facts, rationale, and recommended resolution.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
       "reasonCodes": ["appeal_response", "operator_correction"],
@@ -2229,7 +2229,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Run TerraCanon system diagnostics — checks workspace health, governance gates, and service connectivity",
+      "description": "Run TerraCanon system diagnostics \u2014 checks workspace health, governance gates, and service connectivity",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2246,7 +2246,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Quick governance gate validation — runs type-check and Phase 83 tool tests without full CI",
+      "description": "Quick governance gate validation \u2014 runs type-check and Phase 83 tool tests without full CI",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2263,7 +2263,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Returns the Golden Corpus lock status — artifact inventory, SHA256 hashes, release tag, and ledger state",
+      "description": "Returns the Golden Corpus lock status \u2014 artifact inventory, SHA256 hashes, release tag, and ledger state",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2280,7 +2280,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Lists files and directories within an allowed path — enforces path allowlist, rejects traversal",
+      "description": "Lists files and directories within an allowed path \u2014 enforces path allowlist, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2302,7 +2302,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Reads file content from an allowed path — enforces path allowlist, 512KB limit, rejects traversal",
+      "description": "Reads file content from an allowed path \u2014 enforces path allowlist, 512KB limit, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2324,7 +2324,7 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": ["canon_file"],
-      "description": "Writes file content to an allowed path — enforces path allowlist, 1MB limit, rejects traversal",
+      "description": "Writes file content to an allowed path \u2014 enforces path allowlist, 1MB limit, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2353,7 +2353,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Searches for text across files in allowed paths — case-insensitive, optional regex, returns matching lines with context",
+      "description": "Searches for text across files in allowed paths \u2014 case-insensitive, optional regex, returns matching lines with context",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2387,7 +2387,7 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Executes an allowlisted command in the Canon IDE terminal — governance gates, type-check, build, and test commands only",
+      "description": "Executes an allowlisted command in the Canon IDE terminal \u2014 governance gates, type-check, build, and test commands only",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2412,7 +2412,7 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Creates a new file in an allowed Canon IDE path — rejects if the file already exists to prevent accidental overwrites",
+      "description": "Creates a new file in an allowed Canon IDE path \u2014 rejects if the file already exists to prevent accidental overwrites",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2441,7 +2441,7 @@
       "risk": "write_high",
       "writeLane": "os",
       "touches": [],
-      "description": "Deletes an existing file in an allowed Canon IDE path — requires confirmation since deletion is irreversible",
+      "description": "Deletes an existing file in an allowed Canon IDE path \u2014 requires confirmation since deletion is irreversible",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2470,7 +2470,7 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Renames or moves a file within allowed Canon IDE paths — both source and destination must be in the allowlist",
+      "description": "Renames or moves a file within allowed Canon IDE paths \u2014 both source and destination must be in the allowlist",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2973,8 +2973,12 @@
             "items": {
               "type": "object",
               "properties": {
-                "id": { "type": "string" },
-                "line": { "type": "number" },
+                "id": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "number"
+                },
                 "severity": {
                   "type": "string",
                   "enum": ["error", "warning", "info", "hint"]
@@ -2983,7 +2987,9 @@
                   "type": "string",
                   "enum": ["diagnostic", "bookmark", "modified"]
                 },
-                "message": { "type": "string" }
+                "message": {
+                  "type": "string"
+                }
               },
               "required": ["id", "line", "severity", "kind", "message"]
             }
@@ -3296,7 +3302,10 @@
             "type": "integer",
             "description": "1-based column number of cursor"
           },
-          "content": { "type": "string", "description": "Full file content" }
+          "content": {
+            "type": "string",
+            "description": "Full file content"
+          }
         },
         "required": ["filePath", "line", "column", "content"]
       }
@@ -3330,7 +3339,10 @@
             "type": "integer",
             "description": "1-based column number of cursor"
           },
-          "content": { "type": "string", "description": "Full file content" }
+          "content": {
+            "type": "string",
+            "description": "Full file content"
+          }
         },
         "required": ["filePath", "line", "column", "content"]
       }
@@ -3425,6 +3437,446 @@
         },
         "required": ["filePath", "content"]
       }
+    },
+    {
+      "toolId": "cu_calculate_rollback",
+      "displayName": "Calculate Rollback Tax",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Calculate rollback taxes, interest, and penalties for a parcel being removed from current use classification per RCW 84.33/84.34",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": ["DFL", "CUFA", "CUOS", "CUTL"],
+            "description": "Current use classification code"
+          },
+          "enrollmentYear": {
+            "type": "integer",
+            "description": "Year parcel was enrolled in current use"
+          },
+          "removalYear": {
+            "type": "integer",
+            "description": "Year of removal from current use"
+          },
+          "marketValues": {
+            "type": "object",
+            "description": "Year-keyed market values for lookback period"
+          },
+          "currentUseValues": {
+            "type": "object",
+            "description": "Year-keyed current use values for lookback period"
+          },
+          "penaltyExceptionCode": {
+            "type": "string",
+            "description": "Optional penalty exception code (DEATH, GOVT_ACQUISITION, etc.)"
+          }
+        },
+        "required": [
+          "parcelId",
+          "classificationCode",
+          "enrollmentYear",
+          "removalYear",
+          "marketValues",
+          "currentUseValues"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_calculate_interest",
+      "displayName": "Calculate Current Use Interest",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["current_use"],
+      "description": "Compute compound interest on rollback tax principal using WA DOR published rates per WAC 458-30-262",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "principal": {
+            "type": "number",
+            "description": "Rollback tax principal amount"
+          },
+          "startYear": {
+            "type": "integer",
+            "description": "First year of interest accrual"
+          },
+          "endYear": {
+            "type": "integer",
+            "description": "Last year of interest accrual"
+          }
+        },
+        "required": ["principal", "startYear", "endYear"]
+      }
+    },
+    {
+      "toolId": "cu_evaluate_penalty_exceptions",
+      "displayName": "Evaluate Penalty Exceptions",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Evaluate which 20% penalty exceptions apply for a parcel per RCW 84.33.140 / 84.34.108",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier to evaluate"
+          }
+        },
+        "required": ["parcelId"]
+      }
+    },
+    {
+      "toolId": "cu_initiate_removal",
+      "displayName": "Initiate Current Use Removal",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "current_use", "workflow"],
+      "description": "Initiate removal of a parcel from current use classification, triggering rollback tax calculation workflow",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "voluntary_withdrawal",
+        "change_of_use",
+        "sale_nonqualifying",
+        "subdivision",
+        "failure_requirements",
+        "govt_acquisition",
+        "owner_death"
+      ],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": ["DFL", "CUFA", "CUOS", "CUTL"],
+            "description": "Current use classification code"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for removal"
+          }
+        },
+        "required": ["parcelId", "classificationCode", "reason"]
+      }
+    },
+    {
+      "toolId": "cu_enroll_parcel",
+      "displayName": "Enroll Parcel in Current Use",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["parcel", "current_use"],
+      "description": "Create a new current use classification enrollment for a parcel under RCW 84.33 (DFL) or RCW 84.34 (CUFA/CUOS/CUTL)",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["new_application", "reclassification", "correction"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": ["DFL", "CUFA", "CUOS", "CUTL"],
+            "description": "Current use classification code"
+          },
+          "enrollmentDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of enrollment"
+          },
+          "acreage": {
+            "type": "number",
+            "description": "Enrolled acreage"
+          },
+          "currentMarketValue": {
+            "type": "number",
+            "description": "Market value at enrollment"
+          },
+          "currentUseValue": {
+            "type": "number",
+            "description": "Current use value at enrollment"
+          }
+        },
+        "required": ["parcelId", "classificationCode", "enrollmentDate"]
+      }
+    },
+    {
+      "toolId": "cu_get_interest_rates",
+      "displayName": "Get Current Use Interest Rates",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["current_use"],
+      "description": "Retrieve all WA DOR published interest rates for current use rollback calculations",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "cu_list_classifications",
+      "displayName": "List Current Use Classifications",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "current_use"],
+      "description": "Query current use classifications with filtering by status, code, and pagination",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["Active", "Removed", "Pending"],
+            "description": "Filter by enrollment status"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": ["DFL", "CUFA", "CUOS", "CUTL"],
+            "description": "Filter by classification code"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page number (1-based)"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Results per page (max 100)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "toolId": "report_generate_rollback_notice",
+      "displayName": "Generate Rollback Notice Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["parcel", "current_use", "reports"],
+      "description": "Generate a Current Use Rollback Notice (RCW 84.34.108) as HTML/PDF with year-by-year tax breakdown, interest calculation, and penalty assessment",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "ownerName": {
+            "type": "string",
+            "description": "Property owner name"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": ["DFL", "CUFA", "CUOS", "CUTL"],
+            "description": "Current use classification code"
+          },
+          "startYear": {
+            "type": "integer",
+            "description": "First year of rollback period"
+          },
+          "endYear": {
+            "type": "integer",
+            "description": "Last year of rollback period"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["html", "pdf"],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": ["parcelId"]
+      },
+      "reasonCodes": ["report_generation", "annual_certification"],
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "report_generate_levy_certification",
+      "displayName": "Generate Levy Certification Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["levy", "district", "reports"],
+      "description": "Generate a Levy Certification Report (RCW 84.52.070) with all district rates, assessed values, and statutory compliance verification",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for certification"
+          },
+          "taxAreaNumber": {
+            "type": "string",
+            "description": "Tax area number (optional \u2014 all areas if omitted)"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["html", "pdf"],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": ["taxYear"]
+      },
+      "reasonCodes": ["report_generation", "annual_certification"]
+    },
+    {
+      "toolId": "report_generate_cost_valuation",
+      "displayName": "Generate Cost Valuation Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["parcel", "cost", "reports"],
+      "description": "Generate a Cost Approach Valuation Report (IAAO Standard) with RCN, depreciation, RCNLD, and total assessed value for a property",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "buildingType": {
+            "type": "string",
+            "description": "Building type (e.g., SFR, Commercial)"
+          },
+          "squareFootage": {
+            "type": "number",
+            "description": "Building square footage"
+          },
+          "yearBuilt": {
+            "type": "integer",
+            "description": "Year the building was constructed"
+          },
+          "quality": {
+            "type": "string",
+            "description": "Quality grade"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region for cost factors"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["html", "pdf"],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": ["parcelId"]
+      },
+      "reasonCodes": ["report_generation", "annual_certification"],
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "report_generate_ratio_study",
+      "displayName": "Generate Ratio Study Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["sales", "ratio_study", "reports"],
+      "description": "Generate an IAAO Ratio Study Report with COD, PRD, PRB metrics, stratified analysis, and compliance determination",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for the study"
+          },
+          "area": {
+            "type": "string",
+            "description": "Geographic area or neighborhood code"
+          },
+          "propertyType": {
+            "type": "string",
+            "description": "Property type filter (e.g., R, C, I)"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["html", "pdf"],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": ["taxYear"]
+      },
+      "reasonCodes": ["report_generation", "annual_certification"]
     }
   ]
 }

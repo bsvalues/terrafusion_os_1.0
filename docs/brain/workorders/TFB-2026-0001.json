@@ -1,0 +1,47 @@
+{
+  "id": "TFB-2026-0001",
+  "title": "Verify TerraDais persistence (do NOT rebuild)",
+  "agent_role": "qa",
+  "mode": "pilot",
+  "risk": "R0",
+  "layer": ["Layer 3 Suite Workspace"],
+  "suite": "dais",
+  "rationale": "Drift D-002 — Dais persistence already exists. Prove behavior, do not re-implement.",
+  "allowed_files": [
+    "backend/src/TerraFusion.Core/Entities/Appeal.cs",
+    "backend/src/TerraFusion.Core/Entities/Exemption.cs",
+    "backend/src/TerraFusion.Core/Services/AppealService.cs",
+    "backend/src/TerraFusion.API/Controllers/DaisController.cs"
+  ],
+  "forbidden_files": [
+    "frontend/src/**",
+    "**/ARCHIVE/**",
+    "specialized/**",
+    "backend/src/TerraFusion.*/**/*Forge*",
+    "backend/src/TerraFusion.*/**/*Atlas*",
+    "backend/src/TerraFusion.*/**/*Dossier*"
+  ],
+  "allowed_writes": [
+    "test runs",
+    "docs/brain/memory/release-gates.md",
+    "docs/brain/memory/drift-ledger.md"
+  ],
+  "forbidden_writes": [
+    "new Dais entities (they exist)",
+    "valuation artifacts",
+    "GIS geometry",
+    "documents/evidence packets"
+  ],
+  "required_tests": [
+    "dotnet test --filter DaisPersistence",
+    "dotnet test --filter DaisCountyIsolation"
+  ],
+  "stop_conditions": [
+    "a test reveals a real defect (file new WO, do not fix opportunistically)",
+    "shell routing change required",
+    "cross-suite service write required",
+    "unclear data owner"
+  ],
+  "status": "ready",
+  "blocked_by": "D-001 (running TerraFusion.API holds DLL locks — stop the dev API first)"
+}
