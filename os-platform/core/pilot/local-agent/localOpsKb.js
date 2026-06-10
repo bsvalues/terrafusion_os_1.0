@@ -103,7 +103,10 @@ function headingFor(text, index) {
 }
 function snippetAround(text, index) {
     const start = Math.max(0, index - 60);
-    const raw = text.slice(start, start + SNIPPET_MAX).replace(/\s+/g, ' ').trim();
+    const raw = text
+        .slice(start, start + SNIPPET_MAX)
+        .replace(/\s+/g, ' ')
+        .trim();
     return (0, redact_js_1.redactStringValue)(raw);
 }
 class LocalOpsKb {
@@ -112,8 +115,11 @@ class LocalOpsKb {
         this.config = options.config ?? (0, aiProfile_js_1.resolveAiProfile)(options.env ?? process.env);
         this.trace = options.trace;
         this.maxResults = options.maxResults ?? DEFAULT_MAX_RESULTS;
-        const requested = options.roots ??
-            [this.config.localKbPath, this.config.runbookPath, 'docs/localops'];
+        const requested = options.roots ?? [
+            this.config.localKbPath,
+            this.config.runbookPath,
+            'docs/localops',
+        ];
         const seen = new Set();
         const allowed = [];
         const excluded = [];
