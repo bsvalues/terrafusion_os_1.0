@@ -43,6 +43,25 @@ Validation guarantees (enforced by `resolveAiProfile`, proven by tests):
 - `redactedAiProfileSummary` strips URL credentials and routes every string through the local-agent
   redactor (API keys, tokens, emails, SSNs, user paths) before display.
 
+## Provider abstraction (WO-LOCALOPS-002)
+
+`createLocalOpsProvider` (`os-platform/core/pilot/local-agent/localOpsProvider.ts`) turns a resolved
+profile into the **one** provider it permits, and **fails closed** otherwise — no silent fallback:
+
+- `disabled` → refusing provider (`AI_DISABLED`); all `complete()` calls return a structured refusal.
+- `localops` + a **local** provider (`ollama`, loopback base URL) → active local provider.
+- `localops`/`disabled` + an **external** provider (`openai`/`claude`/`anthropic`/`remote`) →
+  `EXTERNAL_PROVIDER_REFUSED`. External adapters are not constructed by v1 at all
+  (`EXTERNAL_NOT_IMPLEMENTED` even under `hybrid-approved`) — wiring them is a later, separately-approved WO.
+- missing/unknown provider, missing model, or non-loopback base URL → fail closed
+  (`PROVIDER_NOT_CONFIGURED` / `UNKNOWN_PROVIDER_REFUSED` / `PROVIDER_UNAVAILABLE`).
+- an injected adapter that does not declare `capabilities.local` is refused under a no-external profile
+  (`NON_LOCAL_ADAPTER_REFUSED`) — silent fallback is impossible even through dependency injection.
+
+`provider.status()` returns a redacted, network-free health summary (profile/provider/model/baseUrl
+redacted; adapter name; refusal code+reason). All refusal `reason` strings are redaction-safe.
+**No provider performs network I/O at construction or status time.**
+
 ## Purpose
 
 Describe, in plain terms, what a Benton County LocalOps AI profile must express so that LocalOps can

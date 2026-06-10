@@ -342,3 +342,16 @@ export {
   type AiProfileName,
   type AiProfileConfig,
 } from './aiProfile.js';
+
+export {
+  LOCAL_PROVIDER_IDS,
+  EXTERNAL_PROVIDER_IDS,
+  createLocalOpsProvider,
+  isLocalOpsRefusal,
+  type LocalOpsProvider,
+  type LocalOpsProviderKind,
+  type LocalOpsProviderStatus,
+  type LocalOpsRefusal,
+  type LocalOpsRefusalCode,
+  type CreateLocalOpsProviderOptions,
+} from './localOpsProvider.js';
