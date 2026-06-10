@@ -68,6 +68,77 @@ const SyncReadinessConsole = lazy(
   () => import('./pages/workbench/sync-readiness/SyncReadinessConsole'),
 );
 
+// DASHBOARD-1: Sync Doctrine Console — read-only status board for
+// the doctrine pipeline. Sibling to sync-readiness; renders the
+// snapshot from /api/sync/doctrine/state across canonical/truth/
+// raw/quarantine layers. Polls every 30s.
+const SyncDoctrineConsole = lazy(
+  () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
+);
+
+// SYNC-UX-1A: Sync Quarantine Triage — read-write operator surface
+// for the imprv-attr quarantine cohort. Lives at /workbench/sync/*
+// (new namespace, sibling to sync-doctrine). Wraps the
+// SYNC-WORKBENCH-F triage controller (route + dismiss decisions).
+const SyncQuarantinePage = lazy(
+  () => import('./pages/workbench/sync-quarantine/SyncQuarantinePage'),
+);
+
+// SYNC-UX-1B: Sync Commits page — operator surface for the
+// SYNC-WORKBENCH-G/H spine. Lists recent decision-commits, drills
+// into a single commit's snapshot, and downloads the signed
+// evidence ZIP / inspects the manifest.
+const SyncCommitsPage = lazy(
+  () => import('./pages/workbench/sync-commits/SyncCommitsPage'),
+);
+
+// SYNC-UX-1C: Full-Corpus Sync Runner — launcher + detail page
+// for durable 6+ hour PACS drains. Sibling to sync-readiness and
+// sync-doctrine; consumes /api/sync/corpus/* (FullCorpusController).
+const SyncCorpusPage = lazy(
+  () => import('./pages/workbench/sync-corpus/SyncCorpusPage'),
+);
+
+// WORKBENCH-V0.2 SLICE-I: Quarantine Review Panel — browse imprv_attr
+// quarantine rows and save append-only operator dispositions.
+// ACCEPT_AS_IS = reviewed + acknowledged only; does NOT promote.
+// Source quarantine rows are never mutated. No bulk action.
+// Consumes /api/sync/workbench/quarantine/review (GET + POST).
+const SyncQuarantineReviewPage = lazy(
+  () => import('./pages/workbench/sync-quarantine-review/SyncQuarantineReviewPage'),
+);
+
+// WORKBENCH-V0.3 SLICE-J: OS Shell Doctor Panel — substrate health check.
+// Spawns tf-sync-doctor.mjs via .NET child-process bridge and renders
+// the PASS/WARN/FAIL verdict with step cards.
+// FAIL is a hard gate — no dismiss, no proceed-anyway affordance.
+// Consumes /api/sync/workbench/doctor/run (POST) and /status (GET).
+// Per docs/sync/workbench/SLICE_J_OS_SHELL_DOCTOR_PANEL_CONTRACT.md.
+const SyncDoctorPage = lazy(
+  () => import('./pages/workbench/sync-doctor/SyncDoctorPage'),
+);
+
+// WORKBENCH-V0.3 SLICE-K: OS Shell Source Pack Fit Panel.
+// Spawns pack-validator-runner.mjs via .NET child-process bridge and renders
+// the PASS/WARN/FAIL verdict with 4 section cards.
+// FAIL is a hard gate — no dismiss, no proceed-anyway affordance.
+// Consumes /api/sync/workbench/source-pack/run (POST) and /status (GET).
+// Per docs/sync/workbench/SLICE_K_OS_SHELL_SOURCE_PACK_FIT_CONTRACT.md.
+const SourcePackFitPage = lazy(
+  () => import('./pages/workbench/source-pack/SourcePackFitPage'),
+);
+
+// WORKBENCH-V0.3 SLICE-L: OS Shell Identity Spine Panel.
+// Spawns identity-runner.mjs via .NET child-process bridge and renders
+// per-table PASS/WARN/FAIL verdict with 4 group cards.
+// tf_parcel_owner_link FAIL → WARN (known deferred lane).
+// FAIL is a hard gate — no dismiss, no proceed-anyway affordance.
+// Consumes /api/sync/workbench/identity-spine/run (POST) and /status (GET).
+// Per docs/sync/workbench/SLICE_L_OS_SHELL_IDENTITY_SPINE_CONTRACT.md.
+const IdentitySpinePage = lazy(
+  () => import('./pages/workbench/identity-spine/IdentitySpinePage'),
+);
+
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
@@ -205,6 +276,62 @@ const Router: React.FC = () => {
                   <Route
                     path='workbench/sync-readiness'
                     element={<SyncReadinessConsole />}
+                  />
+
+                  {/* DASHBOARD-1: Sync Doctrine Console (sibling) */}
+                  <Route
+                    path='workbench/sync-doctrine'
+                    element={<SyncDoctrineConsole />}
+                  />
+
+                  {/* SYNC-UX-1A: Sync Quarantine Triage (read-write) */}
+                  <Route
+                    path='workbench/sync/quarantine'
+                    element={<SyncQuarantinePage />}
+                  />
+
+                  {/* SYNC-UX-1B: Workbench commits + evidence UI */}
+                  <Route
+                    path='workbench/sync/commits'
+                    element={<SyncCommitsPage />}
+                  />
+                  <Route
+                    path='workbench/sync/commits/:commitId'
+                    element={<SyncCommitsPage />}
+                  />
+
+                  {/* SYNC-UX-1C: Full-Corpus Sync Runner */}
+                  <Route
+                    path='workbench/sync/corpus'
+                    element={<SyncCorpusPage />}
+                  />
+                  <Route
+                    path='workbench/sync/corpus/:runId'
+                    element={<SyncCorpusPage />}
+                  />
+
+                  {/* WORKBENCH-V0.2 SLICE-I: Quarantine Review Panel */}
+                  <Route
+                    path='workbench/sync/quarantine/review'
+                    element={<SyncQuarantineReviewPage />}
+                  />
+
+                  {/* WORKBENCH-V0.3 SLICE-J: OS Shell Doctor Panel */}
+                  <Route
+                    path='workbench/sync/doctor'
+                    element={<SyncDoctorPage />}
+                  />
+
+                  {/* WORKBENCH-V0.3 SLICE-K: OS Shell Source Pack Fit Panel */}
+                  <Route
+                    path='workbench/sync/source-pack'
+                    element={<SourcePackFitPage />}
+                  />
+
+                  {/* WORKBENCH-V0.3 SLICE-L: OS Shell Identity Spine Panel */}
+                  <Route
+                    path='workbench/sync/identity-spine'
+                    element={<IdentitySpinePage />}
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
