@@ -12,8 +12,7 @@ were verified from this exact worktree/SHA against real Benton County GIS data f
 `119802030006001`.
 
 Full production proof is not claimed because several enrichments remain external:
-Mapbox token/configuration, FEMA flood enrichment, zoning enrichment, and Snyk credentialed
-security scanning.
+Mapbox token/configuration, FEMA flood enrichment, and zoning enrichment.
 
 ## Runtime Proof Summary
 
@@ -62,6 +61,9 @@ The in-app browser confirmed these visible/DOM signals:
 | `node --test os-platform/core/tests/phase83-tools.test.mjs` | pass, 56/56 |
 | `pnpm --dir frontend run type-check` | pass |
 | `pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx apps/os-shell/src/__tests__/workbench/workbench.contractGates.test.ts` | pass, 45/45 |
+| Pre-push unit tests | pass, 164/164 |
+| Pre-push `pnpm run security:scan` | Snyk Code completed with findings in governed targets; hook did not block |
+| Pre-push Release backend build | pass, 0 warnings, 0 errors |
 
 ## Changeset
 
@@ -80,7 +82,7 @@ The in-app browser confirmed these visible/DOM signals:
 | Mapbox live satellite/canvas | External configuration gap: `VITE_MAPBOX_ACCESS_TOKEN` is absent. |
 | FEMA flood layer | External enrichment gap: backend reports flood as `source: stub`. |
 | Zoning layer | External enrichment gap: backend returns zoning as `null`. |
-| Snyk scan | External credential/tooling gap: no Snyk tool is available in this Codex session. |
+| Snyk scan | Ran in pre-push; findings exist in governed targets, and the hook did not block. |
 
 ## PR Title
 
@@ -92,7 +94,7 @@ The in-app browser confirmed these visible/DOM signals:
 ## Summary
 - proves TerraAtlas core runtime from an isolated Codex worktree using real parcel `119802030006001`
 - records live API/browser evidence for Benton GIS boundary, layers, owner, situs, centroid, and tax area
-- updates Atlas proof docs to classify Mapbox, FEMA, zoning, and Snyk as external enrichment gaps
+- updates Atlas proof docs to classify Mapbox, FEMA, and zoning as external enrichment gaps
 
 ## Verification
 - pnpm run type-check
