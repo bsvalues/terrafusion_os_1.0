@@ -1,7 +1,36 @@
 # TerraAtlas Runtime Proof
 **Branch**: feat/june10-dev39-runtime-truth  
 **Date**: 2026-06-10  
+**Final status**: ✅ **PROVEN CORE RUNTIME** (live Benton County GIS data)  
 **Sprint scope**: TerraAtlas Suite runtime proof — Atlas as third Workbench tab, honest GIS unavailable states, Cortex advisory-only, no cross-suite writes, no hardcoded ports.
+
+> **Status upgrade (2026-06-10):** This is no longer merely *VERIFIED BY TEST*. The Atlas GIS core API was driven against the live Postgres `terrafusion` database and returned **real Benton County parcel geometry** (`source: live`). The earlier `404` claims below were caused by a **stale API binary + placeholder parcel ID + Production DB-host misconfig**, not by missing TerraAtlas architecture. See **Live GIS Runtime Proof** and **Runtime Launch Truth** sections.
+
+---
+
+## Live GIS Runtime Proof (canonical)
+
+**Canonical runtime smoke parcel**: `119802030006001` — **203 E 47TH PL, KENNEWICK, WA 99337** (owner *COX DONNA M*).
+
+| Evidence | Result |
+|----------|--------|
+| `GET /health` | ✅ **200** |
+| Real Postgres `terrafusion` DB reachable via `localhost:5432` | ✅ container `terrafusion-postgres-dev` (pgvector/pgvector:pg16) |
+| `GisParcelGeometries` row count | ✅ **80,014** rows |
+| Sampled rows have `RingJson` **and** centroids | ✅ 80,014 / 80,014 (all sampled) |
+| `GET /api/atlas/gis/parcels/119802030006001/boundary` | ✅ **200**, `source: live` |
+| `GET /api/atlas/gis/parcels/119802030006001` (combined) | ✅ **200**, `source: live` |
+| Response includes real `RingJson` polygon (15 points) | ✅ |
+| Response includes real centroid (`46.16697, -119.11561`, `derivedFrom: arcgis-centroid`) | ✅ |
+| Response includes real situs / owner / area (`0.3271 ac`, `14,250 sqft`) | ✅ |
+| Live `taxArea` (`K1`) and `landClass` (`primaryUseCd: 11`) layers | ✅ `source: live` |
+| Flood layer | ⚠️ `source: stub` — FEMA enrichment gap (not a core blocker) |
+| Zoning layer | ⚠️ `null` — honest, enrichment gap (not a core blocker) |
+
+**Placeholder-ID correction:**
+- `00AA00001129049` was a **placeholder fixture ID** and must **not** be used as runtime proof.
+- `12345-001` is also **placeholder/demo** and must **not** be used as runtime proof.
+- The canonical runtime smoke parcel is **`119802030006001`** unless a better real parcel is selected.
 
 ---
 
@@ -46,6 +75,8 @@ Duration: 62s. Warnings: React Router v7 future flags (pre-existing, non-blockin
 ---
 
 ## OS Shell Runtime Evidence (captured this session)
+
+> **Note (placeholder correction):** The URLs in this section use the placeholder fixture ID `00AA00001129049`, which has **no GIS geometry** and must **not** be cited as live-data proof. They remain here only as a record of the OS-shell mount/honest-error behavior captured before the live-data proof. The authoritative live-data proof is the **Live GIS Runtime Proof** section above, using real parcel `119802030006001`.
 
 **URL**: `http://127.0.0.1:3103/property/00AA00001129049/atlas`
 
@@ -105,13 +136,33 @@ No Cortex/Brain integration is present in the Atlas Workbench tab. The `explain_
 
 ---
 
+## Runtime Launch Truth
+
+The earlier `404`/`401` false negatives were **launch/runtime truth defects**, not TerraAtlas architecture gaps. Root causes and fixes:
+
+| Defect | Cause | Fix |
+|--------|-------|-----|
+| Auth/route false negative (`401` on `[AllowAnonymous]` GIS routes) | **Stale API binary** — the running `TerraFusion.API.exe` predated the `[AllowAnonymous]` attribute on the parcel routes | Rebuilt API (`dotnet build`, 0 errors); restarted. `401` → `200`. |
+| Apparent missing endpoint | Mislabeled — routes `parcels/{id}/boundary`, `parcels/{id}/layers`, `parcels/{id}` **already exist** in `AtlasGisController.cs` | Confirmed by `401` (route registered), not `404` |
+| DB DNS failure (`SocketException 11001 No such host is known`) | `--no-launch-profile` defaulted env to **Production**, loading `appsettings.Production.json` whose `DefaultConnection` uses **unsubstituted** `Host=${TF_DB_HOST}` | Relaunched with explicit `ASPNETCORE_ENVIRONMENT=Development` + `ConnectionStrings__DefaultConnection=Host=localhost;...;Port=5432` |
+| GIS data "missing" | **Wrong parcel ID** — `00AA00001129049` is a placeholder fixture with no geometry | Used real GeoId `119802030006001` (one of 80,014 real parcels) |
+
+**Launch contract for runtime proof:**
+- The production launch command must explicitly set `ASPNETCORE_ENVIRONMENT=Development` **or** provide a valid `TF_DB_HOST` / `ConnectionStrings__DefaultConnection`.
+- Do **not** use `dotnet run --no-launch-profile` without an explicit environment / connection-string override for local runtime proof.
+
+---
+
 ## Known Blockers / Limitations
 
 | Item | Status |
 |------|--------|
-| Live Atlas GIS endpoints (`/api/atlas/gis/parcels/{id}/boundary`, `/layers`) | `404 Not Found` — backend GIS route not wired. Atlas tab renders honest error state, does not crash. |
-| Mapbox token | Not set in dev env — `atlas-map-canvas` not rendered, `map-container` always present as stable mount. Correct behavior. |
-| Dev session auth expiry | Browser session expired before final screenshot. Not a regression — parcel data requires valid JWT. |
+| Live Atlas GIS endpoints (`/api/atlas/gis/parcels/{id}/boundary`, `/layers`, combined `/{id}`) | ✅ **PROVEN 200 with live data** for real parcel `119802030006001`. Routes exist in `AtlasGisController.cs` (`[AllowAnonymous]`). |
+| Browser visual smoke | ⏳ Pending **only** if the browser session/JWT is expired. API runtime itself is proven. Navigate to `/property/119802030006001/atlas` (real GeoId), not a placeholder. |
+| Mapbox live satellite rendering | ⚠️ **External/config-dependent** — `VITE_MAPBOX_ACCESS_TOKEN` absent. `atlas-map-canvas` not rendered; `map-container` always present as stable mount. Not a core runtime blocker. |
+| FEMA flood layer | ⚠️ Enrichment/config gap — returns `source: stub`. Not a core runtime blocker. |
+| Zoning layer | ⚠️ Enrichment/config gap — returns `null`. Not a core runtime blocker. |
+| Dev session auth expiry (browser) | Parcel **detail** page requires a valid JWT. The Atlas GIS API routes themselves are `[AllowAnonymous]` and proven independent of JWT. |
 | `pnpm run check:generated` | Fails due to `.tmp/worktrees/` ToolRegistry artifacts outside governance surface — pre-existing, unrelated to TerraAtlas. |
 | Snyk security scan | Snyk tool not available in this Copilot session. Cannot produce scan result. |
 
