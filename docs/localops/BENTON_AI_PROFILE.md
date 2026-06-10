@@ -59,8 +59,30 @@ profile into the **one** provider it permits, and **fails closed** otherwise —
   (`NON_LOCAL_ADAPTER_REFUSED`) — silent fallback is impossible even through dependency injection.
 
 `provider.status()` returns a redacted, network-free health summary (profile/provider/model/baseUrl
-redacted; adapter name; refusal code+reason). All refusal `reason` strings are redaction-safe.
+redacted; adapter name; problem details). All `message` strings are redaction-safe.
 **No provider performs network I/O at construction or status time.**
+
+### AX-compatible outcome taxonomy
+
+`complete()` returns a discriminated `LocalOpsResult` (`ok` + `status`) so a future TerraPilot UI can
+render a Provider Status Card / Refusal Card / Active Profile Badge / System Halt without re-deriving
+meaning. The six mutually-exclusive statuses are distinct — in particular **`failed` ≠ `refused`** and
+**`disabled` ≠ `unavailable`**:
+
+| `status` | Meaning | Example `reasonCode` |
+|----------|---------|----------------------|
+| `success` | a permitted local call produced a completion | — |
+| `refused` | policy said no | `EXTERNAL_PROVIDER_REFUSED`, `NON_LOCAL_ADAPTER_REFUSED` |
+| `failed` | a permitted local call errored at runtime | `LOCAL_PROVIDER_FAILED` |
+| `disabled` | AI turned off by profile | `AI_DISABLED` |
+| `unavailable` | permitted provider could not be built/reached | `PROVIDER_UNAVAILABLE`, `EXTERNAL_NOT_IMPLEMENTED` |
+| `misconfigured` | config invalid | `PROVIDER_NOT_CONFIGURED`, `UNKNOWN_PROVIDER_REFUSED` |
+
+Non-success outcomes (`LocalOpsProblem`) carry `status`, `reasonCode`, `profile`, `provider`,
+`message`, and — where applicable — `violatedConstraint` (e.g. `no_external_calls`, `local_only`,
+`loopback_only`, `ai_disabled`) and `safeAlternatives`. A local provider that is **unavailable** or
+**fails** at call time is reported as exactly that — it is **never** silently turned into a cloud
+fallback, and a failure is **never** represented as success.
 
 ## Purpose
 
