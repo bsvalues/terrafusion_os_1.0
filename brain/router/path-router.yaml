@@ -125,6 +125,21 @@ routes:
     escalate:
       - 'any constitutional change (Article amendment, write-lane change, tab-order change)'
 
+  # --- LocalOps planning envelope (docs only) ---------------------------
+  - match: 'docs/localops/**'
+    domain: localops
+    pack: brain/packs/localops/README.md
+    risk_floor: R0
+    status: authoritative
+    note: 'WO-LOCALOPS-000 planning envelope. Docs/planning only; not implementation. LocalOps code lives at os-platform/core/pilot/local-agent/** (R3).'
+    forbidden:
+      - 'claiming runtime readiness, FISMA compliance, or accreditation not yet proven'
+      - 'documenting silent cloud fallback, unrestricted shell, or autonomous production repair as acceptable'
+    proof:
+      - prettier_check
+    escalate:
+      - 'promoting a planning doc into an implementation contract (open the matching WO-LOCALOPS-00x)'
+
   # --- Shell (OS surface) -----------------------------------------------
   - match: 'frontend/apps/os-shell/src/shell/desktop/zIndex.ts'
     domain: shell
