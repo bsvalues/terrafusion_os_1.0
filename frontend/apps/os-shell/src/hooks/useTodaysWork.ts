@@ -155,6 +155,14 @@ export function useTodaysWork(): {
     let cancelled = false;
 
     const loadTodaysWork = async () => {
+      if (typeof window !== 'undefined' && window.location.hostname === 'dev39.terrafusionmarket.com') {
+        setTasks([]);
+        setReadState('unavailable');
+        setError('Today\'s Work is not part of the dev39 controlled statewide runtime preview.');
+        setLoading(false);
+        return;
+      }
+
       try {
         const queueItems = await getQueueItems({ throwOnError: true });
         if (cancelled) return;

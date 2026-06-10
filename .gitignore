@@ -675,3 +675,29 @@ frontend/playwright-report/
 .tmp-terrafusion-api.pp.xml
 .tmp-zipverify/
 backend/TerraFusion.API.Tests/Services/ModuleRuntimeHealthTest.txt
+
+# Generated june10 ArcGIS source-discovery outputs (machine-generated)
+os-platform/core/pilot/evidence/june10-statewide-arcgis-source-discovery.latest.json
+os-platform/core/pilot/evidence/june10-statewide-arcgis-source-discovery.latest.md
+
+# Generated june10 ArcGIS evidence artifacts
+os-platform/core/pilot/evidence/june10-*/
+
+# HARD RULE (co-founder 2026-05-27): no statewide/39-county/ArcGIS repair
+# artifacts in active Sync gates while Benton drain is active. Quarantine all.
+# june10-arcgis-quarantine
+os-platform/core/pilot/june10-*
+os-platform/core/pilot/**/june10-*
+os-platform/core/pilot/evidence/june10-*/
+
+# Governed exception: dev39 read-only truth/audit scripts are not Sync repair scripts.
+!os-platform/core/pilot/june10-dev39-*.mjs
+!os-platform/core/pilot/june10-dev39-*.test.mjs
+!os-platform/core/pilot/june10-backend-endpoint-contract-matrix.mjs
+!os-platform/core/pilot/june10-backend-endpoint-contract-matrix.test.mjs
+!os-platform/core/pilot/june10-endpoint-matrix-triage-wave1.mjs
+!os-platform/core/pilot/june10-endpoint-matrix-triage-wave1.test.mjs
+!os-platform/core/pilot/june10-pacs-leakage-audit.mjs
+!os-platform/core/pilot/june10-pacs-leakage-audit.test.mjs
+!os-platform/core/pilot/evidence/june10-pacs-leakage-audit.latest.json
+!os-platform/core/pilot/evidence/june10-pacs-leakage-audit.latest.md
