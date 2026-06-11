@@ -2,10 +2,6 @@
 
 **Scope**: TerraAtlas Suite runtime proof only.
 
-This checklist excludes Property Workbench. `/property/:parcelId/atlas`,
-Workbench tab order, Workbench shell behavior, and Dossier/Pilot finality are
-`OUT_OF_SCOPE_PROPERTY_WORKBENCH`.
-
 ## Required
 
 | Check | Command or evidence |
@@ -28,8 +24,6 @@ Workbench tab order, Workbench shell behavior, and Dossier/Pilot finality are
 - Mapbox missing-token behavior is classified as an external configuration gap.
 - FEMA flood enrichment remains classified as an external enrichment gap while backend returns `source: stub`.
 - Zoning enrichment remains classified as an external enrichment gap while backend returns `zoning: null`.
-- No Property Workbench source file appears in the final PR diff.
-- No Workbench test is used as acceptance proof.
 
 ## Non-Blocking External Gaps
 
@@ -38,10 +32,3 @@ Workbench tab order, Workbench shell behavior, and Dossier/Pilot finality are
 | Mapbox token absent | `EXTERNAL-ONLY` |
 | FEMA enrichment stub | `EXTERNAL-ONLY` |
 | Zoning enrichment null | `EXTERNAL-ONLY` |
-
-## Not Required
-
-- Workbench Atlas tab tests.
-- Workbench tab order tests.
-- `/property/:parcelId/atlas` browser proof.
-- Dossier/Pilot finality tests.

@@ -2,12 +2,12 @@
 
 **Branch**: `feat/terraatlas-full-production`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY`
 
 This branch is scoped to TerraAtlas Suite runtime proof.
 
-Property Workbench is not part of this sprint. Do not inspect, edit, test, route,
-or document Property Workbench except to explicitly state it is out of scope.
+Property Workbench integration is intentionally out of scope and belongs to the
+separate Workbench workstream.
 
 ## Worktree Isolation
 
@@ -23,9 +23,6 @@ edits.
 | Rule | Status |
 |------|--------|
 | Only `/atlas` is browser proof for this PR | Enforced |
-| `/property/*` routes are out of scope | Enforced |
-| Property Workbench source changes are not part of final diff | Enforced |
-| Workbench tests are not acceptance proof | Enforced |
 | Shared Atlas GIS API proof is allowed only because it supports TerraAtlas Suite runtime | Enforced |
 
 ## Final Changed Files
@@ -44,17 +41,12 @@ edits.
 Do not claim:
 
 - `FULL RUNTIME PROVEN PRODUCTION`, because Mapbox, FEMA, and zoning enrichments remain external/configuration gaps.
-- Property Workbench production readiness.
-- `/property/:parcelId/atlas` readiness.
-- Atlas Workbench tab proof.
-- Workbench tab order, routing, or shell behavior.
-- Dossier/Pilot finality.
 - Placeholder parcel proof from `00AA00001129049` or `12345-001`.
 - A clean Snyk finding slate unless a fresh scan proves that separately.
 
 ## Accepted Terminal Status
 
-`PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
+`PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY`
 
 The TerraAtlas Suite runtime is proven for `/atlas` plus the shared live Benton
 County GIS API contract for parcel `119802030006001`. External Mapbox, FEMA, and

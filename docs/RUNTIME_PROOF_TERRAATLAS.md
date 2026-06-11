@@ -2,13 +2,9 @@
 
 **Branch**: `feat/terraatlas-full-production`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY`
 
-This PR proves the TerraAtlas Suite runtime surface.
-
-It does not prove Property Workbench Atlas-tab integration. Property Workbench
-integration is intentionally excluded and belongs to the separate Workbench
-agent/workstream.
+This PR proves the TerraAtlas Suite runtime surface only.
 
 ## Owned Surface
 
@@ -21,19 +17,6 @@ agent/workstream.
 | Mapbox token fallback | In scope as an external configuration gap |
 | FEMA flood enrichment | In scope as an external enrichment gap |
 | Zoning enrichment | In scope as an external enrichment gap |
-
-## Explicitly Out Of Scope
-
-| Surface | Classification |
-|---------|----------------|
-| `/property/:parcelId/atlas` | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-| Atlas Workbench tab | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-| Workbench tab order | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-| Dossier/Pilot finality | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-| Workbench routing or shell behavior | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-| Workbench component tests | `OUT_OF_SCOPE_PROPERTY_WORKBENCH` |
-
-If a route starts with `/property`, it is not proof for this PR.
 
 ## Runtime API Evidence
 
@@ -64,7 +47,7 @@ Canonical parcel fields verified by the smoke script:
 
 ## Browser Proof Target
 
-The only browser route proof target for this sprint is `/atlas`.
+The browser route proof target for this sprint is `/atlas`.
 
 Pass criteria:
 
@@ -72,8 +55,6 @@ Pass criteria:
 - TerraAtlas source-status posture is honest.
 - TerraAtlas Suite does not claim queued breadth modules are live.
 - Mapbox/FEMA/zoning gaps are not hidden or promoted to full production proof.
-
-Do not use `/property/:parcelId/atlas` browser output as evidence for this PR.
 
 ## Required Gates
 

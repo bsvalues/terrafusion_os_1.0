@@ -57,7 +57,6 @@ Assert-True ($null -eq $combined.layers.zoning) "Zoning should remain null exter
 [pscustomobject]@{
   status = "pass"
   routeScope = "/atlas"
-  excludedScope = "/property/:parcelId/atlas"
   parcelId = $ParcelId
   boundarySource = $combined.boundary.source
   layersSource = $combined.layers.source
