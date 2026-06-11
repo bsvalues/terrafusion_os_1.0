@@ -23,6 +23,7 @@ const localOpsProvider_js_1 = require("./localOpsProvider.js");
 const localOpsKb_js_1 = require("./localOpsKb.js");
 const localOpsDiagnostics_js_1 = require("./localOpsDiagnostics.js");
 const localOpsTrace_js_1 = require("./localOpsTrace.js");
+const localOpsTraceBridge_js_1 = require("./localOpsTraceBridge.js");
 function flagsOf(config) {
     return {
         externalCalls: config.externalCalls,
@@ -42,7 +43,10 @@ function createLocalOpsEngine(options) {
     const env = options.env ?? process.env;
     const config = (0, aiProfile_js_1.resolveAiProfile)(env);
     const recording = (0, localOpsTrace_js_1.createRecordingLocalOpsTraceSink)();
-    const trace = (0, localOpsTrace_js_1.createLocalOpsTrace)({ sink: recording });
+    const sink = options.sink
+        ? (0, localOpsTraceBridge_js_1.composeLocalOpsTraceSinks)(recording, options.sink)
+        : recording;
+    const trace = (0, localOpsTrace_js_1.createLocalOpsTrace)({ sink });
     const provider = (0, localOpsProvider_js_1.createLocalOpsProvider)({ config, env, adapter: options.adapter });
     const kb = (0, localOpsKb_js_1.createLocalOpsKb)({ repoRoot: options.repoRoot, env, trace });
     const diagnostics = (0, localOpsDiagnostics_js_1.createLocalOpsDiagnostics)({ repoRoot: options.repoRoot, env, trace });

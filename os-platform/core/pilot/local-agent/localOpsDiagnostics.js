@@ -29,6 +29,7 @@ exports.READONLY_DIAGNOSTICS = [
     'config.summary',
     'provider.status',
     'kb.status',
+    'health.summary',
 ];
 function isDiagnosticRefusal(value) {
     return (typeof value === 'object' &&
@@ -161,6 +162,74 @@ class LocalOpsDiagnostics {
                     rootsExcluded: kb.rootsExcluded,
                     fileCount: kb.fileCount,
                     requireSources: kb.requireSources,
+                });
+            }
+            case 'health.summary': {
+                // WO-AI-CONSOLIDATION-003: bring SystemGPT's read-only health-evaluation
+                // pattern (Herald threshold rules -> overall status + warnings) onto the
+                // LocalOps diagnostics path, but ONLY over local, truthful signals — the
+                // sibling read-only diagnostics. No network, no .NET call, no swarm, no
+                // control plane. Swarm/forecast advisory is shown unavailable, never
+                // inferred (see docs/ai-consolidation/AI_ESTATE_INVENTORY.md).
+                const provider = this.compute('provider.status');
+                const kb = this.compute('kb.status');
+                const warnings = [];
+                let overall = 'ok';
+                const escalate = (s) => {
+                    if (s === 'error')
+                        overall = 'error';
+                    else if (s === 'warn' && overall !== 'error')
+                        overall = 'warn';
+                };
+                if (this.config.profile === 'disabled') {
+                    warnings.push({
+                        level: 'warn',
+                        source: 'ai.profile',
+                        message: 'AI profile is disabled; LocalOps will not answer.',
+                    });
+                    escalate('warn');
+                }
+                if (this.config.externalCalls) {
+                    warnings.push({
+                        level: 'warn',
+                        source: 'ai.profile',
+                        message: 'External calls are enabled — unexpected for a county-boundary profile.',
+                    });
+                    escalate('warn');
+                }
+                escalate(provider.status);
+                if (provider.status !== 'ok') {
+                    warnings.push({ level: provider.status, source: 'provider.status', message: provider.summary });
+                }
+                escalate(kb.status);
+                if (kb.status !== 'ok') {
+                    warnings.push({ level: kb.status, source: 'kb.status', message: kb.summary });
+                }
+                if (this.config.requireSources && Number(kb.data.fileCount) === 0) {
+                    warnings.push({
+                        level: 'warn',
+                        source: 'kb.status',
+                        message: 'Sources are required but the local KB is empty — answers will be refused.',
+                    });
+                    escalate('warn');
+                }
+                // Honest unavailability: advisory outputs that depend on swarm state are
+                // NOT inferred from mocked/missing bridge state.
+                const unavailable = [
+                    {
+                        advisory: 'systemgpt.forecast',
+                        reason: 'depends on swarm state via a control plane not present in v1 — not inferred',
+                    },
+                    {
+                        advisory: 'swarm.health',
+                        reason: 'no running swarm — the swarm/consciousness services report "lane unavailable"',
+                    },
+                ];
+                return this.finalize('health.summary', overall, `overall LocalOps health: ${overall} (${warnings.length} warning(s); swarm/forecast advisory unavailable)`, {
+                    overall,
+                    evaluated: ['ai.profile', 'provider.status', 'kb.status'],
+                    warnings,
+                    unavailable,
                 });
             }
         }

@@ -15,13 +15,14 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const localopsEnv = { AI_PROFILE: 'localops', AI_PROVIDER: 'ollama', AI_MODEL: 'm' };
 
 describe('LocalOps read-only diagnostics (WO-LOCALOPS-005)', () => {
-  it('exposes the four read-only diagnostics', () => {
+  it('exposes the read-only diagnostics allowlist', () => {
     const diag = createLocalOpsDiagnostics({ repoRoot: REPO_ROOT, env: localopsEnv });
     assert.deepStrictEqual(diag.list(), [
       'ai.profile',
       'config.summary',
       'provider.status',
       'kb.status',
+      'health.summary',
     ]);
     assert.deepStrictEqual([...READONLY_DIAGNOSTICS], diag.list());
   });
@@ -85,6 +86,29 @@ describe('LocalOps read-only diagnostics (WO-LOCALOPS-005)', () => {
     assert.ok(!isDiagnosticRefusal(r));
     assert.strictEqual(r.status, 'ok');
     assert.ok(Number(r.data.fileCount) >= 1);
+  });
+
+  it('health.summary rolls up local signals (read-only) and marks swarm/forecast unavailable', () => {
+    const diag = createLocalOpsDiagnostics({ repoRoot: REPO_ROOT, env: localopsEnv });
+    const r = diag.request('health.summary');
+    assert.ok(!isDiagnosticRefusal(r));
+    assert.strictEqual(r.readonly, true);
+    assert.ok(['ok', 'warn', 'error'].includes(r.status));
+    assert.strictEqual(r.data.overall, r.status);
+    assert.deepStrictEqual(r.data.evaluated, ['ai.profile', 'provider.status', 'kb.status']);
+    assert.ok(Array.isArray(r.data.warnings));
+    // Swarm-dependent advisory is shown unavailable, never inferred.
+    const advisories = r.data.unavailable.map(u => u.advisory);
+    assert.ok(advisories.includes('systemgpt.forecast'));
+    assert.ok(advisories.includes('swarm.health'));
+  });
+
+  it('health.summary does not report healthy for a disabled profile / unready provider', () => {
+    const diag = createLocalOpsDiagnostics({ repoRoot: REPO_ROOT, env: { AI_PROFILE: 'disabled' } });
+    const r = diag.request('health.summary');
+    assert.ok(!isDiagnosticRefusal(r));
+    assert.notStrictEqual(r.status, 'ok', 'a disabled profile must not report healthy');
+    assert.ok(r.data.warnings.length >= 1);
   });
 
   it('refuses unsafe (mutating/operational) diagnostic requests', () => {
