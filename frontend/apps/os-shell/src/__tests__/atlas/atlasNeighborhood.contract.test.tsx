@@ -351,7 +351,7 @@ describe('AtlasSuiteHome — contract', () => {
     expect(screen.getByText(/RingJson 15 points/i)).toBeInTheDocument();
     expect(screen.getByText(/Tax area K1/i)).toBeInTheDocument();
     expect(screen.getByText(/Land class 11/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Flood stub/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Flood external enrichment/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Zoning null\/not configured/i)).toBeInTheDocument();
   });
 });
