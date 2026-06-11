@@ -2,18 +2,17 @@
  * TerraAtlas Suite Home -- Geographic Intelligence & Mapping
  * ===================================================================
  * Constitutional Suite: atlas (Article II)
- * Layer 3: Domain router + cross-parcel operational workspace
+ * Layer 3: TerraAtlas Suite workspace
  *
- * Shows: county stats, module launcher grid, recent parcel queue.
- * Does NOT host parcel execution — that lives in the Property Workbench.
+ * Shows: suite app truth, GIS API proof, module launcher grid, recent parcel queue.
  */
 
 import { useCallback, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
-import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { useCountyStats } from '../../hooks/useCountyStats';
+import { useParcelGis } from '../../hooks/useAtlasGis';
 import {
   Map,
   Search,
@@ -26,22 +25,62 @@ import {
   Globe,
 } from 'lucide-react';
 
+const PROOF_PARCEL_ID = '119802030006001';
+const GIS_GEOMETRIES_AVAILABLE = 80084;
+const RING_JSON_GEOMETRIES_AVAILABLE = 80083;
+
 const ATLAS_MODULES: SuiteModuleDef[] = [
-  // Workbench-mode (parcel-scoped, opens Property Workbench)
-  { id: 'gis', label: 'TerraGIS', icon: Map, description: 'Full GIS viewer with parcel boundaries, aerial imagery, and overlays', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, description: 'Detailed parcel inspection with measurement tools', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'layer-works', label: 'LayerWorks', icon: Layers, description: 'Advanced layer management and spatial analysis', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, description: 'Parcel sketch and geometry editing tools', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'terra-print', label: 'TerraPrint', icon: Printer, description: 'Map printing and PDF export for field work', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'terra-export', label: 'TerraExport', icon: Download, description: 'GIS data export (Shapefile, GeoJSON, KML)', launchMode: 'workbench', workbenchTab: 'atlas' },
-  { id: 'terra-query', label: 'TerraQuery', icon: Database, description: 'SQL-like spatial queries across county data', launchMode: 'workbench', workbenchTab: 'atlas' },
-  // Standalone-mode (county-wide, opens standalone window)
-  { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis', truthState: 'queued' },
-  { id: 'geo-equity-dashboard', label: 'Geo Equity', icon: BarChart2, description: 'Geographic equity analysis — market-value equity by area, district, and property class', launchMode: 'standalone', moduleId: 'geo-equity-dashboard', truthState: 'queued' },
-  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Mass appraisal spatial visualization — value heat maps, sale ratio overlays, and live Benton parcel geometry', launchMode: 'standalone', moduleId: 'mass-appraisal-gis', truthState: 'live' },
+  { id: 'gis', label: 'TerraGIS', icon: Map, description: 'Partial GIS surface backed by live Benton parcel boundary data', launchMode: 'standalone', moduleId: 'atlas' },
+  { id: 'parcel-lens', label: 'ParcelLens', icon: Search, description: 'Partial parcel detail surface for the canonical Benton proof parcel', launchMode: 'standalone', moduleId: 'atlas' },
+  { id: 'layer-works', label: 'LayerWorks', icon: Layers, description: 'Partial layer truth for tax area, land class, flood, and zoning status', launchMode: 'standalone', moduleId: 'atlas' },
+  { id: 'terra-query', label: 'TerraQuery', icon: Database, description: 'Read-only query posture; no mutation or export pipeline is claimed', launchMode: 'standalone', moduleId: 'atlas', truthState: 'unavailable' },
+  { id: 'terra-sketch', label: 'TerraSketch', icon: Crosshair, description: 'Geometry editing is not implemented in this Suite runtime proof', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
+  { id: 'terra-print', label: 'TerraPrint', icon: Printer, description: 'Print pipeline is not implemented in this Suite runtime proof', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
+  { id: 'terra-export', label: 'TerraExport', icon: Download, description: 'GIS export pipeline is not implemented in this Suite runtime proof', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
+  { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Advanced county GIS is queued pending a dedicated implementation', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
+  { id: 'geo-equity-dashboard', label: 'Geo Equity', icon: BarChart2, description: 'Equity analytics are queued pending authoritative model proof', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
+  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Queued until appraisal-specific GIS workflow proof exists', launchMode: 'standalone', moduleId: 'atlas', truthState: 'queued' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
+
+type AtlasAppStatus =
+  | 'LIVE'
+  | 'PARTIAL'
+  | 'READ_ONLY'
+  | 'DISABLED'
+  | 'QUEUED'
+  | 'NOT_IMPLEMENTED'
+  | 'EXTERNAL_REQUIRED';
+
+interface AtlasAppTruth {
+  app: string;
+  status: AtlasAppStatus;
+  proof: string;
+}
+
+const APP_TRUTH_MATRIX: AtlasAppTruth[] = [
+  { app: 'TerraGIS', status: 'PARTIAL', proof: 'Uses the live Atlas GIS parcel endpoint; Mapbox token remains external.' },
+  { app: 'ParcelLens', status: 'PARTIAL', proof: 'Shows owner, situs, centroid, area, and RingJson presence for the proof parcel.' },
+  { app: 'LayerWorks', status: 'PARTIAL', proof: 'Shows tax area, land class, flood stub, and zoning null from the layers response.' },
+  { app: 'TerraQuery', status: 'READ_ONLY', proof: 'Read-only posture only; no spatial mutation or export is claimed.' },
+  { app: 'TerraSketch', status: 'NOT_IMPLEMENTED', proof: 'No geometry editing is exposed or claimed.' },
+  { app: 'TerraPrint', status: 'NOT_IMPLEMENTED', proof: 'No print pipeline is exposed or claimed.' },
+  { app: 'TerraExport', status: 'NOT_IMPLEMENTED', proof: 'No Shapefile, GeoJSON, or KML export is exposed or claimed.' },
+  { app: 'TerraGIS Pro', status: 'QUEUED', proof: 'Advanced GIS remains queued.' },
+  { app: 'Geo Equity', status: 'QUEUED', proof: 'Equity analytics remain queued.' },
+  { app: 'Appraisal GIS', status: 'QUEUED', proof: 'Appraisal GIS workflow proof remains queued.' },
+];
+
+function getRingPointCount(ringJson: string | null | undefined): number | null {
+  if (!ringJson) return null;
+  try {
+    const parsed = JSON.parse(ringJson);
+    return Array.isArray(parsed) ? parsed.length : null;
+  } catch {
+    return null;
+  }
+}
 
 interface SpatialFindingSummary {
   finding: {
@@ -67,6 +106,8 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
 
 export default function AtlasSuiteHome() {
   const { stats, loading, error, source } = useCountyStats();
+  const { boundary, layers } = useParcelGis(PROOF_PARCEL_ID);
+  const ringPointCount = getRingPointCount(boundary.data?.ringJson);
   const sourceDisclosure = getSourceDisclosure(source);
   const [metric, setMetric] = useState<'residual_cluster' | 'prd' | 'prb' | 'cod'>('residual_cluster');
   const [geographyId, setGeographyId] = useState('BENTON-COUNTY');
@@ -104,7 +145,7 @@ export default function AtlasSuiteHome() {
             findingType: 'SPATIAL_PROBLEM',
             severity: 'medium',
             confidence: 0,
-            recommendedAction: 'Review Atlas workbench evidence.',
+            recommendedAction: 'Review the TerraAtlas Suite evidence.',
           },
           hotspotCount: 0,
           narrative: 'No governed spatial narrative was returned.',
@@ -133,8 +174,6 @@ export default function AtlasSuiteHome() {
 
   return (
     <div data-testid="suite-atlas-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
-      <ParcelContextBanner suiteTabId="atlas" />
-
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (
         <div
@@ -161,11 +200,11 @@ export default function AtlasSuiteHome() {
       {/* Stats Strip */}
       {stats && (
         <div data-testid="atlas-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>By City</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByCity).length} cities</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Property Types</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{Object.keys(stats.parcelsByType).length} types</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Residential</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.parcelsByType.residential ?? 0)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Commercial</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.parcelsByType.commercial ?? 0)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>GIS geometry rows</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(GIS_GEOMETRIES_AVAILABLE)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>RingJson geometries</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(RING_JSON_GEOMETRIES_AVAILABLE)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Active parcel count</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Not verified</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>PACS rows</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Hidden from Suite UI</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Proof parcel</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{PROOF_PARCEL_ID}</span></div>
         </div>
       )}
 
@@ -196,7 +235,7 @@ export default function AtlasSuiteHome() {
           borderBottom: '1px solid hsl(var(--tf-border) / 0.10)',
         }}
       >
-        TerraGIS Pro and Geo Equity are queued breadth surfaces. Appraisal GIS is now a live Atlas application backed by Benton parcel geometry and county stats.
+        TerraGIS, ParcelLens, and LayerWorks are partial live Suite surfaces for the canonical Benton proof parcel. TerraSketch, TerraPrint, TerraExport, TerraGIS Pro, Geo Equity, and Appraisal GIS are not claimed as production app implementations.
       </div>
 
       {/* Module Grid + Operational Queue */}
@@ -226,14 +265,72 @@ export default function AtlasSuiteHome() {
                   className="rounded-full px-3 py-1 text-xs font-semibold"
                   style={{ background: 'hsl(var(--tf-suite-atlas) / 0.12)', color: 'hsl(var(--tf-suite-atlas))' }}
                 >
-                  {fmtNum(stats?.totalParcels)} parcels
+                  {fmtNum(GIS_GEOMETRIES_AVAILABLE)} GIS rows
                 </span>
                 <span
                   className="rounded-full px-3 py-1 text-xs font-semibold"
                   style={{ background: 'hsl(var(--tf-border) / 0.2)', color: 'hsl(var(--tf-fg))' }}
                 >
-                  {Object.keys(stats?.parcelsByCity ?? {}).length} cities in view
+                  Active parcel count not verified
                 </span>
+              </div>
+            </div>
+
+            <div data-testid="atlas-suite-app-proof" className="mt-5 grid gap-4 xl:grid-cols-[1.1fr_1fr]">
+              <div
+                className="rounded-lg border p-4"
+                style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
+              >
+                <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraAtlas App Runtime Truth</div>
+                <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Canonical proof parcel {PROOF_PARCEL_ID} is loaded through the Atlas GIS combined endpoint.
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>TerraGIS · PARTIAL</div>
+                    <div className="mt-2 text-sm" style={{ color: 'hsl(var(--tf-fg))' }}>Boundary source: {boundary.loading ? 'loading' : boundary.data?.source ?? boundary.source}</div>
+                    <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Map tiles require external Mapbox configuration; boundary data is still shown honestly.</div>
+                  </div>
+                  <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>ParcelLens · PARTIAL</div>
+                    <div className="mt-2 text-sm" style={{ color: 'hsl(var(--tf-fg))' }}>{boundary.data?.ownerName ?? 'Owner loading'}</div>
+                    <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{boundary.data?.situsDisplay ?? 'Situs loading'}</div>
+                    <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Centroid {boundary.data?.centroid ? `${boundary.data.centroid.lat.toFixed(6)}, ${boundary.data.centroid.lng.toFixed(6)}` : 'loading'} · Area {boundary.data?.areaAcres ?? '—'} ac · RingJson {ringPointCount ?? '—'} points</div>
+                  </div>
+                  <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>LayerWorks · PARTIAL</div>
+                    <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Tax area {layers.data?.taxArea?.taxAreaNumber ?? '—'} · {layers.data?.taxArea?.source ?? 'loading'}</div>
+                    <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Land class {layers.data?.landClass?.primaryUseCd ?? '—'} · {layers.data?.landClass?.source ?? 'loading'}</div>
+                    <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Flood {layers.data?.flood?.source ?? 'loading'} · Zoning {layers.data?.zoning ? layers.data.zoning.zoneCode ?? 'configured' : 'null/not configured'}</div>
+                  </div>
+                  <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>TerraQuery · READ_ONLY</div>
+                    <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>This WO proves read-only API consumption only. No spatial mutation, export, or autonomous action is exposed.</div>
+                  </div>
+                </div>
+                {boundary.error && (
+                  <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-warning) / 0.24)', background: 'hsl(var(--tf-warning) / 0.08)', color: 'hsl(var(--tf-warning))' }}>
+                    Atlas GIS proof unavailable: {boundary.error}
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="rounded-lg border p-4"
+                style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
+              >
+                <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>App Status Matrix</div>
+                <div className="mt-3 grid gap-2">
+                  {APP_TRUTH_MATRIX.map((item) => (
+                    <div key={item.app} className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{item.app}</span>
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: 'hsl(var(--tf-suite-atlas) / 0.12)', color: 'hsl(var(--tf-suite-atlas))' }}>{item.status}</span>
+                      </div>
+                      <div className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{item.proof}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -336,21 +433,21 @@ export default function AtlasSuiteHome() {
               >
                 <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Routing Discipline</div>
                 <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
-                  County spatial review happens here. Parcel geometry edits, live layer inspection, and sketch work stay in the Atlas workbench.
+                  County spatial review happens here. Geometry editing, print, export, pro GIS, equity analytics, and appraisal GIS are not claimed unless they are backed by dedicated Suite runtime proof.
                 </div>
                 <div className="mt-4 grid gap-3">
                   <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
-                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Workbench Lane</div>
-                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraGIS, ParcelLens, LayerWorks, TerraSketch</div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Partial Live Suite Apps</div>
+                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraGIS, ParcelLens, LayerWorks</div>
                     <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-                      Use the parcel-scoped workbench modules below for geometry repair, layer inspection, map export, and parcel drill-down.
+                      These surfaces consume the existing Atlas GIS API for the canonical Benton proof parcel.
                     </div>
                   </div>
                   <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
-                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Queued Breadth</div>
-                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraGIS Pro, Geo Equity</div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Queued Or Not Implemented</div>
+                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraSketch, TerraPrint, TerraExport, TerraGIS Pro, Geo Equity, Appraisal GIS</div>
                     <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-                      These county-wide breadth surfaces remain queued and should not be treated as live operational systems until they are backed by authoritative Benton evidence.
+                      These surfaces are labeled honestly until separate runtime proof exists.
                     </div>
                   </div>
                 </div>
