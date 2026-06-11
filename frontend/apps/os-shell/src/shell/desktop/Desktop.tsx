@@ -14,6 +14,7 @@ import { Outlet, useLocation, UNSAFE_NavigationContext } from 'react-router-dom'
 import { Layers, Moon, Search, Settings2, Sun, User } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { Launcher } from '../../components/launcher';
+import { LocalOpsSurface } from '../../components/localops/LocalOpsSurface';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useIpcBridge } from '../../ipc/useIpcBridge';
@@ -633,6 +634,10 @@ export function Desktop({ className = '', children }: DesktopProps) {
       <WindowPeek />
 
       <SentinelPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+
+      {/* Layer 1050: TerraPilot LocalOps — shell-chrome side panel (in-shell only,
+          no route / no desktop icon). Visibility owned by useLocalOpsStore. */}
+      <LocalOpsSurface />
 
       {/* Layer 9997: Control Center Drawer */}
       <ControlCenter />

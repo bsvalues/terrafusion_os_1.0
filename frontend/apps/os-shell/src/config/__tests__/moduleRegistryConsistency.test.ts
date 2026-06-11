@@ -238,6 +238,7 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'os-pilot': 'TerraFusion Pilot',
       'os-trace': 'TerraFusion Trace',
       'os-canon': 'TerraCanon',
+      'os-localops': 'TerraFusion LocalOps',
       // Levy (legacy canonical kept for backward compat)
       'terra-levy': 'Levy Calculator',
       // Forge standalone modules (Phase 35 + Phase 36)
