@@ -23,7 +23,12 @@ import {
 } from './localOpsProvider.js';
 import { createLocalOpsKb } from './localOpsKb.js';
 import { createLocalOpsDiagnostics } from './localOpsDiagnostics.js';
-import { createLocalOpsTrace, createRecordingLocalOpsTraceSink } from './localOpsTrace.js';
+import {
+  createLocalOpsTrace,
+  createRecordingLocalOpsTraceSink,
+  type LocalOpsTraceSink,
+} from './localOpsTrace.js';
+import { composeLocalOpsTraceSinks } from './localOpsTraceBridge.js';
 import type { ModelAdapter } from './modelAdapter.js';
 
 // ============================================================================
@@ -93,6 +98,13 @@ export interface CreateLocalOpsEngineOptions {
   env?: Record<string, string | undefined>;
   /** Test/DI seam: inject the local model adapter instead of constructing one. */
   adapter?: ModelAdapter;
+  /**
+   * Optional additional trace sink (WO-AI-CONSOLIDATION-002), e.g. the
+   * TerraTrace bridge. Composed with the engine's internal recording sink so
+   * the view model keeps its event stream while the canonical spine receives
+   * the same events. A failing sink never breaks the operator path.
+   */
+  sink?: LocalOpsTraceSink;
 }
 
 export interface LocalOpsEngine {
@@ -125,7 +137,10 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
   const config = resolveAiProfile(env);
 
   const recording = createRecordingLocalOpsTraceSink();
-  const trace = createLocalOpsTrace({ sink: recording });
+  const sink = options.sink
+    ? composeLocalOpsTraceSinks(recording, options.sink)
+    : recording;
+  const trace = createLocalOpsTrace({ sink });
 
   const provider = createLocalOpsProvider({ config, env, adapter: options.adapter });
   const kb = createLocalOpsKb({ repoRoot: options.repoRoot, env, trace });

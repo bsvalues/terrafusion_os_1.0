@@ -401,6 +401,15 @@ export {
 } from './localOpsDiagnostics.js';
 
 export {
+  mapLocalOpsEventToTraceInput,
+  createTerraTraceBridgeSink,
+  composeLocalOpsTraceSinks,
+  type TerraTraceEmitter,
+  type TerraTraceBridgeContext,
+  type CreateTerraTraceBridgeSinkOptions,
+} from './localOpsTraceBridge.js';
+
+export {
   createLocalOpsEngine,
   type LocalOpsEngine,
   type LocalOpsViewModel,
