@@ -44,7 +44,7 @@ TerraFusion operates as a complete operating system with three core service tier
    - Rate limiting and request routing
 
 3. **Consciousness (TerraFusion.Consciousness)** - Port 3004
-   - AI swarm orchestration (1,008 agents in production)
+   - AI swarm orchestration (**target architecture**; swarm/consciousness services are currently stubs returning "lane unavailable" — see [`docs/ai-consolidation/AI_ESTATE_INVENTORY.md`](docs/ai-consolidation/AI_ESTATE_INVENTORY.md))
    - SignalR real-time coordination
    - Quantum consciousness layer for multi-agent coordination
 
@@ -80,7 +80,7 @@ terrafusion_os_1.0/
 │   └── ui/                     # Frontend build output (deployed here)
 │
 ├── os-platform/                # AI systems + testing suite
-│   ├── ai-systems/ai-systems/ai-swarm/  # 1,008 agent swarm (DO NOT MODIFY)
+│   ├── ai-systems/ai-systems/ai-swarm/  # AI swarm scaffolding — NOT a running production swarm (quarantined; see docs/ai-consolidation/AI_ESTATE_INVENTORY.md)
 │   └── development/testing-suite/       # 716 real tests (91.9% pass rate)
 │
 ├── marketplace/                # Plugin ecosystem modules
@@ -204,10 +204,13 @@ var properties = await context.Properties
 
 ### 2. AI Swarm Coordination
 
-**DO NOT modify production AI swarm** in `backend/TerraFusion.Consciousness/` or `os-platform/ai-systems/ai-systems/ai-swarm/`:
-- 1,008 production agents in hierarchical coordination
-- Coordinator agents, Field General agents, Micro agents
-- Autonomous self-healing and quantum-ready architecture
+**There is NO running 1,008-agent production swarm.** The .NET swarm/consciousness services in
+`backend/TerraFusion.Consciousness/` are compatibility stubs that return "lane unavailable"; the Node
+`os-platform/ai-systems/ai-systems/ai-swarm/` is unwired scaffolding (in-memory agent registration, stub
+tests, Redis/TensorFlow deps). **Leave both quarantined** — do not modify them and do not build on them
+as if operational. See [`docs/ai-consolidation/AI_ESTATE_INVENTORY.md`](docs/ai-consolidation/AI_ESTATE_INVENTORY.md).
+- Designed (not running) coordination tiers: Coordinator, Field General, Micro agents
+- "Autonomous self-healing / quantum-ready" is aspirational, not implemented
 
 **Use AICommandService API** to interact with swarm:
 
@@ -415,7 +418,7 @@ Services use dynamic port allocation (configurable via environment):
 
 **Infrastructure:** Docker, Kubernetes, Consul (service discovery), Redis (caching), Jaeger (tracing), Prometheus (metrics), Grafana (dashboards)
 
-**AI/ML:** 1,008 agent swarm, autonomous coordination, quantum-ready processing
+**AI/ML:** LocalOps governed local agent (runtime-proven); AI swarm/consciousness is target architecture, currently stubbed (see [`docs/ai-consolidation/AI_ESTATE_INVENTORY.md`](docs/ai-consolidation/AI_ESTATE_INVENTORY.md)); ML.NET 3.0
 
 ## Central Package Management
 
@@ -496,7 +499,7 @@ npm run ai-agent-briefing
 
 1. **Government compliance posture** (FISMA-HIGH / NIST 800-53 as target — current gaps tracked in [`docs/security/baseline.md`](docs/security/baseline.md))
 2. **Citizen data protection** (Sovereign County isolation)
-3. **AI swarm coordination** (1,008 agents in production)
+3. **AI swarm coordination** (target architecture; currently stubbed — see [`docs/ai-consolidation/AI_ESTATE_INVENTORY.md`](docs/ai-consolidation/AI_ESTATE_INVENTORY.md))
 4. **Real-world integration** (Harris PACS as the legacy source database; Aumentum and other county-specific systems where applicable; Tyler Vision is NOT in Benton's stack)
 5. **Production readiness** (716 tests, 91.9% pass rate, 99.9% uptime target)
 
