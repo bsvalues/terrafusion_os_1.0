@@ -55,8 +55,14 @@ status surfaces and is sequenced after `004a` because it changes product behavio
 - **Proof:** trace-equivalence + PII-safety tests; offline.
 - **Stop condition:** a mutation can execute without an approval record → stop.
 - **Non-goals:** no new analytics; no schema rewrite.
-
-## WO-AI-CONSOLIDATION-003 — SystemGPT read-only health/forecast → LocalOps diagnostics
+- **Status — first cut REALIZED (thin seam):** `localOpsTraceBridge.ts` maps all eight `localops.*`
+  events 1:1 onto the canonical TerraTrace union (`tool_invoked/completed/failed`,
+  `permission_denied`, `approval_requested`) and the engine gained an optional composed `sink`, so the
+  governed on-server AI operator path (engine asks, refusals, retrieval, diagnostics) now lands on a
+  real `TraceService` with county context + correlation linkage — proven offline
+  (`local-agent-localops-trace-bridge.test.mjs`). **Deferred honestly:** the .NET AuditLogs paths
+  (AICommandService / Muse HTTP) — outside the agent entrypoint's allowed lanes and not provable in
+  this container (no dotnet); they remain a separate, explicitly-approved backend slice.
 
 - **Goal:** Surface the genuinely-real SystemGPT read-only health/forecast outputs as **read-only**
   LocalOps diagnostics, so the operator gets health insight on the governed path. Explicitly exclude the

@@ -16,8 +16,8 @@ Each entry has the same shape:
 - **Symptom** — what the operator observes.
 - **Diagnostic source** — one of:
   - _LocalOps read-only diagnostic (shipped)_ — a fixed-allowlist diagnostic from WO-005
-    (`ai.profile`, `config.summary`, `provider.status`, `kb.status`). LocalOps runs it, emits a
-    trace event, and cites the result.
+    (`ai.profile`, `config.summary`, `provider.status`, `kb.status`, `health.summary`). LocalOps runs
+    it, emits a trace event, and cites the result.
   - _Operator-performed read-only check (no LocalOps seam in v1)_ — the operator runs the read-only
     inspection (port/process/log/status). LocalOps surfaces the proposed step but cannot run the
     check itself yet.
@@ -167,7 +167,7 @@ work order may add them; until then these entries are operator-performed and Loc
 ## Grounding and trace (where the entries route)
 
 - Read-only diagnostics: `os-platform/core/pilot/local-agent/localOpsDiagnostics.ts`
-  (`READONLY_DIAGNOSTICS` = `ai.profile`, `config.summary`, `provider.status`, `kb.status`).
+  (`READONLY_DIAGNOSTICS` = `ai.profile`, `config.summary`, `provider.status`, `kb.status`, `health.summary`).
 - Source grounding: `os-platform/core/pilot/local-agent/localOpsKb.ts` (docs/ allowlist only).
 - Trace events: `os-platform/core/pilot/local-agent/localOpsTrace.ts`
   (`localops.tool.diagnostic.started` / `.completed`, `localops.policy.refused`).

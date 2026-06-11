@@ -66,7 +66,10 @@ statement (see the plan's honest-status sweep).
 2. **Trace unification.** Emit AICommandService / Muse / Pilot-explain activity to **TerraTrace** (one
    append-only spine, not AuditLogs-vs-TerraTrace), and gate any mutation behind the LocalOps approval gate.
 3. **SystemGPT read-only health/forecast → LocalOps diagnostics** (read-only only; leave the dead swarm
-   bridge out).
+   bridge out). **Realized by WO-AI-CONSOLIDATION-003:** the `health.summary` LocalOps diagnostic brings
+   SystemGPT's read-only Herald health-roll-up pattern onto the Node diagnostics path over local truthful
+   signals; the swarm-dependent forecast is shown unavailable, never inferred. (The .NET
+   `SystemGptHealthEvaluator` is not called — the diagnostics seam is no-network by invariant.)
 
 ## Quarantine list (label non-operational; do **not** wire)
 

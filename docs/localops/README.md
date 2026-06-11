@@ -121,6 +121,11 @@ contract only.
 - `config.summary` — redacted AI profile configuration
 - `provider.status` — provider readiness (a non-ready provider is `warn`, not `error`)
 - `kb.status` — local KB health (roots, excluded roots, file count)
+- `health.summary` — **(WO-AI-CONSOLIDATION-003)** SystemGPT-style read-only health roll-up: applies
+  Herald threshold rules to the local signals above to produce an overall `ok`/`warn`/`error` + warnings.
+  Local-only (no network, no .NET call, no swarm); swarm-dependent advisory (`systemgpt.forecast`,
+  `swarm.health`) is shown **unavailable**, never inferred — see
+  [`../ai-consolidation/AI_ESTATE_INVENTORY.md`](../ai-consolidation/AI_ESTATE_INVENTORY.md).
 
 Every result is `readonly: true` — diagnostics **observe only**: no mutation, no shell, no service
 restart, no DB write, no migration, no network I/O. `request(name)` is the gated entry point: any name
