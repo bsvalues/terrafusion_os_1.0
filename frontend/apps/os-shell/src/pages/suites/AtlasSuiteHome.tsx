@@ -62,7 +62,7 @@ interface AtlasAppTruth {
 const APP_TRUTH_MATRIX: AtlasAppTruth[] = [
   { app: 'TerraGIS', status: 'PARTIAL', proof: 'Uses the live Atlas GIS parcel endpoint; Mapbox token remains external.' },
   { app: 'ParcelLens', status: 'PARTIAL', proof: 'Shows owner, situs, centroid, area, and RingJson presence for the proof parcel.' },
-  { app: 'LayerWorks', status: 'PARTIAL', proof: 'Shows tax area, land class, flood stub, and zoning null from the layers response.' },
+  { app: 'LayerWorks', status: 'PARTIAL', proof: 'Shows tax area, land class, flood external enrichment, and zoning null from the layers response.' },
   { app: 'TerraQuery', status: 'READ_ONLY', proof: 'Read-only posture only; no spatial mutation or export is claimed.' },
   { app: 'TerraSketch', status: 'NOT_IMPLEMENTED', proof: 'No geometry editing is exposed or claimed.' },
   { app: 'TerraPrint', status: 'NOT_IMPLEMENTED', proof: 'No print pipeline is exposed or claimed.' },
