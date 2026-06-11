@@ -57,6 +57,12 @@ export interface Permit {
   applicant?: string;
 }
 
+export interface PermitsLaneResult {
+  permits: Permit[];
+  source: string;
+  isLive: boolean;
+}
+
 export interface Exemption {
   exemptionId: string;
   parcelId: string;
@@ -132,10 +138,23 @@ export async function createAppeal(
 // Permit Operations
 // ============================================================================
 
-export async function getPermits(parcelId: string): Promise<Permit[]> {
+export async function getPermitsLane(parcelId: string): Promise<PermitsLaneResult> {
   const res = await fetch(`${API}/permits?parcelId=${encodeURIComponent(parcelId)}`, { headers: authHeadersReadOnly() });
   if (!res.ok) throw new Error(`Failed to fetch permits: ${res.statusText}`);
-  return res.json();
+  const permits = await res.json() as Permit[];
+  const source = res.headers.get('x-dais-permits-source')
+    ?? res.headers.get('x-dais-source')
+    ?? 'not-live:permit-records-not-projected';
+  return {
+    permits,
+    source,
+    isLive: !source.startsWith('not-live:'),
+  };
+}
+
+export async function getPermits(parcelId: string): Promise<Permit[]> {
+  const result = await getPermitsLane(parcelId);
+  return result.permits;
 }
 
 export async function updatePermitStatus(

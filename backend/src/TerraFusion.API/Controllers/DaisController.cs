@@ -248,6 +248,34 @@ public class DaisController : ControllerBase
   }
 
   /// <summary>
+  /// GET api/dais/permits?parcelId={parcelId} — Workbench permit list lane.
+  /// Building permit records are not yet projected into the governed Dais store,
+  /// so this endpoint returns an explicit empty not-live lane instead of a route miss.
+  /// </summary>
+  [HttpGet("permits")]
+  public async Task<IActionResult> GetPermits([FromQuery] string parcelId)
+  {
+    if (string.IsNullOrWhiteSpace(parcelId))
+      return BadRequest(new { error = "parcelId is required." });
+
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var parcelExists = await _db.Properties
+      .AsNoTracking()
+      .AnyAsync(p => p.CountyId == countyAccess.CountyId!.Value &&
+                     (p.ParcelId == parcelId || p.ParcelNumber == parcelId));
+
+    if (!parcelExists)
+      return NotFound(new { error = $"Parcel '{parcelId}' not found." });
+
+    Response.Headers["X-Dais-Permits-Source"] = "not-live:permit-records-not-projected";
+    Response.Headers["X-Dais-Source"] = "governed-dais-permit-lane-classification";
+    return Ok(Array.Empty<object>());
+  }
+
+  /// <summary>
   /// GET api/dais/permits/{parcelId}/assessment-impact — Check permit impact for a parcel.
   /// County-isolated: requires countyId/countyCode claim.
   /// </summary>

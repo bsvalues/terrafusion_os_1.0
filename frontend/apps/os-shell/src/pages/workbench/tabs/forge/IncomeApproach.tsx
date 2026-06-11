@@ -17,6 +17,7 @@ import { WorkbenchSourceBadge } from '../../../../components/workbench/Workbench
 import { IncomeValuationPanel } from '../../../../components/workbench/IncomeValuationPanel';
 import { DcfPanel } from '../../income/DcfPanel';
 import { useIncomeApproach as useIncomeApproachAPI } from '../../../../hooks/forge/useForgeValuation';
+import { getWorkbenchLiveScopeDecision } from '../../../../config/workbenchLiveScope';
 import {
   type ForgeSubTabProps,
   type IncomeResult,
@@ -57,6 +58,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   onValueIndicated,
 }) => {
   const { parcelId } = useWorkbenchTab();
+  const incomeScope = getWorkbenchLiveScopeDecision('forge-income');
 
   /* ── Live API data ──────────────────────────────────────── */
   const incomeAPI = useIncomeApproachAPI(parcelId, taxYear);
@@ -163,6 +165,20 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
 
   return (
     <div className="space-y-4" style={{ overflow: 'hidden' }}>
+      <div
+        className="tf-status-warning rounded-xl p-4"
+        data-testid="forge-income-deferred-disclosure"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="tf-text font-semibold">Income approach is deferred for production scope.</p>
+            <p className="tf-text-secondary text-sm mt-1">{incomeScope.rationale}</p>
+            <p className="tf-text-dim text-xs mt-2">{incomeScope.smallestSafeAction}</p>
+          </div>
+          <WorkbenchSourceBadge source="unavailable" />
+        </div>
+      </div>
+
       {/* Live Income Approach Data */}
       <BentoCard
         title="&#128176; Income Approach Summary"

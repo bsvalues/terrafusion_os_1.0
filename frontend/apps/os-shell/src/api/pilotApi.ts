@@ -96,6 +96,8 @@ export interface PilotToolFull extends PilotTool {
 export interface PilotToolListResponse {
   count: number;
   tools: PilotTool[];
+  source?: string;
+  runtimeOnline?: boolean;
 }
 
 /** Nested confirmation payload (preferred form) */
@@ -254,6 +256,8 @@ export interface PilotTraceListParams {
 /** Trace list response (with pagination metadata) */
 export interface PilotTraceListResponse {
   events: PilotTraceEvent[];
+  source?: string;
+  runtimeOnline?: boolean;
   pagination: {
     offset: number;
     limit: number;
