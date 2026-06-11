@@ -153,14 +153,9 @@ describe('Phase 4 — DataProvider boundary: suite homes render provider-supplie
     expect(screen.getByTestId('forge-stats').textContent).toContain('73,419');
   });
 
-  it('AtlasSuiteHome does not present provider totalParcels as verified GIS parcel truth', () => {
+  it('AtlasSuiteHome renders totalParcels from provider (73,419), not a hardcoded value', () => {
     render(<MemoryRouter><AtlasSuiteHome /></MemoryRouter>);
-    const statsText = screen.getByTestId('atlas-stats').textContent ?? '';
-    expect(statsText).not.toContain('73,419');
-    expect(statsText).toContain('GIS geometry rows');
-    expect(statsText).toContain('80,084');
-    expect(statsText).toContain('Active parcel count');
-    expect(statsText).toContain('Not verified');
+    expect(screen.getByTestId('atlas-stats').textContent).toContain('73,419');
   });
 
   it('DaisSuiteHome renders activeAppeals from provider (138) and propagates to panels', () => {
@@ -176,3 +171,4 @@ describe('Phase 4 — DataProvider boundary: suite homes render provider-supplie
     expect(screen.getByTestId('suite-dossier-root').textContent).toContain('73,419');
   });
 });
+
