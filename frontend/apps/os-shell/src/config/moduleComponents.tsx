@@ -122,9 +122,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   pilot: 'os-pilot',
   trace: 'os-trace',
   canon: 'os-canon',
+  localops: 'os-localops',
   terrapilot: 'os-pilot',
   terratrace: 'os-trace',
   terracanon: 'os-canon',
+  terralocalops: 'os-localops',
 
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
@@ -218,6 +220,9 @@ export const MODULE_REGISTRY = new Set<string>([
   'os-pilot',
   'os-trace',
   'os-canon',
+  // LocalOps — registered OS feature whose ONLY operator surface is the shell
+  // side panel (LocalOpsSurface). The window home is a truthful redirect to it.
+  'os-localops',
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard',
   'mass-appraisal-gis',
@@ -443,6 +448,7 @@ const PropertyWorkbenchWindow = lazy(
 const PilotHome = lazy(() => import('../pages/PilotHome'));
 const TraceHome = lazy(() => import('../pages/TraceHome'));
 const CanonHome = lazy(() => import('../pages/CanonHome'));
+const LocalOpsHome = lazy(() => import('../pages/LocalOpsHome'));
 
 // ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
@@ -498,6 +504,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
   'os-canon': { Component: CanonHome },
+  // LocalOps window home is a thin in-window redirect to the shell side panel.
+  'os-localops': { Component: LocalOpsHome },
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard': { Component: GeoEquityDashboard },
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
@@ -1157,6 +1165,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <CanonHome />
+        </Suspense>
+      );
+
+    case 'os-localops':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <LocalOpsHome />
         </Suspense>
       );
 

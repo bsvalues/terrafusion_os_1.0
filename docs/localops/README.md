@@ -55,11 +55,26 @@ It holds only local UI state, performs **no** API calls, mutation, shell executi
 actions, uses design tokens only (`hsl(var(--tf-*))`, leak-guard tested) and the shell z-index
 authority (`Z.companionPanel`, never hardcoded).
 
-**Deferred to WO-LOCALOPS-006.1 (approval-gated):** registering LocalOps as an OS feature
-(`OS_FEATURES`/module registry) and **mounting** the panel in the live `Desktop.tsx`. That step changes
-what the shell renders (a product-behavior change) and touches shell-contract surfaces, so it is a
-separate, explicitly-approved slice. The live engine→view-model adapter (mapping WO-001…005 outputs
-onto `LocalOpsViewModel`) also lands there.
+## Mount + registration (WO-LOCALOPS-006.1)
+
+LocalOps is now **mounted** in the live shell and **registered** as a governed OS feature:
+
+- `frontend/apps/os-shell/src/components/localops/LocalOpsSurface.tsx` is the shell-chrome container
+  that mounts `LocalOpsPanel` into `Desktop.tsx` and renders a right-edge pull-tab. Visibility and the
+  view model live in `frontend/apps/os-shell/src/stores/localOpsStore.ts` (open/close/toggle/setData),
+  mirroring the companion store. It is fixed shell chrome — **not** a routable window.
+- `localops` is registered in `OS_FEATURES` (`suiteRegistry.ts`) **without a `route` or `homeMeta`**, so
+  it stays out of the launcher, desktop icons, standalone-home derivation, and the React Router — there
+  is **no Router / full-page escape**. `os-localops` is registered in the module registry, object-placement
+  contract, and module-activation maps so the shell anti-drift contract sees a consistent feature.
+- The os-localops window home (`pages/LocalOpsHome.tsx`) is a truthful redirect to the side panel, not a
+  duplicate full-page surface.
+
+**Still deferred (separately approvable):** the live engine→view-model adapter (mapping WO-001…005 node
+outputs onto `LocalOpsViewModel`). The store ships the honest `disabled`-profile default and a `setData`
+seam; until an adapter is wired, the panel renders that default and performs **no** API calls, mutation,
+or shell execution. Wiring a live adapter crosses the node/browser boundary (needs a backend surface) and
+is intentionally left to a future slice to keep 006.1 dependency-free.
 
 ## LocalOps trace events (WO-LOCALOPS-003)
 
