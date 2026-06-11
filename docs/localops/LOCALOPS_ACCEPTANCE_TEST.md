@@ -54,6 +54,7 @@ no hardcoded z-index. **Asserts I8** (Tier-1 UI Harness + shell-contract).
 | Trace event adapter (WO-003) | `node --test os-platform/core/tests/local-agent-localops-trace.test.mjs` |
 | Local KB/RAG interface (WO-004) | `node --test os-platform/core/tests/local-agent-localops-kb.test.mjs` |
 | Read-only diagnostics (WO-005) | `node --test os-platform/core/tests/local-agent-localops-diagnostics.test.mjs` |
+| In-shell LocalOps UI (WO-006) | `pnpm --filter terrafusion-frontend vitest run apps/os-shell/src/__tests__/localops/LocalOpsPanel.test.tsx` |
 | Core tool tests | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 | Governance gate | `pnpm canon:gatefast` |
 | Canon health | `pnpm canon:ping` |

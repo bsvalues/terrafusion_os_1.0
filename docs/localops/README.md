@@ -44,6 +44,23 @@ production repair. No property-record or valuation mutation by AI.
 - Path routing: [`brain/router/path-router.yaml`](../../brain/router/path-router.yaml)
   (`docs/localops/**` is registered as an `R0` planning-docs route)
 
+## In-shell LocalOps UI (WO-LOCALOPS-006)
+
+`frontend/apps/os-shell/src/components/localops/LocalOpsPanel.tsx` is the in-shell TerraPilot LocalOps
+surface — **shell chrome** (a fixed side panel like `CompanionPanel`), not a standalone app and not a
+routable window. It is **presentational**: it renders a typed `LocalOpsViewModel` (profile + boundary
+flags, provider-status card, read-only diagnostics, structured refusal card, source references /
+honest no-source, trace events) across six sections — Ask, Explain, Diagnose, Runbook, Sources, Trace.
+It holds only local UI state, performs **no** API calls, mutation, shell execution, or autonomous
+actions, uses design tokens only (`hsl(var(--tf-*))`, leak-guard tested) and the shell z-index
+authority (`Z.companionPanel`, never hardcoded).
+
+**Deferred to WO-LOCALOPS-006.1 (approval-gated):** registering LocalOps as an OS feature
+(`OS_FEATURES`/module registry) and **mounting** the panel in the live `Desktop.tsx`. That step changes
+what the shell renders (a product-behavior change) and touches shell-contract surfaces, so it is a
+separate, explicitly-approved slice. The live engine→view-model adapter (mapping WO-001…005 outputs
+onto `LocalOpsViewModel`) also lands there.
+
 ## LocalOps trace events (WO-LOCALOPS-003)
 
 LocalOps emits an append-only, **TerraTrace-compatible** event stream via
