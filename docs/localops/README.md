@@ -24,7 +24,7 @@ describing what a future, human-approved implementation work order must deliver 
 |------|---------|
 | [`LOCALOPS_DOCTRINE.md`](LOCALOPS_DOCTRINE.md) | The non-negotiable rules. What LocalOps is, is not, and must never do. The constitution for this lane. |
 | [`LOCALOPS_WORKORDER_PLAN.md`](LOCALOPS_WORKORDER_PLAN.md) | Decomposition into WO-LOCALOPS-001…008, each with goal / allowed / forbidden / risk class / acceptance / proof / stop condition / non-goals. |
-| [`BENTON_SERVER_RUNBOOK.md`](BENTON_SERVER_RUNBOOK.md) | Operator-facing survival runbook templates for Benton County server scenarios (read-only diagnose → human-approved act). |
+| [`BENTON_SERVER_RUNBOOK.md`](BENTON_SERVER_RUNBOOK.md) | Hardened operator-facing survival runbook for Benton County server scenarios (read-only diagnose → human-approved act). R0 is wired to shipped LocalOps diagnostics; R1–R7 are operator-performed in v1. |
 | [`BENTON_AI_PROFILE.md`](BENTON_AI_PROFILE.md) | The documented shape of the Benton AI profile (providers, boundaries, grounding, trace) that WO-LOCALOPS-001 will turn into a config contract. |
 | [`BENTON_IT_QUESTIONS.md`](BENTON_IT_QUESTIONS.md) | Questions to answer with Benton County IT/security before any implementation begins. De-risks the whole sequence. |
 | [`LOCALOPS_ACCEPTANCE_TEST.md`](LOCALOPS_ACCEPTANCE_TEST.md) | The v1 acceptance criteria and the proof scenarios every LocalOps WO must pass. |
