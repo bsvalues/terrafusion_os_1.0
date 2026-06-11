@@ -2,15 +2,11 @@
 
 **Branch**: `feat/terraatlas-full-production`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY`
 
 ## Verdict
 
-This PR proves the TerraAtlas Suite runtime surface.
-
-It does not prove Property Workbench Atlas-tab integration. Property Workbench
-integration is intentionally excluded and belongs to the separate Workbench
-agent/workstream.
+This PR proves the TerraAtlas Suite runtime surface only.
 
 The accepted production status is limited to the TerraAtlas Suite and its shared
 GIS API consumption. Full production proof is not claimed because Mapbox token
@@ -18,16 +14,14 @@ configuration, FEMA flood enrichment, and zoning enrichment remain external gaps
 
 ## Scope Boundary
 
-| In scope | Out of scope |
-|----------|--------------|
-| `/atlas` | `/property/:parcelId/atlas` |
-| TerraAtlas Suite workspace | Atlas Workbench tab |
-| TerraAtlas GIS API consumption | Workbench tab order |
-| TerraAtlas layer/source honesty | Dossier/Pilot finality |
-| TerraAtlas Mapbox fallback | Workbench routing |
-| TerraAtlas runtime smoke script | Workbench component tests |
-
-If it starts with `/property`, it is not this sprint.
+| In scope |
+|----------|
+| `/atlas` |
+| TerraAtlas Suite workspace |
+| TerraAtlas GIS API consumption |
+| TerraAtlas layer/source honesty |
+| TerraAtlas Mapbox fallback |
+| TerraAtlas runtime smoke script |
 
 ## Runtime Proof Summary
 
@@ -68,13 +62,6 @@ dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
 powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ApiBaseUrl http://127.0.0.1:5047 -ParcelId 119802030006001
 ```
 
-Not acceptance proof for this PR:
-
-- Workbench Atlas tab tests.
-- Workbench tab order tests.
-- `/property/:parcelId/atlas` browser proof.
-- Dossier/Pilot finality tests.
-
 ## Changeset
 
 | File | Purpose |
@@ -85,8 +72,6 @@ Not acceptance proof for this PR:
 | `docs/TERRAATLAS_FINAL_PRODUCTION_REPORT.md` | Final status and PR evidence. |
 | `docs/TERRAATLAS_RELEASE_CHECKLIST.md` | Release checklist for `/atlas` only. |
 | `scripts/smoke/terraatlas-runtime-smoke.ps1` | Reproducible TerraAtlas GIS API smoke proof. |
-
-No Property Workbench source file is part of the final intended diff.
 
 ## External Gaps
 
@@ -106,15 +91,7 @@ No Property Workbench source file is part of the final intended diff.
 ## Summary
 - proves the TerraAtlas Suite runtime surface for `/atlas`
 - adds a reproducible TerraAtlas GIS API smoke script for real parcel `119802030006001`
-- removes Property Workbench proof claims from this PR
 - documents Mapbox, FEMA, and zoning as external enrichment/configuration gaps
-
-## Out of scope
-- Property Workbench
-- `/property/:parcelId/atlas`
-- Atlas Workbench tab proof
-- Workbench tab order or shell behavior
-- Dossier/Pilot finality
 
 ## Verification
 - pnpm run type-check
@@ -125,5 +102,5 @@ No Property Workbench source file is part of the final intended diff.
 - powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ApiBaseUrl http://127.0.0.1:5047 -ParcelId 119802030006001
 
 ## Terminal Status
-PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY
+PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY
 ```

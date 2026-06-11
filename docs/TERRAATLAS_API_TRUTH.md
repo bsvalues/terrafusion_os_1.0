@@ -2,13 +2,10 @@
 
 **Branch**: `feat/terraatlas-full-production`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS — TERRAATLAS SUITE ONLY`
 
 This is the shared frontend/backend Atlas GIS contract used as TerraAtlas Suite
 runtime proof. It supports the `/atlas` sprint boundary only.
-
-This document is not Property Workbench proof. `/property/:parcelId/atlas` is
-`OUT_OF_SCOPE_PROPERTY_WORKBENCH`.
 
 ## Canonical Runtime Parcel
 
@@ -62,8 +59,7 @@ Source: `frontend/apps/os-shell/src/hooks/useAtlasGis.ts`
 | `useParcelBoundary(parcelId)` | wrapper | Deprecated wrapper over `useParcelGis().boundary`. |
 | `useParcelLayers(parcelId)` | wrapper | Deprecated wrapper over `useParcelGis().layers`. |
 
-These hooks are API proof only in this sprint. Any Property Workbench consumer is
-out of scope for PR acceptance.
+These hooks are API proof only in this sprint.
 
 ## Live Data Source
 
