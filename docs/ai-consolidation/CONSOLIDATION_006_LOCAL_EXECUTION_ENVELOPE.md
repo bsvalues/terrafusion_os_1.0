@@ -18,20 +18,24 @@ defines how execution could exist **without** crossing that line: tiny, named, a
 
 - **No autonomous mutation.** Every execution requires explicit human **confirmation + reason** at call
   time (mirrors `ToolExecutionContext.confirmation`/`reasonCode` and the `localops.approval.required`
-  trace event that already exists). `allowMutation` defaults `false`; execution mode does not flip it
-  globally — it gates per-tool.
+  trace event that already exists). The profile flag `allowMutation` defaults `false` and is **not** a
+  per-tool gate today; an execution mode must **not** flip it globally — it would introduce a new
+  per-tool approval gate, leaving the profile default untouched.
 - **No unrestricted shell.** Execution is a **fixed allowlist of named operations**, never arbitrary
   command strings (the read-only diagnostics' `UNSAFE_DIAGNOSTIC` refusal model, inverted into an
   explicit allow with approval).
 - **No write-lane violation.** An execution tool may only act in its own lane; cross-lane intent emits a
   governed request, never a direct write (per `AGENTS.md` Write-Lane Matrix).
-- **No silent cloud, no county-data mutation by AI, append-only trace.** Every execution emits
-  `action_started` + terminal `action_completed`/`action_failed` to **TerraTrace** (via the WO-002
-  bridge), PII-redacted, hash-chained.
+- **No silent cloud, no county-data mutation by AI, append-only trace.** Every execution emits the
+  canonical TerraTrace tool-lifecycle pair — `tool_invoked` + terminal `tool_completed`/`tool_failed`
+  (per the `TraceEventType` union in `os-platform/core/types/index.ts`, reused via the WO-002 bridge) —
+  PII-redacted, hash-chained. (Note: `AGENT_ENTRYPOINT.md` still documents the older
+  `action_started/completed/failed` names; the **code contract is authoritative** — that doc/code drift
+  is a separate fix.)
 - **TerraPilot-only.** Execution lives behind the in-shell TerraPilot operator surface — never a
   standalone app, never Muse Mode (Muse is read/explain/draft only).
 
-## The minimal toolset (candidate v1 — each approval-gated, read-bounded blast radius)
+## The minimal toolset (candidate v1 — each approval-gated, bounded blast radius)
 
 | Tool | What it does | Risk class | Approval | Reversible? |
 |---|---|---|---|---|
@@ -49,7 +53,7 @@ human-only.
 
 1. **Propose** — LocalOps surfaces the diagnostic finding + the *named* tool it would run (no execution).
 2. **Approve** — operator confirms with a reason; `localops.approval.required` is emitted.
-3. **Execute** — the allowlisted op runs in its lane; `action_started` → `action_completed/failed` on
+3. **Execute** — the allowlisted op runs in its lane; `tool_invoked` → `tool_completed/tool_failed` on
    TerraTrace; output redacted.
 4. **Verify** — a read-only diagnostic confirms the new state; the trace chain is the evidence.
 5. **Refuse-by-default** — any unnamed/unsafe request is refused exactly as the read-only diagnostics
@@ -58,8 +62,9 @@ human-only.
 ## Proof bar (for any future execution slice)
 
 Identical to the LocalOps bar: offline `node --test` harness proving (a) an unapproved execution does
-**not** run, (b) an approved execution emits the started/terminal TerraTrace pair, (c) an unnamed tool is
-refused, (d) no cross-lane write occurs, (e) zero egress. No execution tool ships without this.
+**not** run, (b) an approved execution emits the canonical `tool_invoked` → `tool_completed`/`tool_failed`
+TerraTrace pair, (c) an unnamed tool is refused, (d) no cross-lane write occurs, (e) zero egress. No
+execution tool ships without this.
 
 ## Sequencing note
 
