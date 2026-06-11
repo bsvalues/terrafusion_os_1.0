@@ -21,7 +21,6 @@
  */
 
 import { create } from 'zustand';
-import { useDesktopStore } from '../stores/desktopStore';
 
 // ============================================================================
 // Types
@@ -439,55 +438,11 @@ export function recordRecentParcelMeta(parcelId: string, meta: RecentParcelMeta)
  * @param tabId - Optional tab to focus (defaults to 'summary')
  */
 export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
-  // useDesktopStore imported at module top level (no circular dep exists)
-  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
-
-  // If no parcelId, open a blank workbench (shows NoParcelSelected state)
-  if (!parcelId) {
-    const blankExisting = windows.find(
-      (w) => w.moduleId === 'property-workbench' && !w.metadata?.parcelId
-    );
-    if (blankExisting) {
-      focusWindow(blankExisting.id);
-      return;
-    }
-    openWindow('property-workbench', 'Property Workbench', '🏠', { defaultMaximized: true });
-    return;
-  }
-
-  // Check if a workbench window for this parcel already exists
-  const existing = windows.find(
-    (w) =>
-      w.moduleId === 'property-workbench' &&
-      w.metadata?.parcelId === parcelId
-  );
-
-  if (existing) {
-    focusWindow(existing.id);
-    return;
-  }
-
-  // Set parcel context + record to recents
-  const { setContext, recordRecent } = useParcelContextStore.getState();
-  setContext({ parcelId, source: 'selection' });
-  recordRecent(parcelId);
-
-  // Broadcast to companion context bus — Pilot auto-updates to this parcel
-  import('../stores/companionStore').then(({ useCompanionStore }) => {
-    useCompanionStore.getState().setActiveParcel(parcelId!);
-  });
-
-  // Pre-load parcel data via property store (DataProvider-backed)
-  import('../stores/propertyStore').then(({ usePropertyStore }) => {
-    usePropertyStore.getState().selectParcel(parcelId!);
-  });
-
-  // Open new workbench window
-  const truncatedId = parcelId.length > 20 ? parcelId.slice(0, 20) + '…' : parcelId;
-  openWindow(
-    'property-workbench',
-    `Property: ${truncatedId}`,
-    '🏠',
-    { parcelId, tabId: tabId ?? 'summary', defaultMaximized: true }
+  void import('../orchestration/moduleActivation').then(({ activateModule }) =>
+    activateModule('property-workbench', {
+      source: 'system',
+      metadata: parcelId ? { parcelId, tabId: tabId ?? 'summary' } : undefined,
+      showNotification: false,
+    })
   );
 }

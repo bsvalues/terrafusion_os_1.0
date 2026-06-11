@@ -69,7 +69,7 @@ public sealed class GisDataService : IGisDataService
             return new ParcelLayersResult(
                 parcelId, "unavailable",
                 Zoning: null,
-                Flood: new ParcelFloodLayer("X", "Minimal risk", "stub"),
+                Flood: new ParcelFloodLayer("unavailable", "FEMA flood enrichment unavailable", "unavailable"),
                 TaxArea: null,
                 LandClass: null);
         }
@@ -95,7 +95,7 @@ public sealed class GisDataService : IGisDataService
             ParcelId: parcelId,
             Source: "live",
             Zoning: null,
-            Flood: new ParcelFloodLayer("X", "Minimal risk — FEMA data requires external enrichment", "stub"),
+            Flood: new ParcelFloodLayer("unavailable", "FEMA flood enrichment unavailable", "unavailable"),
             TaxArea: taxAreaLayer,
             LandClass: landClass);
     }

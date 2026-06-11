@@ -128,6 +128,7 @@ export interface DesktopState {
   focusWindow: (windowId: string) => void;
   updateWindowPosition: (windowId: string, position: Position) => void;
   updateWindowSize: (windowId: string, size: Size) => void;
+  updateWindowMetadata: (windowId: string, metadata: Record<string, any>) => void;
 
   // Virtual Desktop Actions
   addDesktop: () => void;
@@ -822,6 +823,22 @@ export const useDesktopStore = create<DesktopState>()(
         set({ windows: newWindows });
       },
 
+      updateWindowMetadata: (windowId: string, metadata: Record<string, any>) => {
+        const { windows } = get();
+
+        const newWindows = windows.map((w) => {
+          if (w.id !== windowId) {
+            return w;
+          }
+          return {
+            ...w,
+            metadata: { ...w.metadata, ...metadata },
+          };
+        });
+
+        set({ windows: newWindows });
+      },
+
       // ========================================================================
       // Virtual Desktop Actions
       // ========================================================================
@@ -1062,6 +1079,7 @@ export const useWindowActions = () =>
     focusWindow: state.focusWindow,
     updateWindowPosition: state.updateWindowPosition,
     updateWindowSize: state.updateWindowSize,
+    updateWindowMetadata: state.updateWindowMetadata,
   }));
 
 /**

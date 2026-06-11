@@ -1,176 +1,135 @@
 /**
  * valuationRouteResume.contract.test.ts
  *
- * Phase 15 — Runtime Hardening: Brick 3
- * ======================================
+ * Workbench deep-link resume contract
+ * ===================================
  *
- * Proves that valuation workflow state resumes correctly after route changes,
- * suite switches, or shell-level navigation. The key invariant is:
- *
- *   Tab state is URL-driven, not component state.
- *   Navigating away and back to /property/:parcelId/forge always restores
- *   the Forge tab — no separate "remember last tab" logic needed or possible.
- *
- * Proofs:
- *   1. Router structure — /property/:parcelId/* nests all tab sub-routes
- *   2. tabPathMap completeness — every WorkbenchTabSlug (except 'summary')
- *      has a corresponding sub-route in router.tsx
- *   3. getCurrentTabFromPath source — fallback to 'summary' for unknown paths
- *   4. Summary tab (index route) — empty sub-path → 'summary'
- *   5. Each named tab slug maps to a unique non-overlapping path
- *   6. All 9 WORKBENCH_TABS exist as sub-routes in router.tsx
- *
- * Source-inspection is used (not component rendering) because PropertyWorkbench
- * imports LiquidPanel/materialServices that crash the jsdom worker via WebGL.
- * The routing contract is proven structurally — URL drives state.
- *
- * @see src/pages/workbench/PropertyWorkbench.tsx — getCurrentTabFromPath, tabPathMap
- * @see src/router.tsx — property/:parcelId/* sub-route tree
- * @see src/contracts/workbench.ts — WorkbenchTabSlug
+ * /property/:parcelId[/tab] remains a stable URL, but it resumes work by
+ * activating the maximized OS-owned Property Workbench window. The route must
+ * not keep a second tab lifecycle alive.
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-let workbenchSource: string;
+let routeBridgeSource: string;
+let windowHostSource: string;
+let surfaceSource: string;
 let routerSource: string;
 
 beforeAll(() => {
-  workbenchSource = readFileSync(
+  routeBridgeSource = readFileSync(
     resolve(import.meta.dirname, '../../pages/workbench/PropertyWorkbench.tsx'),
     'utf-8',
   );
+  windowHostSource = readFileSync(
+    resolve(import.meta.dirname, '../../pages/workbench/PropertyWorkbenchWindow.tsx'),
+    'utf-8',
+  );
+  surfaceSource = readFileSync(
+    resolve(import.meta.dirname, '../../pages/workbench/PropertyWorkbenchSurface.tsx'),
+    'utf-8',
+  );
   routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../router.tsx'),
+    resolve(import.meta.dirname, '../../Router.tsx'),
     'utf-8',
   );
 });
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
-
-describe('Phase 15 Brick 3 — Valuation route resume contract', () => {
-
-  // ── 1. Router structure — wildcard route enables sub-tab URLs ──────────────
-
-  describe('router.tsx — workbench route structure', () => {
-    it('property/:parcelId is a wildcard route (nests sub-routes)', () => {
+describe('Workbench deep-link resume contract', () => {
+  describe('Router structure', () => {
+    it('keeps /property/:parcelId as the deep-link route root', () => {
       expect(routerSource).toContain("path='property/:parcelId'");
     });
 
-    it('lazy-imports PropertyWorkbench', () => {
+    it('lazy-imports the PropertyWorkbench route bridge', () => {
       expect(routerSource).toMatch(
         /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/workbench\/PropertyWorkbench['"]\s*\)\s*\)/,
       );
     });
-  });
 
-  // ── 2. tabPathMap completeness ──────────────────────────────────────────────
-
-  describe('tabPathMap — every WorkbenchTabSlug has a router sub-route', () => {
-    const tabsWithPaths: Array<{ slug: string; routePath: string }> = [
-      { slug: 'forge',    routePath: "path='forge'" },
-      { slug: 'atlas',    routePath: "path='atlas'" },
-      { slug: 'dais',     routePath: "path='dais'" },
-      { slug: 'clerk',    routePath: "path='clerk'" },
-      { slug: 'treasury', routePath: "path='treasury'" },
-      { slug: 'audit',    routePath: "path='audit'" },
-      { slug: 'dossier',  routePath: "path='dossier'" },
-      { slug: 'pilot',    routePath: "path='pilot'" },
-    ];
-
-    for (const { slug, routePath } of tabsWithPaths) {
-      it(`'${slug}' tab has a matching <Route> in router.tsx`, () => {
-        expect(routerSource).toContain(routePath);
-      });
-    }
-
-    it("'summary' tab uses the index route (no path segment)", () => {
-      // Summary maps to /property/:parcelId (no suffix) — proven by <Route index>
+    it('registers every named Workbench tab path', () => {
+      for (const path of ['forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot']) {
+        expect(routerSource).toContain(`path='${path}'`);
+      }
       expect(routerSource).toContain('<Route index');
     });
   });
 
-  // ── 3. getCurrentTabFromPath source — correct tab derivation ───────────────
-
-  describe('getCurrentTabFromPath — URL-driven tab state', () => {
-    it('tabPathMap in PropertyWorkbench covers all 8 named tab paths', () => {
-      const tabPathMapBlock = workbenchSource.match(
-        /const tabPathMap[^=]*=\s*\{([^}]+)\}/s,
-      )?.[1] ?? '';
-
-      const slugs = ['forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
-      for (const slug of slugs) {
-        expect(tabPathMapBlock).toContain(`'${slug}'`);
+  describe('Route bridge tab resolution', () => {
+    it('allows every canonical tab slug in route parsing', () => {
+      const validTabBlock = routeBridgeSource.match(/const VALID_ROUTE_TABS[^=]*=\s*new Set[^[]*\[([^\]]+)\]/s)?.[1] ?? '';
+      for (const slug of ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot']) {
+        expect(validTabBlock).toContain(`'${slug}'`);
       }
     });
 
-    it("falls back to 'summary' for unknown paths", () => {
-      // The fallback is: return tabPathMap[pathAfterBase] ?? 'summary'
-      expect(workbenchSource).toContain("?? 'summary'");
+    it('derives the tab from location.pathname and parcelId', () => {
+      expect(routeBridgeSource).toContain('function getRoutedTab');
+      expect(routeBridgeSource).toContain('pathname.split');
+      expect(routeBridgeSource).toContain("parts.indexOf('property')");
+      expect(routeBridgeSource).toContain('decodeURIComponent');
     });
 
-    it("extracts tab from pathname by stripping the base /property/:parcelId prefix", () => {
-      // getCurrentTabFromPath computes basePath = `/property/${parcelId}`
-      expect(workbenchSource).toContain('basePath = `/property/${parcelId}`');
-    });
-  });
-
-  // ── 4. URL-driven resume guarantee ─────────────────────────────────────────
-
-  describe('URL-driven resume — structural proof', () => {
-    it('getCurrentTabFromPath is derived from location.pathname (not component state)', () => {
-      // Verify that useMemo depends on [location.pathname, parcelId]
-      // The actual source has the dependency array on a separate line:
-      //   const currentTabId = useMemo(
-      //     () => (parcelId ? getCurrentTabFromPath(location.pathname, parcelId) : 'summary'),
-      //     [location.pathname, parcelId]
-      //   );
-      expect(workbenchSource).toContain('getCurrentTabFromPath(location.pathname, parcelId)');
-      expect(workbenchSource).toContain('[location.pathname, parcelId]');
-    });
-
-    it('tab state is NOT stored in useState (URL is the single source of truth)', () => {
-      // No useState for tab — the tab is derived, not stored
-      expect(workbenchSource).not.toMatch(/useState\s*<\s*WorkbenchTabSlug/);
-      expect(workbenchSource).not.toMatch(/useState\(['"]summary['"]\)/);
-    });
-
-    it('navigating to /property/parcelId/forge and returning restores forge tab (URL proof)', () => {
-      // Since tab = getCurrentTabFromPath(location.pathname, parcelId),
-      // and location.pathname IS the URL, returning to /property/X/forge always gives 'forge'.
-      // This is structurally guaranteed — prove the path is in the tabPathMap.
-      expect(workbenchSource).toContain("forge: 'forge'");
-      expect(workbenchSource).toContain("atlas: 'atlas'");
-      expect(workbenchSource).toContain("dais: 'dais'");
+    it("falls back to 'summary' for missing or unknown tab paths", () => {
+      expect(routeBridgeSource).toContain("return 'summary'");
+      expect(routeBridgeSource).toContain('VALID_ROUTE_TABS.has(candidate)');
     });
   });
 
-  // ── 5. WORKBENCH_TABS locked order ─────────────────────────────────────────
+  describe('Window activation resume', () => {
+    it('passes parcelId and resolved tab into the canonical Workbench through Cortex activation', () => {
+      expect(routeBridgeSource).toContain("activateModule('property-workbench'");
+      expect(routeBridgeSource).toContain("source: 'route'");
+      expect(routeBridgeSource).toContain('metadata: { parcelId, tabId: routedTabId');
+    });
 
-  describe('WORKBENCH_TABS — locked order and completeness', () => {
-    it('summary is the first tab (index 0)', () => {
-      const tabsBlock = workbenchSource.match(
-        /const WORKBENCH_TABS[^=]*=\s*\[([^\]]+)\]/s,
-      )?.[1] ?? '';
+    it('does not call the legacy direct Workbench window helper', () => {
+      expect(routeBridgeSource).not.toContain('openWorkbenchWindow');
+    });
+
+    it('derives routedTabId from URL state instead of component tab state', () => {
+      expect(routeBridgeSource).toContain('getRoutedTab(location.pathname, parcelId)');
+      expect(routeBridgeSource).toContain('[location.pathname, parcelId]');
+      expect(routeBridgeSource).not.toMatch(/useState\s*<\s*WorkbenchTabSlug/);
+    });
+
+    it('normalizes the browser route after activating the Workbench window', () => {
+      expect(routeBridgeSource).toContain("navigate('/', { replace: true })");
+    });
+  });
+
+  describe('Canonical window host resume', () => {
+    it('consumes routed metadata before defaulting to summary', () => {
+      expect(windowHostSource).toContain("readMetadataString(metadata, '_routedTab')");
+      expect(windowHostSource).toContain("metadata?.tabId as WorkbenchTabSlug");
+      expect(windowHostSource).toContain("?? tab ?? 'summary'");
+    });
+
+    it('hosts the side rail in the OS window, not the route', () => {
+      expect(windowHostSource).toContain('<WorkbenchRail');
+      expect(routeBridgeSource).not.toContain('<WorkbenchRail');
+    });
+  });
+
+  describe('WORKBENCH_TABS locked order and completeness', () => {
+    it('summary is the first tab', () => {
+      const tabsBlock = surfaceSource.match(/export const WORKBENCH_TABS[^=]*=\s*\[([^\]]+)\]/s)?.[1] ?? '';
       const firstTab = tabsBlock.match(/id:\s*'(\w+)'/)?.[1];
       expect(firstTab).toBe('summary');
     });
 
     it('all 9 WorkbenchTabSlug values appear in WORKBENCH_TABS', () => {
-      const tabsBlock = workbenchSource.match(
-        /const WORKBENCH_TABS[^=]*=\s*\[([^\]]+)\]/s,
-      )?.[1] ?? '';
-      const slugs = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
-      for (const slug of slugs) {
+      const tabsBlock = surfaceSource.match(/export const WORKBENCH_TABS[^=]*=\s*\[([^\]]+)\]/s)?.[1] ?? '';
+      for (const slug of ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot']) {
         expect(tabsBlock).toContain(`id: '${slug}'`);
       }
     });
 
-    it('each tab has a path property (enables URL construction)', () => {
-      // All tabs except summary have a non-empty path; summary has path: ''
-      expect(workbenchSource).toContain("path: 'forge'");
-      expect(workbenchSource).toContain("path: 'atlas'");
-      expect(workbenchSource).toContain("path: 'dais'");
+    it('each named tab keeps a URL path for deep-link construction', () => {
+      expect(surfaceSource).toContain("path: 'forge'");
+      expect(surfaceSource).toContain("path: 'atlas'");
+      expect(surfaceSource).toContain("path: 'dais'");
     });
   });
 });

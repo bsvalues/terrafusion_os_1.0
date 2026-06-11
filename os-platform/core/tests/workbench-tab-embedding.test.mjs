@@ -137,28 +137,15 @@ describe('PropertyWorkbenchWindow Tab Embedding', () => {
     }
   });
 
-  it('TABS array has all 9 canonical tab entries in correct order', () => {
-    const ids = extractTabArrayIds(source, 'TABS');
-
-    assert.equal(ids.length, 9,
-      `TABS array has ${ids.length} entries, expected 9.\nFound: [${ids.join(', ')}]`
-    );
-
-    assert.deepEqual(ids, CANONICAL_TAB_IDS,
-      `TABS array order does not match canonical order.\n` +
-      `Expected: [${CANONICAL_TAB_IDS.join(', ')}]\n` +
-      `Got:      [${ids.join(', ')}]`
-    );
-  });
 });
 
 // ============================================================================
-// PropertyWorkbench.tsx — Route-Based Workbench
+// PropertyWorkbenchSurface.tsx — Shared Canonical Workbench Surface
 // ============================================================================
 
-describe('PropertyWorkbench Route Tab Embedding', () => {
-  const workbenchPath = resolve(SHELL, 'pages/workbench/PropertyWorkbench.tsx');
-  const source = readFileSync(workbenchPath, 'utf-8');
+describe('PropertyWorkbenchSurface Tab Embedding', () => {
+  const surfacePath = resolve(SHELL, 'pages/workbench/PropertyWorkbenchSurface.tsx');
+  const source = readFileSync(surfacePath, 'utf-8');
 
   it('WORKBENCH_TABS has all 9 canonical tab entries in correct order', () => {
     const ids = extractTabArrayIds(source, 'WORKBENCH_TABS');
@@ -174,18 +161,84 @@ describe('PropertyWorkbench Route Tab Embedding', () => {
     );
   });
 
-  it('tabPathMap includes all 8 non-summary tab paths', () => {
-    // summary is the default (empty path), so tabPathMap has 8 entries
-    const re = /tabPathMap[^{]*\{([^}]+)\}/s;
-    const m = re.exec(source);
-    assert.ok(m, 'tabPathMap not found in PropertyWorkbench.tsx');
+  it('renders the full 9-tab Workbench by default without forward-staged presentation gating', () => {
+    assert.doesNotMatch(
+      source,
+      /applyForwardStagedGate\(\s*WORKBENCH_TABS\.filter/s,
+      'PropertyWorkbenchSurface must not hide canonical Workbench tabs from the rendered rail',
+    );
+    assert.match(
+      source,
+      /const filteredTabs[\s\S]*WORKBENCH_TABS\.filter\(\(tab\) => visibleTabs\.includes\(tab\.id\)\)/,
+      'PropertyWorkbenchSurface must render from the full role-visible canonical tab list',
+    );
+  });
+});
 
-    const nonSummaryTabs = CANONICAL_TAB_IDS.filter((id) => id !== 'summary');
-    for (const tabId of nonSummaryTabs) {
-      assert.ok(m[1].includes(tabId),
-        `tabPathMap missing path for "${tabId}"`
-      );
+describe('Workbench role visibility source', () => {
+  const rolesPath = resolve(SHELL, 'config/workbenchRoles.ts');
+  const source = readFileSync(rolesPath, 'utf-8');
+
+  it('ALL_TAB_SLUGS preserves all 9 canonical tabs in order', () => {
+    const m = source.match(/ALL_TAB_SLUGS[^=]*=\s*\[([\s\S]*?)\]\s+as const/);
+    assert.ok(m, 'ALL_TAB_SLUGS not found in workbenchRoles.ts');
+    const ids = [...m[1].matchAll(/['"](\w+)['"]/g)].map((match) => match[1]);
+    assert.deepEqual(
+      ids,
+      CANONICAL_TAB_IDS,
+      `ALL_TAB_SLUGS must not drop Workbench tabs.\nExpected: [${CANONICAL_TAB_IDS.join(', ')}]\nGot:      [${ids.join(', ')}]`,
+    );
+  });
+});
+
+// ============================================================================
+// PropertyWorkbench.tsx — Route Bridge Only
+// ============================================================================
+
+describe('PropertyWorkbench Route Bridge', () => {
+  const workbenchPath = resolve(SHELL, 'pages/workbench/PropertyWorkbench.tsx');
+  const source = readFileSync(workbenchPath, 'utf-8');
+
+  it('does not own a second canonical tab array or route Outlet host', () => {
+    assert.doesNotMatch(
+      source,
+      /const\s+WORKBENCH_TABS\b/,
+      'PropertyWorkbench route bridge must not own a second WORKBENCH_TABS host array',
+    );
+    assert.doesNotMatch(
+      source,
+      /<\s*Outlet\b/,
+      'PropertyWorkbench route bridge must not render nested tab routes as a second host',
+    );
+  });
+
+  it('passes the routed parcel and tab into the canonical Workbench through Cortex activation', () => {
+    assert.match(
+      source,
+      /activateModule\s*\(\s*['"]property-workbench['"]\s*,/,
+      'PropertyWorkbench route bridge must activate the canonical Workbench through activateModule',
+    );
+    assert.match(
+      source,
+      /metadata:\s*\{\s*parcelId,\s*tabId:\s*routedTabId/s,
+      'PropertyWorkbench route bridge must pass parcel/tab context as activation metadata',
+    );
+    assert.doesNotMatch(
+      source,
+      /openWorkbenchWindow/,
+      'PropertyWorkbench route bridge must not bypass Cortex with openWorkbenchWindow',
+    );
+    for (const tabId of CANONICAL_TAB_IDS) {
+      assert.ok(source.includes(`'${tabId}'`), `route bridge VALID_ROUTE_TABS missing "${tabId}"`);
     }
+  });
+
+  it('does not apply presentation gates in the bridge', () => {
+    assert.doesNotMatch(
+      source,
+      /applyForwardStagedGate/,
+      'route bridge must not own rendered-tab presentation gating',
+    );
   });
 });
 

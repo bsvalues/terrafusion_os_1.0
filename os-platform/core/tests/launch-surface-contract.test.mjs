@@ -180,6 +180,28 @@ test("no dock utilities — SentinelChip/NotificationBell/Clock not in Taskbar",
   );
 });
 
+test("Dock running-app overflow excludes suite-* windows already owned by CoreSuiteZone", async (t) => {
+  const taskbarPath = path.resolve(
+    import.meta.dirname,
+    "../../../frontend/apps/os-shell/src/shell/desktop/Taskbar.tsx"
+  );
+  const content = fs.readFileSync(taskbarPath, "utf-8");
+  const runningAppsStart = content.indexOf("const RunningApps");
+  const runningAppsEnd = content.indexOf("// ============================================================================", runningAppsStart + 1);
+  assert.ok(runningAppsStart > 0, "RunningApps block found");
+  assert.ok(runningAppsEnd > runningAppsStart, "RunningApps block end found");
+  const runningAppsBlock = content.slice(runningAppsStart, runningAppsEnd);
+
+  assert.ok(
+    runningAppsBlock.includes("`suite-${s.id}`") || runningAppsBlock.includes("`suite-${suite.id}`"),
+    "Taskbar must derive pinned suite window IDs with the suite-* prefix"
+  );
+  assert.ok(
+    !runningAppsBlock.includes("CONSTITUTIONAL_SUITES.map((s) => s.id)"),
+    "RunningApps must not filter suite windows by short IDs only"
+  );
+});
+
 test("StageZeroState is not search-first", async (t) => {
   const stagePath = path.resolve(
     import.meta.dirname,

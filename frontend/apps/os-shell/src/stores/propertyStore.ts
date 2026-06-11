@@ -35,6 +35,7 @@ interface PropertyState {
   // Active parcel (selected via search or navigation)
   activeParcel: Property | null;
   activeParcelLoading: boolean;
+  activeParcelError: string | null;
 
   // Search
   searchQuery: string;
@@ -73,6 +74,7 @@ export const usePropertyStore = create<PropertyState>()(
       // Initial state
       activeParcel: null,
       activeParcelLoading: false,
+      activeParcelError: null,
       searchQuery: '',
       searchResults: [],
       searchTotalCount: 0,
@@ -107,12 +109,16 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
-        set({ activeParcelLoading: true });
+        set({ activeParcelLoading: true, activeParcelError: null });
         try {
           const provider = getDataProvider();
           const parcel = await provider.getParcel(parcelId);
           if (!parcel) {
-            set({ activeParcel: null, activeParcelLoading: false });
+            set({
+              activeParcel: null,
+              activeParcelLoading: false,
+              activeParcelError: `Parcel ${parcelId} was not found in the governed county data source.`,
+            });
             return;
           }
 
@@ -154,9 +160,15 @@ export const usePropertyStore = create<PropertyState>()(
             auditTrail,
             operations,
             activeParcelLoading: false,
+            activeParcelError: null,
           });
-        } catch {
-          set({ activeParcelLoading: false });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unknown parcel load error';
+          set({
+            activeParcel: null,
+            activeParcelLoading: false,
+            activeParcelError: `Parcel ${parcelId} could not be loaded from the governed county data source. ${message}`,
+          });
         }
       },
 
@@ -164,6 +176,7 @@ export const usePropertyStore = create<PropertyState>()(
       clearParcel: () => {
         set({
           activeParcel: null,
+          activeParcelError: null,
           assessments: [],
           documents: [],
           appeals: [],

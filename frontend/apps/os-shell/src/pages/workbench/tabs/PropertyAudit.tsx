@@ -19,6 +19,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -229,7 +230,19 @@ export const PropertyAudit: React.FC = () => {
 
   return (
     <div className='tf-suite-audit space-y-4'>
-      <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`Financial compliance & audit for ${parcelId}`} />
+      <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`County audit controls with parcel context for ${parcelId}`} />
+
+      <div className='tf-status-warning rounded-xl p-4' data-testid='audit-parcel-specific-disclosure'>
+        <div className='flex items-start justify-between gap-3'>
+          <div>
+            <p className='tf-text font-semibold'>The parcel-specific audit backend is not live.</p>
+            <p className='tf-text-secondary text-sm mt-1'>
+              Current roll, levy, reconciliation, and compliance report actions use county/static audit contracts with the parcel carried as context.
+            </p>
+          </div>
+          <WorkbenchSourceBadge source='partial' />
+        </div>
+      </div>
 
       {/* Audit History from Store */}
       {auditTrail.length > 0 && (

@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   const backendUrl =
     configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
       ? configuredApiUrl
-      : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5000}`;
+      : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5046}`;
 
   // Dev-mode middleware: serves service-registry.json directly from disk.
   // The .NET ServiceRegistryController serves this in production. In dev, this

@@ -61,24 +61,6 @@ export const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true },
 ];
 
-/**
- * FU-2A / ADR-0012 / drift D-007: reserved municipal offices (Clerk/Treasury/Audit) are
- * forward-staged, not constitutionally active in OS 1.0 (TF-052 reserves them; the route guard
- * CANONICAL_WORKBENCH_TABS already excludes them). Their tab components, tools, controllers, and
- * VALID_WORKBENCH_TAB_IDS contract stay intact — only the rendered nav is gated, default OFF, behind
- * an explicit flag. Flip VITE_TF_ENABLE_FORWARD_STAGED_OFFICES=true to preview them.
- */
-export const RESERVED_OFFICE_TAB_IDS = ['clerk', 'treasury', 'audit'] as const;
-
-export function forwardStagedOfficesEnabled(): boolean {
-  return import.meta.env.VITE_TF_ENABLE_FORWARD_STAGED_OFFICES === 'true';
-}
-
-export function applyForwardStagedGate(tabs: WorkbenchTab[], enabled: boolean): WorkbenchTab[] {
-  if (enabled) return tabs;
-  return tabs.filter((tab) => !RESERVED_OFFICE_TAB_IDS.includes(tab.id as (typeof RESERVED_OFFICE_TAB_IDS)[number]));
-}
-
 export function hashParcelId(parcelId: string): string {
   let hash = 5381;
   for (let i = 0; i < parcelId.length; i++) {
@@ -201,11 +183,7 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
   const { visibleTabs } = useWorkbenchRoles(roles);
 
   const filteredTabs = useMemo(
-    () =>
-      applyForwardStagedGate(
-        WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
-        forwardStagedOfficesEnabled(),
-      ),
+    () => WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
     [visibleTabs],
   );
 

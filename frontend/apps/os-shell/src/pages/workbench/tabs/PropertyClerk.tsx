@@ -301,7 +301,9 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Title Chain (read_only) */}
         <BentoCard title='🔗 Title Chain' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Returned title-chain owner and preview entries for parcel {parcelId}</p>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Title-chain records are not projected for every parcel. Empty results are treated as a thin/non-live chain, not as proof of complete ownership history.
+          </p>
           <button onClick={handleGetTitleChain} disabled={titleChainState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {titleChainState.status === 'loading' ? 'Loading...' : 'Get Title Chain'}
           </button>
@@ -309,13 +311,22 @@ export const PropertyClerk: React.FC = () => {
           {titleChainState.status === 'success' && titleChainState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
-                <span className='font-semibold tf-text'>Returned Title-Chain Owner: {titleChainState.result.currentOwner}</span>
-                <p className='text-xs tf-text-dim mt-1'>Owner shown from the returned title chain. This preview shows up to five returned chain entries.</p>
-                {titleChainState.result.chain.slice(0, 5).map(c => (
-                  <div key={c.documentId} className='text-sm tf-text-secondary mt-1'>
-                    {c.type}: {c.grantor} → {c.grantee} ({formatDate(c.date)})
-                  </div>
-                ))}
+                {titleChainState.result.chain.length > 0 ? (
+                  <>
+                    <span className='font-semibold tf-text'>Returned Title-Chain Owner: {titleChainState.result.currentOwner}</span>
+                    <p className='text-xs tf-text-dim mt-1'>Owner shown from the returned title chain. This preview shows up to five returned chain entries.</p>
+                    {titleChainState.result.chain.slice(0, 5).map(c => (
+                      <div key={c.documentId} className='text-sm tf-text-secondary mt-1'>
+                        {c.type}: {c.grantor} → {c.grantee} ({formatDate(c.date)})
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <span className='font-semibold tf-text'>Title-chain records are not projected for this parcel.</span>
+                    <p className='text-xs tf-text-dim mt-1'>The Clerk lane is truthful but thin here; recording summary may be available while title-chain depth remains unavailable.</p>
+                  </>
+                )}
               </div>
               {titleChainState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{titleChainState.correlationId.slice(0, 16)}...</code></div>}
             </div>
