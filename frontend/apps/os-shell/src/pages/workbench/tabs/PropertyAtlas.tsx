@@ -32,6 +32,7 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
+import { getWorkbenchLiveScopeDecision } from '../../../config/workbenchLiveScope';
 import LayerWorksModule from '../../suites/modules/LayerWorksModule';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -285,6 +286,7 @@ function gisSourceToDisclosure(
 
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const enrichmentScope = getWorkbenchLiveScopeDecision('atlas-enrichment-layers');
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   // Live GIS hooks
@@ -749,6 +751,20 @@ export const PropertyAtlas: React.FC = () => {
       {/* ── Source disclosure: Workbench hosts the live Atlas GIS and LayerWorks parcel workflow ── */}
       <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
         Workbench hosts live Atlas GIS parcel geometry when available. Enrichment layers are shown only when returned by county services.
+      </div>
+
+      <div
+        className="tf-status-warning rounded-xl p-4"
+        data-testid="atlas-enrichment-deferred-disclosure"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="tf-text font-semibold">Atlas enrichment layers are deferred for production scope.</p>
+            <p className="tf-text-secondary text-sm mt-1">{enrichmentScope.rationale}</p>
+            <p className="tf-text-dim text-xs mt-2">{enrichmentScope.smallestSafeAction}</p>
+          </div>
+          <span className="tf-badge tf-badge-warning shrink-0">Deferred</span>
+        </div>
       </div>
 
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
