@@ -22,7 +22,7 @@
 - `/atlas` loads.
 - TerraGIS is partial and uses live Atlas GIS parcel data or reports unavailable honestly.
 - ParcelLens is partial and shows owner, situs, centroid, area, and RingJson presence.
-- LayerWorks is partial and shows tax area `K1`, land class `11`, flood stub, and zoning null.
+- LayerWorks is partial and shows tax area `K1`, land class `11`, flood unavailable external enrichment, and zoning null.
 - TerraQuery is read-only.
 - TerraSketch, TerraPrint, TerraExport, TerraGIS Pro, Geo Equity, and Appraisal GIS are not falsely promoted.
 - GIS geometry rows are labeled as `80,084`.

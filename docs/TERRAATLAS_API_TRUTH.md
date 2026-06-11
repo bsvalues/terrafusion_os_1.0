@@ -26,7 +26,7 @@ Source: `backend/src/TerraFusion.API/Controllers/AtlasGisController.cs`
 | Method + path | Runtime result |
 |---------------|----------------|
 | `GET /api/atlas/gis/parcels/119802030006001/boundary` | `200`, `source: live` |
-| `GET /api/atlas/gis/parcels/119802030006001/layers` | `200`, live tax area and land class; flood stub; zoning null |
+| `GET /api/atlas/gis/parcels/119802030006001/layers` | `200`, live tax area and land class; flood unavailable external enrichment; zoning null |
 | `GET /api/atlas/gis/parcels/119802030006001` | Preferred combined response for Suite app proof |
 
 ## Canonical Runtime Parcel
@@ -41,7 +41,7 @@ Source: `backend/src/TerraFusion.API/Controllers/AtlasGisController.cs`
 | Geometry | 15-point RingJson polygon |
 | Tax area | `K1`, source live |
 | Land class | `primaryUseCd: 11`, source live |
-| Flood | `source: stub` |
+| Flood | `source: unavailable` |
 | Zoning | `null` |
 
 ## Data-Count Truth

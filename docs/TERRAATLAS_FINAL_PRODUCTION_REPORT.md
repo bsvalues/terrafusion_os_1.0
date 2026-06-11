@@ -28,7 +28,7 @@ This PR proves `/atlas` as a TerraAtlas Suite app surface with partial live app 
 |-----|--------|---------------|
 | TerraGIS | `PARTIAL` | Uses live Atlas GIS parcel data and shows boundary status; Mapbox live tiles are external. |
 | ParcelLens | `PARTIAL` | Shows real parcel owner, situs, centroid, area, and RingJson presence. |
-| LayerWorks | `PARTIAL` | Shows live tax area and land class, plus flood stub and zoning null. |
+| LayerWorks | `PARTIAL` | Shows live tax area and land class, plus flood unavailable external enrichment and zoning null. |
 | TerraQuery | `READ_ONLY` | Read-only posture only. |
 | TerraSketch | `NOT_IMPLEMENTED` | No geometry editing claim. |
 | TerraPrint | `NOT_IMPLEMENTED` | No print pipeline claim. |
@@ -67,6 +67,6 @@ Browser proof target: `/atlas` only.
 | Gap | Status |
 |-----|--------|
 | Mapbox live tiles | External token/configuration required. |
-| FEMA flood enrichment | External enrichment required; current flood source is stub. |
+| FEMA flood enrichment | External enrichment required; current flood source is unavailable. |
 | Zoning enrichment | External enrichment required; current zoning is null. |
 | Editing, print, export, pro GIS, equity analytics, appraisal GIS | Separate implementation/proof required. |
