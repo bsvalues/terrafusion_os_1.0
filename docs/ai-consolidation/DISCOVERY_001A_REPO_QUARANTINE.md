@@ -48,9 +48,22 @@ the substantial quarantine assets carry cloud-dependence or unverified-runtime c
 
 ## Security note
 
-No hardcoded API keys/endpoints found in the swept assets; external AI access is env-var gated
-(`OPENAI_API_KEY` etc.). The hardcoded-port and fabricated-count instances above are recorded as
-honesty/ports debt, not security exposure.
+No hardcoded API **keys** found in the swept assets; cloud API access is key-gated via env vars
+(`OPENAI_API_KEY` etc.).
+
+> **Correction (post-review, P2):** an earlier version of this note claimed "no hardcoded endpoints."
+> That was wrong. `.ai/core/AIModelHub.ts` **hardcodes provider endpoints** — Anthropic (`:166`),
+> OpenAI (`:191`), Gemini (`:216`), Azure OpenAI (`:266`); only the local Ollama endpoint (`:241`) is
+> env-gated (`TF_OLLAMA_PORT`). So `.ai/` carries real **endpoint debt**, and the reconciliation matrix
+> (WO-AI-DISCOVERY-002) must NOT treat this area as cleared. The hardcoded-port and fabricated-count
+> instances elsewhere remain honesty/ports debt, not key exposure.
+
+## Authorization (governance trail)
+
+Per repo `AGENTS.md`, work outside the Core Governance Surface "requires explicit authorization." These
+`docs/ai-consolidation/**` discovery artifacts are explicitly authorized by the **TF-AI-OPS-001** goal
+directive, which mandates the AI estate inventory and consolidation plan. This note records that
+linkage so the artifacts are authorized, not guardrail-violating.
 
 ## Discovery debt (carried into 002)
 
