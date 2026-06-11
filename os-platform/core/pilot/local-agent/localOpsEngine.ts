@@ -1,0 +1,228 @@
+// WO-AI-CONSOLIDATION-001 — LocalOps engine (provider/engine layer only).
+//
+// Turns the existing local brain into the LocalOps engine path. Composes the
+// already-governed LocalOps seams — the profile contract (WO-001), the local
+// provider abstraction (WO-002), the trace adapter (WO-003), the local KB
+// (WO-004), and the read-only diagnostics (WO-005) — into the in-shell panel's
+// `LocalOpsViewModel` plus a single local-only answer.
+//
+// It drives the SAME local-Ollama substrate MuseService uses, but ONLY through
+// the LocalOps provider abstraction: there is no call to the .NET Muse HTTP
+// endpoint, no cloud path, and no silent fallback. Local-first, source-grounded,
+// trace-emitting, read-only — the LocalOps doctrine, end to end.
+//
+// Boundary note: this is the engine/view-model layer (Node). Transporting its
+// output to the browser panel (a host/endpoint) is a separate, approval-gated
+// slice — the in-shell panel still performs no API calls itself.
+
+import { resolveAiProfile, type AiProfileConfig, type AiProfileName } from './aiProfile.js';
+import {
+  createLocalOpsProvider,
+  isLocalOpsProblem,
+  type LocalOpsOutcomeStatus,
+} from './localOpsProvider.js';
+import { createLocalOpsKb } from './localOpsKb.js';
+import { createLocalOpsDiagnostics } from './localOpsDiagnostics.js';
+import { createLocalOpsTrace, createRecordingLocalOpsTraceSink } from './localOpsTrace.js';
+import type { ModelAdapter } from './modelAdapter.js';
+
+// ============================================================================
+// View model — STRUCTURALLY MIRRORS the in-shell panel's `LocalOpsViewModel`
+// (frontend/apps/os-shell/src/components/localops/LocalOpsPanel.tsx). The two
+// must stay in sync; the panel store consumes this exact shape via setData.
+// ============================================================================
+
+export interface LocalOpsDiagnosticView {
+  name: string;
+  status: 'ok' | 'warn' | 'error';
+  summary: string;
+}
+
+export interface LocalOpsRefusalView {
+  reasonCode: string;
+  status: string;
+  message: string;
+  safeAlternatives?: string[];
+}
+
+export interface LocalOpsSourceView {
+  sourceFile: string;
+  heading?: string;
+  snippet: string;
+}
+
+export interface LocalOpsTraceView {
+  type: string;
+  ts: string;
+  summary: string;
+}
+
+export interface LocalOpsViewModel {
+  profile: AiProfileName;
+  provider: string;
+  model?: string;
+  flags: {
+    externalCalls: boolean;
+    allowWeb: boolean;
+    allowShell: boolean;
+    allowMutation: boolean;
+    requireTrace: boolean;
+    requireSources: boolean;
+  };
+  providerStatus: { ok: boolean; status: LocalOpsOutcomeStatus; adapter?: string };
+  diagnostics: LocalOpsDiagnosticView[];
+  refusal?: LocalOpsRefusalView;
+  grounded: boolean;
+  sources: LocalOpsSourceView[];
+  traceEvents: LocalOpsTraceView[];
+}
+
+/** Result of a single LocalOps ask — never a silent cloud fallback. */
+export interface LocalOpsAnswer {
+  answered: boolean;
+  text: string | null;
+  grounded: boolean;
+  sources: LocalOpsSourceView[];
+  refusal?: LocalOpsRefusalView;
+}
+
+export interface CreateLocalOpsEngineOptions {
+  /** Repo root for the local KB / diagnostics (docs allowlist only). */
+  repoRoot: string;
+  /** Env for the AI profile contract. Defaults to process.env. */
+  env?: Record<string, string | undefined>;
+  /** Test/DI seam: inject the local model adapter instead of constructing one. */
+  adapter?: ModelAdapter;
+}
+
+export interface LocalOpsEngine {
+  /** Build the current panel view model (no network, read-only). */
+  viewModel(): LocalOpsViewModel;
+  /** Ask the local engine a question. Local-only, grounded, read-only. */
+  ask(question: string): Promise<LocalOpsAnswer>;
+  /** Release the provider adapter. Idempotent. */
+  close(): Promise<void>;
+}
+
+function flagsOf(config: AiProfileConfig): LocalOpsViewModel['flags'] {
+  return {
+    externalCalls: config.externalCalls,
+    allowWeb: config.allowWeb,
+    allowShell: config.allowShell,
+    allowMutation: config.allowMutation,
+    requireTrace: config.requireTrace,
+    requireSources: config.requireSources,
+  };
+}
+
+/**
+ * Create a LocalOps engine over the governed local provider. Provider, KB,
+ * diagnostics and trace share one recording trace so the view model can surface
+ * the append-only event stream.
+ */
+export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): LocalOpsEngine {
+  const env = options.env ?? process.env;
+  const config = resolveAiProfile(env);
+
+  const recording = createRecordingLocalOpsTraceSink();
+  const trace = createLocalOpsTrace({ sink: recording });
+
+  const provider = createLocalOpsProvider({ config, env, adapter: options.adapter });
+  const kb = createLocalOpsKb({ repoRoot: options.repoRoot, env, trace });
+  const diagnostics = createLocalOpsDiagnostics({ repoRoot: options.repoRoot, env, trace });
+
+  let lastGrounded = false;
+  let lastSources: LocalOpsSourceView[] = [];
+  let lastRefusal: LocalOpsRefusalView | undefined;
+
+  function traceViews(): LocalOpsTraceView[] {
+    return recording.events.map((e) => ({ type: e.type, ts: e.ts, summary: e.summary }));
+  }
+
+  function viewModel(): LocalOpsViewModel {
+    const st = provider.status();
+    return {
+      profile: config.profile,
+      provider: config.provider || '(unset)',
+      model: config.model || undefined,
+      flags: flagsOf(config),
+      providerStatus: { ok: st.ok, status: st.status, adapter: st.adapter },
+      diagnostics: diagnostics.runAll().map((d) => ({
+        name: d.name,
+        status: d.status,
+        summary: d.summary,
+      })),
+      refusal: lastRefusal,
+      grounded: lastGrounded,
+      sources: lastSources,
+      traceEvents: traceViews(),
+    };
+  }
+
+  async function ask(question: string): Promise<LocalOpsAnswer> {
+    trace.aiRequested({ profile: config.profile, provider: config.provider });
+
+    // Source grounding (I6): retrieve local sources first; when sources are
+    // required and nothing supports the question, refuse BEFORE calling the
+    // model — an ungrounded confident answer is not permitted.
+    const retrieval = kb.retrieve(question);
+    lastGrounded = retrieval.grounded;
+    lastSources = retrieval.sources.map((s) => ({
+      sourceFile: s.sourceFile,
+      heading: s.heading,
+      snippet: s.snippet,
+    }));
+
+    if (config.requireSources && !retrieval.canAnswer) {
+      const refusal: LocalOpsRefusalView = {
+        reasonCode: 'NO_GROUNDING',
+        status: 'refused',
+        message: 'No local source supports this question; LocalOps will not answer ungrounded.',
+        safeAlternatives: [
+          'Add the relevant document to the local KB (docs/ allowlist)',
+          'Ask about a documented runbook topic',
+        ],
+      };
+      lastRefusal = refusal;
+      trace.emit('localops.policy.refused', 'LocalOps refused: no local source', {
+        reasonCode: 'NO_GROUNDING',
+        profile: config.profile,
+        violatedConstraint: 'source_grounding',
+      });
+      trace.aiResponded({ status: 'refused' });
+      return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
+    }
+
+    // The provider enforces local-only / no-external / no-silent-fallback. We
+    // never construct a cloud adapter and never reach the network on refusal.
+    const result = await provider.complete({ messages: [{ role: 'user', content: question }] });
+
+    if (isLocalOpsProblem(result)) {
+      const refusal: LocalOpsRefusalView = {
+        reasonCode: result.reasonCode,
+        status: result.status,
+        message: result.message,
+        safeAlternatives: result.safeAlternatives,
+      };
+      lastRefusal = refusal;
+      trace.policyRefused(result);
+      trace.aiResponded({ status: result.status });
+      return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
+    }
+
+    lastRefusal = undefined;
+    trace.aiResponded({ status: 'success' });
+    return {
+      answered: true,
+      text: result.completion.text,
+      grounded: retrieval.grounded,
+      sources: lastSources,
+    };
+  }
+
+  async function close(): Promise<void> {
+    await provider.close();
+  }
+
+  return { viewModel, ask, close };
+}
