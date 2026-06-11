@@ -1,11 +1,14 @@
-# TerraAtlas API Truth
+# TerraAtlas Suite API Truth
 
 **Branch**: `feat/terraatlas-full-production`  
-**Verified SHA**: `cab511d4cb81ed285783cea0dd771493e940b014`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
 
-This is the current frontend/backend contract for the Atlas GIS runtime proof.
+This is the shared frontend/backend Atlas GIS contract used as TerraAtlas Suite
+runtime proof. It supports the `/atlas` sprint boundary only.
+
+This document is not Property Workbench proof. `/property/:parcelId/atlas` is
+`OUT_OF_SCOPE_PROPERTY_WORKBENCH`.
 
 ## Canonical Runtime Parcel
 
@@ -16,12 +19,40 @@ This is the current frontend/backend contract for the Atlas GIS runtime proof.
 | Owner | `COX DONNA M` |
 | Centroid | `46.1669718650024, -119.115612775675` |
 | Area | `0.3271 ac`, `14,250 sqft` |
-| Geometry | 15-point `RingJson` polygon |
+| Geometry | 15-point `ringJson` polygon |
 
-Do not use placeholder/demo parcel IDs such as `00AA00001129049` or `12345-001` as
-runtime proof.
+Do not use placeholder/demo parcel IDs such as `00AA00001129049` or `12345-001`
+as runtime proof.
 
-## Frontend Contract
+## Backend Contract
+
+Source: `backend/src/TerraFusion.API/Controllers/AtlasGisController.cs`
+
+Route prefix: `api/atlas/gis`
+
+| Method + path | Auth | Runtime result |
+|---------------|------|----------------|
+| `GET parcels/{parcelId}/boundary` | `[AllowAnonymous]` | `200`, `source: live` for `119802030006001`; `404` only when boundary is unavailable. |
+| `GET parcels/{parcelId}/layers` | `[AllowAnonymous]` | Returns parcel layers; live tax area and land class for the proof parcel. |
+| `GET parcels/{parcelId}` | `[AllowAnonymous]` | Combined boundary + layers response used by frontend Atlas GIS consumers. |
+| `GET geocode` | `[Authorize]` | Address geocode via geospatial enricher. Not part of this unauthenticated proof. |
+| `GET spatial-query` | `[Authorize]` | Bounding-box query. Not part of this proof. |
+| `GET layers/{layerName}/features` | `[Authorize]` | Layer feature retrieval. Not part of this proof. |
+| `POST upload-shapefile` | `[Authorize]` | Upload route. Not part of this proof. |
+
+## Frontend Suite Contract
+
+Source: `frontend/apps/os-shell/src/pages/suites/AtlasSuiteHome.tsx`
+
+| Surface | Runtime expectation |
+|---------|---------------------|
+| `/atlas` | Loads TerraAtlas Suite workspace. |
+| `suite-atlas-root` | Stable root selector for Suite rendering. |
+| `atlas-breadth-posture-note` | Discloses queued breadth modules honestly. |
+| `atlas-source-disclosure` | Appears when county aggregates are not live backend metrics. |
+| Appraisal GIS module | Classified as the live Suite GIS path backed by Benton geometry/stats. |
+
+The shared GIS API is also available to Atlas GIS consumers through:
 
 Source: `frontend/apps/os-shell/src/hooks/useAtlasGis.ts`
 
@@ -31,23 +62,8 @@ Source: `frontend/apps/os-shell/src/hooks/useAtlasGis.ts`
 | `useParcelBoundary(parcelId)` | wrapper | Deprecated wrapper over `useParcelGis().boundary`. |
 | `useParcelLayers(parcelId)` | wrapper | Deprecated wrapper over `useParcelGis().layers`. |
 
-Browser calls use `buildApiUrl('/atlas/gis' + path)`, which returns `/api/...` and relies on
-the Vite proxy. For this proof, Vite was launched with `VITE_API_URL=http://127.0.0.1:5047`.
-
-## Backend Contract
-
-Source: `backend/src/TerraFusion.API/Controllers/AtlasGisController.cs`  
-Route prefix: `api/atlas/gis`
-
-| Method + path | Auth | Runtime result |
-|---------------|------|----------------|
-| `GET parcels/{parcelId}/boundary` | `[AllowAnonymous]` | `200`, `source: live` for `119802030006001`; `404` only when boundary is unavailable. |
-| `GET parcels/{parcelId}/layers` | `[AllowAnonymous]` | Returns parcel layers; live tax area/land class for the proof parcel. |
-| `GET parcels/{parcelId}` | `[AllowAnonymous]` | Combined boundary + layers; frontend uses this route. |
-| `GET geocode` | `[Authorize]` | Address geocode via geospatial enricher. Not part of the unauthenticated parcel proof. |
-| `GET spatial-query` | `[Authorize]` | Bounding-box query. Not part of this proof. |
-| `GET layers/{layerName}/features` | `[Authorize]` | Layer feature retrieval. Not part of this proof. |
-| `POST upload-shapefile` | `[Authorize]` | Upload route. Not part of this proof. |
+These hooks are API proof only in this sprint. Any Property Workbench consumer is
+out of scope for PR acceptance.
 
 ## Live Data Source
 
@@ -56,8 +72,8 @@ Route prefix: `api/atlas/gis`
 | Postgres container | `terrafusion-postgres-dev` |
 | Host/port | `localhost:5432` |
 | Database | `terrafusion` |
-| GIS table | `GisParcelGeometries`, `80,084` rows |
-| PACS table | `PacsParcel`, `128,950` rows |
+| GIS table | `GisParcelGeometries` |
+| PACS table | `PacsParcel` |
 | Geometry source | ArcGIS-derived geometry in Postgres |
 
 ## Response Shape
@@ -96,22 +112,22 @@ Layers:
 
 ## Reproduction Commands
 
+Run the API from the repository root:
+
 ```powershell
-docker exec terrafusion-postgres-dev psql -U postgres -d terrafusion -At `
-  -c 'select count(*) from "GisParcelGeometries";'
-
-docker exec terrafusion-postgres-dev psql -U postgres -d terrafusion -At `
-  -c 'select count(*) from "PacsParcel";'
-
 dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
 
-cd backend/src/TerraFusion.API
 $env:ASPNETCORE_ENVIRONMENT='Development'
 $env:DatabaseProvider='Postgres'
 $env:ConnectionStrings__DefaultConnection='Host=localhost;Database=terrafusion;Username=postgres;Password=devpassword123;Port=5432'
-dotnet bin/Debug/net8.0/TerraFusion.API.dll --urls http://127.0.0.1:5047 --skip-dev-seeders
+dotnet run --project backend/src/TerraFusion.API/TerraFusion.API.csproj --no-build --no-launch-profile --urls http://127.0.0.1:5047 --skip-dev-seeders
+```
 
+In a second shell from the repository root:
+
+```powershell
 Invoke-WebRequest http://127.0.0.1:5047/health -UseBasicParsing
-Invoke-WebRequest http://127.0.0.1:5047/api/atlas/gis/parcels/119802030006001/boundary -UseBasicParsing
-Invoke-WebRequest http://127.0.0.1:5047/api/atlas/gis/parcels/119802030006001 -UseBasicParsing
+powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 `
+  -ApiBaseUrl http://127.0.0.1:5047 `
+  -ParcelId 119802030006001
 ```

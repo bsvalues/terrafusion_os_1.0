@@ -1,31 +1,44 @@
-# TerraAtlas Final Production Report
+# TerraAtlas Suite Final Production Report
 
 **Branch**: `feat/terraatlas-full-production`  
-**Verified SHA**: `cab511d4cb81ed285783cea0dd771493e940b014`  
 **Date**: 2026-06-10  
-**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS`
+**Terminal status**: `PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY`
 
 ## Verdict
 
-TerraAtlas is production-ready for the proven core runtime path. The API and Workbench tab
-were verified from this exact worktree/SHA against real Benton County GIS data for parcel
-`119802030006001`.
+This PR proves the TerraAtlas Suite runtime surface.
 
-Full production proof is not claimed because several enrichments remain external:
-Mapbox token/configuration, FEMA flood enrichment, and zoning enrichment.
+It does not prove Property Workbench Atlas-tab integration. Property Workbench
+integration is intentionally excluded and belongs to the separate Workbench
+agent/workstream.
+
+The accepted production status is limited to the TerraAtlas Suite and its shared
+GIS API consumption. Full production proof is not claimed because Mapbox token
+configuration, FEMA flood enrichment, and zoning enrichment remain external gaps.
+
+## Scope Boundary
+
+| In scope | Out of scope |
+|----------|--------------|
+| `/atlas` | `/property/:parcelId/atlas` |
+| TerraAtlas Suite workspace | Atlas Workbench tab |
+| TerraAtlas GIS API consumption | Workbench tab order |
+| TerraAtlas layer/source honesty | Dossier/Pilot finality |
+| TerraAtlas Mapbox fallback | Workbench routing |
+| TerraAtlas runtime smoke script | Workbench component tests |
+
+If it starts with `/property`, it is not this sprint.
 
 ## Runtime Proof Summary
 
-| Proof item | Result |
-|------------|--------|
-| API build | `dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj` passed with 0 warnings and 0 errors |
-| API identity | PID `35672`, content root under `C:\Users\bsval\.codex-worktrees\terraatlas-full-production` |
-| API health | `GET http://127.0.0.1:5047/health` returned `200` |
-| GIS DB | `GisParcelGeometries` has `80,084` rows; `PacsParcel` has `128,950` rows |
-| Boundary endpoint | `200`, `source: live`, 15-point polygon |
-| Combined endpoint | `200`, `boundary.source: live`, `layers.source: live` |
-| Frontend proxy | `GET http://127.0.0.1:3107/api/atlas/gis/parcels/119802030006001` returned `200`, `live/live` |
-| Browser route | `http://127.0.0.1:3107/property/119802030006001/atlas` rendered the Atlas tab |
+| Proof item | Result expected from proof wall |
+|------------|---------------------------------|
+| API build | `dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj` |
+| API health | `GET /health` returns `200` |
+| Boundary endpoint | `GET /api/atlas/gis/parcels/119802030006001/boundary` returns `source: live` |
+| Combined endpoint | `GET /api/atlas/gis/parcels/119802030006001` returns `boundary.source: live`, `layers.source: live` |
+| Browser route | `/atlas` renders TerraAtlas Suite |
+| Runtime smoke | `scripts/smoke/terraatlas-runtime-smoke.ps1` validates the real parcel contract |
 
 Proven parcel:
 
@@ -37,43 +50,43 @@ Proven parcel:
 | Centroid | `46.1669718650024, -119.115612775675` |
 | Tax area | `K1` |
 | Land class | `primaryUseCd: 11` |
-
-## Browser Verification
-
-The in-app browser confirmed these visible/DOM signals:
-
-| Signal | Result |
-|--------|--------|
-| `property-atlas-tab` | present |
-| `map-container` | present |
-| `atlas-geometry-disclosure` | present |
-| Parcel ID | visible |
-| Situs | visible |
-| Owner | visible |
-| Centroid | visible |
-| Tax district | visible |
+| Flood | `source: stub` |
+| Zoning | `null` |
 
 ## Test Wall
 
-| Command | Result |
-|---------|--------|
-| `pnpm run type-check` | pass |
-| `node --test os-platform/core/tests/phase83-tools.test.mjs` | pass, 56/56 |
-| `pnpm --dir frontend run type-check` | pass |
-| `pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx apps/os-shell/src/__tests__/workbench/workbench.contractGates.test.ts` | pass, 45/45 |
-| Pre-push unit tests | pass, 164/164 |
-| Pre-push `pnpm run security:scan` | Snyk Code completed with findings in governed targets; hook did not block |
-| Pre-push Release backend build | pass, 0 warnings, 0 errors |
+Required:
+
+```powershell
+git status --short
+git diff --name-only origin/main...HEAD
+pnpm run type-check
+node --test os-platform/core/tests/phase83-tools.test.mjs
+pnpm --dir frontend run type-check
+pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/atlas/atlasGeo.contract.test.tsx apps/os-shell/src/__tests__/atlas/atlasNeighborhood.contract.test.tsx
+dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
+powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ApiBaseUrl http://127.0.0.1:5047 -ParcelId 119802030006001
+```
+
+Not acceptance proof for this PR:
+
+- Workbench Atlas tab tests.
+- Workbench tab order tests.
+- `/property/:parcelId/atlas` browser proof.
+- Dossier/Pilot finality tests.
 
 ## Changeset
 
 | File | Purpose |
 |------|---------|
-| `frontend/apps/property-workbench/src/pages/workbench/tabs/PropertyAtlas.tsx` | Honest wording/token cleanup for the Atlas Workbench proof surface. |
-| `docs/RUNTIME_PROOF_TERRAATLAS.md` | Runtime proof record. |
-| `docs/TERRAATLAS_API_TRUTH.md` | API contract and reproduction commands. |
-| `docs/TERRAATLAS_CHANGESET_BOUNDARY.md` | Worktree/cherry-pick/scope boundary. |
+| `docs/RUNTIME_PROOF_TERRAATLAS.md` | TerraAtlas Suite runtime proof boundary. |
+| `docs/TERRAATLAS_API_TRUTH.md` | Shared Atlas GIS API contract used by TerraAtlas Suite. |
+| `docs/TERRAATLAS_CHANGESET_BOUNDARY.md` | Branch and scope boundary. |
 | `docs/TERRAATLAS_FINAL_PRODUCTION_REPORT.md` | Final status and PR evidence. |
+| `docs/TERRAATLAS_RELEASE_CHECKLIST.md` | Release checklist for `/atlas` only. |
+| `scripts/smoke/terraatlas-runtime-smoke.ps1` | Reproducible TerraAtlas GIS API smoke proof. |
+
+No Property Workbench source file is part of the final intended diff.
 
 ## External Gaps
 
@@ -82,28 +95,35 @@ The in-app browser confirmed these visible/DOM signals:
 | Mapbox live satellite/canvas | External configuration gap: `VITE_MAPBOX_ACCESS_TOKEN` is absent. |
 | FEMA flood layer | External enrichment gap: backend reports flood as `source: stub`. |
 | Zoning layer | External enrichment gap: backend returns zoning as `null`. |
-| Snyk scan | Ran in pre-push; findings exist in governed targets, and the hook did not block. |
 
 ## PR Title
 
-`fix(atlas): prove TerraAtlas core runtime with live Benton GIS`
+`fix(atlas): prove TerraAtlas Suite runtime with live Benton GIS`
 
 ## PR Body
 
 ```markdown
 ## Summary
-- proves TerraAtlas core runtime from an isolated Codex worktree using real parcel `119802030006001`
-- records live API/browser evidence for Benton GIS boundary, layers, owner, situs, centroid, and tax area
-- updates Atlas proof docs to classify Mapbox, FEMA, and zoning as external enrichment gaps
+- proves the TerraAtlas Suite runtime surface for `/atlas`
+- adds a reproducible TerraAtlas GIS API smoke script for real parcel `119802030006001`
+- removes Property Workbench proof claims from this PR
+- documents Mapbox, FEMA, and zoning as external enrichment/configuration gaps
+
+## Out of scope
+- Property Workbench
+- `/property/:parcelId/atlas`
+- Atlas Workbench tab proof
+- Workbench tab order or shell behavior
+- Dossier/Pilot finality
 
 ## Verification
 - pnpm run type-check
 - node --test os-platform/core/tests/phase83-tools.test.mjs
 - pnpm --dir frontend run type-check
-- pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.test.tsx apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx apps/os-shell/src/__tests__/workbench/workbench.contractGates.test.ts
+- pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/atlas/atlasGeo.contract.test.tsx apps/os-shell/src/__tests__/atlas/atlasNeighborhood.contract.test.tsx
 - dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
-- runtime API/browser proof documented in docs/RUNTIME_PROOF_TERRAATLAS.md
+- powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ApiBaseUrl http://127.0.0.1:5047 -ParcelId 119802030006001
 
 ## Terminal Status
-PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS
+PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS - TERRAATLAS SUITE ONLY
 ```
