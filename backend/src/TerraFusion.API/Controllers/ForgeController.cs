@@ -50,8 +50,16 @@ public class ForgeController : ControllerBase
         CancellationToken ct)
     {
         _logger.LogInformation("Forge available years requested for {ParcelId}", parcelId);
-        var result = await _valuationService.GetAvailableYearsAsync(parcelId, ct);
-        return Ok(result);
+        try
+        {
+            var result = await _valuationService.GetAvailableYearsAsync(parcelId, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Forge available years rejected for unknown parcel {ParcelId}", parcelId);
+            return NotFound(new { error = ex.Message });
+        }
     }
 
     /// <summary>GET /api/forge/{parcelId}/cost?taxYear=2025</summary>
@@ -66,8 +74,16 @@ public class ForgeController : ControllerBase
         var year = taxYear ?? DateTime.UtcNow.Year;
         _logger.LogInformation("Forge cost approach requested for {ParcelId} year {TaxYear}", parcelId, year);
 
-        var result = await _valuationService.CalculateCostApproachAsync(parcelId, year, ct);
-        return Ok(result);
+        try
+        {
+            var result = await _valuationService.CalculateCostApproachAsync(parcelId, year, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Forge cost approach rejected for unknown parcel {ParcelId}", parcelId);
+            return NotFound(new { error = ex.Message });
+        }
     }
 
     /// <summary>GET /api/forge/{parcelId}/sales?taxYear=2025</summary>
@@ -86,6 +102,11 @@ public class ForgeController : ControllerBase
         {
             var result = await _valuationService.CalculateSalesComparisonAsync(parcelId, year, ct);
             return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Forge sales comparison rejected for unknown parcel {ParcelId}", parcelId);
+            return NotFound(new { error = ex.Message });
         }
         catch (Exception ex)
         {
@@ -106,8 +127,16 @@ public class ForgeController : ControllerBase
         var year = taxYear ?? DateTime.UtcNow.Year;
         _logger.LogInformation("Forge income approach requested for {ParcelId} year {TaxYear}", parcelId, year);
 
-        var result = await _valuationService.CalculateIncomeApproachAsync(parcelId, year, ct);
-        return Ok(result);
+        try
+        {
+            var result = await _valuationService.CalculateIncomeApproachAsync(parcelId, year, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Forge income approach rejected for unknown parcel {ParcelId}", parcelId);
+            return NotFound(new { error = ex.Message });
+        }
     }
 
     /// <summary>GET /api/forge/{parcelId}/reconciliation?taxYear=2025</summary>
@@ -122,8 +151,16 @@ public class ForgeController : ControllerBase
         var year = taxYear ?? DateTime.UtcNow.Year;
         _logger.LogInformation("Forge reconciliation requested for {ParcelId} year {TaxYear}", parcelId, year);
 
-        var result = await _valuationService.ReconcileAsync(parcelId, year, ct);
-        return Ok(result);
+        try
+        {
+            var result = await _valuationService.ReconcileAsync(parcelId, year, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Forge reconciliation rejected for unknown parcel {ParcelId}", parcelId);
+            return NotFound(new { error = ex.Message });
+        }
     }
 
     /// <summary>

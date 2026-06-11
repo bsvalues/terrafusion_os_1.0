@@ -137,15 +137,32 @@ describe('PropertyWorkbenchWindow Tab Embedding', () => {
     }
   });
 
-  it('TABS array has all 9 canonical tab entries in correct order', () => {
-    const ids = extractTabArrayIds(source, 'TABS');
+  it('delegates rendered tab navigation to PropertyWorkbenchSurface', () => {
+    assert.match(
+      source,
+      /PropertyWorkbenchSurface/,
+      'window adapter must use PropertyWorkbenchSurface for canonical tab navigation',
+    );
+  });
+});
+
+// ============================================================================
+// PropertyWorkbenchSurface.tsx — Shared Workbench Surface
+// ============================================================================
+
+describe('PropertyWorkbenchSurface Tab Embedding', () => {
+  const surfacePath = resolve(SHELL, 'pages/workbench/PropertyWorkbenchSurface.tsx');
+  const source = readFileSync(surfacePath, 'utf-8');
+
+  it('WORKBENCH_TABS has all 9 canonical tab entries in correct order', () => {
+    const ids = extractTabArrayIds(source, 'WORKBENCH_TABS');
 
     assert.equal(ids.length, 9,
-      `TABS array has ${ids.length} entries, expected 9.\nFound: [${ids.join(', ')}]`
+      `WORKBENCH_TABS has ${ids.length} entries, expected 9.\nFound: [${ids.join(', ')}]`
     );
 
     assert.deepEqual(ids, CANONICAL_TAB_IDS,
-      `TABS array order does not match canonical order.\n` +
+      `WORKBENCH_TABS order does not match canonical order.\n` +
       `Expected: [${CANONICAL_TAB_IDS.join(', ')}]\n` +
       `Got:      [${ids.join(', ')}]`
     );

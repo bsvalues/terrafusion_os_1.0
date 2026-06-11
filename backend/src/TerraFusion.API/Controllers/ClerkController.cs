@@ -149,6 +149,14 @@ public class ClerkController : ControllerBase
         var countyId = await ResolveCountyIdAsync();
         if (countyId is null) return Forbid();
 
+        var parcelExists = await _db.Properties
+            .AsNoTracking()
+            .AnyAsync(p => p.CountyId == countyId.Value &&
+                           (p.ParcelId == parcelId || p.ParcelNumber == parcelId));
+
+        if (!parcelExists)
+            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
+
         var chain = await _db.TitleChainEntries
             .AsNoTracking()
             .Where(t => t.CountyId == countyId.Value && t.ParcelId == parcelId)
@@ -163,7 +171,19 @@ public class ClerkController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(new { chain });
+        if (chain.Count == 0)
+        {
+            Response.Headers["X-Clerk-Title-Chain-Source"] = "not-live:title-chain-records-not-projected";
+            return Ok(new
+            {
+                chain,
+                source = "not-live:title-chain-records-not-projected",
+                message = "Title-chain records are not projected for this parcel in the governed Clerk store."
+            });
+        }
+
+        Response.Headers["X-Clerk-Title-Chain-Source"] = "live";
+        return Ok(new { chain, source = "live" });
     }
 
     // ── GET api/clerk/fees ──────────────────────────────────────────

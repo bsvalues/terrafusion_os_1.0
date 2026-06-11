@@ -28,7 +28,7 @@
  * Architecture: UI → select params → governed tool → correlationId UX
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -48,6 +48,7 @@ import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
 import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
 import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
 import AppealCertificationPanel from '../../../components/dais/AppealCertificationPanel';
+import { getPermitsLane, type PermitsLaneResult } from '../../../services/suites/daisService';
 
 interface WorkflowStep {
   name: string;
@@ -204,6 +205,8 @@ const MORNING_BRIEF_ROLES = [
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
+  const [permitsLane, setPermitsLane] = useState<PermitsLaneResult | null>(null);
+  const [permitsLaneError, setPermitsLaneError] = useState<string | null>(null);
 
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
   const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
@@ -246,6 +249,20 @@ export const PropertyDais: React.FC = () => {
   const [morningBriefState, setMorningBriefState] = useState<DaisToolState<MorningBriefResult>>({ status: 'idle' });
   const [morningBriefRole, setMorningBriefRole] = useState<(typeof MORNING_BRIEF_ROLES)[number]['value']>('chief_appraiser');
   const [morningBriefTaxYear, setMorningBriefTaxYear] = useState<number>(new Date().getFullYear());
+
+  useEffect(() => {
+    let cancelled = false;
+    setPermitsLane(null);
+    setPermitsLaneError(null);
+    getPermitsLane(parcelId)
+      .then((result) => {
+        if (!cancelled) setPermitsLane(result);
+      })
+      .catch((error) => {
+        if (!cancelled) setPermitsLaneError(error instanceof Error ? error.message : 'Permit lane status unavailable');
+      });
+    return () => { cancelled = true; };
+  }, [parcelId]);
   /** explain_senior_exemption_impact — senior exemption impact summary */
   const handleExemptionImpact = useCallback(async () => {
     setExemptionState({ status: 'loading' });
@@ -613,6 +630,15 @@ export const PropertyDais: React.FC = () => {
           for this parcel and tax year.
         </p>
         <WorkbenchSourceBadge source="unavailable" />
+      </div>
+
+      <div className="flex items-center justify-between gap-3 px-2" data-testid="dais-permits-lane-disclosure">
+        <p className="text-xs tf-text-dim">
+          Permit records are not projected into the governed Workbench permit lane
+          {permitsLane?.source ? ` (${permitsLane.source})` : ' (not-live:permit-records-not-projected)'}.
+          {permitsLaneError ? ` Status check failed: ${permitsLaneError}` : ''}
+        </p>
+        <WorkbenchSourceBadge source={permitsLane?.isLive ? 'live' : 'unavailable'} />
       </div>
 
       {/* Active Appeals from Store */}

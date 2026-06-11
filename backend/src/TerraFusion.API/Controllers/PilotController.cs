@@ -140,29 +140,38 @@ public sealed class PilotController : ControllerBase
         }
     }
 
-    // ── Graceful-degradation stubs for when the dedicated pilot runtime
+    // ── Explicit non-live responses for when the dedicated pilot runtime
     // (dev-pilot-runtime.mjs, port 4317) is offline. The frontend proxy
-    // is redirected here so the Pilot tab renders rather than showing 500s.
+    // is redirected here so the Pilot tab can disclose the non-live lane.
 
-    /// <summary>Stub: returns empty tool list when pilot runtime is offline.</summary>
+    private void MarkPilotRuntimeOffline()
+    {
+        Response.Headers["X-Pilot-Source"] = "not-live:pilot-runtime-offline";
+    }
+
+    /// <summary>Returns explicit non-live tool list when pilot runtime is offline.</summary>
     [HttpGet("tools")]
     [AllowAnonymous]
     public IActionResult GetTools([FromQuery] string? mode = null)
     {
-        _logger.LogDebug("Pilot tools stub hit (mode={Mode}) — pilot runtime offline", mode);
-        return Ok(new { tools = Array.Empty<object>(), source = "stub", runtimeOnline = false });
+        _logger.LogDebug("Pilot tools fallback hit (mode={Mode}) — pilot runtime offline", mode);
+        MarkPilotRuntimeOffline();
+        return Ok(new { tools = Array.Empty<object>(), source = "not-live:pilot-runtime-offline", runtimeOnline = false });
     }
 
-    /// <summary>Stub: returns graceful error when pilot invoke is hit without runtime.</summary>
+    /// <summary>Returns explicit non-live error when pilot invoke is hit without runtime.</summary>
     [HttpPost("invoke")]
     [AllowAnonymous]
     public IActionResult InvokeTool([FromBody] object? body = null)
     {
-        _logger.LogDebug("Pilot invoke stub hit — pilot runtime offline");
+        _logger.LogDebug("Pilot invoke fallback hit — pilot runtime offline");
+        MarkPilotRuntimeOffline();
         return Ok(new
         {
             success = false,
-            correlationId = $"stub-{Guid.NewGuid():N}",
+            correlationId = $"pilot-offline-{Guid.NewGuid():N}",
+            source = "not-live:pilot-runtime-offline",
+            runtimeOnline = false,
             error = new
             {
                 code = "PILOT_RUNTIME_OFFLINE",
@@ -172,29 +181,32 @@ public sealed class PilotController : ControllerBase
         });
     }
 
-    /// <summary>Stub: returns empty traces when pilot runtime is offline.</summary>
+    /// <summary>Returns explicit non-live traces when pilot runtime is offline.</summary>
     [HttpGet("traces")]
     [AllowAnonymous]
     public IActionResult GetTraces()
     {
-        _logger.LogDebug("Pilot traces stub hit — pilot runtime offline");
-        return Ok(new { events = Array.Empty<object>(), total = 0, source = "stub", runtimeOnline = false });
+        _logger.LogDebug("Pilot traces fallback hit — pilot runtime offline");
+        MarkPilotRuntimeOffline();
+        return Ok(new { events = Array.Empty<object>(), total = 0, source = "not-live:pilot-runtime-offline", runtimeOnline = false });
     }
 
-    /// <summary>Stub: returns health indicating pilot runtime is offline.</summary>
+    /// <summary>Returns health indicating pilot runtime is offline.</summary>
     [HttpGet("health")]
     [AllowAnonymous]
     public IActionResult GetPilotHealth()
     {
-        _logger.LogDebug("Pilot health stub hit — pilot runtime offline");
-        return Ok(new { status = "degraded", runtimeOnline = false, message = "Pilot runtime offline — using .NET fallback stubs" });
+        _logger.LogDebug("Pilot health fallback hit — pilot runtime offline");
+        MarkPilotRuntimeOffline();
+        return Ok(new { status = "degraded", source = "not-live:pilot-runtime-offline", runtimeOnline = false, message = "Pilot runtime is not live. The dedicated Pilot runtime is offline." });
     }
 
-    /// <summary>Stub: returns empty for validate when pilot runtime is offline.</summary>
+    /// <summary>Returns explicit non-live validation when pilot runtime is offline.</summary>
     [HttpPost("validate")]
     [AllowAnonymous]
     public IActionResult ValidateTool([FromBody] object? body = null)
     {
-        return Ok(new { valid = false, runtimeOnline = false });
+        MarkPilotRuntimeOffline();
+        return Ok(new { valid = false, source = "not-live:pilot-runtime-offline", runtimeOnline = false });
     }
 }

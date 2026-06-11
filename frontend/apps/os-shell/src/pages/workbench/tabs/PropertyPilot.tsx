@@ -21,6 +21,7 @@ import {
 import {
   InvocationHistory,
   ParcelContextHeader,
+  WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
 import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
@@ -68,6 +69,8 @@ export const PropertyPilot: React.FC = () => {
   const [tools, setTools] = useState<PilotTool[]>([]);
   const [toolsLoading, setToolsLoading] = useState(true);
   const [toolsError, setToolsError] = useState<string | null>(null);
+  const [runtimeOnline, setRuntimeOnline] = useState<boolean | null>(null);
+  const [runtimeSource, setRuntimeSource] = useState<string | null>(null);
 
   // Invocation history (accumulated across tool runs)
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
@@ -80,17 +83,23 @@ export const PropertyPilot: React.FC = () => {
     let cancelled = false;
     setToolsLoading(true);
     setToolsError(null);
+    setRuntimeOnline(null);
+    setRuntimeSource(null);
 
     listPilotTools('muse')
       .then((response) => {
         if (!cancelled) {
           setTools(filterMuseReadOnlyTools(response.tools));
+          setRuntimeOnline(response.runtimeOnline ?? true);
+          setRuntimeSource(response.source ?? 'live');
           setToolsLoading(false);
         }
       })
       .catch((err) => {
         if (!cancelled) {
           setToolsError(err instanceof Error ? err.message : 'Failed to load tools');
+          setRuntimeOnline(null);
+          setRuntimeSource(null);
           setToolsLoading(false);
         }
       });
@@ -159,9 +168,24 @@ export const PropertyPilot: React.FC = () => {
         }
       />
 
-      {!toolsLoading && !toolsError && (
+      {!toolsLoading && !toolsError && runtimeOnline !== false && (
         <div className='tf-status-info rounded-xl p-4' data-testid='pilot-muse-scope'>
           <p className='tf-text'>This panel provides only read-only reasoning and explanation tools for this parcel.</p>
+        </div>
+      )}
+
+      {!toolsLoading && !toolsError && runtimeOnline === false && (
+        <div className='tf-status-warning rounded-xl p-4' data-testid='pilot-runtime-not-live'>
+          <div className='flex items-start justify-between gap-3'>
+            <div>
+              <p className='tf-text font-semibold'>Pilot runtime is not live.</p>
+              <p className='tf-text-secondary text-sm mt-1'>
+                The dedicated Pilot runtime is offline, so read-only analysis tools and traces are intentionally unavailable for this parcel.
+              </p>
+              {runtimeSource && <p className='tf-text-dim text-xs mt-2'>Source: {runtimeSource}</p>}
+            </div>
+            <WorkbenchSourceBadge source='unavailable' />
+          </div>
         </div>
       )}
 
@@ -216,8 +240,18 @@ export const PropertyPilot: React.FC = () => {
               setToolsLoading(true);
               setToolsError(null);
               listPilotTools('muse')
-                .then((r) => { setTools(filterMuseReadOnlyTools(r.tools)); setToolsLoading(false); })
-                .catch((e) => { setToolsError(e instanceof Error ? e.message : 'Retry failed'); setToolsLoading(false); });
+                .then((r) => {
+                  setTools(filterMuseReadOnlyTools(r.tools));
+                  setRuntimeOnline(r.runtimeOnline ?? true);
+                  setRuntimeSource(r.source ?? 'live');
+                  setToolsLoading(false);
+                })
+                .catch((e) => {
+                  setToolsError(e instanceof Error ? e.message : 'Retry failed');
+                  setRuntimeOnline(null);
+                  setRuntimeSource(null);
+                  setToolsLoading(false);
+                });
             }}
             className='mt-2 px-3 py-1 text-sm tf-hover-surface rounded'
           >
@@ -268,7 +302,7 @@ export const PropertyPilot: React.FC = () => {
         </div>
       )}
 
-      {!toolsLoading && !toolsError && tools.length === 0 && (
+      {!toolsLoading && !toolsError && tools.length === 0 && runtimeOnline !== false && (
         <div className='tf-status-info rounded-xl p-4'>
           <p className='tf-text-muted text-center'>No analysis tools are currently available.</p>
         </div>
