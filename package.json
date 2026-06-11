@@ -562,5 +562,10 @@
       "Port": 5000
     },
     "Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM"
+  },
+  "pnpm": {
+    "overrides": {
+      "shell-quote": ">=1.8.4"
+    }
   }
 }
