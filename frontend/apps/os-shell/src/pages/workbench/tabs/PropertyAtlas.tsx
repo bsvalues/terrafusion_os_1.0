@@ -231,27 +231,27 @@ function ParcelMapVisualization({
 
       {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Parcel boundary shown is approximate. Connected geometry is shown only when returned by the Atlas GIS response.
+        Parcel boundary shown is approximate. Full GIS geometry loads when a connected layer is available.
       </p>
 
       {/* Map info bar */}
       <div className='flex items-center justify-between px-4 py-2 text-xs' style={{ background: 'hsl(var(--tf-text-primary-hs) 0% / 0.4)' }}>
-        <span className='tf-text-secondary'>
+        <span className='text-white/70'>
           {result.parcelId}
         </span>
         {result.centroid && (
-          <span className='tf-text-dim font-mono'>
+          <span className='text-white/50 font-mono'>
             {result.centroid.lat.toFixed(4)}°N, {Math.abs(result.centroid.lng).toFixed(4)}°W
             <span
               data-testid="atlas-centroid-disclosure"
-              className="ml-1 tf-text-muted"
+              className="ml-1 text-white/30"
               style={{ fontSize: 9 }}
             >
               (preview only)
             </span>
           </span>
         )}
-        <span className='tf-text-dim'>
+        <span className='text-white/50'>
           {selectedLayers.size} layer{selectedLayers.size !== 1 ? 's' : ''} active
         </span>
       </div>
