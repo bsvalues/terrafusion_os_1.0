@@ -270,13 +270,11 @@ describe('Atlas GIS Entry Points', () => {
     expect(screen.getByTestId('atlas-queue')).toBeDefined();
   });
 
-  it('Atlas module grid contains standalone TerraAtlas Suite app entries', () => {
+  it('Atlas module grid contains workbench-mode GIS modules targeting atlas tab', () => {
     render(<MemoryRouter><AtlasSuiteHome /></MemoryRouter>);
     const grid = screen.getByTestId('mock-module-grid');
-    const atlasStandalone = grid.querySelectorAll('[data-launch-mode="standalone"][data-module-id="atlas"]');
     const atlasWorkbench = grid.querySelectorAll('[data-workbench-tab="atlas"]');
-    expect(atlasStandalone.length).toBeGreaterThan(0);
-    expect(atlasWorkbench).toHaveLength(0);
+    expect(atlasWorkbench.length).toBeGreaterThan(0);
   });
 
   it('every Atlas module button is clickable and labeled', () => {
@@ -289,19 +287,21 @@ describe('Atlas GIS Entry Points', () => {
     });
   });
 
-  it('clicking Atlas Suite modules invokes standalone Atlas activation contract', async () => {
+  it('clicking Atlas workbench modules invokes correct activation contract', async () => {
     const user = userEvent.setup();
     render(<MemoryRouter><AtlasSuiteHome /></MemoryRouter>);
     const grid = screen.getByTestId('mock-module-grid');
-    const standaloneButtons = Array.from(grid.querySelectorAll('[data-launch-mode="standalone"]')) as HTMLElement[];
-    expect(standaloneButtons.length).toBeGreaterThan(0);
+    const workbenchButtons = Array.from(grid.querySelectorAll('[data-launch-mode="workbench"]')) as HTMLElement[];
 
-    for (const btn of standaloneButtons) {
+    for (const btn of workbenchButtons) {
       mockActivateModule.mockClear();
       await user.click(btn);
       expect(mockActivateModule).toHaveBeenCalledWith(
-        'atlas',
-        expect.objectContaining({ source: 'start_menu' })
+        'property-workbench',
+        expect.objectContaining({
+          source: 'start_menu',
+          metadata: expect.objectContaining({ tabId: 'atlas' }),
+        })
       );
     }
   });
@@ -335,20 +335,14 @@ describe('Cross-Suite Entry Point Consistency', () => {
     }
   });
 
-  it('Dais has workbench-mode entry points; Atlas and Forge expose standalone Suite entries', () => {
-    // Dais remains workbench-targeted for its parcel workflow.
-    const { unmount: unmountDais } = render(<MemoryRouter><DaisSuiteHome /></MemoryRouter>);
-    const daisWorkbench = screen.getByTestId('mock-module-grid').querySelectorAll('[data-launch-mode="workbench"]');
-    expect(daisWorkbench.length).toBeGreaterThan(0);
-    unmountDais();
-
-    // Atlas is the /atlas Suite surface in this WO, not the Property Workbench Atlas tab.
-    const { unmount: unmountAtlas } = render(<MemoryRouter><AtlasSuiteHome /></MemoryRouter>);
-    const atlasStandalone = screen.getByTestId('mock-module-grid').querySelectorAll('[data-launch-mode="standalone"]');
-    const atlasWorkbench = screen.getByTestId('mock-module-grid').querySelectorAll('[data-launch-mode="workbench"]');
-    expect(atlasStandalone.length).toBeGreaterThan(0);
-    expect(atlasWorkbench).toHaveLength(0);
-    unmountAtlas();
+  it('Dais and Atlas have workbench-mode entry points; Forge exposes standalone primary modules', () => {
+    // Dais and Atlas use SuiteModuleGrid with workbench-targeted entries
+    for (const Component of [DaisSuiteHome, AtlasSuiteHome]) {
+      const { unmount } = render(<MemoryRouter><Component /></MemoryRouter>);
+      const wb = screen.getByTestId('mock-module-grid').querySelectorAll('[data-launch-mode="workbench"]');
+      expect(wb.length).toBeGreaterThan(0);
+      unmount();
+    }
 
     // Forge uses its own inline primary-applications section with standalone modules
     const { container, unmount: unmountForge } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
