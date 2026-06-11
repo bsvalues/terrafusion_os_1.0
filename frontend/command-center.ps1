@@ -217,8 +217,10 @@ function Invoke-MonitoringCommand {
 
     switch ($MonitorType) {
         "monitor" {
-            Write-Command "👁️ Starting real-time monitoring..." "COMMAND"
-            .\elite-dashboard.ps1 -Monitoring
+            # elite-dashboard.ps1 was quarantined (WO-AI-CONSOLIDATION-004b): it served
+            # fabricated metrics (agentCount 1008, fake FISMA HIGH claim). No truthful
+            # replacement exists yet, so this command reports unavailable instead.
+            Write-Command "👁️ Real-time monitoring dashboard is unavailable (quarantined fabricated-metrics surface; see QUARANTINE/elite-dashboard/)" "ERROR"
         }
 
         "logs" {

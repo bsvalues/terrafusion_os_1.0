@@ -101,7 +101,7 @@ public class SwarmIntelligenceService : ISwarmIntelligenceService
                 CollectiveIntelligence = 0.0,
                 EmergentBehaviorScore = 0.0,
                 ConsensusLevel = 0.0,
-                ProcessingTime = TimeSpan.FromMilliseconds(15),
+                ProcessingTime = TimeSpan.Zero,
                 PatternsDiscovered = 0
             }
         };

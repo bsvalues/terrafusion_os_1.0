@@ -44,6 +44,7 @@ public class SwarmStubHonestyTests
         result.SwarmMetrics.EmergentBehaviorScore.Should().Be(0.0);
         result.SwarmMetrics.ConsensusLevel.Should().Be(0.0);
         result.SwarmMetrics.PatternsDiscovered.Should().Be(0);
+        result.SwarmMetrics.ProcessingTime.Should().Be(TimeSpan.Zero, "no swarm processing occurred");
         result.OptimizationScore.Should().Be(0.0);
         result.SwarmConsensus.Should().Be(0.0);
     }
