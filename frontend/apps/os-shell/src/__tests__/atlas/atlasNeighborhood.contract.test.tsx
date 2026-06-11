@@ -49,12 +49,55 @@ vi.mock('../../lib/utils', () => ({
 vi.mock('../../hooks/useCountyStats', () => ({
   useCountyStats: () => ({
     stats: {
-      totalParcels: 89247,
+      totalParcels: 128784,
       parcelsByCity: { Kennewick: 30000, Richland: 25000, Prosser: 8000 },
       parcelsByType: { residential: 65000, commercial: 12000, industrial: 5000 },
     },
     loading: false,
     error: null,
+    source: 'live',
+  }),
+}));
+
+vi.mock('../../hooks/useAtlasGis', () => ({
+  useParcelGis: () => ({
+    boundary: {
+      data: {
+        parcelId: '119802030006001',
+        source: 'live',
+        centroid: {
+          lat: 46.1669718650024,
+          lng: -119.115612775675,
+          derivedFrom: 'arcgis-centroid',
+        },
+        dimensions: null,
+        areaAcres: 0.3271,
+        areaSqFt: 14250,
+        situsDisplay: '203 E 47TH PL KENNEWICK, WA 99337-5905',
+        ringJson: JSON.stringify(Array.from({ length: 15 }, (_, index) => [-119.115 + index * 0.001, 46.166])),
+        ownerName: 'COX DONNA M',
+        imageUrl: null,
+        sketchUrl: null,
+      },
+      loading: false,
+      error: null,
+      source: 'live',
+      refetch: vi.fn(),
+    },
+    layers: {
+      data: {
+        parcelId: '119802030006001',
+        source: 'live',
+        zoning: null,
+        flood: { zone: 'Unknown', risk: 'Unknown', source: 'stub' },
+        taxArea: { taxAreaNumber: 'K1', taxAreaDescription: null, taxYear: 2026, source: 'live' },
+        landClass: { landTypeCode: null, landClassCode: null, primaryUseCd: '11', subUseCd: null, source: 'live' },
+      },
+      loading: false,
+      error: null,
+      source: 'live',
+      refetch: vi.fn(),
+    },
   }),
 }));
 
@@ -68,10 +111,6 @@ vi.mock('../../components/suites/OperationalQueue', () => ({
   OperationalQueue: (props: any) => (
     <div data-accent={props.accentVar}>OperationalQueue</div>
   ),
-}));
-
-vi.mock('../../components/workbench/ParcelContextBanner', () => ({
-  ParcelContextBanner: () => null,
 }));
 
 vi.mock('../../api/pilotApi', () => ({
@@ -277,5 +316,42 @@ describe('AtlasSuiteHome — contract', () => {
 
     expect(screen.getByTestId('atlas-evidence-plane')).toBeInTheDocument();
     expect(screen.getByText('County Spatial Audit Posture')).toBeInTheDocument();
+  });
+
+  it('renders Suite app truth and corrected data-count labels', () => {
+    render(
+      <MemoryRouter>
+        <AtlasSuiteHome />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('atlas-suite-app-proof')).toBeInTheDocument();
+    expect(screen.getByText('GIS geometry rows')).toBeInTheDocument();
+    expect(screen.getByText('80,084')).toBeInTheDocument();
+    expect(screen.getByText('RingJson geometries')).toBeInTheDocument();
+    expect(screen.getByText('80,083')).toBeInTheDocument();
+    expect(screen.getByText('Active parcel count')).toBeInTheDocument();
+    expect(screen.getByText('Not verified')).toBeInTheDocument();
+    expect(screen.queryByText('Total Parcels')).not.toBeInTheDocument();
+    expect(screen.queryByText('128,784')).not.toBeInTheDocument();
+  });
+
+  it('renders canonical parcel and layer truth for TerraGIS, ParcelLens, and LayerWorks', () => {
+    render(
+      <MemoryRouter>
+        <AtlasSuiteHome />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('TerraGIS · PARTIAL')).toBeInTheDocument();
+    expect(screen.getByText('ParcelLens · PARTIAL')).toBeInTheDocument();
+    expect(screen.getByText('LayerWorks · PARTIAL')).toBeInTheDocument();
+    expect(screen.getByText('COX DONNA M')).toBeInTheDocument();
+    expect(screen.getByText(/203 E 47TH PL KENNEWICK/i)).toBeInTheDocument();
+    expect(screen.getByText(/RingJson 15 points/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tax area K1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Land class 11/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Flood stub/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Zoning null\/not configured/i)).toBeInTheDocument();
   });
 });

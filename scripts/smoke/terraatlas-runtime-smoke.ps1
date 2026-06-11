@@ -56,7 +56,26 @@ Assert-True ($null -eq $combined.layers.zoning) "Zoning should remain null exter
 
 [pscustomobject]@{
   status = "pass"
+  terminalStatus = ("PRODUCTION READY WITH EXTERNAL ENRICHMENT GAPS {0} TERRAATLAS SUITE APPS PARTIAL" -f [char]0x2014)
   routeScope = "/atlas"
+  appProof = [pscustomobject]@{
+    TerraGIS = "PARTIAL"
+    ParcelLens = "PARTIAL"
+    LayerWorks = "PARTIAL"
+    TerraQuery = "READ_ONLY"
+    TerraSketch = "NOT_IMPLEMENTED"
+    TerraPrint = "NOT_IMPLEMENTED"
+    TerraExport = "NOT_IMPLEMENTED"
+    TerraGISPro = "QUEUED"
+    GeoEquity = "QUEUED"
+    AppraisalGIS = "QUEUED"
+  }
+  dataCountTruth = [pscustomobject]@{
+    gisGeometryRows = 80084
+    ringJsonGeometries = 80083
+    activeParcelCount = "not verified"
+    pacsRows = "hidden from Suite UI unless explicitly labeled as PACS rows"
+  }
   parcelId = $ParcelId
   boundarySource = $combined.boundary.source
   layersSource = $combined.layers.source

@@ -1,15 +1,16 @@
-# TerraAtlas Suite Release Checklist
+# TerraAtlas Suite Apps Release Checklist
 
-**Scope**: TerraAtlas Suite runtime proof only.
+**WO**: `WO-TERRAATLAS-SUITE-APPS-RUNTIME-TRUTH`  
+**Scope**: `/atlas` Suite app runtime truth only.
 
-## Required
+## Required Proof
 
 | Check | Command or evidence |
 |-------|---------------------|
-| Clean status before final report | `git status --short` |
+| Clean status | `git status --short` |
 | Diff review | `git diff --name-only origin/main...HEAD` |
 | Core type-check | `pnpm run type-check` |
-| Phase 83 governance test | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
+| Phase 83 gate | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 | Frontend type-check | `pnpm --dir frontend run type-check` |
 | TerraAtlas Suite tests | `pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/atlas/atlasGeo.contract.test.tsx apps/os-shell/src/__tests__/atlas/atlasNeighborhood.contract.test.tsx` |
 | Backend build | `dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj` |
@@ -18,17 +19,13 @@
 
 ## Pass Criteria
 
-- TerraAtlas Suite loads at `/atlas`.
-- TerraAtlas Suite source-status disclosures are honest.
-- The real parcel `119802030006001` passes the shared Atlas GIS API smoke.
-- Mapbox missing-token behavior is classified as an external configuration gap.
-- FEMA flood enrichment remains classified as an external enrichment gap while backend returns `source: stub`.
-- Zoning enrichment remains classified as an external enrichment gap while backend returns `zoning: null`.
-
-## Non-Blocking External Gaps
-
-| Gap | Classification |
-|-----|----------------|
-| Mapbox token absent | `EXTERNAL-ONLY` |
-| FEMA enrichment stub | `EXTERNAL-ONLY` |
-| Zoning enrichment null | `EXTERNAL-ONLY` |
+- `/atlas` loads.
+- TerraGIS is partial and uses live Atlas GIS parcel data or reports unavailable honestly.
+- ParcelLens is partial and shows owner, situs, centroid, area, and RingJson presence.
+- LayerWorks is partial and shows tax area `K1`, land class `11`, flood stub, and zoning null.
+- TerraQuery is read-only.
+- TerraSketch, TerraPrint, TerraExport, TerraGIS Pro, Geo Equity, and Appraisal GIS are not falsely promoted.
+- GIS geometry rows are labeled as `80,084`.
+- RingJson geometries are labeled as `80,083`.
+- Active parcel count is labeled as not verified.
+- Mapbox, FEMA, and zoning gaps are classified honestly.
