@@ -399,3 +399,15 @@ export {
   type DiagnosticOutcome,
   type CreateLocalOpsDiagnosticsOptions,
 } from './localOpsDiagnostics.js';
+
+export {
+  createLocalOpsEngine,
+  type LocalOpsEngine,
+  type LocalOpsViewModel,
+  type LocalOpsAnswer,
+  type LocalOpsDiagnosticView,
+  type LocalOpsRefusalView,
+  type LocalOpsSourceView,
+  type LocalOpsTraceView,
+  type CreateLocalOpsEngineOptions,
+} from './localOpsEngine.js';
