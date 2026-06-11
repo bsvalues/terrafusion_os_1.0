@@ -51,7 +51,7 @@ Assert-True ([int]$combined.boundary.areaSqFt -eq 14250) "Area square feet misma
 Assert-True ($ring.Count -eq 15) "Expected 15 ring points."
 Assert-True ($combined.layers.taxArea.taxAreaNumber -eq "K1") "Tax area mismatch."
 Assert-True ($combined.layers.landClass.primaryUseCd -eq "11") "Land class mismatch."
-Assert-True ($combined.layers.flood.source -eq "stub") "Flood source should remain stub external enrichment."
+Assert-True ($combined.layers.flood.source -eq "unavailable") "Flood source should remain unavailable external enrichment."
 Assert-True ($null -eq $combined.layers.zoning) "Zoning should remain null external enrichment."
 
 [pscustomobject]@{
@@ -91,6 +91,6 @@ Assert-True ($null -eq $combined.layers.zoning) "Zoning should remain null exter
   ringPoints = $ring.Count
   taxArea = $combined.layers.taxArea.taxAreaNumber
   landClass = $combined.layers.landClass.primaryUseCd
-  floodClassification = "EXTERNAL-ONLY: source stub"
+  floodClassification = "EXTERNAL-ONLY: source unavailable"
   zoningClassification = "EXTERNAL-ONLY: zoning null"
 } | ConvertTo-Json -Depth 5

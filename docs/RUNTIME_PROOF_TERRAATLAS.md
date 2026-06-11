@@ -43,7 +43,7 @@ GET /api/atlas/gis/parcels/119802030006001
 |-----|--------|-------|
 | TerraGIS | `PARTIAL` | Uses the live Atlas GIS parcel endpoint; boundary source is live. Mapbox tiles remain an external configuration gap. |
 | ParcelLens | `PARTIAL` | Shows owner `COX DONNA M`, situs, centroid, area, and RingJson presence for parcel `119802030006001`. |
-| LayerWorks | `PARTIAL` | Shows tax area `K1` source live, land class `11` source live, flood `source: stub`, and zoning `null`. |
+| LayerWorks | `PARTIAL` | Shows tax area `K1` source live, land class `11` source live, flood `source: unavailable`, and zoning `null`. |
 | TerraQuery | `READ_ONLY` | Read-only posture only; no spatial mutation or export is claimed. |
 | TerraSketch | `NOT_IMPLEMENTED` | No geometry editing is exposed or claimed. |
 | TerraPrint | `NOT_IMPLEMENTED` | No print pipeline is exposed or claimed. |
@@ -74,7 +74,7 @@ GET /api/atlas/gis/parcels/119802030006001
 | Ring geometry | 15-point RingJson polygon |
 | Tax area | `K1`, source live |
 | Land class | `primaryUseCd: 11`, source live |
-| Flood | `source: stub` |
+| Flood | `source: unavailable` |
 | Zoning | `null` |
 
 ## Required Gates
@@ -94,5 +94,5 @@ GET /api/atlas/gis/parcels/119802030006001
 | Gap | Classification |
 |-----|----------------|
 | Mapbox live tiles | `EXTERNAL_REQUIRED`: no token is configured. |
-| FEMA flood enrichment | `EXTERNAL_REQUIRED`: backend returns flood data as `source: stub`. |
+| FEMA flood enrichment | `EXTERNAL_REQUIRED`: backend returns flood data as `source: unavailable`. |
 | Zoning enrichment | `EXTERNAL_REQUIRED`: backend returns zoning as `null`. |

@@ -89,7 +89,7 @@ vi.mock('../../hooks/useAtlasGis', () => ({
         parcelId: '119802030006001',
         source: 'live',
         zoning: null,
-        flood: { zone: 'Unknown', risk: 'Unknown', source: 'stub' },
+        flood: { zone: 'unavailable', risk: 'FEMA flood enrichment unavailable', source: 'unavailable' },
         taxArea: { taxAreaNumber: 'K1', taxAreaDescription: null, taxYear: 2026, source: 'live' },
         landClass: { landTypeCode: null, landClassCode: null, primaryUseCd: '11', subUseCd: null, source: 'live' },
       },
