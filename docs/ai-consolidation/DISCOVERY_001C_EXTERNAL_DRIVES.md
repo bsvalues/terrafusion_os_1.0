@@ -5,6 +5,12 @@
 > Inventory voice only — verdicts describe what exists; nothing here authorizes recovery,
 > resurrection, mounting, or deletion. This sweep ran locally on the operator workstation
 > (it was impossible from the cloud container that executed 001a/001b's predecessors).
+> **Authorization (governance trail):** per repo `AGENTS.md`, work outside the Core Governance
+> Surface requires explicit authorization. These `docs/ai-consolidation/**` discovery artifacts are
+> explicitly authorized by the **TF-AI-OPS-001** goal directive (which mandates discovery across
+> repo quarantine, GitHub, and external drives D:/E:) — the same linkage recorded in the merged
+> [`DISCOVERY_001A_REPO_QUARANTINE.md`](DISCOVERY_001A_REPO_QUARANTINE.md) §Authorization and
+> carried by the merged 001b (#955) and 002 (#957) deliverables on this exact path.
 > **Drives:** D: 932 GB (712 GB used, 77%) · E: 4.6 TB (4.4 TB used, 97% full)
 
 ## Per-drive structure summary
