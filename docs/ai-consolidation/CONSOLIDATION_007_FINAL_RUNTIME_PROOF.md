@@ -7,7 +7,7 @@
 
 ## What the operator path IS, runtime-proven
 
-**One path: LocalOps/TerraPilot.** The Node `os-platform/core/pilot/local-agent/**` stack — local-first,
+**One path: TerraPilot LocalOps.** The Node `os-platform/core/pilot/local-agent/**` stack — local-first,
 source-grounded, trace-emitting, read-only, human-approved-before-mutation — composed into an engine
 that produces the in-shell panel's view model and now emits onto the canonical **TerraTrace** spine.
 
@@ -62,7 +62,7 @@ DB, no dotnet). Required governance gate `phase83-tools` also green (56/56).
 
 ## Done-definition (TF-AI-OPS-001) — final state
 
-- ✅ Single canonical on-server AI path (LocalOps/TerraPilot), runtime-proven (82/82 + I1–I8).
+- ✅ Single canonical on-server AI path (TerraPilot LocalOps), runtime-proven (82/82 + I1–I8).
 - ✅ Muse/diagnostics/sources/trace unified **on the LocalOps path**; ⚠️ .NET trace-unify pending.
 - ⚠️ Fabricated AI status: **canon corrected (004a)**; runtime surfaces pending **004b** (approval).
 - ✅ Full AI estate inventory with verdicts (in-repo + quarantine + 130-repo GitHub); ⚠️ drives pending.
