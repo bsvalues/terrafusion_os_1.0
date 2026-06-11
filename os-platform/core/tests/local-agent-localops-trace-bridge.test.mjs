@@ -126,8 +126,27 @@ describe('LocalOps → TerraTrace bridge (WO-AI-CONSOLIDATION-002)', () => {
     const trace = createLocalOpsTrace({ sink: bridge });
     const diag = createLocalOpsDiagnostics({ repoRoot: REPO_ROOT, env: localopsEnv, trace });
     diag.request('provider.status');
-    const types = service.query({ toolId: 'localops.diagnostics' }).map((e) => e.type);
-    assert.deepStrictEqual(types, ['tool_invoked', 'tool_completed']);
+
+    // Assert the causal PAIR, not the array order returned by query():
+    // TraceService.query() is newest-first by contract, so the display order
+    // can legitimately surface `tool_completed` before `tool_invoked` whenever
+    // the two emits land in different milliseconds (the case on CI). The spine
+    // stores them causally; correctness is "one invoked + one completed for the
+    // same correlation, invoked not after completed" — never display order.
+    const events = service.query({ toolId: 'localops.diagnostics' });
+    const invoked = events.filter((e) => e.type === 'tool_invoked');
+    const completed = events.filter((e) => e.type === 'tool_completed');
+    assert.strictEqual(invoked.length, 1, 'exactly one tool_invoked emitted');
+    assert.strictEqual(completed.length, 1, 'exactly one tool_completed emitted');
+    assert.strictEqual(
+      invoked[0].correlationId,
+      completed[0].correlationId,
+      'invoked and completed must share a correlationId (a genuine pair)'
+    );
+    assert.ok(
+      new Date(invoked[0].timestamp).getTime() <= new Date(completed[0].timestamp).getTime(),
+      'tool_invoked must causally precede tool_completed'
+    );
   });
 
   it('summaries on the spine carry no raw PII (redaction upstream holds)', () => {
