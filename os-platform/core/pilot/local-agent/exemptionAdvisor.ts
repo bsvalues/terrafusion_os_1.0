@@ -87,11 +87,28 @@ function factLines(input: ExemptionReviewInput): string[] {
  */
 function parseVerdict(text: string): ExemptionAdvisoryVerdict {
   const firstLine = text.trim().split(/\r?\n/, 1)[0]?.toLowerCase() ?? '';
-  // Keep letters, underscores and spaces so both `likely_eligible` and
-  // `likely eligible` openers match; collapse leading punctuation/markup.
-  const head = firstLine.replace(/[^a-z_ ]+/g, ' ').trim();
+  // Normalize: keep letters and underscores, turn every other run (punctuation,
+  // markup, digits, the em-dash) into a single space, and collapse repeated
+  // whitespace. So `likely-eligible:`, `likely   eligible` and `likely_eligible`
+  // all normalize to a comparable head.
+  const head = firstLine
+    .replace(/[^a-z_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   for (const v of VERDICTS) {
-    if (head.startsWith(v) || head.startsWith(v.replace(/_/g, ' '))) return v;
+    const spaced = v.replace(/_/g, ' ');
+    // Require a WORD BOUNDARY after the label (exact match or a following
+    // space) so a longer token that merely prefixes a label — e.g.
+    // `likely_eligibleish`, `needs_reviewed` — is NOT accepted and falls
+    // through to the conservative default.
+    if (
+      head === v ||
+      head === spaced ||
+      head.startsWith(`${v} `) ||
+      head.startsWith(`${spaced} `)
+    ) {
+      return v;
+    }
   }
   return 'needs_review';
 }
