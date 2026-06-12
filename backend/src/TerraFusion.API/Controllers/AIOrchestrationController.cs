@@ -464,7 +464,9 @@ public class AIOrchestrationController : ControllerBase
                     await Task.Delay(500); // Simulate failsafe execution
                     success = true;
                     message = "System failsafe executed successfully";
-                    affectedAgents = 1008;
+                    // Honesty (WO-AI-CONSOLIDATION-004c-a): no real agent fleet to affect;
+                    // do not emit a fabricated 1008 count.
+                    affectedAgents = 0;
                     break;
 
                 case "restart-all":

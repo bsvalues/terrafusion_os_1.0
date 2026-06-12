@@ -81,7 +81,8 @@ public class EnhancementController : ControllerBase
             {
                 operation = request.Operation,
                 parameters = request.Parameters ?? new Dictionary<string, object>(),
-                agentCount = request.AgentCount ?? 1008,
+                // Honesty (WO-AI-CONSOLIDATION-004c-a): no fabricated default agent count.
+                agentCount = request.AgentCount ?? 0,
                 priority = request.Priority ?? "normal",
                 timestamp = DateTime.UtcNow
             };
