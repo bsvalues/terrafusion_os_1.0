@@ -428,11 +428,14 @@ public class CostForgeAIService : ICostForgeAIService
     var startTime = DateTime.UtcNow;
     await System.Threading.Tasks.Task.Delay(2000); // Simulate sync operation
 
+    // Honesty (WO-CF-b2g): this method is a stub — no Harris PACS connection occurs.
+    // RecordsProcessed/Updated/Added were fabricated counts; harris_version was invented.
+    // Zeroed per operator representation rule. sync_type and county are request-derived (real).
     return new HarrisSyncResultDto
     {
-      RecordsProcessed = 89_247, // CARD-10: Benton County parcel count stub
-      RecordsUpdated = 1247,
-      RecordsAdded = 23,
+      RecordsProcessed = 0,
+      RecordsUpdated = 0,
+      RecordsAdded = 0,
       RecordsSkipped = 0,
       SyncStartTime = startTime,
       SyncEndTime = DateTime.UtcNow,
@@ -441,7 +444,7 @@ public class CostForgeAIService : ICostForgeAIService
       Errors = new List<string>(),
       SyncMetadata = new Dictionary<string, object>
       {
-        ["harris_version"] = "12.4.7",
+        ["harris_version"] = "0.0.0",
         ["sync_type"] = request.FullSync ? "full" : "incremental",
         ["county"] = request.CountyId
       }
@@ -489,25 +492,28 @@ public class CostForgeAIService : ICostForgeAIService
     var start = startDate ?? DateTime.UtcNow.AddDays(-30);
     var end = endDate ?? DateTime.UtcNow;
 
+    // Honesty (WO-CF-b2g): AverageAccuracy, TotalValueCalculated, CalculationsByType counts,
+    // and PerformanceTrends were fabricated constants with no real analytics pipeline backing.
+    // Zeroed per operator representation rule. TotalCalculations is real (Interlocked counter).
     return new AnalyticsDto
     {
       StartDate = start,
       EndDate = end,
       TotalCalculations = Interlocked.Read(ref _totalCalculations),
-      AverageAccuracy = 98.7m,
-      TotalValueCalculated = 2847392000m,
+      AverageAccuracy = 0m,
+      TotalValueCalculated = 0m,
       CalculationsByType = new Dictionary<string, int>
       {
-        ["residential"] = 1247,
-        ["commercial"] = 423,
-        ["industrial"] = 89,
-        ["agricultural"] = 156
+        ["residential"] = 0,
+        ["commercial"] = 0,
+        ["industrial"] = 0,
+        ["agricultural"] = 0
       },
       PerformanceTrends = new Dictionary<string, decimal>
       {
-        ["accuracy_trend"] = 0.3m,
-        ["speed_trend"] = 12.7m,
-        ["efficiency_trend"] = 8.9m
+        ["accuracy_trend"] = 0m,
+        ["speed_trend"] = 0m,
+        ["efficiency_trend"] = 0m
       },
       TopPerformingAgents = _agents.Values
             .OrderByDescending(a => a.PerformanceScore)
@@ -516,7 +522,7 @@ public class CostForgeAIService : ICostForgeAIService
             {
               AgentId = a.AgentId,
               TasksCompleted = a.TasksCompleted,
-              AverageAccuracy = 98.7m,
+              AverageAccuracy = 0m,
               PerformanceScore = a.PerformanceScore
             })
             .ToList()
