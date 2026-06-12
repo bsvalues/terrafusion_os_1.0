@@ -59,6 +59,8 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // WS-1 / 1f — Forge TF-native valuation reference data (county-scoped, versioned, audit-stamped)
   public DbSet<CostFactorSet> CostFactorSets { get; set; }
   public DbSet<CostFactor> CostFactors { get; set; }
+  public DbSet<DepreciationSchedule> DepreciationSchedules { get; set; }
+  public DbSet<DepreciationFactor> DepreciationFactors { get; set; }
 
   // AI System Entities
   public DbSet<AIAgent> AIAgents { get; set; }
