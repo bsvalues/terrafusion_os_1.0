@@ -78,13 +78,37 @@ function factLines(input: ExemptionReviewInput): string[] {
 
 /**
  * Map the model's free text to a bounded verdict. Conservative by construction:
- * anything that does not clearly assert eligibility or ineligibility falls back
- * to `needs_review`, so the advisory never over-claims eligibility.
+ * the model is instructed to BEGIN with exactly one label, so we parse ONLY the
+ * leading label of the first line. A whole-text substring scan would let a
+ * conservative opener ("needs_review — not enough evidence to say likely
+ * eligible") be overridden by a later mention of a stronger label and overstate
+ * eligibility. Anything without a recognized leading label falls back to
+ * `needs_review`, so the advisory never over-claims eligibility.
  */
 function parseVerdict(text: string): ExemptionAdvisoryVerdict {
-  const lowered = text.toLowerCase();
+  const firstLine = text.trim().split(/\r?\n/, 1)[0]?.toLowerCase() ?? '';
+  // Normalize: keep letters and underscores, turn every other run (punctuation,
+  // markup, digits, the em-dash) into a single space, and collapse repeated
+  // whitespace. So `likely-eligible:`, `likely   eligible` and `likely_eligible`
+  // all normalize to a comparable head.
+  const head = firstLine
+    .replace(/[^a-z_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   for (const v of VERDICTS) {
-    if (lowered.includes(v) || lowered.includes(v.replace(/_/g, ' '))) return v;
+    const spaced = v.replace(/_/g, ' ');
+    // Require a WORD BOUNDARY after the label (exact match or a following
+    // space) so a longer token that merely prefixes a label — e.g.
+    // `likely_eligibleish`, `needs_reviewed` — is NOT accepted and falls
+    // through to the conservative default.
+    if (
+      head === v ||
+      head === spaced ||
+      head.startsWith(`${v} `) ||
+      head.startsWith(`${spaced} `)
+    ) {
+      return v;
+    }
   }
   return 'needs_review';
 }

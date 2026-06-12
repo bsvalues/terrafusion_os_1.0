@@ -56,6 +56,35 @@ describe('LocalOps exemption advisor (WO-AI-CONSOLIDATION-005)', () => {
     await advisor.close();
   });
 
+  it('parses only the LEADING label — a conservative opener is not overridden by a later mention', async () => {
+    // The model opens with needs_review but later mentions "likely eligible".
+    // A whole-text scan would overstate eligibility; the leading-label parse must not.
+    const fake = new FakeModelAdapter().setFallback(
+      'needs_review — not enough evidence to say likely eligible; verify income documentation.'
+    );
+    const advisor = createExemptionAdvisor({ env: localopsEnv, adapter: fake });
+    const out = await advisor.review(SAMPLE_INPUT);
+    assert.strictEqual(out.verdict, 'needs_review', 'leading label wins; no eligibility overstatement');
+    await advisor.close();
+  });
+
+  it('requires a word boundary — a token that merely prefixes a label is not accepted', async () => {
+    // 'likely_eligibleish' must NOT be read as a verdict label.
+    const fake = new FakeModelAdapter().setFallback('likely_eligibleish guess — undocumented.');
+    const advisor = createExemptionAdvisor({ env: localopsEnv, adapter: fake });
+    const out = await advisor.review(SAMPLE_INPUT);
+    assert.strictEqual(out.verdict, 'needs_review', 'prefix garbage must not overstate eligibility');
+    await advisor.close();
+  });
+
+  it('normalizes internal whitespace and punctuation in the leading label', async () => {
+    const fake = new FakeModelAdapter().setFallback('likely   eligible:  owner meets the age and income tests.');
+    const advisor = createExemptionAdvisor({ env: localopsEnv, adapter: fake });
+    const out = await advisor.review(SAMPLE_INPUT);
+    assert.strictEqual(out.verdict, 'likely_eligible', 'spaced/punctuated label still matches');
+    await advisor.close();
+  });
+
   it('is unavailable with ZERO egress when AI is disabled (no local model)', async () => {
     const calls = [];
     const realFetch = globalThis.fetch;
