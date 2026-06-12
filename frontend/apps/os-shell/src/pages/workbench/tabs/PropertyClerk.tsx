@@ -302,7 +302,7 @@ export const PropertyClerk: React.FC = () => {
         {/* Title Chain (read_only) */}
         <BentoCard title='🔗 Title Chain' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
           <p className='tf-text-tertiary text-sm mb-3'>
-            Title-chain records are not projected for every parcel. Empty results are treated as a thin/non-live chain, not as proof of complete ownership history.
+            Returned title-chain owner and preview entries for parcel {parcelId} when Clerk data is available. Title-chain records are not projected for every parcel. Empty results are treated as a thin/non-live chain, not as proof of complete ownership history.
           </p>
           <button onClick={handleGetTitleChain} disabled={titleChainState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {titleChainState.status === 'loading' ? 'Loading...' : 'Get Title Chain'}

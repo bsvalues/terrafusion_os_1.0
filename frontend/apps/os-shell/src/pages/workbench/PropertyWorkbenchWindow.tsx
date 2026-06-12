@@ -11,6 +11,8 @@ import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import type { WorkbenchSegmentHandoffContext } from '../../context/workbenchTabContext';
 import { validateWorkbenchHost, type WorkbenchHostViolation } from '../../contracts/objectPlacement';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
+import { useAuthContext } from '../../auth/useAuthContext';
+import { useSession } from '../../auth/useSession';
 import { useCompanionStore } from '../../stores/companionStore';
 import { emitTraceEvent } from '../../services/terraTrace';
 import {
@@ -133,12 +135,18 @@ const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation
 };
 
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
+  const session = useSession();
+  const auth = useAuthContext();
   const parcelId = readMetadataString(metadata, 'parcelId') ?? null;
   const metadataTab = resolveMetadataTab(metadata);
   const segmentHandoff = useMemo(() => buildSegmentHandoffContext(metadata), [metadata]);
   const [activeTab, setActiveTab] = useState<WorkbenchTabSlug>(metadataTab);
   const previousTabRef = useRef<WorkbenchTabSlug>(metadataTab);
   const setCompanionTab = useCompanionStore((state) => state.setActiveTab);
+  const roles = useMemo(
+    () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
+    [auth.roles, session.role],
+  );
 
   useEffect(() => {
     setActiveTab(metadataTab);
@@ -162,6 +170,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
       parcelId={parcelId}
       currentTabId={activeTab}
       segmentHandoff={segmentHandoff}
+      rolesOverride={roles}
       showBreadcrumb={false}
       onBack={() => window.history.pushState({}, '', '/')}
       onSearch={() => window.history.pushState({}, '', '/property')}

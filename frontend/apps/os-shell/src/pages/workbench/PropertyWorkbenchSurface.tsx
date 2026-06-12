@@ -21,6 +21,7 @@ import { BADGE_PROVIDERS } from '../../services/badges';
 import { executeOsAction } from '../../services/osActions';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { usePropertyStore } from '../../stores/propertyStore';
+import { activateModule } from '../../orchestration/moduleActivation';
 
 export interface WorkbenchTab {
   id: WorkbenchTabSlug;
@@ -40,6 +41,7 @@ export interface PropertyWorkbenchSurfaceProps {
   currentTabId: WorkbenchTabSlug;
   className?: string;
   segmentHandoff?: WorkbenchSegmentHandoffContext | null;
+  rolesOverride?: readonly string[];
   showBreadcrumb?: boolean;
   buildContextRibbonFacts?: typeof buildContextRibbonFactsBase;
   onBack: () => void;
@@ -119,6 +121,7 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
   currentTabId,
   className = '',
   segmentHandoff = null,
+  rolesOverride,
   showBreadcrumb = true,
   buildContextRibbonFacts = buildContextRibbonFactsBase,
   onBack,
@@ -177,8 +180,8 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
   const countyId = auth.countyId ?? session.countyId;
   const userId = auth.userId ?? session.userId;
   const roles = useMemo(
-    () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
-    [auth.roles, session.role],
+    () => (rolesOverride ? [...rolesOverride] : auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
+    [auth.roles, rolesOverride, session.role],
   );
   const { visibleTabs } = useWorkbenchRoles(roles);
 
@@ -256,6 +259,25 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
     [auth, parcelId],
   );
 
+  const handleSegmentBackToCountyStudio = useCallback(() => {
+    if (!segmentHandoff) return;
+
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: {
+        segmentId: segmentHandoff.segmentId,
+        segmentLabel: segmentHandoff.segmentLabel,
+        studyId: segmentHandoff.studyId,
+        countyId: segmentHandoff.countyId,
+        sourceSuite: segmentHandoff.source,
+        countyStudioHandoff: segmentHandoff.handoffTemplate,
+        exceptionSetId: segmentHandoff.exceptionSetId,
+        downstreamReceiptId: segmentHandoff.downstreamReceiptId,
+        downstreamStatus: segmentHandoff.downstreamStatus,
+      },
+    });
+  }, [segmentHandoff]);
+
   if (!parcelId) {
     return (
       <div
@@ -272,6 +294,58 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
         <p className="text-sm text-center max-w-md">
           Search for a parcel to view the Property Workbench.
         </p>
+        {segmentHandoff && (
+          <div
+            className="w-full max-w-lg rounded-lg p-4 text-left"
+            style={{
+              background: 'hsl(var(--tf-surface))',
+              border: '1px solid hsl(var(--tf-border) / 0.45)',
+              color: 'hsl(var(--tf-text) / 0.82)',
+            }}
+            data-testid="workbench-segment-handoff-card"
+          >
+            <div className="text-[11px] uppercase tracking-widest" style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}>
+              County Studio Context
+            </div>
+            <h3 className="mt-1 text-base font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+              {segmentHandoff.segmentLabel ?? segmentHandoff.segmentId}
+            </h3>
+            <p className="mt-2 text-sm">
+              Segment handoff is preserved, but no parcel is selected for Workbench runtime.
+            </p>
+            <dl className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
+              <div>
+                <dt style={{ color: 'hsl(var(--tf-muted))' }}>Handoff</dt>
+                <dd>{segmentHandoff.handoffTemplate ?? 'Not specified'}</dd>
+              </div>
+              <div>
+                <dt style={{ color: 'hsl(var(--tf-muted))' }}>Downstream Status</dt>
+                <dd>{segmentHandoff.downstreamStatus ?? 'Not returned'}</dd>
+              </div>
+              <div>
+                <dt style={{ color: 'hsl(var(--tf-muted))' }}>Receipt</dt>
+                <dd>{segmentHandoff.downstreamReceiptId ?? 'Not returned'}</dd>
+              </div>
+              <div>
+                <dt style={{ color: 'hsl(var(--tf-muted))' }}>Study</dt>
+                <dd>{segmentHandoff.studyId ?? 'Not specified'}</dd>
+              </div>
+            </dl>
+            <button
+              type="button"
+              onClick={handleSegmentBackToCountyStudio}
+              className="mt-4 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+              style={{
+                background: 'hsl(var(--tf-surface-alt, var(--tf-surface)))',
+                color: 'hsl(var(--tf-text))',
+                border: '1px solid hsl(var(--tf-border) / 0.45)',
+              }}
+              data-testid="workbench-segment-back-county-studio"
+            >
+              Back to County Studio
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={onSearch}
