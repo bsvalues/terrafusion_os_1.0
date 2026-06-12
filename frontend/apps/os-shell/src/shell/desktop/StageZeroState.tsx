@@ -44,6 +44,10 @@ import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
 import { useParcelCount } from '../../hooks/useParcelCount';
+import {
+  WASHINGTON_COUNTY_RUNTIME_POSTURES,
+  getCountyRuntimePosture,
+} from '../../config/countyRuntimePosture';
 import { LiquidPanel } from '../../ui/materials';
 import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
@@ -250,6 +254,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
   const { data: statsData } = useParcelCount();
+  const bentonPosture = getCountyRuntimePosture('benton');
+  const sourceOnlyCountyCount = WASHINGTON_COUNTY_RUNTIME_POSTURES.filter(
+    (posture) => !posture.runtimeActionsAllowed
+  ).length;
+  const runtimeEnabledCountyCount = WASHINGTON_COUNTY_RUNTIME_POSTURES.length - sourceOnlyCountyCount;
   const parcelCountLabel = typeof statsData?.totalParcels === 'number'
     ? `${statsData.totalParcels.toLocaleString()} parcels`
     : 'Parcel count unavailable';
@@ -498,6 +507,33 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
               </div>
               <div className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
                 Benton County • Governed summaries only
+              </div>
+            </div>
+
+            <div
+              data-testid='county-runtime-posture-summary'
+              data-total-counties={String(WASHINGTON_COUNTY_RUNTIME_POSTURES.length)}
+              data-runtime-enabled-count={String(runtimeEnabledCountyCount)}
+              data-source-intake-count={String(sourceOnlyCountyCount)}
+              data-benton-runtime-mode={bentonPosture.runtimeMode}
+              data-intake-canonical-import-allowed='false'
+              className='rounded-xl p-3 text-xs leading-5'
+              style={{
+                border: '1px solid hsl(var(--tf-border) / 0.7)',
+                background: 'hsl(var(--tf-surface) / 0.36)',
+                color: 'hsl(var(--tf-muted))',
+              }}
+            >
+              <div className='flex flex-wrap items-center gap-x-3 gap-y-1'>
+                <span className='font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
+                  39 Washington counties registered
+                </span>
+                <span>{runtimeEnabledCountyCount} runtime-enabled: Benton</span>
+                <span>{sourceOnlyCountyCount} County Data Intake only</span>
+                <span>canonicalImportAllowed: false for intake counties</span>
+              </div>
+              <div className='mt-1'>
+                Non-Benton runtime actions remain blocked until source provenance, onboarding, and lineage proof are promoted.
               </div>
             </div>
 

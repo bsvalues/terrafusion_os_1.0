@@ -1,8 +1,12 @@
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 import { CountyEmployeeWorkspace } from '../../pages/CountyEmployeeWorkspace';
+import {
+  WASHINGTON_COUNTY_RUNTIME_POSTURES,
+  getCountyRuntimePosture,
+} from '../../config/countyRuntimePosture';
 
 const invokeToolMock = vi.fn();
 const activateModuleMock = vi.fn();
@@ -214,5 +218,51 @@ describe('CountyEmployeeWorkspace honesty contract', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Open TerraAtlas/i }));
     expect(activateModuleMock).toHaveBeenCalledWith('suite-atlas', { source: 'desktop' });
+  });
+
+  it('keeps the 39-county posture model explicit with only Benton runtime-enabled', () => {
+    expect(WASHINGTON_COUNTY_RUNTIME_POSTURES).toHaveLength(39);
+
+    const benton = getCountyRuntimePosture('benton');
+    const nonBenton = WASHINGTON_COUNTY_RUNTIME_POSTURES.filter(
+      (posture) => posture.countySlug !== 'benton'
+    );
+
+    expect(benton.runtimeMode).toBe('runtime-enabled');
+    expect(benton.runtimeActionsAllowed).toBe(true);
+    expect(benton.canonicalImportAllowed).toBe('not_applicable');
+    expect(benton.sourcePosture).toMatch(/already runtime-enabled/i);
+    expect(nonBenton).toHaveLength(38);
+    expect(nonBenton.every((posture) => posture.runtimeMode === 'source-provenance-onboarding-intake')).toBe(true);
+    expect(nonBenton.every((posture) => posture.runtimeActionsAllowed === false)).toBe(true);
+    expect(nonBenton.every((posture) => posture.canonicalImportAllowed === false)).toBe(true);
+  });
+
+  it('shows County Data Intake boundary and blocks non-Benton runtime actions', async () => {
+    render(
+      <CountyEmployeeWorkspace
+        countyId='yakima'
+        employeeName='Casey Operator'
+        employeeRole='assessor'
+        department='Assessor'
+      />
+    );
+
+    const boundary = screen.getByTestId('county-runtime-posture-boundary');
+    expect(boundary).toHaveAttribute('data-county-slug', 'yakima');
+    expect(boundary).toHaveAttribute('data-runtime-mode', 'source-provenance-onboarding-intake');
+    expect(boundary).toHaveAttribute('data-runtime-actions-allowed', 'false');
+    expect(boundary).toHaveAttribute('data-canonical-import-allowed', 'false');
+    expect(within(boundary).getByText(/County Data Intake/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Runtime actions are blocked for this county/i).length).toBeGreaterThan(0);
+
+    await waitFor(() => {
+      expect(invokeToolMock).not.toHaveBeenCalled();
+    });
+
+    const atlasButton = screen.getByRole('button', { name: /Open TerraAtlas/i });
+    expect(atlasButton).toBeDisabled();
+    fireEvent.click(atlasButton);
+    expect(activateModuleMock).not.toHaveBeenCalled();
   });
 });
