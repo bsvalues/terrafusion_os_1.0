@@ -31,7 +31,9 @@ namespace TerraFusion.AI.Services
         private const int COORDINATOR_AGENTS = 12;    // Coordination-layer design capacity
         private const int FIELD_GENERAL_AGENTS = 96;  // Tactical-layer design capacity
         private const int MICRO_AGENTS = 900;         // Rapid-response-layer design capacity
-        private const int TOTAL_AGENTS = 0;           // Active AI agent count (no swarm running)
+        // static readonly (not const) so the no-swarm guard in MonitorAISwarmAsync is a
+        // runtime check, not a constant-folded branch that trips CS0162 unreachable-code.
+        private static readonly int TOTAL_AGENTS = 0; // Active AI agent count (no swarm running)
 
         // Performance thresholds
         private const decimal SWARM_COORDINATION_THRESHOLD = 90m;  // 90% minimum coordination
@@ -78,6 +80,17 @@ namespace TerraFusion.AI.Services
 
         private async Task MonitorAISwarmAsync(CancellationToken cancellationToken)
         {
+            // Honesty (WO-AI-CONSOLIDATION-004c-b3): in declared no-swarm mode there is no
+            // swarm to score or heal. Report the truthful idle state and return — do NOT run
+            // 3-6-9 scoring, the status banner, or the imbalance/remediation workflow, and do
+            // NOT emit "IMBALANCE DETECTED" false alarms for a swarm that does not exist.
+            if (TOTAL_AGENTS == 0)
+            {
+                _logger.LogInformation(
+                    "📊 AI Swarm monitoring idle: no governed swarm running (0 agents); no scoring or remediation performed.");
+                return;
+            }
+
             using var scope = _serviceProvider.CreateScope();
             var metricsEngine = scope.ServiceProvider.GetRequiredService<Framework369MetricsEngine>();
 
