@@ -420,3 +420,13 @@ export {
   type LocalOpsTraceView,
   type CreateLocalOpsEngineOptions,
 } from './localOpsEngine.js';
+
+// WO-AI-CONSOLIDATION-005 — assessor-domain advisory capability (read-only).
+export {
+  createExemptionAdvisor,
+  type ExemptionAdvisor,
+  type ExemptionAdvisory,
+  type ExemptionAdvisoryVerdict,
+  type ExemptionReviewInput,
+  type CreateExemptionAdvisorOptions,
+} from './exemptionAdvisor.js';
