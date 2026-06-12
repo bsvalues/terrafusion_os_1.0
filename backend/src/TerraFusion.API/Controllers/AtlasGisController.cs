@@ -1,9 +1,11 @@
 // TFT-034: Atlas GIS Controller — geocoding, spatial queries, shapefile upload
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.GIS;
 using TerraFusion.Core.GIS.Connectors;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Data;
 
 namespace TerraFusion.API.Controllers;
 
@@ -18,13 +20,16 @@ namespace TerraFusion.API.Controllers;
 public class AtlasGisController : ControllerBase
 {
     private readonly IGisDataService _gisData;
+    private readonly TerraFusionDbContext _db;
     private readonly ILogger<AtlasGisController> _logger;
 
     public AtlasGisController(
         IGisDataService gisData,
+        TerraFusionDbContext db,
         ILogger<AtlasGisController> logger)
     {
         _gisData = gisData;
+        _db = db;
         _logger = logger;
     }
 
@@ -292,7 +297,14 @@ public class AtlasGisController : ControllerBase
         var boundary = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
 
         if (boundary.Source == "unavailable")
-            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
+        {
+            var parcelExists = await _db.Properties
+                .AsNoTracking()
+                .AnyAsync(p => p.ParcelNumber == parcelId || p.ParcelId == parcelId, ct);
+
+            if (!parcelExists)
+                return NotFound(new { error = $"Parcel '{parcelId}' not found." });
+        }
 
         var layers = await _gisData.GetParcelLayersAsync(parcelId, ct);
         return Ok(new { boundary, layers });

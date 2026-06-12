@@ -179,7 +179,7 @@ const ROLE_VISIBLE_TABS: Record<CountyRole, readonly WorkbenchTabSlug[]> = {
 
 /** Canonical tab order — NEVER mutate. */
 export const ALL_TAB_SLUGS: readonly WorkbenchTabSlug[] = [
-  'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier',
+  'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot',
 ] as const;
 
 // ============================================================================

@@ -22,6 +22,10 @@ import {
   Globe,
   ClipboardList,
   FolderOpen,
+  Landmark,
+  BadgeDollarSign,
+  ShieldCheck,
+  Bot,
   PanelLeftClose,
   PanelLeftOpen,
   PanelLeft,
@@ -56,7 +60,11 @@ const TAB_ICONS: Partial<Record<WorkbenchTabSlug, React.ElementType>> = {
   forge:    Flame,
   atlas:    Globe,
   dais:     ClipboardList,
+  clerk:    Landmark,
+  treasury: BadgeDollarSign,
+  audit:    ShieldCheck,
   dossier:  FolderOpen,
+  pilot:    Bot,
 };
 
 function TabIcon({ slug, size = 20 }: { slug: WorkbenchTabSlug; size?: number }) {

@@ -19,6 +19,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 const {
   mockOpenWindow,
   mockFocusWindow,
+  mockUpdateWindowMetadata,
   mockGetWindows,
   mockLoadModule,
   mockGetLoadState,
@@ -28,6 +29,7 @@ const {
 } = vi.hoisted(() => ({
   mockOpenWindow: vi.fn().mockReturnValue('window-123'),
   mockFocusWindow: vi.fn(),
+  mockUpdateWindowMetadata: vi.fn(),
   mockGetWindows: vi.fn().mockReturnValue([]),
   mockLoadModule: vi.fn().mockResolvedValue(undefined),
   mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
@@ -35,11 +37,12 @@ const {
     const aliases: Record<string, string> = {
       terrabuild: 'costforge',
       assessment: 'costforge',
+      workbench: 'property-workbench',
     };
     return aliases[id] || id;
   }),
   mockIsModuleRegistered: vi.fn((id: string) => {
-    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai', 'property-workbench'];
     return registry.includes(id);
   }),
   mockTrackEvent: vi.fn(),
@@ -51,6 +54,7 @@ vi.mock('../../stores/desktopStore', () => ({
       windows: mockGetWindows(),
       openWindow: mockOpenWindow,
       focusWindow: mockFocusWindow,
+      updateWindowMetadata: mockUpdateWindowMetadata,
     }),
   },
 }));
@@ -96,6 +100,7 @@ import {
 function resetAllMocks() {
   mockOpenWindow.mockClear().mockReturnValue('window-123');
   mockFocusWindow.mockClear();
+  mockUpdateWindowMetadata.mockClear();
   mockGetWindows.mockClear().mockReturnValue([]);
   mockLoadModule.mockClear().mockResolvedValue(undefined);
   mockGetLoadState.mockClear().mockReturnValue({ status: 'idle' });
@@ -104,11 +109,12 @@ function resetAllMocks() {
     const aliases: Record<string, string> = {
       terrabuild: 'costforge',
       assessment: 'costforge',
+      workbench: 'property-workbench',
     };
     return aliases[id] || id;
   });
   mockIsModuleRegistered.mockClear().mockImplementation((id: string) => {
-    const registry = ['costforge', 'terra-gaia', 'atlas-ai'];
+    const registry = ['costforge', 'terra-gaia', 'atlas-ai', 'property-workbench'];
     return registry.includes(id);
   });
 }
@@ -244,6 +250,21 @@ describe('moduleActivation', () => {
           source: 'desktop',
         })
       );
+    });
+
+    it('refreshes existing window metadata before focusing route-reactivated Workbench', async () => {
+      simulateExistingWindow('property-workbench', 'existing-workbench-window');
+      const metadata = { parcelId: 'TEST-PARCEL-001', tabId: 'atlas' };
+
+      await activateModule('property-workbench', {
+        source: 'route',
+        metadata,
+      });
+
+      expect(mockUpdateWindowMetadata).toHaveBeenCalledTimes(1);
+      expect(mockUpdateWindowMetadata).toHaveBeenCalledWith('existing-workbench-window', metadata);
+      expect(mockFocusWindow).toHaveBeenCalledWith('existing-workbench-window');
+      expect(mockOpenWindow).not.toHaveBeenCalled();
     });
 
     it('respects focusIfOpen: false option', async () => {

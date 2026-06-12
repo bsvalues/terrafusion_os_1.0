@@ -309,6 +309,10 @@ export async function activateModule(
   const existingWindowId = findExistingWindow(canonicalId);
 
   if (existingWindowId) {
+    if (metadata) {
+      useDesktopStore.getState().updateWindowMetadata(existingWindowId, metadata);
+    }
+
     // Window already open
     if (focusIfOpen) {
       // Focus existing window

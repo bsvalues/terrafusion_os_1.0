@@ -25,9 +25,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..', '..', '..');
 const CODEX_PATH = resolve(ROOT, 'frontend/apps/os-shell/src/contracts/objectPlacement.ts');
 const STORE_PATH = resolve(ROOT, 'frontend/apps/os-shell/src/stores/desktopStore.ts');
+const WORKBENCH_WINDOW_PATH = resolve(ROOT, 'frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx');
 
 const codexSrc = readFileSync(CODEX_PATH, 'utf-8');
 const storeSrc = readFileSync(STORE_PATH, 'utf-8');
+const workbenchWindowSrc = readFileSync(WORKBENCH_WINDOW_PATH, 'utf-8');
 
 // ============================================================================
 // Helpers: extract classifications from source
@@ -145,6 +147,21 @@ describe('Codex → Workbench Host Agreement', () => {
     assert.ok(
       storeSrc.includes('_routedTab: moduleId'),
       'openWindow injects _routedTab when routing to workbench'
+    );
+  });
+
+  it('PropertyWorkbenchWindow consumes routed tab metadata', () => {
+    assert.ok(
+      workbenchWindowSrc.includes('function normalizeRoutedTab'),
+      'PropertyWorkbenchWindow must define routed module ID normalization'
+    );
+    assert.ok(
+      workbenchWindowSrc.includes("readMetadataString(metadata, '_routedTab')"),
+      'PropertyWorkbenchWindow must read _routedTab metadata injected by desktopStore'
+    );
+    assert.ok(
+      workbenchWindowSrc.includes("routedTab ?? (metadata?.tabId as WorkbenchTabSlug) ?? tab ?? 'summary'"),
+      'PropertyWorkbenchWindow must prefer routed tab metadata, then explicit tab metadata, before defaulting to summary'
     );
   });
 

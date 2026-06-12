@@ -7,6 +7,9 @@ const CANONICAL_WORKBENCH_TABS = new Set([
   'forge',
   'atlas',
   'dais',
+  'clerk',
+  'treasury',
+  'audit',
   'dossier',
   'pilot',
 ]);

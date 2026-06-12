@@ -313,7 +313,7 @@ const RunningApps: React.FC = () => {
 
   // Only show windows that DON'T match a constitutional suite (those are in CoreSuiteZone)
   // and exclude os-pilot (TerraPilot is now a CompanionPanel, not a window)
-  const pinnedIds = new Set(CONSTITUTIONAL_SUITES.map((s) => s.id));
+  const pinnedIds = new Set(CONSTITUTIONAL_SUITES.map((s) => `suite-${s.id}`));
   const visibleWindows = windows.filter(
     (w) =>
       w.desktopId === currentDesktopId &&

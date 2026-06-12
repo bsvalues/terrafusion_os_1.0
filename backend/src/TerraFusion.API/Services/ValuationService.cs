@@ -39,8 +39,8 @@ public class ValuationService : IValuationService
 
         if (property == null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found in canonical Properties — returning fallback cost approach", parcelId);
-            return BuildFallbackCostApproach(parcelId, taxYear);
+            _logger.LogWarning("Parcel {ParcelId} not found in canonical Properties — rejecting governed cost approach", parcelId);
+            throw new KeyNotFoundException($"Parcel {parcelId} was not found in canonical Properties.");
         }
 
         var valRec = await _db.ValuationRecords
@@ -138,7 +138,7 @@ public class ValuationService : IValuationService
             LandValue                 = landValue,
             IndicatedValue            = indicated,
             ImprovementValue          = imprvValue > 0 ? imprvValue : rcnld,
-            Source                    = hasData ? "canonical" : "stub",
+            Source                    = hasData ? "canonical" : "unavailable",
             Confidence                = hasData ? (rcn > 0 ? 0.85 : 0.60) : 0.40,
             Inputs                    = BuildCostInputs(valRec != null, cama?.LandAreaSqft > 0, cama != null),
             // CP-4 additions
@@ -178,8 +178,8 @@ public class ValuationService : IValuationService
 
         if (property == null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found — returning fallback sales comparison", parcelId);
-            return BuildFallbackSalesComparison(parcelId, taxYear);
+            _logger.LogWarning("Parcel {ParcelId} not found in canonical Properties — rejecting governed sales comparison", parcelId);
+            throw new KeyNotFoundException($"Parcel {parcelId} was not found in canonical Properties.");
         }
 
         var valRec = await _db.ValuationRecords
@@ -393,7 +393,7 @@ public class ValuationService : IValuationService
                     ? $"{comps.Count} comparable sales within {taxYear - 2}–{taxYear}. Median: ${median:N0}. Neighborhood filter active — comps restricted to hood {subjectHood}."
                     : $"{comps.Count} comparable sales within {taxYear - 2}–{taxYear}. Median: ${median:N0}. Neighborhood filter inactive — fewer than 5 sales in hood {subjectHood ?? "unknown"}; comps span entire county."
                 : "No comparable sales found. Market value from canonical valuation record used where available.",
-            Source                   = hasData ? "canonical" : "stub",
+            Source                   = hasData ? "canonical" : "unavailable",
             Confidence               = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
             // CP-5 / R2Wave39 additions
             SalesRatioMedian         = ratioMedian,
@@ -421,8 +421,8 @@ public class ValuationService : IValuationService
 
         if (property == null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found — returning fallback income approach", parcelId);
-            return BuildFallbackIncomeApproach(parcelId, taxYear);
+            _logger.LogWarning("Parcel {ParcelId} not found in canonical Properties — rejecting governed income approach", parcelId);
+            throw new KeyNotFoundException($"Parcel {parcelId} was not found in canonical Properties.");
         }
 
         var valRec = await _db.ValuationRecords
@@ -494,7 +494,7 @@ public class ValuationService : IValuationService
             GrossIncomeMultiplier      = gim,
             RiskClassification         = ClassifyRisk(capRate),
             IncomeIndicatedValue       = incomeValue,
-            Source                     = hasData ? "canonical" : "stub",
+            Source                     = hasData ? "canonical" : "unavailable",
             Confidence                 = hasData ? 0.75 : 0.30,
             // CP-6 additions
             GrossIncome                = grossIncome,
@@ -574,7 +574,7 @@ public class ValuationService : IValuationService
             Method          = "weighted_average",
             AssessedValue   = property?.AssessedValue,
             MarketValue     = property?.MarketValue,
-            Source          = anyReal ? "canonical" : "stub",
+            Source          = anyReal ? "canonical" : "unavailable",
             Confidence      = anyReal ? 0.82 : 0.35,
         };
     }
@@ -596,7 +596,7 @@ public class ValuationService : IValuationService
             .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
         if (property == null)
-            return new ParcelYearLayersResult { ParcelId = parcelId };
+            throw new KeyNotFoundException($"Parcel {parcelId} was not found in canonical Properties.");
 
         var valRecs = await _db.ValuationRecords
             .AsNoTracking()
@@ -654,7 +654,7 @@ public class ValuationService : IValuationService
         LandValue              = 0,
         IndicatedValue         = 0,
         ImprovementValue       = 0,
-        Source                 = "stub",
+        Source                 = "unavailable",
         Confidence             = 0.0,
         Inputs                 = BuildCostInputs(false, false, false),
     };
@@ -669,7 +669,7 @@ public class ValuationService : IValuationService
         AdjustmentRange     = 0,
         Comparables         = [],
         Rationale           = "No data available for this parcel. Load parcel data to enable sales comparison analysis.",
-        Source              = "stub",
+        Source              = "unavailable",
         Confidence          = 0.0,
     };
 
@@ -683,7 +683,7 @@ public class ValuationService : IValuationService
         GrossIncomeMultiplier = 0,
         RiskClassification    = "unknown",
         IncomeIndicatedValue  = 0,
-        Source                = "stub",
+        Source                = "unavailable",
         Confidence            = 0.0,
     };
 
