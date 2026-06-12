@@ -48,7 +48,10 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
 {
     private readonly ICodex369FrameworkService _codexService;
     private readonly ILogger<Codex369AgentIntegrationService> _logger;
-    private const int TOTAL_AGENTS = 1008;
+    // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs.
+    // static readonly (not const) so the zero divisor below is a runtime guard,
+    // not a CS0020 "division by constant zero" compile error.
+    private static readonly int TOTAL_AGENTS = 0;
     private const int TOTAL_COUNTIES = 39;
 
     public Codex369AgentIntegrationService(
@@ -147,7 +150,8 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
             ThroughputOpsPerSec = throughput,
             TasksCompleted = tasksCompleted,
             SuccessRate = successRate,
-            ContributionToUltimatePower = healthScore / TOTAL_AGENTS, // Individual contribution
+            // Zero-guard: TOTAL_AGENTS is 0 (no swarm) — avoid divide-by-zero / Infinity.
+            ContributionToUltimatePower = TOTAL_AGENTS > 0 ? healthScore / TOTAL_AGENTS : 0,
             IsOptimal = healthScore >= 11.5,
             RecommendedActions = GenerateAgentRecommendations(healthScore, responseTime, throughput),
             Timestamp = DateTime.UtcNow
@@ -252,7 +256,7 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
 
         var random = new Random();
 
-        // Calculate ideal distribution (1008 agents / 39 counties ≈ 26 agents per county)
+        // Calculate ideal distribution (TOTAL_AGENTS / TOTAL_COUNTIES); TOTAL_AGENTS is 0 (no swarm).
         var idealAgentsPerCounty = TOTAL_AGENTS / TOTAL_COUNTIES;
 
         var countyDistributions = new List<CountyAgentDistribution>();

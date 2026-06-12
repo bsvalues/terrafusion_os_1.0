@@ -143,9 +143,10 @@ namespace TerraFusion.AI.Services
             // AI Agent Performance
             metrics.AIMetrics = new AIPerformanceMetrics
             {
-                ActiveAgents = 1008,
-                TotalAgents = 1008,
-                AgentUtilization = 100.0,
+                // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs.
+                ActiveAgents = 0,
+                TotalAgents = 0,
+                AgentUtilization = 0,
                 AverageProcessingTimeMs = GenerateTimeSeriesData(100, 300),
                 TasksProcessedPerMinute = 4567,
                 SwarmCoordinationLatencyMs = 15
@@ -273,10 +274,10 @@ namespace TerraFusion.AI.Services
                 NetworkOutboundMBps = 56.7,
                 ActiveConnections = 156,
 
-                // AI Swarm
-                AIAgentsActive = 1008,
-                AIAgentsTotal = 1008,
-                AISwarmUtilization = 100.0
+                // AI Swarm — Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed swarm runs.
+                AIAgentsActive = 0,
+                AIAgentsTotal = 0,
+                AISwarmUtilization = 0
             };
         }
 
