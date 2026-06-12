@@ -4,7 +4,7 @@ namespace TerraFusion.Core.Entities;
 
 
 
-public class PropertyAssessment
+public class PropertyAssessment : IAuditableEntity
 {
     public Guid Id { get; set; }
     public Guid PropertyId { get; set; }

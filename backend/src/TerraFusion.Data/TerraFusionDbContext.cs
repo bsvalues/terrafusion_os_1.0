@@ -23,11 +23,27 @@ namespace TerraFusion.Data;
 public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 {
   private readonly IConfiguration _configuration;
+  private readonly Interceptors.AuditableEntityInterceptor? _auditInterceptor;
 
   public TerraFusionDbContext(DbContextOptions<TerraFusionDbContext> options, IConfiguration configuration)
       : base(options)
   {
     _configuration = configuration;
+  }
+
+  /// <summary>
+  /// DI constructor (WS-3 / AU-2): receives the audit-stamping interceptor so it is wired on
+  /// every context instance via OnConfiguring. No write path can bypass stamping. Registered
+  /// via IServiceCollection.AddAuditableEntityStamping(); design-time/tests use the 2-arg ctor.
+  /// </summary>
+  public TerraFusionDbContext(
+      DbContextOptions<TerraFusionDbContext> options,
+      IConfiguration configuration,
+      Interceptors.AuditableEntityInterceptor auditInterceptor)
+      : base(options)
+  {
+    _configuration = configuration;
+    _auditInterceptor = auditInterceptor;
   }
 
   // Core Government Entities
@@ -688,6 +704,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       }
 
       optionsBuilder.EnableDetailedErrors();
+    }
+
+    // WS-3 / AU-2: wire the audit interceptor on every context instance, even when options
+    // are configured externally (AddDbContext in Program.cs), so no write path bypasses it.
+    if (_auditInterceptor != null)
+    {
+      optionsBuilder.AddInterceptors(_auditInterceptor);
     }
   }
 
@@ -1704,78 +1727,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   /// </summary>
   public bool SuppressAuditLogging { get; set; }
 
-  public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-  {
-    if (SuppressAuditLogging)
-      return await base.SaveChangesAsync(cancellationToken);
-
-    // Add audit logging for all changes
-    var auditEntries = CreateAuditEntries();
-
-    var result = await base.SaveChangesAsync(cancellationToken);
-
-    // Save audit logs after successful save
-    await SaveAuditLogs(auditEntries);
-
-    return result;
-  }
-
-  private List<AuditLog> CreateAuditEntries()
-  {
-    var auditEntries = new List<AuditLog>();
-
-    foreach (var entry in ChangeTracker.Entries())
-    {
-      if (entry.Entity is AuditLog || entry.State == EntityState.Unchanged)
-        continue;
-
-      var auditLog = new AuditLog
-      {
-        Id = Guid.NewGuid(),
-        Type = $"{entry.Entity.GetType().Name}_{entry.State}",
-        Data = System.Text.Json.JsonSerializer.Serialize(GetChanges(entry)),
-        Timestamp = DateTime.UtcNow,
-        UserId = GetCurrentUserId(),
-        Source = "EntityFramework"
-      };
-
-      auditEntries.Add(auditLog);
-    }
-
-    return auditEntries;
-  }
-
-  private async System.Threading.Tasks.Task SaveAuditLogs(List<AuditLog> auditEntries)
-  {
-    if (auditEntries.Any())
-    {
-      AuditLogs.AddRange(auditEntries);
-      await base.SaveChangesAsync();
-    }
-  }
-
-  private string GetCurrentUserId()
-  {
-    // Get current user from HTTP context or authentication context
-    return "System"; // Placeholder
-  }
-
-  private object GetChanges(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)
-  {
-    var changes = new Dictionary<string, object>();
-
-    foreach (var property in entry.Properties)
-    {
-      if (property.IsModified)
-      {
-        changes[property.Metadata.Name] = new
-        {
-          OldValue = property.OriginalValue,
-          NewValue = property.CurrentValue
-        };
-      }
-    }
-
-    return changes;
-  }
+  // WS-3 / AU-2: audit-row emission + audit-field stamping are owned by
+  // TerraFusion.Data.Interceptors.AuditableEntityInterceptor, wired on this context.
+  // It is the SINGLE audit path — marker-scoped (IAuditableEntity), attributes the real
+  // request user (replacing the former "System" placeholder), and honors
+  // SuppressAuditLogging for bulk drains. The legacy in-context broad-audit emission was
+  // removed here to avoid double-writing audit rows. SaveChanges/SaveChangesAsync use the
+  // base implementation so the interceptor pipeline runs for every write.
 }

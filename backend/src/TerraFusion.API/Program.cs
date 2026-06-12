@@ -1153,6 +1153,8 @@ builder.Services.AddSignalR();
 // Register authentication services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TerraFusion.Core.Auth.IRequestUserContextAccessor, TerraFusion.API.Auth.HttpContextRequestUserContextAccessor>();
+// WS-3 / AU-2: audit-stamping interceptor wired on TerraFusionDbContext (no write path bypasses it).
+TerraFusion.Data.Interceptors.AuditInterceptorServiceCollectionExtensions.AddAuditableEntityStamping(builder.Services);
 builder.Services.AddTerraFusionAuthentication(builder.Configuration);
 builder.Services.AddTerraFusionSecurityServices(builder.Configuration, builder.Environment);
 
