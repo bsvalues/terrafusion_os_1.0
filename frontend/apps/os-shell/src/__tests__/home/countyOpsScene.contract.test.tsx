@@ -151,6 +151,7 @@ import { StageZeroState } from '../../shell/desktop/StageZeroState';
 import { useSceneStore, SCENE_LIBRARY } from '../../stores/sceneStore';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { selectRecentParcel } from '../../context/parcelContext';
+import { WASHINGTON_COUNTY_RUNTIME_POSTURES } from '../../config/countyRuntimePosture';
 
 // Get mock references
 const mockActivateModule = activateModule as ReturnType<typeof vi.fn>;
@@ -191,6 +192,22 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
     expect(screen.getByText('Cross-suite county posture')).toBeInTheDocument();
+  });
+
+  it('4b. runtime posture summary exposes the 39-county source/runtime boundary', () => {
+    render(<StageZeroState />);
+
+    const summary = screen.getByTestId('county-runtime-posture-summary');
+    expect(summary).toHaveAttribute('data-total-counties', '39');
+    expect(summary).toHaveAttribute('data-runtime-enabled-count', '1');
+    expect(summary).toHaveAttribute('data-source-intake-count', '38');
+    expect(summary).toHaveAttribute('data-benton-runtime-mode', 'runtime-enabled');
+    expect(summary).toHaveAttribute('data-intake-canonical-import-allowed', 'false');
+    expect(WASHINGTON_COUNTY_RUNTIME_POSTURES).toHaveLength(39);
+    expect(screen.getByText(/39 Washington counties registered/i)).toBeInTheDocument();
+    expect(screen.getByText(/38 County Data Intake only/i)).toBeInTheDocument();
+    expect(screen.getByText(/canonicalImportAllowed: false for intake counties/i)).toBeInTheDocument();
+    expect(screen.getByText(/Non-Benton runtime actions remain blocked/i)).toBeInTheDocument();
   });
 
   it('5. County status info renders', () => {

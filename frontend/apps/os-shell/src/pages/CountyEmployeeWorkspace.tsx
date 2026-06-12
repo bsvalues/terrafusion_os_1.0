@@ -11,6 +11,7 @@ import { CountyEmployeeDashboard } from '@/components/dashboards/CountyEmployeeD
 import { Badge, Button, Card, CardContent } from '@/components/terrafusion-design-system';
 import { ExecutiveKpiCards } from '@/components/workbench/ExecutiveKpiCards';
 import { SwarmActivityBar } from '@/components/workbench/SwarmActivityBar';
+import { getCountyRuntimePosture } from '@/config/countyRuntimePosture';
 import { useAIAssistant } from '@/hooks/useAIAssistant';
 import { usePropertyAnalysis } from '@/hooks/usePropertyAnalysis';
 import { invokeTool } from '@/api/pilotApi';
@@ -148,6 +149,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
     correlationId?: string;
     error?: string;
   }>({ status: 'idle' });
+  const countyPosture = getCountyRuntimePosture(countyId);
 
   // Initialize AI Assistant hook
   const {
@@ -193,6 +195,15 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
     let cancelled = false;
 
     const loadStaffPosture = async () => {
+      if (!countyPosture.runtimeActionsAllowed) {
+        const blockedMessage =
+          'Runtime actions are blocked for this county. Use County Data Intake until source provenance and lineage proof are promoted.';
+        setBriefState({ status: 'error', error: blockedMessage });
+        setSpatialState({ status: 'error', error: blockedMessage });
+        setPacketState({ status: 'error', error: blockedMessage });
+        return;
+      }
+
       setBriefState({ status: 'loading' });
       setSpatialState({ status: 'loading' });
       setPacketState({ status: 'loading' });
@@ -292,9 +303,12 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
     return () => {
       cancelled = true;
     };
-  }, [countyId, selectedRole]);
+  }, [countyId, countyPosture.runtimeActionsAllowed, selectedRole]);
 
   const handleOpenSuite = (suiteId: 'suite-dais' | 'suite-forge' | 'suite-atlas' | 'suite-dossier') => {
+    if (!countyPosture.runtimeActionsAllowed) {
+      return;
+    }
     activateModule(suiteId, { source: 'desktop' });
   };
 
@@ -305,6 +319,42 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
           <div className='space-y-6'>
             <Card className='terra-glass border border-white/10' data-testid='workspace-command-surface'>
               <CardContent className='p-6 space-y-4'>
+                <div
+                  className={cn(
+                    'rounded-xl border p-4',
+                    countyPosture.runtimeActionsAllowed
+                      ? 'border-emerald-400/20 bg-emerald-400/5'
+                      : 'border-amber-400/25 bg-amber-400/5'
+                  )}
+                  data-testid='county-runtime-posture-boundary'
+                  data-county-slug={countyPosture.countySlug}
+                  data-runtime-mode={countyPosture.runtimeMode}
+                  data-runtime-actions-allowed={String(countyPosture.runtimeActionsAllowed)}
+                  data-canonical-import-allowed={String(countyPosture.canonicalImportAllowed)}
+                >
+                  <div className='flex flex-wrap items-start justify-between gap-3'>
+                    <div>
+                      <p className='text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400'>
+                        {countyPosture.boundaryLabel}
+                      </p>
+                      <h4 className='mt-2 text-lg font-semibold text-white'>
+                        {countyPosture.countyName} County posture
+                      </h4>
+                      <p className='mt-2 max-w-3xl text-sm text-slate-300'>
+                        {countyPosture.sourcePosture}
+                      </p>
+                    </div>
+                    <div className='flex flex-col items-start gap-2 text-xs text-slate-300 sm:items-end'>
+                      <Badge variant='outline' className='text-xs'>
+                        {countyPosture.runtimeMode}
+                      </Badge>
+                      <span>runtimeActionsAllowed: {String(countyPosture.runtimeActionsAllowed)}</span>
+                      <span>canonicalImportAllowed: {String(countyPosture.canonicalImportAllowed)}</span>
+                    </div>
+                  </div>
+                  <p className='mt-3 text-xs text-slate-400'>{countyPosture.nextAction}</p>
+                </div>
+
                 <div className='flex flex-wrap items-start justify-between gap-4'>
                   <div>
                     <p className='text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400'>
@@ -366,7 +416,12 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                       <span className='text-[11px] text-slate-500'>
                         {briefState.correlationId ? `corr ${briefState.correlationId}` : 'corr pending'}
                       </span>
-                      <Button variant='outline' size='sm' onClick={() => handleOpenSuite('suite-dais')}>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        disabled={!countyPosture.runtimeActionsAllowed}
+                        onClick={() => handleOpenSuite('suite-dais')}
+                      >
                         Open TerraDais
                       </Button>
                     </div>
@@ -395,7 +450,12 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                       <span className='text-[11px] text-slate-500'>
                         {spatialState.correlationId ? `corr ${spatialState.correlationId}` : 'corr pending'}
                       </span>
-                      <Button variant='outline' size='sm' onClick={() => handleOpenSuite('suite-atlas')}>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        disabled={!countyPosture.runtimeActionsAllowed}
+                        onClick={() => handleOpenSuite('suite-atlas')}
+                      >
                         Open TerraAtlas
                       </Button>
                     </div>
@@ -425,11 +485,21 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                         {packetState.correlationId ? `corr ${packetState.correlationId}` : 'corr pending'}
                       </span>
                       <div className='flex gap-2'>
-                        <Button variant='outline' size='sm' onClick={() => handleOpenSuite('suite-forge')}>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          disabled={!countyPosture.runtimeActionsAllowed}
+                          onClick={() => handleOpenSuite('suite-forge')}
+                        >
                           <Shield className='mr-2 h-4 w-4' />
                           Open Forge
                         </Button>
-                        <Button variant='outline' size='sm' onClick={() => handleOpenSuite('suite-dossier')}>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          disabled={!countyPosture.runtimeActionsAllowed}
+                          onClick={() => handleOpenSuite('suite-dossier')}
+                        >
                           Open Dossier
                         </Button>
                       </div>

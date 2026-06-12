@@ -143,6 +143,7 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
 );
+const CountiesHub = lazy(() => import('./components/CountiesHub'));
 const ResearchPortal = lazy(() => import('./components/research/ResearchPortal'));
 const ResearchProviders = lazy(() => import('./context/ResearchContext'));
 const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList'));
@@ -336,6 +337,7 @@ const Router: React.FC = () => {
 
                   <Route path='monitoring' element={<Monitoring />} />
                   <Route path='marketplace' element={<TerraFusionMarketplace />} />
+                  <Route path='counties' element={<CountiesHub />} />
                   <Route
                     path='elite-research'
                     element={
