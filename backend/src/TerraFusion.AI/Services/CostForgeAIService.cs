@@ -411,7 +411,9 @@ public class CostForgeAIService : ICostForgeAIService
       Uptime = DateTime.UtcNow - _startTime,
       MemoryUsage = 2048,
       CpuUsage = 23.5,
-      ActiveConnections = 1008,
+      // Honesty (WO-AI-CONSOLIDATION-004c-b2a): no governed AI agent swarm runs,
+      // so there are no live agent connections to report.
+      ActiveConnections = 0,
       ErrorCount = 0,
       WarningCount = 0
     };
