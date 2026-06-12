@@ -49,17 +49,30 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = () => {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!parcelId) {
       navigate('/property', { replace: true });
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
-    void activateModule('property-workbench', {
-      source: 'route',
-      metadata: { parcelId, tabId: routedTabId },
-      showNotification: false,
-    });
-    navigate('/', { replace: true });
+    void (async () => {
+      await activateModule('property-workbench', {
+        source: 'route',
+        metadata: { parcelId, tabId: routedTabId },
+        showNotification: false,
+      });
+
+      if (!cancelled) {
+        navigate('/', { replace: true });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate, parcelId, routedTabId]);
 
   return (

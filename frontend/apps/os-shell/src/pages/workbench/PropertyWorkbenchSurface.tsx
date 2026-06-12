@@ -44,6 +44,7 @@ export interface PropertyWorkbenchSurfaceProps {
   buildContextRibbonFacts?: typeof buildContextRibbonFactsBase;
   onBack: () => void;
   onSearch: () => void;
+  onParcelSelected?: (parcelId: string) => void;
   onPopOut?: () => void;
   renderNavigation: (args: PropertyWorkbenchSurfaceNavigationArgs) => React.ReactNode;
   renderContent: (context: WorkbenchTabData) => React.ReactNode;
@@ -123,6 +124,7 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
   buildContextRibbonFacts = buildContextRibbonFactsBase,
   onBack,
   onSearch,
+  onParcelSelected,
   onPopOut,
   renderNavigation,
   renderContent,
@@ -136,6 +138,7 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
   const selectParcel = usePropertyStore((s) => s.selectParcel);
   const hasWorkbenchAuth = hasUsableWorkbenchToken(auth.token);
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
+  const [parcelSearchDraft, setParcelSearchDraft] = useState('');
 
   useEffect(() => {
     if (!parcelId || hasWorkbenchAuth) {
@@ -256,6 +259,23 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
     [auth, parcelId],
   );
 
+  const handleOpenSelectedParcel = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const nextParcelId = parcelSearchDraft.trim();
+      if (!nextParcelId) {
+        onSearch();
+        return;
+      }
+      if (onParcelSelected) {
+        onParcelSelected(nextParcelId);
+        return;
+      }
+      onSearch();
+    },
+    [onParcelSelected, onSearch, parcelSearchDraft],
+  );
+
   if (!parcelId) {
     return (
       <div
@@ -272,6 +292,34 @@ export const PropertyWorkbenchSurface: React.FC<PropertyWorkbenchSurfaceProps> =
         <p className="text-sm text-center max-w-md">
           Search for a parcel to view the Property Workbench.
         </p>
+        <form
+          className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
+          onSubmit={handleOpenSelectedParcel}
+          aria-label="Open parcel in Workbench"
+        >
+          <label className="sr-only" htmlFor="workbench-parcel-id-input">
+            Parcel ID
+          </label>
+          <input
+            id="workbench-parcel-id-input"
+            value={parcelSearchDraft}
+            onChange={(event) => setParcelSearchDraft(event.target.value)}
+            className="min-w-0 flex-1 rounded-lg px-3 py-2 text-sm outline-none"
+            placeholder="Parcel ID"
+            style={{
+              background: 'hsl(var(--tf-surface))',
+              color: 'hsl(var(--tf-text))',
+              border: '1px solid hsl(var(--tf-border) / 0.45)',
+            }}
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{ background: 'hsl(var(--tf-accent))', color: 'hsl(var(--tf-text))' }}
+          >
+            Open Parcel
+          </button>
+        </form>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={onSearch}

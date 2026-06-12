@@ -28,11 +28,11 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       expect(size.maximized).not.toBe(true);
     });
 
-    it('property-workbench: opens standalone, maximized', () => {
+    it('property-workbench: opens standalone, normal/resizable', () => {
       const verdict = evaluateSpawnIntent('property-workbench');
       expect(verdict.decision).toBe('open');
       const size = getModuleWindowSize('property-workbench');
-      expect(size.maximized).toBe(true);
+      expect(size.maximized).not.toBe(true);
     });
 
     it('os-pilot: opens standalone, near-full-stage', () => {
@@ -118,14 +118,14 @@ describe('Phase 25: Shell Anti-Drift Governance', () => {
       expect(wbEntry.objectType).toBe('tier0-workbench');
     });
 
-    it('Path B: Home -> Recent Parcel -> Workbench (maximized with parcel context)', () => {
+    it('Path B: Home -> Recent Parcel -> Workbench (OS-managed window with parcel context)', () => {
       // Recent parcel click -> opens workbench
       const verdict = evaluateSpawnIntent('property-workbench');
       expect(verdict.decision).toBe('open');
 
-      // Verify workbench opens maximized
+      // Verify workbench opens as an adjustable OS window.
       const size = getModuleWindowSize('property-workbench');
-      expect(size.maximized).toBe(true);
+      expect(size.maximized).not.toBe(true);
 
       // Verify default landing tab exists
       expect(VALID_WORKBENCH_TAB_IDS).toContain('summary');

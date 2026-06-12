@@ -544,10 +544,10 @@ describe('Workbench Real Hosting Gate', () => {
       }
     });
 
-    it('getModuleWindowSize("property-workbench") returns maximized: true', async () => {
+    it('getModuleWindowSize("property-workbench") returns adjustable window sizing', async () => {
       const { getModuleWindowSize } = await import('../../stores/desktopStore');
       const result = getModuleWindowSize('property-workbench');
-      expect(result.maximized).toBe(true);
+      expect(result.maximized).not.toBe(true);
     });
   });
 });
