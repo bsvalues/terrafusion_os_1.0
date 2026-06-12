@@ -336,10 +336,27 @@ public class CostForgeAIService : ICostForgeAIService
   {
     await System.Threading.Tasks.Task.Delay(10);
 
-    var totalAgents = _agents.Count;
-    var activeAgents = _agents.Values.Count(a => a.Status == "active");
-    var idleAgents = _agents.Values.Count(a => a.Status == "idle");
-    var busyAgents = _agents.Values.Count(a => a.Status == "busy");
+    // Coherence (WO-CF-b2e): _agents is a ConcurrentDictionary that can change between reads
+    // (e.g. via ScaleAIAgentsAsync). Take ONE snapshot and derive every field from it so the
+    // returned DTO is internally consistent — counts cannot exceed TotalAgents, and the Agents
+    // sample matches the same generation. Behavior-neutral apart from that consistency.
+    var snapshot = _agents.Values.ToList();
+    var totalAgents = snapshot.Count;
+
+    // Single pass: read each agent's Status exactly once so an agent is classified into at most
+    // one bucket (no double-counting across passes), and avoid three O(n) enumerations.
+    var activeAgents = 0;
+    var idleAgents = 0;
+    var busyAgents = 0;
+    foreach (var agent in snapshot)
+    {
+      switch (agent.Status)
+      {
+        case "active": activeAgents++; break;
+        case "idle": idleAgents++; break;
+        case "busy": busyAgents++; break;
+      }
+    }
 
     return new AIAgentStatusDto
     {
@@ -351,7 +368,7 @@ public class CostForgeAIService : ICostForgeAIService
       // fabricated 87.3. The non-empty simulation constant remains deferred to the broader
       // simulation-truth cleanup.
       AverageUtilization = totalAgents == 0 ? 0.0 : (double)87.3m,
-      Agents = _agents.Values.Take(10).Cast<object>().ToList() // Return first 10 for performance
+      Agents = snapshot.Take(10).Cast<object>().ToList() // Return first 10 for performance
     };
   }
 
