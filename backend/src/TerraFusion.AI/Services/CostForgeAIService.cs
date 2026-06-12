@@ -96,11 +96,13 @@ public class CostForgeAIService : ICostForgeAIService
     var baseAccuracy = _targetAccuracy * 100;
     var quantumBonus = (_quantumFactor - 900) * 0.01m;
     // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): with a default-0 fleet, _agents can be
-    // empty. Decimal division by an empty count throws DivideByZeroException, so an empty
-    // fleet contributes no system-load penalty.
-    var systemLoadPenalty = _agents.IsEmpty
+    // empty. Snapshot the count once — _agents is a ConcurrentDictionary, so checking
+    // emptiness and reading Count separately would race (the fleet could empty in between) and
+    // still throw DivideByZeroException. An empty fleet contributes no system-load penalty.
+    var agentCount = _agents.Count;
+    var systemLoadPenalty = agentCount == 0
         ? 0m
-        : (_agents.Values.Count(a => a.Status == "busy") / (decimal)_agents.Count) * 0.5m;
+        : (_agents.Values.Count(a => a.Status == "busy") / (decimal)agentCount) * 0.5m;
 
     return Math.Min(baseAccuracy + quantumBonus - systemLoadPenalty, 99.9m);
   }
@@ -108,14 +110,17 @@ public class CostForgeAIService : ICostForgeAIService
   private string DetermineSystemStatus()
   {
     // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): no agents configured/running (default
-    // fleet is 0, not a fabricated 1008). Take an explicit empty-fleet path instead of
-    // dividing by an empty count. "critical" is the safest EXISTING status — it is the only
-    // one that does not falsely imply a healthy or operational fleet (no NoAgentsConfigured
-    // status exists in this contract).
-    if (_agents.IsEmpty)
+    // fleet is 0, not a fabricated 1008). Snapshot the count once — _agents is a
+    // ConcurrentDictionary, so checking emptiness and reading Count separately would race and
+    // still throw DivideByZeroException. Take an explicit empty-fleet path instead of dividing
+    // by an empty count. "critical" is the safest EXISTING status — it is the only one that
+    // does not falsely imply a healthy or operational fleet (no NoAgentsConfigured status
+    // exists in this contract).
+    var agentCount = _agents.Count;
+    if (agentCount == 0)
       return "critical";
 
-    var activePercentage = _agents.Values.Count(a => a.Status == "active") / (decimal)_agents.Count;
+    var activePercentage = _agents.Values.Count(a => a.Status == "active") / (decimal)agentCount;
     var modelsHealthy = _mlModels.Count == _modelLastUpdated.Count;
 
     if (activePercentage >= 0.8m && modelsHealthy)
