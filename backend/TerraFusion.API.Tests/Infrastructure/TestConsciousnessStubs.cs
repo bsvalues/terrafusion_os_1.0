@@ -39,12 +39,17 @@ namespace TerraFusion.API.Tests.Infrastructure
 
         public Task<ConsciousnessScalingResultDto> ScaleConsciousnessAsync(ConsciousnessScalingRequestDto request)
         {
+            // WO-DOCS-TEST-HONESTY-013a: no running consciousness swarm (target architecture /
+            // stubbed), so scaling is unavailable. Report a self-consistent no-op result —
+            // failed, 0 current, 0 progress — rather than the prior contradictory "100% complete
+            // to target" with a hardcoded 1008 current count.
             var result = new ConsciousnessScalingResultDto
             {
-                Success = true,
-                CurrentAgentCount = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
+                Success = false,
+                CurrentAgentCount = 0,
                 TargetAgentCount = request.TargetAgentCount,
-                ScalingProgress = 1.0m,
+                ScalingProgress = 0m,
+                ErrorMessage = "Scaling unavailable: no running consciousness swarm (target architecture / stubbed).",
                 EstimatedTimeRemaining = TimeSpan.Zero
             };
             return Task.FromResult(result);

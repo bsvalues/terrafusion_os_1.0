@@ -165,9 +165,10 @@ namespace TerraFusion.API.Tests
             metrics.CompliancePercentage.Should().BeGreaterThan(95.0, "Compliance should be > 95%");
 
             // AI metrics — WO-DOCS-TEST-HONESTY-013a: do NOT pin a fabricated 1,008-agent swarm.
-            // No production swarm runs (consciousness is target architecture / stubbed), so assert
-            // the count is reported truthfully (>= 0) rather than a hardcoded fabricated figure.
-            metrics.ActiveAIAgents.Should().BeGreaterThanOrEqualTo(0, "AI agent count is reported truthfully; there is no running 1,008-agent swarm");
+            // This assertion verifies only that the count is a sane NON-NEGATIVE value; there is no
+            // running swarm to check an exact count against (consciousness is target architecture /
+            // stubbed). It intentionally does not detect a missing field (default 0).
+            metrics.ActiveAIAgents.Should().BeGreaterThanOrEqualTo(0, "agent count must be a non-negative value, not a fabricated 1,008");
             metrics.AITasksCompleted.Should().BeGreaterThan(0);
 
             _output.WriteLine($"Total Requests: {metrics.TotalRequests:N0} (Success: {successRate:F2}%)");
