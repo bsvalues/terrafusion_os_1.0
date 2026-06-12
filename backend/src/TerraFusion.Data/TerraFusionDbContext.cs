@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Forge;
 using TerraFusion.Core.Entities.TerraForge;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
@@ -54,6 +55,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TaxLevy> TaxLevies { get; set; }
   public DbSet<GovernmentUser> GovernmentUsers { get; set; }
   public DbSet<AuditLog> AuditLogs { get; set; }
+
+  // WS-1 / 1f — Forge TF-native valuation reference data (county-scoped, versioned, audit-stamped)
+  public DbSet<CostFactorSet> CostFactorSets { get; set; }
+  public DbSet<CostFactor> CostFactors { get; set; }
 
   // AI System Entities
   public DbSet<AIAgent> AIAgents { get; set; }
