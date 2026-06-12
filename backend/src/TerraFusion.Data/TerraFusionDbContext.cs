@@ -63,6 +63,8 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<DepreciationFactor> DepreciationFactors { get; set; }
   public DbSet<LandScheduleSet> LandScheduleSets { get; set; }
   public DbSet<LandRate> LandRates { get; set; }
+  public DbSet<CapRateSet> CapRateSets { get; set; }
+  public DbSet<CapRate> CapRates { get; set; }
 
   // AI System Entities
   public DbSet<AIAgent> AIAgents { get; set; }
