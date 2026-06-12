@@ -40,13 +40,20 @@ function factLines(input) {
 }
 /**
  * Map the model's free text to a bounded verdict. Conservative by construction:
- * anything that does not clearly assert eligibility or ineligibility falls back
- * to `needs_review`, so the advisory never over-claims eligibility.
+ * the model is instructed to BEGIN with exactly one label, so we parse ONLY the
+ * leading label of the first line. A whole-text substring scan would let a
+ * conservative opener ("needs_review — not enough evidence to say likely
+ * eligible") be overridden by a later mention of a stronger label and overstate
+ * eligibility. Anything without a recognized leading label falls back to
+ * `needs_review`, so the advisory never over-claims eligibility.
  */
 function parseVerdict(text) {
-    const lowered = text.toLowerCase();
+    const firstLine = text.trim().split(/\r?\n/, 1)[0]?.toLowerCase() ?? '';
+    // Keep letters, underscores and spaces so both `likely_eligible` and
+    // `likely eligible` openers match; collapse leading punctuation/markup.
+    const head = firstLine.replace(/[^a-z_ ]+/g, ' ').trim();
     for (const v of VERDICTS) {
-        if (lowered.includes(v) || lowered.includes(v.replace(/_/g, ' ')))
+        if (head.startsWith(v) || head.startsWith(v.replace(/_/g, ' ')))
             return v;
     }
     return 'needs_review';
