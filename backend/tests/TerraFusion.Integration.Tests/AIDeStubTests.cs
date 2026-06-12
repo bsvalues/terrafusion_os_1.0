@@ -95,7 +95,7 @@ public class AIDeStubTests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_CreatesNewAgents()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_RemainsUnavailableAndDoesNotCreateAgents()
     {
         await using var ctx = CreateDbContext("CE_InitSwarm");
 
@@ -104,18 +104,18 @@ public class AIDeStubTests
 
         var result = await engine.InitializeSwarmAsync(20, "BENTON");
 
-        result.Should().BeTrue();
+        result.Should().BeFalse("governed swarm provisioning is not live on this compatibility surface");
         var agentCount = await ctx.AIAgents.CountAsync();
-        agentCount.Should().Be(20);
+        agentCount.Should().Be(0, "the compatibility surface must not fake-create AI agents");
 
         var bentonAgents = await ctx.AIAgents
             .Where(a => a.AssignedCounty == "BENTON")
             .CountAsync();
-        bentonAgents.Should().Be(20);
+        bentonAgents.Should().Be(0);
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_DoesNotDuplicateExisting()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_InitializeSwarm_DoesNotMutateExistingAgents()
     {
         await using var ctx = CreateDbContext("CE_InitSwarm_NoDup");
         await SeedAgents(ctx, 15, "Active", "BENTON");
@@ -125,9 +125,9 @@ public class AIDeStubTests
 
         var result = await engine.InitializeSwarmAsync(20, "BENTON");
 
-        result.Should().BeTrue();
+        result.Should().BeFalse("governed swarm provisioning is not live on this compatibility surface");
         var agentCount = await ctx.AIAgents.CountAsync();
-        agentCount.Should().Be(20, "should only create 5 new agents to reach 20");
+        agentCount.Should().Be(15, "the compatibility surface must not synthesize missing agents");
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class AIDeStubTests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ConsciousnessEngine_QuantumOptimization_RecordsMetric()
+    public async System.Threading.Tasks.Task ConsciousnessEngine_QuantumOptimization_RemainsUnavailableAndDoesNotRecordFakeMetric()
     {
         await using var ctx = CreateDbContext("CE_Quantum");
         await SeedAgents(ctx, 5, "Active");
@@ -191,16 +191,19 @@ public class AIDeStubTests
 
         var result = await engine.ExecuteQuantumOptimizationAsync(request);
 
-        result.Success.Should().BeTrue();
-        result.QuantumFactor.Should().Be(949);
-        result.OptimizationScore.Should().BeGreaterThan(0);
+        result.Success.Should().BeFalse("governed quantum optimization is not live on this compatibility surface");
+        result.QuantumFactor.Should().Be(0);
+        result.OptimizationScore.Should().Be(0);
+        result.Results.Should().ContainKey("governed_quantum_lane_available");
+        result.Results["governed_quantum_lane_available"].Should().Be(false);
+        result.Results.Should().ContainKey("requested_quantum_factor");
+        result.Results["requested_quantum_factor"].Should().Be(949);
 
         // Verify metric was persisted
         var metric = await ctx.PerformanceMetrics
             .Where(m => m.MetricName == "QuantumOptimization")
             .FirstOrDefaultAsync();
-        metric.Should().NotBeNull("optimization should record a performance metric");
-        metric!.Source.Should().Be("ConsciousnessEngine");
+        metric.Should().BeNull("unavailable quantum optimization must not record fake success metrics");
     }
 
     [Fact]

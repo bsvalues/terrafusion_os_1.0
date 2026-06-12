@@ -352,27 +352,18 @@ public class SystemGptAtlasControllerTests
             NullLogger<SystemGptAtlasLiveService>.Instance);
 
         // Act
-        var cts = new CancellationTokenSource();
-        var eventsBeforeCancel = 0;
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        using var cts = new CancellationTokenSource();
+        await using var enumerator = service.StreamEventsAsync(cts.Token).GetAsyncEnumerator(cts.Token);
 
-        try
-        {
-            await foreach (var evt in service.StreamEventsAsync(cts.Token))
-            {
-                eventsBeforeCancel++;
-                if (eventsBeforeCancel >= 2)
-                {
-                    cts.Cancel();
-                }
-            }
-        }
-        catch (OperationCanceledException) { }
+        Assert.True(await enumerator.MoveNextAsync());
 
-        stopwatch.Stop();
+        cts.Cancel();
+        var cancellationTask = enumerator.MoveNextAsync().AsTask();
+        var completedTask = await Task.WhenAny(cancellationTask, Task.Delay(TimeSpan.FromSeconds(5)));
 
         // Assert
-        Assert.True(eventsBeforeCancel >= 2);
-        Assert.True(stopwatch.ElapsedMilliseconds < 5000, "Stream should stop quickly after cancellation");
+        Assert.Same(cancellationTask, completedTask);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await cancellationTask);
+        mockTelemetrySource.Verify(m => m.GetCurrentMetricsAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 }
