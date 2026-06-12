@@ -92,17 +92,21 @@ public class CostForgeAIService : ICostForgeAIService
 
   private decimal CalculateCurrentAccuracy()
   {
+    // Snapshot the count once — _agents is a ConcurrentDictionary, so checking emptiness and
+    // reading Count separately would race (the fleet could empty in between) and could throw
+    // DivideByZeroException (WO-AI-CONSOLIDATION-004c-b2c).
+    var agentCount = _agents.Count;
+
+    // Honesty (WO-AI-CONSOLIDATION-004c-b2d): an empty fleet has no live accuracy to report.
+    // Return 0 rather than the quantum-derived ~99.9% so the operator-visible AccuracyRate does
+    // not imply live performance when AgentsActive=0 / SystemStatus=critical.
+    if (agentCount == 0)
+      return 0m;
+
     // Calculate current accuracy based on quantum factor and system performance
     var baseAccuracy = _targetAccuracy * 100;
     var quantumBonus = (_quantumFactor - 900) * 0.01m;
-    // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): with a default-0 fleet, _agents can be
-    // empty. Snapshot the count once — _agents is a ConcurrentDictionary, so checking
-    // emptiness and reading Count separately would race (the fleet could empty in between) and
-    // still throw DivideByZeroException. An empty fleet contributes no system-load penalty.
-    var agentCount = _agents.Count;
-    var systemLoadPenalty = agentCount == 0
-        ? 0m
-        : (_agents.Values.Count(a => a.Status == "busy") / (decimal)agentCount) * 0.5m;
+    var systemLoadPenalty = (_agents.Values.Count(a => a.Status == "busy") / (decimal)agentCount) * 0.5m;
 
     return Math.Min(baseAccuracy + quantumBonus - systemLoadPenalty, 99.9m);
   }
@@ -332,17 +336,21 @@ public class CostForgeAIService : ICostForgeAIService
   {
     await System.Threading.Tasks.Task.Delay(10);
 
+    var totalAgents = _agents.Count;
     var activeAgents = _agents.Values.Count(a => a.Status == "active");
     var idleAgents = _agents.Values.Count(a => a.Status == "idle");
     var busyAgents = _agents.Values.Count(a => a.Status == "busy");
 
     return new AIAgentStatusDto
     {
-      TotalAgents = _agents.Count,
+      TotalAgents = totalAgents,
       ActiveAgents = activeAgents,
       IdleAgents = idleAgents,
       BusyAgents = busyAgents,
-      AverageUtilization = (double)87.3m,
+      // Honesty (WO-AI-CONSOLIDATION-004c-b2d): an empty fleet has 0 utilization, not a
+      // fabricated 87.3. The non-empty simulation constant remains deferred to the broader
+      // simulation-truth cleanup.
+      AverageUtilization = totalAgents == 0 ? 0.0 : (double)87.3m,
       Agents = _agents.Values.Take(10).Cast<object>().ToList() // Return first 10 for performance
     };
   }
