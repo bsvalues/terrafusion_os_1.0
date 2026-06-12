@@ -99,8 +99,9 @@ namespace TerraFusion.AI.Services
             // AI Analytics
             summary.AIAnalytics = new AIAnalytics
             {
-                TotalAgents = 1008,
-                ActiveAgents = 1008,
+                // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs.
+                TotalAgents = 0,
+                ActiveAgents = 0,
                 TasksProcessed = 567890,
                 AverageProcessingTime = 156.7,
                 SuccessRate = 98.9,
