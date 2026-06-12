@@ -23,7 +23,7 @@ import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
-import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
+import { useDesktopStore } from '../../stores/desktopStore';
 import { useCompanionStore } from '../../stores/companionStore';
 import { useDevContext } from '../../hooks/useDevContext';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
@@ -106,9 +106,9 @@ const DesktopTopSystemBar: React.FC<{
         </span>
       </div>
 
-      {/* Zone B: County + Department Context (center) */}
+      {/* Zone B: Active county operating context (center) */}
       <div className='absolute left-1/2 -translate-x-1/2 flex items-center gap-2'>
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
           Benton County
         </span>
         <div
@@ -119,7 +119,17 @@ const DesktopTopSystemBar: React.FC<{
           }}
         />
         <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
-          Assessor&apos;s Office
+          Assessor's Office
+        </span>
+        <div
+          style={{
+            width: 1,
+            height: 12,
+            background: 'hsl(var(--tf-border) / 0.5)',
+          }}
+        />
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
+          Runtime Pilot
         </span>
       </div>
 
@@ -267,6 +277,11 @@ export function Desktop({ className = '', children }: DesktopProps) {
   const shellMode = useShellMode();
   const surfaces = useShellSurfaces();
   const { enterDesktop: transitionToDesktop } = useShellModeActions();
+  const showHomeScene =
+    surfaces.recentWork === 'visible' ||
+    surfaces.quickActions === 'visible' ||
+    surfaces.countyMap === 'visible';
+  const showDesktopWorkspace = surfaces.desktop !== 'hidden';
 
   // Scene Selector state (Phase 8)
   const [isSceneSelectorOpen, setSceneSelectorOpen] = useState(false);
@@ -311,13 +326,6 @@ export function Desktop({ className = '', children }: DesktopProps) {
     }
     prevStartMenuOpen.current = isStartMenuOpen;
   }, [isStartMenuOpen]);
-
-  // ============================================================================
-  // TerraPilot Companion — auto-spawn on desktop mount as floating window
-  // ============================================================================
-  useEffect(() => {
-    openCompanionWindow();
-  }, []);
 
   // ============================================================================
   // Dev context bus — wire engineering signals (buildStatus, branch, file)
@@ -577,14 +585,12 @@ export function Desktop({ className = '', children }: DesktopProps) {
       {isHome ? (
         <>
           {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
-          {surfaces.desktop !== 'hidden' && (
+          {showDesktopWorkspace && (
             <DesktopIconGrid className='absolute top-12 left-4' />
           )}
 
-          {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
-          {surfaces.recentWork !== 'hidden' && (
-            <StageZeroState id='desktop-main-content' />
-          )}
+          {/* Layer 0.5: Stage Zero-State — visible only while the shell is in Home mode */}
+          {showHomeScene && <StageZeroState id='desktop-main-content' />}
         </>
       ) : (
         <div

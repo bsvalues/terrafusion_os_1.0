@@ -2,6 +2,8 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // Mock mapbox-gl so tests run in jsdom without canvas
 vi.mock('mapbox-gl', () => ({
@@ -59,6 +61,19 @@ describe('BentonCountyMap', () => {
     // At least one of the two root elements must be present
     expect(mapEl ?? errorEl).toBeTruthy();
   });
+
+  it('uses honest unavailable language when the map token is not configured', async () => {
+    const { default: BentonCountyMap } = await import(
+      '../../shell/desktop/BentonCountyMap'
+    );
+    render(<BentonCountyMap />);
+
+    const errorEl = screen.queryByTestId('benton-county-map-error');
+    if (errorEl) {
+      expect(errorEl).toHaveTextContent('Map layer unavailable: Mapbox token not configured');
+    }
+    expect(screen.queryByText(/add it to \.env/i)).not.toBeInTheDocument();
+  });
 });
 
 describe('BentonCountyMap props contract', () => {
@@ -72,5 +87,18 @@ describe('BentonCountyMap props contract', () => {
       expect(typeof id).toBe('string');
     };
     expect(typeof fn).toBe('function');
+  });
+});
+
+describe('BentonCountyMap proof-path honesty', () => {
+  it('does not fabricate parcel geometry when source geometry is absent', () => {
+    const source = readFileSync(
+      resolve(__dirname, '../../shell/desktop/BentonCountyMap.tsx'),
+      'utf8',
+    );
+
+    expect(source).not.toContain('Math.random');
+    expect(source).not.toContain("type: 'Point'");
+    expect(source).toContain('Parcel layer unavailable: source check timed out');
   });
 });

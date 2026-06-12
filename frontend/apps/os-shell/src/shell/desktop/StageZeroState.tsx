@@ -13,7 +13,9 @@
  *
  * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
  * - Recent Work: live parcel browsing history from OS session state.
- * - Parcel count: from useParcelCount() API data; unavailable stays unavailable.
+ * - Parcel count: not rendered on the June 10 shell unless owned by a verified
+ *   Benton runtime proof endpoint. /api/government/stats is intentionally not
+ *   used here because it is not the launch proof contract.
  * - Today's Work: TerraDais queue API data only; unavailable state renders
  *   explicitly and never falls back to seeded sample tasks.
  * - County status strip: Last sync, appeal count, and system status fields render
@@ -23,7 +25,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import {
   Clock,
   ArrowRight,
@@ -43,14 +45,13 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
-import { useParcelCount } from '../../hooks/useParcelCount';
 import {
   WASHINGTON_COUNTY_RUNTIME_POSTURES,
   getCountyRuntimePosture,
 } from '../../config/countyRuntimePosture';
 import { LiquidPanel } from '../../ui/materials';
-import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
+import BentonCountyMap from './BentonCountyMap';
 
 // ============================================================================
 // Types
@@ -211,39 +212,24 @@ function TodaysWorkPanel({
   );
 }
 
-function parseToolOutput<T>(output: unknown): T | null {
-  try {
-    return typeof output === 'string' ? JSON.parse(output) as T : output as T;
-  } catch {
-    return null;
-  }
-}
-
-// ============================================================================
-// County Map — Mapbox GL satellite map with parcel layer
-// ============================================================================
-import BentonCountyMap from './BentonCountyMap';
-
-/**
- * Real Mapbox GL satellite map of Benton County WA.
- * Parcel click → opens PropertyWorkbench for that parcel.
- */
-const CountyMapOverview: React.FC<{
-  onParcelSelect: (parcelId: string) => void;
-}> = ({ onParcelSelect }) => (
-  <div
-    className='relative w-full h-full rounded-xl overflow-hidden'
-    aria-label='Benton County WA — satellite GIS map'
-  >
-    <span className='sr-only' role='img' aria-label='Open TerraAtlas for full county map' />
-
-    {/* Mapbox GL satellite map */}
-    <BentonCountyMap
-      onParcelSelect={onParcelSelect}
-      className='w-full h-full'
-    />
-  </div>
-);
+const HOME_EXECUTIVE_POSTURE: ExecutivePostureState = {
+  dais: {
+    status: 'error',
+    summary: 'County leadership briefing unavailable.',
+  },
+  forge: {
+    status: 'error',
+    summary: 'Chief appraiser brief unavailable.',
+  },
+  atlas: {
+    status: 'error',
+    summary: 'Spatial audit posture unavailable.',
+  },
+  dossier: {
+    status: 'error',
+    summary: 'Packet readiness unavailable.',
+  },
+};
 
 // ============================================================================
 // Main Component
@@ -253,21 +239,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
-  const { data: statsData } = useParcelCount();
+  const executivePosture = HOME_EXECUTIVE_POSTURE;
   const bentonPosture = getCountyRuntimePosture('benton');
   const sourceOnlyCountyCount = WASHINGTON_COUNTY_RUNTIME_POSTURES.filter(
     (posture) => !posture.runtimeActionsAllowed
   ).length;
   const runtimeEnabledCountyCount = WASHINGTON_COUNTY_RUNTIME_POSTURES.length - sourceOnlyCountyCount;
-  const parcelCountLabel = typeof statsData?.totalParcels === 'number'
-    ? `${statsData.totalParcels.toLocaleString()} parcels`
-    : 'Parcel count unavailable';
-  const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
-    dais: { status: 'idle' },
-    forge: { status: 'idle' },
-    atlas: { status: 'idle' },
-    dossier: { status: 'idle' },
-  });
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -296,106 +273,6 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
 
   const handleOpenDossier = useCallback(() => {
     activateModule('suite-dossier', { source: 'desktop' });
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadExecutivePosture() {
-      const taxYear = new Date().getFullYear();
-
-      setExecutivePosture({
-        dais: { status: 'loading' },
-        forge: { status: 'loading' },
-        atlas: { status: 'loading' },
-        dossier: { status: 'loading' },
-      });
-
-      const [daisResult, forgeResult, atlasResult, dossierResult] = await Promise.allSettled([
-        invokeTool({
-          toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'assessor_leadership', taxYear },
-        }),
-        invokeTool({
-          toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'chief_appraiser', taxYear },
-        }),
-        invokeTool({
-          toolId: 'explain_spatial_anomaly',
-          params: { county: 'benton', taxYear, metric: 'residual_cluster', geographyId: 'BENTON-COUNTY' },
-        }),
-        invokeTool({
-          toolId: 'open_appeal_packet',
-          params: { county: 'benton', appealId: 'BOE-2026-001' },
-        }),
-      ]);
-
-      if (cancelled) {
-        return;
-      }
-
-      setExecutivePosture({
-        dais: daisResult.status === 'fulfilled' && daisResult.value.success
-          ? (() => {
-              const parsed = parseToolOutput<{ queueType?: string; summary?: string; recommendedTool?: string }>(
-                daisResult.value.result?.output
-              );
-              return {
-                status: 'success',
-                summary: parsed?.summary || 'Summary not returned.',
-                queueType: parsed?.queueType,
-                recommendedTool: parsed?.recommendedTool,
-                correlationId: daisResult.value.correlationId,
-              };
-            })()
-          : { status: 'error', summary: 'County leadership briefing unavailable.' },
-        forge: forgeResult.status === 'fulfilled' && forgeResult.value.success
-          ? (() => {
-              const parsed = parseToolOutput<{ summary?: string; queueType?: string }>(
-                forgeResult.value.result?.output
-              );
-              return {
-                status: 'success',
-                summary: parsed?.summary || 'Summary not returned.',
-                readiness: parsed?.queueType,
-                correlationId: forgeResult.value.correlationId,
-              };
-            })()
-          : { status: 'error', summary: 'Chief appraiser brief unavailable.' },
-        atlas: atlasResult.status === 'fulfilled' && atlasResult.value.success
-          ? (() => {
-              const parsed = parseToolOutput<{ narrative?: string; hotspotCount?: number }>(
-                atlasResult.value.result?.output
-              );
-              return {
-                status: 'success',
-                summary: parsed?.narrative || 'Summary not returned.',
-                hotspots: parsed?.hotspotCount,
-                correlationId: atlasResult.value.correlationId,
-              };
-            })()
-          : { status: 'error', summary: 'Spatial audit posture unavailable.' },
-        dossier: dossierResult.status === 'fulfilled' && dossierResult.value.success
-          ? (() => {
-              const parsed = parseToolOutput<{ packetRef?: string; payloadRef?: string }>(
-                dossierResult.value.result?.output
-              );
-              return {
-                status: 'success',
-                summary: parsed?.payloadRef || 'Summary not returned.',
-                packetRef: parsed?.packetRef,
-                correlationId: dossierResult.value.correlationId,
-              };
-            })()
-          : { status: 'error', summary: 'Packet readiness unavailable.' },
-      });
-    }
-
-    void loadExecutivePosture();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   return (
@@ -444,7 +321,10 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           {/* ═══ Center: County Overview ═══ */}
           <div data-testid='county-map-center' className='flex-1 min-w-0'>
             <GlassCard className='h-full p-2'>
-              <CountyMapOverview onParcelSelect={handleSelectParcel} />
+              <BentonCountyMap
+                className='rounded-xl overflow-hidden'
+                onParcelSelect={handleSelectParcel}
+              />
             </GlassCard>
           </div>
 
@@ -502,11 +382,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
                   Executive Command Surface
                 </div>
                 <div className='text-sm font-semibold mt-1' style={{ color: 'hsl(var(--tf-text))' }}>
-                  Cross-suite county posture
+                  County operations command surface
                 </div>
               </div>
               <div className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                Benton County • Governed summaries only
+                Benton Runtime Pilot • 38 counties Onboarding / Provenance / Intake
               </div>
             </div>
 
@@ -617,9 +497,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
           <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
             <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
-              Benton County, WA
+              Washington County Operating Model
             </span>
-            <span>{parcelCountLabel}</span>
+            <span>Benton Runtime Pilot</span>
+            <span>38 counties Onboarding / Provenance / Intake</span>
+            <span>Parcel count: proof path only</span>
             <span>Last sync: –</span>
             <span>Appeals: –</span>
             <span className='flex items-center gap-1'>

@@ -50,18 +50,27 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [parcelLayerStatus, setParcelLayerStatus] = useState<string>('Loading parcel layer...');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
 
     if (!token) {
-      setError('Map requires VITE_MAPBOX_ACCESS_TOKEN — add it to .env.development');
+      setError('Map layer unavailable: Mapbox token not configured');
       setLoading(false);
       return;
     }
 
     if (mapRef.current || !containerRef.current) return;
+
+    const parcelLayerTimeout = window.setTimeout(() => {
+      setParcelLayerStatus((current) =>
+        current === 'Loading parcel layer...'
+          ? 'Parcel layer unavailable: source check timed out'
+          : current
+      );
+    }, 5000);
 
     mapboxgl.accessToken = token;
 
@@ -113,32 +122,40 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
         },
       });
 
-      // Parcel layer — load from backend, graceful fallback if offline
+      // Parcel layer — load from backend. Missing geometry is reported, never fabricated.
       fetch('/api/benton-county/parcels?limit=500')
         .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
         .then((parcels: unknown[]) => {
-          if (!Array.isArray(parcels) || parcels.length === 0) return;
+          if (!Array.isArray(parcels) || parcels.length === 0) {
+            setParcelLayerStatus('Parcel layer unavailable: no parcel features returned');
+            return;
+          }
+
+          const features = parcels
+            .filter((p: any) => p?.geometry)
+            .map((p: any) => ({
+              type: 'Feature' as const,
+              properties: {
+                id: p.parcelNumber || String(p.objectId),
+                address: p.situsAddress || p.address || '',
+                owner: p.ownerName || '',
+                value: p.assessedValue || '',
+              },
+              geometry: p.geometry,
+            }));
+
+          if (features.length === 0) {
+            setParcelLayerStatus('Parcel layer unavailable: source returned no geometry');
+            return;
+          }
+
+          setParcelLayerStatus(`Parcel layer loaded: ${features.length} source geometries`);
 
           map.addSource('parcels', {
             type: 'geojson',
             data: {
               type: 'FeatureCollection',
-              features: parcels.map((p: any) => ({
-                type: 'Feature',
-                properties: {
-                  id: p.parcelNumber || String(p.objectId),
-                  address: p.situsAddress || p.address || '',
-                  owner: p.ownerName || '',
-                  value: p.assessedValue || '',
-                },
-                geometry: p.geometry ?? {
-                  type: 'Point',
-                  coordinates: [
-                    -119.2687 + (Math.random() - 0.5) * 0.6,
-                    46.2619 + (Math.random() - 0.5) * 0.4,
-                  ],
-                },
-              })),
+              features,
             },
           });
 
@@ -194,15 +211,17 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
           });
         })
         .catch(() => {
-          // Backend offline — map shows satellite tiles without parcel layer
+          setParcelLayerStatus('Parcel layer unavailable: API request failed');
         });
     });
 
     map.on('error', () => {
+      setParcelLayerStatus('Parcel layer unavailable: map source failed');
       setLoading(false);
     });
 
     return () => {
+      window.clearTimeout(parcelLayerTimeout);
       map.remove();
       mapRef.current = null;
     };
@@ -224,6 +243,18 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
 
   return (
     <div data-testid='benton-county-map' className={`relative w-full h-full ${className ?? ''}`}>
+      <div
+        data-testid='benton-map-status'
+        className='absolute left-3 top-3 z-20 rounded-md px-3 py-2 text-xs'
+        style={{
+          border: '1px solid hsl(var(--tf-border) / 0.65)',
+          background: 'hsl(var(--tf-bg) / 0.84)',
+          color: 'hsl(var(--tf-text))',
+        }}
+      >
+        <div className='font-semibold'>Benton County GIS Orientation</div>
+        <div style={{ color: 'hsl(var(--tf-muted))' }}>{parcelLayerStatus}</div>
+      </div>
       {loading && (
         <div
           className='absolute inset-0 flex items-center justify-center z-10'
