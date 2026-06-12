@@ -13,7 +13,7 @@ namespace TerraFusion.API.Tests.Infrastructure
             {
                 LegacySystem = new LegacyConsciousnessStatusDto
                 {
-                    ActiveAgents = 1008,
+                    ActiveAgents = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                     Status = "Active",
                     PerformanceMetrics = 0.99m,
                     LastSync = DateTime.UtcNow
@@ -31,7 +31,7 @@ namespace TerraFusion.API.Tests.Infrastructure
                 CurrentMode = "Legacy",
                 TransitionProgress = 0.0m,
                 LastUpdated = DateTime.UtcNow,
-                TotalActiveAgents = 1008,
+                TotalActiveAgents = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 SystemMetrics = new Dictionary<string, object>()
             };
             return Task.FromResult(status);
@@ -42,7 +42,7 @@ namespace TerraFusion.API.Tests.Infrastructure
             var result = new ConsciousnessScalingResultDto
             {
                 Success = true,
-                CurrentAgentCount = 1008,
+                CurrentAgentCount = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 TargetAgentCount = request.TargetAgentCount,
                 ScalingProgress = 1.0m,
                 EstimatedTimeRemaining = TimeSpan.Zero
@@ -69,7 +69,7 @@ namespace TerraFusion.API.Tests.Infrastructure
             var metrics = new ConsciousnessMetricsDto
             {
                 Timestamp = DateTime.UtcNow,
-                TotalActiveAgents = 1008,
+                TotalActiveAgents = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 SystemLoad = 0.1m,
                 MemoryUsage = 0.1m,
                 CPUUsage = 0.1m,
@@ -155,7 +155,7 @@ namespace TerraFusion.API.Tests.Infrastructure
             {
                 Success = true,
                 MaintenanceId = Guid.NewGuid().ToString(),
-                AgentsMaintained = 1008,
+                AgentsMaintained = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 OptimalPerformanceAchieved = 1.0m,
                 MaintenanceDuration = TimeSpan.FromMilliseconds(1),
                 MaintenanceTimestamp = DateTime.UtcNow
@@ -236,7 +236,7 @@ namespace TerraFusion.API.Tests.Infrastructure
                 InitializedAt = DateTime.UtcNow,
                 Message = "Test initialization",
                 SystemReady = true,
-                LegacyAgentsActive = 1008,
+                LegacyAgentsActive = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 QuantumAgentsActive = 0
             });
         }
@@ -254,8 +254,8 @@ namespace TerraFusion.API.Tests.Infrastructure
                 LayerData = new Dictionary<string, object>(),
                 DataFormat = "test",
                 ConsciousnessLevel = 1.0m,
-                TotalAgents = 1008,
-                ActiveAgents = 1008,
+                TotalAgents = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
+                ActiveAgents = 0, // WO-DOCS-TEST-HONESTY-013a: no running swarm — truthful zero, not fabricated 1008
                 HiveCoherence = 0.99m,
                 ConsciousnessEmergence = 0.99m,
                 SessionMetrics = new Dictionary<string, object>()
