@@ -95,13 +95,26 @@ public class CostForgeAIService : ICostForgeAIService
     // Calculate current accuracy based on quantum factor and system performance
     var baseAccuracy = _targetAccuracy * 100;
     var quantumBonus = (_quantumFactor - 900) * 0.01m;
-    var systemLoadPenalty = (_agents.Values.Count(a => a.Status == "busy") / (decimal)_agents.Count) * 0.5m;
+    // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): with a default-0 fleet, _agents can be
+    // empty. Decimal division by an empty count throws DivideByZeroException, so an empty
+    // fleet contributes no system-load penalty.
+    var systemLoadPenalty = _agents.IsEmpty
+        ? 0m
+        : (_agents.Values.Count(a => a.Status == "busy") / (decimal)_agents.Count) * 0.5m;
 
     return Math.Min(baseAccuracy + quantumBonus - systemLoadPenalty, 99.9m);
   }
 
   private string DetermineSystemStatus()
   {
+    // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): no agents configured/running (default
+    // fleet is 0, not a fabricated 1008). Take an explicit empty-fleet path instead of
+    // dividing by an empty count. "critical" is the safest EXISTING status — it is the only
+    // one that does not falsely imply a healthy or operational fleet (no NoAgentsConfigured
+    // status exists in this contract).
+    if (_agents.IsEmpty)
+      return "critical";
+
     var activePercentage = _agents.Values.Count(a => a.Status == "active") / (decimal)_agents.Count;
     var modelsHealthy = _mlModels.Count == _modelLastUpdated.Count;
 
@@ -476,7 +489,11 @@ public class CostForgeAIService : ICostForgeAIService
 
   private void InitializeQuantumAgents()
   {
-    var targetAgentCount = _configuration.GetValue<int>("costforge:target_agent_count", 1008);
+    // Honesty (WO-AI-CONSOLIDATION-004c-b2c): default to 0, not a fabricated 1008.
+    // There is no running agent fleet; this only seeds an internal simulation when an
+    // operator explicitly configures costforge:target_agent_count. A 0 default means the
+    // surfaced agent metrics reflect the real (empty) state by default.
+    var targetAgentCount = _configuration.GetValue<int>("costforge:target_agent_count", 0);
 
     _logger.LogInformation("Initializing {AgentCount} quantum-enhanced AI agents", targetAgentCount);
 
