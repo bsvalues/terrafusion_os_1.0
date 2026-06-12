@@ -749,25 +749,39 @@ public class OpenTelemetryDistributedTracingTests : IDisposable
         var exception = new Exception("test");
         const int iterations = 1000;
         const int operationsPerIteration = 6;
+        const double maxBatchMsThreshold = 250.0;
 
         // Act - these should all be no-ops. Use many iterations so CI scheduler
         // jitter does not turn a single tiny measurement window into a false failure.
         var stopwatch = Stopwatch.StartNew();
+        long maxBatchTicks = 0;
         for (int i = 0; i < iterations; i++)
         {
+            var batchStart = Stopwatch.GetTimestamp();
+
             nullTracer.SetAttribute(span, TracingConstants.Attributes.CountyId, "test");
             nullTracer.SetAttribute(span, TracingConstants.Attributes.DocumentCount, 5);
             nullTracer.SetAttribute(span, TracingConstants.Attributes.UsesRag, true);
             nullTracer.SetStatus(span, ActivityStatusCode.Ok);
             nullTracer.RecordException(span, exception);
             nullTracer.AddEvent(span, "test-event");
+
+            var batchTicks = Stopwatch.GetTimestamp() - batchStart;
+            if (batchTicks > maxBatchTicks)
+            {
+                maxBatchTicks = batchTicks;
+            }
         }
         stopwatch.Stop();
 
-        // Assert - no-op tracer calls should remain comfortably sub-millisecond on average.
+        // Assert - no-op tracer calls should remain comfortably sub-millisecond on average,
+        // while a single blocking batch cannot be hidden by the average.
         var averageOperationMs = stopwatch.Elapsed.TotalMilliseconds / (iterations * operationsPerIteration);
+        var maxBatchMs = maxBatchTicks * 1000.0 / Stopwatch.Frequency;
         Assert.True(averageOperationMs < 1.0,
             $"Null tracer operations averaged {averageOperationMs:F4}ms, expected < 1ms");
+        Assert.True(maxBatchMs < maxBatchMsThreshold,
+            $"Null tracer batch took {maxBatchMs:F4}ms, expected < {maxBatchMsThreshold}ms");
     }
 
     #endregion
