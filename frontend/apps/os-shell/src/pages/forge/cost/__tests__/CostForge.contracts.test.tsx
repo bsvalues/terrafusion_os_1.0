@@ -23,6 +23,7 @@ vi.mock('@/services/countyIsolation', () => ({
 
 vi.mock('@/lib/apiBase', () => ({
   apiFetchJson: apiFetchJsonMock,
+  buildApiUrl: (path: string) => path,
 }));
 
 vi.mock('@/auth/authStorage', () => ({
