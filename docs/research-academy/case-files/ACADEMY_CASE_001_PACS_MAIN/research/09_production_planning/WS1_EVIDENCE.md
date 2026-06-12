@@ -19,7 +19,8 @@ Reproduce: `cd backend/tests/TerraFusion.Integration.Tests && dotnet test --filt
 | V6 income NOI/cap | `IncomeApproachTests` I1–I5 (value, zero-rate guard, audit) | ✅ |
 | V7 reconciliation rule | `ValuationEngineTests` V7/V7b (weights by property type) | ✅ |
 | V8 explanation complete | `result_carries_a_complete_explanation` (breakdown sums to value) | ✅ |
-| V9 auditable + persisted explanation | reference-data writes audit-stamped via WS-3 (F6/C6/I5); `ValuationResult` is serializable | ⚠️ partial — persisting `ValuationResult`+explanation to a queryable table is a follow-up |
+| V9 auditable + persisted explanation | `ParcelValuationPersistenceTests` — `ParcelValuation` (audit-stamped) persists value+explanation+breakdown, retrievable by (county, parcel, year) | ✅ |
+| Criterion 6 calibration/QC | `CalibrationGateTests` CG1–CG6 — IAAO median/COD/PRD + sample-size acceptance gate | ✅ |
 | V10 county isolation | `ForgeGovernanceTests` + `CostReferenceDataTests.selection_is_county_scoped` | ✅ |
 | V11 write-lane discipline | `ForgeGovernanceTests.forge_write_lane_allows_only_valuation_columns` | ✅ |
 | V12 workbench-consumable | `result_is_workbench_consumable_json` | ✅ |
@@ -43,18 +44,18 @@ model migration-consistent).
 
 ## Remaining to fully close WS-1 (honest)
 
-These are integration/human-gated, not core math:
-1. **Parity gates RP-1/2/3/5/6** — the comparison harness exists, but the gated parity *runs* vs a
-   PACS shadow at **Assessor-agreed tolerances** are a county sign-off + need real data. **RP-5
-   (supplement round-trip via SourceXref lineage)** is the confirmed migration-validation gate.
-2. **`IValuationEngine.ValueParcel(parcelId, year)` data-loading** — wire the engine to load canonical
-   inputs (`TfImprovement`/`TfLand`/`TfSale`) from `TerraFusionDbContext` and select reference sets by
-   county/year. The deterministic core + governance are done; this is the assembly adapter.
-3. **V9 full** — persist `ValuationResult`+explanation to a queryable store (retrievable by parcel+year),
-   written through the Forge write-lane.
-4. **CostForge project wiring** — expose the calculators via `IValuationApproach`/`IValuationEngine` in
-   `TerraFusion.CostForge` and **demote `ICostForgeAI`/`UltimateCostForgeAI` to advisory-only** (keep,
-   don't delete; never authoritative). Behind `Forge:Engine` = Shadow by default.
+These are human-gated, canonical-blocked, or rollout-gated — not core math:
+1. **Parity gates RP-1/2/3/5/6** (human-gated) — the comparison harness exists, but the gated parity
+   *runs* vs a PACS shadow at **Assessor-agreed tolerances** are a county sign-off + need real data.
+   **RP-5 (supplement round-trip via SourceXref lineage)** is the confirmed migration-validation gate.
+2. **`ValueParcel(parcelId, year)` DB assembly** (CANONICAL-BLOCKED) — driving the engine from canonical
+   entities is currently blocked: `TfImprovement` has **no square-footage/area** field (the cost approach
+   needs improvement size), and neighborhood lives on the parcel, not `TfLand`. Faithful assembly needs a
+   canonical-model extension (its own slice) — NOT fabricated fields. The engine consumes assembled
+   `ApproachValue`s today; the DB adapter lands once canonical carries improvement area + parcel neighborhood.
+3. **CostForge authoritative swap** (ROLLOUT-GATED) — exposing the calculators in `TerraFusion.CostForge`
+   and demoting `ICostForgeAI`/`UltimateCostForgeAI` to advisory-only is correctly deferred behind
+   `Forge:Engine` = **Shadow** (legacy authoritative until parity G1 passes). Keep AI, never authoritative.
 
 ## Gate status
 G1 (WS-1 cutover) is **not** cleared — it requires the parity runs above at agreed tolerances. The
