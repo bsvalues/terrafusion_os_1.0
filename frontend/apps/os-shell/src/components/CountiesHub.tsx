@@ -40,6 +40,10 @@ const CountiesHub: React.FC = () => {
     []
   );
   const intakeCount = WASHINGTON_COUNTY_RUNTIME_POSTURES.length - runtimeEnabledCount;
+  const canonicalImportLabel =
+    selectedPosture.canonicalImportAllowed === 'not_applicable'
+      ? 'Canonical import: not applicable - Benton is already runtime-enabled'
+      : `canonicalImportAllowed: ${String(selectedPosture.canonicalImportAllowed)}`;
 
   return (
     <Box sx={{ p: 4 }} data-testid='counties-hub-unavailable'>
@@ -125,7 +129,7 @@ const CountiesHub: React.FC = () => {
             </Box>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip label={`runtimeActionsAllowed: ${String(selectedPosture.runtimeActionsAllowed)}`} />
-              <Chip label={`canonicalImportAllowed: ${String(selectedPosture.canonicalImportAllowed)}`} />
+              <Chip label={canonicalImportLabel} />
               <Chip label={selectedPosture.runtimeMode} color={selectedPosture.runtimeActionsAllowed ? 'success' : 'warning'} />
             </Box>
           </Box>

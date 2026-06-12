@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import React from 'react';
 import { describe, expect, it } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 
 import CountiesHub from '../../components/CountiesHub';
 import ABTestingFramework from '../../components/ABTestingFramework';
@@ -94,7 +94,10 @@ describe('Legacy dashboard rendered honesty behavior', () => {
     expect(boundary).toHaveAttribute('data-county-slug', 'benton');
     expect(boundary).toHaveAttribute('data-runtime-mode', 'runtime-enabled');
     expect(boundary).toHaveAttribute('data-runtime-actions-allowed', 'true');
-    expect(boundary).toHaveAttribute('data-canonical-import-allowed', 'true');
+    expect(boundary).toHaveAttribute('data-canonical-import-allowed', 'not_applicable');
+    expect(within(boundary).getByText(/Canonical import: not applicable/i)).toBeInTheDocument();
+    expect(within(boundary).getAllByText(/Benton is already runtime-enabled/i).length).toBeGreaterThan(0);
+    expect(within(boundary).queryByText(/canonicalImportAllowed: true/i)).not.toBeInTheDocument();
   });
 
   it('renders ABTestingFramework as a governed guardrail', () => {

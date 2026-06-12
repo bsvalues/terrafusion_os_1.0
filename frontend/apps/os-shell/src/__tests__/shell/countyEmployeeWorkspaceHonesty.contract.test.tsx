@@ -230,6 +230,8 @@ describe('CountyEmployeeWorkspace honesty contract', () => {
 
     expect(benton.runtimeMode).toBe('runtime-enabled');
     expect(benton.runtimeActionsAllowed).toBe(true);
+    expect(benton.canonicalImportAllowed).toBe('not_applicable');
+    expect(benton.sourcePosture).toMatch(/already runtime-enabled/i);
     expect(nonBenton).toHaveLength(38);
     expect(nonBenton.every((posture) => posture.runtimeMode === 'source-provenance-onboarding-intake')).toBe(true);
     expect(nonBenton.every((posture) => posture.runtimeActionsAllowed === false)).toBe(true);

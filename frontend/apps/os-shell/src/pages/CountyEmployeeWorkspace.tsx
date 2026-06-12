@@ -150,6 +150,10 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
     error?: string;
   }>({ status: 'idle' });
   const countyPosture = getCountyRuntimePosture(countyId);
+  const canonicalImportLabel =
+    countyPosture.canonicalImportAllowed === 'not_applicable'
+      ? 'Canonical import: not applicable - Benton is already runtime-enabled'
+      : `canonicalImportAllowed: ${String(countyPosture.canonicalImportAllowed)}`;
 
   // Initialize AI Assistant hook
   const {
@@ -349,7 +353,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                         {countyPosture.runtimeMode}
                       </Badge>
                       <span>runtimeActionsAllowed: {String(countyPosture.runtimeActionsAllowed)}</span>
-                      <span>canonicalImportAllowed: {String(countyPosture.canonicalImportAllowed)}</span>
+                      <span>{canonicalImportLabel}</span>
                     </div>
                   </div>
                   <p className='mt-3 text-xs text-slate-400'>{countyPosture.nextAction}</p>

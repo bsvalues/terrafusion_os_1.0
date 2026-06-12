@@ -1,4 +1,5 @@
 export type CountyRuntimeMode = 'runtime-enabled' | 'source-provenance-onboarding-intake';
+export type CanonicalImportBoundary = false | 'not_applicable';
 
 export interface CountyRuntimePosture {
   countyName: string;
@@ -6,7 +7,7 @@ export interface CountyRuntimePosture {
   state: 'WA';
   runtimeMode: CountyRuntimeMode;
   runtimeActionsAllowed: boolean;
-  canonicalImportAllowed: boolean;
+  canonicalImportAllowed: CanonicalImportBoundary;
   sourcePosture: string;
   boundaryLabel: string;
   nextAction: string;
@@ -79,8 +80,9 @@ function buildPosture(countyName: string): CountyRuntimePosture {
       state: 'WA',
       runtimeMode: 'runtime-enabled',
       runtimeActionsAllowed: true,
-      canonicalImportAllowed: true,
-      sourcePosture: 'Benton runtime-enabled: governed parcel runtime actions are allowed for the June 10 lane.',
+      canonicalImportAllowed: 'not_applicable',
+      sourcePosture:
+        'Benton is already runtime-enabled: governed parcel runtime actions are allowed for the June 10 lane, and County Data Intake canonical import is not applicable.',
       boundaryLabel: 'Runtime-enabled county',
       nextAction: 'Use governed suite actions and keep runtime proof current.',
     };
