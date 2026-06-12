@@ -90,7 +90,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(swarmPayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3001/api/enhancement/swarm/execute", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:AICommandBrain"] ?? "http://localhost:3001"}/api/enhancement/swarm/execute", content);
             
             if (response.IsSuccessStatusCode)
             {
@@ -246,7 +246,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(performancePayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3004/api/enhancement/performance/optimize", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:Consciousness"] ?? "http://localhost:3004"}/api/enhancement/performance/optimize", content);
             
             if (response.IsSuccessStatusCode)
             {
