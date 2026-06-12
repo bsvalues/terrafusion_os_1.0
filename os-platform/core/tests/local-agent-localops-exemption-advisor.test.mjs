@@ -56,6 +56,18 @@ describe('LocalOps exemption advisor (WO-AI-CONSOLIDATION-005)', () => {
     await advisor.close();
   });
 
+  it('parses only the LEADING label — a conservative opener is not overridden by a later mention', async () => {
+    // The model opens with needs_review but later mentions "likely eligible".
+    // A whole-text scan would overstate eligibility; the leading-label parse must not.
+    const fake = new FakeModelAdapter().setFallback(
+      'needs_review — not enough evidence to say likely eligible; verify income documentation.'
+    );
+    const advisor = createExemptionAdvisor({ env: localopsEnv, adapter: fake });
+    const out = await advisor.review(SAMPLE_INPUT);
+    assert.strictEqual(out.verdict, 'needs_review', 'leading label wins; no eligibility overstatement');
+    await advisor.close();
+  });
+
   it('is unavailable with ZERO egress when AI is disabled (no local model)', async () => {
     const calls = [];
     const realFetch = globalThis.fetch;
