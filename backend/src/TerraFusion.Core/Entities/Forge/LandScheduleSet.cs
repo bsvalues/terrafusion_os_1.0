@@ -26,7 +26,7 @@ public sealed class LandRate
 /// audit contract as <see cref="CostFactorSet"/>; deterministic neighborhood lookup. Current-use/ag
 /// (WA RCW 84.34) is an explicit reduced-value path, never a silent fallback.
 /// </summary>
-public sealed class LandScheduleSet : IAuditableEntity
+public sealed class LandScheduleSet : IAuditableEntity, IReferenceDataSet
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid CountyId { get; set; }

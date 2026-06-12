@@ -18,7 +18,7 @@ public readonly record struct CostFactorResolution(
 /// lookup. Implements <see cref="IAuditableEntity"/> so writes inherit WS-3 audit stamping; there
 /// is no separate audit path. Honors county isolation via <see cref="CountyId"/>.
 /// </summary>
-public sealed class CostFactorSet : IAuditableEntity
+public sealed class CostFactorSet : IAuditableEntity, IReferenceDataSet
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 

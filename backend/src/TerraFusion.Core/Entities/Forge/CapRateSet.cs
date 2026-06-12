@@ -23,7 +23,7 @@ public sealed class CapRate
 /// versioning/audit contract as the other reference sets; deterministic class lookup. A non-positive
 /// rate is treated as invalid (explicit miss) — never a divide-by-zero or silent value.
 /// </summary>
-public sealed class CapRateSet : IAuditableEntity
+public sealed class CapRateSet : IAuditableEntity, IReferenceDataSet
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid CountyId { get; set; }

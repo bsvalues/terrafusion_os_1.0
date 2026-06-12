@@ -26,7 +26,7 @@ public sealed class DepreciationFactor
 /// provenance/versioning/audit contract as <see cref="CostFactorSet"/>; deterministic age→fraction
 /// lookup. No vendor depreciation table.
 /// </summary>
-public sealed class DepreciationSchedule : IAuditableEntity
+public sealed class DepreciationSchedule : IAuditableEntity, IReferenceDataSet
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid CountyId { get; set; }
