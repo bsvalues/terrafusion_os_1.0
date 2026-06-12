@@ -23,6 +23,12 @@ import {
 
 type AuditMetric = 'boundary' | 'uniformity' | 'zoning';
 
+interface LayerWorksModuleProps {
+  initialParcelId?: string;
+  autoLoadParcelProfile?: boolean;
+  embedded?: boolean;
+}
+
 interface LayerAuditSummary {
   narrative: string;
   hotspotCount: number;
@@ -35,10 +41,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   analysis: 'Analysis Services',
 };
 
-export default function LayerWorksModule() {
+export default function LayerWorksModule({
+  initialParcelId = '',
+  autoLoadParcelProfile = false,
+  embedded = false,
+}: LayerWorksModuleProps = {}) {
   const [layers, setLayers] = useState<MapLayer[]>([]);
   const [layerConfigs, setLayerConfigs] = useState<LayerConfigsResponse | null>(null);
-  const [profileParcelId, setProfileParcelId] = useState('');
+  const [profileParcelId, setProfileParcelId] = useState(initialParcelId.trim());
   const [spatialProfile, setSpatialProfile] = useState<ParcelSpatialProfileResponse | null>(null);
   const [profileState, setProfileState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -99,6 +109,31 @@ export default function LayerWorksModule() {
     setLayers((current) => current.map((layer) => (layer.id === layerId ? { ...layer, opacity } : layer)));
   }, []);
 
+  const loadParcelSpatialProfile = useCallback(async (parcelIdToLoad: string) => {
+    const nextParcelId = parcelIdToLoad.trim();
+    if (!nextParcelId) return;
+    setProfileState('loading');
+    setProfileError(null);
+    try {
+      const profile = await atlasService.getParcelSpatialProfile(nextParcelId);
+      setSpatialProfile(profile);
+      setProfileState('success');
+    } catch (error) {
+      setSpatialProfile(null);
+      setProfileState('error');
+      setProfileError(error instanceof Error ? error.message : 'Could not load live parcel spatial profile.');
+    }
+  }, []);
+
+  useEffect(() => {
+    const nextParcelId = initialParcelId.trim();
+    if (!nextParcelId) return;
+    setProfileParcelId(nextParcelId);
+    if (autoLoadParcelProfile) {
+      void loadParcelSpatialProfile(nextParcelId);
+    }
+  }, [autoLoadParcelProfile, initialParcelId, loadParcelSpatialProfile]);
+
   const runGovernedLayerAudit = useCallback(async () => {
     setLayerAudit({ status: 'loading' });
     try {
@@ -133,46 +168,22 @@ export default function LayerWorksModule() {
   }, [auditMetric]);
 
   const runParcelSpatialProfile = useCallback(async () => {
-    if (!profileParcelId.trim()) return;
-    setProfileState('loading');
-    setProfileError(null);
-    try {
-      const profile = await atlasService.getParcelSpatialProfile(profileParcelId.trim());
-      setSpatialProfile(profile);
-      setProfileState('success');
-    } catch (error) {
-      setSpatialProfile(null);
-      setProfileState('error');
-      setProfileError(error instanceof Error ? error.message : 'Could not load live parcel spatial profile.');
-    }
-  }, [profileParcelId]);
+    await loadParcelSpatialProfile(profileParcelId);
+  }, [loadParcelSpatialProfile, profileParcelId]);
+
+  const containerClassName = embedded ? 'space-y-4' : 'p-6 space-y-6';
+  const loadingClassName = embedded ? 'py-6 flex items-center justify-center min-h-[220px]' : 'p-6 flex items-center justify-center min-h-[400px]';
 
   if (loading) {
     return (
-      <div className='p-6 flex items-center justify-center min-h-[400px]'>
+      <div className={loadingClassName} data-testid='layerworks-module'>
         <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading LayerWorks from live Atlas services...</p>
       </div>
     );
   }
 
-  if (loadError) {
-    return (
-      <div className='p-6 space-y-4'>
-        <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
-          <Layers style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
-          LayerWorks
-        </h2>
-        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)' }}>
-          <CardContent className='p-6 text-sm' style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
-            {loadError}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className='p-6 space-y-6'>
+    <div className={containerClassName} data-testid='layerworks-module' data-embedded={embedded ? 'true' : undefined}>
       <div>
         <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
           <Layers style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
@@ -185,7 +196,23 @@ export default function LayerWorksModule() {
 
       <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,0.9fr)] gap-6'>
         <div className='space-y-4'>
-          {(['base', 'overlay', 'analysis'] as const).map((category) => (
+          {loadError && (
+            <Card data-testid='layerworks-layer-load-error' style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)' }}>
+              <CardHeader>
+                <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  Layer Catalog Status
+                </CardTitle>
+                <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Parcel workflow remains available while Atlas reports the layer catalog failure.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='text-sm' style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
+                {loadError}
+              </CardContent>
+            </Card>
+          )}
+
+          {!loadError && (['base', 'overlay', 'analysis'] as const).map((category) => (
             <Card key={category} style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
               <CardHeader className='pb-2'>
                 <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
@@ -251,7 +278,7 @@ export default function LayerWorksModule() {
             </Card>
           ))}
 
-          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <Card data-testid='layerworks-parcel-spatial-profile' style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader>
               <CardTitle className='flex items-center gap-2 text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
                 <Radar size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />

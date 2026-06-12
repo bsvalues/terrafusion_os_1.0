@@ -26,6 +26,26 @@ vi.mock('../../hooks/useAtlasGis', () => ({
   useParcelLayers: (...args: unknown[]) => mockUseParcelLayers(...args),
 }));
 
+vi.mock('@/services/atlasService', () => ({
+  atlasService: {
+    getLayers: vi.fn(async () => []),
+    getLayerConfigs: vi.fn(async () => ({
+      count: 0,
+      source: 'test',
+      baseUrl: '/api/atlas',
+      layers: [],
+    })),
+    getParcelSpatialProfile: vi.fn(async (parcelId: string) => ({
+      parcelId,
+      workflow: 'live parcel overlay workflow',
+      source: 'test atlas service',
+      overlayLayers: [],
+      expectedResults: { overlays: 'live overlay workflow' },
+      steps: [{ step: 1, action: 'Load parcel boundary and live overlay intersections' }],
+    })),
+  },
+}));
+
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
@@ -162,12 +182,9 @@ describe('PropertyAtlas', () => {
       await waitFor(() => {
         expect(screen.getAllByText(/Parcel Boundary/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/Zoning Districts/i)).toBeInTheDocument();
-        expect(screen.getByText(/Not exposed on this route yet/i)).toBeInTheDocument();
+        expect(screen.getByText(/LayerWorks below hosts the live parcel spatial profile/i)).toBeInTheDocument();
         expect(
-          screen.getByText(/Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches/i)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(/Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches/i)
+          screen.getByText(/Boundary and centroid render from live Atlas GIS when available/i)
         ).toBeInTheDocument();
         expect(screen.queryByText(/Live Atlas layer truth is available/i)).not.toBeInTheDocument();
         // Truncated display shows first 16 chars

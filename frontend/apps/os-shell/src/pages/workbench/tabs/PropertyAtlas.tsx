@@ -8,7 +8,7 @@
  *        GET /api/atlas/gis/parcels/{parcelId}/boundary
  *        GET /api/atlas/gis/parcels/{parcelId}/layers
  *   2. When source="assessment", renders real county assessment data in boundary info & layer panels.
- *   3. Falls back to SVG deterministic preview when API data is unavailable.
+ *   3. Falls back to SVG deterministic query visualization when API data is unavailable.
  *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
 
@@ -32,6 +32,8 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
+import { getWorkbenchLiveScopeDecision } from '../../../config/workbenchLiveScope';
+import LayerWorksModule from '../../suites/modules/LayerWorksModule';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -229,9 +231,9 @@ function ParcelMapVisualization({
         <circle cx='200' cy='150' r='8' fill='none' stroke='hsl(var(--tf-warning-hs) 50%)' strokeWidth='1' opacity='0.6' />
       </svg>
 
-      {/* Preview disclaimer */}
+      {/* Query visualization disclosure */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Parcel boundary shown is approximate. Full GIS geometry loads when a connected layer is available.
+        Query visualization is generated from the governed layer response. Connected geometry is shown when returned by Atlas GIS.
       </p>
 
       {/* Map info bar */}
@@ -247,7 +249,7 @@ function ParcelMapVisualization({
               className="ml-1 text-white/30"
               style={{ fontSize: 9 }}
             >
-              (preview only)
+              (query centroid)
             </span>
           </span>
         )}
@@ -284,6 +286,7 @@ function gisSourceToDisclosure(
 
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
+  const enrichmentScope = getWorkbenchLiveScopeDecision('atlas-enrichment-layers');
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   // Live GIS hooks
@@ -745,10 +748,23 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
-      {/* ── Honesty disclosure: full GIS geometry is not exposed on this route ── */}
+      {/* ── Source disclosure: Workbench hosts live Atlas GIS while enrichment remains bounded ── */}
       <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
-        This route shows boundary previews and layer availability only.
-        Full GIS geometry rendering is reserved for the dedicated Atlas suite.
+        Workbench hosts live Atlas GIS parcel geometry when available. Enrichment layers are shown only when returned by county services.
+      </div>
+
+      <div
+        className="tf-status-warning rounded-xl p-4"
+        data-testid="atlas-enrichment-deferred-disclosure"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="tf-text font-semibold">Atlas enrichment layers are deferred for production scope.</p>
+            <p className="tf-text-secondary text-sm mt-1">{enrichmentScope.rationale}</p>
+            <p className="tf-text-dim text-xs mt-2">{enrichmentScope.smallestSafeAction}</p>
+          </div>
+          <WorkbenchSourceBadge source={layers.source === 'live' ? 'partial' : 'unavailable'} />
+        </div>
       </div>
 
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
@@ -884,12 +900,9 @@ export const PropertyAtlas: React.FC = () => {
               </div>
               <div className="text-[11px] tf-text-dim space-y-1">
                 <p>
-                  Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches. Full parcel geometry is reserved for the dedicated Atlas suite.
+                  Atlas layer availability is confirmed for this parcel. Boundary and centroid render from live Atlas GIS when available; endpoint status remains visible above.
                 </p>
-                <p>
-                  Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches and are not the canonical authoritative geometry.
-                </p>
-                <p>Not exposed on this route yet: full geometry rendering, neighbor parcels, and live overlay editing.</p>
+                <p>LayerWorks below hosts the live parcel spatial profile and overlay workflow inside Workbench.</p>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (
@@ -978,6 +991,10 @@ export const PropertyAtlas: React.FC = () => {
           )}
         </BentoCard>
       </BentoGrid>
+
+      <div data-testid="workbench-atlas-layerworks" className="tf-panel rounded-xl p-1">
+        <LayerWorksModule initialParcelId={parcelId} autoLoadParcelProfile embedded />
+      </div>
 
       <InvocationHistory
         records={queryHistory}

@@ -65,6 +65,26 @@ vi.mock('../../hooks/useAtlasGis', () => ({
   useParcelLayers: () => ({ data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() }),
 }));
 
+vi.mock('@/services/atlasService', () => ({
+  atlasService: {
+    getLayers: vi.fn(async () => []),
+    getLayerConfigs: vi.fn(async () => ({
+      count: 0,
+      source: 'test',
+      baseUrl: '/api/atlas',
+      layers: [],
+    })),
+    getParcelSpatialProfile: vi.fn(async (parcelId: string) => ({
+      parcelId,
+      workflow: 'live parcel overlay workflow',
+      source: 'test atlas service',
+      overlayLayers: [],
+      expectedResults: { overlays: 'live overlay workflow' },
+      steps: [{ step: 1, action: 'Load parcel boundary and live overlay intersections' }],
+    })),
+  },
+}));
+
 import { PropertyAtlas } from '../../pages/workbench/tabs/PropertyAtlas';
 import * as pilotApi from '../../api/pilotApi';
 
@@ -185,7 +205,7 @@ describe('PropertyAtlas honesty — source disclosure', () => {
       await waitFor(() => {
         const centroidDisclosure = screen.getByTestId('atlas-centroid-disclosure');
         expect(centroidDisclosure).toBeInTheDocument();
-        expect(centroidDisclosure.textContent).toMatch(/preview/i);
+        expect(centroidDisclosure.textContent).toMatch(/query centroid/i);
       });
     });
   });
