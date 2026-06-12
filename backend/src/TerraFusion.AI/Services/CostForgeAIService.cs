@@ -83,7 +83,9 @@ public class CostForgeAIService : ICostForgeAIService
           .ToList();
 
       if (recentData.Count == 0)
-        return 847m; // Default baseline
+        // Honesty (WO-CF-b2f): no recorded throughput → report 0, not a fabricated 847
+        // baseline. The computed branch below derives from real _performanceHistory timings.
+        return 0m;
 
       var avgResponseTime = recentData.Average(d => d.Value);
       return Math.Max(1000m / Math.Max(avgResponseTime, 1m), 100m);
@@ -364,10 +366,10 @@ public class CostForgeAIService : ICostForgeAIService
       ActiveAgents = activeAgents,
       IdleAgents = idleAgents,
       BusyAgents = busyAgents,
-      // Honesty (WO-AI-CONSOLIDATION-004c-b2d): an empty fleet has 0 utilization, not a
-      // fabricated 87.3. The non-empty simulation constant remains deferred to the broader
-      // simulation-truth cleanup.
-      AverageUtilization = totalAgents == 0 ? 0.0 : (double)87.3m,
+      // Honesty (WO-CF-b2f): the agent Status values are Random-assigned simulations, so any
+      // utilization derived from them is fabricated. Report 0 in all states — there is no
+      // trustworthy live utilization to surface (supersedes the b2d empty-only guard).
+      AverageUtilization = 0.0,
       Agents = snapshot.Take(10).Cast<object>().ToList() // Return first 10 for performance
     };
   }
@@ -399,18 +401,21 @@ public class CostForgeAIService : ICostForgeAIService
   {
     await System.Threading.Tasks.Task.Delay(10);
 
+    // Honesty (WO-CF-b2f): these were fabricated constants with no real telemetry backing —
+    // zeroed so the surfaced metrics do not imply live performance. HistoricalData below is
+    // real (written by RecordPerformanceMetrics during actual valuations) and is preserved.
     return new PerformanceMetricsDto
     {
-      AverageResponseTime = 1.2m,
-      ThroughputPerSecond = 847m,
-      ErrorRate = 0.03m,
-      MemoryUsage = 2048m,
-      CpuUsage = 23.5m,
+      AverageResponseTime = 0m,
+      ThroughputPerSecond = 0m,
+      ErrorRate = 0m,
+      MemoryUsage = 0m,
+      CpuUsage = 0m,
       CustomMetrics = new Dictionary<string, decimal>
       {
-        ["quantum_acceleration"] = 379000000m,
-        ["harris_sync_rate"] = 99.7m,
-        ["championship_score"] = 98.7m
+        ["quantum_acceleration"] = 0m,
+        ["harris_sync_rate"] = 0m,
+        ["championship_score"] = 0m
       },
       HistoricalData = _performanceHistory.TakeLast(100).ToList()
     };
@@ -452,8 +457,9 @@ public class CostForgeAIService : ICostForgeAIService
       Status = TerraFusion.Core.Enums.HealthStatus.Healthy,
       LastHealthCheck = DateTime.UtcNow,
       Uptime = DateTime.UtcNow - _startTime,
-      MemoryUsage = 2048,
-      CpuUsage = 23.5,
+      // Honesty (WO-CF-b2f): fabricated telemetry constants with no real backing → 0.
+      MemoryUsage = 0,
+      CpuUsage = 0,
       // Honesty (WO-AI-CONSOLIDATION-004c-b2a): no governed AI agent swarm runs,
       // so there are no live agent connections to report.
       ActiveConnections = 0,
