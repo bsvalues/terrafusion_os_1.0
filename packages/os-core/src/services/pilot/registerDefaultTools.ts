@@ -34,6 +34,129 @@ const atlasParcelRead: ToolDefinition = {
   },
 };
 
+// API base for the .NET Kernel (port 5000 by default, configurable)
+const API_BASE = process.env.TERRAFUSION_API_BASE ?? 'http://localhost:5000';
+
+interface ParcelWorkbenchParams {
+  parcelId: string;
+  taxYear?: number;
+  era?: string;
+}
+
+// ── Output schema contracts (camelCase wire keys; nullable fields present as null, never omitted) ──
+
+interface GeometryFacet {
+  tfParcelId: string;
+  countyId: string;
+  geomWkt: string;
+  centroidLat: number;
+  centroidLon: number;
+  areaSqFt: number;
+  lastSyncedAt: string;
+  sourceServiceUrl: string;
+  isActive: boolean;
+}
+
+interface OwnerEntry {
+  tfOwnerId: string;
+  // CAUTION: acctId is emitted as a JSON number from int64.
+  // Valid JSON, but can exceed Number.MAX_SAFE_INTEGER (2^53-1).
+  acctId: number;
+  displayName: string;
+  pctOwnership: number | null;
+  isPrimary: boolean;
+  confidentialFlag: boolean;
+  webSuppression: boolean;
+}
+
+interface OwnerCurrentFacet {
+  tfParcelId: string;
+  countyId: string;
+  taxYear: number;
+  owners: OwnerEntry[];
+}
+
+interface WsdorEntry {
+  tfAssessmentWsdorId: string;
+  tfOwnerId: string;
+  ownerDisplayName: string;
+  assessedVal: number | null;
+  marketVal: number | null;
+  appraisedVal: number | null;
+  taxableClassified: number | null;
+  taxableNonClassified: number | null;
+  landTaxableClassified: number | null;
+  landTaxableNonClassified: number | null;
+  imprvTaxableClassified: number | null;
+  imprvTaxableNonClassified: number | null;
+  stateValueClassified: number | null;
+  stateValueNonClassified: number | null;
+  boeStatus: string | null;
+  disasterProrationPct: number | null;
+  snrFrzImprvHs: number | null;
+  snrFrzLandHs: number | null;
+}
+
+interface WsdorRollFacet {
+  tfParcelId: string;
+  countyId: string;
+  assessmentYear: number;
+  entries: WsdorEntry[];
+  assessedValTotal: number | null;
+  marketValTotal: number | null;
+}
+
+interface ParcelWorkbenchResult {
+  parcelId: string;
+  geometry: GeometryFacet | null;
+  ownerCurrent: OwnerCurrentFacet | null;
+  wsdorRoll: WsdorRollFacet | null;
+  errors: string[];
+}
+
+async function fetchFacet<T>(url: string): Promise<{ data: T | null; error: string | null }> {
+  try {
+    const res = await fetch(url);
+    if (res.status === 404) return { data: null, error: null };
+    if (!res.ok) return { data: null, error: `HTTP ${res.status} from ${url}` };
+    return { data: (await res.json()) as T, error: null };
+  } catch (err: any) {
+    return { data: null, error: err?.message ?? String(err) };
+  }
+}
+
+const atlasParcelWorkbench: ToolDefinition = {
+  id: 'atlas.parcel.workbench',
+  suite: 'atlas',
+  writeLane: 'atlas:read',
+  risk: 'read_only',
+  requiredPermissions: ['parcel:read'],
+  handler: async (params: ParcelWorkbenchParams): Promise<ParcelWorkbenchResult> => {
+    const { parcelId, taxYear, era } = params;
+    const year = taxYear ?? new Date().getFullYear();
+    const eraParam = era ? `&era=${encodeURIComponent(era)}` : '';
+
+    const [geom, owner, wsdor] = await Promise.all([
+      fetchFacet<GeometryFacet>(`${API_BASE}/api/parcels/${parcelId}/geometry`),
+      fetchFacet<OwnerCurrentFacet>(`${API_BASE}/api/parcels/${parcelId}/owner-current?taxYear=${year}${eraParam}`),
+      fetchFacet<WsdorRollFacet>(`${API_BASE}/api/parcels/${parcelId}/wsdor-roll?taxYear=${year}${eraParam}`),
+    ]);
+
+    const errors: string[] = [];
+    if (geom.error) errors.push(`geometry: ${geom.error}`);
+    if (owner.error) errors.push(`ownerCurrent: ${owner.error}`);
+    if (wsdor.error) errors.push(`wsdorRoll: ${wsdor.error}`);
+
+    return {
+      parcelId,
+      geometry: geom.data,
+      ownerCurrent: owner.data,
+      wsdorRoll: wsdor.data,
+      errors,
+    };
+  },
+};
+
 const atlasParcelSearch: ToolDefinition = {
   id: 'atlas.parcel.search',
   suite: 'atlas',
@@ -154,6 +277,7 @@ export function registerDefaultTools(): void {
   // Atlas suite
   ToolRegistry.register(atlasParcelRead);
   ToolRegistry.register(atlasParcelSearch);
+  ToolRegistry.register(atlasParcelWorkbench);
 
   // Dais suite
   ToolRegistry.register(daisWorkflowRead);
@@ -171,6 +295,7 @@ export function registerDefaultTools(): void {
 export const defaultTools = {
   atlasParcelRead,
   atlasParcelSearch,
+  atlasParcelWorkbench,
   daisWorkflowRead,
   daisWorkflowAdvance,
   forgeValuationRead,
