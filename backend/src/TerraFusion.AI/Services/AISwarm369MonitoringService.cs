@@ -329,9 +329,10 @@ namespace TerraFusion.AI.Services
         // Honesty (WO-AI-CONSOLIDATION-004c-b3): there is NO governed AI swarm running.
         // Every collector below returned a random "looks-healthy" value for a swarm that
         // does not exist; each now reports the truthful zero / no-swarm state. The callers
-        // keep a non-zero MaxValue (tier capacity / 100) purely as the engine's denominator
-        // so the truthful zero normalizes to 0 instead of throwing DivideByZeroException
-        // in Framework369MetricsEngine (decimal `CurrentValue / MaxValue`).
+        // keep a non-zero MaxValue — tier capacities (12/96/900), percentage scales (100),
+        // and the response-time scale (1000) — purely as the engine's denominator, so the
+        // truthful zero normalizes to 0 instead of throwing DivideByZeroException in
+        // Framework369MetricsEngine (decimal `CurrentValue / MaxValue`).
 
         private decimal GetActiveAgents(int maxAgents)
         {
