@@ -1,10 +1,18 @@
-# 🌊 Claude-Flow v2.0.0 Alpha Integration
+# 🌊 Claude-Flow v2.0.0 Alpha Integration (Design / Alpha)
 
-## TerraFusion OS - Government. Transcended.
+> **⚠️ Accuracy & status (WO-AI-DOCS-002).** This is **design / aspirational alpha**, not a running
+> production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root
+> `README.md`): the AI agent swarm (**1,008 designed; larger counts are aspirational**) is **target
+> architecture, NOT a running runtime** (the runtime-proven AI path is **LocalOps / local-agent**);
+> **FISMA-HIGH is a posture target, not an accreditation** (no measured compliance rate); **Tyler is NOT
+> in Benton County's stack**. Capability labels:
+> **[implemented] · [partial] · [planned] · [target architecture]**.
 
-This directory contains the complete Claude-Flow v2.0.0 Alpha integration with
-TerraFusion OS, providing revolutionary AI orchestration capabilities for
-government operations.
+## TerraFusion OS — Claude-Flow integration (design)
+
+This directory contains the Claude-Flow v2.0.0 Alpha integration **design** for TerraFusion OS — AI
+orchestration scaffolding for government operations. It is aspirational architecture, **not** a running
+production system.
 
 ## 📁 Directory Structure
 
@@ -107,32 +115,34 @@ npx claude-flow@alpha hive-mind wizard
 - `harris_pacs_sync`, `revenue_discovery`, `property_assessment`
 - `compliance_check`, `jurisdiction_isolate`, `audit_trail_create`
 
-## 📊 Performance Metrics
+## 📊 Performance Targets (aspirational — unvalidated)
 
-- **Total AI Agents**: 50,240+ (50,000 TerraFusion + 240 Claude-Flow)
-- **Neural Models**: 27+ cognitive models with government specialization
-- **Memory Tables**: 12 specialized government data tables
-- **Processing Speed**: 2.8-4.4x improvement through hive-mind coordination
-- **Cost Reduction**: 32.3% token reduction through intelligent task
-  distribution
+> Design goals, not measured results.
 
-## 🛡️ Government Compliance
+- **AI Agents**: 1,008-agent hierarchy is the design target *([target architecture]; no swarm runs —
+  larger counts here were aspirational)*
+- **Neural Models**: 27+ cognitive models *(planned)*
+- **Memory Tables**: 12 specialized government data tables *(design)*
+- **Processing Speed**: 2.8-4.4x improvement target *(unvalidated)*
+- **Cost Reduction**: 32.3% token-reduction target *(unvalidated)*
 
-- ✅ County-level data isolation and sovereignty
-- ✅ FISMA compliance (95%+ compliance rate)
-- ✅ Comprehensive audit trails for all AI decisions
-- ✅ Neural pattern security with encryption
-- ✅ Role-based access control with government-grade security
+## 🛡️ Government Compliance (design targets)
+
+- **County-level data isolation and sovereignty** *([planned])*
+- **FISMA** — posture **target**, not an accreditation; there is **no measured compliance rate**
+- **Audit trails for AI decisions** *([planned])*
+- **Security with encryption** *([planned])*
+- **Role-based access control** *([planned])*
 
 ## 🎯 Benton County Deployment
 
-**Status**: ✅ **PRODUCTION READY**
+**Status**: Alpha — design/aspirational, **not** production-accredited
 
-- **Parcel Count**: 89,247 parcels supported
-- **Harris PACS**: v12.4.7 integration certified
-- **Revenue Target**: $10.1M annual increase identified
-- **ROI**: 2,700%+ in Year 1
-- **Performance**: 379M× quantum speedup validated
+- **Parcel Count**: 89,247 real Benton County parcels *([implemented] data)*
+- **Harris PACS**: legacy source DB; integration is *([partial])* — not "certified"
+- **Revenue Target**: $10.1M annual increase *(target, unvalidated)*
+- **ROI**: Year-1 ROI figure is a **target, unvalidated**
+- **Performance**: "quantum speedup" claims are **not real** — removed as fabricated
 
 ## 📞 Support
 
@@ -153,4 +163,5 @@ npx claude-flow@alpha update --government-mode
 
 ---
 
-**Government. Transcended.**
+**Status**: design / aspirational alpha — not production-accredited.  
+**Canon**: `AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root `README.md`.

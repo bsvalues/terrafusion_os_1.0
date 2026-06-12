@@ -1,11 +1,17 @@
-# TerraFusion AI Training Platform
+# TerraFusion AI Training Platform (Design / Alpha)
+
+> **⚠️ Accuracy & status (WO-AI-DOCS-002).** This is a **design / aspirational alpha**, not a running
+> production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root
+> `README.md`): **FISMA-HIGH is a posture target, not an accreditation**, and accuracy/reliability
+> figures (**95% / 99.9%**) are **aspirational and unvalidated**. The runtime-proven AI path today is
+> **LocalOps / local-agent**. Capability labels:
+> **[implemented] · [partial] · [planned] · [target architecture]**.
 
 ## Overview
 
-The AI Training Platform enables government agencies to develop, train, and
-deploy custom AI models tailored to their specific needs and data. It provides
-comprehensive tools for data preparation, model training, validation, and
-deployment with government-grade security and compliance.
+The AI Training Platform is a **design** for government agencies to develop, train, and deploy custom AI
+models — data preparation, model training, validation, and deployment. It is aspirational architecture,
+**not** a description of a running production system.
 
 ## Core Capabilities
 
@@ -358,23 +364,25 @@ class FederatedTraining:
 
 ## Success Metrics
 
-### Technical Performance
+### Technical Performance (targets — unvalidated)
 
-- **Training Efficiency**: 50% reduction in training time through optimization
-- **Model Accuracy**: 95%+ accuracy for government-specific models
-- **Deployment Speed**: Deploy new models in under 24 hours
-- **Resource Utilization**: 80%+ GPU utilization during training
+> Design goals, not measured results.
 
-### Business Impact
+- **Training Efficiency**: 50% reduction in training time through optimization *(target)*
+- **Model Accuracy**: 95%+ accuracy for government-specific models *(target, unvalidated)*
+- **Deployment Speed**: Deploy new models in under 24 hours *(target)*
+- **Resource Utilization**: 80%+ GPU utilization during training *(target)*
 
-- **Custom Model Development**: 20+ jurisdiction-specific models deployed
-- **Performance Improvement**: 25% improvement over generic models
-- **Cost Savings**: 60% reduction in external AI service costs
-- **Time to Value**: 90% reduction in time from data to deployed model
+### Business Impact (targets — unvalidated)
 
-### Operational Excellence
+- **Custom Model Development**: 20+ jurisdiction-specific models *(target)*
+- **Performance Improvement**: 25% improvement over generic models *(target, unvalidated)*
+- **Cost Savings**: 60% reduction in external AI service costs *(target, unvalidated)*
+- **Time to Value**: 90% reduction in time from data to deployed model *(target)*
 
-- **System Reliability**: 99.9% uptime for training infrastructure
-- **Security Incidents**: Zero security breaches or data leaks
-- **Compliance Rate**: 100% compliance with government regulations
+### Operational Excellence (targets — unvalidated)
+
+- **System Reliability**: 99.9% uptime for training infrastructure *(target, unvalidated)*
+- **Security Incidents**: zero breaches *(target — FISMA-HIGH is a posture target, not accredited)*
+- **Compliance Rate**: government-regulation compliance *(target; no measured rate)*
 - **User Satisfaction**: 4.5+ star rating from government data scientists
