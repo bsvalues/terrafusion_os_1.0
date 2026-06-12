@@ -201,4 +201,22 @@ namespace TerraFusion.API.Models.DTOs
         public List<string> ActivationTriggers { get; set; } = new();
         public Dictionary<string, object> ProtocolActions { get; set; } = new();
     }
+
+    /// <summary>
+    /// Emergency Protocol Execution Result DTO — the actual response shape returned by
+    /// <c>AIOrchestrationController.ExecuteEmergencyProtocol</c>. This is distinct from
+    /// <see cref="EmergencyProtocolDto"/> (which describes a protocol *definition*); this
+    /// type describes the *result of executing* a protocol, so the OpenAPI contract matches
+    /// the real payload instead of advertising the wrong shape.
+    /// </summary>
+    public class EmergencyProtocolExecutionResultDto
+    {
+        public string Protocol { get; set; } = string.Empty;
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public int AffectedAgents { get; set; }
+        public double ExecutionTimeMs { get; set; }
+        public DateTime ExecutedAt { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
 }
