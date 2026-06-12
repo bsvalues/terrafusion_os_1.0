@@ -746,19 +746,28 @@ public class OpenTelemetryDistributedTracingTests : IDisposable
         // Arrange
         var nullTracer = NullTerraFusionTracer.Instance;
         Activity? span = null;
+        var exception = new Exception("test");
+        const int iterations = 1000;
+        const int operationsPerIteration = 6;
 
-        // Act - these should all be no-ops
+        // Act - these should all be no-ops. Use many iterations so CI scheduler
+        // jitter does not turn a single tiny measurement window into a false failure.
         var stopwatch = Stopwatch.StartNew();
-        nullTracer.SetAttribute(span, TracingConstants.Attributes.CountyId, "test");
-        nullTracer.SetAttribute(span, TracingConstants.Attributes.DocumentCount, 5);
-        nullTracer.SetAttribute(span, TracingConstants.Attributes.UsesRag, true);
-        nullTracer.SetStatus(span, ActivityStatusCode.Ok);
-        nullTracer.RecordException(span, new Exception("test"));
-        nullTracer.AddEvent(span, "test-event");
+        for (int i = 0; i < iterations; i++)
+        {
+            nullTracer.SetAttribute(span, TracingConstants.Attributes.CountyId, "test");
+            nullTracer.SetAttribute(span, TracingConstants.Attributes.DocumentCount, 5);
+            nullTracer.SetAttribute(span, TracingConstants.Attributes.UsesRag, true);
+            nullTracer.SetStatus(span, ActivityStatusCode.Ok);
+            nullTracer.RecordException(span, exception);
+            nullTracer.AddEvent(span, "test-event");
+        }
         stopwatch.Stop();
 
-        // Assert - operations should complete nearly instantly
-        Assert.True(stopwatch.ElapsedMilliseconds < 10, "Null tracer operations should be near-instant");
+        // Assert - no-op tracer calls should remain comfortably sub-millisecond on average.
+        var averageOperationMs = stopwatch.Elapsed.TotalMilliseconds / (iterations * operationsPerIteration);
+        Assert.True(averageOperationMs < 1.0,
+            $"Null tracer operations averaged {averageOperationMs:F4}ms, expected < 1ms");
     }
 
     #endregion
