@@ -133,16 +133,23 @@ const WorkbenchHostViolationNotice: React.FC<{ violation: WorkbenchHostViolation
 };
 
 const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metadata }) => {
-  const parcelId = readMetadataString(metadata, 'parcelId') ?? null;
+  const metadataParcelId = readMetadataString(metadata, 'parcelId') ?? null;
   const metadataTab = resolveMetadataTab(metadata);
   const segmentHandoff = useMemo(() => buildSegmentHandoffContext(metadata), [metadata]);
+  const [selectedParcelId, setSelectedParcelId] = useState<string | null>(metadataParcelId);
   const [activeTab, setActiveTab] = useState<WorkbenchTabSlug>(metadataTab);
   const previousTabRef = useRef<WorkbenchTabSlug>(metadataTab);
   const setCompanionTab = useCompanionStore((state) => state.setActiveTab);
 
   useEffect(() => {
+    setSelectedParcelId(metadataParcelId);
+  }, [metadataParcelId]);
+
+  useEffect(() => {
     setActiveTab(metadataTab);
   }, [metadataTab]);
+
+  const parcelId = selectedParcelId;
 
   useEffect(() => {
     const previousTab = previousTabRef.current;
@@ -165,6 +172,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
       showBreadcrumb={false}
       onBack={() => window.history.pushState({}, '', '/')}
       onSearch={() => window.history.pushState({}, '', '/property')}
+      onParcelSelected={setSelectedParcelId}
       onPopOut={() => {
         if (parcelId) {
           window.open(`/property/${encodeURIComponent(parcelId)}`, '_blank', 'noopener');

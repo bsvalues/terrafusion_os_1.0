@@ -4,7 +4,7 @@
  * Enforces:
  *   1. Zero hardcoded z-depth Tailwind classes in governed shell files
  *   2. Suite windows open near-full-stage (not maximized)
- *   3. Property Workbench opens maximized
+ *   3. Property Workbench opens as an adjustable OS-managed window
  *   4. OS feature windows open near-full-stage
  */
 import { describe, it, expect } from 'vitest';
@@ -47,11 +47,20 @@ describe('Phase 22: Shell Chrome Contract', () => {
   });
 
   describe('Workbench sizing', () => {
-    it('property-workbench opens maximized', () => {
+    it('property-workbench opens as an adjustable OS-managed window', () => {
       const result = getModuleWindowSize('property-workbench');
-      expect(result.maximized).toBe(true);
+      expect(result.maximized).not.toBe(true);
       expect(result.size.width).toBeGreaterThan(0);
       expect(result.size.height).toBeGreaterThan(0);
+      expect(result.size.width).toBeLessThan(window.innerWidth);
+      expect(result.size.height).toBeLessThan(window.innerHeight);
+    });
+
+    it('property-workbench uses normal window chrome and controls', () => {
+      const src = readShellFile('shell/desktop/Window.tsx');
+      expect(src).not.toContain('Tier-0 surface (property-workbench) — no chrome, no titlebar');
+      expect(src).not.toContain('disableDragging={isMaximized || isTier0}');
+      expect(src).not.toContain('enableResizing={\n          isMaximized || isTier0');
     });
   });
 

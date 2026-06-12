@@ -309,14 +309,24 @@ export async function activateModule(
   const existingWindowId = findExistingWindow(canonicalId);
 
   if (existingWindowId) {
+    const desktopState = useDesktopStore.getState();
+    const existingWindow = desktopState.windows.find((w) => w.id === existingWindowId);
+
     if (metadata) {
       useDesktopStore.getState().updateWindowMetadata(existingWindowId, metadata);
     }
 
     // Window already open
     if (focusIfOpen) {
-      // Focus existing window
-      useDesktopStore.getState().focusWindow(existingWindowId);
+      const alreadyVisibleAndActive =
+        existingWindow?.state !== 'minimized' && desktopState.activeWindowId === existingWindowId;
+
+      if (!alreadyVisibleAndActive) {
+        // Focus existing window. Do not call this for the already-active
+        // window because focusWindow intentionally toggles active taskbar
+        // clicks to minimized.
+        useDesktopStore.getState().focusWindow(existingWindowId);
+      }
       
       // Emit focus telemetry
       telemetry.trackEvent('module.focus', {

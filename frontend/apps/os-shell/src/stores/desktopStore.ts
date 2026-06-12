@@ -196,7 +196,20 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
   if (classification) {
     const { objectType } = classification;
 
-    // Tier-0 workbench → MAXIMIZED (fills usable area between top bar and taskbar)
+    // Property Workbench remains the Tier-0 parcel surface, but it must be
+    // managed by the OS window system so users can move, resize, minimize,
+    // and close it like the other work surfaces.
+    if (moduleId === 'property-workbench') {
+      return {
+        size: {
+          width: Math.min(1200, Math.max(MIN_WINDOW_SIZE.width, vw - 200)),
+          height: Math.min(760, Math.max(MIN_WINDOW_SIZE.height, vh - 220)),
+        },
+        maximized: false,
+      };
+    }
+
+    // Other Tier-0 workbenches stay maximized unless explicitly reclassified.
     if (objectType === 'tier0-workbench') {
       return {
         size: { width: vw, height: vh - TOP_BAR_HEIGHT - TASKBAR_HEIGHT },
