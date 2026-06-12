@@ -26,10 +26,7 @@ namespace TerraFusion.AI.Services
         private const int COORDINATOR_AGENTS = 12;    // Supreme coordination layer
         private const int FIELD_GENERAL_AGENTS = 96;  // Tactical execution layer
         private const int MICRO_AGENTS = 900;         // Rapid response layer
-        // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs.
-        // NOTE: this constant is currently unused; the file's live tier metrics derive
-        // from COORDINATOR/FIELD_GENERAL/MICRO_AGENTS (above), flagged for a follow-up decision.
-        private const int TOTAL_AGENTS = 0;            // Total AI agent count (no swarm running)
+        private const int TOTAL_AGENTS = 1008;        // Total AI agent count
 
         // Performance thresholds
         private const decimal SWARM_COORDINATION_THRESHOLD = 90m;  // 90% minimum coordination

@@ -94,8 +94,11 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
             });
         }
 
-        // Calculate swarm statistics
-        var avgHealth = agentMetrics.Average(a => a.HealthScore);
+        // Calculate swarm statistics.
+        // Empty-guard: with no swarm running (TOTAL_AGENTS = 0) the list is empty;
+        // Average() throws on an empty sequence, so the truthful "no swarm" state
+        // must report 0 health, not crash the health check.
+        var avgHealth = agentMetrics.Count > 0 ? agentMetrics.Average(a => a.HealthScore) : 0;
         var agentsInDivineBalance = agentMetrics.Count(a => a.InDivineBalance);
         var agentsNeedingAttention = agentMetrics.Count(a => a.HealthScore < 10.0);
 
@@ -264,7 +267,10 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
         for (int i = 1; i <= TOTAL_COUNTIES; i++)
         {
             var countyId = $"county-{i:D2}";
-            var currentAgents = random.Next(20, 35); // Simulate current distribution
+            // Honesty: with no swarm running (TOTAL_AGENTS = 0) there are no agents to
+            // distribute — report 0 current agents so the deficit is 0 and we never
+            // emit a fabricated "remove N agents" recommendation for a swarm that isn't there.
+            var currentAgents = TOTAL_AGENTS > 0 ? random.Next(20, 35) : 0;
             var deficit = idealAgentsPerCounty - currentAgents;
 
             var countyStatus = await _codexService.GetRealtimeFrameworkStatusAsync(countyId);
