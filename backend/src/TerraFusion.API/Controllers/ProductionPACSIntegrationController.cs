@@ -581,12 +581,14 @@ public class ProductionPACSIntegrationController : ControllerBase
         await Task.CompletedTask;
         await Task.CompletedTask;
         // Implementation for AI agent status
+        // Honesty (WO-AI-CONSOLIDATION-004c-a): no governed AI agent swarm runs.
+        // Report the real state (zero agents) — never a fabricated count.
         return new AIAgentStatus
         {
-            TotalAgents = 1008,
-            ActiveAgents = 1008,
+            TotalAgents = 0,
+            ActiveAgents = 0,
             TrainingAgents = 0,
-            HealthyAgents = 1008
+            HealthyAgents = 0
         };
     }
 
