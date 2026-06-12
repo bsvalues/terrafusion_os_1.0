@@ -1,5 +1,6 @@
 // TerraFusion OS: AI Swarm 3-6-9 Framework Monitoring Service
-// Elite Government OS Engineering - 1,008 Agent Tesla Harmonic Monitoring
+// Government OS Engineering - Tesla Harmonic Monitoring (no governed swarm runs;
+// reports the truthful no-swarm state — WO-AI-CONSOLIDATION-004c-b3)
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,8 @@ using System.Threading.Tasks;
 namespace TerraFusion.AI.Services
 {
     /// <summary>
-    /// Background service that continuously monitors the 1,008-agent AI swarm
-    /// using Tesla's 3-6-9 Framework to ensure perfect harmonic coordination
+    /// Background service that reports AI-swarm health via Tesla's 3-6-9 Framework.
+    /// No governed swarm currently runs, so it reports a truthful no-swarm / zero state.
     /// </summary>
     public class AISwarm369MonitoringService : BackgroundService
     {
@@ -22,11 +23,17 @@ namespace TerraFusion.AI.Services
         private readonly ILogger<AISwarm369MonitoringService> _logger;
         private readonly TimeSpan _monitoringInterval = TimeSpan.FromMinutes(2); // Check every 2 minutes
 
-        // Agent hierarchy (1,008 total agents)
-        private const int COORDINATOR_AGENTS = 12;    // Supreme coordination layer
-        private const int FIELD_GENERAL_AGENTS = 96;  // Tactical execution layer
-        private const int MICRO_AGENTS = 900;         // Rapid response layer
-        private const int TOTAL_AGENTS = 1008;        // Total AI agent count
+        // Honesty (WO-AI-CONSOLIDATION-004c-b3): no governed AI swarm runs. The per-tier
+        // values below are retained ONLY as designed-capacity denominators (BaselineMetric
+        // MaxValue) — they are NOT a claim that agents are running. Active counts are 0
+        // (see GetActiveAgents). Zeroing these would make the engine's decimal
+        // `CurrentValue / MaxValue` throw DivideByZeroException, so they stay non-zero.
+        private const int COORDINATOR_AGENTS = 12;    // Coordination-layer design capacity
+        private const int FIELD_GENERAL_AGENTS = 96;  // Tactical-layer design capacity
+        private const int MICRO_AGENTS = 900;         // Rapid-response-layer design capacity
+        // static readonly (not const) so the no-swarm guard in MonitorAISwarmAsync is a
+        // runtime check, not a constant-folded branch that trips CS0162 unreachable-code.
+        private static readonly int TOTAL_AGENTS = 0; // Active AI agent count (no swarm running)
 
         // Performance thresholds
         private const decimal SWARM_COORDINATION_THRESHOLD = 90m;  // 90% minimum coordination
@@ -45,10 +52,10 @@ namespace TerraFusion.AI.Services
         {
             _logger.LogInformation("═══════════════════════════════════════════════════════");
             _logger.LogInformation("🔮 AI SWARM 3-6-9 MONITORING SERVICE");
-            _logger.LogInformation("   Total Agents: 1,008");
-            _logger.LogInformation("   Coordinators: {Coord} | Field Generals: {FG} | Micro: {Micro}",
+            _logger.LogInformation("   Active Agents: {Active} (no governed swarm running)", TOTAL_AGENTS);
+            _logger.LogInformation("   Designed tier capacity (not running): Coordinators {Coord} | Field Generals {FG} | Micro {Micro}",
                 COORDINATOR_AGENTS, FIELD_GENERAL_AGENTS, MICRO_AGENTS);
-            _logger.LogInformation("   Tesla Framework: ACTIVE");
+            _logger.LogInformation("   Tesla Framework: unavailable (no swarm running)");
             _logger.LogInformation("═══════════════════════════════════════════════════════");
 
             // Wait 15 seconds for system initialization
@@ -73,10 +80,21 @@ namespace TerraFusion.AI.Services
 
         private async Task MonitorAISwarmAsync(CancellationToken cancellationToken)
         {
+            // Honesty (WO-AI-CONSOLIDATION-004c-b3): in declared no-swarm mode there is no
+            // swarm to score or heal. Report the truthful idle state and return — do NOT run
+            // 3-6-9 scoring, the status banner, or the imbalance/remediation workflow, and do
+            // NOT emit "IMBALANCE DETECTED" false alarms for a swarm that does not exist.
+            if (TOTAL_AGENTS == 0)
+            {
+                _logger.LogInformation(
+                    "📊 AI Swarm monitoring idle: no governed swarm running (0 agents); no scoring or remediation performed.");
+                return;
+            }
+
             using var scope = _serviceProvider.CreateScope();
             var metricsEngine = scope.ServiceProvider.GetRequiredService<Framework369MetricsEngine>();
 
-            _logger.LogInformation("📊 Monitoring AI Swarm (1,008 agents) with 3-6-9 Framework...");
+            _logger.LogInformation("📊 Monitoring AI Swarm (no swarm running) with 3-6-9 Framework...");
 
             // Collect swarm metrics
             var swarmMetrics = await CollectSwarmMetricsAsync();
@@ -107,7 +125,7 @@ namespace TerraFusion.AI.Services
 
             var metrics = new Framework369Input
             {
-                ComponentName = "TerraFusion AI Swarm (1,008 Agents)",
+                ComponentName = "TerraFusion AI Swarm (no swarm running)",
                 BaselineMetrics = new List<BaselineMetric>
                 {
                     // Agent Population Metrics (Foundation - 3)
@@ -211,7 +229,7 @@ namespace TerraFusion.AI.Services
         {
             _logger.LogInformation("");
             _logger.LogInformation("╔═══════════════════════════════════════════════════════╗");
-            _logger.LogInformation("║  🔮 AI SWARM TESLA 3-6-9 STATUS (1,008 Agents)       ║");
+            _logger.LogInformation("║  🔮 AI SWARM TESLA 3-6-9 STATUS (no swarm running)   ║");
             _logger.LogInformation("╠═══════════════════════════════════════════════════════╣");
             _logger.LogInformation("║  📊 FOUNDATION (3) - Agent Population & Performance   ║");
             _logger.LogInformation("║     Score: {0,-4} / 12     Balance: {1,3}%            ║",
@@ -321,50 +339,58 @@ namespace TerraFusion.AI.Services
 
         #region Metric Collection (Placeholders - Replace with actual implementation)
 
+        // Honesty (WO-AI-CONSOLIDATION-004c-b3): there is NO governed AI swarm running.
+        // Every collector below returned a random "looks-healthy" value for a swarm that
+        // does not exist; each now reports the truthful zero / no-swarm state. The callers
+        // keep a non-zero MaxValue — tier capacities (12/96/900), percentage scales (100),
+        // and the response-time scale (1000) — purely as the engine's denominator, so the
+        // truthful zero normalizes to 0 instead of throwing DivideByZeroException in
+        // Framework369MetricsEngine (decimal `CurrentValue / MaxValue`).
+
         private decimal GetActiveAgents(int maxAgents)
         {
-            // Simulate 92-98% of agents being active
-            return maxAgents * (0.92m + (decimal)Random.Shared.NextDouble() * 0.06m);
+            // No swarm running: zero active agents (maxAgents is the capacity denominator only).
+            return 0m;
         }
 
         private decimal GetSwarmCoordinationEfficiency()
         {
-            return 94m + (decimal)Random.Shared.NextDouble() * 5m; // 94-99%
+            return 0m; // no swarm running
         }
 
         private decimal GetAverageAgentResponseTime()
         {
-            return 200m + (decimal)(Random.Shared.NextDouble() * 150); // 200-350ms
+            return 0m; // no swarm running
         }
 
         private decimal GetTaskCompletionRate()
         {
-            return 96m + (decimal)(Random.Shared.NextDouble() * 3); // 96-99%
+            return 0m; // no swarm running
         }
 
         private decimal GetCoordinationLinkHealth(string from, string to)
         {
-            return 96m + (decimal)(Random.Shared.NextDouble() * 3); // 96-99%
+            return 0m; // no swarm running
         }
 
         private decimal GetMessageQueueHealth()
         {
-            return 93m + (decimal)(Random.Shared.NextDouble() * 6); // 93-99%
+            return 0m; // no swarm running
         }
 
         private decimal GetAIDecisionQuality()
         {
-            return 92m + (decimal)(Random.Shared.NextDouble() * 7); // 92-99%
+            return 0m; // no swarm running
         }
 
         private decimal GetSwarmLearningRate()
         {
-            return 88m + (decimal)(Random.Shared.NextDouble() * 10); // 88-98%
+            return 0m; // no swarm running
         }
 
         private decimal GetAutonomousTaskSuccessRate()
         {
-            return 94m + (decimal)(Random.Shared.NextDouble() * 5); // 94-99%
+            return 0m; // no swarm running
         }
 
         #endregion
