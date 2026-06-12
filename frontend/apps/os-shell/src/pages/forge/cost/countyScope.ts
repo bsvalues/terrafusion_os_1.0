@@ -1,4 +1,5 @@
 import { getSession } from '@/auth/session';
+import { getToken } from '@/auth/authStorage';
 import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 
 export interface CostForgeCountyScope {
@@ -10,6 +11,10 @@ export interface CostForgeCountyScope {
 export function getCostForgeCountyScope(): CostForgeCountyScope {
   const session = getSession();
   const { headers, isolated } = buildCountyScopedSessionHeaders(session);
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   return {
     countyId: session?.countyId ?? null,
     headers,
