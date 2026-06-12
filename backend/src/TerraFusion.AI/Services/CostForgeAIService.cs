@@ -342,9 +342,21 @@ public class CostForgeAIService : ICostForgeAIService
     // sample matches the same generation. Behavior-neutral apart from that consistency.
     var snapshot = _agents.Values.ToList();
     var totalAgents = snapshot.Count;
-    var activeAgents = snapshot.Count(a => a.Status == "active");
-    var idleAgents = snapshot.Count(a => a.Status == "idle");
-    var busyAgents = snapshot.Count(a => a.Status == "busy");
+
+    // Single pass: read each agent's Status exactly once so an agent is classified into at most
+    // one bucket (no double-counting across passes), and avoid three O(n) enumerations.
+    var activeAgents = 0;
+    var idleAgents = 0;
+    var busyAgents = 0;
+    foreach (var agent in snapshot)
+    {
+      switch (agent.Status)
+      {
+        case "active": activeAgents++; break;
+        case "idle": idleAgents++; break;
+        case "busy": busyAgents++; break;
+      }
+    }
 
     return new AIAgentStatusDto
     {
