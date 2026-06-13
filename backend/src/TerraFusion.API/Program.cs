@@ -64,10 +64,13 @@ static string ResolveApiContentRoot()
     var envOverride = Environment.GetEnvironmentVariable("TERRAFUSION_API_CONTENT_ROOT")
                    ?? Environment.GetEnvironmentVariable("ASPNETCORE_CONTENTROOT");
     if (!string.IsNullOrWhiteSpace(envOverride) &&
-        File.Exists(Path.Combine(envOverride, "TerraFusion.API.csproj")) &&
         File.Exists(Path.Combine(envOverride, "appsettings.json")))
     {
-        return Path.GetFullPath(envOverride);
+        if (File.Exists(Path.Combine(envOverride, "TerraFusion.API.csproj")) ||
+            File.Exists(Path.Combine(envOverride, "TerraFusion.API.dll")))
+        {
+            return Path.GetFullPath(envOverride);
+        }
     }
 
     var candidateStarts = new[]
@@ -84,6 +87,12 @@ static string ResolveApiContentRoot()
         foreach (var probe in EnumerateSelfAndAncestors(candidate))
         {
             if (File.Exists(Path.Combine(probe, "TerraFusion.API.csproj")) &&
+                File.Exists(Path.Combine(probe, "appsettings.json")))
+            {
+                return probe;
+            }
+
+            if (File.Exists(Path.Combine(probe, "TerraFusion.API.dll")) &&
                 File.Exists(Path.Combine(probe, "appsettings.json")))
             {
                 return probe;
