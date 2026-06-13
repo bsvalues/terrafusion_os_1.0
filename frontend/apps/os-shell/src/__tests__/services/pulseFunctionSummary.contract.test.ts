@@ -106,7 +106,7 @@ describe('summarizePulseFunctions — real partial availability', () => {
     expect(byFn.appeals.level).toBe('stable');
 
     expect(byFn.exemptions.state).toBe('unavailable');
-    expect(byFn.exemptions.reason).toMatch(/not.*wired/i);
+    expect(byFn.exemptions.reason).toMatch(/no governed exemptions source is wired/i);
   });
 
   it('reports a throwing provider as unavailable without sinking the rest', async () => {
