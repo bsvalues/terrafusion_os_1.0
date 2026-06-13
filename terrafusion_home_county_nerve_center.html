@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TerraFusion Home — Benton County Nerve Center</title>
+<!--
+  TerraFusion Home — County Nerve Center (single-file prototype)
+  Purpose: prove the FEEL before React work. Not a dashboard.
+  No external libraries. No build step. Pure HTML/CSS/JS.
+
+  Sections:
+    1. Global Truth Bar
+    2. Morning Brief Hero
+    3. Living County Map Panel
+    4. Today's Action Path
+    5. Operational Pulse
+    6. What Changed Overnight
+    7. Evidence Behind Today
+
+  Theme note: this prototype uses a DARK command-center surface to judge
+  layout/feel. The React port targets the live app's warm-linen civic tokens
+  (--tf-bg / --tf-accent terracotta). Structure is theme-agnostic on purpose.
+-->
+<style>
+  /* ---------------------------------------------------------------------
+     Tokens — dark command-center palette (prototype only)
+     Mirrors the SHAPE of the app's --tf-* token system so it ports cleanly.
+  --------------------------------------------------------------------- */
+  :root {
+    --bg:            #0a0d14;   /* void ground */
+    --bg-deep:       #070910;
+    --surface:       #11151f;   /* panel */
+    --surface-2:     #161b27;   /* elevated panel */
+    --surface-3:     #1d2433;   /* hover / chip */
+    --border:        #232b3d;
+    --border-soft:   #1a2030;
+
+    --text:          #eef2f8;
+    --text-2:        #aab4c5;   /* secondary */
+    --text-3:        #6b7689;   /* muted */
+
+    --accent:        #d97a52;   /* terracotta — carries from civic theme */
+    --accent-soft:   #d97a5222;
+    --cyan:          #57c4d6;   /* restrained teal accent */
+
+    /* status semantics */
+    --stable:        #5fae7e;
+    --watching:      #d6a85a;
+    --attention:     #d98a4f;
+    --critical:      #d65f5f;
+
+    /* suite hues (match app) */
+    --forge:         #d98c4a;   /* copper   */
+    --atlas:         #4f9fe0;   /* blue     */
+    --dais:          #c66a82;   /* claret   */
+    --dossier:       #5aae7c;   /* green    */
+    --pilot:         #6d82e0;   /* indigo   */
+
+    --r-sm: 8px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+
+    --shadow-1: 0 1px 0 rgba(255,255,255,0.03) inset, 0 10px 30px rgba(0,0,0,0.45);
+    --shadow-2: 0 20px 60px rgba(0,0,0,0.55);
+
+    /* themeable surfaces (referenced by gradient-heavy blocks so both modes work) */
+    --body-grad-a: rgba(217,122,82,0.10);
+    --body-grad-b: rgba(87,196,214,0.06);
+    --body-base-1: var(--bg);
+    --body-base-2: var(--bg-deep);
+    --hero-glow: rgba(217,122,82,0.14);
+    --map-base-1: #0c1018;
+    --map-base-2: #0a0d14;
+    --label-stroke: #0a0d14;
+    --btn-primary-ink: #1a0f0a;
+    --truthbar-grad: linear-gradient(180deg, rgba(10,13,20,0.92), rgba(10,13,20,0.72));
+
+    --gap: 22px;
+    --maxw: 1480px;
+  }
+
+  /* ---------------------------------------------------------------------
+     LIGHT MODE — mirrors the app's live warm-linen / terracotta civic tokens
+     (--tf-bg 45 20% 94%, --tf-accent 16 55% 56%). Toggle via the truth bar.
+  --------------------------------------------------------------------- */
+  body[data-theme="light"] {
+    --bg:            #f1ede4;   /* warm linen ground */
+    --bg-deep:       #e9e2d4;
+    --surface:       #faf8f3;   /* warm paper panel */
+    --surface-2:     #fffefb;   /* elevated paper */
+    --surface-3:     #ece6da;   /* hover / chip */
+    --border:        #d4cab8;
+    --border-soft:   #e2dbcc;
+
+    --text:          #1b150f;
+    --text-2:        #574d40;
+    --text-3:        #8a7f70;
+
+    --accent:        #c96841;   /* terracotta on linen */
+    --accent-soft:   #c9684122;
+    --cyan:          #3f97a8;
+
+    --stable:        #4f8a68;
+    --watching:      #b07f2c;
+    --attention:     #c1652f;
+    --critical:      #bd4640;
+
+    --shadow-1: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 22px rgba(120,90,60,0.10);
+    --shadow-2: 0 20px 50px rgba(120,90,60,0.16);
+
+    --body-grad-a: rgba(201,104,65,0.10);
+    --body-grad-b: rgba(63,151,168,0.07);
+    --body-base-1: #f1ede4;   /* literal: var() indirection bakes in :root values */
+    --body-base-2: #e9e2d4;
+    --hero-glow: rgba(201,104,65,0.12);
+    --map-base-1: #eef5f3;
+    --map-base-2: #f1ede4;
+    --label-stroke: #faf8f3;
+    --btn-primary-ink: #fdf6f1;
+    --truthbar-grad: linear-gradient(180deg, rgba(248,246,241,0.92), rgba(248,246,241,0.70));
+  }
+  body[data-theme="light"] .county-shape { fill: rgba(79,159,224,0.06); stroke: rgba(70,110,150,0.45); }
+  body[data-theme="light"] .river { stroke: rgba(63,151,168,0.55); }
+  body[data-theme="light"] .grid-line { stroke: rgba(0,0,0,0.04); }
+  body[data-theme="light"] .brand .mark { box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 6px 18px rgba(201,104,65,0.30); }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background:
+      radial-gradient(1200px 700px at 78% -8%, var(--body-grad-a), transparent 60%),
+      radial-gradient(900px 600px at 8% 4%, var(--body-grad-b), transparent 55%),
+      linear-gradient(180deg, var(--body-base-1) 0%, var(--body-base-2) 100%);
+    background-repeat: no-repeat;
+    background-color: var(--body-base-2);
+    color: var(--text);
+    font-family: "Switzer", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+    line-height: 1.45;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  /* ===================================================================
+     1. GLOBAL TRUTH BAR
+  =================================================================== */
+  .truthbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(18px) saturate(140%);
+    background: var(--truthbar-grad);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .truthbar-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .brand .mark {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: conic-gradient(from 200deg, var(--accent), var(--cyan), var(--accent));
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 6px 18px rgba(217,122,82,0.35);
+  }
+  .brand .sub { color: var(--text-3); font-weight: 500; font-size: 13px; }
+
+  .truth-divider { width: 1px; height: 26px; background: var(--border); }
+
+  .truth-facts {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--text-2);
+  }
+  .truth-fact { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .truth-fact b { color: var(--text); font-weight: 600; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.ok    { background: var(--stable);   box-shadow: 0 0 10px var(--stable); }
+  .dot.watch { background: var(--watching); box-shadow: 0 0 10px var(--watching); }
+  .dot.warn  { background: var(--attention);box-shadow: 0 0 10px var(--attention); }
+
+  .truth-spacer { flex: 1 1 auto; }
+  .theme-toggle {
+    font: inherit; cursor: pointer;
+    font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 13px; border-radius: 999px;
+    background: var(--surface-3); color: var(--text-2);
+    border: 1px solid var(--border);
+    transition: all .16s ease;
+  }
+  .theme-toggle:hover { color: var(--text); border-color: var(--accent); }
+  .theme-toggle .tt-icon { font-size: 14px; color: var(--accent); }
+  .truth-user {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13.5px; color: var(--text-2);
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+    border: 1px solid var(--border);
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600; color: var(--text);
+  }
+
+  /* ===================================================================
+     2. MORNING BRIEF HERO
+  =================================================================== */
+  .hero {
+    margin-top: 34px;
+    border-radius: var(--r-xl);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(900px 360px at 88% -30%, var(--hero-glow), transparent 60%),
+      linear-gradient(180deg, var(--surface-2), var(--surface));
+    box-shadow: var(--shadow-2);
+    padding: 44px 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 60%, rgba(87,196,214,0.05));
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 12.5px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-3); font-weight: 600;
+  }
+  .hero h1 {
+    margin: 14px 0 6px;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.04;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .hero-condition {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 6px; margin-bottom: 22px;
+    font-size: 18px; color: var(--text);
+  }
+  .hero-condition .pill {
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.3px;
+    padding: 4px 11px; border-radius: 999px;
+    border: 1px solid var(--watching);
+    color: var(--watching);
+    background: rgba(214,168,90,0.10);
+  }
+  .hero-narrative {
+    max-width: 760px;
+    font-size: 17.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .hero-narrative b { color: var(--text); font-weight: 600; }
+
+  .hero-cta-row {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  .btn {
+    font: inherit; cursor: pointer; border: none;
+    border-radius: var(--r-md);
+    padding: 13px 22px;
+    font-size: 15px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 9px;
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: linear-gradient(180deg, var(--accent), #c96841);
+    color: var(--btn-primary-ink);
+    box-shadow: 0 10px 26px rgba(217,122,82,0.35);
+  }
+  .btn-primary:hover { box-shadow: 0 14px 34px rgba(217,122,82,0.5); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface-3); border-color: var(--accent); }
+
+  .hero-confidence {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; color: var(--text-3);
+    margin-left: auto;
+  }
+  .hero-confidence .bars { display: flex; gap: 3px; }
+  .hero-confidence .bars i {
+    width: 5px; height: 16px; border-radius: 2px; background: var(--border);
+    display: inline-block;
+  }
+  .hero-confidence .bars i.on { background: var(--cyan); }
+
+  /* ===================================================================
+     LAYOUT GRID (map + action path)
+  =================================================================== */
+  .section-head {
+    display: flex; align-items: baseline; gap: 14px;
+    margin: 44px 0 18px;
+  }
+  .section-head h2 {
+    font-size: 21px; font-weight: 600; margin: 0; letter-spacing: -0.2px;
+  }
+  .section-head .hint { color: var(--text-3); font-size: 13.5px; }
+
+  .grid-main {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: var(--gap);
+    align-items: stretch;
+  }
+  @media (max-width: 1080px) {
+    .grid-main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+  }
+
+  /* ===================================================================
+     3. LIVING COUNTY MAP PANEL
+  =================================================================== */
+  .map-panel { padding: 22px 22px 18px; display: flex; flex-direction: column; }
+  .map-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+  }
+  .map-panel-head .title { font-size: 16px; font-weight: 600; }
+  .map-panel-head .meta { font-size: 12.5px; color: var(--text-3); }
+
+  .layer-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip {
+    font: inherit; cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    padding: 7px 14px; border-radius: 999px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    transition: all .16s ease;
+  }
+  .chip:hover { color: var(--text); border-color: var(--accent); }
+  .chip.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .map-stage {
+    position: relative;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background:
+      radial-gradient(600px 360px at 30% 20%, rgba(79,159,224,0.08), transparent 60%),
+      linear-gradient(180deg, var(--map-base-1), var(--map-base-2));
+    border: 1px solid var(--border-soft);
+    flex: 1;
+    min-height: 360px;
+  }
+  .map-stage svg { display: block; width: 100%; height: 100%; }
+
+  .county-shape {
+    fill: url(#countyFill);
+    stroke: rgba(150,180,215,0.55);
+    stroke-width: 1.75;
+    filter: drop-shadow(0 8px 22px rgba(0,0,0,0.35));
+  }
+  .district-line {
+    fill: none; stroke: rgba(160,185,215,0.22);
+    stroke-width: 1; stroke-dasharray: 4 5;
+  }
+  .contour { fill: none; stroke: rgba(150,180,215,0.06); stroke-width: 1; }
+  .river { fill: none; stroke: rgba(87,196,214,0.55); stroke-width: 2.5; stroke-linecap: round; }
+  .river.minor { stroke: rgba(87,196,214,0.32); stroke-width: 1.75; }
+  .river-label {
+    font-size: 9.5px; font-weight: 500; fill: var(--cyan); opacity: .7;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .grid-line { stroke: rgba(255,255,255,0.03); stroke-width: 1; }
+  .place-dot { fill: rgba(200,215,235,0.5); }
+  .place-name {
+    font-size: 9px; font-weight: 500; fill: var(--text-3);
+    letter-spacing: .3px;
+  }
+  .compass { opacity: .5; }
+  .compass-needle { fill: var(--accent); }
+  .compass-text { font-size: 9px; font-weight: 700; fill: var(--text-2); }
+  .scale-bar { stroke: var(--text-3); stroke-width: 1.5; }
+  .scale-text { font-size: 8.5px; fill: var(--text-3); }
+  body[data-theme="light"] .county-shape { filter: drop-shadow(0 6px 16px rgba(120,90,60,0.14)); }
+  body[data-theme="light"] .grid-line { stroke: rgba(0,0,0,0.035); }
+  body[data-theme="light"] .contour { stroke: rgba(80,110,150,0.07); }
+  body[data-theme="light"] .place-dot { fill: rgba(70,90,120,0.4); }
+
+  .cluster { cursor: pointer; }
+  .cluster .halo { opacity: 0.0; transition: opacity .3s ease, r .3s ease; }
+  .cluster.show .halo { opacity: 1; }
+  .cluster .core { opacity: 0; transform-box: fill-box; transform-origin: center; transition: opacity .3s ease; }
+  .cluster.show .core { opacity: 1; }
+  .cluster .label {
+    opacity: 0; transition: opacity .3s ease;
+    font-size: 11px; font-weight: 600; fill: var(--text);
+    paint-order: stroke; stroke: var(--label-stroke); stroke-width: 3px;
+  }
+  .cluster.show .label { opacity: 1; }
+
+  .map-legend {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    margin-top: 14px; font-size: 12.5px; color: var(--text-3);
+  }
+  .map-legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .map-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  /* ===================================================================
+     4. TODAY'S ACTION PATH
+  =================================================================== */
+  .action-rail { display: flex; flex-direction: column; gap: 12px; }
+  .rail-label {
+    font-size: 11.5px; letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--text-3); font-weight: 600; margin: 2px 2px 2px;
+  }
+  .action-card {
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    position: relative;
+    transition: transform .16s ease, box-shadow .2s ease, border-color .2s ease;
+    overflow: hidden;
+  }
+  .action-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow-2); }
+
+  /* --- PRIMARY (dominant) recommended action --- */
+  .action-card.primary {
+    padding: 22px 22px 20px;
+    border-color: var(--accent);
+    background:
+      radial-gradient(420px 200px at 100% 0%, var(--hero-glow), transparent 65%),
+      linear-gradient(180deg, var(--surface-2), var(--surface));
+    box-shadow: 0 0 0 1px var(--accent-soft), var(--shadow-1);
+  }
+  .action-card.primary::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent);
+  }
+  .primary .action-flag {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .primary .action-flag::before { content: "★"; font-size: 12px; }
+  .primary .action-title { font-size: 21px; font-weight: 600; margin: 0 0 8px; letter-spacing: -0.2px; }
+  .primary .action-why { font-size: 14.5px; }
+
+  /* --- SECONDARY (compact) actions --- */
+  .action-card.compact {
+    padding: 14px 16px;
+    display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 12px;
+  }
+  .compact .action-rank-lg {
+    font-size: 15px; font-weight: 700; color: var(--text-3); text-align: center;
+  }
+  .compact .action-title { font-size: 14.5px; font-weight: 600; margin: 0 0 2px; }
+  .compact .action-why { font-size: 12.5px; color: var(--text-2); margin: 0; }
+  .compact .action-why b { color: var(--text); }
+  .compact .due { font-size: 11.5px; }
+  .compact .btn-arrow {
+    font: inherit; cursor: pointer; background: none; border: none;
+    color: var(--accent); font-size: 18px; font-weight: 600; padding: 4px 6px;
+    transition: transform .15s ease;
+  }
+  .compact:hover .btn-arrow { transform: translateX(3px); }
+
+  .action-title { color: var(--text); }
+  .action-why { color: var(--text-2); }
+  .action-why b { color: var(--text); }
+  .action-evidence { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 16px; }
+  .ev-tag {
+    font-size: 12px; color: var(--text-2);
+    background: var(--surface-3); border: 1px solid var(--border);
+    padding: 4px 9px; border-radius: 7px;
+  }
+  .action-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .due { font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .due.soon { color: var(--attention); }
+  .due.week { color: var(--watching); }
+  .btn-sm {
+    font: inherit; cursor: pointer;
+    font-size: 14px; font-weight: 600;
+    padding: 11px 20px; border-radius: 10px;
+    background: linear-gradient(180deg, var(--accent), #c96841); color: var(--btn-primary-ink);
+    border: 1px solid var(--accent);
+    box-shadow: 0 8px 20px rgba(217,122,82,0.28);
+    transition: all .16s ease;
+  }
+  .btn-sm:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(217,122,82,0.42); }
+
+  /* ===================================================================
+     5. OPERATIONAL PULSE
+  =================================================================== */
+  /* Operational Pulse — civic register, not a card grid */
+  .pulse-register {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 760px) { .pulse-register { grid-template-columns: 1fr; } }
+  .pulse-row {
+    display: grid; grid-template-columns: 130px 96px 1fr 20px;
+    align-items: center; gap: 14px;
+    padding: 15px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background .15s ease;
+  }
+  .pulse-row:hover { background: var(--surface-3); }
+  .pulse-row .chev { color: var(--text-3); font-size: 16px; text-align: center; transition: transform .15s ease, color .15s ease; }
+  .pulse-row:hover .chev { color: var(--accent); transform: translateX(2px); }
+  /* right column shares the top border with left for a clean grid seam */
+  .pulse-register .pulse-row:nth-child(odd) { border-right: 1px solid var(--border-soft); }
+  @media (max-width: 760px) { .pulse-register .pulse-row:nth-child(odd) { border-right: none; } }
+  .pulse-name { font-size: 14.5px; font-weight: 600; }
+  .status {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .4px;
+    padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px; justify-self: start;
+  }
+  .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .status.stable    { color: var(--stable);    background: rgba(95,174,126,0.12); }
+  .status.watching  { color: var(--watching);  background: rgba(214,168,90,0.12); }
+  .status.attention { color: var(--attention); background: rgba(217,138,79,0.13); }
+  .status.critical  { color: var(--critical);  background: rgba(214,95,95,0.13); }
+  .pulse-reason { font-size: 13px; color: var(--text-2); }
+
+  /* ===================================================================
+     6 + 7. OVERNIGHT + EVIDENCE (two columns)
+  =================================================================== */
+  .grid-bottom {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--gap);
+    align-items: start;
+  }
+  @media (max-width: 1080px) { .grid-bottom { grid-template-columns: 1fr; } }
+
+  .stream { padding: 22px 24px; }
+  .stream-list { position: relative; margin: 6px 0 0; padding: 0 0 0 22px; list-style: none; }
+  .stream-list::before {
+    content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--border);
+  }
+  .stream-item { position: relative; padding: 0 0 20px; }
+  .stream-item:last-child { padding-bottom: 0; }
+  .stream-item::before {
+    content: ""; position: absolute; left: -22px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--cyan);
+  }
+  .stream-item.accent::before { border-color: var(--accent); }
+  .stream-time { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .stream-text { font-size: 14.5px; color: var(--text); margin: 2px 0 0; }
+  .stream-text b { font-weight: 600; }
+  .stream-sub { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+  /* Evidence Behind Today — proof chain */
+  .evidence { padding: 22px 24px; }
+  .evidence-note { font-size: 13px; color: var(--text-3); margin: 0 0 18px; }
+  .chain { position: relative; padding-left: 4px; }
+  .chain::before {
+    content: ""; position: absolute; left: 17px; top: 12px; bottom: 14px;
+    width: 2px; background: linear-gradient(180deg, var(--accent), var(--border));
+    opacity: .55;
+  }
+  .ev-node { position: relative; padding: 0 0 4px 0; }
+  .ev-row {
+    display: grid; grid-template-columns: 30px auto 1fr 18px;
+    align-items: center; gap: 14px;
+    padding: 11px 8px; border-radius: 10px;
+    cursor: pointer; transition: background .15s ease;
+  }
+  .ev-row:hover { background: var(--surface-3); }
+  .ev-marker {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--accent);
+    display: grid; place-items: center; color: var(--accent);
+    font-size: 13px; font-weight: 700; z-index: 1; position: relative;
+  }
+  .ev-node.gap .ev-marker { border-color: var(--attention); color: var(--attention); }
+  .ev-count {
+    font-size: 21px; font-weight: 700; min-width: 60px;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.5px;
+  }
+  .ev-count.warn { color: var(--attention); }
+  .ev-meta { min-width: 0; }
+  .ev-label { font-size: 14px; font-weight: 600; }
+  .ev-detail { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+  .ev-chevron { color: var(--text-3); font-size: 16px; transition: transform .2s ease; text-align: center; }
+  .ev-row.open .ev-chevron { transform: rotate(90deg); color: var(--accent); }
+  .ev-expand {
+    font-size: 13px; color: var(--text-2); line-height: 1.55;
+    max-height: 0; overflow: hidden;
+    transition: max-height .25s ease, padding .25s ease, margin .25s ease;
+    margin-left: 44px; padding: 0 12px;
+    border-left: 2px dashed var(--border);
+  }
+  .ev-row.open + .ev-expand { max-height: 220px; padding: 4px 12px 14px; margin-bottom: 6px; }
+  .ev-expand .src {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--accent);
+  }
+  .ev-expand .src::before { content: "⛓"; font-size: 12px; }
+
+  /* ===================================================================
+     "Teach Me Why" slide-over panel
+  =================================================================== */
+  .scrim {
+    position: fixed; inset: 0; z-index: 90;
+    background: rgba(5,7,12,0.55);
+    backdrop-filter: blur(3px);
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+  }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .teach {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 91;
+    width: min(440px, 92vw);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    border-left: 1px solid var(--border);
+    box-shadow: -30px 0 60px rgba(0,0,0,0.5);
+    transform: translateX(100%); transition: transform .3s cubic-bezier(.16,1,.3,1);
+    padding: 30px 30px 40px;
+    overflow-y: auto;
+  }
+  .teach.open { transform: translateX(0); }
+  .teach-eyebrow { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); font-weight: 600; }
+  .teach h3 { font-size: 23px; margin: 10px 0 4px; font-weight: 600; }
+  .teach .lede { color: var(--text-2); font-size: 15px; margin-bottom: 24px; }
+  .teach-step { display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid var(--border-soft); }
+  .teach-step .n {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+    border: 1px solid var(--accent);
+  }
+  .teach-step .body h4 { margin: 2px 0 4px; font-size: 14.5px; font-weight: 600; }
+  .teach-step .body p { margin: 0; font-size: 13.5px; color: var(--text-2); }
+  .teach-close {
+    position: absolute; top: 22px; right: 24px;
+    background: var(--surface-3); border: 1px solid var(--border);
+    color: var(--text-2); cursor: pointer;
+    width: 34px; height: 34px; border-radius: 9px; font-size: 18px;
+    transition: all .15s ease;
+  }
+  .teach-close:hover { color: var(--text); border-color: var(--accent); }
+  .teach-foot {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border-soft);
+    font-size: 13px; color: var(--text-3);
+  }
+
+  .footer-note {
+    margin-top: 52px; text-align: center;
+    font-size: 12.5px; color: var(--text-3);
+  }
+
+  /* ---------------------------------------------------------------------
+     LIGHT MODE — civic EDITORIAL character (not an inverted dark theme):
+     serif mastheads, hairline rules, dateline accent, paper restraint.
+  --------------------------------------------------------------------- */
+  body[data-theme="light"] {
+    /* faint paper tooth */
+    background-image:
+      radial-gradient(1200px 700px at 78% -8%, var(--body-grad-a), transparent 60%),
+      radial-gradient(900px 600px at 8% 4%, var(--body-grad-b), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(120,90,60,0.012) 0 2px, transparent 2px 4px),
+      linear-gradient(180deg, var(--body-base-1) 0%, var(--body-base-2) 100%);
+  }
+  body[data-theme="light"] .hero h1,
+  body[data-theme="light"] .section-head h2,
+  body[data-theme="light"] .primary .action-title,
+  body[data-theme="light"] .teach h3,
+  body[data-theme="light"] .stream .section-head h2,
+  body[data-theme="light"] .evidence .section-head h2 {
+    font-family: "Spectral", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    letter-spacing: -0.3px; font-weight: 600;
+  }
+  body[data-theme="light"] .hero {
+    border-top: 3px solid var(--accent);   /* editorial masthead rule */
+    border-radius: 4px var(--r-xl) var(--r-xl) var(--r-xl);
+  }
+  body[data-theme="light"] .hero-eyebrow {        /* dateline */
+    color: var(--accent); border-bottom: 1px solid var(--border);
+    display: inline-block; padding-bottom: 6px;
+  }
+  body[data-theme="light"] .section-head {
+    border-bottom: 1px solid var(--border); padding-bottom: 9px; align-items: center;
+  }
+  body[data-theme="light"] .rail-label,
+  body[data-theme="light"] .primary .action-flag,
+  body[data-theme="light"] .teach-eyebrow { color: var(--accent); }
+  body[data-theme="light"] .hero-narrative { color: #463c30; }
+  /* crisp print-weight separators */
+  body[data-theme="light"] .pulse-row,
+  body[data-theme="light"] .stream-item::before { border-color: var(--border); }
+  body[data-theme="light"] .chain::before { opacity: .8; }
+</style>
+</head>
+<body data-theme="dark">
+
+  <!-- ============================= 1. GLOBAL TRUTH BAR ============================= -->
+  <header class="truthbar">
+    <div class="truthbar-inner">
+      <div class="brand">
+        <span class="mark"></span>
+        TerraFusion <span class="sub">Home</span>
+      </div>
+      <div class="truth-divider"></div>
+      <div class="truth-facts">
+        <span class="truth-fact"><b>Benton County</b></span>
+        <span class="truth-fact">2026 Roll</span>
+        <span class="truth-fact"><span class="dot ok"></span> Synced 7:42 AM</span>
+        <span class="truth-fact"><span class="dot watch"></span> Certification: <b>Watching</b></span>
+        <span class="truth-fact"><span class="dot ok"></span> Operating normally</span>
+      </div>
+      <div class="truth-spacer"></div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light / dark mode">
+        <span class="tt-icon">◑</span> <span id="themeLabel">Dark</span>
+      </button>
+      <div class="truth-user">
+        <span>William Devereux · Assessment</span>
+        <span class="avatar">WD</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ============================= 2. MORNING BRIEF HERO ============================= -->
+    <section class="hero">
+      <div class="hero-eyebrow">Morning Brief · Friday, June 13</div>
+      <h1>Good morning, William.</h1>
+      <div class="hero-condition">
+        Benton County is stable, but
+        <span class="pill">2 issues need attention</span>
+      </div>
+      <p class="hero-narrative">
+        <b>Commercial calibration</b> needs review after recent qualified sales shifted
+        ratio performance below tolerance in Grandview East. <b>Exemption renewals</b>
+        are aging but not yet blocking certification. The <b>COV mail cycle</b> remains
+        on track, and overnight sync completed clean.
+      </p>
+      <div class="hero-cta-row">
+        <button class="btn btn-primary" onclick="route('Forge · Grandview East calibration')">
+          Review Grandview East calibration →
+        </button>
+        <button class="btn btn-ghost" id="teachBtn">Teach me why</button>
+        <div class="hero-confidence">
+          Evidence-backed
+          <span class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 3 + 4. LIVING COUNTY + ACTION PATH ============================= -->
+    <div class="section-head">
+      <h2>The county, right now</h2>
+      <span class="hint">Select a layer to see where activity is concentrated</span>
+    </div>
+
+    <div class="grid-main">
+
+      <!-- 3. LIVING COUNTY MAP PANEL -->
+      <section class="panel map-panel">
+        <div class="map-panel-head">
+          <span class="title">Living County · Benton</span>
+          <span class="meta" id="mapMeta">Showing: today's activity</span>
+        </div>
+
+        <div class="layer-chips" id="layerChips">
+          <button class="chip active" data-layer="today">Today</button>
+          <button class="chip" data-layer="permits">Permits</button>
+          <button class="chip" data-layer="sales">Sales</button>
+          <button class="chip" data-layer="appeals">Appeals</button>
+          <button class="chip" data-layer="exemptions">Exemptions</button>
+          <button class="chip" data-layer="notices">Notices</button>
+          <button class="chip" data-layer="risk">Risk</button>
+        </div>
+
+        <div class="map-stage">
+          <svg viewBox="0 0 700 460" preserveAspectRatio="xMidYMid meet" aria-label="Stylized territory map of Benton County">
+            <defs>
+              <radialGradient id="countyFill" cx="38%" cy="32%" r="75%">
+                <stop offset="0%" stop-color="rgba(79,159,224,0.10)"/>
+                <stop offset="60%" stop-color="rgba(79,159,224,0.045)"/>
+                <stop offset="100%" stop-color="rgba(79,159,224,0.02)"/>
+              </radialGradient>
+              <clipPath id="countyClip">
+                <path d="M95,60 L300,48 L470,58 L585,150 L600,250 L560,355 L470,415 L300,418 L185,392 L105,318 L70,200 Z"/>
+              </clipPath>
+            </defs>
+
+            <!-- faint reference grid -->
+            <g>
+              <line class="grid-line" x1="0" y1="115" x2="700" y2="115"/>
+              <line class="grid-line" x1="0" y1="230" x2="700" y2="230"/>
+              <line class="grid-line" x1="0" y1="345" x2="700" y2="345"/>
+              <line class="grid-line" x1="175" y1="0" x2="175" y2="460"/>
+              <line class="grid-line" x1="350" y1="0" x2="350" y2="460"/>
+              <line class="grid-line" x1="525" y1="0" x2="525" y2="460"/>
+            </g>
+
+            <!-- county boundary (stylized, not real GIS) -->
+            <path class="county-shape" d="M95,60 L300,48 L470,58 L585,150 L600,250 L560,355 L470,415 L300,418 L185,392 L105,318 L70,200 Z"/>
+
+            <!-- clipped territory texture + districts + rivers -->
+            <g clip-path="url(#countyClip)">
+              <!-- subtle terrain contour suggestion -->
+              <path class="contour" d="M70,140 C200,120 320,160 460,130 C540,112 590,140 620,160"/>
+              <path class="contour" d="M70,210 C190,190 300,235 440,205 C540,184 600,214 630,236"/>
+              <path class="contour" d="M70,290 C200,272 330,312 470,286 C560,270 610,300 640,320"/>
+              <path class="contour" d="M70,360 C190,344 320,382 470,360"/>
+
+              <!-- internal district / TCA traces -->
+              <path class="district-line" d="M300,48 L290,418"/>
+              <path class="district-line" d="M70,200 L600,230"/>
+              <path class="district-line" d="M440,58 L470,415"/>
+              <path class="district-line" d="M185,392 L300,200 L470,250"/>
+
+              <!-- Yakima River (NW→SE) and Columbia bend (E) -->
+              <path class="river" d="M80,120 C200,170 250,150 330,210 C400,262 430,300 470,330 C520,366 560,360 600,300"/>
+              <path class="river minor" d="M150,250 C220,270 250,300 300,300 C360,300 380,330 420,340"/>
+            </g>
+
+            <text class="river-label" x="120" y="135" transform="rotate(14 120 135)">Yakima R.</text>
+            <text class="river-label" x="520" y="328">Columbia R.</text>
+
+            <!-- place markers (cities within the county) -->
+            <g>
+              <circle class="place-dot" cx="180" cy="250" r="2.5"/><text class="place-name" x="187" y="253">Prosser</text>
+              <circle class="place-dot" cx="330" cy="210" r="2.5"/><text class="place-name" x="337" y="213">Benton City</text>
+              <circle class="place-dot" cx="470" cy="260" r="2.5"/><text class="place-name" x="477" y="263">West Richland</text>
+              <circle class="place-dot" cx="380" cy="330" r="2.5"/><text class="place-name" x="387" y="333">Kennewick</text>
+              <circle class="place-dot" cx="250" cy="150" r="2.5"/><text class="place-name" x="257" y="153">Grandview East</text>
+            </g>
+
+            <!-- compass rose -->
+            <g class="compass" transform="translate(560,90)">
+              <circle cx="0" cy="0" r="16" fill="none" stroke="var(--border)" stroke-width="1"/>
+              <polygon class="compass-needle" points="0,-13 3,0 0,-4 -3,0"/>
+              <polygon points="0,13 3,0 0,4 -3,0" fill="var(--text-3)"/>
+              <text class="compass-text" x="-3.5" y="-19">N</text>
+            </g>
+
+            <!-- scale bar -->
+            <g transform="translate(95,398)">
+              <line class="scale-bar" x1="0" y1="0" x2="60" y2="0"/>
+              <line class="scale-bar" x1="0" y1="-3" x2="0" y2="3"/>
+              <line class="scale-bar" x1="60" y1="-3" x2="60" y2="3"/>
+              <text class="scale-text" x="0" y="14">10 mi</text>
+            </g>
+
+            <!-- activity clusters; toggled by JS per layer -->
+            <g id="clusters">
+              <!-- Grandview East -->
+              <g class="cluster" data-where="grandview" transform="translate(250,150)">
+                <circle class="halo" r="34" fill="rgba(217,122,82,0.18)"/>
+                <circle class="core" r="11" fill="#d97a52"/>
+                <text class="label" x="0" y="-44" text-anchor="middle">Grandview East</text>
+              </g>
+              <!-- West Richland -->
+              <g class="cluster" data-where="westrichland" transform="translate(470,260)">
+                <circle class="halo" r="40" fill="rgba(79,159,224,0.18)"/>
+                <circle class="core" r="13" fill="#4f9fe0"/>
+                <text class="label" x="0" y="-50" text-anchor="middle">West Richland</text>
+              </g>
+              <!-- Kennewick core -->
+              <g class="cluster" data-where="kennewick" transform="translate(380,330)">
+                <circle class="halo" r="30" fill="rgba(95,174,126,0.18)"/>
+                <circle class="core" r="10" fill="#5aae7c"/>
+                <text class="label" x="0" y="-40" text-anchor="middle">Kennewick</text>
+              </g>
+              <!-- Prosser -->
+              <g class="cluster" data-where="prosser" transform="translate(180,250)">
+                <circle class="halo" r="26" fill="rgba(214,168,90,0.18)"/>
+                <circle class="core" r="9" fill="#d6a85a"/>
+                <text class="label" x="0" y="-36" text-anchor="middle">Prosser</text>
+              </g>
+              <!-- Benton City -->
+              <g class="cluster" data-where="bentoncity" transform="translate(330,210)">
+                <circle class="halo" r="24" fill="rgba(214,95,95,0.18)"/>
+                <circle class="core" r="8" fill="#d65f5f"/>
+                <text class="label" x="0" y="-34" text-anchor="middle">Benton City</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="map-legend" id="mapLegend">
+          <span><i style="background:#d97a52"></i> Needs review</span>
+          <span><i style="background:#4f9fe0"></i> Active cluster</span>
+          <span><i style="background:#5aae7c"></i> Stable</span>
+        </div>
+      </section>
+
+      <!-- 4. TODAY'S ACTION PATH -->
+      <section class="action-rail" aria-label="Today's action path">
+        <div class="rail-label">Start here today</div>
+
+        <!-- PRIMARY recommended action — dominant -->
+        <div class="action-card primary" onclick="route('Forge · Grandview East calibration')">
+          <span class="action-flag">Recommended first action</span>
+          <h3 class="action-title">Review Grandview East calibration</h3>
+          <p class="action-why">Median ratio moved <b>below tolerance</b> after recent qualified sales. Reviewing now keeps the commercial stratum defensible before notices depend on it.</p>
+          <div class="action-evidence">
+            <span class="ev-tag">31 sales</span>
+            <span class="ev-tag">7 permits</span>
+            <span class="ev-tag">prior trend</span>
+          </div>
+          <div class="action-foot">
+            <span class="due soon">● Due today</span>
+            <button class="btn-sm" onclick="event.stopPropagation(); route('Forge · valuation review')">Open Review →</button>
+          </div>
+        </div>
+
+        <div class="rail-label">Then, this week</div>
+
+        <!-- SECONDARY compact actions -->
+        <div class="action-card compact" onclick="route('Dais · exemption queue')">
+          <span class="action-rank-lg">02</span>
+          <div>
+            <h3 class="action-title">Complete exemption renewal review</h3>
+            <p class="action-why"><b>18 files</b> aging past 14 days · <span class="due week">deadline Jun 20</span></p>
+          </div>
+          <button class="btn-arrow" onclick="event.stopPropagation(); route('Dais · exemption queue')" aria-label="Open queue">→</button>
+        </div>
+
+        <div class="action-card compact" onclick="route('Dossier · West Richland packets')">
+          <span class="action-rank-lg">03</span>
+          <div>
+            <h3 class="action-title">Prepare West Richland appeal packets</h3>
+            <p class="action-why">6 appeals · 4 complete, <b>2 missing narrative</b> · <span class="due week">hearings Thu</span></p>
+          </div>
+          <button class="btn-arrow" onclick="event.stopPropagation(); route('Dossier · evidence review')" aria-label="Open packets">→</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================= 5. OPERATIONAL PULSE ============================= -->
+    <div class="section-head">
+      <h2>Operational pulse</h2>
+      <span class="hint">Plain-English condition of each county function</span>
+    </div>
+
+    <div class="pulse-register">
+      <div class="pulse-row" onclick="route('Forge · valuation review')">
+        <span class="pulse-name">Valuation</span>
+        <span class="status attention">Attention</span>
+        <span class="pulse-reason">Grandview East commercial ratio slipped below tolerance.</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="pulse-row" onclick="route('Dossier · appeal packets')">
+        <span class="pulse-name">Appeals</span>
+        <span class="status watching">Watching</span>
+        <span class="pulse-reason">Elevated but within hearing capacity; 2 packets need narrative.</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="pulse-row" onclick="route('Dais · exemption queue')">
+        <span class="pulse-name">Exemptions</span>
+        <span class="status watching">Watching</span>
+        <span class="pulse-reason">18 renewals aging past 14 days; not yet blocking.</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="pulse-row" onclick="route('Notices · mail cycle')">
+        <span class="pulse-name">Notices</span>
+        <span class="status stable">Stable</span>
+        <span class="pulse-reason">COV mail cycle on track; last batch generated cleanly.</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="pulse-row" onclick="route('Roll readiness')">
+        <span class="pulse-name">Certification</span>
+        <span class="status watching">Watching</span>
+        <span class="pulse-reason">1 unresolved signoff blocks roll readiness.</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="pulse-row" onclick="route('Counter · approved explanations')">
+        <span class="pulse-name">Public Counter</span>
+        <span class="status stable">Stable</span>
+        <span class="pulse-reason">Walk-in volume normal; no escalations pending.</span>
+        <span class="chev">›</span>
+      </div>
+    </div>
+
+    <!-- ============================= 6 + 7. OVERNIGHT + EVIDENCE ============================= -->
+    <div class="grid-bottom">
+
+      <!-- 6. WHAT CHANGED OVERNIGHT -->
+      <section class="panel stream">
+        <div class="section-head" style="margin:0 0 8px;">
+          <h2 style="font-size:18px;">What changed overnight</h2>
+        </div>
+        <ul class="stream-list">
+          <li class="stream-item accent">
+            <div class="stream-time">7:42 AM</div>
+            <div class="stream-text"><b>Ratio study updated</b> — Grandview East commercial</div>
+            <div class="stream-sub">Median moved to 0.89, below the 0.90 tolerance floor.</div>
+          </li>
+          <li class="stream-item">
+            <div class="stream-time">6:15 AM</div>
+            <div class="stream-text"><b>Permit import completed</b> — 142 new permits</div>
+            <div class="stream-sub">West Richland accounts for the largest cluster.</div>
+          </li>
+          <li class="stream-item">
+            <div class="stream-time">11:58 PM</div>
+            <div class="stream-text"><b>New appeal filed</b> — parcel 1-2289-104-0007</div>
+            <div class="stream-sub">Assigned to the West Richland hearing block.</div>
+          </li>
+          <li class="stream-item">
+            <div class="stream-time">10:30 PM</div>
+            <div class="stream-text"><b>Notice batch generated</b> — COV cycle, 1,204 notices</div>
+            <div class="stream-sub">Queued for mail house pickup; no print errors.</div>
+          </li>
+          <li class="stream-item">
+            <div class="stream-time">9:12 PM</div>
+            <div class="stream-text"><b>Evidence packet completed</b> — appeal 2026-0418</div>
+            <div class="stream-sub">Comparable sales and photos attached.</div>
+          </li>
+          <li class="stream-item">
+            <div class="stream-time">8:40 PM</div>
+            <div class="stream-text"><b>Academy doctrine note updated</b> — ratio tolerance policy</div>
+            <div class="stream-sub">Clarifies handling of thin-market commercial strata.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 7. EVIDENCE BEHIND TODAY -->
+      <section class="panel evidence">
+        <div class="section-head" style="margin:0 0 6px;">
+          <h2 style="font-size:18px;">Evidence behind today</h2>
+        </div>
+        <p class="evidence-note">Today's brief, traced back to its sources. Open any link in the chain to see the record behind the claim.</p>
+        <div class="chain" id="evList">
+          <div class="ev-node">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">1</div>
+              <div class="ev-count">31</div>
+              <div class="ev-meta"><div class="ev-label">Qualified sales reviewed</div><div class="ev-detail">Grandview East · last 90 days</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">Verified arms-length transactions used to recompute the commercial ratio. 4 flagged conditional and excluded from the median.<span class="src">Source: Sales register · ratio study 2026-06-13</span></div>
+          </div>
+
+          <div class="ev-node">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">2</div>
+              <div class="ev-count">142</div>
+              <div class="ev-meta"><div class="ev-label">Permits imported</div><div class="ev-detail">Overnight batch · 6:15 AM</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">Sourced from the county permit feed. 38 are West Richland new construction awaiting first review.<span class="src">Source: Permit feed · import #4471</span></div>
+          </div>
+
+          <div class="ev-node">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">3</div>
+              <div class="ev-count">6</div>
+              <div class="ev-meta"><div class="ev-label">Appeals filed</div><div class="ev-detail">West Richland hearing block</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">4 packets complete with narrative and comparables; 2 awaiting analyst narrative before Thursday's hearings.<span class="src">Source: Dossier · appeal docket 2026-W</span></div>
+          </div>
+
+          <div class="ev-node">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">4</div>
+              <div class="ev-count">1,204</div>
+              <div class="ev-meta"><div class="ev-label">Notices prepared</div><div class="ev-detail">COV mail cycle</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">Generated overnight, validated against the current roll. Zero address-correction holds.<span class="src">Source: Notice batch · COV-2026-07</span></div>
+          </div>
+
+          <div class="ev-node gap">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">!</div>
+              <div class="ev-count warn">2</div>
+              <div class="ev-meta"><div class="ev-label">Missing evidence items</div><div class="ev-detail">Gating before certification</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">2 appeal packets lack written narrative — the gating items for West Richland readiness. Everything else in the chain is complete.<span class="src">Open: West Richland packets</span></div>
+          </div>
+
+          <div class="ev-node">
+            <div class="ev-row" onclick="toggleEv(this)">
+              <div class="ev-marker">✓</div>
+              <div class="ev-count">47</div>
+              <div class="ev-meta"><div class="ev-label">Audit entries created</div><div class="ev-detail">Overnight operations</div></div>
+              <div class="ev-chevron">›</div>
+            </div>
+            <div class="ev-expand">Every import, ratio recompute, and notice batch wrote an immutable audit record with operator and timestamp.<span class="src">Source: Audit log · 47 sealed entries</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer-note">
+      TerraFusion Home — County Nerve Center prototype · Benton County · 2026 Roll · sample data
+    </div>
+  </main>
+
+  <!-- ============================= Teach Me Why slide-over ============================= -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="teach" id="teach" aria-label="Why this matters">
+    <button class="teach-close" id="teachClose" aria-label="Close">×</button>
+    <div class="teach-eyebrow">Reasoning · evidence-backed</div>
+    <h3>Why Grandview East comes first</h3>
+    <p class="lede">This isn't an opinion. Here's the chain of evidence behind today's recommended first action.</p>
+
+    <div class="teach-step">
+      <span class="n">1</span>
+      <div class="body"><h4>Recent sales landed</h4>
+        <p>31 qualified arms-length sales closed in Grandview East over the last 90 days — enough to move the commercial stratum.</p></div>
+    </div>
+    <div class="teach-step">
+      <span class="n">2</span>
+      <div class="body"><h4>The ratio shifted</h4>
+        <p>Median assessment-to-sale ratio recomputed to 0.89, below the 0.90 tolerance floor in county doctrine.</p></div>
+    </div>
+    <div class="teach-step">
+      <span class="n">3</span>
+      <div class="body"><h4>It compounds with permits</h4>
+        <p>7 active permits in the same area suggest value change that will widen the gap if left unaddressed.</p></div>
+    </div>
+    <div class="teach-step">
+      <span class="n">4</span>
+      <div class="body"><h4>It's reversible today</h4>
+        <p>A calibration review now keeps the stratum defensible before notices and certification depend on it.</p></div>
+    </div>
+
+    <div class="teach-foot">
+      Recommendation confidence is <b>evidence-backed (4/5)</b> — strong sales signal, moderate permit corroboration. No autonomous change was made; this only directs your attention.
+    </div>
+  </aside>
+
+<script>
+  /* ---------------------------------------------------------------------
+     Typed-ish mock model (mirrors the React types the WO will define:
+     HomeBrief, HomePriorityAction, HomePulseItem, HomeActivityEvent,
+     HomeEvidenceItem, HomeMapLayer). Kept declarative for clean porting.
+  --------------------------------------------------------------------- */
+
+  // Which clusters light up per map layer, + the meta caption.
+  const LAYERS = {
+    today:      { caption: "today's activity",        clusters: ["grandview","westrichland","kennewick"] },
+    permits:    { caption: "permit activity",          clusters: ["westrichland","kennewick","prosser"] },
+    sales:      { caption: "qualified sales",           clusters: ["grandview","kennewick"] },
+    appeals:    { caption: "active appeals",            clusters: ["westrichland","bentoncity"] },
+    exemptions: { caption: "exemption renewals",        clusters: ["prosser","kennewick"] },
+    notices:    { caption: "notice distribution",       clusters: ["grandview","westrichland","kennewick","prosser"] },
+    risk:       { caption: "risk concentration",        clusters: ["grandview","bentoncity"] },
+  };
+
+  const chips = document.getElementById('layerChips');
+  const mapMeta = document.getElementById('mapMeta');
+  const allClusters = Array.from(document.querySelectorAll('#clusters .cluster'));
+
+  function applyLayer(layer) {
+    const def = LAYERS[layer] || LAYERS.today;
+    mapMeta.textContent = "Showing: " + def.caption;
+    allClusters.forEach(c => {
+      c.classList.toggle('show', def.clusters.includes(c.dataset.where));
+    });
+  }
+
+  chips.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    applyLayer(btn.dataset.layer);
+  });
+
+  // clicking a map cluster routes to a filtered review (Atlas doctrine)
+  allClusters.forEach(c => c.addEventListener('click', () => {
+    route('Atlas · filtered review (' + c.dataset.where + ')');
+  }));
+
+  applyLayer('today'); // initial
+
+  /* -------- Evidence reveal -------- */
+  function toggleEv(row) { row.classList.toggle('open'); }
+
+  /* -------- Teach Me Why slide-over -------- */
+  const scrim = document.getElementById('scrim');
+  const teach = document.getElementById('teach');
+  function openTeach() { scrim.classList.add('open'); teach.classList.add('open'); }
+  function closeTeach() { scrim.classList.remove('open'); teach.classList.remove('open'); }
+  document.getElementById('teachBtn').addEventListener('click', openTeach);
+  document.getElementById('teachClose').addEventListener('click', closeTeach);
+  scrim.addEventListener('click', closeTeach);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTeach(); });
+
+  /* -------- Light / dark theme toggle (app supports both) -------- */
+  const themeToggle = document.getElementById('themeToggle');
+  const themeLabel = document.getElementById('themeLabel');
+  themeToggle.addEventListener('click', () => {
+    const light = document.body.getAttribute('data-theme') === 'light';
+    document.body.setAttribute('data-theme', light ? 'dark' : 'light');
+    themeLabel.textContent = light ? 'Dark' : 'Light';
+  });
+
+  /* -------- Routing doctrine (placeholder; labels are future-correct) -------- */
+  function route(destination) {
+    // In the React port these map to real surfaces:
+    //   valuation → Forge · appeals → Dossier · exemptions/notices → Dais
+    //   certification → Roll readiness · map cluster → Atlas filtered review
+    console.log('[route]', destination);
+    // lightweight visual ack for the prototype
+    const note = document.createElement('div');
+    note.textContent = '→ ' + destination;
+    Object.assign(note.style, {
+      position:'fixed', left:'50%', bottom:'34px', transform:'translateX(-50%)',
+      background:'var(--surface-3)', color:'var(--text)', border:'1px solid var(--accent)',
+      padding:'11px 18px', borderRadius:'12px', fontSize:'14px', fontWeight:'600',
+      boxShadow:'var(--shadow-2)', zIndex:'200', opacity:'0', transition:'opacity .2s ease',
+    });
+    document.body.appendChild(note);
+    requestAnimationFrame(() => note.style.opacity = '1');
+    setTimeout(() => { note.style.opacity = '0'; setTimeout(() => note.remove(), 250); }, 1600);
+  }
+</script>
+</body>
+</html>
