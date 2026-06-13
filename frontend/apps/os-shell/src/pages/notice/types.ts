@@ -4,7 +4,7 @@
  * TerraNotice is the governed control surface for civic notice legality,
  * delivery, explanation, and proof. This file types every data shape the
  * console renders. All console screens read from a single service surface
- * (today: sandbox fixtures, see ./data/sandboxData) so a real backend can be
+ * (today: sandbox fixtures, see ./fixtures/sandboxData) so a real backend can be
  * dropped in without touching the screens.
  *
  * @module pages/notice/types

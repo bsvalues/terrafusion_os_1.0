@@ -10,7 +10,7 @@
  * area reads from a single console snapshot so a real backend can replace the
  * sandbox fixtures without touching the screens.
  *
- * HONESTY: while the snapshot's `source` is 'sandbox', a persistent ribbon
+ * (see ./fixtures/sandboxData). HONESTY: while the snapshot's `source` is 'sandbox', a persistent ribbon
  * makes clear the data is demonstration content, not live county production
  * data, and write-style actions are inert.
  *
@@ -34,7 +34,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { ConsoleAreaId, NoticeConsoleSnapshot } from './types';
-import { getNoticeConsoleSnapshot } from './data/sandboxData';
+import { getNoticeConsoleSnapshot } from './fixtures/sandboxData';
 import { CommandCenter } from './areas/CommandCenter';
 import { CountyConfiguration } from './areas/CountyConfiguration';
 import { PolicyPacks } from './areas/PolicyPacks';
