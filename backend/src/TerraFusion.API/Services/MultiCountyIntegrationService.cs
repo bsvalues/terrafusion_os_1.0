@@ -339,22 +339,17 @@ public class MultiCountyIntegrationService : IMultiCountyIntegrationService
 
             using var httpClient = _httpClientFactory.CreateClient("HarrisPacs");
 
-            // Simulate Harris PACS API integration
-            var pacsEndpoint = countyConfig.HarrisPacsIntegration.ApiEndpoint;
-            var apiKey = countyConfig.HarrisPacsIntegration.ApiKey;
-
-            // In a real implementation, this would connect to the actual Harris PACS system
-            // For now, we'll simulate the integration
-            await Task.Delay(2000); // Simulate API call delay
-
-            result.RecordsSynced = Random.Shared.Next(100, 1000);
-            result.RecordsUpdated = Random.Shared.Next(10, 50);
-            result.RecordsCreated = Random.Shared.Next(5, 25);
+            // Honesty (WO-CF-b2g): no live Harris PACS connector is wired here.
+            // Previously returned Random.Shared.Next() fabricated counts; zeroed so
+            // operator-visible sync results do not imply real record movement.
+            result.RecordsSynced = 0;
+            result.RecordsUpdated = 0;
+            result.RecordsCreated = 0;
             result.SyncEndTime = DateTime.UtcNow;
             result.IsSuccessful = true;
 
             await _auditLogger.LogAsync("HARRIS_PACS_SYNC",
-                $"Harris PACS sync for {countyCode}: {result.RecordsSynced} records processed", true);
+                $"Harris PACS sync stub for {countyCode}: no live connector, 0 records", true);
 
             return result;
         }
