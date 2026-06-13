@@ -21,14 +21,17 @@ Deterministic, stratified — no cherry-picking:
 - **County scope:** single county per run (sovereign isolation); Benton first.
 
 ## 2. Comparison method per RP (TF source → PACS baseline → ParityComparer)
-| RP | TF value (shadow) | PACS baseline | Tolerance |
+Baseline source is the **internal** TruthPacs clone + SourceXref (the PACS-faithful layer already in
+the model) — not live legacy PACS. Confirmed present 2026-06-13.
+
+| RP | TF value (shadow) | Baseline (internal TruthPacs / Sync) | Tolerance |
 |----|---|---|---|
-| RP-1 Cost | `CostApproachCalculator` RCNLD (improvement portion) | PACS `imprv` value | per-class (§3) |
-| RP-2 Land | `LandApproachCalculator` land value | PACS `land_detail` | per-class (§3) |
-| RP-3 Reconciled | `ValuationEngine` `IndicatedValue` (`ParcelValuation`) | PACS `property_val` / `wash_prop_owner_val` | per-class (§3) |
-| RP-5 Supplement round-trip | active-supplement TF value via `SourceXref` lineage | PACS active-supplement `property_val` | exact lineage (no history loss) — §6 |
-| RP-6 Income | `IncomeApproachCalculator` value | county income study | per-class (§3) |
-| RP-4 Ratio study (informational) | `SalesRatioCalculator` median/COD/PRD + `CalibrationGate` | county published study | informational |
+| RP-1 Cost | `CostApproachCalculator` RCNLD (improvement portion) | `TruthPacsImprvCurrent.ImprvVal` | per-class (§3) |
+| RP-2 Land | `LandApproachCalculator` land value | `TruthPacsLandCurrent.LandSegMarketVal`/`LandSegAgValue` | per-class (§3) |
+| RP-3 Reconciled | `ValuationEngine` `IndicatedValue` (`ParcelValuation`) | `TruthPacsAssessmentCurrent` (+ `TruthPacsWashPropOwnerVal`) | per-class (§3) |
+| RP-5 Supplement round-trip | active-supplement TF value via `SourceXref` lineage | `SourceXref.SourceKeyJson` `{prop_id,prop_val_yr,sup_num}` | exact lineage (no history loss) — §6 |
+| RP-6 Income | `IncomeApproachCalculator` value | **external** county income study | per-class (§3) |
+| RP-4 Ratio study (informational) | `SalesRatioCalculator` median/COD/PRD + `CalibrationGate` | `TruthPacsSale` / county published study | informational |
 
 Each per-parcel comparison runs through `ParityComparer.Compare(tfValue, pacsValue, tolerance)` →
 delta, delta-fraction, within/outside flag. No TF value is mutated.
@@ -75,5 +78,6 @@ that prior supplement history is intact (no RK-3 loss). This is exact-match line
 ## Blocked-on (external/Sync — not Forge)
 1. `TfParcel.Neighborhood` landed (→ `SYNC_HANDOFF_TfParcel_Neighborhood.md`) — RP-2/RP-3 land path.
 2. Assessor tolerances + pass rates (§3) — G1 honesty.
-3. PACS read access for the baseline pulls (§2) + the income study (RP-6).
+3. Baseline confirmation: approve TruthPacs clone + `SourceXref` as the comparison source (internal —
+   present in the model, not live legacy PACS) + agree the sample scope; supply the external RP-6 income study.
 When 1–3 are in hand, §5 is a single reproducible run; no further Forge code is required to start it.

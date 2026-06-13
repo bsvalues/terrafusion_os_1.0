@@ -36,14 +36,34 @@ We will NOT invent tolerances — these must be county-approved inputs.
 Reference: research/09_production_planning/WS1_PACS_SHADOW_PARITY_RUN_PLAN.md §3
 ```
 
-## Ask 3 — PACS/data: read-only shadow access
+## Ask 3 — Confirm the PACS-clone / TruthPacs parity baseline (NOT "obtain access")
+The comparison baseline already exists **inside** the TerraFusion stack (see Grounding below); this
+is a sign-off + sample-scope decision, not a live-legacy access grant.
 ```
-Subject: Read-only PACS shadow access needed for WS-1 parity run
+Subject: Confirm approved PACS-clone / TruthPacs baseline for WS-1 shadow parity run
 
-Need read-only access to the agreed PACS comparison dataset to execute the prepared run.
-Use: comparison only — no writes, no authority swap, evidence capture only.
+The comparison baseline appears internally available (TruthPacs clone + SourceXref). Need confirmed:
+- which source is authoritative for comparison (TruthPacs/* vs. another snapshot)
+- the sample set / extraction scope to use
+- the RP-6 income-study source (the one comparison NOT in TruthPacs)
+- that the run is read-only comparison only (no writes, no authority swap)
+
+Not a request to open a new live legacy dependency unless the clone/truth layer is insufficient.
 Reference: research/09_production_planning/WS1_PACS_SHADOW_PARITY_RUN_PLAN.md §2/§5
 ```
+
+### Grounding (confirmed in repo, 2026-06-13)
+The TruthPacs source-faithful clone + lineage bridge are present and carry the RP baselines:
+| RP | Internal baseline (TruthPacs / Sync) | Field |
+|----|---|---|
+| RP-1 Cost | `TruthPacsImprvCurrent` | `ImprvVal` (by `PropValYr`) |
+| RP-2 Land | `TruthPacsLandCurrent` | `LandSegMarketVal` / `LandSegAgValue` / `LandSegAssessedVal` |
+| RP-3 Reconciled | `TruthPacsAssessmentCurrent` (+ `TruthPacsWashPropOwnerVal`) | `AssessedVal`/`MarketVal`/`AppraisedVal`, Hstd/NonHstd splits |
+| RP-5 Supplement | `SyncBridge.SourceXref` | `SourceKeyJson` = `{prop_id, prop_val_yr, sup_num, ...}` lineage |
+| RP-4 Sales (info) | `TruthPacsSale` | sale price/date/qualification |
+| RP-6 Income | **external** county income study | not in TruthPacs |
+**Conclusion:** RP-1/2/3/5 baselines are internally available — confirm/approve, don't acquire. Only
+RP-6 needs an external study. Live legacy PACS access is **not** required for the gating proofs.
 
 ---
 
@@ -52,7 +72,7 @@ Reference: research/09_production_planning/WS1_PACS_SHADOW_PARITY_RUN_PLAN.md §
 |---|-----|-------|------|--------|------------------|
 | 1 | `TfParcel.Neighborhood` | Sync lane | TBD | OPEN | |
 | 2 | Parity tolerances | Assessor/county | TBD | OPEN | |
-| 3 | PACS read access | Data/IT | TBD | OPEN | |
+| 3 | Confirm PACS-clone/TruthPacs baseline (+ RP-6 income study) | Data lead / Assessor | TBD | OPEN | RP-1/2/3/5 baseline confirmed internal (TruthPacs+SourceXref); needs approval + sample scope |
 
 Any one landing unblocks a concrete next action (below). All three → step 4 run.
 
