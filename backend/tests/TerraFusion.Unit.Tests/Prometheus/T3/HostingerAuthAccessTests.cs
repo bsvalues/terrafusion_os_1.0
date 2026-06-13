@@ -1,11 +1,13 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Security;
+using TerraFusion.API.Security.Services;
 using TerraFusion.Core.DTOs;
 using Xunit;
 
@@ -23,9 +25,18 @@ public sealed class HostingerAuthAccessTests
     {
         var authService = new Mock<CoreAuth.IAuthenticationService>(MockBehavior.Strict);
         var securityService = new Mock<CoreAuth.ISecurityService>(MockBehavior.Strict);
-        securityService
-            .Setup(x => x.IsValidGovernmentUserAsync("operator@terrafusionmarket.com"))
-            .ReturnsAsync(true);
+        var provisionedUsers = new Mock<IProvisionedUserContextProvider>(MockBehavior.Strict);
+        provisionedUsers
+            .Setup(x => x.GetProvisionedUserContextAsync("operator@terrafusionmarket.com"))
+            .ReturnsAsync(new ProvisionedUserAuthContext(
+                Guid.NewGuid(),
+                "operator@terrafusionmarket.com",
+                new[] { "GovernmentUser" },
+                new[] { "read:parcel" },
+                null,
+                null,
+                null,
+                null));
         securityService
             .Setup(x => x.ValidateUserCredentialsAsync("operator@terrafusionmarket.com", "WrongPassword123!"))
             .ReturnsAsync(false);
@@ -36,6 +47,7 @@ public sealed class HostingerAuthAccessTests
         var controller = new AuthController(
             authService.Object,
             securityService.Object,
+            provisionedUsers.Object,
             NullLogger<AuthController>.Instance);
 
         var result = await controller.Login(new LoginRequest
@@ -55,32 +67,56 @@ public sealed class HostingerAuthAccessTests
     }
 
     [Fact]
-    public async Task AddTerraFusionAuthentication_WithBootstrapCredentials_InstallsProvisionedOperatorLogin()
+    public void AddTerraFusionAuthentication_RegistersDatabaseProvisionedSecurityService()
     {
         var services = new ServiceCollection();
         services.AddLogging();
+        services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
+            options.UseInMemoryDatabase($"hostinger-auth-{Guid.NewGuid():N}"));
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["JwtSettings:SecretKey"] = "test-hostinger-bootstrap-key-at-least-32-chars-long-for-hmac-sha256",
-                ["Auth:Bootstrap:Email"] = "operator@terrafusionmarket.com",
-                ["Auth:Bootstrap:Password"] = "CorrectPassword123!",
-                ["Auth:Bootstrap:Roles"] = "GovernmentUser,Administrator,FullSystemAccess"
+                ["JwtSettings:SecretKey"] = "test-hostinger-db-auth-key-at-least-32-chars-long-for-hmac-sha256"
             })
             .Build();
 
         services.AddTerraFusionAuthentication(config);
+        services.AddSingleton<IConfiguration>(config);
+
+        using var provider = services.BuildServiceProvider();
+        var security = provider.GetRequiredService<CoreAuth.ISecurityService>();
+        var provisioned = provider.GetRequiredService<IProvisionedUserContextProvider>();
+
+        security.Should().BeOfType<DatabaseProvisionedSecurityService>();
+        provisioned.Should().BeSameAs(security);
+    }
+
+    [Fact]
+    public async Task AddTerraFusionAuthentication_WithBootstrapCredentials_DoesNotEnableBootstrapLogin()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
+            options.UseInMemoryDatabase($"hostinger-auth-bootstrap-blocked-{Guid.NewGuid():N}"));
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["JwtSettings:SecretKey"] = "test-hostinger-db-auth-key-at-least-32-chars-long-for-hmac-sha256",
+                ["Auth:Bootstrap:Email"] = "operator@terrafusionmarket.com",
+                ["Auth:Bootstrap:Password"] = "CorrectPassword123!",
+                ["Auth:Bootstrap:Roles"] = "GovernmentUser,Administrator"
+            })
+            .Build();
+
+        services.AddTerraFusionAuthentication(config);
+        services.AddSingleton<IConfiguration>(config);
 
         using var provider = services.BuildServiceProvider();
         var security = provider.GetRequiredService<CoreAuth.ISecurityService>();
 
-        (await security.IsValidGovernmentUserAsync("operator@terrafusionmarket.com")).Should().BeTrue();
-        (await security.ValidateUserCredentialsAsync("operator@terrafusionmarket.com", "CorrectPassword123!")).Should().BeTrue();
-        (await security.ValidateUserCredentialsAsync("operator@terrafusionmarket.com", "WrongPassword123!")).Should().BeFalse();
-        (await security.ValidateUserCredentialsAsync("other@terrafusionmarket.com", "CorrectPassword123!")).Should().BeFalse();
-        (await security.GetUserRolesAsync("operator@terrafusionmarket.com"))
-            .Should()
-            .BeEquivalentTo("GovernmentUser", "Administrator", "FullSystemAccess");
+        security.Should().BeOfType<DatabaseProvisionedSecurityService>();
+        (await security.IsValidGovernmentUserAsync("operator@terrafusionmarket.com")).Should().BeFalse();
+        (await security.ValidateUserCredentialsAsync("operator@terrafusionmarket.com", "CorrectPassword123!")).Should().BeFalse();
     }
 
     [Fact]
@@ -88,9 +124,11 @@ public sealed class HostingerAuthAccessTests
     {
         var authService = new Mock<CoreAuth.IAuthenticationService>(MockBehavior.Loose);
         var securityService = new Mock<CoreAuth.ISecurityService>(MockBehavior.Loose);
+        var provisionedUsers = new Mock<IProvisionedUserContextProvider>(MockBehavior.Loose);
         var controller = new AuthController(
             authService.Object,
             securityService.Object,
+            provisionedUsers.Object,
             NullLogger<AuthController>.Instance);
 
         var result = controller.GetAccessPolicy();
@@ -100,7 +138,7 @@ public sealed class HostingerAuthAccessTests
         {
             signupMode = "provisioned_access_only",
             publicSignupEnabled = false,
-            message = "TerraFusion access is provisioned by an administrator. Public self-signup is disabled."
+            message = "TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled."
         });
     }
 }

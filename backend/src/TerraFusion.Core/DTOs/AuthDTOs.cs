@@ -34,13 +34,19 @@ public class RefreshTokenRequest
 
 public class UserProfile
 {
+    public string? UserId { get; set; }
     public required string Email { get; set; }
     public required string[] Roles { get; set; }
+    public string[] Permissions { get; set; } = Array.Empty<string>();
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Department { get; set; }
     public DateTime LastLogin { get; set; }
+    public string? CountyId { get; set; }
     public string? County { get; set; }
+    public string? CountyFipsCode { get; set; }
+    public string? State { get; set; }
+    public bool SessionValid { get; set; }
 }
 
 public class ChangePasswordRequest
