@@ -437,8 +437,8 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   }, []);
 
   return (
-    <TeachMeWhyProvider>
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
+      <TeachMeWhyProvider>
       <ParcelContextBanner suiteTabId="dossier" />
 
       {/* Task D3 — County Studio handoff: segment evidence draft */}
@@ -694,7 +694,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />
       </main>
+      </TeachMeWhyProvider>
     </div>
-    </TeachMeWhyProvider>
   );
 }
