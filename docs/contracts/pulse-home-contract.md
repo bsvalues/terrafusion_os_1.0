@@ -68,12 +68,17 @@ fabricated value.
 
 ## Suggested next steps (future WOs)
 
-1. **Read layer:** implement `getPulseHomeSnapshot(county, rollYear)` returning
-   `PulseHomeSnapshot`, each region sourced from a governed endpoint or an
-   explicit `pulseUnavailable(...)`. Mirror the `useTodaysWork`
-   `throwOnError` + read-state pattern.
+1. **Read layer (MVP — landed):** `getPulseHomeSnapshot(countyId, rollYear)` in
+   `frontend/apps/os-shell/src/services/pulse/pulseHomeService.ts` returns a
+   `PulseHomeSnapshot`. It is unavailable-safe and dependency-injected: with no
+   readers supplied, every region is an explicit `pulseUnavailable(...)` gap
+   (nothing fabricated). Region readers (TerraForge ratio study, TerraDais
+   queues, TerraTrace audit, notice/certification services) can be supplied one
+   at a time to enable real partial availability. A throwing reader maps to
+   `unavailable`. Mirror the `useTodaysWork` `throwOnError` + read-state pattern
+   when wiring real readers.
 2. **Honesty contract test:** add a source-inspection sweep (W-series style)
-   asserting the read layer has no sample/fixture fallback.
+   asserting the wired readers have no sample/fixture fallback.
 3. **Live Home behind a flag:** render the prototype layout from a
    `PulseHomeSnapshot`, showing live-with-source or explicit "–", and only
    promote to `/` once contract-complete.
