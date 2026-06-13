@@ -52,12 +52,13 @@ namespace TerraFusion.Core.Services
                 Success = true
             };
 
-            await Task.Delay(800);
+            // Honesty (WO-CF-b2g): stub — no live Tyler Tech connector. Zeroed.
+            await Task.Delay(10);
 
-            result.RecordsProcessed = await _dynamicPropertyService.GetActivePropertyCountAsync(Jurisdiction);
-            result.RecordsUpdated = 890;
-            result.RecordsAdded = 23;
-            result.RecordsSkipped = 7;
+            result.RecordsProcessed = 0;
+            result.RecordsUpdated = 0;
+            result.RecordsAdded = 0;
+            result.RecordsSkipped = 0;
             result.SyncEndTime = DateTime.UtcNow;
 
             return result;
