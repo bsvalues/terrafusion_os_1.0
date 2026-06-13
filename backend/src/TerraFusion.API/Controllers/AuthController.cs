@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using TerraFusion.API.Security.Services;
 using TerraFusion.Core.Services;
 using TerraFusion.Core.DTOs;
 
@@ -14,15 +16,18 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authService;
     private readonly ISecurityService _securityService;
+    private readonly IProvisionedUserContextProvider _provisionedUsers;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IAuthenticationService authService,
         ISecurityService securityService,
+        IProvisionedUserContextProvider provisionedUsers,
         ILogger<AuthController> logger)
     {
         _authService = authService;
         _securityService = securityService;
+        _provisionedUsers = provisionedUsers;
         _logger = logger;
     }
 
@@ -32,39 +37,49 @@ public class AuthController : ControllerBase
     {
         try
         {
-            // Validate government user
-            if (!await _securityService.IsValidGovernmentUserAsync(request.Email))
+            var email = request.Email.Trim();
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
+
+            if (provisionedUser is null)
             {
-                await _securityService.LogSecurityEventAsync("INVALID_LOGIN_ATTEMPT", 
-                    $"Non-government user attempted login: {request.Email}");
-                return Unauthorized(new { message = "Invalid credentials" });
+                await _securityService.LogSecurityEventAsync("UNPROVISIONED_LOGIN_ATTEMPT",
+                    $"Unprovisioned account attempted login: {email}");
+                return Unauthorized(new { message = "Account not provisioned" });
             }
 
-            // In production, validate against government directory (Active Directory, LDAP, etc.)
-            var isValidCredentials = await ValidateUserCredentials(request.Email, request.Password);
+            var isValidCredentials = await _securityService.ValidateUserCredentialsAsync(email, request.Password);
             
             if (!isValidCredentials)
             {
                 await _securityService.LogSecurityEventAsync("FAILED_LOGIN_ATTEMPT", 
-                    $"Failed login attempt for user: {request.Email}");
+                    $"Failed login attempt for user: {email}");
                 return Unauthorized(new { message = "Invalid credentials" });
             }
 
-            // Generate JWT token
-            var roles = await GetUserRoles(request.Email);
-            var token = await _authService.GenerateJwtTokenAsync(
-                Guid.NewGuid().ToString(), 
-                request.Email, 
-                roles);
+            var claims = BuildProvisionedClaims(provisionedUser);
+            var tokenPair = await _authService.GenerateTokenPairAsync(
+                provisionedUser.UserId.ToString(),
+                provisionedUser.Email,
+                provisionedUser.Roles,
+                claims);
+
+            await _provisionedUsers.RecordUserSessionAsync(
+                provisionedUser.UserId,
+                tokenPair.AccessToken,
+                tokenPair.RefreshToken,
+                DateTime.UtcNow.AddDays(7),
+                ControllerContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+                ControllerContext.HttpContext?.Request.Headers.UserAgent.ToString());
 
             await _securityService.LogSecurityEventAsync("SUCCESSFUL_LOGIN", 
-                $"User successfully logged in: {request.Email}");
+                $"User successfully logged in: {provisionedUser.Email}");
 
             return Ok(new LoginResponse
             {
-                Token = token,
-                Email = request.Email,
-                Roles = roles.ToArray(),
+                Token = tokenPair.AccessToken,
+                RefreshToken = tokenPair.RefreshToken,
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
                 ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
@@ -75,6 +90,18 @@ public class AuthController : ControllerBase
                 $"Error during login for user: {request.Email}", ex.Message);
             return StatusCode(500, new { message = "Internal server error" });
         }
+    }
+
+    [HttpGet("access-policy")]
+    [AllowAnonymous]
+    public IActionResult GetAccessPolicy()
+    {
+        return Ok(new
+        {
+            signupMode = "provisioned_access_only",
+            publicSignupEnabled = false,
+            message = "Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available."
+        });
     }
 
     [HttpPost("refresh")]
@@ -89,16 +116,27 @@ public class AuthController : ControllerBase
                 return Unauthorized(new { message = "Invalid token" });
             }
 
-            var email = principal.FindFirst("email")?.Value;
-            var userId = principal.FindFirst("sub")?.Value;
+            var email = principal.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                ?? principal.FindFirst("email")?.Value;
+            var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? principal.FindFirst("sub")?.Value;
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(userId))
             {
                 return Unauthorized(new { message = "Invalid token claims" });
             }
 
-            var roles = await GetUserRoles(email);
-            var newToken = await _authService.GenerateJwtTokenAsync(userId, email, roles);
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
+            if (provisionedUser is null || provisionedUser.UserId.ToString() != userId)
+            {
+                return Unauthorized(new { message = "Account not provisioned" });
+            }
+
+            var newToken = await _authService.GenerateJwtTokenAsync(
+                userId,
+                provisionedUser.Email,
+                provisionedUser.Roles,
+                BuildProvisionedClaims(provisionedUser));
 
             await _securityService.LogSecurityEventAsync("TOKEN_REFRESH", 
                 $"Token refreshed for user: {email}");
@@ -106,8 +144,8 @@ public class AuthController : ControllerBase
             return Ok(new LoginResponse
             {
                 Token = newToken,
-                Email = email,
-                Roles = roles.ToArray(),
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
                 ExpiresAt = DateTime.UtcNow.AddHours(8)
             });
         }
@@ -180,17 +218,36 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
-            var email = User.FindFirst("email")?.Value;
-            var roles = User.FindAll("role").Select(c => c.Value).ToArray();
+            var email = FindClaimValue(ClaimTypes.Email, "email");
+            var userIdClaim = FindClaimValue(ClaimTypes.NameIdentifier, "nameid", "sub");
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(userIdClaim))
+            {
+                return Unauthorized(new { message = "Invalid token claims" });
+            }
+
+            var provisionedUser = await _provisionedUsers.GetProvisionedUserContextAsync(email);
+            if (provisionedUser is null || !string.Equals(provisionedUser.UserId.ToString(), userIdClaim, StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized(new { message = "Account not provisioned" });
+            }
+
+            var bearerToken = GetBearerToken(Request);
+            var sessionValid = await _provisionedUsers.IsUserSessionValidAsync(provisionedUser.UserId, bearerToken);
 
             return Ok(new UserProfile
             {
-                Email = email!,
-                Roles = roles,
+                UserId = provisionedUser.UserId.ToString(),
+                Email = provisionedUser.Email,
+                Roles = provisionedUser.Roles,
+                Permissions = provisionedUser.Permissions,
+                CountyId = provisionedUser.CountyId?.ToString(),
+                County = provisionedUser.CountyName,
+                CountyFipsCode = provisionedUser.CountyFipsCode,
+                State = provisionedUser.CountyState,
+                SessionValid = sessionValid,
                 LastLogin = DateTime.UtcNow // In production, get from database
             });
         }
@@ -201,34 +258,29 @@ public class AuthController : ControllerBase
         }
     }
 
-    private async Task<bool> ValidateUserCredentials(string email, string password)
+    private string? FindClaimValue(params string[] claimTypes)
     {
-        // In production, integrate with government authentication systems
-        // For demo purposes, use simple validation
-        await Task.Delay(100); // Simulate authentication delay
-        
-        // Government users with @gov., @state., @county. domains
-        return email.EndsWith("@gov.") || 
-               email.EndsWith("@state.") || 
-               email.EndsWith("@county.") ||
-               email.EndsWith("@terrafusionmarket.com");
+        foreach (var claimType in claimTypes)
+        {
+            var value = User.FindFirst(claimType)?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return null;
     }
 
-    private async Task<IEnumerable<string>> GetUserRoles(string email)
+    private static string? GetBearerToken(HttpRequest request)
     {
-        // In production, get from government directory or database
-        await Task.Delay(50);
-        
-        var roles = new List<string> { "GovernmentUser" };
-        
-        if (email.Contains("admin"))
-            roles.Add("Administrator");
-        if (email.Contains("assessor"))
-            roles.Add("PropertyAssessor");
-        if (email.Contains("auditor"))
-            roles.Add("CountyAuditor");
-        
-        return roles;
+        var authorization = request.Headers.Authorization.ToString();
+        if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return authorization["Bearer ".Length..].Trim();
     }
 
     private static bool TryParseRevocationMetadata(string token, out string jti, out DateTime expiresAtUtc)
@@ -266,5 +318,35 @@ public class AuthController : ControllerBase
         {
             return false;
         }
+    }
+
+    private static Dictionary<string, object> BuildProvisionedClaims(ProvisionedUserAuthContext user)
+    {
+        var claims = new Dictionary<string, object>
+        {
+            ["perm"] = user.Permissions
+        };
+
+        if (user.CountyId.HasValue)
+        {
+            claims["countyId"] = user.CountyId.Value.ToString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyName))
+        {
+            claims["countyName"] = user.CountyName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyState))
+        {
+            claims["countyState"] = user.CountyState;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.CountyFipsCode))
+        {
+            claims["countyFipsCode"] = user.CountyFipsCode;
+        }
+
+        return claims;
     }
 }

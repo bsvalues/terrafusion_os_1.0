@@ -14,21 +14,40 @@ using TerraFusion.Data.Repositories;
 using CoreAuth = TerraFusion.Core.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace TerraFusion.API.Security
 {
     public static class AuthenticationConfiguration
     {
-        public static IServiceCollection AddTerraFusionAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddTerraFusionAuthentication(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            IHostEnvironment? environment = null)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"] ?? GenerateDefaultKey();
+            var secretKey = jwtSettings["SecretKey"];
             var issuer = jwtSettings["Issuer"] ?? "TerraFusion";
             var audience = jwtSettings["Audience"] ?? "TerraFusionAPI";
 
-            if (secretKey == GenerateDefaultKey())
+            // PR-2 (Prometheus T3 #5): fail-fast in non-Development when JWT key is missing.
+            // Previously a random "TerraFusion-Default-Key-..." key was synthesized at
+            // startup with only a Console.WriteLine warning — producing a working-but-
+            // forgeable JWT signer in any environment that hadn't been explicitly
+            // configured. Production must throw; Development gets a long, fixed
+            // padding key so local dev keeps working without env vars.
+            var isDevelopment = environment?.IsDevelopment() ?? false;
+            if (string.IsNullOrWhiteSpace(secretKey) && !isDevelopment)
             {
-                Console.WriteLine("⚠️  WARNING: Using default JWT key. Configure Jwt:SecretKey in appsettings.json for production!");
+                throw new InvalidOperationException(
+                    "JwtSettings:SecretKey is required in non-Development environments. " +
+                    "Configure via env var JwtSettings__SecretKey or appsettings.{Env}.local.json.");
+            }
+            if (string.IsNullOrWhiteSpace(secretKey))
+            {
+                // Dev-only fallback. 64+ chars to satisfy HS256 minimum.
+                secretKey = "TerraFusion-Dev-Secret-Key-DEV-ONLY-NEVER-USE-IN-PROD-PADDING-XXXXXXXXXXXXXXXXXXXX";
+                Console.WriteLine("⚠️  WARNING: Using Development JWT fallback key. NEVER use this in production.");
             }
 
             services.AddAuthentication(options =>
@@ -86,11 +105,24 @@ namespace TerraFusion.API.Security
             services.AddScoped<TerraFusion.API.Services.IJwtTokenService, TerraFusion.API.Services.JwtTokenService>();
             services.AddScoped<CoreAuth.IJwtTokenService, ApiJwtTokenServiceAdapter>();
             services.AddScoped<CoreAuth.IAuthenticationService, CoreAuth.AuthenticationService>();
-            services.TryAddSingleton<CoreAuth.ISecurityService, InMemorySecurityService>();
+            services.AddScoped<DatabaseProvisionedSecurityService>();
+            services.AddScoped<CoreAuth.ISecurityService>(provider =>
+                provider.GetRequiredService<DatabaseProvisionedSecurityService>());
+            services.AddScoped<IProvisionedUserContextProvider>(provider =>
+                provider.GetRequiredService<DatabaseProvisionedSecurityService>());
             services.AddHostedService<CoreAuth.RevocationCleanupBackgroundService>();
 
             services.AddAuthorization(options =>
             {
+                // PR-2 (Prometheus T3 #1): require authentication by default.
+                // Any controller without an explicit [Authorize] or [AllowAnonymous]
+                // attribute now gets 401 instead of silently defaulting to anonymous.
+                // Controllers that intentionally run anonymously (Workbench F/G/H,
+                // FullCorpus, Doctrine*) must be tagged with [AllowAnonymous] explicitly.
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
                 options.AddPolicy("RequireAdmin", policy =>
                     policy.RequireRole("Admin", "SystemAdmin"));
 
@@ -120,15 +152,14 @@ namespace TerraFusion.API.Security
             return services;
         }
 
-        private static string GenerateDefaultKey()
-        {
-            return "TerraFusion-Default-Key-CHANGE-IN-PRODUCTION-2025-" + Guid.NewGuid().ToString().Substring(0, 8);
-        }
-
         /// <summary>
         /// Registers MFA, Session Management, and LDAP security services.
         /// Phase 5: Security Service Runtime Completeness.
         /// Phase 9: DevelopmentLdapService is now guarded by environment check.
+        /// PR-2 (Prometheus T3 #4): non-Development now registers
+        /// <see cref="FailClosedLdapService"/> (throws on every method) instead
+        /// of the in-memory dev stub, which previously was registered in BOTH
+        /// branches despite a comment claiming "rejects all logins".
         /// </summary>
         public static IServiceCollection AddTerraFusionSecurityServices(
             this IServiceCollection services,
@@ -145,10 +176,11 @@ namespace TerraFusion.API.Security
             }
             else
             {
-                // Production: register a no-op LDAP that rejects all logins
-                // until a real LDAP/AD provider is configured.
-                services.AddSingleton<ILdapService, DevelopmentLdapService>();
-                // TODO: Replace with ProductionLdapService backed by AD/OAuth2
+                // PR-2 (Prometheus T3 #4): fail-closed in non-Development. Every method
+                // throws NotImplementedException so any code path that reaches LDAP in
+                // prod surfaces loud instead of silently succeeding via dev stub.
+                // TODO: Replace with ProductionLdapService backed by AD/OAuth2.
+                services.AddSingleton<ILdapService, FailClosedLdapService>();
             }
 
             return services;
@@ -204,6 +236,173 @@ namespace TerraFusion.API.Security
         }
     }
 
+    internal sealed class ConfiguredBootstrapSecurityService : CoreAuth.ISecurityService
+    {
+        private static readonly string[] DefaultRoles =
+        {
+            "GovernmentUser",
+            "Administrator",
+            "FullSystemAccess"
+        };
+
+        private readonly string _email;
+        private readonly string _password;
+        private readonly string[] _roles;
+        private readonly ConcurrentDictionary<string, int> _failedAttempts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTimeOffset> _lockedAccounts = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ILogger<ConfiguredBootstrapSecurityService> _logger;
+
+        public ConfiguredBootstrapSecurityService(
+            IConfiguration configuration,
+            ILogger<ConfiguredBootstrapSecurityService> logger)
+        {
+            _email = ReadSetting(configuration, "Auth:Bootstrap:Email", "TERRAFUSION_BOOTSTRAP_EMAIL").Trim();
+            _password = ReadSetting(configuration, "Auth:Bootstrap:Password", "TERRAFUSION_BOOTSTRAP_PASSWORD");
+            _roles = ReadRoles(configuration);
+            _logger = logger;
+        }
+
+        public static bool HasBootstrapCredentials(IConfiguration configuration)
+        {
+            return !string.IsNullOrWhiteSpace(ReadSetting(configuration, "Auth:Bootstrap:Email", "TERRAFUSION_BOOTSTRAP_EMAIL"))
+                && !string.IsNullOrWhiteSpace(ReadSetting(configuration, "Auth:Bootstrap:Password", "TERRAFUSION_BOOTSTRAP_PASSWORD"));
+        }
+
+        public Task<bool> IsValidGovernmentUserAsync(string email)
+        {
+            return Task.FromResult(IsConfiguredUser(email));
+        }
+
+        public Task LogSecurityEventAsync(string eventType, string description, string? details = null)
+        {
+            _logger.LogInformation("Security event {EventType}: {Description} {Details}", eventType, description, details);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> ValidateUserCredentialsAsync(string email, string password)
+        {
+            if (!IsConfiguredUser(email) || string.IsNullOrEmpty(password))
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(FixedTimeEquals(password, _password));
+        }
+
+        public Task<IEnumerable<string>> GetUserRolesAsync(string email)
+        {
+            IEnumerable<string> roles = IsConfiguredUser(email) ? _roles : Array.Empty<string>();
+            return Task.FromResult(roles);
+        }
+
+        public Task<bool> IsAccountLockedAsync(string email)
+        {
+            if (_lockedAccounts.TryGetValue(email, out var lockedUntil))
+            {
+                if (lockedUntil > DateTimeOffset.UtcNow)
+                {
+                    return Task.FromResult(true);
+                }
+
+                _lockedAccounts.TryRemove(email, out _);
+            }
+
+            return Task.FromResult(false);
+        }
+
+        public Task RecordFailedLoginAttemptAsync(string email)
+        {
+            _failedAttempts.AddOrUpdate(email, 1, (_, count) => count + 1);
+            return Task.CompletedTask;
+        }
+
+        public Task ResetFailedLoginAttemptsAsync(string email)
+        {
+            _failedAttempts.TryRemove(email, out _);
+            return Task.CompletedTask;
+        }
+
+        public Task<int> GetFailedLoginAttemptsAsync(string email)
+        {
+            _failedAttempts.TryGetValue(email, out var count);
+            return Task.FromResult(count);
+        }
+
+        public Task LockAccountAsync(string email, TimeSpan duration, string reason)
+        {
+            _lockedAccounts[email] = DateTimeOffset.UtcNow.Add(duration);
+            _logger.LogWarning("Account locked for configured bootstrap user hash {EmailHash}. Reason: {Reason}", email.GetHashCode(), reason);
+            return Task.CompletedTask;
+        }
+
+        public Task UnlockAccountAsync(string email)
+        {
+            _lockedAccounts.TryRemove(email, out _);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> IsIpAddressAllowedAsync(string ipAddress)
+        {
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> HasPermissionAsync(string userId, string permission)
+        {
+            return Task.FromResult(IsConfiguredUser(userId) && HasElevatedRole());
+        }
+
+        public Task<bool> HasModuleAccessAsync(string userId, string moduleId)
+        {
+            return Task.FromResult(IsConfiguredUser(userId) && HasElevatedRole());
+        }
+
+        private bool IsConfiguredUser(string email)
+        {
+            return !string.IsNullOrWhiteSpace(email)
+                && string.Equals(email.Trim(), _email, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool HasElevatedRole()
+        {
+            return _roles.Any(role =>
+                role.Equals("Administrator", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("SystemAdmin", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("SystemAdministrator", StringComparison.OrdinalIgnoreCase)
+                || role.Equals("FullSystemAccess", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string ReadSetting(IConfiguration configuration, string key, string envKey)
+        {
+            return configuration[key] ?? configuration[envKey] ?? string.Empty;
+        }
+
+        private static string[] ReadRoles(IConfiguration configuration)
+        {
+            var raw = ReadSetting(configuration, "Auth:Bootstrap:Roles", "TERRAFUSION_BOOTSTRAP_ROLES");
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return DefaultRoles;
+            }
+
+            var roles = raw
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(role => !string.IsNullOrWhiteSpace(role))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            return roles.Length == 0 ? DefaultRoles : roles;
+        }
+
+        private static bool FixedTimeEquals(string provided, string expected)
+        {
+            var providedBytes = Encoding.UTF8.GetBytes(provided);
+            var expectedBytes = Encoding.UTF8.GetBytes(expected);
+            return providedBytes.Length == expectedBytes.Length
+                && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
+        }
+    }
+
     internal sealed class InMemorySecurityService : CoreAuth.ISecurityService
     {
         private static readonly string[] AllowedDomains =
@@ -239,8 +438,16 @@ namespace TerraFusion.API.Security
 
         public Task<bool> ValidateUserCredentialsAsync(string email, string password)
         {
-            var valid = !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password);
-            return Task.FromResult(valid);
+            // PR-2 (Prometheus T3 #3): fail-closed default. Previously accepted any
+            // non-empty email + password (silent allow-all). InMemorySecurityService
+            // is the fallback registration (services.TryAddSingleton); a real
+            // credential validator should replace it before any reliance is placed
+            // on this method. Until then, every call is denied + warns.
+            _logger.LogWarning(
+                "InMemorySecurityService.ValidateUserCredentialsAsync called for email-hash {EmailHash}; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                email?.GetHashCode());
+            return Task.FromResult(false);
         }
 
         public Task<IEnumerable<string>> GetUserRolesAsync(string email)
@@ -302,12 +509,28 @@ namespace TerraFusion.API.Security
 
         public Task<bool> HasPermissionAsync(string userId, string permission)
         {
-            return Task.FromResult(true);
+            // PR-2 (Prometheus T3 #2): fail-closed default. Previously returned true
+            // for every (userId, permission) tuple — silent allow-all that defeated
+            // any caller that relied on this method as a real authorization check.
+            // A real ISecurityService implementation should replace this before any
+            // permission decision relies on it; until then, every call is denied.
+            _logger.LogWarning(
+                "InMemorySecurityService.HasPermissionAsync called for permission '{Permission}'; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                permission);
+            return Task.FromResult(false);
         }
 
         public Task<bool> HasModuleAccessAsync(string userId, string moduleId)
         {
-            return Task.FromResult(true);
+            // PR-2 (Prometheus T3 #2 sibling): same fail-closed treatment as
+            // HasPermissionAsync. Module-access checks should go through a real
+            // ISecurityService; the in-memory fallback denies and warns.
+            _logger.LogWarning(
+                "InMemorySecurityService.HasModuleAccessAsync called for module '{ModuleId}'; " +
+                "fail-closed default returning false. Register a real ISecurityService implementation.",
+                moduleId);
+            return Task.FromResult(false);
         }
     }
 }
