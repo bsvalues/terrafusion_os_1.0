@@ -13,6 +13,7 @@
  */
 
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   GraduationCap,
   Sparkles,
@@ -42,6 +43,11 @@ import {
 } from './academyContent';
 
 const eyebrow = 'text-[10px] font-bold uppercase tracking-[0.16em]';
+
+// Honesty: Academy currently renders illustrative sample content, not live
+// county data or a persisted system of record. Surfaced as a standing notice.
+const ACADEMY_SAMPLE_NOTICE =
+  'Preview — Academy shows illustrative Benton County sample doctrine. Figures, guidance, progress, and capture actions are examples, not live county data or a persisted system of record.';
 
 export default function AcademyHome() {
   return (
@@ -95,6 +101,18 @@ function AcademyHomeInner() {
       {/* Body */}
       <main className='min-h-0 flex-1 overflow-y-auto'>
         <div className='mx-auto max-w-[1400px] px-6 pb-12'>
+          <div
+            role='status'
+            data-testid='academy-sample-disclosure'
+            className='mt-5 rounded-lg border px-4 py-2.5 text-xs'
+            style={{
+              borderColor: 'hsl(var(--tf-warning) / 0.4)',
+              background: 'hsl(var(--tf-warning) / 0.1)',
+              color: 'hsl(var(--tf-warning))',
+            }}
+          >
+            {ACADEMY_SAMPLE_NOTICE}
+          </div>
           {/* Hero */}
           <section className='pt-7'>
             <div
@@ -106,7 +124,7 @@ function AcademyHomeInner() {
               }}
             >
               <div className={`flex items-center gap-2 ${eyebrow}`} style={{ color: 'hsl(var(--tf-accent))' }}>
-                <LiveDot /> Live · Benton County Assessor · this cycle
+                <LiveDot /> Preview · Benton County Assessor · sample doctrine
               </div>
               <h2
                 className='mt-3 max-w-2xl text-3xl font-semibold leading-tight'
@@ -121,7 +139,7 @@ function AcademyHomeInner() {
               </p>
               <div className='mt-5 flex flex-wrap gap-6'>
                 <Stat value='89,247' label='Parcels under doctrine' />
-                <Stat value='3' label='Cycles guided right now' />
+                <Stat value='3' label='Cycles in this sample' />
                 <Stat value='23' label='Memory records on file' />
               </div>
             </div>
@@ -132,7 +150,7 @@ function AcademyHomeInner() {
             icon={<Sparkles size={14} />}
             live
             kicker='Live Workflow Guidance'
-            title='Academy is guiding the work right now'
+            title='Academy guides the work in front of you'
             sub='As each cycle moves, Academy surfaces the doctrine and evidence standard that applies — at the moment the decision is made, not in a classroom afterward.'
           >
             <div className='grid gap-3 md:grid-cols-3'>
@@ -407,6 +425,10 @@ function Stat({ value, label }: { value: string; label: string }) {
 function Progress({ value }: { value: number }) {
   return (
     <div
+      role='progressbar'
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={100}
       className='mt-3 h-1.5 overflow-hidden rounded-full'
       style={{ background: 'hsl(var(--tf-surface-2))' }}
     >
@@ -451,12 +473,12 @@ function Section({
   live,
   children,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   kicker: string;
   title: string;
   sub: string;
   live?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className='pt-9'>
@@ -476,7 +498,7 @@ function Section({
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
+function Card({ children }: { children: ReactNode }) {
   return (
     <div
       className='rounded-xl border p-5'

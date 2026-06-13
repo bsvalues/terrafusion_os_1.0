@@ -81,7 +81,6 @@ export function TeachMeWhyPanel({ topicId, onClose }: TeachMeWhyPanelProps) {
   const activeTopic: TeachTopic | null = topicId ? TEACH_TOPICS[topicId] : null;
   const [retained, setRetained] = useState<TeachTopic | null>(null);
   const [captured, setCaptured] = useState(false);
-  const [recordId, setRecordId] = useState('');
   const shown = activeTopic ?? retained;
 
   useEffect(() => {
@@ -92,7 +91,9 @@ export function TeachMeWhyPanel({ topicId, onClose }: TeachMeWhyPanelProps) {
   }, [activeTopic]);
 
   const handleCapture = useCallback(() => {
-    setRecordId(`DOC-2026-${Math.floor(Math.random() * 900) + 100}`);
+    // Honesty: this is a local, in-session draft affordance only. There is no
+    // API / store / trace write yet, so we do not mint a record id or claim
+    // the lesson was queued for review.
     setCaptured(true);
   }, []);
 
@@ -252,19 +253,19 @@ export function TeachMeWhyPanel({ topicId, onClose }: TeachMeWhyPanelProps) {
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                  {captured ? `Drafted as memory record · ${recordId}` : 'Turn this into a lesson'}
+                  {captured ? 'Lesson draft started' : 'Turn this into a lesson'}
                 </div>
                 <div className='text-[11px]' style={{ color: 'hsl(var(--tf-muted))' }}>
                   {captured
-                    ? `“${shown.title}” queued for Chief Deputy review before it becomes doctrine.`
-                    : 'Capture this reasoning as a county memory record — so the next person inherits it.'}
+                    ? 'Held locally for this session only — saving to a governed county memory record is not wired up yet.'
+                    : 'Capture this reasoning toward a county memory record — so the next person inherits it.'}
                 </div>
               </div>
               <span
                 className={eyebrow}
                 style={{ color: 'hsl(var(--tf-success))', whiteSpace: 'nowrap' }}
               >
-                {captured ? 'Queued' : 'Capture →'}
+                {captured ? 'Draft · local' : 'Capture →'}
               </span>
             </button>
           </>
