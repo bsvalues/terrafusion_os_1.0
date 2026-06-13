@@ -114,14 +114,20 @@ interface ParcelWorkbenchResult {
   errors: string[];
 }
 
+const FACET_TIMEOUT_MS = 8_000;
+
 async function fetchFacet<T>(url: string): Promise<{ data: T | null; error: string | null }> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FACET_TIMEOUT_MS);
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
     if (res.status === 404) return { data: null, error: null };
     if (!res.ok) return { data: null, error: `HTTP ${res.status} from ${url}` };
     return { data: (await res.json()) as T, error: null };
   } catch (err: any) {
     return { data: null, error: err?.message ?? String(err) };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -135,11 +141,12 @@ const atlasParcelWorkbench: ToolDefinition = {
     const { parcelId, taxYear, era } = params;
     const year = taxYear ?? new Date().getFullYear();
     const eraParam = era ? `&era=${encodeURIComponent(era)}` : '';
+    const encodedParcelId = encodeURIComponent(parcelId);
 
     const [geom, owner, wsdor] = await Promise.all([
-      fetchFacet<GeometryFacet>(`${API_BASE}/api/parcels/${parcelId}/geometry`),
-      fetchFacet<OwnerCurrentFacet>(`${API_BASE}/api/parcels/${parcelId}/owner-current?taxYear=${year}${eraParam}`),
-      fetchFacet<WsdorRollFacet>(`${API_BASE}/api/parcels/${parcelId}/wsdor-roll?taxYear=${year}${eraParam}`),
+      fetchFacet<GeometryFacet>(`${API_BASE}/api/parcels/${encodedParcelId}/geometry`),
+      fetchFacet<OwnerCurrentFacet>(`${API_BASE}/api/parcels/${encodedParcelId}/owner-current?taxYear=${year}${eraParam}`),
+      fetchFacet<WsdorRollFacet>(`${API_BASE}/api/parcels/${encodedParcelId}/wsdor-roll?taxYear=${year}${eraParam}`),
     ]);
 
     const errors: string[] = [];

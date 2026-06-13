@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ToolRunner, type PilotContext } from '../ToolRunner';
 import { ToolRegistry } from '../ToolRegistry';
 import { registerDefaultTools, defaultTools } from '../registerDefaultTools';
@@ -26,6 +26,10 @@ describe('atlas.parcel.workbench', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     ToolRegistry._clear();
+  });
+
+  afterEach(() => {
+
   });
 
   it('is registered by registerDefaultTools', () => {
@@ -61,7 +65,7 @@ describe('atlas.parcel.workbench', () => {
     expect(result).toHaveProperty('wsdorRoll', null);
     expect(result.errors).toEqual([]);
 
-    vi.unstubAllGlobals();
+
   });
 
   it('collects per-facet errors without throwing', async () => {
@@ -82,7 +86,7 @@ describe('atlas.parcel.workbench', () => {
     expect(result.errors[1]).toContain('ownerCurrent');
     expect(result.errors[2]).toContain('wsdorRoll');
 
-    vi.unstubAllGlobals();
+
   });
 
   it('nullable output fields are present as null, never omitted', async () => {
@@ -99,7 +103,7 @@ describe('atlas.parcel.workbench', () => {
     expect(keys).toContain('wsdorRoll');
     expect(keys).toContain('errors');
 
-    vi.unstubAllGlobals();
+
   });
 
   it('composes all three facets when API returns 200', async () => {
@@ -162,7 +166,7 @@ describe('atlas.parcel.workbench', () => {
     expect(result.errors).toEqual([]);
     expect(mockFetch).toHaveBeenCalledTimes(3);
 
-    vi.unstubAllGlobals();
+
   });
 
   it('passes era param through to owner-current and wsdor-roll URLs', async () => {
@@ -178,7 +182,7 @@ describe('atlas.parcel.workbench', () => {
     expect(ownerUrl).toContain('era=ALL');
     expect(wsdorUrl).toContain('era=ALL');
 
-    vi.unstubAllGlobals();
+
   });
 
   it('is denied when parcel:read permission is missing', async () => {
@@ -191,9 +195,36 @@ describe('atlas.parcel.workbench', () => {
     ).rejects.toThrow(/Permission Denied/i);
   });
 
-  // CAUTION: acctId is emitted as a JSON number from int64.
-  // Valid JSON, but can exceed Number.MAX_SAFE_INTEGER in the abstract.
-  it('documents acctId int64 caution in the type contract', () => {
-    expect(Number.MAX_SAFE_INTEGER).toBe(9007199254740991);
+  it('passes acctId through as-is from the API response (int64 caution)', async () => {
+    const ownerPayload = {
+      tfParcelId: 'p1',
+      countyId: 'c1',
+      taxYear: 2026,
+      owners: [
+        {
+          tfOwnerId: 'o1',
+          acctId: 9007199254740992,
+          displayName: 'Large AcctId Owner',
+          pctOwnership: null,
+          isPrimary: true,
+          confidentialFlag: false,
+          webSuppression: false,
+        },
+      ],
+    };
+
+    const mockFetch = vi.fn().mockImplementation((url: string) => {
+      if (url.includes('/owner-current')) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(ownerPayload) });
+      }
+      return Promise.resolve({ ok: false, status: 404 });
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const tool = defaultTools.atlasParcelWorkbench;
+    const result = await tool.handler({ parcelId: 'p1', taxYear: 2026 }, makeCtx());
+
+    expect(result.ownerCurrent).not.toBeNull();
+    expect(result.ownerCurrent!.owners[0].acctId).toBe(9007199254740992);
   });
 });
