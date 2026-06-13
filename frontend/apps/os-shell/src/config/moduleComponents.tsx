@@ -433,6 +433,13 @@ const AtlasLivePage = lazy(() =>
 // CUForge — Current Use Program (RCW 84.33/84.34)
 const CUForge = lazy(() => import('../pages/forge/current-use/CUForge'));
 
+// TerraNotice — Governed Civic Communications Console (TerraDais suite).
+// OS-native operator console: 12 governed areas (command center, policy packs,
+// template governance, batch ops, freeze snapshots, vendor dispatch, exceptions,
+// citizen portal preview, telemetry, audit vault, release console). Runs on
+// clearly-labeled County Sandbox fixtures until a backend is wired.
+const TerraNoticeConsole = lazy(() => import('../pages/notice/TerraNoticeConsole'));
+
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
@@ -500,6 +507,7 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'terra-gama': { Component: TerraGamaPage },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
+  'terra-notice': { Component: TerraNoticeConsole },
   // OS Features (in-shell windows)
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
@@ -985,13 +993,12 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         />
       );
 
+    // TerraNotice — Governed Civic Communications Console (OS-native operator surface).
     case 'terra-notice':
       return (
-        <QueuedModuleSurface
-          name="TerraNotice"
-          description="Notice templates, batch generation, and mail queue — assessment notice production and delivery tracking."
-          moduleId="terra-notice"
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraNoticeConsole />
+        </Suspense>
       );
 
     // Analytics - Real-time Reporting
