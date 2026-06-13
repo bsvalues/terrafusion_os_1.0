@@ -71,25 +71,14 @@ namespace TerraFusion.Core.Services
             {
                 _logger.LogInformation("Starting Harris PACS data sync for {Jurisdiction}", Jurisdiction);
 
-                // Simulate Harris PACS specific sync logic
-                await Task.Delay(1000);
+                // Honesty (WO-CF-b2g): no live Harris PACS connector here.
+                // Previously returned fabricated counts; zeroed. No controller calls this.
+                await Task.Delay(10);
 
-                // For Benton County, we know there are await DynamicPropertyService.GetPropertyCountAsync("benton") parcels
-                if (Jurisdiction.Contains("Benton"))
-                {
-                    result.RecordsProcessed = await _dynamicPropertyService.GetActivePropertyCountAsync("benton");
-                    result.RecordsUpdated = 1250;
-                    result.RecordsAdded = 45;
-                    result.RecordsSkipped = 12;
-                }
-                else
-                {
-                    // Default values for other counties
-                    result.RecordsProcessed = 50000;
-                    result.RecordsUpdated = 500;
-                    result.RecordsAdded = 25;
-                    result.RecordsSkipped = 5;
-                }
+                result.RecordsProcessed = 0;
+                result.RecordsUpdated = 0;
+                result.RecordsAdded = 0;
+                result.RecordsSkipped = 0;
 
                 result.Success = true;
                 result.SyncEndTime = DateTime.UtcNow;
