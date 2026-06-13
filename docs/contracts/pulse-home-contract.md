@@ -1,0 +1,79 @@
+# PulseHome Data Contract (design-only)
+
+Status: **typed contract, not yet wired.** No UI, no network calls, no
+`StageZeroState` changes. This document and
+`frontend/apps/os-shell/src/contracts/pulseHome.ts` define the data shape a
+future live "County Nerve Center" Home must satisfy so the cinematic prototype
+(`docs/prototypes/terrafusion_home_county_nerve_center.html`) can become
+production **without inventing county data**.
+
+## Why this exists
+
+The Home prototype is truthful only if every claim it shows is real and
+attributed. `StageZeroState` is proof-sealed for data honesty; a live Home can
+only ship once its data flows through contracts that make fabrication
+structurally impossible. This is that contract.
+
+## The honesty invariants (enforced by types)
+
+1. **No live datum without a source.** `PulseRead<T>` can be `live` only when it
+   carries both `data` and a `PulseSourceAttribution`.
+2. **No count outside a live read.** Numbers live on `PulseEvidenceItem`, which
+   only exists inside a `live` read with a source. Priority actions reference
+   evidence by id — they never inline fabricated counts.
+3. **`unavailable` carries a reason, never data.** There is no field to smuggle a
+   placeholder value through.
+4. **`loading` ≠ `unavailable`.** Absent/stale data must never render as live.
+5. **County-scoped.** Every brief, event, and evidence item is scoped to one
+   `countyId` + `rollYear`.
+
+## Surface ↔ contract map
+
+| Prototype section        | Contract type            | Read wrapper                         |
+| ------------------------ | ------------------------ | ------------------------------------ |
+| Morning Brief hero       | `PulseHomeBrief`         | `PulseRead<PulseHomeBrief>`          |
+| Operational Pulse        | `PulseCondition[]`       | inside `PulseHomeBrief.conditions`   |
+| Today's Action Path      | `PulsePriorityAction[]`  | inside `PulseHomeBrief.priorityActions` |
+| What Changed Overnight   | `PulseActivityEvent[]`   | `PulseRead<PulseActivityEvent[]>`    |
+| Evidence Behind Today    | `PulseEvidenceSummary`   | `PulseRead<PulseEvidenceSummary>`    |
+| (per-datum provenance)   | `PulseSourceAttribution` | required on every live read/event/item |
+| (any missing region)     | `PulseUnavailable`       | explicit "–" / reason in the UI      |
+
+`PulseHomeSnapshot` bundles the three independent reads so the Home can show
+**real partial availability** (e.g. live brief + unavailable evidence) without
+faking the missing parts.
+
+## Read result model
+
+```ts
+type PulseRead<T> =
+  | { state: 'live'; data: T; source: PulseSourceAttribution }
+  | { state: 'unavailable'; reason: string }
+  | { state: 'loading' };
+```
+
+Constructors (`pulseLive`, `pulseUnavailable`, `pulseLoading`) are the only
+sanctioned way to build a read. Guards (`isPulseLive`, …) and
+`pulseDataOrNull` force callers to handle the gap rather than default to a
+fabricated value.
+
+## What is intentionally NOT in scope here
+
+- No read layer / hooks / services. Wiring to governed backends (TerraForge
+  ratio study, TerraDais queues, TerraTrace audit, notice/certification
+  services) is a later WO.
+- No UI. The prototype stays a design reference; production Home stays
+  `StageZeroState` until a read layer satisfies this contract.
+- No Academy launcher and no `StageZeroState` edits.
+
+## Suggested next steps (future WOs)
+
+1. **Read layer:** implement `getPulseHomeSnapshot(county, rollYear)` returning
+   `PulseHomeSnapshot`, each region sourced from a governed endpoint or an
+   explicit `pulseUnavailable(...)`. Mirror the `useTodaysWork`
+   `throwOnError` + read-state pattern.
+2. **Honesty contract test:** add a source-inspection sweep (W-series style)
+   asserting the read layer has no sample/fixture fallback.
+3. **Live Home behind a flag:** render the prototype layout from a
+   `PulseHomeSnapshot`, showing live-with-source or explicit "–", and only
+   promote to `/` once contract-complete.
