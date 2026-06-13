@@ -124,3 +124,20 @@ notices, valuation) follow the same provider shape, one at a time.
   live/unavailable/loading — one function's truth is never borrowed to cover
   another's gap. Tested for real partial availability across cert + appeals +
   an unwired gap, and for a throwing provider isolated as unavailable.
+
+## Home renderer (landed, gated)
+
+`pages/TerraFusionHome.tsx` is a **pure renderer** of a `PulseHomeSnapshot` —
+Home is finally just `render(snapshot)`, not a decision or truth engine.
+
+- No data logic in the component: it fetches nothing, infers nothing, computes
+  no status. Everything shown comes from the snapshot prop.
+- Renders ONLY snapshot reads. Each region (brief / activity / evidence)
+  honours its `live` / `unavailable` / `loading` state with explicit fallbacks.
+  Conditions and actions come only from a live brief; counts only from live
+  evidence items; an unavailable region shows its reason.
+- No fabricated copy, counts, confidence, or operational claims. With every
+  region unavailable, the renderer invents no headline, condition, or number
+  (contract-tested).
+- Gated: not wired into any route or icon. Mounting it is a separate, explicit
+  step once a read layer feeds it live snapshots. `StageZeroState` is untouched.
