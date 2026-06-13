@@ -140,6 +140,8 @@ const PilotHome = lazy(() => import('./pages/PilotHome'));
 const TraceHome = lazy(() => import('./pages/TraceHome'));
 // Phase 30: TerraCanon IDE Shell
 const CanonHome = lazy(() => import('./pages/CanonHome'));
+// TerraFusion Academy — authored assessment doctrine (static, data-honest)
+const AcademyHome = lazy(() => import('./pages/AcademyHome'));
 
 // GovernanceLock - Dashboard (role-gated metrics)
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
@@ -312,6 +314,8 @@ const Router: React.FC = () => {
                   <Route path='trace' element={<TraceHome />} />
                   {/* Phase 30: TerraCanon - Integrated Development Environment */}
                   <Route path='canon' element={<CanonHome />} />
+                  {/* TerraFusion Academy - authored assessment doctrine (static, data-honest) */}
+                  <Route path='academy' element={<AcademyHome />} />
 
                   {/* GovernanceLock - Dashboard (role-gated) */}
                   <Route path='pilot/dashboard' element={<GovernanceDashboard />} />
