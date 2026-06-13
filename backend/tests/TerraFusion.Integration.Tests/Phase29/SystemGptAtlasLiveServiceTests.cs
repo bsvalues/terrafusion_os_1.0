@@ -101,30 +101,19 @@ public class SystemGptAtlasLiveServiceTests
         // Arrange
         var telemetrySource = CreateMockTelemetrySource(countyCount: 1);
         var service = CreateLiveService(telemetrySource, intervalMs: 50);
-        var cts = new CancellationTokenSource();
-        var eventCount = 0;
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        using var cts = new CancellationTokenSource();
+        await using var enumerator = service.StreamEventsAsync(cts.Token).GetAsyncEnumerator(cts.Token);
 
         // Act
-        cts.CancelAfter(300);
+        Assert.True(await enumerator.MoveNextAsync());
 
-        // Async enumerator may either throw or complete gracefully on cancellation
-        try
-        {
-            await foreach (var evt in service.StreamEventsAsync(cts.Token))
-            {
-                eventCount++;
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Expected - cancellation occurred during enumeration
-        }
-        
-        stopwatch.Stop();
+        cts.Cancel();
+        var cancellationTask = enumerator.MoveNextAsync().AsTask();
+        var completedTask = await Task.WhenAny(cancellationTask, Task.Delay(TimeSpan.FromSeconds(5)));
 
-        // Assert - stream stopped within reasonable time (generous for CI runners under load)
-        Assert.True(stopwatch.ElapsedMilliseconds < 5000, "Stream should stop quickly after cancellation");
+        // Assert - timeout is only a deadlock guard; cancellation is the contract.
+        Assert.Same(cancellationTask, completedTask);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await cancellationTask);
     }
 
     [Fact]

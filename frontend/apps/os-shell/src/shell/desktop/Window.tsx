@@ -60,7 +60,7 @@ export interface WindowProps {
 // ============================================================================
 
 /** Window-chrome z-layering (scoped, not shell-level) */
-const WINDOW_CHROME_Z = { titleControls: 50, titleCenter: 10 } as const;
+const WINDOW_CHROME_Z = { titleControls: 50, titleCenter: 10, resizeHandles: 5 } as const;
 
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 300;
@@ -87,7 +87,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     left: '16px',
     right: '16px',
     cursor: 's-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   bottomLeft: {
     position: 'absolute',
@@ -96,7 +96,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     bottom: '0',
     left: '0',
     cursor: 'sw-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   bottomRight: {
     position: 'absolute',
@@ -105,7 +105,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     bottom: '0',
     right: '0',
     cursor: 'se-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   left: {
     position: 'absolute',
@@ -114,7 +114,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     top: '40px',
     bottom: '16px',
     cursor: 'w-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   right: {
     position: 'absolute',
@@ -123,7 +123,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     top: '40px',
     bottom: '16px',
     cursor: 'e-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   top: {
     position: 'absolute',
@@ -132,7 +132,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     left: '16px',
     right: '90px',
     cursor: 'n-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   topLeft: {
     position: 'absolute',
@@ -141,7 +141,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     top: '0',
     left: '0',
     cursor: 'nw-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
   topRight: {
     position: 'absolute',
@@ -150,7 +150,7 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
     top: '0',
     right: '0',
     cursor: 'ne-resize',
-    zIndex: 9999,
+    zIndex: WINDOW_CHROME_Z.resizeHandles,
   },
 };
 
