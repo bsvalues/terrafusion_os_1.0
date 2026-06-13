@@ -337,8 +337,6 @@ public class MultiCountyIntegrationService : IMultiCountyIntegrationService
                 return result;
             }
 
-            using var httpClient = _httpClientFactory.CreateClient("HarrisPacs");
-
             // Honesty (WO-CF-b2g): no live Harris PACS connector is wired here.
             // Previously returned Random.Shared.Next() fabricated counts; zeroed so
             // operator-visible sync results do not imply real record movement.
