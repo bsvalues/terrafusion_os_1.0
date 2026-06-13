@@ -92,6 +92,23 @@ export async function readCertificationBrief(
     return pulseUnavailable('Certification readiness source returned no data.');
   }
 
+  // The backend normalizes a non-array response by defaulting missing numeric
+  // fields to 0. Reject such shapes rather than emit a "live" brief built on
+  // 0/0 parcels or a defaulted 0% — that would be fabrication, not data.
+  const rowsAreSound = statuses.every(
+    (s) =>
+      typeof s.area === 'string' &&
+      s.area.length > 0 &&
+      Number.isFinite(s.totalParcels) &&
+      s.totalParcels > 0 &&
+      Number.isFinite(s.completedParcels) &&
+      s.completedParcels >= 0 &&
+      Number.isFinite(s.percentComplete)
+  );
+  if (!rowsAreSound) {
+    return pulseUnavailable('Certification readiness returned incomplete or default-stamped data.');
+  }
+
   const observedAt = new Date().toISOString();
   const source: PulseSourceAttribution = {
     system: 'TerraDais certification readiness',
@@ -139,12 +156,13 @@ export async function readCertificationBrief(
     priorityActions.push({
       id: `cert-${worst.area}`,
       title: `Resolve ${worst.area} certification`,
-      why: `${worst.area} is ${worst.status} at ${worst.percentComplete}% (${worst.completedParcels}/${worst.totalParcels} parcels).`,
+      // Qualitative only. Operational counts (parcels, %) belong on sourced
+      // evidence items, not inlined in action copy — otherwise a live brief
+      // could show counts while the evidence region is an explicit gap.
+      why: `${worst.area} certification is ${worst.status}; resolve remaining signoffs.`,
       rank: 1,
       urgency: urgencyFor(overall),
       dueLabel: worst.deadline ? `Due ${worst.deadline}` : undefined,
-      // No fabricated evidence: counts above are derived from the source and
-      // narrated in `why`. The evidence region stays empty until wired.
       evidence: [],
       destination: 'certification.roll-readiness',
     });

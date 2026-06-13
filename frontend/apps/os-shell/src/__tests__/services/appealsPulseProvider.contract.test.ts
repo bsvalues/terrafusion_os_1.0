@@ -55,7 +55,9 @@ describe('readAppealsBrief — live mapping', () => {
     expect(brief.conditions[0].function).toBe('appeals');
     expect(brief.conditions[0].reason).toMatch(/in hearing/i);
     expect(brief.priorityActions).toHaveLength(1);
-    expect(brief.priorityActions[0].why).toContain('2 open appeals');
+    // Qualitative copy — no operational counts inlined.
+    expect(brief.priorityActions[0].why).toMatch(/in hearing/i);
+    expect(brief.priorityActions[0].why).not.toMatch(/\d/);
     expect(brief.priorityActions[0].destination).toBe('dossier.appeal-packets');
   });
 

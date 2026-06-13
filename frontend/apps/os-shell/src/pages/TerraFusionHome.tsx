@@ -135,7 +135,7 @@ export function TerraFusionHome({ snapshot, className }: TerraFusionHomeProps): 
         {/* ── Morning Brief ── */}
         <LiquidPanel variant="shell" radius="lg" className="p-6">
           <div
-            className="text-[12px] font-semibold uppercase tracking-[0.16em] mb-2"
+            className="text-[12px] font-semibold uppercase tracking-widest mb-2"
             style={{ color: 'hsl(var(--tf-muted))' }}
           >
             Morning Brief
@@ -264,12 +264,12 @@ export function TerraFusionHome({ snapshot, className }: TerraFusionHomeProps): 
                       >
                         {item.count}
                       </span>
-                      <span>
+                      <div>
                         <span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
                           {item.label}
                         </span>
                         <SourceLine text={formatPulseSource(item.source)} />
-                      </span>
+                      </div>
                     </li>
                   ))}
                 </ul>

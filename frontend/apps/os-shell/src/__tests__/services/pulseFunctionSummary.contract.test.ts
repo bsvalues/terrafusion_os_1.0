@@ -65,6 +65,14 @@ describe('projectAvailability — all three states', () => {
     expect(a.level).toBeUndefined();
     expect(a.reason).toBeUndefined();
   });
+
+  it('never borrows another function condition (live brief, no matching function)', () => {
+    // sampleBrief carries a 'certification' condition; ask for 'appeals'.
+    const a = projectAvailability('appeals', pulseLive(sampleBrief, source));
+    expect(a.state).toBe('unavailable');
+    expect(a.level).toBeUndefined();
+    expect(a.reason).toMatch(/did not include a appeals condition/i);
+  });
 });
 
 describe('summarizePulseFunctions — real partial availability', () => {

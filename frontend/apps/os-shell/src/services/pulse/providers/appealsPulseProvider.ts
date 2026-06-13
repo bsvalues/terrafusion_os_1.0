@@ -83,7 +83,6 @@ export async function readAppealsBrief(
 
   const open = appeals.filter((a) => OPEN_STATUSES.has(a.status));
   const inHearing = open.filter((a) => a.status === 'hearing').length;
-  const scheduled = open.filter((a) => a.status === 'scheduled').length;
 
   // Level derived only from concrete states — no capacity thresholds invented.
   const level: PulseConditionLevel =
@@ -108,11 +107,14 @@ export async function readAppealsBrief(
     priorityActions.push({
       id: 'appeals-docket',
       title: 'Work the appeal docket',
-      why: `${open.length} open appeal${open.length === 1 ? '' : 's'}; ${inHearing} in hearing, ${scheduled} scheduled.`,
+      // Qualitative only. Operational counts belong on sourced evidence items,
+      // not inlined in action copy (the evidence region may be a gap).
+      why:
+        inHearing > 0
+          ? 'Open appeals include cases now in hearing.'
+          : 'Appeals are open and awaiting work.',
       rank: 1,
       urgency: urgencyFor(level),
-      // Counts above are derived from the source and narrated in `why`.
-      // No evidence refs fabricated; the evidence region stays empty until wired.
       evidence: [],
       destination: 'dossier.appeal-packets',
     });

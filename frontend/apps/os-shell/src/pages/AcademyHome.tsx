@@ -310,7 +310,7 @@ export function AcademyHome(): React.ReactElement {
         {/* Header */}
         <header className="flex flex-col gap-2">
           <span
-            className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em]"
+            className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-widest"
             style={{ color: 'hsl(var(--tf-accent))' }}
           >
             <GraduationCap className="h-4 w-4" />

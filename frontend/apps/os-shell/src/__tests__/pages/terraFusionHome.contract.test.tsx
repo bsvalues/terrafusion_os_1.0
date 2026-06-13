@@ -48,7 +48,7 @@ const liveBrief: PulseHomeBrief = {
     {
       id: 'cert-countywide',
       title: 'Resolve Countywide certification',
-      why: 'Countywide is at-risk at 99% (99/100 parcels).',
+      why: 'Countywide certification is at-risk; resolve remaining signoffs.',
       rank: 1,
       urgency: 'this_week',
       dueLabel: 'Due 2026-07-01',
@@ -116,7 +116,7 @@ describe('TerraFusionHome — live brief', () => {
 
     const actions = screen.getByTestId('tfh-actions-live');
     expect(actions).toHaveTextContent('Resolve Countywide certification');
-    expect(actions).toHaveTextContent('99/100 parcels');
+    expect(actions).toHaveTextContent('resolve remaining signoffs');
     expect(actions).toHaveTextContent('Due 2026-07-01');
 
     // Source attribution is shown for the live brief.

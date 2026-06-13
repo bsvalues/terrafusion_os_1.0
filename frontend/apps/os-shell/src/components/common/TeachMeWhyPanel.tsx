@@ -125,7 +125,7 @@ export function TeachMeWhyPanel({
       >
         <div className="flex items-start justify-between gap-4">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.15em]"
+            className="text-[11px] font-semibold uppercase tracking-widest"
             style={{ color: 'hsl(var(--tf-accent))' }}
           >
             {eyebrow}

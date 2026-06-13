@@ -60,8 +60,9 @@ describe('readCertificationBrief — live mapping from governed source', () => {
     const action = brief.priorityActions[0];
     expect(action.rank).toBe(1);
     expect(action.urgency).toBe('this_week');
-    // Derived from real counts — not fabricated.
-    expect(action.why).toContain('99/100 parcels');
+    // Qualitative copy — operational counts are NOT inlined in the action.
+    expect(action.why).toMatch(/countywide certification is at-risk/i);
+    expect(action.why).not.toMatch(/\d+\/\d+ parcels/);
     expect(action.dueLabel).toBe('Due 2026-07-01');
     expect(brief.recommendedFirstActionId).toBe(action.id);
   });
@@ -126,6 +127,20 @@ describe('readCertificationBrief — unavailable, never fabricated', () => {
     expect(isPulseUnavailable(read)).toBe(true);
     if (isPulseUnavailable(read)) {
       expect(read.reason).toMatch(/no data/i);
+    }
+  });
+
+  it('rejects default-stamped 0/0 rows instead of emitting a misleading live brief', async () => {
+    // Mirrors the backend normalizing a non-array response to default zeros.
+    const read = await readCertificationBrief(
+      ctx,
+      depsReturning([
+        { area: 'Benton County', totalParcels: 0, completedParcels: 0, percentComplete: 0, deadline: '', status: 'at-risk' },
+      ])
+    );
+    expect(isPulseUnavailable(read)).toBe(true);
+    if (isPulseUnavailable(read)) {
+      expect(read.reason).toMatch(/incomplete or default-stamped/i);
     }
   });
 });

@@ -59,13 +59,21 @@ export function projectAvailability(
   read: PulseRead<PulseHomeBrief>
 ): PulseFunctionAvailability {
   if (isPulseLive(read)) {
-    const condition =
-      read.data.conditions.find((c) => c.function === fn) ?? read.data.conditions[0];
+    // Never borrow another function's condition. If the live brief has no
+    // condition for this function, that is a gap — not a chance to mislabel.
+    const condition = read.data.conditions.find((c) => c.function === fn);
+    if (!condition) {
+      return {
+        function: fn,
+        state: 'unavailable',
+        reason: `Live brief did not include a ${fn} condition.`,
+      };
+    }
     return {
       function: fn,
       state: 'live',
-      level: condition?.level,
-      reason: condition?.reason,
+      level: condition.level,
+      reason: condition.reason,
     };
   }
   if (isPulseUnavailable(read)) {
