@@ -27,6 +27,8 @@ import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStor
 import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
 import { adjustmentSetApi, exceptionApi } from '../../services/countyStudyHandoffApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
+import { TeachMeWhyProvider } from '../../components/academy/TeachMeWhyPanel';
+import { TeachWhyButton } from '../../components/academy/TeachWhyButton';
 import {
   FolderOpen,
   Shield,
@@ -435,6 +437,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   }, []);
 
   return (
+    <TeachMeWhyProvider>
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dossier" />
 
@@ -512,7 +515,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                   Governed county evidence actions for appeals, equalization, and audit bundles. Use this surface to verify readiness before routing into parcel-scoped dossier work.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
                   className="rounded-full px-3 py-1 text-xs font-semibold"
                   style={{ background: 'hsl(var(--tf-suite-dossier) / 0.12)', color: 'hsl(var(--tf-suite-dossier))' }}
@@ -525,6 +528,8 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                 >
                   {fmtNum(stats?.pendingAssessments)} pending assessments
                 </span>
+                {/* Academy reuse: evidence doctrine for the defense plane */}
+                <TeachWhyButton topic="boe-packet" label="BOE packet doctrine" />
               </div>
             </div>
 
@@ -594,7 +599,11 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                 className="rounded-lg border p-4"
                 style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
               >
-                <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>County Exports</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>County Exports</div>
+                  {/* Academy reuse: comparable-sales evidence underpins equalization */}
+                  <TeachWhyButton topic="comparable-sales" />
+                </div>
                 <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Draft governed equalization and audit artifacts for certification, DOR, and oversight reviews.</div>
                 <div className="mt-4 grid gap-3">
                   <input
@@ -686,5 +695,6 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />
       </main>
     </div>
+    </TeachMeWhyProvider>
   );
 }
