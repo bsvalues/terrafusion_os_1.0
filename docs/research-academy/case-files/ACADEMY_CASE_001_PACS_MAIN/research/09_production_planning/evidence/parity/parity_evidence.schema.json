@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tf/ws1/parity_evidence.schema.json",
+  "title": "WS-1 PACS Shadow Parity Evidence",
+  "description": "Evidence captured by the WS-1 shadow parity run. Comparison-only; the TF value is never replaced by PACS. See WS1_PACS_SHADOW_PARITY_RUN_PLAN.md.",
+  "type": "object",
+  "required": ["run", "parcels", "rpSummaries"],
+  "properties": {
+    "run": {
+      "type": "object",
+      "required": [
+        "runId",
+        "county",
+        "engineMode",
+        "sampleSeed",
+        "parcelIds",
+        "timestampUtc"
+      ],
+      "properties": {
+        "runId": { "type": "string" },
+        "county": {
+          "type": "string",
+          "description": "CountyId (sovereign isolation: one county per run)"
+        },
+        "engineMode": {
+          "const": "Shadow",
+          "description": "MUST be Shadow; no authoritative swap"
+        },
+        "sampleSeed": {
+          "type": "string",
+          "description": "deterministic selection seed/stride for reproducibility"
+        },
+        "parcelIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "exact sample (reproducibility)"
+        },
+        "referenceSetVersions": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "timestampUtc": { "type": "string", "format": "date-time" }
+      }
+    },
+    "parcels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "parcelId",
+          "rp",
+          "propertyClass",
+          "tfValue",
+          "pacsValue",
+          "delta",
+          "deltaFraction",
+          "withinTolerance",
+          "toleranceUsed"
+        ],
+        "properties": {
+          "parcelId": { "type": "string" },
+          "rp": { "enum": ["RP-1", "RP-2", "RP-3", "RP-5", "RP-6", "RP-4"] },
+          "propertyClass": { "type": "string" },
+          "tfValue": { "type": "number" },
+          "pacsValue": { "type": "number" },
+          "delta": { "type": "number", "description": "tfValue - pacsValue" },
+          "deltaFraction": { "type": "number" },
+          "withinTolerance": {
+            "type": ["boolean", "null"],
+            "description": "null = tolerance not approved (ungated)"
+          },
+          "toleranceUsed": { "type": ["number", "null"] },
+          "rp5LineageExact": {
+            "type": ["boolean", "null"],
+            "description": "RP-5 only: active-supplement value matches via SourceXref, history intact"
+          },
+          "engineVersion": { "type": "string" }
+        }
+      }
+    },
+    "rpSummaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rp",
+          "n",
+          "withinCount",
+          "passRate",
+          "agreedRate",
+          "gatePass"
+        ],
+        "properties": {
+          "rp": { "enum": ["RP-1", "RP-2", "RP-3", "RP-5", "RP-6", "RP-4"] },
+          "n": { "type": "integer" },
+          "withinCount": { "type": "integer" },
+          "passRate": { "type": ["number", "null"] },
+          "agreedRate": {
+            "type": ["number", "null"],
+            "description": "Assessor-approved min pass rate; null = ungated"
+          },
+          "gatePass": {
+            "type": ["boolean", "null"],
+            "description": "null until both tolerance and agreedRate are set"
+          }
+        }
+      }
+    }
+  }
+}
