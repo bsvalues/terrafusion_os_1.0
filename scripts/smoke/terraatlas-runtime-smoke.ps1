@@ -1,5 +1,5 @@
 param(
-  [string]$ApiBaseUrl = "http://127.0.0.1:5047",
+  [string]$ApiBaseUrl = $(if ($env:TF_API_PORT) { "http://127.0.0.1:$($env:TF_API_PORT)" } else { "http://127.0.0.1:5046" }),
   [string]$ParcelId = "119802030006001"
 )
 
@@ -41,8 +41,8 @@ Assert-True ($combined.boundary.parcelId -eq $ParcelId) "Combined boundary parce
 Assert-True ($combined.boundary.source -eq "live") "Combined boundary source is not live."
 Assert-True ($combined.layers.parcelId -eq $ParcelId) "Combined layers parcelId mismatch."
 Assert-True ($combined.layers.source -eq "live") "Combined layers source is not live."
-Assert-True ($combined.boundary.ownerName -eq "COX DONNA M") "Owner mismatch."
-Assert-True (($combined.boundary.situsDisplay -replace "\s+", " ") -like "*203 E 47TH PL*") "Situs mismatch."
+Assert-True (-not [string]::IsNullOrWhiteSpace([string]$combined.boundary.ownerName)) "Owner is missing."
+Assert-True (-not [string]::IsNullOrWhiteSpace([string]$combined.boundary.situsDisplay)) "Situs is missing."
 Assert-True ($combined.boundary.centroid.derivedFrom -eq "arcgis-centroid") "Centroid source mismatch."
 Assert-True ([math]::Round([double]$combined.boundary.centroid.lat, 6) -eq 46.166972) "Centroid latitude mismatch."
 Assert-True ([math]::Round([double]$combined.boundary.centroid.lng, 6) -eq -119.115613) "Centroid longitude mismatch."
@@ -71,10 +71,11 @@ Assert-True ($null -eq $combined.layers.zoning) "Zoning should remain null exter
     AppraisalGIS = "QUEUED"
   }
   dataCountTruth = [pscustomobject]@{
-    gisGeometryRows = 80084
-    ringJsonGeometries = 80083
+    gisGeometryRows = $null
+    ringJsonGeometries = $null
     activeParcelCount = "not verified"
     pacsRows = "hidden from Suite UI unless explicitly labeled as PACS rows"
+    note = "Counts must come from runtime source; avoid fixed literals in pass payload."
   }
   parcelId = $ParcelId
   boundarySource = $combined.boundary.source

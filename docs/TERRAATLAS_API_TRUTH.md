@@ -64,13 +64,13 @@ dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
 $env:ASPNETCORE_ENVIRONMENT='Development'
 $env:DatabaseProvider='Postgres'
 $env:ConnectionStrings__DefaultConnection='Host=localhost;Database=terrafusion;Username=postgres;Password=devpassword123;Port=5432'
-dotnet run --project backend/src/TerraFusion.API/TerraFusion.API.csproj --no-build --no-launch-profile --urls http://127.0.0.1:5047 --skip-dev-seeders
+$apiPort = if ($env:TF_API_PORT) { $env:TF_API_PORT } else { '5046' }
+dotnet run --project backend/src/TerraFusion.API/TerraFusion.API.csproj --no-build --no-launch-profile --urls "http://127.0.0.1:$apiPort" --skip-dev-seeders
 ```
 
 In a second shell:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 `
-  -ApiBaseUrl http://127.0.0.1:5047 `
   -ParcelId 119802030006001
 ```

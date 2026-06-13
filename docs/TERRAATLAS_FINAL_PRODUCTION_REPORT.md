@@ -57,7 +57,7 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 pnpm --dir frontend run type-check
 pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/atlas/atlasGeo.contract.test.tsx apps/os-shell/src/__tests__/atlas/atlasNeighborhood.contract.test.tsx
 dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj
-powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ApiBaseUrl http://127.0.0.1:5047 -ParcelId 119802030006001
+powershell -ExecutionPolicy Bypass -File scripts/smoke/terraatlas-runtime-smoke.ps1 -ParcelId 119802030006001
 ```
 
 Browser proof target: `/atlas` only.
