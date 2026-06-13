@@ -103,3 +103,24 @@ returned as a `readBrief`-compatible `PulseRead<PulseHomeBrief>`.
 This is the proof that the stack is real: governed source → provider →
 `PulseRead<PulseHomeBrief>` → snapshot. Remaining domains (appeals, exemptions,
 notices, valuation) follow the same provider shape, one at a time.
+
+## Truth-layer protection (landed)
+
+- **Pulse Honesty Guard** (`__tests__/governance/pulseHonestyGuard.contract.test.ts`):
+  governance test that statically inspects every file under
+  `services/pulse/providers/` (discovered dynamically — new providers are
+  auto-guarded). A provider fails CI if it contains sample/demo/fixture/mock
+  tokens, a fabricated `confidence`, a default `count: 0`, lacks a
+  `pulseUnavailable(` gap path, or returns `pulseLive` from a catch/failure
+  path. This makes "fallback disguised as live" a build failure.
+- **Appeals provider** (`services/pulse/providers/appealsPulseProvider.ts`):
+  second real provider, same canonical shape. Reads `getAllAppeals`
+  (`/api/dais/appeals`); empty list is a legitimate live "zero open" stable
+  state; throw → unavailable.
+- **Aggregator** (`services/pulse/pulseFunctionSummary.ts`):
+  `summarizePulseFunctions` + `projectAvailability` produce the per-function
+  availability view (Certification: Watching · Appeals: Stable · Exemptions:
+  Unavailable · Notices: Loading). Each function is independently
+  live/unavailable/loading — one function's truth is never borrowed to cover
+  another's gap. Tested for real partial availability across cert + appeals +
+  an unwired gap, and for a throwing provider isolated as unavailable.
