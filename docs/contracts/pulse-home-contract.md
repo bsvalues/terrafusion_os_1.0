@@ -82,3 +82,24 @@ fabricated value.
 3. **Live Home behind a flag:** render the prototype layout from a
    `PulseHomeSnapshot`, showing live-with-source or explicit "–", and only
    promote to `/` once contract-complete.
+
+## First real Pulse source (landed): Certification
+
+`services/pulse/providers/certificationPulseProvider.ts` →
+`readCertificationBrief(ctx, deps?)` is the first authoritative provider. It
+reads the governed TerraDais certification source
+(`daisService.getCertificationStatus` → `/api/dais/cert/status`) and maps it to
+a `PulseCondition` + optional `PulsePriorityAction` + `PulseSourceAttribution`,
+returned as a `readBrief`-compatible `PulseRead<PulseHomeBrief>`.
+
+- Condition level is derived from the source status: `overdue` → critical,
+  `at-risk` → attention, incomplete → watching, 100% → stable.
+- The priority action's `why` is derived from real parcel counts; no evidence
+  is fabricated (the evidence region stays empty until wired).
+- Source throws or empty → `pulseUnavailable(...)` with a reason.
+- Proven end-to-end: injected into `getPulseHomeSnapshot`, the certification
+  brief goes live (with source) while activity + evidence remain explicit gaps.
+
+This is the proof that the stack is real: governed source → provider →
+`PulseRead<PulseHomeBrief>` → snapshot. Remaining domains (appeals, exemptions,
+notices, valuation) follow the same provider shape, one at a time.
