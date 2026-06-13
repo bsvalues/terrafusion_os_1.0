@@ -49,7 +49,7 @@ describe('readAppealsBrief — live mapping', () => {
     expect(isPulseLive(read)).toBe(true);
     if (!isPulseLive(read)) return;
 
-    expect(read.source.reference).toBe('dais:/api/dais/appeals');
+    expect(read.source.reference).toBe('dais:/api/dais/appeals?county=benton&taxYear=2026');
     const brief = read.data;
     expect(brief.overallCondition).toBe('attention');
     expect(brief.conditions[0].function).toBe('appeals');
@@ -88,6 +88,30 @@ describe('readAppealsBrief — live mapping', () => {
     expect(isPulseLive(read)).toBe(true);
     if (!isPulseLive(read)) return;
     expect(read.data.overallCondition).toBe('stable');
+  });
+});
+
+describe('readAppealsBrief — explicit scope', () => {
+  it('passes the requested county + roll year to the source (no unscoped default)', async () => {
+    let captured: { countyId?: string; taxYear?: number } | undefined;
+    await readAppealsBrief(ctx, {
+      getAllAppeals: async (scope) => {
+        captured = scope;
+        return [];
+      },
+    });
+    expect(captured).toEqual({ countyId: 'benton', taxYear: 2026 });
+  });
+
+  it('returns unavailable when no county/roll-year scope is available', async () => {
+    const read = await readAppealsBrief(
+      { county: { countyId: '', label: '', rollYear: 0 } },
+      depsReturning([])
+    );
+    expect(isPulseUnavailable(read)).toBe(true);
+    if (isPulseUnavailable(read)) {
+      expect(read.reason).toMatch(/explicit county and roll year/i);
+    }
   });
 });
 

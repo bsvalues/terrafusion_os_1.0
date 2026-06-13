@@ -39,11 +39,12 @@ import type { PulseReaderContext } from '../pulseHomeService';
 import {
   getCertificationStatus,
   type CertificationStatus,
+  type DaisQueryScope,
 } from '../../suites/daisService';
 
 /** Injectable dependency so the provider is testable without a network. */
 export interface CertificationPulseDeps {
-  getCertificationStatus: () => Promise<CertificationStatus[]>;
+  getCertificationStatus: (scope: DaisQueryScope) => Promise<CertificationStatus[]>;
 }
 
 const DEFAULT_DEPS: CertificationPulseDeps = { getCertificationStatus };
@@ -80,9 +81,16 @@ export async function readCertificationBrief(
   ctx: PulseReaderContext,
   deps: CertificationPulseDeps = DEFAULT_DEPS
 ): Promise<PulseRead<PulseHomeBrief>> {
+  // Require an explicit county + roll year. Never read unscoped (which the
+  // backend would silently default to the authenticated county / current year).
+  const { countyId, rollYear } = ctx.county;
+  if (!countyId || !Number.isFinite(rollYear) || rollYear <= 0) {
+    return pulseUnavailable('Certification readiness requires an explicit county and roll year scope.');
+  }
+
   let statuses: CertificationStatus[];
   try {
-    statuses = await deps.getCertificationStatus();
+    statuses = await deps.getCertificationStatus({ countyId, taxYear: rollYear });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';
     return pulseUnavailable(`Certification readiness unavailable: ${message}`);
@@ -112,7 +120,7 @@ export async function readCertificationBrief(
   const observedAt = new Date().toISOString();
   const source: PulseSourceAttribution = {
     system: 'TerraDais certification readiness',
-    reference: 'dais:/api/dais/cert/status',
+    reference: `dais:/api/dais/cert/status?county=${countyId}&taxYear=${rollYear}`,
     observedAt,
     classification: 'CONFIDENTIAL',
   };

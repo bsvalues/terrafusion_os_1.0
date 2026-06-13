@@ -33,11 +33,11 @@ import {
   type PulseUrgency,
 } from '../../../contracts/pulseHome';
 import type { PulseReaderContext } from '../pulseHomeService';
-import { getAllAppeals, type Appeal } from '../../suites/daisService';
+import { getAllAppeals, type Appeal, type DaisQueryScope } from '../../suites/daisService';
 
 /** Injectable dependency so the provider is testable without a network. */
 export interface AppealsPulseDeps {
-  getAllAppeals: () => Promise<Appeal[]>;
+  getAllAppeals: (scope: DaisQueryScope) => Promise<Appeal[]>;
 }
 
 const DEFAULT_DEPS: AppealsPulseDeps = { getAllAppeals };
@@ -61,9 +61,16 @@ export async function readAppealsBrief(
   ctx: PulseReaderContext,
   deps: AppealsPulseDeps = DEFAULT_DEPS
 ): Promise<PulseRead<PulseHomeBrief>> {
+  // Require an explicit county + roll year. Never read unscoped (the backend
+  // would default to the authenticated county / current year).
+  const { countyId, rollYear } = ctx.county;
+  if (!countyId || !Number.isFinite(rollYear) || rollYear <= 0) {
+    return pulseUnavailable('Appeals docket requires an explicit county and roll year scope.');
+  }
+
   let appeals: Appeal[];
   try {
-    appeals = await deps.getAllAppeals();
+    appeals = await deps.getAllAppeals({ countyId, taxYear: rollYear });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';
     return pulseUnavailable(`Appeals docket unavailable: ${message}`);
@@ -76,7 +83,7 @@ export async function readAppealsBrief(
   const observedAt = new Date().toISOString();
   const source: PulseSourceAttribution = {
     system: 'TerraDais appeals',
-    reference: 'dais:/api/dais/appeals',
+    reference: `dais:/api/dais/appeals?county=${countyId}&taxYear=${rollYear}`,
     observedAt,
     classification: 'CONFIDENTIAL',
   };

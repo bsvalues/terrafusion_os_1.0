@@ -45,7 +45,8 @@ describe('readCertificationBrief — live mapping from governed source', () => {
 
     // Source attribution is present and identifies the governed origin.
     expect(read.source.system).toMatch(/certification readiness/i);
-    expect(read.source.reference).toBe('dais:/api/dais/cert/status');
+    // Attribution records the requested scope (county + roll year).
+    expect(read.source.reference).toBe('dais:/api/dais/cert/status?county=benton&taxYear=2026');
 
     const brief = read.data;
     expect(brief.overallCondition).toBe('attention');
@@ -145,6 +146,30 @@ describe('readCertificationBrief — unavailable, never fabricated', () => {
   });
 });
 
+describe('readCertificationBrief — explicit scope', () => {
+  it('passes the requested county + roll year to the source (no unscoped default)', async () => {
+    let captured: { countyId?: string; taxYear?: number } | undefined;
+    await readCertificationBrief(ctx, {
+      getCertificationStatus: async (scope) => {
+        captured = scope;
+        return [atRiskRow];
+      },
+    });
+    expect(captured).toEqual({ countyId: 'benton', taxYear: 2026 });
+  });
+
+  it('returns unavailable when no county/roll-year scope is available', async () => {
+    const read = await readCertificationBrief(
+      { county: { countyId: '', label: '', rollYear: 0 } },
+      depsReturning([atRiskRow])
+    );
+    expect(isPulseUnavailable(read)).toBe(true);
+    if (isPulseUnavailable(read)) {
+      expect(read.reason).toMatch(/explicit county and roll year/i);
+    }
+  });
+});
+
 describe('Certification Pulse end-to-end through getPulseHomeSnapshot', () => {
   it('yields a live certification brief alongside unavailable activity + evidence', async () => {
     const snap = await getPulseHomeSnapshot('benton', 2026, {
@@ -159,7 +184,7 @@ describe('Certification Pulse end-to-end through getPulseHomeSnapshot', () => {
     expect(isPulseUnavailable(snap.evidence)).toBe(true);
     if (isPulseLive(snap.brief)) {
       expect(snap.brief.data.conditions[0].function).toBe('certification');
-      expect(snap.brief.source.reference).toBe('dais:/api/dais/cert/status');
+      expect(snap.brief.source.reference).toBe('dais:/api/dais/cert/status?county=benton&taxYear=2026');
     }
   });
 

@@ -140,8 +140,10 @@ const PilotHome = lazy(() => import('./pages/PilotHome'));
 const TraceHome = lazy(() => import('./pages/TraceHome'));
 // Phase 30: TerraCanon IDE Shell
 const CanonHome = lazy(() => import('./pages/CanonHome'));
-// TerraFusion Academy — authored assessment doctrine (static, data-honest)
-const AcademyHome = lazy(() => import('./pages/AcademyHome'));
+// NOTE: AcademyHome (pages/AcademyHome.tsx) is intentionally NOT routed here.
+// Exposing /academy is a product-surface expansion that requires a separate,
+// governance-approved WO (root AGENTS.md). The component + TeachMeWhyPanel are
+// retained and tested, but no user-facing route/icon is reachable by default.
 
 // GovernanceLock - Dashboard (role-gated metrics)
 const GovernanceDashboard = lazy(() => import('./pages/GovernanceDashboard'));
@@ -314,8 +316,9 @@ const Router: React.FC = () => {
                   <Route path='trace' element={<TraceHome />} />
                   {/* Phase 30: TerraCanon - Integrated Development Environment */}
                   <Route path='canon' element={<CanonHome />} />
-                  {/* TerraFusion Academy - authored assessment doctrine (static, data-honest) */}
-                  <Route path='academy' element={<AcademyHome />} />
+                  {/* TerraFusion Academy route intentionally omitted — see note at
+                      AcademyHome import: product-surface expansion needs a
+                      governance-approved WO before /academy becomes reachable. */}
 
                   {/* GovernanceLock - Dashboard (role-gated) */}
                   <Route path='pilot/dashboard' element={<GovernanceDashboard />} />

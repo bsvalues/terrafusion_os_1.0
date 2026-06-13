@@ -18,6 +18,13 @@
  * authored and stable, rather than to live operational claims (which would
  * require a real, unavailable-safe data contract before entering production).
  *
+ * GOVERNANCE / TODO: This component is intentionally NOT routed. Exposing a
+ * reachable /academy product surface is a product-behavior change outside the
+ * root AGENTS.md allowed-modify scope and requires a separate, governance-
+ * approved "Academy Product Surface" WO (route registration, landmark contract,
+ * launcher/icon, acceptance criteria). Until then this stays component-only and
+ * test-covered; do not re-add the route without that approval.
+ *
  * @module pages/AcademyHome
  */
 
