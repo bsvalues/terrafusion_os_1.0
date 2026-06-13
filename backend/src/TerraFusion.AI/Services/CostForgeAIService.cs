@@ -423,16 +423,21 @@ public class CostForgeAIService : ICostForgeAIService
 
   public async System.Threading.Tasks.Task<HarrisSyncResultDto> SyncWithHarrisPACSAsync(HarrisSyncRequestDto request)
   {
-    _logger.LogInformation("Starting Harris PACS sync for county {CountyId}", request.CountyId);
+    // Honesty (WO-CF-b2g): this stub returned fabricated sync counts (89,247
+    // processed, 1247 updated, 23 added, fake harris_version "12.4.7").
+    // No controller calls this method — the real endpoint is
+    // CostForgeController.SyncWithHarrisPACS which queries the actual DB.
+    // Zeroed so these fabrications cannot resurface through a future wiring.
+    _logger.LogInformation("Harris PACS sync stub invoked for county {CountyId} — no live connector", request.CountyId);
 
     var startTime = DateTime.UtcNow;
-    await System.Threading.Tasks.Task.Delay(2000); // Simulate sync operation
+    await System.Threading.Tasks.Task.Delay(10);
 
     return new HarrisSyncResultDto
     {
-      RecordsProcessed = 89_247, // CARD-10: Benton County parcel count stub
-      RecordsUpdated = 1247,
-      RecordsAdded = 23,
+      RecordsProcessed = 0,
+      RecordsUpdated = 0,
+      RecordsAdded = 0,
       RecordsSkipped = 0,
       SyncStartTime = startTime,
       SyncEndTime = DateTime.UtcNow,
@@ -441,9 +446,9 @@ public class CostForgeAIService : ICostForgeAIService
       Errors = new List<string>(),
       SyncMetadata = new Dictionary<string, object>
       {
-        ["harris_version"] = "12.4.7",
         ["sync_type"] = request.FullSync ? "full" : "incremental",
-        ["county"] = request.CountyId
+        ["county"] = request.CountyId,
+        ["note"] = "stub — no live Harris PACS connector"
       }
     };
   }
@@ -489,37 +494,20 @@ public class CostForgeAIService : ICostForgeAIService
     var start = startDate ?? DateTime.UtcNow.AddDays(-30);
     var end = endDate ?? DateTime.UtcNow;
 
+    // Honesty (WO-CF-b2g): fabricated analytics constants (98.7m accuracy,
+    // 2847392000m total value, hardcoded CalculationsByType/PerformanceTrends)
+    // zeroed. TotalCalculations is real (from Interlocked counter during actual
+    // valuations) and preserved. No controller calls this method today.
     return new AnalyticsDto
     {
       StartDate = start,
       EndDate = end,
       TotalCalculations = Interlocked.Read(ref _totalCalculations),
-      AverageAccuracy = 98.7m,
-      TotalValueCalculated = 2847392000m,
-      CalculationsByType = new Dictionary<string, int>
-      {
-        ["residential"] = 1247,
-        ["commercial"] = 423,
-        ["industrial"] = 89,
-        ["agricultural"] = 156
-      },
-      PerformanceTrends = new Dictionary<string, decimal>
-      {
-        ["accuracy_trend"] = 0.3m,
-        ["speed_trend"] = 12.7m,
-        ["efficiency_trend"] = 8.9m
-      },
-      TopPerformingAgents = _agents.Values
-            .OrderByDescending(a => a.PerformanceScore)
-            .Take(5)
-            .Select(a => new TopPerformingAgentDto
-            {
-              AgentId = a.AgentId,
-              TasksCompleted = a.TasksCompleted,
-              AverageAccuracy = 98.7m,
-              PerformanceScore = a.PerformanceScore
-            })
-            .ToList()
+      AverageAccuracy = 0m,
+      TotalValueCalculated = 0m,
+      CalculationsByType = new Dictionary<string, int>(),
+      PerformanceTrends = new Dictionary<string, decimal>(),
+      TopPerformingAgents = new List<TopPerformingAgentDto>()
     };
   }
 
