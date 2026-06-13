@@ -45,8 +45,10 @@ export const TemplateGovernance: React.FC<{ snapshot: NoticeConsoleSnapshot }> =
   const previous = active?.previousVersion
     ? templateAssemblies.find((a) => a.templateId === active.templateId && a.version === active.previousVersion)
     : undefined;
-  const previousBlocks = previous?.blocks ?? (active?.previousVersion ? active.blocks : undefined);
-  const { added, removed } = active ? diff(previousBlocks, active.blocks) : { added: [], removed: [] };
+  // Only diff against a previous assembly we actually have. A declared-but-missing
+  // previousVersion is surfaced as "unavailable" — never as a false "no changes".
+  const previousMissing = !!active?.previousVersion && !previous;
+  const { added, removed } = active && previous ? diff(previous.blocks, active.blocks) : { added: [], removed: [] };
 
   return (
     <div className="space-y-5" data-testid="notice-area-template-governance">
@@ -117,6 +119,8 @@ export const TemplateGovernance: React.FC<{ snapshot: NoticeConsoleSnapshot }> =
           >
             {!active.previousVersion ? (
               <EmptyState message="No prior version to diff against." />
+            ) : previousMissing ? (
+              <EmptyState message={`Prior version ${active.previousVersion} is not in this snapshot — diff unavailable.`} />
             ) : added.length === 0 && removed.length === 0 ? (
               <EmptyState message="No block-level changes between versions." />
             ) : (

@@ -16,6 +16,8 @@ import { EmptyState, SectionCard, StatusPill } from '../components/primitives';
 
 export const AuditVault: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ snapshot }) => {
   const bundles = snapshot.auditBundles;
+  // Vault open/export operate against a live backend; disabled in sandbox.
+  const inert = snapshot.source !== 'live';
   const [selected, setSelected] = useState(bundles[0]?.bundleId ?? '');
   const active = bundles.find((b) => b.bundleId === selected) ?? bundles[0];
 
@@ -68,8 +70,8 @@ export const AuditVault: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ snap
             ))}
           </dl>
           <div className="flex flex-wrap gap-2 mt-4">
-            <Button size="sm" variant="outline">Open Evidence Bundle</Button>
-            <Button size="sm" variant="outline">Export Release Manifest</Button>
+            <Button size="sm" variant="outline" disabled={inert}>Open Evidence Bundle</Button>
+            <Button size="sm" variant="outline" disabled={inert}>Export Release Manifest</Button>
           </div>
           <p className="text-[11px] mt-3" style={{ color: 'hsl(var(--tf-muted))' }}>
             Sandbox: export actions are inert. A sealed bundle binds every notice to its template, policy, config,

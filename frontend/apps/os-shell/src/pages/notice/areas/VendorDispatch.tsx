@@ -39,6 +39,9 @@ function dispatchVariant(s: DispatchStatus): 'default' | 'secondary' | 'destruct
 export const VendorDispatch: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ snapshot }) => {
   const { dispatches, county } = snapshot;
   const fallback = county.vendorMappings.find((v) => v.status === 'inactive');
+  // Dispatch actions only operate against a live backend; disabled in sandbox
+  // so an enabled control never implies an action that won't run.
+  const inert = snapshot.source !== 'live';
 
   return (
     <div className="space-y-5" data-testid="notice-area-vendor-dispatch">
@@ -83,8 +86,8 @@ export const VendorDispatch: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ 
           </Table>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Button size="sm" variant="outline">Import Delivery Receipts</Button>
-          <Button size="sm" variant="outline">Retry Failures</Button>
+          <Button size="sm" variant="outline" disabled={inert}>Import Delivery Receipts</Button>
+          <Button size="sm" variant="outline" disabled={inert}>Retry Failures</Button>
         </div>
         <p className="text-[11px] mt-3" style={{ color: 'hsl(var(--tf-muted))' }}>
           Sandbox: dispatch actions are inert — no bundle is transmitted to a vendor.

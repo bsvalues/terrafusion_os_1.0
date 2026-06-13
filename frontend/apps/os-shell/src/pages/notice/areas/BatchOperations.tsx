@@ -38,6 +38,9 @@ export const BatchOperations: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({
 
   const allChecked = CHECKLIST.every((c) => checked[c.id]);
   const validationPassed = active?.status !== 'failed' && active?.status !== 'draft';
+  // Release dispatches notices — only valid against a live backend. Freeze stays
+  // interactive in sandbox to demonstrate the checklist→freeze gating locally.
+  const inert = snapshot.source !== 'live';
 
   if (!active) {
     return (
@@ -109,7 +112,7 @@ export const BatchOperations: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({
             >
               Freeze Snapshot
             </Button>
-            <Button size="sm" variant="outline" disabled={!frozen} data-testid="batch-release-action">
+            <Button size="sm" variant="outline" disabled={!frozen || inert} data-testid="batch-release-action">
               Release to Dispatch
             </Button>
             {!validationPassed && (

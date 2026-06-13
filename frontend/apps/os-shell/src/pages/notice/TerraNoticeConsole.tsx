@@ -71,19 +71,44 @@ const AREAS: AreaDef[] = [
 
 export const TerraNoticeConsole: React.FC = () => {
   const [snapshot, setSnapshot] = useState<NoticeConsoleSnapshot | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [area, setArea] = useState<ConsoleAreaId>('command-center');
 
   useEffect(() => {
     let alive = true;
-    void getNoticeConsoleSnapshot().then((snap) => {
-      if (alive) setSnapshot(snap);
-    });
+    getNoticeConsoleSnapshot()
+      .then((snap) => {
+        if (alive) setSnapshot(snap);
+      })
+      .catch(() => {
+        // A real backend fetch can reject; surface the typed 'unavailable'
+        // state instead of hanging on the loading view forever.
+        if (alive) setLoadFailed(true);
+      });
     return () => {
       alive = false;
     };
   }, []);
 
   const activeArea = useMemo(() => AREAS.find((a) => a.id === area) ?? AREAS[0], [area]);
+
+  if (loadFailed) {
+    return (
+      <div
+        data-testid="terra-notice-console"
+        className="w-full h-full flex flex-col items-center justify-center gap-2 p-8 text-center"
+        style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
+      >
+        <div data-testid="notice-unavailable" className="text-base font-semibold">
+          TerraNotice is unavailable
+        </div>
+        <p className="text-sm max-w-md" style={{ color: 'hsl(var(--tf-muted))' }}>
+          The console could not load its data, so no notice information is shown. Retry once the
+          TerraNotice service is reachable.
+        </p>
+      </div>
+    );
+  }
 
   if (!snapshot) {
     return (

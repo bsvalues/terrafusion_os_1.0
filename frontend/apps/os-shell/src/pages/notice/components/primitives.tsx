@@ -179,7 +179,7 @@ export const Tr: React.FC<{ children: React.ReactNode; onClick?: () => void; int
 }) => (
   <tr
     onClick={onClick}
-    className={interactive ? 'hover:bg-white/5 cursor-pointer' : ''}
+    className={interactive ? 'hover:bg-[hsl(var(--tf-text)_/_0.06)] cursor-pointer' : ''}
     style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}
   >
     {children}

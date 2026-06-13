@@ -26,6 +26,8 @@ export const ReturnedMail: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ sn
   const rows = snapshot.exceptions;
   const totalOpen = rows.reduce((acc, r) => acc + r.count, 0);
   const highRisk = rows.filter((r) => r.highRisk).reduce((acc, r) => acc + r.count, 0);
+  // Reissue only runs against a live backend; disabled in sandbox.
+  const inert = snapshot.source !== 'live';
 
   return (
     <div className="space-y-5" data-testid="notice-area-returned-mail">
@@ -64,7 +66,7 @@ export const ReturnedMail: React.FC<{ snapshot: NoticeConsoleSnapshot }> = ({ sn
                     <StatusPill label={r.highRisk ? 'High' : 'Normal'} variant={r.highRisk ? 'destructive' : 'outline'} />
                   </Td>
                   <Td className="text-right">
-                    <Button size="sm" variant="outline" disabled={r.count === 0}>
+                    <Button size="sm" variant="outline" disabled={inert || r.count === 0}>
                       Reissue
                     </Button>
                   </Td>
