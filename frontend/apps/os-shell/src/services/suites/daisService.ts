@@ -45,7 +45,9 @@ function scopeQuery(scope?: DaisQueryScope): string {
   if (!scope) return '';
   const params = new URLSearchParams();
   if (scope.countyId) params.set('county', scope.countyId);
-  if (typeof scope.taxYear === 'number') params.set('taxYear', String(scope.taxYear));
+  if (typeof scope.taxYear === 'number' && Number.isFinite(scope.taxYear) && scope.taxYear > 0) {
+    params.set('taxYear', String(scope.taxYear));
+  }
   const q = params.toString();
   return q ? `?${q}` : '';
 }
