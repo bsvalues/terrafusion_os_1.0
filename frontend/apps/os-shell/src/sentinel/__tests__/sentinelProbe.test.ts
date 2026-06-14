@@ -80,7 +80,7 @@ describe('probeHealth', () => {
     expect(result.warnings.join(' ')).toMatch(/Network Error/);
   });
 
-  it('adds warning when no active modules are loaded', async () => {
+  it('does not warn when no backend filesystem modules are configured', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -90,6 +90,27 @@ describe('probeHealth', () => {
         warnings: [],
         systemComponents: {},
         moduleCountActive: 0,
+        moduleCountTotal: 0,
+      }),
+    } as Response);
+
+    const result = await probeHealth('/api/system/health', 1000);
+
+    expect(result.ok).toBe(true);
+    expect(result.warnings.join(' ')).not.toMatch(/No active modules loaded/);
+  });
+
+  it('adds warning when discovered backend modules are present but none are active', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: 'Healthy',
+        moduleCount: 0,
+        healthyModules: 0,
+        warnings: [],
+        systemComponents: {},
+        moduleCountActive: 0,
+        moduleCountTotal: 4,
       }),
     } as Response);
 

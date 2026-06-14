@@ -44,6 +44,7 @@ jobs:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
       TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
+      VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
       PROVISION_AUTH: ${{ inputs.provision_auth }}
       TF_EXPECTED_JUNE10_DB_NAME: ${{ vars.TF_EXPECTED_JUNE10_DB_NAME }}
       TF_EXPECTED_JUNE10_DB_PROVIDER: ${{ vars.TF_EXPECTED_JUNE10_DB_PROVIDER }}
@@ -231,7 +232,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target production -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
+          docker build --pull --target production -f frontend/Dockerfile \
+            --build-arg VITE_BUILD_SHA="$RELEASE_SHA" \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${VITE_MAPBOX_ACCESS_TOKEN:-}" \
+            -t "$FRONTEND_IMAGE" .
           docker push "$FRONTEND_IMAGE"
 
       - name: Prepare runtime bundle
