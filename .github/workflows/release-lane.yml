@@ -14,6 +14,11 @@ on:
         description: Full git SHA to deploy
         required: true
         type: string
+      provision_auth:
+        description: Run approved production AuthProvisioner before auth smoke
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -39,6 +44,7 @@ jobs:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
       TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
+      PROVISION_AUTH: ${{ inputs.provision_auth }}
       TF_EXPECTED_JUNE10_DB_NAME: ${{ vars.TF_EXPECTED_JUNE10_DB_NAME }}
       TF_EXPECTED_JUNE10_DB_PROVIDER: ${{ vars.TF_EXPECTED_JUNE10_DB_PROVIDER }}
     steps:
@@ -257,6 +263,7 @@ jobs:
           cat > runtime/release.env <<EOF
           COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
           TF_RELEASE_SHA=${RELEASE_SHA}
+          TF_GIT_SHA=${RELEASE_SHA}
           TF_RELEASE_ENV=${TARGET_ENV}
           TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
           TF_PUBLIC_URL=${PUBLIC_URL}
@@ -398,6 +405,81 @@ jobs:
 
           grep -iE '^HTTP/.* 200' curl_headers.txt
 
+      - name: Set up .NET SDK for AuthProvisioner
+        if: ${{ inputs.provision_auth }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Provision production operator auth
+        if: ${{ inputs.provision_auth }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${TF_PROVISIONED_AUTH_EMAIL}"
+          echo "::add-mask::${TF_PROVISIONED_AUTH_PASSWORD}"
+          echo "=== Approved production AuthProvisioner run ==="
+
+          dotnet publish backend/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj \
+            -m:1 \
+            -c Release \
+            --self-contained false \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
+            -o auth-provisioner
+
+          tar -C auth-provisioner -czf auth-provisioner.tgz .
+          scp -P "$DEPLOY_PORT" auth-provisioner.tgz "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/auth-provisioner-${RELEASE_SHA}.tgz"
+
+          quoted_app_root="$(printf '%q' "$APP_ROOT")"
+          quoted_release_sha="$(printf '%q' "$RELEASE_SHA")"
+          quoted_email="$(printf '%q' "$TF_PROVISIONED_AUTH_EMAIL")"
+          quoted_password="$(printf '%q' "$TF_PROVISIONED_AUTH_PASSWORD")"
+
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT=$quoted_app_root RELEASE_SHA=$quoted_release_sha TF_PROVISIONED_AUTH_EMAIL=$quoted_email TF_PROVISIONED_AUTH_PASSWORD=$quoted_password bash -s" <<'SSH' | tee auth-provisioner-output.txt
+          set -euo pipefail
+          db="$APP_ROOT/data/terrafusion.db"
+          backup="$APP_ROOT/data/terrafusion.db.pre-authprovisioner-$(date +%Y%m%d%H%M%S)"
+
+          test -s "$db"
+          cp "$db" "$backup"
+          test -s "$backup"
+          echo "AUTH_PROVISIONER_DB_BACKUP_PATH=$backup"
+
+          provisioner_dir="$APP_ROOT/auth-provisioner-$RELEASE_SHA"
+          container_provisioner_dir="/tmp/auth-provisioner-$RELEASE_SHA"
+          rm -rf "$provisioner_dir"
+          install -d "$provisioner_dir"
+          tar -xzf "$APP_ROOT/auth-provisioner-${RELEASE_SHA}.tgz" -C "$provisioner_dir"
+
+          cd "$APP_ROOT"
+          docker compose -f runtime-compose.yml --env-file release.env cp "$provisioner_dir/." "backend:$container_provisioner_dir"
+          docker compose -f runtime-compose.yml --env-file release.env exec -T \
+            -e TF_PROVISIONED_AUTH_EMAIL="$TF_PROVISIONED_AUTH_EMAIL" \
+            -e TF_PROVISIONED_AUTH_PASSWORD="$TF_PROVISIONED_AUTH_PASSWORD" \
+            backend \
+            dotnet "$container_provisioner_dir/TerraFusion.AuthProvisioner.dll" \
+            --provider Sqlite \
+            --connection-string "Data Source=data/terrafusion.db" \
+            --email "$TF_PROVISIONED_AUTH_EMAIL" \
+            --password-env TF_PROVISIONED_AUTH_PASSWORD \
+            --first-name Provisioned \
+            --last-name Operator \
+            --roles GovernmentUser,Administrator \
+            --permissions read:parcel,ecosystem:view \
+            --county-name Benton \
+            --county-state WA \
+            --county-fips 53005
+          SSH
+
+          backup_path="$(awk -F= '/^AUTH_PROVISIONER_DB_BACKUP_PATH=/ {print $2}' auth-provisioner-output.txt | tail -1)"
+          if [ -z "$backup_path" ]; then
+            echo "AuthProvisioner backup path was not reported."
+            exit 1
+          fi
+          echo "AUTH_PROVISIONER_DB_BACKUP_PATH=$backup_path" >> "$GITHUB_ENV"
+
       - name: Shell route contract smoke
         shell: bash
         run: |
@@ -429,6 +511,25 @@ jobs:
         run: |
           set -euo pipefail
           echo "=== Provisioned auth contract smoke ==="
+
+          restore_auth_backup() {
+            if [ "${PROVISION_AUTH:-false}" != "true" ] || [ -z "${AUTH_PROVISIONER_DB_BACKUP_PATH:-}" ]; then
+              return 0
+            fi
+
+            echo "Restoring production DB backup after failed provisioned auth smoke."
+            quoted_app_root="$(printf '%q' "$APP_ROOT")"
+            quoted_backup="$(printf '%q' "$AUTH_PROVISIONER_DB_BACKUP_PATH")"
+            ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+              "APP_ROOT=$quoted_app_root AUTH_PROVISIONER_DB_BACKUP_PATH=$quoted_backup bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          test -s "$AUTH_PROVISIONER_DB_BACKUP_PATH"
+          cp "$AUTH_PROVISIONER_DB_BACKUP_PATH" data/terrafusion.db
+          test -s data/terrafusion.db
+          docker compose -f runtime-compose.yml --env-file release.env restart backend
+          SSH
+          }
 
           POLICY_JSON="$(curl -fsS --max-time 10 "${PUBLIC_URL}/api/auth/access-policy")"
           POLICY_JSON="$POLICY_JSON" node <<'NODE'
@@ -475,10 +576,11 @@ jobs:
 
           if [ -z "$LOGIN_RESPONSE" ]; then
             echo "Provisioned auth login smoke did not receive a response after retries."
+            restore_auth_backup
             exit 1
           fi
 
-          LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
+          if ! LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
           const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
           const token = response.token || response.Token;
           const email = response.email || response.Email || response.user?.email || response.User?.Email;
@@ -491,6 +593,10 @@ jobs:
           }
           console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
           NODE
+          then
+            restore_auth_backup
+            exit 1
+          fi
 
       - name: Finalize current SHA on VPS
         shell: bash
