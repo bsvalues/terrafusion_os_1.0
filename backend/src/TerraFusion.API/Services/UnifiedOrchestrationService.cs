@@ -394,6 +394,12 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
         try
         {
             var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
+            var moduleLoaderRequired = _configuration.GetValue("TF_MODULE_LOADER_REQUIRED", false);
+            if (!moduleLoaderRequired && modules.Count == 0)
+            {
+                return true;
+            }
+
             return modules.Count > 0;
         }
         catch

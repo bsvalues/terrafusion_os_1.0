@@ -113,7 +113,7 @@ export async function probeHealth(endpoint: string, timeoutMs = 1500): Promise<P
       warnings.push(`Health status reported: ${statusHint || 'unknown'}`);
     }
 
-    if (moduleCountActive === 0) {
+    if (moduleCountActive === 0 && moduleCountTotal !== null && moduleCountTotal > 0) {
       warnings.push('No active modules loaded (check TF_MODULE_INTENT_FILTER and module path)');
     }
 

@@ -28,6 +28,10 @@ COPY frontend/ frontend/
 
 # Build production bundle
 WORKDIR /app/frontend
+ARG VITE_BUILD_SHA=dev
+ARG VITE_MAPBOX_ACCESS_TOKEN=
+ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
+ENV VITE_MAPBOX_ACCESS_TOKEN=$VITE_MAPBOX_ACCESS_TOKEN
 RUN npx vite build --outDir /app/dist
 
 # Assert build produced output
