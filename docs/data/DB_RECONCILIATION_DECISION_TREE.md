@@ -8,294 +8,429 @@
 
 ## Purpose
 
-This document provides a decision tree for the operator to choose a reconciliation path for the migration divergence documented in WO-DATA-001 and WO-DATA-001R. Each decision point has a clear question, the available options, and the consequences of each choice.
+Provides a decision tree with 6 reconciliation paths for the migration divergence documented in WO-DATA-001. Each path includes: when valid, risk level, required proof, forbidden shortcuts, rollback strategy, and recommendation.
 
 ---
 
-## Decision 0: Is PostgreSQL accepting connections?
+## Prerequisite Decisions
+
+### Decision 0: Is PostgreSQL accepting TCP connections?
 
 ```
 PostgreSQL TCP on port 5432?
 ├── YES → proceed to Decision 1
 └── NO  → STOP. Fix PostgreSQL first.
-            Check: pg_hba.conf, listen_addresses, service status.
+            Check: pg_hba.conf listen_addresses, postgresql.conf port,
+            Windows service postgresql-x64-17 status, firewall rules.
             No reconciliation work can proceed without DB access.
 ```
 
-**Current status:** PostgreSQL Windows service is running but refusing TCP connections. This must be resolved before any reconciliation work.
+**Current status (2026-06-13):** Service `postgresql-x64-17` is Running but refusing TCP connections. This must be resolved first.
 
----
-
-## Decision 1: Backup before anything
+### Decision 1: Backup before anything
 
 ```
-Do you have a fresh pg_dump of both databases?
+Do you have a fresh pg_dump of BOTH databases?
 ├── YES → proceed to Decision 2
-└── NO  → RUN THESE FIRST:
-            pg_dump -h localhost -U postgres -d terrafusion -Fc > terrafusion_backup_$(date +%Y%m%d).dump
-            pg_dump -h localhost -U postgres -d terrafusion_levy -Fc > terrafusion_levy_backup_$(date +%Y%m%d).dump
+└── NO  → RUN THESE FIRST (PowerShell):
+            $env:PGPASSWORD = "<password>"
+            & "C:\Program Files\PostgreSQL\17\bin\pg_dump.exe" `
+              -h localhost -p 5432 -U postgres -d terrafusion -Fc `
+              -f "terrafusion_backup_20260613.dump"
+            & "C:\Program Files\PostgreSQL\17\bin\pg_dump.exe" `
+              -h localhost -p 5432 -U postgres -d terrafusion_levy -Fc `
+              -f "terrafusion_levy_backup_20260613.dump"
+            Remove-Item Env:\PGPASSWORD
             Then proceed to Decision 2.
 ```
 
 ---
 
-## Decision 2: Choose reconciliation approach
+## Decision 2: Choose Reconciliation Path
 
 ```
-Which approach fits your situation?
-
-A) SNAPSHOT RESET (recommended for solo-dev)
-   - Collapse all 107 applied migrations into a single baseline
-   - Fresh start for migration chain going forward
-   - Lose per-migration rollback history
-   - Fastest to execute (~1 hour)
-   → Go to Path A
-
-B) CHAIN REPAIR
-   - Recover all 19 DB-only migration source files
-   - Insert or remove 11 source-only entries
-   - Preserve full migration history
-   - Highest effort (~4 hours)
-   → Go to Path B
-
-C) HYBRID (merge feature branch + cleanup)
-   - Merge feat/ws1-forge-cost-reference to main first
-   - Then handle remaining 5+11 divergent entries
-   - Medium effort (~2 hours after merge)
-   → Go to Path C
+A) Restore missing DB-only migration source files into main
+B) Mark local DB as contaminated, rebuild clean dev DB from source
+C) Create a new clean dev DB under explicit name, archive old DB     ← RECOMMENDED
+D) Manually edit __EFMigrationsHistory to force alignment
+E) Split Levy/CurrentUse migration histories explicitly
+F) Create a formal baseline migration (snapshot reset)
 ```
+
+Note: Path E (Levy/CurrentUse split) is a prerequisite cleanup step for most other paths. It can be combined with any of A-D or F.
 
 ---
 
-## Path A: Snapshot Reset
+## Path A: Restore Missing DB-Only Migration Files Into Source
 
-### Step A1: Enumerate exact DB state
+### When valid
+- You intend to merge `feat/ws1-forge-cost-reference` to main soon
+- You want to preserve the full migration chain history
+- You can identify all 19 DB-only migrations and recover their source files
 
-```sql
--- Run against terrafusion database
-SELECT "MigrationId", "ProductVersion" FROM "__EFMigrationsHistory" ORDER BY "MigrationId";
--- Save output as evidence artifact
-```
+### Risk level: MEDIUM
 
-### Step A2: Remove Levy contamination
+### Steps
+1. Merge `feat/ws1-forge-cost-reference` to main (brings 10 of 15 feature migrations)
+2. For remaining 5 unknown DB-only migrations:
+   - Query `__EFMigrationsHistory` for exact MigrationIds
+   - Search all remote branches: `git log --all --oneline -- 'backend/src/TerraFusion.Data/Migrations/*<partial>*'`
+   - Recover source files via `git show <branch>:<path>`
+3. For the 11 source-only migrations:
+   - Verify which are already represented in the DB by equivalent schema
+   - Mark as applied if schema equivalent: `INSERT INTO "__EFMigrationsHistory"` with empty Up/Down
+   - Or remove source files if superseded
+4. Run `dotnet ef migrations list` and verify all entries show "Applied"
+5. Run `dotnet ef migrations add VerifyClean` — Up() and Down() must be empty
 
-```sql
--- Remove 4 Levy cross-context entries
-DELETE FROM "__EFMigrationsHistory"
-WHERE "MigrationId" IN (
-  '20260418045322_InitialLevy',
-  '20260418050107_AddLevyCertificationAndBankedCapacity',
-  '20260427190328_SeedLevyData',
-  '20260427190440_AddReferenceSources'
-);
--- Verify: should now show 103 rows
-SELECT COUNT(*) FROM "__EFMigrationsHistory";
-```
+### Required proof
+- [ ] All 107 DB MigrationIds enumerated (live query)
+- [ ] All 19 DB-only source files recovered or accounted for
+- [ ] All 11 source-only verified against live DB schema
+- [ ] `dotnet ef migrations add VerifyClean` produces empty migration
 
-### Step A3: Generate schema dump
+### Forbidden shortcuts
+- Do NOT delete source-only migrations without verifying the DB has equivalent schema
+- Do NOT insert into `__EFMigrationsHistory` without confirming the migration's schema changes exist
+- Do NOT run `dotnet ef database update` until chain is fully aligned
 
-```bash
-pg_dump -h localhost -U postgres -d terrafusion --schema-only > terrafusion_schema_current.sql
-```
+### Rollback strategy
+- Restore from pg_dump backup
+- `git reset --hard` to pre-merge state
 
-### Step A4: Clear migration history
-
-```sql
--- DANGEROUS: removes all migration tracking
--- Only do this if you have the pg_dump backup from Decision 1
-DELETE FROM "__EFMigrationsHistory";
-```
-
-### Step A5: Create baseline migration
-
-```bash
-cd backend/src
-# Remove all existing migration files (keep snapshot)
-rm TerraFusion.Data/Migrations/2*.cs
-rm TerraFusion.Data/Migrations/2*.Designer.cs
-
-# Generate fresh snapshot + empty baseline
-dotnet ef migrations add BaselineReset --project TerraFusion.Data --startup-project TerraFusion.API
-
-# Edit the generated migration: empty Up() and Down() methods
-# (the DB already has all tables — no schema changes needed)
-```
-
-### Step A6: Mark baseline as applied
-
-```sql
-INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('YYYYMMDDHHMMSS_BaselineReset', '8.0.0');
-```
-
-### Step A7: Verify
-
-```bash
-dotnet ef migrations list --project TerraFusion.Data --startup-project TerraFusion.API
-# Should show: BaselineReset (Applied)
-```
-
-### Step A8: Set LevyDatabase connection string
-
-Add to all appsettings files:
-```json
-{
-  "ConnectionStrings": {
-    "LevyDatabase": "Host=localhost;Database=terrafusion_levy;Username=postgres;Password=devpassword123;Port=5432"
-  }
-}
-```
+### Recommendation: NOT RECOMMENDED
+Too many unknowns (5 unidentified DB-only, 11 source-only needing per-migration analysis). High effort with moderate risk of chain corruption.
 
 ---
 
-## Path B: Chain Repair
+## Path B: Mark Local DB as Contaminated, Rebuild Clean Dev DB From Source
 
-### Step B1: Enumerate exact DB-only list
+### When valid
+- The local DB is a dev artifact, not a production system
+- PACS is the source of truth for all property data (can re-drain)
+- You want a clean EF chain without historical baggage
 
-Same as Step A1 — query `__EFMigrationsHistory` and cross-reference with source files.
+### Risk level: LOW
 
-### Step B2: Recover feature branch migration files
+### Steps
+1. **Rename** the contaminated DB: `ALTER DATABASE terrafusion RENAME TO terrafusion_contaminated_20260613;`
+2. **Create** new DB: `CREATE DATABASE terrafusion;`
+3. **Set LevyDatabase connection string** in appsettings.Development.local.json BEFORE running migrations
+4. **Run all 99 source migrations**: `dotnet ef database update --context TerraFusionDbContext`
+5. **Run Levy migrations separately**: `dotnet ef database update --context LevyDbContext`
+6. **Verify**: `dotnet ef migrations list` shows 99 Applied, 0 Pending
+7. **Re-drain PACS data** into clean DB (separate work order)
 
-```bash
-# For each of the 10 known feature-branch migrations:
-git show feat/ws1-forge-cost-reference:backend/src/TerraFusion.Data/Migrations/<file>.cs > backend/src/TerraFusion.Data/Migrations/<file>.cs
-git show feat/ws1-forge-cost-reference:backend/src/TerraFusion.Data/Migrations/<file>.Designer.cs > backend/src/TerraFusion.Data/Migrations/<file>.Designer.cs
-```
+### Required proof
+- [ ] pg_dump of old `terrafusion` completed before rename
+- [ ] New `terrafusion` has exactly 99 entries in `__EFMigrationsHistory`
+- [ ] `terrafusion_levy` has exactly 4 entries (no contamination in new DB)
+- [ ] `dotnet ef migrations add VerifyClean` produces empty migration
+- [ ] Application starts and connects successfully
 
-### Step B3: Investigate remaining 5 DB-only
+### Forbidden shortcuts
+- Do NOT drop the old database — rename and archive it
+- Do NOT skip setting LevyDatabase connection string (will re-contaminate)
+- Do NOT run init-db.sql until deciding which tables are needed
 
-```bash
-# Search all remote branches for the missing migration files
-git log --all --oneline -- 'backend/src/TerraFusion.Data/Migrations/*<partial_name>*'
-```
+### Rollback strategy
+- Rename `terrafusion_contaminated_20260613` back to `terrafusion`
+- Drop the new (failed) `terrafusion`
 
-### Step B4: Handle 11 source-only
-
-For each source-only migration, decide:
-```
-Is this migration's schema change already in the DB (applied via a different path)?
-├── YES → Insert into __EFMigrationsHistory as applied (empty Up/Down)
-└── NO  → This migration needs to actually run
-          ├── Safe to apply? → dotnet ef database update --target <migrationId>
-          └── Conflicts? → Rewrite migration to be idempotent (IF NOT EXISTS)
-```
-
-### Step B5: Rebuild model snapshot
-
-```bash
-# After all source files are aligned:
-dotnet ef migrations add SnapshotVerify --project TerraFusion.Data --startup-project TerraFusion.API
-# If Up() is empty → snapshot matches DB → delete this migration
-# If Up() has content → snapshot diverged → investigate
-```
-
-### Step B6: Clean Levy contamination
-
-Same as Step A2.
-
-### Step B7: Set LevyDatabase connection string
-
-Same as Step A8.
+### Recommendation: GOOD — simple, low risk, but requires re-draining all PACS data
 
 ---
 
-## Path C: Hybrid
+## Path C: Create New Clean Dev DB Under Explicit Name, Archive Old DB
 
-### Step C1: Merge feature branch
+### When valid
+- Same as Path B, plus you want to keep the old DB accessible for comparison without renaming
+- Preferred when you want both databases available simultaneously during transition
 
-```bash
-git checkout main
-git merge feat/ws1-forge-cost-reference
-# Resolve any conflicts in migration files
-```
+### Risk level: LOW (RECOMMENDED)
 
-### Step C2: Recount divergence
+### Steps
+1. **Create** new DB with explicit name: `CREATE DATABASE terrafusion_dev_clean;`
+2. **Update connection strings** in `appsettings.Development.local.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Host=localhost;Database=terrafusion_dev_clean;Username=postgres;Password=devpassword123;Port=5432",
+       "LevyDatabase": "Host=localhost;Database=terrafusion_levy;Username=postgres;Password=devpassword123;Port=5432"
+     }
+   }
+   ```
+3. **Run all 99 source migrations**: `dotnet ef database update --context TerraFusionDbContext --startup-project TerraFusion.API`
+4. **Run Levy migrations**: `dotnet ef database update --context LevyDbContext --startup-project TerraFusion.API`
+5. **Verify chain**: `dotnet ef migrations list` — 99 Applied for TerraFusion, 4 Applied for Levy
+6. **Verify snapshot**: `dotnet ef migrations add VerifyClean` — must produce empty Up()/Down()
+7. **Archive old DB**: leave `terrafusion` untouched for forensic reference
+8. **Re-drain PACS data** into clean DB (WO-DATA-002+)
+9. **Decide init-db.sql fate**: run selectively or skip (depending on which tables are needed)
+10. **Decide CurrentUse**: register or defer
 
-After merge, main will have 109 source migrations (99 + 10 from feature branch). The divergence shrinks to:
-- DB-only: 9 (4 Levy + 5 unknown)
-- Source-only: 11 (unchanged — these were on main before the merge)
+### Required proof
+- [ ] pg_dump of old `terrafusion` for permanent archive
+- [ ] New DB has exactly 99 entries in `__EFMigrationsHistory`
+- [ ] No Levy entries in new DB's `__EFMigrationsHistory` (only 99 TF entries)
+- [ ] `terrafusion_levy.__EFMigrationsHistory` has exactly 4 entries
+- [ ] `dotnet ef migrations add VerifyClean` produces empty migration
+- [ ] Application starts and connects to clean DB
+- [ ] Both old and new DBs accessible for comparison queries
 
-### Step C3: Handle remaining 9 DB-only
+### Forbidden shortcuts
+- Do NOT drop old `terrafusion` — keep as archive
+- Do NOT skip `LevyDatabase` connection string (contamination prevention)
+- Do NOT run `dotnet ef database update` until appsettings point to clean DB
+- Do NOT assume init-db.sql tables are needed — verify first
 
-Same as Steps B3 (investigate 5 unknown) + A2 (remove 4 Levy).
+### Rollback strategy
+- Revert `appsettings.Development.local.json` to point back to old `terrafusion`
+- Drop `terrafusion_dev_clean` if migration chain failed
+- Old DB is untouched and immediately usable
 
-### Step C4: Handle 11 source-only
+### Recommendation: **RECOMMENDED**
 
-Same as Step B4.
-
-### Step C5: Verify and set Levy connection
-
-Same as Steps B5 + A8.
+This is the safest path for a solo-dev project:
+- Old DB preserved for forensic comparison (no data loss)
+- Clean EF chain from source (no divergence)
+- Levy contamination prevented by explicit connection string
+- Both databases available simultaneously during transition
+- PACS re-drain is a known, repeatable operation
+- init-db.sql and CurrentUse get explicit, conscious decisions
 
 ---
 
-## Common Cleanup (all paths)
+## Path D: Manually Edit __EFMigrationsHistory
 
-### Levy duplicate tables in `terrafusion`
+### When valid
+- You understand the exact schema equivalence between DB state and source expectations
+- You have full proof that every manual edit preserves chain integrity
+- You want to avoid any data re-seeding
+
+### Risk level: **HIGH**
+
+**Manual edits to `__EFMigrationsHistory` are HIGH RISK and NOT recommended unless backed by full schema equivalence proof.**
+
+### Steps
+1. **Delete 4 Levy entries** from `terrafusion.__EFMigrationsHistory` (reduces 107 → 103)
+2. **For each of the 15 DB-only feature branch entries:**
+   - Verify the migration's schema changes exist in the DB
+   - Decide: keep entry (add source file) or delete entry (if schema was superseded)
+3. **For each of the 11 source-only entries:**
+   - Verify the migration's schema changes exist in the DB
+   - If equivalent schema exists: INSERT the MigrationId into `__EFMigrationsHistory`
+   - If schema is missing: the migration needs to actually run
+4. **Rebuild model snapshot**: `dotnet ef migrations add SnapshotFix`
+5. **Verify**: Up() and Down() must be empty
+
+### Required proof
+- [ ] Full 107-entry DB migration list (live query)
+- [ ] Per-migration schema equivalence verification for every INSERT/DELETE
+- [ ] `dotnet ef migrations add SnapshotFix` produces empty migration
+- [ ] No DROP or CREATE TABLE operations triggered by snapshot diff
+
+### Forbidden shortcuts
+- Do NOT INSERT entries without verifying schema equivalence
+- Do NOT DELETE entries without verifying the migration is truly foreign
+- Do NOT batch-delete "all entries after date X" — verify each individually
+- Do NOT assume timestamp order implies dependency order
+
+### Rollback strategy
+- Restore from pg_dump backup (only option — manual edits are hard to reverse)
+
+### Recommendation: **NOT RECOMMENDED**
+Requires per-migration schema equivalence proof for 30 entries (19 DB-only + 11 source-only). One incorrect edit breaks the chain. The pg_dump rollback is all-or-nothing. Path C is faster and safer.
+
+---
+
+## Path E: Split Levy/CurrentUse Migration Histories Explicitly
+
+### When valid
+- Always valid as a prerequisite step for any other path
+- Required before any future migration work
+
+### Risk level: LOW (cleanup only)
+
+### Steps
+1. **Set `LevyDatabase` connection string** in all appsettings files:
+   ```json
+   "LevyDatabase": "Host=localhost;Database=terrafusion_levy;Username=postgres;Password=devpassword123;Port=5432"
+   ```
+2. **Replace fallback chain** in Program.cs LevyDbContext registration:
+   ```csharp
+   // FROM:
+   ?? builder.Configuration.GetConnectionString("DefaultConnection")
+   // TO:
+   ?? throw new InvalidOperationException("LevyDatabase connection string required")
+   ```
+3. **Delete 4 Levy entries** from `terrafusion.__EFMigrationsHistory`:
+   ```sql
+   DELETE FROM "__EFMigrationsHistory"
+   WHERE "MigrationId" IN (
+     '20260418045322_InitialLevy',
+     '20260418050107_AddLevyCertificationAndBankedCapacity',
+     '20260427190328_SeedLevyData',
+     '20260427190440_AddReferenceSources'
+   );
+   ```
+4. **Remove `LevyCertification` from TerraFusionDbContext** (keep only in LevyDbContext)
+5. **Decide CurrentUse target**: register with explicit connection or defer
+6. **Verify Levy isolation**: `dotnet ef migrations list --context LevyDbContext` shows 4 Applied, no cross-contamination
+
+### Required proof
+- [ ] `terrafusion.__EFMigrationsHistory` no longer contains Levy entries
+- [ ] `terrafusion_levy.__EFMigrationsHistory` still has 4 entries
+- [ ] LevyDbContext fails to start if `LevyDatabase` connection string is missing (fail-loud)
+- [ ] `LevyCertification` is only in LevyDbContext
+
+### Forbidden shortcuts
+- Do NOT just set the connection string without removing the fallback — future missing configs will re-contaminate
+- Do NOT remove Levy tables from `terrafusion` in this step — that's a separate decision
+
+### Rollback strategy
+- Re-insert 4 Levy entries into `terrafusion.__EFMigrationsHistory`
+- Revert Program.cs connection string change
+- Low risk — easily reversible
+
+### Recommendation: **ALWAYS DO THIS** — combine with any other path
+
+---
+
+## Path F: Create a Formal Baseline Migration (Snapshot Reset)
+
+### When valid
+- You want to keep using the existing `terrafusion` database
+- You don't want to re-drain PACS data
+- You're willing to lose per-migration rollback history
+
+### Risk level: MEDIUM
+
+### Steps
+1. **Capture live schema**: `pg_dump --schema-only -d terrafusion > terrafusion_schema.sql`
+2. **Delete ALL entries** from `__EFMigrationsHistory` (after backup)
+3. **Delete ALL source migration files** (keep snapshot):
+   ```bash
+   rm backend/src/TerraFusion.Data/Migrations/2*.cs
+   rm backend/src/TerraFusion.Data/Migrations/2*.Designer.cs
+   ```
+4. **Generate baseline migration**:
+   ```bash
+   dotnet ef migrations add BaselineReset_20260613 --context TerraFusionDbContext
+   ```
+5. **Edit generated migration**: empty the Up() and Down() methods (DB already has all tables)
+6. **Mark as applied**:
+   ```sql
+   INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+   VALUES ('20260613000000_BaselineReset_20260613', '8.0.0');
+   ```
+7. **Verify**: `dotnet ef migrations list` shows 1 Applied migration
+8. **Verify snapshot**: `dotnet ef migrations add VerifyClean` — must produce empty Up()/Down()
+
+### Required proof
+- [ ] pg_dump backup of full DB before any changes
+- [ ] pg_dump --schema-only for schema comparison after baseline
+- [ ] Generated baseline snapshot matches live DB (empty verify migration)
+- [ ] Application starts and operates normally
+
+### Forbidden shortcuts
+- Do NOT delete migration history without a pg_dump backup
+- Do NOT skip editing the baseline Up()/Down() to be empty (it will try to CREATE all tables)
+- Do NOT forget to clean Levy contamination (combine with Path E)
+
+### Rollback strategy
+- Restore pg_dump backup
+- Restore migration source files from git: `git checkout HEAD -- backend/src/TerraFusion.Data/Migrations/`
+
+### Recommendation: ACCEPTABLE
+Works well for solo-dev with no production deployment. However, Path C is preferred because it doesn't require editing generated migrations or manually inserting into `__EFMigrationsHistory`.
+
+---
+
+## Common Cleanup (All Paths)
+
+### Levy Tables in `terrafusion`
 
 ```
-Do you want to keep Levy tables in BOTH databases?
-├── YES → No action. Accept the duplication. Note: data may diverge between the two copies.
-└── NO  → Which copy is authoritative?
-          ├── terrafusion_levy → DROP the public.Districts, etc. from terrafusion
-          └── terrafusion → DROP from terrafusion_levy and remove LevyDbContext
+After contamination cleanup (Path E), decide:
+├── DROP Levy tables from terrafusion.public
+│   (Districts, LevyMeasures, LevyScenarios, etc.)
+│   Rationale: terrafusion_levy is authoritative
+└── Keep both copies (accept duplication)
+    Warning: data will diverge between copies
 ```
 
-**Recommendation:** Keep `terrafusion_levy` as authoritative. Drop the duplicate Levy tables from `terrafusion.public`. Set `LevyDatabase` connection string to prevent future contamination.
+**Recommendation:** DROP from `terrafusion.public` after confirming `terrafusion_levy` has the authoritative data.
 
-### LevyCertification dual registration
-
-```
-LevyCertification exists in both TerraFusionDbContext and LevyDbContext.
-├── Remove from TerraFusionDbContext → Levy operations use LevyDbContext exclusively
-└── Remove from LevyDbContext → All entities managed by one context (simpler, but Levy loses independence)
-```
-
-**Recommendation:** Remove from TerraFusionDbContext. LevyCertification belongs with the Levy domain.
-
-### init-db.sql audit
+### init-db.sql Tables
 
 ```
-For each init-db.sql table (auth.users, core.properties, public.notebooks, ai.*, analytics.*):
-├── Table is actively used at runtime → Move to EF management (add entity + migration) OR keep as SQL-managed (document explicitly)
-└── Table is NOT used → DROP and remove from init-db.sql
+For each init-db.sql table:
+├── Actively used at runtime?
+│   ├── YES → Formalize: either add to TerraFusionDbContext (EF-managed)
+│   │         or document as SQL-managed (but not both)
+│   └── NO  → Remove from init-db.sql; DROP from DB if safe
 ```
 
-### CurrentUseDbContext decision
+### CurrentUse Decision
 
 ```
 Is current-use functionality being actively developed?
-├── YES → Register in Program.cs with explicit schema. Decide target DB.
-│         ├── Same database (terrafusion, schema=currentuse) → Add connection + migration
-│         └── Separate database (terrafusion_currentuse) → Add connection string + migration
-└── NO  → Leave as-is. No action until feature development begins.
+├── YES → Register in Program.cs with explicit connection string
+│         ├── Schema in terrafusion (currentuse schema)
+│         └── Separate database (terrafusion_currentuse)
+└── NO  → Leave unregistered. No action until feature dev begins.
 ```
 
 ---
 
-## Success Criteria
+## Success Criteria (All Paths)
 
-After reconciliation, all of these must be true:
+After reconciliation, ALL of these must be true:
 
 1. `dotnet ef migrations list --context TerraFusionDbContext` shows only TerraFusionDbContext migrations, all as "Applied"
 2. `dotnet ef migrations add VerifyClean` generates an empty Up() and Down() — model snapshot matches live DB
 3. No Levy migration IDs in `terrafusion.__EFMigrationsHistory`
 4. `LevyDatabase` connection string is set in all appsettings
-5. `dotnet build TerraFusion.sln` succeeds with 0 errors
-6. All existing tests pass (no regressions)
+5. LevyDbContext registration uses fail-loud (no DefaultConnection fallback)
+6. `dotnet build TerraFusion.sln` succeeds with 0 errors
+7. All existing tests pass (no regressions)
+8. Application starts and connects to the correct database
 
 ---
 
 ## Estimated Effort
 
-| Path | Effort | Risk | Best for |
-|---|---|---|---|
-| A: Snapshot Reset | ~1 hour | LOW | Solo dev, no production deploy |
-| B: Chain Repair | ~4 hours | MEDIUM | Multi-dev team, production history needed |
-| C: Hybrid | ~2 hours (after merge) | MEDIUM | Feature branch merge is planned anyway |
+| Path | Effort | Risk | Best For | Combine With |
+|---|---|---|---|---|
+| **A: Restore Files** | ~4 hours | MEDIUM | Multi-dev teams needing full history | E |
+| **B: Rebuild In-Place** | ~2 hours + re-drain | LOW | Quick cleanup, don't need old DB | E |
+| **C: New Clean DB** | ~2 hours + re-drain | **LOW** | **Solo dev, forensic comparison needed** | **E** |
+| **D: Edit History** | ~4 hours | **HIGH** | Experts with full schema proof | E |
+| **E: Split Contexts** | ~1 hour | LOW | Always — prerequisite for all paths | Any |
+| **F: Baseline Reset** | ~2 hours | MEDIUM | Keep existing DB, accept history loss | E |
+
+---
+
+## Final Recommendation
+
+**Execute Path E (Levy/CurrentUse split) + Path C (new clean dev DB).**
+
+1. Fix PostgreSQL TCP connectivity
+2. pg_dump both databases
+3. Set `LevyDatabase` connection string (Path E, step 1)
+4. Replace Levy fallback chain with fail-loud (Path E, step 2)
+5. Create `terrafusion_dev_clean` database (Path C, step 1)
+6. Update appsettings to point to clean DB (Path C, step 2)
+7. Run source migrations against clean DB (Path C, steps 3-4)
+8. Verify chain and snapshot (Path C, steps 5-6)
+9. Archive old `terrafusion` (untouched, available for queries)
+10. Re-drain PACS data (separate work order)
+
+This sequence costs ~3 hours plus PACS re-drain time. Risk is LOW. Both old and new databases remain accessible throughout. No manual edits to `__EFMigrationsHistory`. No migration file recovery needed. No schema equivalence proof required.
 
 ---
 
 **Classification:** Development Infrastructure Decision Framework  
-**Depends on:** WO-DATA-001, WO-DATA-001R (divergence + context boundary reports)  
+**Depends on:** WO-DATA-001 (PR #1006, merged), WO-DATA-001R (divergence + context boundary reports)  
 **Next:** Operator chooses path → WO-DATA-002 executes it
