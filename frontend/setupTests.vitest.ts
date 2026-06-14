@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
 class MockMapboxMap {
+  _center = { lng: -119.5, lat: 46.3 };
   on(_event: string, layerOrHandler?: unknown, maybeHandler?: unknown) {
     const handler = typeof layerOrHandler === 'function'
       ? layerOrHandler
@@ -16,6 +17,7 @@ class MockMapboxMap {
   addSource() { return this; }
   getSource() { return undefined; }
   addLayer() { return this; }
+  getLayer() { return undefined; }
   setFilter() { return this; }
   setLayoutProperty() { return this; }
   setPaintProperty() { return this; }
@@ -23,7 +25,9 @@ class MockMapboxMap {
   removeFeatureState() { return this; }
   getCanvas() { return document.createElement('canvas'); }
   getBounds() { return { getWest: () => -120, getSouth: () => 46, getEast: () => -119, getNorth: () => 47 }; }
+  getCenter() { return this._center; }
   getZoom() { return 10; }
+  isStyleLoaded() { return true; }
   remove() {}
 }
 
