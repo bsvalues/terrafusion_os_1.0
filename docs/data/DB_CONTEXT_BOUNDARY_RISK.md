@@ -147,7 +147,7 @@ EF cannot distinguish which context applied a given migration entry. When `dotne
 
 ## 7. Required Rule Before Future Migrations
 
-After reconciliation (WO-DATA-002+), the following rules MUST be enforced:
+After reconciliation (WO-DATA-002A+), the following rules MUST be enforced:
 
 ### Rule 1: One Context → One Migration History
 
@@ -186,7 +186,7 @@ Before running `dotnet ef migrations add` or `dotnet ef database update`:
 
 ---
 
-## 8. Remediation Checklist (for WO-DATA-002)
+## 8. Remediation Checklist (for WO-DATA-002A+)
 
 1. [ ] **Set `LevyDatabase` connection string** in all appsettings — prevent future Levy→terrafusion fallback
 2. [ ] **Replace Levy fallback chain** — remove `?? DefaultConnection` from LevyDbContext registration; use fail-loud
@@ -202,4 +202,4 @@ Before running `dotnet ef migrations add` or `dotnet ef database update`:
 **Classification:** Development Infrastructure Analysis  
 **Status:** BLOCKED FOR FORWARD MIGRATIONS  
 **Depends on:** WO-DATA-001 (PR #1006, merged)  
-**Next:** WO-DATA-002 (execute remediation after operator decision on reconciliation path)
+**Next:** WO-DATA-002A — Clean Dev DB Bootstrap Plan

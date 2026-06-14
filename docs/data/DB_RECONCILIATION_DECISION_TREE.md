@@ -165,7 +165,7 @@ Too many unknowns (5 unidentified DB-only, 11 source-only needing per-migration 
 5. **Verify chain**: `dotnet ef migrations list` — 99 Applied for TerraFusion, 4 Applied for Levy
 6. **Verify snapshot**: `dotnet ef migrations add VerifyClean` — must produce empty Up()/Down()
 7. **Archive old DB**: leave `terrafusion` untouched for forensic reference
-8. **Re-drain PACS data** into clean DB (WO-DATA-002+)
+8. **Re-drain PACS data** into clean DB (WO-DATA-002A+)
 9. **Decide init-db.sql fate**: run selectively or skip (depending on which tables are needed)
 10. **Decide CurrentUse**: register or defer
 
@@ -433,4 +433,4 @@ This sequence costs ~3 hours plus PACS re-drain time. Risk is LOW. Both old and 
 
 **Classification:** Development Infrastructure Decision Framework  
 **Depends on:** WO-DATA-001 (PR #1006, merged), WO-DATA-001R (divergence + context boundary reports)  
-**Next:** Operator chooses path → WO-DATA-002 executes it
+**Next:** WO-DATA-002A — Clean Dev DB Bootstrap Plan

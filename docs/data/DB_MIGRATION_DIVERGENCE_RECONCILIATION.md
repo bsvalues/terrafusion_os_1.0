@@ -165,7 +165,7 @@ This analysis is READ-ONLY. The 4 Levy entries remain in `terrafusion.__EFMigrat
 - Separate `terrafusion_currentuse` database
 - Remain inert until current-use functionality is actively developed
 
-No action needed for WO-DATA-001R. This is a WO-DATA-002+ decision.
+No action needed for WO-DATA-001R. This is a WO-DATA-002A+ decision.
 
 ---
 
@@ -184,7 +184,7 @@ No action needed for WO-DATA-001R. This is a WO-DATA-002+ decision.
 
 **Key finding:** The `auth`, `core`, `ai`, and `analytics` schemas are created by init-db.sql, NOT by EF migrations. If init-db.sql runs before EF migrations on a fresh database, the schemas exist. If only EF runs, these schemas don't exist and the init-db.sql tables are absent. This creates a deploy-order dependency.
 
-**Decision needed (WO-DATA-002+):**
+**Decision needed (WO-DATA-002A+):**
 - Are these init-db.sql tables actively used at runtime?
 - If yes: formalize them (either EF-manage or document as SQL-managed)
 - If no: remove from init-db.sql and consider DROPing from live DB
@@ -246,4 +246,4 @@ After reconciliation, enforce:
 **Classification:** Development Infrastructure Analysis  
 **Status:** BLOCKED FOR FORWARD MIGRATIONS  
 **Depends on:** WO-DATA-001 (PR #1006, merged)  
-**Next:** Operator chooses reconciliation path → WO-DATA-002 executes
+**Next:** Operator chooses reconciliation path → WO-DATA-002A (Clean Dev DB Bootstrap Plan)
