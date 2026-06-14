@@ -57,7 +57,7 @@ jobs:
           # headers, etc.). Build inputs must come from the requested release SHA so
           # auth/runtime changes cannot be silently replaced by main during deploy.
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml; do
+          for path in ops/proxy/Caddyfile ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml; do
             dir="$(dirname "$path")"
             mkdir -p "$dir"
             echo "Overlaying $path from origin/main"

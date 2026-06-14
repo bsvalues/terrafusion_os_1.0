@@ -36,6 +36,12 @@ services:
       - ./docs/spec-lock:/app/docs/spec-lock:ro
     extra_hosts:
       - host.docker.internal:host-gateway
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:5000/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
 
   frontend:
     image: ${TF_FRONTEND_IMAGE}
