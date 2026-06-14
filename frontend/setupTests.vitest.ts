@@ -38,20 +38,6 @@ class MockMapboxPopup {
   remove() {}
 }
 
-vi.mock('mapbox-gl', () => ({
-  default: {
-    accessToken: '',
-    Map: MockMapboxMap,
-    Popup: MockMapboxPopup,
-    NavigationControl: vi.fn(),
-    ScaleControl: vi.fn(),
-  },
-  Map: MockMapboxMap,
-  Popup: MockMapboxPopup,
-  NavigationControl: vi.fn(),
-  ScaleControl: vi.fn(),
-}));
-
 vi.mock('maplibre-gl', () => ({
   default: {
     Map: MockMapboxMap,

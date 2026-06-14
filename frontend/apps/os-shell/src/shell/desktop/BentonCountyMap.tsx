@@ -1,20 +1,13 @@
 /**
- * TerraFusion OS — Benton County GIS Map
+ * TerraFusion OS — Benton County GIS Map (MapLibre GL JS — ADR-0021)
  *
- * Adapted from QUARANTINE/top-level-dirs/applications/bcbs-gis-pro-production/
- * client/src/components/TerraFusionMap.tsx
- *
- * Real Mapbox GL map:
- * - Satellite-streets style centered on Benton County WA
- * - County boundary overlay
- * - Parcel layer from /api/benton-county/parcels (graceful offline fallback)
- * - Click-to-select parcel → opens PropertyWorkbench
- *
- * Token: VITE_MAPBOX_ACCESS_TOKEN in .env.development
+ * ESRI satellite basemap centered on Benton County WA.
+ * County boundary overlay + parcel layer from /api/benton-county/parcels.
+ * Click-to-select parcel → opens PropertyWorkbench.
  */
 
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { useEffect, useRef, useState } from 'react';
 
 // ---------------------------------------------------------------------------
@@ -33,6 +26,19 @@ const BENTON_BOUNDARY_COORDS: [number, number][] = [
   [-119.875, 45.773],
 ];
 
+const SATELLITE_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    esri: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256,
+      attribution: 'Tiles &copy; Esri',
+    },
+  },
+  layers: [{ id: 'esri-tiles', type: 'raster', source: 'esri', minzoom: 0, maxzoom: 19 }],
+};
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -48,29 +54,17 @@ export interface BentonCountyMapProps {
 
 export default function BentonCountyMap({ onParcelSelect, className }: BentonCountyMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
-
-    if (!token) {
-      setError('Map requires VITE_MAPBOX_ACCESS_TOKEN — add it to .env.development');
-      setLoading(false);
-      return;
-    }
-
     if (mapRef.current || !containerRef.current) return;
 
-    mapboxgl.accessToken = token;
-
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
+      style: SATELLITE_STYLE,
       center: BENTON_CENTER,
       zoom: BENTON_ZOOM,
-      projection: 'mercator',
     });
 
     mapRef.current = map;
@@ -78,7 +72,6 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
     map.on('load', () => {
       setLoading(false);
 
-      // Resolve accent color from CSS token (Mapbox GL cannot use CSS custom properties)
       const accentHs = getComputedStyle(document.documentElement)
         .getPropertyValue('--tf-transcend-cyan-hs')
         .trim() || '190 100%';
@@ -207,20 +200,6 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
       mapRef.current = null;
     };
   }, [onParcelSelect]);
-
-  if (error) {
-    return (
-      <div
-        data-testid='benton-county-map-error'
-        className='w-full h-full flex items-center justify-center'
-        style={{ background: 'hsl(var(--tf-bg))' }}
-      >
-        <span className='text-xs text-center px-6' style={{ color: 'hsl(var(--tf-destructive))' }}>
-          {error}
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div data-testid='benton-county-map' className={`relative w-full h-full ${className ?? ''}`}>

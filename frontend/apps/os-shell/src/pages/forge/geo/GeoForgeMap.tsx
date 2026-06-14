@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor, prbColor, bivariateColor } from './utils/choropleths';
@@ -8,11 +8,22 @@ import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
 import { computeLISA, type LISAResult } from './utils/spatialStats';
 import type { MapLayer, ChoroMode } from './types/geoforge.types';
 
-const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ?? '';
-mapboxgl.accessToken = MAPBOX_TOKEN;
-
 const BENTON_CENTER: [number, number] = [-119.3, 46.2];
 const BENTON_ZOOM = 10;
+
+const SATELLITE_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+  sources: {
+    esri: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256,
+      attribution: 'Tiles &copy; Esri',
+    },
+  },
+  layers: [{ id: 'esri-tiles', type: 'raster', source: 'esri', minzoom: 0, maxzoom: 19 }],
+};
 
 interface Props {
   onNeighborhoodClick: (code: string) => void;
@@ -20,9 +31,9 @@ interface Props {
 }
 
 export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const hoverPopupRef = useRef<mapboxgl.Popup | null>(null);
+  const hoverPopupRef = useRef<maplibregl.Popup | null>(null);
   const {
     neighborhoodStats,
     salePoints,
@@ -44,22 +55,21 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
   // Initialize map once
   useEffect(() => {
-    if (!MAPBOX_TOKEN) return;
     if (!containerRef.current || mapRef.current) return;
 
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
+      style: SATELLITE_STYLE,
       center: BENTON_CENTER,
       zoom: BENTON_ZOOM,
       minZoom: 8,
       maxZoom: 18,
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    map.addControl(new maplibregl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
 
-    const hoverPopup = new mapboxgl.Popup({
+    const hoverPopup = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: false,
       offset: 12,
@@ -328,7 +338,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         }),
     };
 
-    const src = map.getSource('neighborhoods') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('neighborhoods') as maplibregl.GeoJSONSource | undefined;
     src?.setData(geojson);
   }, [neighborhoodStats, simulationDeltaMap, choroMode, lisaMode]);
 
@@ -358,11 +368,11 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         })),
     };
 
-    const src = map.getSource('sales') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('sales') as maplibregl.GeoJSONSource | undefined;
     src?.setData(geojson);
 
     // Mirror to KDE source
-    const kdeSrc = map.getSource('sales-kde') as mapboxgl.GeoJSONSource | undefined;
+    const kdeSrc = map.getSource('sales-kde') as maplibregl.GeoJSONSource | undefined;
     kdeSrc?.setData(geojson);
   }, [salePoints]);
 
@@ -386,7 +396,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         })),
     };
 
-    const src = map.getSource('gwr-cells') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('gwr-cells') as maplibregl.GeoJSONSource | undefined;
     src?.setData(geojson);
   }, [gwrSurface]);
 
@@ -402,7 +412,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('comps-highlight') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('comps-highlight') as maplibregl.GeoJSONSource | undefined;
     if (!comparableSalePoints || comparableSalePoints.length === 0) {
       src?.setData({ type: 'FeatureCollection', features: [] });
       return;
@@ -422,7 +432,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
     if (!activeLayers.has('neighborhood-poly')) return;
-    const src = map.getSource('neighborhoods-poly') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('neighborhoods-poly') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     // Build lookup from neighborhoodStats for color enrichment
@@ -463,7 +473,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('yoy-change') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('yoy-change') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     if (!activeLayers.has('yoy-change')) {
@@ -498,7 +508,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('market-trend') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('market-trend') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     if (!activeLayers.has('market-trend')) {
@@ -534,7 +544,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('ratio-drift') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('ratio-drift') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     if (!activeLayers.has('ratio-drift')) {
@@ -572,7 +582,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('ratio-cliffs') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('ratio-cliffs') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     if (!activeLayers.has('ratio-cliffs') || neighborhoodStats.length === 0) {
@@ -622,7 +632,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    const src = map.getSource('parcel-pts') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('parcel-pts') as maplibregl.GeoJSONSource | undefined;
     if (!src) return;
 
     if (!activeLayers.has('parcel-polygons') || !selectedNeighborhoodCode) {
@@ -653,8 +663,8 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
 
-    const ringSrc = map.getSource('comps-radius-ring') as mapboxgl.GeoJSONSource | undefined;
-    const inSrc = map.getSource('comps-radius-sales') as mapboxgl.GeoJSONSource | undefined;
+    const ringSrc = map.getSource('comps-radius-ring') as maplibregl.GeoJSONSource | undefined;
+    const inSrc = map.getSource('comps-radius-sales') as maplibregl.GeoJSONSource | undefined;
     const empty: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
 
     if (!bloomLatlng || !selectedRadiusMi) {
@@ -703,13 +713,13 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     const saleBase = ['all', ['!', ['has', 'point_count']], monthFilter, priceFilter, classFilter];
 
     if (map.getLayer('sale-circles')) {
-      map.setFilter('sale-circles', saleBase as mapboxgl.FilterSpecification);
+      map.setFilter('sale-circles', saleBase as maplibregl.FilterSpecification);
     }
     if (map.getLayer('sale-outlier-ring')) {
       map.setFilter('sale-outlier-ring', [
         ...saleBase,
         ['==', ['get', 'isOutlier'], true],
-      ] as mapboxgl.FilterSpecification);
+      ] as maplibregl.FilterSpecification);
     }
   }, [selectedMonth, priceBand, filter.propertyClass]);
 
@@ -740,25 +750,6 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     }
   }, [activeLayers]);
 
-  if (!MAPBOX_TOKEN) {
-    return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2 text-center px-8">
-        <div className="text-slate-400 text-[10px] font-mono uppercase tracking-widest">GeoForge Map Canvas</div>
-        <div className="text-slate-300 text-sm font-semibold mt-1">Mapbox token required</div>
-        <div className="text-slate-500 text-xs mt-1 max-w-xs leading-relaxed">
-          Add{' '}
-          <code className="text-cyan-500/80 font-mono">VITE_MAPBOX_TOKEN=pk.your_token</code>
-          {' '}to{' '}
-          <code className="text-slate-400 font-mono">frontend/apps/os-shell/.env.development</code>
-          {' '}and restart the dev server.
-        </div>
-        <div className="text-slate-600 text-[9px] mt-4">
-          All 31 analysis panels are available via the equity rail →
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       ref={containerRef}
@@ -783,7 +774,7 @@ function choroColorForMode(
   }
 }
 
-function addYoyChangeLayer(map: mapboxgl.Map) {
+function addYoyChangeLayer(map: maplibregl.Map) {
   map.addSource('yoy-change', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -819,7 +810,7 @@ function addYoyChangeLayer(map: mapboxgl.Map) {
       visibility: 'none',
       'text-field': ['get', 'pctLabel'],
       'text-size': 10,
-      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-font': ['Open Sans Bold'],
       'text-anchor': 'center',
       'text-allow-overlap': false,
     },
@@ -831,7 +822,7 @@ function addYoyChangeLayer(map: mapboxgl.Map) {
   });
 }
 
-function addNeighborhoodPolyLayer(map: mapboxgl.Map) {
+function addNeighborhoodPolyLayer(map: maplibregl.Map) {
   map.addSource('neighborhoods-poly', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -880,7 +871,7 @@ function addNeighborhoodPolyLayer(map: mapboxgl.Map) {
   });
 }
 
-function addNeighborhoodLayer(map: mapboxgl.Map) {
+function addNeighborhoodLayer(map: maplibregl.Map) {
   map.addSource('neighborhoods', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -918,7 +909,7 @@ function addNeighborhoodLayer(map: mapboxgl.Map) {
   });
 }
 
-function addSaleScatterLayer(map: mapboxgl.Map) {
+function addSaleScatterLayer(map: maplibregl.Map) {
   map.addSource('sales', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -961,7 +952,7 @@ function addSaleScatterLayer(map: mapboxgl.Map) {
     layout: {
       'text-field': ['get', 'point_count_abbreviated'],
       'text-size': 10,
-      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-font': ['Open Sans Bold'],
     },
     paint: {
       'text-color': '#ffffff',
@@ -1002,7 +993,7 @@ function addSaleScatterLayer(map: mapboxgl.Map) {
   });
 }
 
-function addKdeLayer(map: mapboxgl.Map) {
+function addKdeLayer(map: maplibregl.Map) {
   map.addSource('sales-kde', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1037,7 +1028,7 @@ function addKdeLayer(map: mapboxgl.Map) {
   );
 }
 
-function addAiClusterLayer(map: mapboxgl.Map) {
+function addAiClusterLayer(map: maplibregl.Map) {
   map.addSource('ai-clusters', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1059,7 +1050,7 @@ function addAiClusterLayer(map: mapboxgl.Map) {
   });
 }
 
-function addSimulationOverlayLayer(map: mapboxgl.Map) {
+function addSimulationOverlayLayer(map: maplibregl.Map) {
   // Reuses the 'neighborhoods' source — draws amber rings on features with hasSimulation=true
   map.addLayer({
     id: 'simulation-ring',
@@ -1095,7 +1086,7 @@ function addSimulationOverlayLayer(map: mapboxgl.Map) {
   });
 }
 
-function addCompsHighlightLayer(map: mapboxgl.Map) {
+function addCompsHighlightLayer(map: maplibregl.Map) {
   map.addSource('comps-highlight', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1129,7 +1120,7 @@ function addCompsHighlightLayer(map: mapboxgl.Map) {
   });
 }
 
-function addCompsRadiusLayer(map: mapboxgl.Map) {
+function addCompsRadiusLayer(map: maplibregl.Map) {
   map.addSource('comps-radius-ring', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1170,7 +1161,7 @@ function addCompsRadiusLayer(map: mapboxgl.Map) {
   });
 }
 
-function addMarketTrendLayer(map: mapboxgl.Map) {
+function addMarketTrendLayer(map: maplibregl.Map) {
   map.addSource('market-trend', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1206,7 +1197,7 @@ function addMarketTrendLayer(map: mapboxgl.Map) {
       visibility: 'none',
       'text-field': ['get', 'pctLabel'],
       'text-size': 10,
-      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-font': ['Open Sans Bold'],
       'text-anchor': 'center',
       'text-allow-overlap': false,
     },
@@ -1218,7 +1209,7 @@ function addMarketTrendLayer(map: mapboxgl.Map) {
   });
 }
 
-function addParcelPointsLayer(map: mapboxgl.Map) {
+function addParcelPointsLayer(map: maplibregl.Map) {
   map.addSource('parcel-pts', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1248,7 +1239,7 @@ function addParcelPointsLayer(map: mapboxgl.Map) {
   });
 }
 
-function addRatioCliffLayer(map: mapboxgl.Map) {
+function addRatioCliffLayer(map: maplibregl.Map) {
   map.addSource('ratio-cliffs', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1281,7 +1272,7 @@ function addRatioCliffLayer(map: mapboxgl.Map) {
   });
 }
 
-function addRatioDriftLayer(map: mapboxgl.Map) {
+function addRatioDriftLayer(map: maplibregl.Map) {
   map.addSource('ratio-drift', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },
@@ -1317,7 +1308,7 @@ function addRatioDriftLayer(map: mapboxgl.Map) {
       visibility: 'none',
       'text-field': ['get', 'deltaLabel'],
       'text-size': 10,
-      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-font': ['Open Sans Bold'],
       'text-anchor': 'center',
       'text-allow-overlap': false,
     },
@@ -1329,7 +1320,7 @@ function addRatioDriftLayer(map: mapboxgl.Map) {
   });
 }
 
-function addGwrLayer(map: mapboxgl.Map) {
+function addGwrLayer(map: maplibregl.Map) {
   map.addSource('gwr-cells', {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] },

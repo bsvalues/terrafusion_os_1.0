@@ -1,30 +1,36 @@
-// GeoForge v2 — Mapbox surface.
+// GeoForge v2 — MapLibre GL JS surface (ADR-0021).
 //
 // Three layers, in Lumin Bridge palette:
 //   1. Neighborhood outlines (concave-hull, from /v2/neighborhoods/outline)
 //   2. Parcel polygons at zoom >= 13 (from /v2/parcels/tiles, bbox-filtered)
 //   3. Selected neighborhood halo + parcel hover
 //
-// Basemap: Mapbox light-v11 (warm-leaning, approximate linen).
+// Basemap: OSM streets (light-weight data-viz backdrop).
 // Click neighborhood → select. Click parcel → emit.
 
 import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import type { NbhdOutlineCollection, ParcelTileCollection, ParcelTileProps } from './v2Api';
 import type { V2LayerId } from './LeftPanel';
 import type { MapContextPayload } from './mapContext';
 
-const MAPBOX_TOKEN = (
-  (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined)
-  ?? (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)
-  ?? ''
-).trim();
-mapboxgl.accessToken = MAPBOX_TOKEN;
-
 const DEFAULT_CENTER: [number, number] = [-120.9, 47.35];
 const DEFAULT_ZOOM = 6.6;
 const PARCEL_ZOOM_MIN = 13;
+
+const STREETS_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    },
+  },
+  layers: [{ id: 'osm-tiles', type: 'raster', source: 'osm', minzoom: 0, maxzoom: 19 }],
+};
 
 interface Props {
   mapRef?: React.RefObject<unknown>;
@@ -56,27 +62,27 @@ export function GeoForgeV2Map({
   mapCtx,
   initialViewport,
 }: Props) {
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const popupRef = useRef<mapboxgl.Popup | null>(null);
+  const popupRef = useRef<maplibregl.Popup | null>(null);
 
   // ── Init map once ─────────────────────────────────────────
   useEffect(() => {
-    if (!MAPBOX_TOKEN || !containerRef.current || mapRef.current) return;
+    if (!containerRef.current || mapRef.current) return;
 
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: STREETS_STYLE,
       center: initialViewport?.center ?? DEFAULT_CENTER,
       zoom: initialViewport?.zoom ?? DEFAULT_ZOOM,
       minZoom: 6,
       maxZoom: 18,
     });
 
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-    map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }), 'bottom-right');
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new maplibregl.ScaleControl({ unit: 'imperial' }), 'bottom-right');
 
-    popupRef.current = new mapboxgl.Popup({
+    popupRef.current = new maplibregl.Popup({
       closeButton: false,
       closeOnClick: false,
       offset: 10,
@@ -283,7 +289,7 @@ export function GeoForgeV2Map({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !outlines) return;
-    const src = map.getSource('nbhd-outlines') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('nbhd-outlines') as maplibregl.GeoJSONSource | undefined;
     if (src) src.setData(outlines as unknown as GeoJSON.FeatureCollection);
   }, [outlines]);
 
@@ -291,7 +297,7 @@ export function GeoForgeV2Map({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !parcels) return;
-    const src = map.getSource('parcels') as mapboxgl.GeoJSONSource | undefined;
+    const src = map.getSource('parcels') as maplibregl.GeoJSONSource | undefined;
     if (src) src.setData(parcels as unknown as GeoJSON.FeatureCollection);
   }, [parcels]);
 
@@ -454,14 +460,6 @@ export function GeoForgeV2Map({
     };
     if (map.isStyleLoaded()) { apply(); } else { map.once('styledata', apply); }
   }, [mapCtx, visibleLayers]);
-
-  if (!MAPBOX_TOKEN) {
-    return (
-      <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-        Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN or VITE_MAPBOX_TOKEN).
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-full">
