@@ -53,11 +53,12 @@ For each check, report:
 node --version
 pnpm --version
 git status --short
-ls backend/TerraFusion.API/
+ls backend/src/TerraFusion.API/
 ls frontend/apps/os-shell/
 ls backend/src/TerraFusion.Data/
 ls os-platform/ai-systems/
-ss -tlnp 2>/dev/null | grep -E ':(3000|3002|3004|5000)'
+# Windows: ss/netstat differ — use PowerShell or netstat -ano
+netstat -ano 2>/dev/null | grep -E 'LISTENING' | grep -E ':(3000|3002|3004|5000)\b' || echo "ports free"
 ```
 
 ## Output Contract

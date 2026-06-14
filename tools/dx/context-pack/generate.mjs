@@ -61,8 +61,12 @@ function getGitInfo(repoRoot) {
  */
 function checkServiceHealth(port) {
   try {
-    // Check if port is listening
-    const result = exec(`ss -tlnp 2>/dev/null | grep ":${port}" || true`);
+    // ss on Linux/macOS; fall back to netstat on Windows where ss is unavailable
+    // (prevents a missing `ss` from reporting every service 'down' → false CRITICAL).
+    let result = exec(`ss -tlnp 2>/dev/null | grep ":${port}" || true`);
+    if (!result && !exec(`command -v ss 2>/dev/null || true`)) {
+      result = exec(`netstat -ano 2>/dev/null | grep LISTENING | grep ":${port} " || true`);
+    }
     return result.includes(`:${port}`) ? 'up' : 'down';
   } catch {
     return 'unknown';
@@ -101,8 +105,12 @@ function scanTodos(repoRoot) {
 
   try {
     // Scan for security TODOs (critical)
+    // Bounded: TODO counts are informational. On a slow filesystem (Windows
+    // Defender real-time scan can add ~40ms/file open), this degrades to empty
+    // rather than blocking the whole context-pack emit. latest.json must always land.
     const securityTodos = exec(
-      `grep -rn "TODO" "${repoRoot}/backend/TerraFusion.Security" 2>/dev/null || true`
+      `grep -rn --include=*.cs "TODO" "${repoRoot}/backend/src/TerraFusion.Security" 2>/dev/null || true`,
+      { timeout: 6000 }
     );
     if (securityTodos) {
       securityTodos.split('\n').filter(l => l.trim()).slice(0, 5).forEach(line => {
@@ -115,7 +123,8 @@ function scanTodos(repoRoot) {
 
     // Scan for DI TODOs (high)
     const diTodos = exec(
-      `grep -rn "TODO.*register\\|TODO.*service" "${repoRoot}/backend" 2>/dev/null | head -5 || true`
+      `grep -rn --include=*.cs --exclude-dir=bin --exclude-dir=obj "TODO.*register\\|TODO.*service" "${repoRoot}/backend/src" 2>/dev/null | head -5 || true`,
+      { timeout: 6000 }
     );
     if (diTodos) {
       diTodos.split('\n').filter(l => l.trim()).forEach(line => {
