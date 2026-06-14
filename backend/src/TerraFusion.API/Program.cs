@@ -2469,9 +2469,7 @@ if (!builder.Configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE", defaultValue: 
 builder.Services.AddDbContext<LevyDbContext>(options =>
 {
   var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
-                ?? builder.Configuration.GetConnectionString("LevyDatabase")
-                ?? builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+                ?? builder.Configuration.GetConnectionString("LevyDatabase");
   var provider = builder.Configuration["DatabaseProvider"];
 
   if (!string.IsNullOrWhiteSpace(levyConn) && string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
