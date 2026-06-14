@@ -32,8 +32,8 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -102,6 +102,69 @@ interface SpatialAnomalyState {
   result?: SpatialAnomalyResult;
   correlationId?: string;
   error?: ErrorInfo;
+}
+
+/* ------------------------------------------------------------------ */
+/*  MapLibre basemap styles (ADR-0021: no Mapbox token dependency)     */
+/* ------------------------------------------------------------------ */
+
+type BasemapId = 'streets' | 'satellite';
+
+const BASEMAP_STYLES: Record<BasemapId, maplibregl.StyleSpecification> = {
+  streets: {
+    version: 8,
+    sources: {
+      osm: {
+        type: 'raster',
+        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      },
+    },
+    layers: [{ id: 'osm-tiles', type: 'raster', source: 'osm', minzoom: 0, maxzoom: 19 }],
+  },
+  satellite: {
+    version: 8,
+    sources: {
+      esri: {
+        type: 'raster',
+        tiles: [
+          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        ],
+        tileSize: 256,
+        attribution: 'Esri, Maxar, Earthstar Geographics',
+      },
+    },
+    layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri', minzoom: 0, maxzoom: 19 }],
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Session state persistence                                          */
+/* ------------------------------------------------------------------ */
+
+interface AtlasSessionState {
+  center: [number, number];
+  zoom: number;
+  basemap: BasemapId;
+  showBoundary: boolean;
+}
+
+const SESSION_KEY = 'tf-atlas-session';
+
+function loadSession(parcelId: string): AtlasSessionState | null {
+  try {
+    const raw = sessionStorage.getItem(`${SESSION_KEY}:${parcelId}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSession(parcelId: string, state: AtlasSessionState): void {
+  try {
+    sessionStorage.setItem(`${SESSION_KEY}:${parcelId}`, JSON.stringify(state));
+  } catch { /* quota exceeded — non-fatal */ }
 }
 
 function isLayerAvailabilityList(layers: QueryResult['layers']): layers is AvailableLayer[] {
@@ -297,53 +360,62 @@ export const PropertyAtlas: React.FC = () => {
   const [geographyId, setGeographyId] = useState<string>('');
   const [spatialAnomalyState, setSpatialAnomalyState] = useState<SpatialAnomalyState>({ status: 'idle' });
 
-  // ── Phase 0B: Mapbox GL JS satellite map ──────────────────────────────────
+  // ── MapLibre GL JS map (ADR-0021 locked stack) ─────────────────────────────
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapboxRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const centroidLat = boundary.data?.centroid?.lat;
   const centroidLng = boundary.data?.centroid?.lng;
 
+  // Session-persisted map state
+  const saved = parcelId ? loadSession(parcelId) : null;
+  const [basemap, setBasemap] = useState<BasemapId>(saved?.basemap ?? 'satellite');
+  const [showBoundary, setShowBoundary] = useState(saved?.showBoundary ?? true);
+
+  // Persist session state on change
+  useEffect(() => {
+    if (!parcelId || !mapRef.current) return;
+    const map = mapRef.current;
+    const center = map.getCenter();
+    saveSession(parcelId, {
+      center: [center.lng, center.lat],
+      zoom: map.getZoom(),
+      basemap,
+      showBoundary,
+    });
+  }, [basemap, showBoundary, parcelId]);
+
+  // Initialize MapLibre map
   useEffect(() => {
     const el = mapContainerRef.current;
-    if (!el || boundary.source !== 'live' || centroidLat === undefined || centroidLng === undefined) return;
+    if (!el || centroidLat === undefined || centroidLng === undefined) return;
 
-    // Remove previous instance if parcel changed
-    if (mapboxRef.current) {
-      mapboxRef.current.remove();
-      mapboxRef.current = null;
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
     }
 
-    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
-    if (!token) return; // token missing — skip render
-
     try {
-      mapboxgl.accessToken = token;
-      const map = new mapboxgl.Map({
+      const sessionState = parcelId ? loadSession(parcelId) : null;
+      const map = new maplibregl.Map({
         container: el,
-        style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: [centroidLng, centroidLat],
-        zoom: 17,
-        scrollZoom: false,
+        style: BASEMAP_STYLES[basemap],
+        center: sessionState?.center ?? [centroidLng, centroidLat],
+        zoom: sessionState?.zoom ?? 17,
         attributionControl: false,
       });
 
-      // Compact attribution
-      map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
-      // Parcel centroid marker
-      const marker = new mapboxgl.Marker({ color: '#20d4c8', scale: 0.9 })
+      const situsText = boundary.data?.situsDisplay?.replace(/\r?\n/g, ', ') ?? parcelId;
+      new maplibregl.Marker({ color: '#20d4c8', scale: 0.9 })
         .setLngLat([centroidLng, centroidLat])
+        .setPopup(
+          new maplibregl.Popup({ offset: 25, closeButton: false })
+            .setHTML(`<span style="font-size:11px;font-weight:600">${situsText}</span>`)
+        )
         .addTo(map);
 
-      // Popup on hover
-      const situsText = boundary.data?.situsDisplay?.replace(/\r?\n/g, ', ') ?? parcelId;
-      marker.setPopup(
-        new mapboxgl.Popup({ offset: 25, closeButton: false })
-          .setHTML(`<span style="font-size:11px;font-weight:600">${situsText}</span>`)
-      );
-
-      // Draw parcel polygon boundary when ArcGIS ring data is available
       const ringJson = boundary.data?.ringJson;
       if (ringJson) {
         map.on('load', () => {
@@ -358,37 +430,55 @@ export const PropertyAtlas: React.FC = () => {
                   properties: {},
                 },
               });
-              // Translucent fill
               map.addLayer({
                 id: 'parcel-fill',
                 type: 'fill',
                 source: 'parcel-boundary',
-                paint: { 'fill-color': '#20d4c8', 'fill-opacity': 0.12 },
+                paint: { 'fill-color': '#20d4c8', 'fill-opacity': 0.15 },
               });
-              // Solid outline
               map.addLayer({
                 id: 'parcel-outline',
                 type: 'line',
                 source: 'parcel-boundary',
-                paint: { 'line-color': '#20d4c8', 'line-width': 2, 'line-opacity': 0.9 },
+                paint: { 'line-color': '#20d4c8', 'line-width': 2.5, 'line-opacity': 0.9 },
               });
+              if (!showBoundary) {
+                map.setLayoutProperty('parcel-fill', 'visibility', 'none');
+                map.setLayoutProperty('parcel-outline', 'visibility', 'none');
+              }
             }
-          } catch {
-            // malformed ringJson — skip polygon, marker still renders
-          }
+          } catch { /* malformed ringJson — marker still renders */ }
         });
       }
 
-      mapboxRef.current = map;
-    } catch {
-      // JSDOM / test environment — silently skip
-    }
+      // Persist zoom/center on interaction
+      map.on('moveend', () => {
+        if (!parcelId) return;
+        const c = map.getCenter();
+        saveSession(parcelId, { center: [c.lng, c.lat], zoom: map.getZoom(), basemap, showBoundary });
+      });
+
+      mapRef.current = map;
+    } catch { /* JSDOM / test environment — silently skip */ }
 
     return () => {
-      mapboxRef.current?.remove();
-      mapboxRef.current = null;
+      mapRef.current?.remove();
+      mapRef.current = null;
     };
-  }, [boundary.source, centroidLat, centroidLng, boundary.data?.situsDisplay, boundary.data?.ringJson, parcelId]);
+  // Re-mount on parcel change or basemap switch
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centroidLat, centroidLng, boundary.data?.ringJson, parcelId, basemap]);
+
+  // Toggle parcel boundary layer visibility without re-mounting the map
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+    const vis = showBoundary ? 'visible' : 'none';
+    try {
+      if (map.getLayer('parcel-fill')) map.setLayoutProperty('parcel-fill', 'visibility', vis);
+      if (map.getLayer('parcel-outline')) map.setLayoutProperty('parcel-outline', 'visibility', vis);
+    } catch { /* layer not yet added */ }
+  }, [showBoundary]);
 
   const toggleLayer = useCallback((layerId: LayerId) => {
     setSelectedLayers((prev) => {
@@ -720,36 +810,62 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
-      {/* ── Phase 0B: Map Canvas ──────────────────────────────
-          map-container always rendered so the layer/Atlas surface always has a stable mount point.
-          atlas-map-canvas (Leaflet target) only mounts when a live boundary with a centroid is available. */}
-      <div
-        data-testid="map-container"
-        className="rounded-xl overflow-hidden w-full"
-        style={{ border: '1px solid hsl(var(--tf-border, 220 13% 22%))', boxShadow: '0 4px 24px rgba(0,0,0,0.35)', minHeight: 24 }}
-      >
-        {boundary.source === 'live' && boundary.data?.centroid && (
+      {/* ── Map Canvas + Controls ─────────────────────────────── */}
+      {boundary.data?.centroid && (
+        <div
+          data-testid="map-container"
+          className="rounded-xl overflow-hidden w-full"
+          style={{ border: '1px solid hsl(var(--tf-border, 220 13% 22%))', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}
+        >
+          {/* Map toolbar */}
+          <div className="flex items-center gap-2 px-3 py-1.5 text-xs" style={{ background: 'hsl(var(--tf-bg-secondary, 220 14% 12%))' }}>
+            <span className="tf-text-dim mr-1">Basemap:</span>
+            {(['satellite', 'streets'] as const).map((id) => (
+              <button
+                key={id}
+                type="button"
+                data-testid={`basemap-${id}`}
+                onClick={() => setBasemap(id)}
+                className={`px-2 py-0.5 rounded ${basemap === id ? 'tf-panel font-semibold' : 'tf-text-dim hover:tf-text'}`}
+                style={basemap === id ? { color: 'hsl(var(--tf-transcend-cyan-hs, 174 100%) 55%)' } : undefined}
+              >
+                {id === 'satellite' ? 'Satellite' : 'Streets'}
+              </button>
+            ))}
+            <span className="mx-2 tf-text-dim">|</span>
+            <button
+              type="button"
+              data-testid="toggle-boundary"
+              onClick={() => setShowBoundary((v) => !v)}
+              className={`px-2 py-0.5 rounded ${showBoundary ? 'tf-panel font-semibold' : 'tf-text-dim hover:tf-text'}`}
+              style={showBoundary ? { color: '#20d4c8' } : undefined}
+            >
+              {showBoundary ? 'Boundary ON' : 'Boundary OFF'}
+            </button>
+          </div>
+
           <div
             ref={mapContainerRef}
             data-testid="atlas-map-canvas"
             className="w-full"
             style={{ height: 480 }}
           />
-        )}
-      </div>
-
-      {/* ── Boundary unavailable state ────────────────────── */}
-      {!boundary.loading && !boundary.error && boundary.source === 'unavailable' && (
-        <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-boundary-unavailable">
-          Boundary data not available for this parcel.
         </div>
       )}
 
-      {/* ── Honesty disclosure: full GIS geometry is not exposed on this route ── */}
-      <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
-        This route shows boundary previews and layer availability only.
-        Full GIS geometry rendering is reserved for the dedicated Atlas suite.
-      </div>
+      {/* Loading state */}
+      {boundary.loading && (
+        <div className="text-xs tf-text-muted p-4 tf-panel rounded-xl text-center" data-testid="atlas-map-loading">
+          Loading parcel geometry...
+        </div>
+      )}
+
+      {/* No centroid available */}
+      {!boundary.loading && !boundary.data?.centroid && (
+        <div className="text-xs tf-text-muted p-4 tf-panel rounded-xl text-center" data-testid="atlas-boundary-unavailable">
+          No geometry available for this parcel. Map renders when centroid data is present.
+        </div>
+      )}
 
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
       {layers.source === 'live' && layers.data && (
@@ -882,14 +998,11 @@ export const PropertyAtlas: React.FC = () => {
               <div className="text-[11px] tf-text-dim" data-testid="atlas-results-source">
                 Layer availability returned from query_parcel_layers (correlationId{queryState.correlationId ? `: ${queryState.correlationId.slice(0, 16)}` : ''}).
               </div>
-              <div className="text-[11px] tf-text-dim space-y-1">
+              <div className="text-[11px] tf-text-dim">
                 <p>
-                  Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches. Full parcel geometry is reserved for the dedicated Atlas suite.
+                  Layer availability confirmed from county-scoped Atlas query.
+                  Boundary geometry rendered from ArcGIS sync data when available.
                 </p>
-                <p>
-                  Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches and are not the canonical authoritative geometry.
-                </p>
-                <p>Not exposed on this route yet: full geometry rendering, neighbor parcels, and live overlay editing.</p>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (

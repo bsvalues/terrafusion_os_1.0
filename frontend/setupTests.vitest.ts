@@ -48,6 +48,23 @@ vi.mock('mapbox-gl', () => ({
   ScaleControl: vi.fn(),
 }));
 
+vi.mock('maplibre-gl', () => ({
+  default: {
+    Map: MockMapboxMap,
+    Marker: class { setLngLat() { return this; } setPopup() { return this; } addTo() { return this; } remove() {} },
+    Popup: MockMapboxPopup,
+    NavigationControl: vi.fn(),
+    AttributionControl: vi.fn(),
+    ScaleControl: vi.fn(),
+  },
+  Map: MockMapboxMap,
+  Marker: class { setLngLat() { return this; } setPopup() { return this; } addTo() { return this; } remove() {} },
+  Popup: MockMapboxPopup,
+  NavigationControl: vi.fn(),
+  AttributionControl: vi.fn(),
+  ScaleControl: vi.fn(),
+}));
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
