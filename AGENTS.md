@@ -43,6 +43,26 @@ when a human must approve.
 6. Conflicting canon (two sources disagree)
 7. Credentials / secrets
 
+## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021)
+
+**No two agents may operate in the same mutable working tree.**
+
+Each agent must use a dedicated git worktree tied to exactly one work order.
+The shared/main working tree is for human-controlled sync only.
+
+- One worktree = one work order = one branch = one PR.
+- Before the first write, every agent runs and reports: `pwd`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git status --short`. If toplevel = main repo root and the agent was not explicitly assigned there, **STOP** and create a worktree.
+- If foreign staged or unstaged files are present, **STOP** and report.
+- No `git reset --hard` / `git clean` / force checkout / broad stash / `git add -A` without human approval.
+- PR is the sync boundary. Agents open draft PRs; humans merge.
+- If a recovery plan's assumptions diverge from current repo state, the plan is stale — do not execute it.
+- If the shared checkout state is uncertain, **quarantine** it (do not clean/recover).
+
+Full policy: `docs/agents/AGENT_WORKTREE_ISOLATION.md`
+Quarantine protocol: `docs/agents/SHARED_WORKTREE_QUARANTINE.md`
+Recovery protocol: `docs/agents/SHARED_WORKTREE_RECOVERY.md`
+Branch/PR policy: `docs/branching/BRANCH_AND_WORKTREE_POLICY.md`
+
 ## CORE GOVERNANCE SURFACE (ALLOWED SCOPE)
 Only modify files under:
 - os-platform/core/pilot/**
