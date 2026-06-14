@@ -148,7 +148,7 @@ These migration files exist on `origin/main` but were never applied to the local
 
 ---
 
-## 7. Reconciliation Prerequisites (WO-DATA-002+)
+## 7. Reconciliation Prerequisites (WO-DATA-002A+)
 
 Before any migration can be safely applied:
 
@@ -186,4 +186,4 @@ SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'current
 ---
 
 **Classification:** Development Infrastructure Audit  
-**Next Work Order:** WO-DATA-002 (Migration Reconciliation Plan)
+**Next Work Order:** WO-DATA-002A — Clean Dev DB Bootstrap Plan
