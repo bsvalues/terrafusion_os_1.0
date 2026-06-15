@@ -1,5 +1,0 @@
-bucket         = "terrafusion-tfstate-prod"
-key            = "terraform.tfstate"
-region         = "us-west-2"
-dynamodb_table = "terrafusion-tfstate-lock-prod"
-encrypt        = true

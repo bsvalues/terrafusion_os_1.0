@@ -26,6 +26,23 @@ packages:
   # property-tax-ai: js-tiktoken (via @langchain/core) not in pnpm offline store
   - '!packages/property-tax-ai'
   - '!packages/property-tax-ai/**'
+  # Remaining iframe-only module packages: os-shell renders these via AppFrame
+  # (no TypeScript imported). Excluded to shrink install graph. Run individually
+  # with `cd packages/<name> && pnpm install && pnpm dev` when needed.
+  - '!packages/terra-gama'
+  - '!packages/terra-gama/**'
+  - '!packages/terra-sync'
+  - '!packages/terra-sync/**'
+  - '!packages/terra-pilt'
+  - '!packages/terra-pilt/**'
+  - '!packages/terra-flow'
+  - '!packages/terra-flow/**'
+  - '!packages/terra-insight'
+  - '!packages/terra-insight/**'
+  - '!packages/terra-levy'
+  - '!packages/terra-levy/**'
+  - '!packages/terra-miner'
+  - '!packages/terra-miner/**'
 
   # Core frontend (OS Shell)
   - 'frontend'
