@@ -4,12 +4,14 @@
 
 ---
 
-**What this is.** A defined assessor-modernization asset package: a bounded suite
-architecture, an administrative workflow-persistence model (TerraDais), a unified
-parcel **Property Workbench**, a provenance/continuity layer, and an optional AI assist
-layer — plus the operating doctrine that makes a county conversion survivable. It is
-licensable for commercial deployment within a defined field-of-use. It is **not** a generic
-platform pitch and **not** a finished drop-in replacement system.
+**What this is.** A **transition-safe assessor-modernization asset** — built first to reduce
+the risk of taking a county off a legacy system, and second to modernize it. Underneath that
+risk-reduction posture sit a provenance/continuity layer, an administrative
+workflow-persistence model (TerraDais), a unified parcel **Property Workbench**, a bounded
+suite architecture, and an optional AI assist layer — plus the operating doctrine that makes
+a county conversion survivable. It is licensable for commercial deployment within a defined
+field-of-use. It is **not** a generic platform pitch and **not** a finished drop-in
+replacement system.
 
 **The honest anchor claim:**
 > Benton County runtime pilot on TerraFusion DB as system-of-record, with a proof-gated

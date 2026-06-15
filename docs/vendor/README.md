@@ -24,6 +24,10 @@ Say this. Repeat this. Every other statement in this package must be consistent 
 | [`asset-inventory.md`](asset-inventory.md) | Honest, tiered list of what actually exists — code vs prototype vs spec. Proof you control what you're licensing. | After interest, before diligence. |
 | [`term-sheet.md`](term-sheet.md) | Business terms only: field-of-use, exclusivity, rights granted, retained rights, support, buyout option. Plus a "they'll ask / you answer" appendix. | When the conversation turns to deal shape. |
 
+**Internal aids (not handouts):** this `README.md` and [`call-script.md`](call-script.md) —
+a 5-question script for controlling the first 10 minutes of a vendor call. Keep both off the
+table; they're for you, not the vendor.
+
 ---
 
 ## How to run a vendor conversation with this
