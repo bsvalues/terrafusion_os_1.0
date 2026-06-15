@@ -345,6 +345,49 @@ function gisSourceToDisclosure(
 
 /* ------------------------------------------------------------------ */
 
+function addBoundaryToMap(
+  map: maplibregl.Map,
+  ringJson: string | null | undefined,
+  visible: boolean,
+): void {
+  if (!ringJson) return;
+  try {
+    const ring: [number, number][] = JSON.parse(ringJson);
+    if (ring.length < 3) return;
+
+    const geojson = {
+      type: 'Feature' as const,
+      geometry: { type: 'Polygon' as const, coordinates: [ring] },
+      properties: {},
+    };
+
+    const existing = map.getSource('parcel-boundary');
+    if (existing && 'setData' in existing) {
+      (existing as maplibregl.GeoJSONSource).setData(geojson);
+    } else {
+      map.addSource('parcel-boundary', { type: 'geojson', data: geojson });
+      map.addLayer({
+        id: 'parcel-fill',
+        type: 'fill',
+        source: 'parcel-boundary',
+        paint: { 'fill-color': '#20d4c8', 'fill-opacity': 0.15 },
+      });
+      map.addLayer({
+        id: 'parcel-outline',
+        type: 'line',
+        source: 'parcel-boundary',
+        paint: { 'line-color': '#20d4c8', 'line-width': 2.5, 'line-opacity': 0.9 },
+      });
+    }
+
+    const vis = visible ? 'visible' : 'none';
+    if (map.getLayer('parcel-fill')) map.setLayoutProperty('parcel-fill', 'visibility', vis);
+    if (map.getLayer('parcel-outline')) map.setLayoutProperty('parcel-outline', 'visibility', vis);
+  } catch { /* malformed ringJson — marker still renders */ }
+}
+
+/* ------------------------------------------------------------------ */
+
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
@@ -366,10 +409,22 @@ export const PropertyAtlas: React.FC = () => {
   const centroidLat = boundary.data?.centroid?.lat;
   const centroidLng = boundary.data?.centroid?.lng;
 
-  // Session-persisted map state
-  const saved = parcelId ? loadSession(parcelId) : null;
-  const [basemap, setBasemap] = useState<BasemapId>(saved?.basemap ?? 'satellite');
-  const [showBoundary, setShowBoundary] = useState(saved?.showBoundary ?? true);
+  // Session-persisted map state (lazy init — avoids re-parsing sessionStorage every render)
+  const [basemap, setBasemap] = useState<BasemapId>(() => {
+    const s = parcelId ? loadSession(parcelId) : null;
+    return s?.basemap ?? 'satellite';
+  });
+  const [showBoundary, setShowBoundary] = useState(() => {
+    const s = parcelId ? loadSession(parcelId) : null;
+    return s?.showBoundary ?? true;
+  });
+
+  // Refs so event handlers always read current values (fixes stale closure in moveend)
+  const basemapRef = useRef(basemap);
+  const showBoundaryRef = useRef(showBoundary);
+  const appliedBasemapRef = useRef(basemap);
+  useEffect(() => { basemapRef.current = basemap; }, [basemap]);
+  useEffect(() => { showBoundaryRef.current = showBoundary; }, [showBoundary]);
 
   // Persist session state on change
   useEffect(() => {
@@ -384,7 +439,7 @@ export const PropertyAtlas: React.FC = () => {
     });
   }, [basemap, showBoundary, parcelId]);
 
-  // Initialize MapLibre map
+  // Initialize MapLibre map — fires once per parcel (centroid arrival), NOT on basemap switch
   useEffect(() => {
     const el = mapContainerRef.current;
     if (!el || centroidLat === undefined || centroidLng === undefined) return;
@@ -396,9 +451,12 @@ export const PropertyAtlas: React.FC = () => {
 
     try {
       const sessionState = parcelId ? loadSession(parcelId) : null;
+      const initBasemap = basemapRef.current;
+      appliedBasemapRef.current = initBasemap;
+
       const map = new maplibregl.Map({
         container: el,
-        style: BASEMAP_STYLES[basemap],
+        style: BASEMAP_STYLES[initBasemap],
         center: sessionState?.center ?? [centroidLng, centroidLat],
         zoom: sessionState?.zoom ?? 17,
         attributionControl: false,
@@ -416,46 +474,19 @@ export const PropertyAtlas: React.FC = () => {
         )
         .addTo(map);
 
-      const ringJson = boundary.data?.ringJson;
-      if (ringJson) {
-        map.on('load', () => {
-          try {
-            const ring: [number, number][] = JSON.parse(ringJson);
-            if (ring.length >= 3) {
-              map.addSource('parcel-boundary', {
-                type: 'geojson',
-                data: {
-                  type: 'Feature',
-                  geometry: { type: 'Polygon', coordinates: [ring] },
-                  properties: {},
-                },
-              });
-              map.addLayer({
-                id: 'parcel-fill',
-                type: 'fill',
-                source: 'parcel-boundary',
-                paint: { 'fill-color': '#20d4c8', 'fill-opacity': 0.15 },
-              });
-              map.addLayer({
-                id: 'parcel-outline',
-                type: 'line',
-                source: 'parcel-boundary',
-                paint: { 'line-color': '#20d4c8', 'line-width': 2.5, 'line-opacity': 0.9 },
-              });
-              if (!showBoundary) {
-                map.setLayoutProperty('parcel-fill', 'visibility', 'none');
-                map.setLayoutProperty('parcel-outline', 'visibility', 'none');
-              }
-            }
-          } catch { /* malformed ringJson — marker still renders */ }
-        });
-      }
+      map.on('load', () => {
+        addBoundaryToMap(map, boundary.data?.ringJson, showBoundaryRef.current);
+      });
 
-      // Persist zoom/center on interaction
       map.on('moveend', () => {
         if (!parcelId) return;
         const c = map.getCenter();
-        saveSession(parcelId, { center: [c.lng, c.lat], zoom: map.getZoom(), basemap, showBoundary });
+        saveSession(parcelId, {
+          center: [c.lng, c.lat],
+          zoom: map.getZoom(),
+          basemap: basemapRef.current,
+          showBoundary: showBoundaryRef.current,
+        });
       });
 
       mapRef.current = map;
@@ -465,19 +496,45 @@ export const PropertyAtlas: React.FC = () => {
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  // Re-mount on parcel change or basemap switch
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [centroidLat, centroidLng, boundary.data?.ringJson, parcelId, basemap]);
+  }, [centroidLat, centroidLng, parcelId]);
+
+  // Swap basemap style without destroying the map instance
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || basemap === appliedBasemapRef.current) return;
+    appliedBasemapRef.current = basemap;
+
+    map.setStyle(BASEMAP_STYLES[basemap]);
+    map.once('style.load', () => {
+      addBoundaryToMap(map, boundary.data?.ringJson, showBoundaryRef.current);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [basemap]);
+
+  // Update boundary geometry in-place when GIS data arrives or changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+    addBoundaryToMap(map, boundary.data?.ringJson, showBoundaryRef.current);
+  }, [boundary.data?.ringJson]);
 
   // Toggle parcel boundary layer visibility without re-mounting the map
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
-    const vis = showBoundary ? 'visible' : 'none';
-    try {
-      if (map.getLayer('parcel-fill')) map.setLayoutProperty('parcel-fill', 'visibility', vis);
-      if (map.getLayer('parcel-outline')) map.setLayoutProperty('parcel-outline', 'visibility', vis);
-    } catch { /* layer not yet added */ }
+    if (!map) return;
+    const apply = () => {
+      const vis = showBoundary ? 'visible' : 'none';
+      try {
+        if (map.getLayer('parcel-fill')) map.setLayoutProperty('parcel-fill', 'visibility', vis);
+        if (map.getLayer('parcel-outline')) map.setLayoutProperty('parcel-outline', 'visibility', vis);
+      } catch { /* layer not yet added */ }
+    };
+    if (map.isStyleLoaded()) {
+      apply();
+    } else {
+      map.once('style.load', apply);
+    }
   }, [showBoundary]);
 
   const toggleLayer = useCallback((layerId: LayerId) => {
