@@ -5,19 +5,24 @@ import React from 'react';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-// Mock mapbox-gl so tests run in jsdom without canvas
-vi.mock('mapbox-gl', () => ({
+const addTo = vi.fn();
+const remove = vi.fn();
+const on = vi.fn();
+const invalidateSize = vi.fn();
+
+// Mock Leaflet so tests run in jsdom without real tile/canvas behavior.
+vi.mock('leaflet', () => ({
   default: {
-    accessToken: '',
-    Map: vi.fn().mockImplementation(() => ({
-      on: vi.fn(),
-      remove: vi.fn(),
-      addSource: vi.fn(),
-      addLayer: vi.fn(),
-      getSource: vi.fn(() => null),
-      setFeatureState: vi.fn(),
-      queryRenderedFeatures: vi.fn(() => []),
-      getCanvas: vi.fn(() => ({ style: {} })),
+    map: vi.fn(() => ({
+      remove,
+      invalidateSize,
+    })),
+    tileLayer: vi.fn(() => ({
+      on,
+      addTo,
+    })),
+    geoJSON: vi.fn(() => ({
+      addTo,
     })),
   },
 }));
@@ -25,6 +30,10 @@ vi.mock('mapbox-gl', () => ({
 describe('BentonCountyMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    }));
   });
 
   it('renders the map container div', async () => {
@@ -42,36 +51,28 @@ describe('BentonCountyMap', () => {
       '../../shell/desktop/BentonCountyMap'
     );
     render(<BentonCountyMap onParcelSelect={onParcelSelect} className='h-full' />);
-    // Component mounts without errors; onParcelSelect is wired via Mapbox click event
-    // (Actual click would require Mapbox GL canvas simulation — just verify mount here)
+    // Component mounts without errors; onParcelSelect is wired via Leaflet layer click handlers.
+    // Actual click simulation belongs to a browser-level map test.
     expect(document.body).toBeTruthy();
   });
 
   it('renders a testid-bearing root element', async () => {
-    // Verify that when the component mounts, it renders either the map wrapper
-    // (data-testid="benton-county-map") or the error state
-    // (data-testid="benton-county-map-error") — both are valid outcomes
-    // depending on whether VITE_MAPBOX_ACCESS_TOKEN is defined in the test env.
     const { default: BentonCountyMap } = await import(
       '../../shell/desktop/BentonCountyMap'
     );
     render(<BentonCountyMap />);
     const mapEl = document.querySelector('[data-testid="benton-county-map"]');
-    const errorEl = document.querySelector('[data-testid="benton-county-map-error"]');
-    // At least one of the two root elements must be present
-    expect(mapEl ?? errorEl).toBeTruthy();
+    expect(mapEl).toBeTruthy();
   });
 
-  it('uses honest unavailable language when the map token is not configured', async () => {
+  it('does not require a Mapbox token to render Home GIS', async () => {
     const { default: BentonCountyMap } = await import(
       '../../shell/desktop/BentonCountyMap'
     );
     render(<BentonCountyMap />);
 
-    const errorEl = screen.queryByTestId('benton-county-map-error');
-    if (errorEl) {
-      expect(errorEl).toHaveTextContent('Map layer unavailable: Mapbox token not configured');
-    }
+    expect(screen.getByTestId('benton-county-map')).toBeInTheDocument();
+    expect(screen.queryByText(/Mapbox token/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/add it to \.env/i)).not.toBeInTheDocument();
   });
 });
@@ -99,6 +100,8 @@ describe('BentonCountyMap proof-path honesty', () => {
 
     expect(source).not.toContain('Math.random');
     expect(source).not.toContain("type: 'Point'");
+    expect(source).not.toContain('VITE_MAPBOX_ACCESS_TOKEN');
+    expect(source).not.toContain('mapbox://');
     expect(source).toContain('Parcel layer unavailable: source check timed out');
   });
 });
