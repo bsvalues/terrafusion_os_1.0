@@ -61,7 +61,7 @@ import { Plus,
   CheckCircle2,
  } from '@mui/icons-material';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../ui/use-toast';
 import { format, formatDistanceToNow, isAfter, isBefore, addDays } from 'date-fns';
 import {

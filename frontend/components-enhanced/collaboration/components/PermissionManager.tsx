@@ -87,7 +87,7 @@ import { Shield,
   Globe,
  } from '@mui/icons-material';
 import { format, formatDistanceToNow } from 'date-fns';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../ui/use-toast';
 import {
   Permission,
