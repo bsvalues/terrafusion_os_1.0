@@ -148,6 +148,7 @@ interface AtlasSessionState {
   zoom: number;
   basemap: BasemapId;
   showBoundary: boolean;
+  showContext?: boolean;
 }
 
 const SESSION_KEY = 'tf-atlas-session';
@@ -388,6 +389,18 @@ function addBoundaryToMap(
 
 /* ------------------------------------------------------------------ */
 
+function ContextRow({ label, value }: { label: string; value: string | null | undefined }) {
+  if (!value) return null;
+  return (
+    <div className="flex justify-between gap-2" style={{ fontSize: 10.5 }}>
+      <span className="tf-text-dim shrink-0">{label}</span>
+      <span className="tf-text text-right truncate" title={value}>{value}</span>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
@@ -418,6 +431,10 @@ export const PropertyAtlas: React.FC = () => {
     const s = parcelId ? loadSession(parcelId) : null;
     return s?.showBoundary ?? true;
   });
+  const [showContext, setShowContext] = useState(() => {
+    const s = parcelId ? loadSession(parcelId) : null;
+    return s?.showContext ?? false;
+  });
 
   // Refs so event handlers always read current values (fixes stale closure in moveend)
   const basemapRef = useRef(basemap);
@@ -436,8 +453,9 @@ export const PropertyAtlas: React.FC = () => {
       zoom: map.getZoom(),
       basemap,
       showBoundary,
+      showContext,
     });
-  }, [basemap, showBoundary, parcelId]);
+  }, [basemap, showBoundary, showContext, parcelId]);
 
   // Initialize MapLibre map — fires once per parcel (centroid arrival), NOT on basemap switch
   useEffect(() => {
@@ -899,14 +917,83 @@ export const PropertyAtlas: React.FC = () => {
             >
               {showBoundary ? 'Boundary ON' : 'Boundary OFF'}
             </button>
+            <button
+              type="button"
+              data-testid="toggle-context"
+              onClick={() => setShowContext((v) => !v)}
+              className={`px-2 py-0.5 rounded ${showContext ? 'tf-panel font-semibold' : 'tf-text-dim hover:tf-text'}`}
+              style={showContext ? { color: '#e8a838' } : undefined}
+            >
+              {showContext ? 'Context ON' : 'Context OFF'}
+            </button>
           </div>
 
-          <div
-            ref={mapContainerRef}
-            data-testid="atlas-map-canvas"
-            className="w-full"
-            style={{ height: 480 }}
-          />
+          <div className="relative">
+            <div
+              ref={mapContainerRef}
+              data-testid="atlas-map-canvas"
+              className="w-full"
+              style={{ height: 480 }}
+            />
+
+            {/* ── Contextual overlay panel (TA-004) ──────────────── */}
+            {showContext && (
+              <div
+                data-testid="atlas-context-overlay"
+                className="absolute top-2 right-2 rounded-lg text-xs pointer-events-auto"
+                style={{
+                  background: 'hsl(var(--tf-bg-secondary, 220 14% 12%) / 0.92)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid hsl(var(--tf-border, 220 13% 22%) / 0.6)',
+                  padding: '8px 10px',
+                  maxWidth: 220,
+                  zIndex: 10,
+                }}
+              >
+                <div className="font-semibold mb-1.5" style={{ color: '#e8a838', fontSize: 11 }}>
+                  Parcel Context
+                </div>
+                {layers.loading && (
+                  <div className="tf-text-dim" style={{ fontSize: 10 }}>Loading...</div>
+                )}
+                {!layers.loading && layers.source === 'unavailable' && !layers.data && (
+                  <div className="tf-text-dim" style={{ fontSize: 10 }}>No layer data available</div>
+                )}
+                {layers.data && (
+                  <div className="space-y-1">
+                    <ContextRow label="Zoning" value={
+                      layers.data.zoning?.zoneCode
+                      || layers.data.zoning?.characteristicZoning1
+                      || activeParcel?.landUseDescription
+                    } />
+                    <ContextRow label="Flood" value={
+                      layers.data.flood
+                        ? `${layers.data.flood.zone} (${layers.data.flood.risk})`
+                        : undefined
+                    } />
+                    <ContextRow label="Tax Area" value={
+                      layers.data.taxArea?.taxAreaNumber
+                        ? `${layers.data.taxArea.taxAreaNumber}${layers.data.taxArea.taxAreaDescription ? ' — ' + layers.data.taxArea.taxAreaDescription : ''}`
+                        : activeParcel?.taxDistrictCode || activeParcel?.taxDistrictName
+                    } />
+                    <ContextRow label="Land Class" value={
+                      layers.data.landClass?.landClassCode
+                      || layers.data.landClass?.landTypeCode
+                    } />
+                    {layers.data.landClass?.primaryUseCd && (
+                      <ContextRow label="Use" value={
+                        layers.data.landClass.primaryUseCd
+                        + (layers.data.landClass.subUseCd ? ` / ${layers.data.landClass.subUseCd}` : '')
+                      } />
+                    )}
+                  </div>
+                )}
+                <div className="mt-1.5 tf-text-dim" style={{ fontSize: 9 }}>
+                  Source: {layers.source === 'live' ? 'County records' : layers.source}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
