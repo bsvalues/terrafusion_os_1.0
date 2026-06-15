@@ -4,25 +4,25 @@
  * Adapted from QUARANTINE/top-level-dirs/applications/bcbs-gis-pro-production/
  * client/src/components/TerraFusionMap.tsx
  *
- * Real Mapbox GL map:
- * - Satellite-streets style centered on Benton County WA
+ * Real Leaflet map:
+ * - No-token OSM basemap centered on Benton County WA
  * - County boundary overlay
  * - Parcel layer from /api/benton-county/parcels (graceful offline fallback)
  * - Click-to-select parcel → opens PropertyWorkbench
- *
- * Token: VITE_MAPBOX_ACCESS_TOKEN in .env.development
  */
 
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState } from 'react';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-const BENTON_CENTER: [number, number] = [-119.2687, 46.2619];
+const BENTON_CENTER: [number, number] = [46.2619, -119.2687];
 const BENTON_ZOOM = 10;
+const OSM_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_ATTRIBUTION = '&copy; OpenStreetMap contributors';
 
 /** Approximate Benton County WA bounding box */
 const BENTON_BOUNDARY_COORDS: [number, number][] = [
@@ -48,20 +48,11 @@ export interface BentonCountyMapProps {
 
 export default function BentonCountyMap({ onParcelSelect, className }: BentonCountyMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
   const [parcelLayerStatus, setParcelLayerStatus] = useState<string>('Loading parcel layer...');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
-
-    if (!token) {
-      setError('Map layer unavailable: Mapbox token not configured');
-      setLoading(false);
-      return;
-    }
-
     if (mapRef.current || !containerRef.current) return;
 
     const parcelLayerTimeout = window.setTimeout(() => {
@@ -72,153 +63,134 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
       );
     }, 5000);
 
-    mapboxgl.accessToken = token;
-
-    const map = new mapboxgl.Map({
-      container: containerRef.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
+    const map = L.map(containerRef.current, {
       center: BENTON_CENTER,
       zoom: BENTON_ZOOM,
-      projection: 'mercator',
+      zoomControl: true,
+      attributionControl: true,
     });
 
     mapRef.current = map;
 
-    map.on('load', () => {
-      setLoading(false);
-
-      // Resolve accent color from CSS token (Mapbox GL cannot use CSS custom properties)
-      const accentHs = getComputedStyle(document.documentElement)
-        .getPropertyValue('--tf-transcend-cyan-hs')
-        .trim() || '190 100%';
-      const accentColor = `hsl(${accentHs} 60%)`;
-
-      // County boundary outline
-      map.addSource('county-boundary', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: { name: 'Benton County, WA', FIPS: '53005' },
-              geometry: {
-                type: 'Polygon',
-                coordinates: [BENTON_BOUNDARY_COORDS],
-              },
-            },
-          ],
-        },
-      });
-
-      map.addLayer({
-        id: 'county-boundary-line',
-        type: 'line',
-        source: 'county-boundary',
-        paint: {
-          'line-color': accentColor,
-          'line-width': 2.5,
-          'line-opacity': 0.7,
-        },
-      });
-
-      // Parcel layer — load from backend. Missing geometry is reported, never fabricated.
-      fetch('/api/benton-county/parcels?limit=500')
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .then((parcels: unknown[]) => {
-          if (!Array.isArray(parcels) || parcels.length === 0) {
-            setParcelLayerStatus('Parcel layer unavailable: no parcel features returned');
-            return;
-          }
-
-          const features = parcels
-            .filter((p: any) => p?.geometry)
-            .map((p: any) => ({
-              type: 'Feature' as const,
-              properties: {
-                id: p.parcelNumber || String(p.objectId),
-                address: p.situsAddress || p.address || '',
-                owner: p.ownerName || '',
-                value: p.assessedValue || '',
-              },
-              geometry: p.geometry,
-            }));
-
-          if (features.length === 0) {
-            setParcelLayerStatus('Parcel layer unavailable: source returned no geometry');
-            return;
-          }
-
-          setParcelLayerStatus(`Parcel layer loaded: ${features.length} source geometries`);
-
-          map.addSource('parcels', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features,
-            },
-          });
-
-          map.addLayer({
-            id: 'parcel-fills',
-            type: 'fill',
-            source: 'parcels',
-            paint: {
-              'fill-color': accentColor,
-              'fill-opacity': 0.12,
-              'fill-outline-color': accentColor,
-            },
-          });
-
-          map.addLayer({
-            id: 'parcel-fills-hover',
-            type: 'fill',
-            source: 'parcels',
-            paint: {
-              'fill-color': accentColor,
-              'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.35, 0],
-            },
-          });
-
-          let hoveredId: string | number | null = null;
-
-          map.on('mousemove', 'parcel-fills', (e) => {
-            if (e.features && e.features.length > 0) {
-              if (hoveredId !== null) {
-                map.setFeatureState({ source: 'parcels', id: hoveredId }, { hover: false });
-              }
-              hoveredId = e.features[0].id ?? null;
-              if (hoveredId !== null) {
-                map.setFeatureState({ source: 'parcels', id: hoveredId }, { hover: true });
-              }
-              map.getCanvas().style.cursor = 'pointer';
-            }
-          });
-
-          map.on('mouseleave', 'parcel-fills', () => {
-            if (hoveredId !== null) {
-              map.setFeatureState({ source: 'parcels', id: hoveredId }, { hover: false });
-              hoveredId = null;
-            }
-            map.getCanvas().style.cursor = '';
-          });
-
-          map.on('click', 'parcel-fills', (e) => {
-            const props = e.features?.[0]?.properties;
-            if (props?.id && onParcelSelect) {
-              onParcelSelect(String(props.id));
-            }
-          });
-        })
-        .catch(() => {
-          setParcelLayerStatus('Parcel layer unavailable: API request failed');
-        });
+    const tileLayer = L.tileLayer(OSM_TILE_URL, {
+      attribution: OSM_ATTRIBUTION,
+      maxZoom: 19,
     });
 
-    map.on('error', () => {
-      setParcelLayerStatus('Parcel layer unavailable: map source failed');
+    tileLayer.on('tileerror', () => {
+      setParcelLayerStatus('Map layer unavailable: tile provider request failed');
       setLoading(false);
     });
+
+    tileLayer.addTo(map);
+    setLoading(false);
+
+    queueMicrotask(() => {
+      map.invalidateSize();
+    });
+
+    // Resolve accent color from CSS token.
+    const accentHs = getComputedStyle(document.documentElement)
+      .getPropertyValue('--tf-transcend-cyan-hs')
+      .trim() || '190 100%';
+    const accentColor = `hsl(${accentHs} 60%)`;
+
+    // County boundary outline.
+    L.geoJSON(
+      {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { name: 'Benton County, WA', FIPS: '53005' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [BENTON_BOUNDARY_COORDS],
+            },
+          },
+        ],
+      },
+      {
+        style: {
+          color: accentColor,
+          weight: 2.5,
+          opacity: 0.7,
+          fillOpacity: 0,
+        },
+      },
+    ).addTo(map);
+
+    // Parcel layer — load from backend. Missing geometry is reported, never fabricated.
+    fetch('/api/benton-county/parcels?limit=500')
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((parcels: unknown[]) => {
+        setLoading(false);
+
+        if (!Array.isArray(parcels) || parcels.length === 0) {
+          setParcelLayerStatus('Parcel layer unavailable: no parcel features returned');
+          return;
+        }
+
+        const features = parcels
+          .filter((p: any) => p?.geometry)
+          .map((p: any) => ({
+            type: 'Feature' as const,
+            properties: {
+              id: p.parcelNumber || String(p.objectId),
+              address: p.situsAddress || p.address || '',
+              owner: p.ownerName || '',
+              value: p.assessedValue || '',
+            },
+            geometry: p.geometry,
+          }));
+
+        if (features.length === 0) {
+          setParcelLayerStatus('Parcel layer unavailable: source returned no geometry');
+          return;
+        }
+
+        setParcelLayerStatus(`Parcel layer loaded: ${features.length} source geometries`);
+
+        L.geoJSON(
+          {
+            type: 'FeatureCollection',
+            features,
+          },
+          {
+            style: {
+              color: accentColor,
+              weight: 1.5,
+              opacity: 0.78,
+              fillColor: accentColor,
+              fillOpacity: 0.12,
+            },
+            onEachFeature: (feature, layer) => {
+              layer.on({
+                mouseover: () => {
+                  if ('setStyle' in layer) {
+                    layer.setStyle({ fillOpacity: 0.35 });
+                  }
+                },
+                mouseout: () => {
+                  if ('setStyle' in layer) {
+                    layer.setStyle({ fillOpacity: 0.12 });
+                  }
+                },
+                click: () => {
+                  const parcelId = feature.properties?.id;
+                  if (parcelId && onParcelSelect) {
+                    onParcelSelect(String(parcelId));
+                  }
+                },
+              });
+            },
+          },
+        ).addTo(map);
+      })
+      .catch(() => {
+        setLoading(false);
+        setParcelLayerStatus('Parcel layer unavailable: API request failed');
+      });
 
     return () => {
       window.clearTimeout(parcelLayerTimeout);
@@ -226,20 +198,6 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
       mapRef.current = null;
     };
   }, [onParcelSelect]);
-
-  if (error) {
-    return (
-      <div
-        data-testid='benton-county-map-error'
-        className='w-full h-full flex items-center justify-center'
-        style={{ background: 'hsl(var(--tf-bg))' }}
-      >
-        <span className='text-xs text-center px-6' style={{ color: 'hsl(var(--tf-destructive))' }}>
-          {error}
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div data-testid='benton-county-map' className={`relative w-full h-full ${className ?? ''}`}>
