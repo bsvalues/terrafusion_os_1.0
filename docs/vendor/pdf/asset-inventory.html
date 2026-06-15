@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TerraFusion — Asset Inventory</title>
+<style>
+@page { margin: 0.7in; }
+/* TerraFusion vendor package — print stylesheet */
+:root {
+  --ink: #14181f;
+  --muted: #5b6573;
+  --line: #d8dee6;
+  --accent: #0b5d7a;
+  --accent-soft: #eef4f7;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
+  color: var(--ink);
+  font-size: 11pt;
+  line-height: 1.5;
+  max-width: 7.2in;
+  margin: 0 auto;
+  padding: 0.2in 0;
+}
+h1 {
+  font-size: 19pt;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 6px;
+  margin: 0 0 14px;
+}
+h2 {
+  font-size: 13.5pt;
+  color: var(--ink);
+  margin: 22px 0 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 3px;
+}
+h3 { font-size: 11.5pt; color: var(--accent); margin: 16px 0 6px; }
+p, li { color: var(--ink); }
+strong { color: var(--ink); }
+em { color: var(--muted); }
+a { color: var(--accent); text-decoration: none; }
+hr { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
+blockquote {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  color: var(--ink);
+  font-style: normal;
+}
+blockquote p { margin: 0; }
+code {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9.5pt;
+  background: #f2f4f7;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #2b3440;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 9.5pt;
+}
+th {
+  background: var(--accent);
+  color: #fff;
+  text-align: left;
+  padding: 6px 8px;
+  font-weight: 600;
+}
+td { border: 1px solid var(--line); padding: 6px 8px; vertical-align: top; }
+tr:nth-child(even) td { background: #f7f9fb; }
+ul, ol { padding-left: 20px; }
+li { margin: 3px 0; }
+
+</style>
+</head>
+<body>
+<h1>TerraFusion — Asset Inventory (Vendor Diligence)</h1>
+<p><strong>Purpose:</strong> an honest, tiered map of what actually exists, so a vendor can see you control what you're offering — and so you never overstate. Maturity tags are deliberate; when a vendor's engineer opens the repo, the tags should match what they find.</p>
+<p><strong>Anchor (consistent with every artifact in this package):</strong></p>
+<blockquote><p>Benton County runtime pilot on TerraFusion DB as system-of-record, with a proof-gated 39-county provenance inventory as the expansion path — a disciplined single-county proof that scales reproducibly, not a 39-county launch.</p></blockquote>
+<h2>Maturity legend</h2>
+<table>
+<thead><tr><th>Tag</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>doctrine</code></td><td>Authored architecture / governance / specification. Real, written, controlled — but a document, not a running feature.</td></tr>
+<tr><td><code>working</code></td><td>Reserved for components present in the active tree with code <strong>and</strong> tests that can be <strong>demonstrated and defended cleanly</strong> end-to-end. Not claimed as production-certified.</td></tr>
+<tr><td><code>prototype</code></td><td>Partial implementation or pilot-stage surface. Present and demonstrable, not hardened or fully wired end-to-end.</td></tr>
+<tr><td><code>spec-only</code></td><td>Designed and documented; implementation not yet in the active tree (or only in quarantined/legacy paths).</td></tr>
+<tr><td><code>aspirational</code></td><td>Roadmap. Named honestly as future scope. Do not demo as present.</td></tr>
+</tbody></table>
+<p>Paths are given as authorship/control evidence.</p>
+<blockquote><p><strong>Bias rule (read before tagging or quoting):</strong> tags are set conservatively. Code-plus-tests alone is not enough for <code>working</code> — if a component isn't fully wired end-to-end and cleanly demoable, it stays <code>prototype</code>. The goal is that a vendor engineer who opens the repo finds <em>more</em> than promised, never less.</p></blockquote>
+<hr>
+<h2>Tier 1 — Documented architecture &amp; doctrine (strongest IP, clearly real)</h2>
+<table>
+<thead><tr><th>Asset</th><th>Tag</th><th>Evidence path</th></tr></thead>
+<tbody>
+<tr><td>90-day execution doctrine (five-schema provenance, lineage invariant, four lanes, write-back doctrine)</td><td><code>doctrine</code></td><td><code>docs/plans/terrafusion-90-day-execution-plan.md</code></td></tr>
+<tr><td>June 10 runtime doctrine &amp; operating discipline (DB-as-truth, API-only access, proof-gating, no-fake-readiness)</td><td><code>doctrine</code></td><td><code>.github/ai-prompts/june10-command-pack.md</code></td></tr>
+<tr><td>Benton pilot UAT evidence protocol (15-step operator workflow, evidence packet rules)</td><td><code>doctrine</code></td><td><code>os-platform/core/pilot/ops/june10-benton-uat-screenshot-checklist-2026-05-13.md</code></td></tr>
+<tr><td>Bounded suite-architecture model (OS shell / workbench / suite / app separation, single-owner write lanes)</td><td><code>doctrine</code></td><td><code>CLAUDE.md</code>, <code>terrafusion.app.json</code>, <code>STANDARD.md</code></td></tr>
+<tr><td>Provenance / continuity layer design (<code>source_xref</code> lineage; <code>raw_pacs → truth_pacs → canonical_tf → product</code>; <code>legacy_tf_unproven</code> quarantine)</td><td><code>doctrine</code></td><td><code>docs/plans/terrafusion-90-day-execution-plan.md</code> (§1–3)</td></tr>
+</tbody></table>
+<p><strong>This tier is the differentiated asset.</strong> It is the implementation doctrine and operating discipline a vendor would otherwise spend years (and several failed county conversions) learning. It is harder to replicate than the code beneath it.</p>
+<hr>
+<h2>Tier 2 — Working / partial implementation (verified in the active tree)</h2>
+<table>
+<thead><tr><th>Asset</th><th>Tag</th><th>Evidence path</th></tr></thead>
+<tbody>
+<tr><td><strong>TerraDais</strong> admin-workflow persistence — <code>Exemption</code>, <code>Appeal</code>, <code>CertificationStep</code>, <code>Notice</code>, <code>QueueItem</code> entities</td><td><code>working</code></td><td><code>backend/src/TerraFusion.Core/Entities/{Exemption,Appeal,CertificationStep,Notice,QueueItem}.cs</code></td></tr>
+<tr><td>TerraDais EF persistence configurations</td><td><code>working</code></td><td><code>backend/src/TerraFusion.Data/Configurations/*Configuration.cs</code></td></tr>
+<tr><td>TerraDais domain services</td><td><code>working</code></td><td><code>backend/src/TerraFusion.Core/Services/{Exemption,Appeal,Notice}Service.cs</code></td></tr>
+<tr><td>TerraDais persistence + county-isolation proof</td><td><code>working</code></td><td><code>backend/tests/TerraFusion.Integration.Tests/Phase40/Dais{WorkflowPersistence,CountyIsolation}Tests.cs</code></td></tr>
+<tr><td><strong>Write-lane governance</strong> (single-owner write lanes; guarded mutations)</td><td><code>working</code></td><td><code>backend/tests/TerraFusion.Unit.Tests/Stage2/AppealWriteLaneGuardTests.cs</code>, <code>.../Wave2/GptWriteLaneGuardTests.cs</code>; enforced across <code>backend/src/TerraFusion.API/Controllers/*</code></td></tr>
+<tr><td>Dais workflow API surface (backed by the persistence + isolation tests above)</td><td><code>working</code></td><td><code>backend/src/TerraFusion.API/Controllers/DaisController.cs</code></td></tr>
+<tr><td>Other suite-app API surfaces (Atlas, Dossier, Clerk, Treasury, Field) — controllers present; per-app end-to-end depth not individually re-verified here</td><td><code>prototype</code></td><td><code>backend/src/TerraFusion.API/Controllers/{Atlas,Dossier,Clerk,Treasury,Field}Controller.cs</code></td></tr>
+<tr><td><strong>Runtime-truth API</strong> (DB identity / content proof endpoints — the honesty surface)</td><td><code>working</code></td><td><code>backend/src/TerraFusion.API/Controllers/RuntimeTruthController.cs</code> (+ <code>backend/TerraFusion.API.Tests/RuntimeTruthControllerTests.cs</code>)</td></tr>
+<tr><td><strong>County Studio</strong> workflow (assessment study + approval workflow)</td><td><code>working</code></td><td><code>backend/src/TerraFusion.Core/Services/CountyStudioAiService.cs</code>, EF migration <code>AddCountyStudioEntities</code>, <code>.../CountyStudio/CountyStudyApprovalWorkflowTests.cs</code></td></tr>
+<tr><td><strong>Property Workbench</strong> parcel-routing surface (OS-shell host, context survival)</td><td><code>prototype</code></td><td><code>frontend/apps/os-shell/src/__tests__/workbench/*</code>, <code>.../shell/workbenchHostIntegrity.contract.test.ts</code>, <code>.../shell/launchSurfaceContractParcelWorkbench.contract.test.tsx</code></td></tr>
+<tr><td><strong>AI assist</strong> as <em>optional augmentation</em> — draft / explain / summarize (not autonomous action)</td><td><code>working</code></td><td><code>backend/src/TerraFusion.AI/Notices/DraftNoticeService.cs</code>; Workbench panels: <code>PropertyWorkbench{ExplainModelInputs,SummarizeSalesCompsRationale,CompareAssessedValueHistory}.test.tsx</code></td></tr>
+</tbody></table>
+<p><strong>Honesty note on AI:</strong> the implemented AI surface <strong>drafts, explains, and summarizes</strong>. It does not make official determinations. That is the correct, defensible thing to tell a vendor — assist layer, human-in-the-loop, not a black box deciding assessments.</p>
+<hr>
+<h2>Tier 3 — Proven-with-evidence (only what has a green proof artifact)</h2>
+<table>
+<thead><tr><th>Asset</th><th>Tag</th><th>Evidence path</th></tr></thead>
+<tbody>
+<tr><td>Benton runtime pilot evidence intake (sync-drain observation, evidence packets)</td><td><code>prototype</code></td><td><code>os-platform/core/pilot/june10-sync-evidence-intake.mjs</code> (+ <code>.test.mjs</code>); <code>os-platform/core/pilot/evidence/*.latest.json</code></td></tr>
+<tr><td>39-county <strong>source-decision registry</strong> (provenance inventory — the acquisition roadmap, NOT live runtime)</td><td><code>doctrine</code>+<code>prototype</code></td><td><code>os-platform/core/pilot/ops/june10-38-county-initial-seed-plan-2026-05-14.md</code></td></tr>
+</tbody></table>
+<p><strong>Claim discipline:</strong> the Benton sales/owner/improvement/land lanes from the 90-day plan are <strong>promotable only when their green commit + regression artifact exist</strong>. Before quoting a specific number (e.g. the 21,715 qualified-sales figure), confirm the Block A proof artifact is present. Until then it is a <em>target</em>, not a proven count.</p>
+<hr>
+<h2>Tier 4 — Aspirational / future scope (name it, don't demo it)</h2>
+<table>
+<thead><tr><th>Asset</th><th>Tag</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>CostForge certified/official valuations</td><td><code>aspirational</code></td><td>Cost calculator is post-90-day. Demo as <em>scenario/preview</em>, never as certified output.</td></tr>
+<tr><td>Multi-county live runtime (beyond Benton)</td><td><code>aspirational</code></td><td>Provenance inventory exists; live runtime does not.</td></tr>
+<tr><td>Plugin marketplace / developer ecosystem</td><td><code>aspirational</code></td><td>Documented; not part of the vendor asset offer.</td></tr>
+<tr><td>AI agent builder / autonomous swarm features</td><td><code>aspirational</code></td><td>Internal/architecture material. Keep out of vendor scope entirely.</td></tr>
+</tbody></table>
+<hr>
+<h2>What you control (the licensable core, restated for diligence)</h2>
+<ul><li><strong>Architecture &amp; doctrine assets</strong> (Tier 1) — suite boundaries, write-lane governance, provenance/continuity model, operating discipline.</li><li><strong>Workflow assets</strong> (Tier 2) — TerraDais administrative persistence model.</li><li><strong>Interaction assets</strong> (Tier 2) — Property Workbench routing/host model, County Studio workflow.</li><li><strong>Assist assets</strong> (Tier 2) — optional draft/explain/summarize AI layer.</li><li><strong>Documentation assets</strong> (all tiers) — specifications, naming conventions, implementation roadmaps.</li></ul>
+<p>You retain underlying IP title; a license conveys field-limited rights to the above. Illustrative business terms are available on request, under NDA.</p>
+</body>
+</html>

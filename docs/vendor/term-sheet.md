@@ -30,7 +30,10 @@ nationwide-within-field as a negotiated term (e.g. tied to commitment, minimums,
 ## 4. Exclusivity
 
 **Exclusive within the field-of-use and territory**, for the term. Licensor will not grant
-overlapping rights in the same field + territory to another commercial vendor.
+overlapping rights in the same field + territory to another commercial vendor. Exclusivity
+applies to the licensed TerraFusion assessor-modernization asset package as defined in the
+diligence inventory and final delivery schedules — covering both the implementation
+components and the associated operating doctrine within the field.
 
 ## 5. Term
 
@@ -60,8 +63,8 @@ Scope is tailorable. Options, by agreement:
 - Source and build artifacts for the licensed components.
 - Workflow/persistence designs and interaction models.
 
-Exact delivery set is a negotiated schedule, keyed to the maturity tiers in
-[`asset-inventory.md`](asset-inventory.md).
+Exact delivery set is a negotiated schedule, keyed to the maturity tiers in the asset
+inventory (available for diligence review under NDA).
 
 ## 9. Transition support
 
@@ -101,14 +104,14 @@ Answers are calibrated to the honest maturity tiers. Do not improve on them in t
 | They ask | You answer |
 |---|---|
 | **Is this code, architecture, or both?** | Both. Working code for the administrative workflow persistence (TerraDais), suite-app APIs, runtime-truth surface, and County Studio; a prototype Property Workbench surface; and the differentiated architecture/doctrine on top. Package scope is tailorable. |
-| **What's production-ready today?** | A Benton County runtime pilot, not a multi-county production system. The administrative workflow entities, write-lane governance, and the DB-as-system-of-record API path are implemented and tested. I'll show you exactly which components are `working` vs `prototype` vs `spec` — it's written down, not hand-waved. |
-| **What third-party dependencies / obligations exist?** | The runtime treats county legacy systems (e.g. PACS) and ArcGIS REST as *upstream sources*, consumed through standard interfaces — not embedded or sublicensed. I'll provide a clean dependency statement during diligence. |
+| **What's production-ready today?** | A Benton County runtime pilot, not a multi-county production rollout. Certain administrative-workflow, write-lane, and runtime-truth components are implemented and tested. I'll show you exactly what is working, what is prototype, and what is doctrine/spec, so there's no ambiguity. |
+| **What third-party dependencies / obligations exist?** | The runtime treats county legacy systems (e.g. PACS) and ArcGIS REST as *upstream sources*, consumed through standard interfaces — not embedded or sublicensed. No claim is being made to transfer third-party platform rights; those remain with their owners. I'll provide a clean dependency statement during diligence. |
 | **What exactly is exclusive?** | The field-of-use (assessor / CAMA administration), the territory, and the scope — defined precisely so there's no ambiguity. |
 | **Can we modify it freely?** | Yes — modification and derivative-works rights are in the package. |
 | **Can we sublicense to counties / customers?** | Yes, explicitly, within the field. |
 | **What support comes with it?** | A 6- or 12-month transition window, scope and rate to be agreed. |
 | **Why not just assign the IP?** | The architecture has stewardship value outside the assessor commercial field. I can still give you sale-like exclusivity *inside* your market via the field-limited license, with a milestone-tied buyout if we get there. |
-| **Why should we believe the proof?** | Because the system is built to refuse fake readiness — there's a runtime-truth surface and an evidence protocol, and I'll only claim what has an artifact behind it. Anything I can't prove, I'll tell you is a target, not a fact. |
+| **Why should we believe the proof?** | Because the package is built around runtime-truth and evidence discipline. I only represent what has an artifact, a test, or a documented maturity tier behind it. Anything else is identified as target scope, not present capability. |
 
 ---
 

@@ -55,8 +55,9 @@ reduce each:
 - **Documentation & doctrine** — specifications, naming conventions, the operating
   discipline that makes county conversions defensible.
 
-Maturity of each item is stated honestly in [`asset-inventory.md`](asset-inventory.md)
-(code vs prototype vs spec). Nothing here is offered as more finished than it is.
+Maturity of each item is stated honestly in the accompanying asset inventory (code vs
+prototype vs spec), available for diligence review under NDA. Nothing here is offered as
+more finished than it is.
 
 ---
 
@@ -108,7 +109,7 @@ Walk it as a county continuity story, not a feature tour:
   public-benefit / stewardship applications).
 - Open to a **milestone-tied buyout/conversion** as a later option — not the opening ask.
 
-Full terms: [`term-sheet.md`](term-sheet.md).
+Illustrative business terms available on request.
 
 ---
 

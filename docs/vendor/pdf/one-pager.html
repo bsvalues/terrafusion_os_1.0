@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TerraFusion — Assessor Modernization Asset</title>
+<style>
+@page { margin: 0.7in; }
+/* TerraFusion vendor package — print stylesheet */
+:root {
+  --ink: #14181f;
+  --muted: #5b6573;
+  --line: #d8dee6;
+  --accent: #0b5d7a;
+  --accent-soft: #eef4f7;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
+  color: var(--ink);
+  font-size: 11pt;
+  line-height: 1.5;
+  max-width: 7.2in;
+  margin: 0 auto;
+  padding: 0.2in 0;
+}
+h1 {
+  font-size: 19pt;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 6px;
+  margin: 0 0 14px;
+}
+h2 {
+  font-size: 13.5pt;
+  color: var(--ink);
+  margin: 22px 0 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 3px;
+}
+h3 { font-size: 11.5pt; color: var(--accent); margin: 16px 0 6px; }
+p, li { color: var(--ink); }
+strong { color: var(--ink); }
+em { color: var(--muted); }
+a { color: var(--accent); text-decoration: none; }
+hr { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
+blockquote {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  color: var(--ink);
+  font-style: normal;
+}
+blockquote p { margin: 0; }
+code {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9.5pt;
+  background: #f2f4f7;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #2b3440;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 9.5pt;
+}
+th {
+  background: var(--accent);
+  color: #fff;
+  text-align: left;
+  padding: 6px 8px;
+  font-weight: 600;
+}
+td { border: 1px solid var(--line); padding: 6px 8px; vertical-align: top; }
+tr:nth-child(even) td { background: #f7f9fb; }
+ul, ol { padding-left: 20px; }
+li { margin: 3px 0; }
+
+</style>
+</head>
+<body>
+<h1>TerraFusion — Assessor Modernization Asset</h1>
+<h3>Exclusive field-of-use license opportunity for CAMA / assessment vendors</h3>
+<hr>
+<p><strong>What this is.</strong> A defined assessor-modernization asset package: a bounded suite architecture, an administrative workflow-persistence model (TerraDais), a unified parcel <strong>Property Workbench</strong>, a provenance/continuity layer, and an optional AI assist layer — plus the operating doctrine that makes a county conversion survivable. It is licensable for commercial deployment within a defined field-of-use. It is <strong>not</strong> a generic platform pitch and <strong>not</strong> a finished drop-in replacement system.</p>
+<p><strong>The honest anchor claim:</strong></p>
+<blockquote><p>Benton County runtime pilot on TerraFusion DB as system-of-record, with a proof-gated 39-county provenance inventory as the expansion path — a disciplined single-county proof that scales reproducibly, not a 39-county launch.</p></blockquote>
+<hr>
+<h2>The problem it solves (lead with this)</h2>
+<p>County assessment modernization fails on three predictable risks. This asset is built to reduce each:</p>
+<ol><li><strong>Migration risk.</strong> Counties distrust rip-and-replace. TerraFusion's model treats the legacy system (e.g. PACS) as a <em>provenanced source</em>, not a thing to be destroyed — ingest → validate → reconcile → prove → serve. Every record carries lineage; nothing enters the system of record without it. That is a transition-safe posture you can put in front of a skeptical county.</li><li><strong>Workflow fragmentation.</strong> Parcel work today is scattered across disconnected modules. The Property Workbench routes parcel-level work — investigation, ratio/comp review, correction routing, evidence, appeal prep — into one surface with context that survives across steps.</li><li><strong>Operational discontinuity.</strong> Assessor administration (exemptions, appeals, certification steps, notices, queues) is modeled as durable, governed workflow with single-owner write lanes — not ad-hoc screens.</li></ol>
+<hr>
+<h2>What's included (the asset package)</h2>
+<ul><li><strong>Suite architecture</strong> — OS-shell / workbench / suite / app separation with bounded domains and single-owner <strong>write-lane governance</strong> (lowers integration ambiguity and product-sprawl risk).</li><li><strong>TerraDais administrative persistence</strong> — <code>Exemption</code>, <code>Appeal</code>, <code>CertificationStep</code>, <code>Notice</code>, <code>QueueItem</code> as first-class, county-isolated, auditable workflow entities.</li><li><strong>Property Workbench</strong> — parcel-level unified work surface with cross-step context survival.</li><li><strong>Provenance / continuity layer</strong> — <code>source_xref</code> lineage and the five-schema model (<code>raw_pacs → truth_pacs → canonical_tf → product</code>) with a quarantine lane for anything unproven.</li><li><strong>AI assist layer (optional)</strong> — drafts notices, explains model inputs, summarizes comps rationale. Human-in-the-loop augmentation, not autonomous determination.</li><li><strong>Documentation &amp; doctrine</strong> — specifications, naming conventions, the operating discipline that makes county conversions defensible.</li></ul>
+<p>Maturity of each item is stated honestly in the accompanying asset inventory (code vs prototype vs spec), available for diligence review under NDA. Nothing here is offered as more finished than it is.</p>
+<hr>
+<h2>The three vendor stories (lead with #1)</h2>
+<ol><li><strong>Reduces migration &amp; modernization risk</strong> <em>(strongest).</em> A transition-safe, continuity-first, provenance-backed posture that gives a vendor a safer county-facing story. Best evidence: the continuity layer, write-lane governance, stewardship-compatible rollout.</li><li><strong>Accelerates your roadmap.</strong> You already know you need clean parcel-workbench routing and assessor workflow persistence; this is solved and demonstrable. Best evidence: TerraDais persistence, Workbench routing, records/evidence separation.</li><li><strong>Strengthens your stack.</strong> License and embed it into an existing product line. Best evidence: bounded suite architecture, optional (not mandatory) AI assist.</li></ol>
+<hr>
+<h2>Demo / walkthrough narrative (grounded in the real Benton UAT path)</h2>
+<p>Walk it as a county continuity story, not a feature tour:</p>
+<ol><li><strong>The county problem</strong> — fragmented parcel workflows, fear of migration, brittle institutional memory.</li><li><strong>County Studio loads the Benton study</strong> from TerraFusion DB — real runtime, no mock fallback.</li><li><strong>Drill into a failing segment</strong> — queue and context scoped to the problem set; segment inspector shows metadata and next actions.</li><li><strong>Build a parcel cohort</strong> — paste parcel IDs; they normalize, dedupe, and persist through a governed payload.</li><li><strong>Scenario preview / compare</strong> — see the delta and affected set <em>without implying an official mutation</em>.</li><li><strong>Approval posture</strong> — state is durable and reloadable; nothing "applied" without backend evidence.</li><li><strong>Route downstream to Dais / Dossier</strong> — a durable receipt exists before handoff.</li><li><strong>Property Workbench</strong> — open it from County Studio; the parcel/segment context survives.</li><li><strong>Defense packet</strong> — export a defensible evidence packet with source/context detail.</li><li><strong>Boundary, stated out loud</strong> — "This is the Benton runtime pilot plus a 39-county provenance inventory. Not a 39-county launch." Saying the boundary yourself builds more trust than any claim.</li></ol>
+<hr>
+<h2>Rights structure (headline)</h2>
+<ul><li><strong>Exclusive, perpetual, irrevocable</strong> license within a defined <strong>field-of-use: assessor / CAMA administration</strong>.</li><li>Includes <strong>sublicense, modify, create-derivative, embed, and commercialize</strong> rights.</li><li><strong>You retain underlying IP title</strong> and all rights outside the assessor field (including public-benefit / stewardship applications).</li><li>Open to a <strong>milestone-tied buyout/conversion</strong> as a later option — not the opening ask.</li></ul>
+<p>Illustrative business terms available on request.</p>
+<hr>
+<h2>Why it matters commercially (one line)</h2>
+<p>It gives a vendor real operational rights and product freedom in their market — faster modernization, safer county conversions, less roadmap time — without requiring full assignment of the core IP, and without inheriting a migration story counties won't trust.</p>
+</body>
+</html>

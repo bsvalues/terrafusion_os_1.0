@@ -14,12 +14,17 @@ vendor's engineer opens the repo, the tags should match what they find.
 | Tag | Meaning |
 |---|---|
 | `doctrine` | Authored architecture / governance / specification. Real, written, controlled — but a document, not a running feature. |
-| `working` | Implemented in the active tree with code **and** tests. Runs; not yet claimed as production-certified. |
-| `prototype` | Partial implementation or pilot-stage surface. Demonstrable, not hardened. |
+| `working` | Reserved for components present in the active tree with code **and** tests that can be **demonstrated and defended cleanly** end-to-end. Not claimed as production-certified. |
+| `prototype` | Partial implementation or pilot-stage surface. Present and demonstrable, not hardened or fully wired end-to-end. |
 | `spec-only` | Designed and documented; implementation not yet in the active tree (or only in quarantined/legacy paths). |
 | `aspirational` | Roadmap. Named honestly as future scope. Do not demo as present. |
 
 Paths are given as authorship/control evidence.
+
+> **Bias rule (read before tagging or quoting):** tags are set conservatively. Code-plus-tests
+> alone is not enough for `working` — if a component isn't fully wired end-to-end and cleanly
+> demoable, it stays `prototype`. The goal is that a vendor engineer who opens the repo finds
+> *more* than promised, never less.
 
 ---
 
@@ -48,7 +53,8 @@ learning. It is harder to replicate than the code beneath it.
 | TerraDais domain services | `working` | `backend/src/TerraFusion.Core/Services/{Exemption,Appeal,Notice}Service.cs` |
 | TerraDais persistence + county-isolation proof | `working` | `backend/tests/TerraFusion.Integration.Tests/Phase40/Dais{WorkflowPersistence,CountyIsolation}Tests.cs` |
 | **Write-lane governance** (single-owner write lanes; guarded mutations) | `working` | `backend/tests/TerraFusion.Unit.Tests/Stage2/AppealWriteLaneGuardTests.cs`, `.../Wave2/GptWriteLaneGuardTests.cs`; enforced across `backend/src/TerraFusion.API/Controllers/*` |
-| Suite-app API surfaces (Atlas, Dais, Dossier, Clerk, Treasury, Field) | `working` | `backend/src/TerraFusion.API/Controllers/{Atlas,Dais,Dossier,Clerk,Treasury,Field}Controller.cs` |
+| Dais workflow API surface (backed by the persistence + isolation tests above) | `working` | `backend/src/TerraFusion.API/Controllers/DaisController.cs` |
+| Other suite-app API surfaces (Atlas, Dossier, Clerk, Treasury, Field) — controllers present; per-app end-to-end depth not individually re-verified here | `prototype` | `backend/src/TerraFusion.API/Controllers/{Atlas,Dossier,Clerk,Treasury,Field}Controller.cs` |
 | **Runtime-truth API** (DB identity / content proof endpoints — the honesty surface) | `working` | `backend/src/TerraFusion.API/Controllers/RuntimeTruthController.cs` (+ `backend/TerraFusion.API.Tests/RuntimeTruthControllerTests.cs`) |
 | **County Studio** workflow (assessment study + approval workflow) | `working` | `backend/src/TerraFusion.Core/Services/CountyStudioAiService.cs`, EF migration `AddCountyStudioEntities`, `.../CountyStudio/CountyStudyApprovalWorkflowTests.cs` |
 | **Property Workbench** parcel-routing surface (OS-shell host, context survival) | `prototype` | `frontend/apps/os-shell/src/__tests__/workbench/*`, `.../shell/workbenchHostIntegrity.contract.test.ts`, `.../shell/launchSurfaceContractParcelWorkbench.contract.test.tsx` |
@@ -96,5 +102,5 @@ is present. Until then it is a *target*, not a proven count.
 - **Documentation assets** (all tiers) — specifications, naming conventions, implementation
   roadmaps.
 
-You retain underlying IP title; a license conveys field-limited rights to the above. See
-[`term-sheet.md`](term-sheet.md).
+You retain underlying IP title; a license conveys field-limited rights to the above.
+Illustrative business terms are available on request, under NDA.
