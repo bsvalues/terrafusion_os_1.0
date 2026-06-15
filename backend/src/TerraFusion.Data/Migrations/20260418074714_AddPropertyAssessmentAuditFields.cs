@@ -177,12 +177,6 @@ namespace TerraFusion.Data.Migrations
                 type: "numeric(14,10)",
                 nullable: true);
 
-            migrationBuilder.AddColumn<decimal>(
-                name: "SecondaryFeaturePctOfBiv",
-                table: "CostMatrices",
-                type: "numeric",
-                nullable: true);
-
             migrationBuilder.AddColumn<int>(
                 name: "PacsPropId",
                 table: "ComparableSales",
@@ -402,10 +396,6 @@ namespace TerraFusion.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "VotedLevyRate",
                 table: "pacs_levy_rates");
-
-            migrationBuilder.DropColumn(
-                name: "SecondaryFeaturePctOfBiv",
-                table: "CostMatrices");
 
             migrationBuilder.DropColumn(
                 name: "PacsPropId",
