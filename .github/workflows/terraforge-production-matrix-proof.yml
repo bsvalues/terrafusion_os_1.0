@@ -29,16 +29,25 @@ jobs:
       TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
     steps:
       - name: Checkout deployed release SHA
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
         with:
           ref: ${{ inputs.release_sha }}
           fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify release contains TerraForge proof smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f scripts/terraforge-production-matrix-smoke.mjs || {
+            echo "Release SHA does not contain scripts/terraforge-production-matrix-smoke.mjs"
+            exit 1
+          }
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 20
-          cache: pnpm
 
       - name: Enable pnpm
         shell: bash
@@ -58,9 +67,26 @@ jobs:
           set -euo pipefail
           base_url="${INPUT_BASE_URL:-${PRODUCTION_PUBLIC_URL:-}}"
           base_url="${base_url%/}"
+          trusted_url="${PRODUCTION_PUBLIC_URL:-}"
+          trusted_url="${trusted_url%/}"
 
           if [ -z "$base_url" ]; then
             echo "Missing production base URL. Set workflow input base_url or production PUBLIC_URL variable."
+            exit 1
+          fi
+
+          if [ -z "$trusted_url" ]; then
+            echo "Missing production PUBLIC_URL variable; refusing to run production proof with secrets."
+            exit 1
+          fi
+
+          if [[ "$base_url" != https://* ]]; then
+            echo "Production base URL must use https."
+            exit 1
+          fi
+
+          if [ "$base_url" != "$trusted_url" ]; then
+            echo "base_url must match production PUBLIC_URL before using production secrets."
             exit 1
           fi
 
@@ -86,7 +112,7 @@ jobs:
             --output "artifacts/terraforge-production-matrix/${TF_EXPECTED_RELEASE_SHA}"
 
       - name: Upload TerraForge production proof
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: terraforge-production-matrix-proof-${{ inputs.release_sha }}
           path: artifacts/terraforge-production-matrix/${{ inputs.release_sha }}/
