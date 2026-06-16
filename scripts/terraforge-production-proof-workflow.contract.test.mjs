@@ -37,6 +37,7 @@ describe('TerraForge production proof workflow', () => {
   it('pins GitHub Actions and avoids persisted checkout credentials', () => {
     const actionRefs = [...workflow.matchAll(/uses:\s*([^\s#]+)/g)].map((match) => match[1]);
 
+    assert.ok(workflow.includes('package-manager-cache: false'));
     assert.deepEqual(actionRefs, [
       'actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd',
       'actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444',
