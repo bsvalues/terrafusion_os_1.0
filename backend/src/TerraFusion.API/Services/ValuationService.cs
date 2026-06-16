@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
@@ -9,7 +10,7 @@ namespace TerraFusion.API.Services;
 
 // BOUNDARY REPAIR COMPLETE (CP-3b): All Pacs* reads removed per PACS Sync mandate.
 // Service reads canonical TF entities only: Properties, ValuationRecords,
-// ComparableSales, CamaCharacteristics.
+// ComparableSales, CamaCharacteristics, and optional CamaImprovementDetails.
 // Assessor workflow PARITY gaps are tracked as CP-4/5/6 work — not this service.
 /// <summary>
 /// Phase 10 — PropertyForge valuation service.
@@ -53,12 +54,10 @@ public class ValuationService : IValuationService
             .Where(c => c.ParcelId == parcelId && c.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
-        // Phase B: Load per-segment breakdown first — needed for Benton depreciation path.
-        // Note: no OrderBy in EF query — SQLite decimal ORDER BY not supported.
-        var segmentRows = await _db.CamaImprovementDetails
-            .AsNoTracking()
-            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
-            .ToListAsync(ct);
+        // Phase B: Load per-segment breakdown when the optional projection exists.
+        // Production SQLite can run before the segment projection is promoted; that
+        // state must return honest empty segment details, not a 500.
+        var segmentRows = await LoadSegmentRowsAsync(parcelId, taxYear, ct);
 
         var segments = segmentRows
             .OrderByDescending(s => s.Area ?? 0m)
@@ -188,19 +187,22 @@ public class ValuationService : IValuationService
             .FirstOrDefaultAsync(ct);
 
         // Find comps by property type and date range.
-        // CP-5: Neighborhood filter uses hood_cd from PacsValuation.
+        // CP-5: Neighborhood filter uses canonical CAMA NeighborhoodCode.
         // Strategy: prefer comps from same neighborhood; fall back to county-wide if < 5 in hood.
         var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var cutoffEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
 
-        // Resolve subject neighborhood from PacsValuation (most recent base-roll year)
-        var subjectHood = await _db.PacsValuations
+        // Resolve subject neighborhood from canonical CAMA first; fall back to the
+        // canonical Property neighborhood when CAMA has not projected the field.
+        var subjectHood = await _db.CamaCharacteristics
             .AsNoTracking()
-            .Where(v => v.SupNum == 0 && v.NeighborhoodCode != null &&
-                (v.Parcel.GeoId == parcelId || v.Parcel.SimpleGeoId == parcelId))
-            .OrderByDescending(v => v.PropValYear)
-            .Select(v => v.NeighborhoodCode)
+            .Where(c => c.ParcelId == parcelId && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .OrderByDescending(c => c.TaxYear == taxYear)
+            .ThenByDescending(c => c.TaxYear)
+            .Select(c => c.NeighborhoodCode)
             .FirstOrDefaultAsync(ct);
+
+        subjectHood ??= property.Neighborhood;
 
         // Qualified comps base query.
         // Qualification priority: Layer 3 (assessor decision) → Layer 2 (TF recommendation) → Layer 1b (PACS legacy sync field).
@@ -688,6 +690,60 @@ public class ValuationService : IValuationService
     };
 
     // ── Helpers ─────────────────────────────────────────────────────────
+
+    private async Task<List<CamaImprovementDetail>> LoadSegmentRowsAsync(
+        string parcelId,
+        int taxYear,
+        CancellationToken ct)
+    {
+        if (!await CanReadTableAsync("cama_improvement_details", ct))
+        {
+            _logger.LogInformation(
+                "CAMA improvement detail projection is unavailable; returning empty segment details for parcel {ParcelId}, tax year {TaxYear}",
+                parcelId,
+                taxYear);
+            return [];
+        }
+
+        return await _db.CamaImprovementDetails
+            .AsNoTracking()
+            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
+            .ToListAsync(ct);
+    }
+
+    private async Task<bool> CanReadTableAsync(string tableName, CancellationToken ct)
+    {
+        var provider = _db.Database.ProviderName ?? string.Empty;
+        if (!provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        var connection = _db.Database.GetDbConnection();
+        var shouldClose = connection.State != ConnectionState.Open;
+        if (shouldClose)
+            await connection.OpenAsync(ct);
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+SELECT 1
+FROM sqlite_master
+WHERE type IN ('table', 'view')
+  AND name = $tableName
+LIMIT 1";
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "$tableName";
+            parameter.Value = tableName;
+            command.Parameters.Add(parameter);
+
+            return await command.ExecuteScalarAsync(ct) != null;
+        }
+        finally
+        {
+            if (shouldClose)
+                await connection.CloseAsync();
+        }
+    }
 
     private static List<ModelInputEntry> BuildCostInputs(bool hasValuation, bool hasLand, bool hasCama)
     {

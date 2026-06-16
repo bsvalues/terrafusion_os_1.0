@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -82,7 +83,8 @@ public sealed class R2Wave41SimilarityScorerTests
         int yearBuilt        = 2000,
         decimal landSqft     = 8000m,
         string? qualityGrade = "GOOD",
-        string? buildingType = "R1")
+        string? buildingType = "R1",
+        string? neighborhoodCode = null)
     {
         db.CamaCharacteristics.Add(new CamaCharacteristic
         {
@@ -94,6 +96,7 @@ public sealed class R2Wave41SimilarityScorerTests
             LandAreaSqft = landSqft,
             QualityGrade = qualityGrade,
             BuildingType = buildingType ?? "UNK",
+            NeighborhoodCode = neighborhoodCode,
             CountyId     = BentonCountyId,
             UpdatedAt    = DateTime.UtcNow
         });
@@ -372,11 +375,80 @@ public sealed class R2Wave41SimilarityScorerTests
         var result = await svc.CalculateSalesComparisonAsync(SubjectParcelId, 2025, default);
 
         result.Comparables.Should().HaveCount(1);
-        // Neighborhood dimension scores 0.5 (neutral) — subject hood comes from PacsValuations
-        // which isn't seeded in this unit test. All other 5 dimensions match → score = 0.925.
+        // Neighborhood dimension scores 0.5 (neutral) — no canonical CAMA neighborhood is
+        // seeded in this unit test. All other 5 dimensions match → score = 0.925.
         // (1.0×0.30 + 1.0×0.20 + 1.0×0.20 + 0.5×0.15 + 1.0×0.10 + 1.0×0.05 = 0.925)
         result.Comparables[0].Similarity.Should().BeGreaterThanOrEqualTo(0.92,
-            "5 of 6 PACS dimensions match exactly; neighborhood neutral due to missing PacsValuation seed");
+            "5 of 6 dimensions match exactly; neighborhood neutral due to missing canonical CAMA neighborhood seed");
+    }
+
+    [Fact(DisplayName = "WF41-13: Sales comparison uses canonical CAMA neighborhood, not PacsValuations")]
+    public async Task WF41_13_SalesComparisonUsesCanonicalCamaNeighborhood()
+    {
+        await using var db = CreateDbContext(nameof(WF41_13_SalesComparisonUsesCanonicalCamaNeighborhood));
+        await SeedBaseDataAsync(db);
+        await SeedSubjectCamaAsync(db, sqft: 1800m, yearBuilt: 2000, landSqft: 8000m,
+            qualityGrade: "GOOD", buildingType: "R1", neighborhoodCode: "HOOD01");
+
+        for (var i = 0; i < 6; i++)
+            await SeedCompAsync(db, neighborhood: "HOOD01", salePrice: 300_000m + i);
+
+        for (var i = 0; i < 6; i++)
+            await SeedCompAsync(db, neighborhood: "OTHER", salePrice: 350_000m + i);
+
+        var svc = CreateService(db);
+        var result = await svc.CalculateSalesComparisonAsync(SubjectParcelId, 2025, default);
+
+        result.NeighborhoodFilterActive.Should().BeTrue(
+            "canonical CAMA NeighborhoodCode should drive the neighborhood filter");
+        result.Comparables.Should().HaveCount(6);
+        result.Rationale.Should().Contain("Neighborhood filter active");
+    }
+
+    [Fact(DisplayName = "WF41-14: Cost approach tolerates missing optional segment projection in SQLite")]
+    public async Task WF41_14_CostApproachToleratesMissingSegmentProjectionInSqlite()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+
+        var options = new DbContextOptionsBuilder<DataDbContext>()
+            .UseSqlite(connection)
+            .Options;
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .Build();
+
+        await using var db = new DataDbContext(options, config);
+        await db.Database.EnsureCreatedAsync();
+        await db.Database.ExecuteSqlRawAsync("DROP TABLE cama_improvement_details");
+
+        await SeedBaseDataAsync(db);
+        db.ValuationRecords.Add(new ValuationRecord
+        {
+            Id = Guid.NewGuid(),
+            ParcelId = SubjectParcelId,
+            TaxYear = 2025,
+            PropertyType = "residential",
+            CostApproachValue = 210000m,
+            Rcn = 180000m,
+            DepreciationPercent = 10m,
+            Rcnld = 162000m,
+            LandValue = 50000m,
+            Status = "draft",
+            CountyId = BentonCountyId,
+            CreatedBy = "wave41-test",
+            CreatedAt = DateTime.UtcNow
+        });
+        await SeedSubjectCamaAsync(db, sqft: 1800m, yearBuilt: 2000, landSqft: 8000m,
+            qualityGrade: "GOOD", buildingType: "R1", neighborhoodCode: "HOOD01");
+
+        var svc = CreateService(db);
+        var result = await svc.CalculateCostApproachAsync(SubjectParcelId, 2025, default);
+
+        result.Source.Should().Be("canonical");
+        result.Segments.Should().BeEmpty(
+            "missing cama_improvement_details means optional segment detail is unavailable, not a 500");
+        result.IndicatedValue.Should().BeGreaterThan(0);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
