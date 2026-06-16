@@ -93,15 +93,14 @@ TF_SKIP_DEV_SEEDERS=true dotnet run --project backend/src/TerraFusion.API
 
 **Problem**: This flag also disables doctrine hosted services. See §5 for resolution.
 
-### 4.2 Recommended: Separate Doctrine Flag
+### 4.2 Separate Doctrine Flag (IMPLEMENTED — WO-DATA-004B-P1)
 
-The current `TF_SKIP_DEV_SEEDERS` is a blunt instrument — it disables both fabricated seeders AND doctrine hosted services.
+As of WO-DATA-004B-P1, the flags are split:
 
-**Recommended for WO-DATA-004 or future**: Split into two flags:
-- `TF_SKIP_DEV_SEEDERS=true` — disables fabricated property/user/sale seeders
-- Doctrine hosted services should NOT be gated by the dev-seeder flag
+- `TF_SKIP_DEV_SEEDERS=true` — disables fabricated property/user/sale/GPT seeders
+- `TF_SKIP_DOCTRINE_SEEDERS=true` — disables doctrine hosted services (universe, ratio, sales-qual, imprv-attr dict)
 
-**Current workaround**: Set `TF_SKIP_DEV_SEEDERS=true`, then manually trigger doctrine seeders via API endpoints or a dedicated startup mode.
+**For import runs**: Set `TF_SKIP_DEV_SEEDERS=true` only. Leave `TF_SKIP_DOCTRINE_SEEDERS` unset so doctrine rules seed automatically at startup.
 
 ---
 
