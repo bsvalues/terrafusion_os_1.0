@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0.0",
+  "scope": "WO-OS-ACCEPT-001 full OS production acceptance",
+  "updatedAt": "2026-06-16T00:00:00Z",
+  "releaseHealth": {
+    "path": "/health",
+    "releaseHeader": "x-release-sha"
+  },
+  "login": {
+    "path": "/login",
+    "rootTestId": "login-page",
+    "allowedSubmitLabels": ["Sign In", "Enter TerraFusion OS"]
+  },
+  "suiteRoutes": [
+    {
+      "id": "forge",
+      "label": "TerraForge",
+      "path": "/forge",
+      "rootTestId": "suite-forge-root"
+    },
+    {
+      "id": "atlas",
+      "label": "TerraAtlas",
+      "path": "/atlas",
+      "rootTestId": "suite-atlas-root"
+    },
+    {
+      "id": "dais",
+      "label": "TerraDais",
+      "path": "/dais",
+      "rootTestId": "suite-dais-root"
+    },
+    {
+      "id": "dossier",
+      "label": "TerraDossier",
+      "path": "/dossier",
+      "rootTestId": "suite-dossier-root"
+    },
+    {
+      "id": "gpt",
+      "label": "TerraGPT",
+      "path": "/gpt",
+      "rootTestId": "suite-gpt-root"
+    }
+  ],
+  "featureRoutes": [
+    {
+      "id": "pilot",
+      "label": "TerraPilot",
+      "path": "/pilot",
+      "rootTestId": "pilot-console-content"
+    },
+    {
+      "id": "trace",
+      "label": "TerraTrace",
+      "path": "/trace",
+      "rootTestId": "standalone-shell",
+      "requiredText": "TerraTrace Console"
+    },
+    {
+      "id": "canon",
+      "label": "TerraCanon",
+      "path": "/canon",
+      "rootTestId": "terracanon-root",
+      "requiredText": "TerraCanon"
+    }
+  ],
+  "supportRoutes": [
+    {
+      "id": "workbench-search",
+      "label": "Property Search",
+      "path": "/property/search?openTab=forge",
+      "rootTestId": "property-search-root",
+      "requiredText": "Property Search"
+    }
+  ],
+  "guardrails": {
+    "suiteCount": 5,
+    "featureCount": 3,
+    "supportRouteCount": 1,
+    "workbenchSearchSupportOnly": true,
+    "oneParcelIsNotLaunchProof": true,
+    "parcelScopedWorkbenchRouteForbiddenPattern": "^/property/[^/]+/forge$",
+    "authenticatedPublicProductionSmokeRequired": true,
+    "terraforgeMatrixProofRequired": true
+  }
+}
