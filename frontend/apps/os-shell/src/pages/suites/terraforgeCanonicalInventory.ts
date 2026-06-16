@@ -57,11 +57,11 @@ export const TERRAFORGE_CANONICAL_INVENTORY: readonly TerraForgeCanonicalCapabil
     description:
       'Income approach lane for cap rates, NOI modeling, and rent schedule review where commercial income data is available.',
     tier: 'primary',
-    status: 'active',
+    status: 'fail',
     proofSurface: 'suite',
     moduleId: 'income-forge',
     route: '/forge',
-    chipLabel: 'Income approach',
+    chipLabel: 'Fails current suite gate',
   },
   {
     id: 'reconciliation',
