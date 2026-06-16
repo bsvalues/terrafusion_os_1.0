@@ -4,8 +4,8 @@ namespace TerraFusion.Core.DTOs;
 
 /// <summary>
 /// Cost approach result matching the frontend CostApproach / ForgeOverview panels.
-/// Maps to fields from pacs_valuations (CostValue, CostMarket, CostLand*, CostImprv*)
-/// and pacs_improvement_details (RCN, depreciation).
+/// Maps to canonical valuation and improvement-detail fields for cost value,
+/// land value, improvement value, replacement cost, and depreciation.
 /// </summary>
 public record CostApproachResult
 {
@@ -27,19 +27,19 @@ public record CostApproachResult
     /// <summary>RCN minus all depreciation.</summary>
     public decimal DepreciatedCost { get; init; }
 
-    /// <summary>Land value from pacs_land_details sum.</summary>
+    /// <summary>Land value from canonical land valuation data.</summary>
     public decimal LandValue { get; init; }
 
     /// <summary>Final cost approach indicated value (DepreciatedCost + LandValue).</summary>
     public decimal IndicatedValue { get; init; }
 
-    /// <summary>Improvement homestead + non-homestead from pacs_valuations cost columns.</summary>
+    /// <summary>Canonical improvement value.</summary>
     public decimal ImprovementValue { get; init; }
 
     /// <summary>Data source label: "pacs" when real data, "fallback" when synthetic.</summary>
     public string Source { get; init; } = "fallback";
 
-    /// <summary>Confidence 0.0 – 1.0 (higher when sourced from real PACS data).</summary>
+    /// <summary>Confidence 0.0 – 1.0 (higher when sourced from real canonical data).</summary>
     public double Confidence { get; init; }
 
     /// <summary>Cost model input factors for the explain_model_inputs tool.</summary>
@@ -70,7 +70,7 @@ public record CostApproachResult
     public bool IsAgriculturalOrTimber { get; init; }
     public string? WaClassificationNote { get; init; }
 
-    // ── Phase B: Physical building attributes from PACS improvement attributes ──
+    // ── Phase B: Physical building attributes from canonical improvement attributes ──
     /// <summary>Foundation type (e.g., Crawl/Concrete Perimeter Piers, Slab, Post & Pier).</summary>
     public string? Foundation { get; init; }
     /// <summary>Exterior wall material (e.g., Alum siding, Vinyl, Brick Veneer).</summary>
@@ -100,13 +100,13 @@ public record CostApproachResult
 
 /// <summary>
 /// One building segment row from cama_improvement_details.
-/// Preserves PACS cost matrix join keys for CostForge recalculation.
+/// Preserves canonical cost matrix join keys for CostForge recalculation.
 /// </summary>
 public record SegmentEntry
 {
     /// <summary>Segment type code (ImprvDetTypeCd): MA, CovPatio, Patio, Shop, DETGAR, etc.</summary>
     public string? SegmentType { get; init; }
-    /// <summary>Human-readable PACS description.</summary>
+    /// <summary>Human-readable segment description.</summary>
     public string? SegmentDesc { get; init; }
     /// <summary>Method code — matrix join key (e.g., R, EXT-B).</summary>
     public string? MethodCode { get; init; }
@@ -116,9 +116,9 @@ public record SegmentEntry
     public string? SubClassCode { get; init; }
     /// <summary>Floor area in square feet.</summary>
     public decimal? Area { get; init; }
-    /// <summary>PACS unit cost per square foot.</summary>
+    /// <summary>Canonical unit cost per square foot.</summary>
     public decimal? UnitPrice { get; init; }
-    /// <summary>PACS-computed segment value (Area × UnitPrice × adjustments). Null if not loaded.</summary>
+    /// <summary>Canonical segment value (Area × UnitPrice × adjustments). Null if not loaded.</summary>
     public decimal? CalcValue { get; init; }
     /// <summary>Condition code for this segment.</summary>
     public string? ConditionCode { get; init; }
@@ -136,14 +136,14 @@ public record ModelInputEntry
 
 /// <summary>
 /// Sales comparison result matching the frontend SalesComparison panel.
-/// Populated from pacs_sales joined to pacs_valuations.
+/// Populated from canonical comparable sales and canonical valuation/property data.
 /// </summary>
 public record SalesComparisonResult
 {
     public string ParcelId { get; init; } = string.Empty;
     public int TaxYear { get; init; }
 
-    /// <summary>Indicated value from market approach (pacs_valuations.MktapprMarket).</summary>
+    /// <summary>Indicated value from canonical market approach data.</summary>
     public decimal IndicatedValue { get; init; }
 
     /// <summary>Number of comparables found.</summary>
@@ -174,7 +174,7 @@ public record SalesComparisonResult
     /// <summary>
     /// Price-Related Differential (IAAO standard). Arithmetic mean / weighted mean.
     /// IAAO target: 0.98–1.03. >1.03 = assessment regressivity; &lt;0.98 = progressivity.
-    /// 0.0 when fewer than 2 qualified sales with PACS ratios available.
+    /// 0.0 when fewer than 2 qualified sales with canonical ratios available.
     /// </summary>
     public double PriceRelatedDifferential { get; init; }
 
@@ -263,7 +263,7 @@ public record ComparableSaleEntry
 
 /// <summary>
 /// Income approach result matching the frontend IncomeApproach panel.
-/// Sourced from pacs_valuations income columns and pacs_sales income data.
+/// Sourced from canonical income valuation and comparable sales data.
 /// </summary>
 public record IncomeApproachResult
 {
@@ -276,7 +276,7 @@ public record IncomeApproachResult
     public decimal GrossIncomeMultiplier { get; init; }
     public string RiskClassification { get; init; } = "moderate";
 
-    /// <summary>Income approach indicated value from pacs_valuations.</summary>
+    /// <summary>Income approach indicated value from canonical valuation data.</summary>
     public decimal IncomeIndicatedValue { get; init; }
 
     public string Source { get; init; } = "fallback";
@@ -322,10 +322,10 @@ public record ReconciliationResult
     /// <summary>Method used for reconciliation.</summary>
     public string Method { get; init; } = "weighted_average";
 
-    /// <summary>Assessed value from pacs_valuations.AssessedVal.</summary>
+    /// <summary>Assessed value from canonical valuation/property data.</summary>
     public decimal? AssessedValue { get; init; }
 
-    /// <summary>Market value from pacs_valuations.Market.</summary>
+    /// <summary>Market value from canonical valuation/property data.</summary>
     public decimal? MarketValue { get; init; }
 
     public string Source { get; init; } = "fallback";
@@ -344,11 +344,11 @@ public record ApproachSummary
 // ── Available Years (Year-Layer Inventory) ─────────────────────────────
 
 /// <summary>
-/// All pacs_valuations year layers for a parcel, ordered most-recent first.
+/// All canonical valuation year layers for a parcel, ordered most-recent first.
 /// The UI calls this endpoint on parcel load to populate the year selector
 /// and default to the most recent base-roll layer.
 ///
-/// PACS year-layer model: each (PropValYear, SupNum) pair is a discrete,
+/// Canonical year-layer model: each (tax year, supplemental number) pair is a discrete,
 /// sovereign snapshot. Layers are never silently substituted — year selection
 /// is explicit and driven by the caller.
 /// </summary>
@@ -367,7 +367,7 @@ public record ParcelYearLayersResult
 }
 
 /// <summary>
-/// Metadata for a single pacs_valuations row (one year-layer).
+/// Metadata for a single canonical valuation year layer.
 /// </summary>
 public record ParcelYearLayer
 {
@@ -377,7 +377,7 @@ public record ParcelYearLayer
     /// <summary>"base" when SupNum=0 (roll record), "supplemental" when SupNum>0 (mid-year adjustment).</summary>
     public string LayerType { get; init; } = "base";
 
-    /// <summary>Raw PropState from PACS (e.g. "A"=active). Null if not set.</summary>
+    /// <summary>Raw property state from canonical valuation data (e.g. "A"=active). Null if not set.</summary>
     public string? PropState { get; init; }
 
     /// <summary>True when HasLockedValues=true — layer is certified / closed roll.</summary>
@@ -385,13 +385,13 @@ public record ParcelYearLayer
 
     /// <summary>
     /// True if this is the oldest known layer for this parcel (data-driven minimum year).
-    /// For Benton County parcels this will be 2015 — the asend/proval → PACS migration year.
+    /// For Benton County parcels this will be the earliest canonical conversion-era valuation year.
     /// That layer is NOT stale data; it is the active certified value for parcels not
     /// reappraised since migration (e.g. agricultural parcels on the 6-year cycle).
     /// </summary>
     public bool IsEarliestKnownLayer { get; init; }
 
-    /// <summary>Revaluation cycle number from pacs_valuations.Cycle.</summary>
+    /// <summary>Revaluation cycle number from canonical valuation data.</summary>
     public int? RevaluationCycle { get; init; }
 
     /// <summary>Date parcel was last appraised (LastAppraisalDate ?? LastActualAppraisalDate).</summary>
@@ -409,7 +409,7 @@ public record ParcelYearLayer
 
 /// <summary>
 /// Special valuation programs active in a given year layer.
-/// Derived from pacs_valuations value fields and pacs_exemptions codes.
+/// Derived from canonical valuation fields and exemption codes.
 ///
 /// Programs with deferred losses (AgLossDeferred, TimberLossDeferred) are the
 /// BASIS for removal penalty calculations under RCW 84.34 and RCW 84.33.
@@ -440,7 +440,7 @@ public record ProgramEnrollment
     // ── RCW 84.36: Exemptions ─────────────────────────────────────────────
     /// <summary>
     /// Exemption type codes active for this parcel in this year layer.
-    /// From pacs_exemptions.ExemptTypeCode (e.g. HS, OV65, DP, AG, EX).
+    /// From canonical exemption code data (e.g. HS, OV65, DP, AG, EX).
     /// </summary>
     public List<string> ExemptionCodes { get; init; } = [];
 }

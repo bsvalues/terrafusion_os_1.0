@@ -950,7 +950,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// Batch property valuation for county-wide assessments
-  /// Supports Washington State compliance and Harris PACS integration
+  /// Supports Washington State compliance and canonical county data integration
   /// </summary>
   [HttpPost("batch-calculate")]
   public async Task<ActionResult<BatchValuationResultDto>> BatchCalculateValuations([FromBody] BatchValuationRequestDto request)
@@ -1426,7 +1426,7 @@ public class CostForgeController : ControllerBase
     if (countyContext is null)
       return Forbid();
 
-    _logger.LogInformation("Harris PACS sync initiated for county {CountyId} by {UserId}",
+    _logger.LogInformation("Legacy source sync initiated for county {CountyId} by {UserId}",
         countyContext.CountyId, User.FindFirst("sub")?.Value);
 
     var startTime = DateTime.UtcNow;
@@ -1439,7 +1439,7 @@ public class CostForgeController : ControllerBase
 
     await _auditLogger.LogUserActionAsync("CostForge:HarrisPACSSync",
         User.FindFirst("sub")?.Value ?? "anonymous",
-        $"Harris PACS sync status retrieved for county {countyContext.CountyName}. Properties: {propertyCount}");
+        $"Legacy source sync status retrieved for county {countyContext.CountyName}. Properties: {propertyCount}");
 
     return Ok(new HarrisSyncResultDto
     {
@@ -2388,7 +2388,7 @@ public class CostForgeController : ControllerBase
     ];
 
     // Tri-Cities neighborhood statistics (source: Benton County market area analysis)
-    // RevalArea maps to the PACS Cycle field (physical inspection rotation area)
+    // RevalArea maps to the county physical inspection rotation area.
     public static readonly NeighborhoodStat[] NeighborhoodStats =
     [
       new("Kennewick – South", 425_000m, 195m, "Reval 1", "Established neighborhoods, retail center"),
@@ -2612,7 +2612,7 @@ public class CostForgeController : ControllerBase
   /// <summary>
   /// Depreciation model: economic life by building type, physical age-life schedules,
   /// functional and external obsolescence factor definitions.
-  /// Source: Harris PACS CMS tables + IAAO age-life method.
+  /// Source: canonical county cost tables + IAAO age-life method.
   /// </summary>
   [HttpGet("valuation-lineage/depreciation-model")]
   public ActionResult GetDepreciationModel()
@@ -2627,13 +2627,13 @@ public class CostForgeController : ControllerBase
       externalObsolescenceFactors = ValuationLineageData.ExternalObsolescenceFactors,
       depreciationModel = "Multiplicative: remaining = (1 - physical) × (1 - functional) × (1 - external)",
       effectiveDate = "2025-01-01",
-      source = "Harris PACS CMS + IAAO Standard on Mass Appraisal / Benton County FY 2025",
+      source = "Canonical county cost model + IAAO Standard on Mass Appraisal / Benton County FY 2025",
     });
   }
 
   /// <summary>
   /// Land base rates per zone and land use for Benton County.
-  /// Source: Benton County land schedule (slope-intercept method from PACS land_sched_si_detail).
+  /// Source: Benton County land schedule (slope-intercept method from canonical land schedule details).
   /// </summary>
   [HttpGet("valuation-lineage/land-rates/benton")]
   public ActionResult GetLandRates()
@@ -2642,7 +2642,7 @@ public class CostForgeController : ControllerBase
     return Ok(new
     {
       rates = ValuationLineageData.LandRates,
-      method = "Slope-Intercept (PACS land_sched_si_detail)",
+      method = "Slope-Intercept (canonical land schedule detail)",
       effectiveDate = "2025-01-01",
       source = "Benton County Assessor – Land Schedule FY 2025",
     });
@@ -2650,7 +2650,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// Site/yard improvement value schedule: garages, pools, outbuildings, fencing, landscaping.
-  /// Source: Benton County residential valuation policy + PACS imprv_detail type codes.
+  /// Source: Benton County residential valuation policy + canonical improvement detail type codes.
   /// </summary>
   [HttpGet("valuation-lineage/site-improvements")]
   public ActionResult GetSiteImprovements()
@@ -2707,7 +2707,7 @@ public class CostForgeController : ControllerBase
     adjustedRate = BankersRound(adjustedRate);
     var rcn = BankersRound(adjustedRate * request.SquareFeet);
 
-    // Step 3: Depreciation (multiplicative age-life model from PACS)
+    // Step 3: Depreciation (multiplicative age-life model from canonical county schedules)
     int effectiveAge = request.EffectiveAge ?? (DateTime.UtcNow.Year - (request.YearBuilt ?? DateTime.UtcNow.Year));
     if (effectiveAge < 0) effectiveAge = 0;
 
@@ -2719,14 +2719,14 @@ public class CostForgeController : ControllerBase
         ? ValuationLineageData.EconomicLifeByType.FirstOrDefault(e => e.Category == "Industrial")?.Years ?? 45
         : ValuationLineageData.EconomicLifeByType.FirstOrDefault(e => e.Category == "Commercial")?.Years ?? 50;
 
-    // Physical depreciation: age-life with 85% cap (per PACS/IAAO)
+    // Physical depreciation: age-life with 85% cap (county schedule / IAAO)
     var physicalDepPct = Math.Min((decimal)effectiveAge / economicLife, 0.85m);
     physicalDepPct = BankersRound(physicalDepPct * 100m) / 100m; // round to 2 decimal pct
 
     var functionalObsPct = request.FunctionalObsolescence ?? 0m;
     var externalObsPct = request.ExternalObsolescence ?? 0m;
 
-    // Multiplicative depreciation (per PACS CMS model)
+    // Multiplicative depreciation (per canonical county cost model)
     var remainingPct = (1m - physicalDepPct) * (1m - functionalObsPct / 100m) * (1m - externalObsPct / 100m);
     var totalDepPct = BankersRound((1m - remainingPct) * 100m);
     var depreciationAmount = BankersRound(rcn * (1m - remainingPct));
@@ -3323,7 +3323,7 @@ public class CostForgeController : ControllerBase
           new { name = "yearBuilt", type = "int", required = true, description = "Year of original construction" },
           new { name = "quality", type = "string", required = false, description = "Construction quality class (1-6)" },
           new { name = "condition", type = "string", required = false, description = "Physical condition rating (Good/Average/Fair/Poor)" },
-          new { name = "revalArea", type = "string", required = false, description = "Reval Area (PACS Cycle 1-6) for local cost multiplier" },
+          new { name = "revalArea", type = "string", required = false, description = "Reval Area (county inspection cycle 1-6) for local cost multiplier" },
         },
         outputs = new[] { "rcn", "depreciation", "rcnld", "landValue", "totalValue" },
         county = ctx.CountyName ?? "Unknown",
@@ -3975,7 +3975,7 @@ public class CostForgeController : ControllerBase
       new("SEVERE",       35m,  "Extreme external impact (contamination, blight)"),
     ];
 
-    // Benton County land rates by zone (from PACS land_sched_si_detail)
+    // Benton County land rates by zone (from canonical land schedule detail)
     public static readonly LandRateEntry[] LandRates =
     [
       new("central-residential",   "Central Benton Residential",    3.50m),
@@ -3992,7 +3992,7 @@ public class CostForgeController : ControllerBase
       new("industrial",            "Industrial Zone",                4.00m),
     ];
 
-    // Site/yard improvement schedule (from PACS imprv_detail type codes + Benton policy)
+    // Site/yard improvement schedule (from canonical improvement detail type codes + Benton policy)
     public static readonly SiteImprovementEntry[] SiteImprovements =
     [
       new("ATTGAR", "Attached Garage",       42.50m, "per sqft"),
@@ -4147,7 +4147,7 @@ public class CostForgeController : ControllerBase
     return Ok(new { buildingTypes = types });
   }
 
-  /// <summary>GET /api/costforge/regions — Benton County Reval Areas (PACS Cycle field) with cost factors.</summary>
+  /// <summary>GET /api/costforge/regions — Benton County Reval Areas with cost factors.</summary>
   [HttpGet("regions")]
   [AllowAnonymous]
   public IActionResult GetRegions()
@@ -4171,9 +4171,9 @@ public class CostForgeController : ControllerBase
   }
 
   /// <summary>
-  /// GET /api/costforge/neighborhoods — Distinct hood_cd values from pacs_valuations with parcel counts.
-  /// hood_cd is the PACS neighborhood code. Reval area is loaded only from explicit Region/Cycle-derived fields.
-  /// Falls back to BentonSalesData if PACS table is empty or unreachable.
+  /// GET /api/costforge/neighborhoods — Distinct canonical neighborhood values with parcel counts.
+  /// Reval area is loaded only from explicit Region/Cycle-derived fields.
+  /// Falls back to BentonSalesData if canonical neighborhood rows are unavailable.
   /// </summary>
   [HttpGet("neighborhoods")]
   [AllowAnonymous]
@@ -4243,7 +4243,7 @@ public class CostForgeController : ControllerBase
 
     var parcelIds = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
 
-    // Assessed values from Properties table (canonical, no PACS naming)
+    // Assessed values from Properties table.
     var avMap = await _db.Properties
       .AsNoTracking()
       .Where(p => p.CountyId == countyContext.CountyId
@@ -4739,7 +4739,7 @@ public class CostForgeController : ControllerBase
       {
         new { step = 1, label = "Base Rate from Cost Matrix",   value = baseRate,        unit = "$/sqft",
               formula = $"Matrix [{buildingType}] × [{revalArea}]",
-              explanation = "Published Benton County cost rate for this building type and Reval Area (PACS Cycle)" },
+              explanation = "Published Benton County cost rate for this building type and Reval Area" },
         new { step = 2, label = "Quality Grade Adjustment",     value = qualityFactor,   unit = "× multiplier",
               formula = $"Quality: {quality} = ×{qualityFactor}",
               explanation = $"Adjusts base rate for construction quality. {quality} grade costs {(qualityFactor >= 1m ? "more" : "less")} than standard." },
@@ -4789,7 +4789,7 @@ public class CostForgeController : ControllerBase
   {
     // 11 building types × 6 Reval Areas = 66 matrix entries
     // Source: Cost Matrix 2025.xlsx, Benton County Assessor's Office
-    // Reval Areas (Cycle field in PACS) = physical inspection rotation areas 1-6
+    // Reval Areas = physical inspection rotation areas 1-6
     internal static readonly CostMatrixEntry[] CostMatrix =
     [
       // ── Reval 1 — Kennewick (Urban Core), Cycle 1, factor 1.00 ──
@@ -4866,7 +4866,7 @@ public class CostForgeController : ControllerBase
       new("S2", "School",                     "Reval 6", 122.44m),
     ];
 
-    // Reval Area (Cycle) adjustment factors — Benton County PACS Cycle field
+    // Reval Area adjustment factors — Benton County inspection cycle
     internal static readonly Dictionary<string, decimal> RegionFactors = new(StringComparer.OrdinalIgnoreCase)
     {
       ["Reval 1"] = 1.00m,  // Kennewick Urban Core
@@ -6987,7 +6987,7 @@ public class CostForgeController : ControllerBase
         category = "Accuracy",
         field = "ImprvVal",
         affectedCount = badImprvVal,
-        description = "Improvement value is negative — invalid; check PACS source.",
+        description = "Improvement value is negative — invalid; check canonical source data.",
         severity = "critical"
       });
     if (effExceedsLife > 0)
@@ -8033,7 +8033,7 @@ public class CostForgeController : ControllerBase
         .OrderBy(e => e.code)
         .ToList();
 
-    // Feature factor codes — real certified-lane improvement detail codes from PACS
+    // Feature factor codes — real certified-lane canonical improvement detail codes
     var featureCodes = new[]
     {
         new { code = "CovPatio",  description = "Covered Patio",          bivPct = 0.03m },

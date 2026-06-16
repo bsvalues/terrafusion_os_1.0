@@ -15,8 +15,8 @@ namespace TerraFusion.API.Controllers;
 /// <summary>
 /// Phase 10 — PropertyForge valuation API.
 /// Four endpoints serving the Forge sub-tabs: cost, sales, income, reconciliation.
-/// Queries PACS tables for real Benton County data; returns structured fallback
-/// where PACS data is incomplete.
+/// Queries canonical TerraFusion runtime tables; returns structured unavailable
+/// states where canonical data is incomplete.
 /// </summary>
 [ApiController]
 [Route("api/forge")]
@@ -35,7 +35,7 @@ public class ForgeController : ControllerBase
 
     /// <summary>
     /// GET /api/forge/{parcelId}/years
-    /// Returns all pacs_valuations year layers for a parcel with program enrollment metadata.
+    /// Returns canonical valuation year layers for a parcel with program enrollment metadata.
     /// Call this on parcel load to populate the year selector. Use DefaultYear as the
     /// starting point — it is the most recent base-roll (SupNum=0) layer.
     ///
@@ -206,7 +206,7 @@ public class ForgeController : ControllerBase
     // Assessor Sale Qualification Override
     // Layer 3: The assessor is the final authority. Their explicit decision
     // always overrides the TerraFusion recommendation (Layer 2).
-    // Raw PACS codes are facts. TF recommendation is a suggestion. Assessor decision is law.
+    // Raw source codes are facts. TF recommendation is a suggestion. Assessor decision is law.
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -291,7 +291,7 @@ public class ForgeController : ControllerBase
     ///
     /// Re-runs the TF qualification rule engine (Layer 2) for all sales in the
     /// assessor's county. Safe to call any time — does not touch Layer 3 assessor decisions.
-    /// Typically called after a PACS ingest to populate QualificationRecommendation.
+    /// Typically called after canonical sales ingest to populate QualificationRecommendation.
     /// </summary>
     [Authorize]
     [RequiresPermission("access:forge")]

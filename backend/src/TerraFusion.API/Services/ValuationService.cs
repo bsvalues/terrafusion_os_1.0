@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
@@ -7,13 +8,12 @@ using CanonicalComparableSale = TerraFusion.Core.Entities.ComparableSale;
 
 namespace TerraFusion.API.Services;
 
-// BOUNDARY REPAIR COMPLETE (CP-3b): All Pacs* reads removed per PACS Sync mandate.
 // Service reads canonical TF entities only: Properties, ValuationRecords,
-// ComparableSales, CamaCharacteristics.
+// ComparableSales, CamaCharacteristics, and optional CamaImprovementDetails.
 // Assessor workflow PARITY gaps are tracked as CP-4/5/6 work — not this service.
 /// <summary>
 /// Phase 10 — PropertyForge valuation service.
-/// Reads canonical TerraFusion entities only. No direct Pacs* mirror reads.
+/// Reads canonical TerraFusion entities only. No legacy source mirror reads.
 /// </summary>
 public class ValuationService : IValuationService
 {
@@ -53,12 +53,10 @@ public class ValuationService : IValuationService
             .Where(c => c.ParcelId == parcelId && c.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
-        // Phase B: Load per-segment breakdown first — needed for Benton depreciation path.
-        // Note: no OrderBy in EF query — SQLite decimal ORDER BY not supported.
-        var segmentRows = await _db.CamaImprovementDetails
-            .AsNoTracking()
-            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
-            .ToListAsync(ct);
+        // Phase B: Load per-segment breakdown when the optional canonical projection exists.
+        // Production can run before this projection is promoted; that state must return
+        // honest empty segment details, not a 500.
+        var segmentRows = await LoadSegmentRowsAsync(parcelId, taxYear, ct);
 
         var segments = segmentRows
             .OrderByDescending(s => s.Area ?? 0m)
@@ -77,10 +75,10 @@ public class ValuationService : IValuationService
             }).ToList();
 
         // Benton residential depreciation path:
-        // pacs_improvement_details.DepPct = percent-GOOD from the county age×condition matrix
+        // CamaImprovementDetails.DepPct = percent-GOOD from the county age×condition matrix
         //   (e.g., 86 = 86% good = 14% total depreciation)
-        // The improvement-level DepPct=100 in PACS is a "formula-driven" flag, not the applied rate.
-        // ImprvVal in PACS IS the RCNLD (depreciation already applied). Back-calculate RCN:
+        // The improvement-level DepPct=100 is a "formula-driven" flag, not the applied rate.
+        // ImprvVal is the canonical RCNLD (depreciation already applied). Back-calculate RCN:
         //   RCN = RCNLD / (percentGood / 100)
         var primaryPctGood = segmentRows
             .OrderByDescending(s => s.Area ?? 0m)
@@ -188,22 +186,25 @@ public class ValuationService : IValuationService
             .FirstOrDefaultAsync(ct);
 
         // Find comps by property type and date range.
-        // CP-5: Neighborhood filter uses hood_cd from PacsValuation.
+        // CP-5: Neighborhood filter uses canonical CAMA NeighborhoodCode.
         // Strategy: prefer comps from same neighborhood; fall back to county-wide if < 5 in hood.
         var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var cutoffEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
 
-        // Resolve subject neighborhood from PacsValuation (most recent base-roll year)
-        var subjectHood = await _db.PacsValuations
+        // Resolve subject neighborhood from canonical CAMA first; fall back to the
+        // canonical Property neighborhood when CAMA has not projected the field.
+        var subjectHood = await _db.CamaCharacteristics
             .AsNoTracking()
-            .Where(v => v.SupNum == 0 && v.NeighborhoodCode != null &&
-                (v.Parcel.GeoId == parcelId || v.Parcel.SimpleGeoId == parcelId))
-            .OrderByDescending(v => v.PropValYear)
-            .Select(v => v.NeighborhoodCode)
+            .Where(c => c.ParcelId == parcelId && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .OrderByDescending(c => c.TaxYear == taxYear)
+            .ThenByDescending(c => c.TaxYear)
+            .Select(c => c.NeighborhoodCode)
             .FirstOrDefaultAsync(ct);
 
+        subjectHood ??= property.Neighborhood;
+
         // Qualified comps base query.
-        // Qualification priority: Layer 3 (assessor decision) → Layer 2 (TF recommendation) → Layer 1b (PACS legacy sync field).
+        // Qualification priority: Layer 3 (assessor decision) → Layer 2 (TF recommendation) → Layer 1b (canonical raw source field).
         var baseCompsQuery = _db.ComparableSales
             .AsNoTracking()
             .Where(cs =>
@@ -292,7 +293,7 @@ public class ValuationService : IValuationService
             .ToList();
 
         // TF computes its own sales ratio: AssessedValue / SalePrice.
-        // PACS is the legacy system being replaced — TF never trusts PACS calculations.
+        // TerraFusion computes its own ratios from canonical runtime data.
         var compParcelIds = qualifiedComps.Select(c => c.ParcelId).Distinct().ToList();
         Dictionary<string, decimal> compAssessedValues = compParcelIds.Count > 0
             ? await _db.Properties
@@ -301,7 +302,7 @@ public class ValuationService : IValuationService
                 .ToDictionaryAsync(p => p.ParcelId, p => p.AssessedValue, ct)
             : new Dictionary<string, decimal>();
 
-        // Ratio = AssessedValue / SalePrice — IAAO standard; TF-computed, not PACS-sourced.
+        // Ratio = AssessedValue / SalePrice — IAAO standard; TF-computed from canonical data.
         var ratioPoints = qualifiedComps
             .Select(c => {
                 var salePrice = (double)(c.AdjustedSalePrice ?? c.SalePrice);
@@ -350,8 +351,8 @@ public class ValuationService : IValuationService
                 ParcelId      = c.ParcelId,
                 SaleDate      = c.SaleDate,
                 SalePrice     = c.SalePrice,
-                // Use PACS adjusted_sl_price when available — this is the price used for ratio study calculations.
-                // Fall back to raw SalePrice only when the adjusted price hasn't been synced from PACS yet.
+                // Use canonical adjusted sale price when available — this is the price used for ratio study calculations.
+                // Fall back to raw SalePrice only when the adjusted price has not been projected yet.
                 AdjustedPrice = c.AdjustedSalePrice ?? c.SalePrice,
                 // Use living area frozen at time of sale (sl_living_area) for ratio study accuracy.
                 // Fall back to current GLA when freeze data hasn't been synced.
@@ -367,7 +368,7 @@ public class ValuationService : IValuationService
                     subjectQualityGrade:    subjectCama?.QualityGrade,    // imprv_det_class_cd → ECONOMY…EXCELLENT
                     subjectImprvTypeCode:   subjectCama?.BuildingType),   // imprv_type_cd → R1, R2, A1, etc.
                 Notes         = BuildSaleNotes(c),
-                // TF-computed ratio: AssessedValue / SalePrice. Never uses PACS sl_ratio.
+                // TF-computed ratio: AssessedValue / SalePrice. Never uses legacy source ratios.
                 SalesRatio    = ((Func<double>)(() => {
                     var sp = (double)(c.AdjustedSalePrice ?? c.SalePrice);
                     compAssessedValues.TryGetValue(c.ParcelId, out var tav);
@@ -379,7 +380,7 @@ public class ValuationService : IValuationService
                 QualificationDecision     = c.QualificationDecision,
                 DecisionSource            = c.DecisionSource,
                 EffectiveQualification    = c.QualificationDecision ?? c.QualificationRecommendation ?? c.SaleQualification,
-                // Qualification-relevant sale flags (imported from ingested data; not PACS calculations)
+                // Qualification-relevant sale flags imported as canonical source facts.
                 LandOnlySale              = c.LandOnlySale,
                 ContinueCurrentUse        = c.ContinueCurrentUse,
                 SalesYear                 = c.SalesYear,
@@ -585,7 +586,7 @@ public class ValuationService : IValuationService
     /// Returns valuation year layers for a parcel from canonical ValuationRecords.
     ///
     /// PARITY GAP (CP-4): The canonical ValuationRecord does not capture the full
-    /// PACS year-layer model (SupNum, PropState, program enrollment, exemptions, etc.).
+    /// county year-layer model (SupNum, PropState, program enrollment, exemptions, etc.).
     /// Those fields return null/empty/false until the canonical model is extended.
     /// </summary>
     public async Task<ParcelYearLayersResult> GetAvailableYearsAsync(
@@ -689,6 +690,60 @@ public class ValuationService : IValuationService
 
     // ── Helpers ─────────────────────────────────────────────────────────
 
+    private async Task<List<CamaImprovementDetail>> LoadSegmentRowsAsync(
+        string parcelId,
+        int taxYear,
+        CancellationToken ct)
+    {
+        if (!await CanReadTableAsync("cama_improvement_details", ct))
+        {
+            _logger.LogInformation(
+                "Canonical CAMA improvement detail projection is unavailable; returning empty segment details for parcel {ParcelId}, tax year {TaxYear}",
+                parcelId,
+                taxYear);
+            return [];
+        }
+
+        return await _db.CamaImprovementDetails
+            .AsNoTracking()
+            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
+            .ToListAsync(ct);
+    }
+
+    private async Task<bool> CanReadTableAsync(string tableName, CancellationToken ct)
+    {
+        var provider = _db.Database.ProviderName ?? string.Empty;
+        if (!provider.Contains("Sqlite", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        var connection = _db.Database.GetDbConnection();
+        var shouldClose = connection.State != ConnectionState.Open;
+        if (shouldClose)
+            await connection.OpenAsync(ct);
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = @"
+SELECT 1
+FROM sqlite_master
+WHERE type IN ('table', 'view')
+  AND name = $tableName
+LIMIT 1";
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "$tableName";
+            parameter.Value = tableName;
+            command.Parameters.Add(parameter);
+
+            return await command.ExecuteScalarAsync(ct) != null;
+        }
+        finally
+        {
+            if (shouldClose)
+                await connection.CloseAsync();
+        }
+    }
+
     private static List<ModelInputEntry> BuildCostInputs(bool hasValuation, bool hasLand, bool hasCama)
     {
         return
@@ -735,10 +790,10 @@ public class ValuationService : IValuationService
     ///
     /// Weighted dimensions:
     ///   GLA (30%)            — largest driver of value, WA assessment rule
-    ///   Quality class (20%)  — PACS imprv_det_class_cd (ECONOMY…EXCELLENT); ordinal distance
+    ///   Quality class (20%)  — canonical quality grade (ECONOMY…EXCELLENT); ordinal distance
     ///   Year Built (20%)     — effective age is core to cost/income approaches
     ///   Same Neighborhood (15%) — location adjustment proxy when lat/lng unavailable
-    ///   Improvement Type (10%)  — PACS imprv_type_cd: R1=SFR, R2=Mobile/MFH, A1=Apt, etc.
+    ///   Improvement Type (10%)  — canonical improvement type code: R1=SFR, R2=Mobile/MFH, A1=Apt, etc.
     ///   Land Size (5%)       — supplementary, noisy for residential
     ///
     /// Quality scoring: ordinal tier distance — ECONOMY=1 through EXCELLENT=6.
@@ -763,7 +818,7 @@ public class ValuationService : IValuationService
         // Neutral score when either side has no data for a dimension
         private const double NeutralDimScore = 0.5;
 
-        // PACS quality tier ordinal map — imprv_det_class_cd normalized values.
+        // Canonical quality tier ordinal map.
         // Source: Benton County 2026 Calibration Technical Report + NormalizeQualityGrade().
         private static readonly IReadOnlyDictionary<string, int> QualityOrdinal =
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
@@ -815,7 +870,7 @@ public class ValuationService : IValuationService
                     ? 1.0
                     : 0.0;
 
-            // Improvement type: binary match on PACS imprv_type_cd (R1=SFR, R2=Mobile/MFH, etc.)
+            // Improvement type: binary match on canonical improvement type code (R1=SFR, R2=Mobile/MFH, etc.)
             double typeScore;
             if (comp.ImprvTypeCode == null || subjectImprvTypeCode == null)
                 typeScore = NeutralDimScore;
