@@ -1,0 +1,93 @@
+name: terraforge-production-matrix-proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Deployed release SHA expected from /health
+        required: true
+        type: string
+      base_url:
+        description: Production public URL; defaults to production PUBLIC_URL variable
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    name: TerraForge production matrix proof
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      RELEASE_SHA: ${{ inputs.release_sha }}
+      INPUT_BASE_URL: ${{ inputs.base_url }}
+      PRODUCTION_PUBLIC_URL: ${{ vars.PUBLIC_URL }}
+      TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
+      TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
+    steps:
+      - name: Checkout deployed release SHA
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.release_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Enable pnpm
+        shell: bash
+        run: corepack enable
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        shell: bash
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Resolve production proof inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_url="${INPUT_BASE_URL:-${PRODUCTION_PUBLIC_URL:-}}"
+          base_url="${base_url%/}"
+
+          if [ -z "$base_url" ]; then
+            echo "Missing production base URL. Set workflow input base_url or production PUBLIC_URL variable."
+            exit 1
+          fi
+
+          for required in RELEASE_SHA TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
+            if [ -z "${!required:-}" ]; then
+              echo "Missing required production proof input: ${required}"
+              exit 1
+            fi
+          done
+
+          {
+            printf 'TF_PRODUCTION_BASE_URL=%s\n' "$base_url"
+            printf 'TF_EXPECTED_RELEASE_SHA=%s\n' "$RELEASE_SHA"
+          } >> "$GITHUB_ENV"
+
+      - name: Run TerraForge production matrix smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/terraforge-production-matrix-smoke.mjs \
+            --base-url "$TF_PRODUCTION_BASE_URL" \
+            --expected-sha "$TF_EXPECTED_RELEASE_SHA" \
+            --output "artifacts/terraforge-production-matrix/${TF_EXPECTED_RELEASE_SHA}"
+
+      - name: Upload TerraForge production proof
+        uses: actions/upload-artifact@v7
+        with:
+          name: terraforge-production-matrix-proof-${{ inputs.release_sha }}
+          path: artifacts/terraforge-production-matrix/${{ inputs.release_sha }}/
+          if-no-files-found: error
