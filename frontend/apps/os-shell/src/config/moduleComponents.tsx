@@ -113,6 +113,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   'county-studio': 'county-studio',
   'atlas-live-view': 'atlas-live-view',
   'atlas-live': 'atlas-live-view',
+  incomeforge: 'income-forge',
+  'income-forge': 'income-forge',
+  reconciliation: 'reconciliation',
+  'cama-characteristics': 'cama-characteristics',
+  'valuation-notes-defensibility': 'valuation-notes-defensibility',
 
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
@@ -224,6 +229,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'value-audit-module',
   // SalesForge — sale qualification & ratio audit flagship
   'sales-forge',
+  'income-forge',
+  'reconciliation',
+  'cama-characteristics',
+  'valuation-notes-defensibility',
   // Neighborhood Ratio Study — per-hood COD/PRD/Median dashboard
   'neighborhood-ratio-study',
   // Cost Analytics — CostForge dashboard stats (property type dist, depreciation)
@@ -360,6 +369,18 @@ const CostManual = lazy(
 const ValueAuditModule = lazy(
   () => import('../pages/suites/modules/ValueAuditModule')
 );
+const ReconciliationModule = lazy(
+  () => import('../pages/suites/modules/ReconciliationModule')
+);
+const IncomeForge = lazy(
+  () => import('../pages/forge/income/IncomeForge')
+);
+const CamaCharacteristicsModule = lazy(
+  () => import('../pages/forge/cama/CamaCharacteristicsModule')
+);
+const ValuationDefensibilityModule = lazy(
+  () => import('../pages/forge/valuation/ValuationDefensibilityModule')
+);
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
@@ -489,6 +510,10 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
   'cost-manual': { Component: CostManual },
   'value-audit-module': { Component: ValueAuditModule },
+  'income-forge': { Component: IncomeForge },
+  'reconciliation': { Component: ReconciliationModule },
+  'cama-characteristics': { Component: CamaCharacteristicsModule },
+  'valuation-notes-defensibility': { Component: ValuationDefensibilityModule },
   // SalesForge — sale qualification & ratio audit flagship
   'sales-forge': { Component: SalesForge },
   // Atlas suite modules
@@ -1302,6 +1327,34 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <ValueAuditModule />
+        </Suspense>
+      );
+
+    case 'income-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <IncomeForge metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
+    case 'reconciliation':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ReconciliationModule />
+        </Suspense>
+      );
+
+    case 'cama-characteristics':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CamaCharacteristicsModule />
+        </Suspense>
+      );
+
+    case 'valuation-notes-defensibility':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ValuationDefensibilityModule />
         </Suspense>
       );
 

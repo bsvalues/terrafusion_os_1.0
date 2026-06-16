@@ -356,6 +356,15 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
   if (mod.id === 'incomeforge') {
     return 'Benton income approach API';
   }
+  if (mod.id === 'reconciliation') {
+    return 'Open value reconciliation';
+  }
+  if (mod.id === 'cama-characteristics') {
+    return 'Read CAMA characteristics';
+  }
+  if (mod.id === 'valuation-notes-defensibility') {
+    return 'Open defensibility notes';
+  }
   if (mod.id === 'county-studio') {
     return 'Support: County Studio studies API';
   }
@@ -493,6 +502,30 @@ export default function ForgeSuiteHome() {
           launchContext: 'terraforge-suite',
           dataSource: 'terrafusion-api',
           runtimePath: 'income-approach',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'reconciliation'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'value-reconciliation',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'cama-characteristics'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'cama-characteristics',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'valuation-notes-defensibility'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'valuation-defensibility',
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
@@ -678,7 +711,10 @@ export default function ForgeSuiteHome() {
               <span className="forge-chip forge-chip--success">SalesForge runtime</span>
               <span className="forge-chip forge-chip--success">CostForge live triage path</span>
               <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
-              <span className="forge-chip forge-chip--warn">IncomeForge launch gap</span>
+              <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
+              <span className="forge-chip forge-chip--success">Reconciliation runtime module</span>
+              <span className="forge-chip forge-chip--success">CAMA characteristics runtime lane</span>
+              <span className="forge-chip forge-chip--success">Defensibility notes runtime lane</span>
               <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
               <span className={`forge-chip ${countyRollupChipClass}`}>
                 {countyRollupStatus}
