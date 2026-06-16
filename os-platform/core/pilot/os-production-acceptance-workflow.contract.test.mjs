@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const ROOT = resolve(import.meta.dirname, '..');
+const ROOT = resolve(import.meta.dirname, '..', '..', '..');
 const workflow = readFileSync(
   join(ROOT, '.github', 'workflows', 'os-production-acceptance.yml'),
   'utf8'
@@ -14,7 +14,13 @@ const contract = JSON.parse(
     'utf8'
   )
 );
-const acceptanceScriptPath = join(ROOT, 'scripts', 'os-production-acceptance-smoke.mjs');
+const acceptanceScriptPath = join(
+  ROOT,
+  'os-platform',
+  'core',
+  'pilot',
+  'os-production-acceptance-smoke.mjs'
+);
 const terraforgeScriptPath = join(ROOT, 'scripts', 'terraforge-production-matrix-smoke.mjs');
 
 describe('OS production acceptance contract', () => {
@@ -25,7 +31,7 @@ describe('OS production acceptance contract', () => {
     assert.equal(contract.suiteRoutes.length, 5);
     assert.equal(contract.featureRoutes.length, 3);
     assert.equal(contract.supportRoutes.length, 1);
-    assert.equal(contract.supportRoutes[0].path, '/property/search?openTab=forge');
+    assert.equal(contract.supportRoutes[0].path, '/property?openTab=forge');
     assert.match(contract.guardrails.parcelScopedWorkbenchRouteForbiddenPattern, /^\^\/property\//);
   });
 
@@ -47,17 +53,21 @@ describe('OS production acceptance workflow', () => {
   });
 
   it('runs TerraForge proof before the broader OS acceptance smoke', () => {
+    assert.ok(
+      workflow.includes('test -f os-platform/core/pilot/os-production-acceptance-smoke.mjs')
+    );
     assert.ok(workflow.includes('test -f scripts/terraforge-production-matrix-smoke.mjs'));
-    assert.ok(workflow.includes('test -f scripts/os-production-acceptance-smoke.mjs'));
     assert.ok(workflow.includes('node scripts/terraforge-production-matrix-smoke.mjs'));
-    assert.ok(workflow.includes('node scripts/os-production-acceptance-smoke.mjs'));
+    assert.ok(workflow.includes('node os-platform/core/pilot/os-production-acceptance-smoke.mjs'));
     assert.ok(
       workflow.indexOf('node scripts/terraforge-production-matrix-smoke.mjs') <
-        workflow.indexOf('node scripts/os-production-acceptance-smoke.mjs')
+        workflow.indexOf('node os-platform/core/pilot/os-production-acceptance-smoke.mjs')
     );
   });
 
-  it('restricts production secrets to the trusted production URL', () => {
+  it('restricts production secrets to the trusted production URL and smoke steps only', () => {
+    const jobEnvBlock = workflow.match(/jobs:\s+acceptance:[\s\S]*?env:\n([\s\S]*?)\n\s+steps:/)?.[1] ?? '';
+
     assert.ok(workflow.includes('Production base URL must use https.'));
     assert.ok(
       workflow.includes(
@@ -69,11 +79,15 @@ describe('OS production acceptance workflow', () => {
         'Missing production PUBLIC_URL variable; refusing to run production proof with secrets.'
       )
     );
-    assert.ok(
-      workflow.includes('TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}')
+    assert.doesNotMatch(jobEnvBlock, /TF_PROVISIONED_AUTH_EMAIL/);
+    assert.doesNotMatch(jobEnvBlock, /TF_PROVISIONED_AUTH_PASSWORD/);
+    assert.match(
+      workflow,
+      /Run TerraForge production matrix smoke[\s\S]*?env:[\s\S]*?TF_PROVISIONED_AUTH_EMAIL: \$\{\{ secrets\.TF_PROVISIONED_AUTH_EMAIL \}\}/
     );
-    assert.ok(
-      workflow.includes('TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}')
+    assert.match(
+      workflow,
+      /Run TerraFusion OS production acceptance smoke[\s\S]*?env:[\s\S]*?TF_PROVISIONED_AUTH_PASSWORD: \$\{\{ secrets\.TF_PROVISIONED_AUTH_PASSWORD \}\}/
     );
   });
 

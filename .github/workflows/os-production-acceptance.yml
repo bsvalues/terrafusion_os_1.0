@@ -25,8 +25,6 @@ jobs:
       RELEASE_SHA: ${{ inputs.release_sha }}
       INPUT_BASE_URL: ${{ inputs.base_url }}
       PRODUCTION_PUBLIC_URL: ${{ vars.PUBLIC_URL }}
-      TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
-      TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
     steps:
       - name: Checkout acceptance harness
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
@@ -43,8 +41,8 @@ jobs:
             echo "Harness SHA does not contain scripts/terraforge-production-matrix-smoke.mjs"
             exit 1
           }
-          test -f scripts/os-production-acceptance-smoke.mjs || {
-            echo "Harness SHA does not contain scripts/os-production-acceptance-smoke.mjs"
+          test -f os-platform/core/pilot/os-production-acceptance-smoke.mjs || {
+            echo "Harness SHA does not contain os-platform/core/pilot/os-production-acceptance-smoke.mjs"
             exit 1
           }
 
@@ -95,12 +93,10 @@ jobs:
             exit 1
           fi
 
-          for required in RELEASE_SHA TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
-            if [ -z "${!required:-}" ]; then
-              echo "Missing required production proof input: ${required}"
-              exit 1
-            fi
-          done
+          if [ -z "${RELEASE_SHA:-}" ]; then
+            echo "Missing required production proof input: RELEASE_SHA"
+            exit 1
+          fi
 
           {
             printf 'TF_PRODUCTION_BASE_URL=%s\n' "$base_url"
@@ -109,6 +105,9 @@ jobs:
 
       - name: Run TerraForge production matrix smoke
         shell: bash
+        env:
+          TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
+          TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
         run: |
           set -euo pipefail
           node scripts/terraforge-production-matrix-smoke.mjs \
@@ -118,9 +117,12 @@ jobs:
 
       - name: Run TerraFusion OS production acceptance smoke
         shell: bash
+        env:
+          TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
+          TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
         run: |
           set -euo pipefail
-          node scripts/os-production-acceptance-smoke.mjs \
+          node os-platform/core/pilot/os-production-acceptance-smoke.mjs \
             --base-url "$TF_PRODUCTION_BASE_URL" \
             --expected-sha "$TF_EXPECTED_RELEASE_SHA" \
             --output "artifacts/os-production-acceptance/${TF_EXPECTED_RELEASE_SHA}"

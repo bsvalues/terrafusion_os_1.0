@@ -69,7 +69,7 @@
     {
       "id": "workbench-search",
       "label": "Property Search",
-      "path": "/property/search?openTab=forge",
+      "path": "/property?openTab=forge",
       "rootTestId": "property-search-root",
       "requiredText": "Property Search"
     }

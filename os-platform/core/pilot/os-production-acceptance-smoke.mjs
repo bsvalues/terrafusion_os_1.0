@@ -28,6 +28,10 @@ function requireSecret(name) {
   return value;
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 async function loadContract() {
   const contractPath = path.resolve(
     process.cwd(),
@@ -69,7 +73,7 @@ async function writeEvidence(outputDir, evidence) {
       '',
       ...surfaceLines,
       '',
-      evidence.errors.length > 0 ? '## Errors' : '## Errors',
+      '## Errors',
       '',
       ...(evidence.errors.length > 0 ? evidence.errors.map(error => `- ${error}`) : ['- none']),
       '',
@@ -77,8 +81,10 @@ async function writeEvidence(outputDir, evidence) {
   );
 }
 
-async function clickLogin(page) {
-  const candidates = [/^sign in$/i, /enter terrafusion os/i];
+async function clickLogin(page, allowedSubmitLabels) {
+  const candidates = allowedSubmitLabels.map(
+    label => new RegExp(`^${escapeRegExp(label)}$`, 'i')
+  );
   for (const candidate of candidates) {
     const button = page.getByRole('button', { name: candidate });
     if (await button.count()) {
@@ -139,7 +145,7 @@ async function main() {
     await page.getByTestId(contract.login.rootTestId).waitFor({ timeout: 30000 });
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
-    await clickLogin(page);
+    await clickLogin(page, contract.login.allowedSubmitLabels);
     await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => undefined);
     evidence.authenticated = true;
 
@@ -148,12 +154,16 @@ async function main() {
       ...contract.featureRoutes.map(route => ({ ...route, family: 'feature' })),
       ...contract.supportRoutes.map(route => ({ ...route, family: 'support' })),
     ];
+    const forbiddenWorkbenchRoute = new RegExp(
+      contract.guardrails.parcelScopedWorkbenchRouteForbiddenPattern
+    );
 
     for (const surface of requiredSurfaces) {
       const priorErrorCount = pageErrors.length;
       await page.goto(`${baseUrl}${surface.path}`, { waitUntil: 'domcontentloaded' });
       await page.getByTestId(surface.rootTestId).waitFor({ timeout: 30000 });
 
+      const visitedUrl = new URL(page.url());
       const bodyText = await page.locator('body').innerText();
       if (surface.requiredText && !bodyText.includes(surface.requiredText)) {
         throw new Error(`${surface.path} missing required text "${surface.requiredText}".`);
@@ -166,15 +176,14 @@ async function main() {
 
       evidence.guardrails.workbenchParcelRouteVisited =
         evidence.guardrails.workbenchParcelRouteVisited ||
-        new RegExp(contract.guardrails.parcelScopedWorkbenchRouteForbiddenPattern).test(
-          surface.path
-        );
+        forbiddenWorkbenchRoute.test(visitedUrl.pathname);
 
       evidence.surfaces.push({
         id: surface.id,
         label: surface.label,
         family: surface.family,
         path: surface.path,
+        visitedPath: `${visitedUrl.pathname}${visitedUrl.search}`,
         ready,
         pacsTextFound,
         pageErrors: routePageErrors,
@@ -223,7 +232,11 @@ async function main() {
         fullPage: true,
       })
       .catch(() => undefined);
-    await browser.close();
+    await browser.close().catch(error => {
+      evidence.errors.push(
+        `Browser close failed: ${error instanceof Error ? error.message : String(error)}`
+      );
+    });
     await writeEvidence(outputDir, evidence);
     process.stdout.write(`${JSON.stringify(evidence, null, 2)}\n`);
   }
