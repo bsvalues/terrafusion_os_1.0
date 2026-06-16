@@ -10,6 +10,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getToken } from '@/auth/authStorage';
 
 /* ── Response shapes (mirror backend ForgeValuationDtos.cs) ── */
 
@@ -162,8 +163,20 @@ export interface ForgeHookResult<T> {
 
 /* ── Internal fetcher ──────────────────────────────────────── */
 
+function withAuth(init: RequestInit = {}): RequestInit {
+  const headers = new Headers(init.headers);
+  const token = getToken();
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  return { ...init, headers };
+}
+
 async function fetchForge<T>(parcelId: string, approach: string, taxYear: number): Promise<T> {
-  const res = await fetch(`/api/forge/${encodeURIComponent(parcelId)}/${approach}?taxYear=${taxYear}`);
+  const res = await fetch(
+    `/api/forge/${encodeURIComponent(parcelId)}/${approach}?taxYear=${taxYear}`,
+    withAuth()
+  );
   if (!res.ok) {
     throw new Error(`Forge ${approach} fetch failed: ${res.status} ${res.statusText}`);
   }
@@ -322,11 +335,14 @@ export function usePatchSaleQualification(parcelId: string | undefined, taxYear:
   const queryClient = useQueryClient();
   return useMutation<PatchSaleQualificationResult, Error, PatchSaleQualificationVars>({
     mutationFn: async ({ saleId, decision, reason }) => {
-      const res = await fetch(`/api/forge/sales/${encodeURIComponent(saleId)}/qualification`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ decision, reason: reason ?? null }),
-      });
+      const res = await fetch(
+        `/api/forge/sales/${encodeURIComponent(saleId)}/qualification`,
+        withAuth({
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision, reason: reason ?? null }),
+        })
+      );
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error ?? `Override failed: ${res.status}`);
@@ -369,11 +385,14 @@ export interface ReconciliationCommitResult {
 export function useCommitReconciliation(parcelId: string | undefined) {
   return useMutation<ReconciliationCommitResult, Error, ReconciliationCommitInput>({
     mutationFn: async (input) => {
-      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/reconciliation/commit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
-      });
+      const res = await fetch(
+        `/api/forge/${encodeURIComponent(parcelId!)}/reconciliation/commit`,
+        withAuth({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(input),
+        })
+      );
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(body?.error ?? `Reconciliation commit failed: ${res.status}`);
@@ -392,9 +411,7 @@ export function useRecomputeRecommendations(parcelId: string | undefined, taxYea
   const queryClient = useQueryClient();
   return useMutation<RecomputeRecommendationsResult, Error, void>({
     mutationFn: async () => {
-      const res = await fetch('/api/forge/sales/recompute-recommendations', {
-        method: 'POST',
-      });
+      const res = await fetch('/api/forge/sales/recompute-recommendations', withAuth({ method: 'POST' }));
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error ?? `Recompute failed: ${res.status}`);
@@ -411,7 +428,7 @@ export function useParcelYears(parcelId: string | undefined): ParcelYearsHookRes
   const query = useQuery<ParcelYearLayersResult>({
     queryKey: ['forge', 'years', parcelId],
     queryFn: async () => {
-      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/years`);
+      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/years`, withAuth());
       if (!res.ok) {
         throw new Error(`Forge /years fetch failed: ${res.status} ${res.statusText}`);
       }
