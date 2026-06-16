@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -8,6 +8,7 @@ const workflow = readFileSync(
   join(ROOT, '.github', 'workflows', 'terraforge-production-matrix-proof.yml'),
   'utf8',
 );
+const smokeScriptPath = join(ROOT, 'scripts', 'terraforge-production-matrix-smoke.mjs');
 
 describe('TerraForge production proof workflow', () => {
   it('is manual, production-scoped, and checks out the deployed release SHA', () => {
@@ -19,6 +20,7 @@ describe('TerraForge production proof workflow', () => {
   });
 
   it('runs the authenticated TerraForge production matrix smoke with production secrets', () => {
+    assert.ok(existsSync(smokeScriptPath));
     assert.ok(workflow.includes('TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}'));
     assert.ok(workflow.includes('TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}'));
     assert.ok(workflow.includes('test -f scripts/terraforge-production-matrix-smoke.mjs'));
