@@ -22,17 +22,26 @@ public sealed class AutoMigrateHostedService : IHostedService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AutoMigrateHostedService> _logger;
+    private readonly IConfiguration _configuration;
 
     public AutoMigrateHostedService(
         IServiceScopeFactory scopeFactory,
-        ILogger<AutoMigrateHostedService> logger)
+        ILogger<AutoMigrateHostedService> logger,
+        IConfiguration configuration)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task StartAsync(CancellationToken ct)
     {
+        if (_configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE"))
+        {
+            _logger.LogInformation("AutoMigrate skipped because TF_SKIP_AUTO_MIGRATE=true");
+            return;
+        }
+
         try
         {
             using var scope = _scopeFactory.CreateScope();

@@ -42,7 +42,10 @@ public sealed class AutoMigrateHostedServiceTests
         var provider = services.BuildServiceProvider();
         var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(
+            scopeFactory,
+            logger,
+            provider.GetRequiredService<IConfiguration>());
         return (svc, logger);
     }
 
@@ -53,7 +56,7 @@ public sealed class AutoMigrateHostedServiceTests
         // a misconfigured DI graph or a transient resolution failure.
         var scopeFactory = new ThrowingScopeFactory(new InvalidOperationException("boom"));
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(scopeFactory, logger, new ConfigurationBuilder().Build());
 
         // Act: must not throw.
         Func<Task> act = () => svc.StartAsync(CancellationToken.None);
@@ -108,7 +111,7 @@ public sealed class AutoMigrateHostedServiceTests
         // Arrange: any service instance — StopAsync has no work to do.
         var scopeFactory = new ThrowingScopeFactory(new InvalidOperationException("never reached"));
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(scopeFactory, logger, new ConfigurationBuilder().Build());
 
         // Act.
         var task = svc.StopAsync(CancellationToken.None);
@@ -119,6 +122,28 @@ public sealed class AutoMigrateHostedServiceTests
         await task; // sanity: does not throw.
         logger.Entries.Should().BeEmpty(
             because: "StopAsync should not log anything");
+    }
+
+    [Fact]
+    public async Task StartAsync_when_skip_auto_migrate_true_does_not_create_a_database_scope()
+    {
+        var scopeFactory = new ThrowingScopeFactory(new InvalidOperationException("database mutation attempted"));
+        var logger = new CapturingLogger<AutoMigrateHostedService>();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["TF_SKIP_AUTO_MIGRATE"] = "true",
+            })
+            .Build();
+        var svc = new AutoMigrateHostedService(scopeFactory, logger, configuration);
+
+        Func<Task> act = () => svc.StartAsync(CancellationToken.None);
+
+        await act.Should().NotThrowAsync("production release lanes must be able to boot without auto migration");
+        logger.Entries.Should().Contain(e =>
+            e.Level == LogLevel.Information
+            && e.Message.Contains("TF_SKIP_AUTO_MIGRATE=true"));
+        logger.Entries.Should().NotContain(e => e.Level >= LogLevel.Warning);
     }
 
     // ------------------------------------------------------------------------
