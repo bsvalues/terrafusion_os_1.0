@@ -104,6 +104,11 @@ describe('/forge canonical suite rendering', () => {
 
     for (const capability of getTerraForgeCanonicalInventory().filter((entry) => entry.tier === 'primary')) {
       expect(within(primary).getByText(capability.label)).toBeDefined();
+      const proofCard = primary.querySelector(`[data-terraforge-capability-id="${capability.id}"]`);
+      expect(proofCard).toBeTruthy();
+      expect(proofCard).toHaveAttribute('data-terraforge-tier', 'primary');
+      expect(proofCard).toHaveAttribute('data-terraforge-proof-surface', 'suite');
+      expect(proofCard).toHaveAttribute('data-terraforge-production-proof', 'primary-required');
     }
   });
 
@@ -115,6 +120,11 @@ describe('/forge canonical suite rendering', () => {
     for (const capability of getTerraForgeCanonicalInventory().filter((entry) => entry.tier !== 'primary')) {
       expect(within(support).getByText(capability.label)).toBeDefined();
       expect(within(primary).queryByText(capability.label)).toBeNull();
+      const proofCard = support.querySelector(`[data-terraforge-capability-id="${capability.id}"]`);
+      expect(proofCard).toBeTruthy();
+      expect(proofCard).toHaveAttribute('data-terraforge-tier', capability.tier);
+      expect(proofCard).toHaveAttribute('data-terraforge-proof-surface', 'support');
+      expect(proofCard).toHaveAttribute('data-terraforge-production-proof', 'support-or-deferred');
     }
   });
 

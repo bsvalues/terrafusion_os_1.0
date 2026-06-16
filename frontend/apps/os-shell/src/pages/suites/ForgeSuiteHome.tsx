@@ -912,6 +912,10 @@ export default function ForgeSuiteHome() {
                   key={mod.id}
                   type="button"
                   className="forge-card forge-card--primary"
+                  data-terraforge-capability-id={mod.id}
+                  data-terraforge-tier={mod.tier}
+                  data-terraforge-proof-surface={mod.proofSurface}
+                  data-terraforge-production-proof="primary-required"
                   onClick={() => handleModuleLaunch(mod)}
                   disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
                   title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
@@ -943,6 +947,10 @@ export default function ForgeSuiteHome() {
                   key={mod.id}
                   type="button"
                   className="forge-card forge-card--secondary"
+                  data-terraforge-capability-id={mod.id}
+                  data-terraforge-tier={mod.tier}
+                  data-terraforge-proof-surface={mod.proofSurface}
+                  data-terraforge-production-proof="support-or-deferred"
                   onClick={() => handleModuleLaunch(mod)}
                   disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
                   title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
