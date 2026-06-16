@@ -1,11 +1,11 @@
 /**
  * forge/ForgeYearSelector.tsx
  *
- * PACS-aware year selector for the Forge workbench.
+ * Canonical year selector for the Forge workbench.
  *
  * Replaces the static TAX_YEARS <select> in PropertyForge.tsx.
  * Calls GET /api/forge/{parcelId}/years to discover the real year
- * layers that exist for this parcel in PACS.
+ * layers that exist for this parcel in canonical TerraFusion data.
  *
  * Each option shows:
  *   - Tax year (bold)
@@ -120,7 +120,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
     );
   }
 
-  /* Happy path — render PACS-sourced layer list */
+  /* Happy path — render canonical layer list */
   return (
     <div className="flex items-center gap-4 flex-wrap">
       <label htmlFor="forge-tax-year" className="tf-text-secondary text-sm whitespace-nowrap">

@@ -228,7 +228,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                 )}
               </div>
             )}
-            {/* Physical attributes from PACS improvement attributes */}
+            {/* Physical attributes from canonical improvement attributes */}
             {(costAPI.data.foundation || costAPI.data.exteriorWall || costAPI.data.roofType ||
               costAPI.data.hvacType || costAPI.data.bedrooms != null || costAPI.data.fireplaces != null) && (
               <div className="tf-panel p-3">

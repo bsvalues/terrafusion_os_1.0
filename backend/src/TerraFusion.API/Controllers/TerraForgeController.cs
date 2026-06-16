@@ -233,7 +233,7 @@ public class TerraForgeController : ControllerBase
         if (s is null)
             return NotFound(new { error = $"Sale {saleId} not found for active county scope." });
 
-        // Properties join for assessed value (canonical TF table — no PACS read).
+        // Properties join for assessed value (canonical TF table).
         decimal? assessedValue = null;
         if (s.ParcelId != null)
         {
@@ -261,9 +261,8 @@ public class TerraForgeController : ControllerBase
             saleAdjustmentAmount = s.SaleAdjustmentAmount,
             saleExemptionAmount = s.SaleExemptionAmount,
             exciseNumber        = s.ExciseNumber,
-            pacsChgOfOwnerId    = s.PacsChgOfOwnerId,
             salesYear           = s.SalesYear,
-            // Time-of-sale physical characteristics (PACS snapshot — use these for ratio)
+            // Time-of-sale physical characteristics — use these for ratio when available.
             slLivingArea        = s.SlLivingArea,
             slYearBuilt         = s.SlYearBuilt,
             slLandAcres         = s.SlLandAcres,
@@ -276,7 +275,7 @@ public class TerraForgeController : ControllerBase
             bathrooms           = s.Bathrooms,
             condition           = s.Condition,
             qualityGrade        = s.QualityGrade,
-            // Raw PACS codes (Layer 1 — facts, never transformed)
+            // Raw source codes (Layer 1 — facts, never transformed)
             rawSaleQualifier    = s.RawSaleQualifier,
             rawCountyRatioCd    = s.RawCountyRatioCd,
             rawWacCd            = s.RawWacCd,
@@ -585,8 +584,8 @@ public class TerraForgeController : ControllerBase
     }
 
     /// <summary>
-    /// Code audit: breakdown of raw PACS qualification codes in the taxYear sale window.
-    /// Exposes WAC code nulls as a data quality flag (the known PACS seeding gap).
+    /// Code audit: breakdown of raw qualification codes in the taxYear sale window.
+    /// Exposes WAC code nulls as a data quality flag.
     /// </summary>
     [HttpGet("sale-qualification/code-audit")]
     public async Task<IActionResult> GetSaleQualificationCodeAudit(
@@ -624,7 +623,7 @@ public class TerraForgeController : ControllerBase
             .Select(g => new
             {
                 wacCd       = g.Key,
-                description = g.Key == null ? "No WAC code (PACS seeding gap — data quality issue)" : g.Key,
+                description = g.Key == null ? "No WAC code (source data quality issue)" : g.Key,
                 count       = g.Count(),
                 isDataGap   = g.Key == null,
             })
@@ -664,7 +663,7 @@ public class TerraForgeController : ControllerBase
             taxYear,
             totalSales,
             dataQualityAlert = wacNullCount > 0
-                ? $"{wacNullCount:N0} of {totalSales:N0} sales ({wacNullPct}%) have no WAC code — PACS seeding gap"
+                ? $"{wacNullCount:N0} of {totalSales:N0} sales ({wacNullPct}%) have no WAC code — source data quality gap"
                 : null,
             wacCdBreakdown        = wacBreakdown,
             saleQualifierBreakdown,
@@ -688,7 +687,7 @@ public class TerraForgeController : ControllerBase
     ///   Run POST /api/terraforge/compute-qualifications to populate recommendations from county ratio codes.
     /// Sales suppressed from the ratio report or flagged IncludeNoCalc are excluded.
     /// Returns IAAO stats (median ratio, mean ratio, COD, PRD) plus paginated detail.
-    /// Ratio = Properties.AssessedValue / ComparableSales.SalePrice (TF-computed; PACS ratio column unused).
+    /// Ratio = Properties.AssessedValue / ComparableSales.SalePrice (TF-computed from canonical runtime data).
     /// </summary>
     [HttpGet("ratio-study")]
     public async Task<IActionResult> GetRatioStudy(
@@ -741,7 +740,7 @@ public class TerraForgeController : ControllerBase
         var total = await baseQuery.CountAsync(ct);
 
         // TF computes its own sales ratios: AssessedValue / SalePrice.
-        // PACS is the legacy system being replaced — TF never uses PACS-computed ratio values.
+        // TerraFusion computes ratio values from canonical runtime data.
         var salesData = await baseQuery
             .Select(s => new
             {
@@ -1096,7 +1095,7 @@ public class TerraForgeController : ControllerBase
     ///
     /// Model: SalePrice ~ intercept + GLA + LotSizeSqft + YearBuilt
     /// Predictors use sale-time values (sl_living_area, sl_land_sqft, sl_yr_blt)
-    /// falling back to assessment-time values when PACS did not record sale-time data.
+    /// falling back to assessment-time values when sale-time data is unavailable.
     /// Observations missing both GLA sources are excluded from the fit.
     ///
     /// Filters: same effective qualified pool as ratio-study (hood / propertyType optional).
@@ -1134,7 +1133,7 @@ public class TerraForgeController : ControllerBase
         if (!string.IsNullOrWhiteSpace(propertyType))
             baseQuery = baseQuery.Where(s => s.PropertyType == propertyType);
 
-        // Fetch fields needed for regression. Prefer sale-time PACS values; fall back to
+        // Fetch fields needed for regression. Prefer sale-time values; fall back to
         // assessment-time values. YearBuilt of 0 is treated as missing.
         var rows = await baseQuery
             .Select(s => new
@@ -1329,9 +1328,9 @@ public class TerraForgeController : ControllerBase
     /// <summary>
     /// Run the county/state ratio-code qualification engine against all ComparableSales.
     /// Reads only TerraFusion canonical tables (ComparableSales, CountyRatioCodes,
-    /// SaleRatioTypes, ReetWacCodes). No PACS staging read. Safe to call anytime.
+    /// SaleRatioTypes, ReetWacCodes). No legacy staging read. Safe to call anytime.
     /// Sets QualificationRecommendation on every sale using the 4-layer hierarchy:
-    ///   1 - PACS SaleQualifier (already on ComparableSales.RawSaleQualifier)
+    ///   1 - raw source SaleQualifier (already on ComparableSales.RawSaleQualifier)
     ///   2 - County ratio code (sl_county_ratio_cd → TF CountyRatioCodes table)
     ///   3 - Exclude-calc flag (sales_exclude_calc_cd)
     ///   4 - WAC 458-61A      (wac_cd            → TF ReetWacCodes table)
@@ -1379,11 +1378,11 @@ public class TerraForgeController : ControllerBase
     /// TerraFusion canonical raw-code truth only.
     ///
     /// Ownership rule:
-    ///   - SyncController owns PACS/raw-mirror backfill into ComparableSales.Raw* fields.
+    ///   - SyncController owns raw-source backfill into ComparableSales.Raw* fields.
     ///   - TerraForgeController owns recommendation computation and appraiser decisions.
     ///
     /// If canonical raw-code columns are still missing, this endpoint reports that gap but
-    /// does not reach back into PACS staging. Missing raw-code repair must happen in Sync.
+    /// does not reach back into legacy staging. Missing raw-code repair must happen in Sync.
     /// </summary>
     [HttpPost("apply-recommendations")]
     public async Task<IActionResult> ApplyQualificationRecommendations(
