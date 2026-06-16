@@ -72,8 +72,8 @@ describe('TerraForge canonical inventory contract', () => {
     const primary = getTerraForgeCanonicalInventory().filter((capability) => capability.tier === 'primary');
 
     expect(primary.every((capability) => capability.proofSurface === 'suite')).toBe(true);
-    expect(primary.every((capability) => ['active', 'honest-unavailable', 'deferred', 'fail'].includes(capability.status))).toBe(true);
-    expect(primary.find((capability) => capability.id === 'incomeforge')?.status).toMatch(/^(active|deferred|fail)$/);
+    expect(primary.every((capability) => capability.status === 'active')).toBe(true);
+    expect(primary.every((capability) => capability.moduleId)).toBe(true);
   });
 
   it('keeps support and deferred tools outside primary suite proof', () => {

@@ -31,7 +31,11 @@ describe('TerraForge app-by-app runtime audit contract', () => {
       'costforge',
       'compsforge',
       'salesforge',
+      'incomeforge',
+      'reconciliation',
       'calibration-qc',
+      'cama-characteristics',
+      'valuation-notes-defensibility',
       'county-studio',
     ]);
 
@@ -41,14 +45,14 @@ describe('TerraForge app-by-app runtime audit contract', () => {
     }
   });
 
-  it('records IncomeForge as the current suite launch gap instead of silently claiming runtime proof', () => {
+  it('records IncomeForge as a registered runtime-backed suite module', () => {
     const incomeForge = byId(getTerraForgeRuntimeAudit(), 'incomeforge');
 
-    expect(incomeForge.auditStatus).toBe('fail');
-    expect(incomeForge.launchableFromSuite).toBe(false);
+    expect(incomeForge.auditStatus).toBe('runtime-backed');
+    expect(incomeForge.launchableFromSuite).toBe(true);
     expect(incomeForge.moduleId).toBe('income-forge');
-    expect(isModuleRegistered(incomeForge.moduleId)).toBe(false);
-    expect(incomeForge.blocker).toMatch(/module registry/i);
+    expect(isModuleRegistered(incomeForge.moduleId)).toBe(true);
+    expect(incomeForge.blocker).toBeUndefined();
     expect(incomeForge.runtimePaths).toContain('/costforge/income-approach/cap-rates');
   });
 
@@ -60,14 +64,17 @@ describe('TerraForge app-by-app runtime audit contract', () => {
     }
   });
 
-  it('marks not-yet-exposed primary lanes as honest unavailable, not active proof', () => {
+  it('routes every canonical primary lane through a registered TerraForge runtime module', () => {
     const audit = getTerraForgeRuntimeAudit();
 
     for (const id of ['reconciliation', 'cama-characteristics', 'valuation-notes-defensibility']) {
       const entry = byId(audit, id);
-      expect(entry.auditStatus).toBe('not-exposed');
-      expect(entry.launchableFromSuite).toBe(false);
-      expect(entry.runtimeSurface).toBe('suite-card-only');
+      expect(entry.auditStatus).toBe('runtime-backed');
+      expect(entry.launchableFromSuite).toBe(true);
+      expect(entry.runtimeSurface).toBe('standalone-module');
+      expect(entry.moduleId, `${id} must declare a moduleId`).toBeTruthy();
+      expect(isModuleRegistered(entry.moduleId!), `${id} module is not registered`).toBe(true);
+      expect(entry.blocker).toBeUndefined();
     }
   });
 });

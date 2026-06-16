@@ -450,7 +450,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(runtimeStatus).toHaveTextContent(/SalesForge runtime/i);
     expect(runtimeStatus).toHaveTextContent(/CostForge live triage path/i);
     expect(runtimeStatus).toHaveTextContent(/CompsForge runtime comps pool/i);
-    expect(runtimeStatus).toHaveTextContent(/IncomeForge launch gap/i);
+    expect(runtimeStatus).toHaveTextContent(/IncomeForge runtime income approach/i);
     expect(runtimeStatus).toHaveTextContent(/County Studio runtime studies/i);
     expect(runtimeStatus).toHaveTextContent(/Full TerraForge not done/i);
     expect(runtimeStatus).toHaveTextContent(/CUForge\/specialists locked/i);
@@ -460,8 +460,10 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(primaryApps.getByRole('button', { name: /SalesForge/i })).toBeEnabled();
     expect(primaryApps.getByRole('button', { name: /Cost \+ land valuation/i })).toBeEnabled();
     expect(primaryApps.getByRole('button', { name: /CompsForge/i })).toBeEnabled();
-    expect(primaryApps.getByRole('button', { name: /IncomeForge/i })).toBeDisabled();
-    expect(primaryApps.getByRole('button', { name: /CAMA Characteristics/i })).toBeDisabled();
+    expect(primaryApps.getByRole('button', { name: /IncomeForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /Reconciliation/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /CAMA Characteristics/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /Valuation Notes \/ Defensibility/i })).toBeEnabled();
 
     const countyApps = within(screen.getByTestId('forge-support-applications'));
     expect(countyApps.getByRole('button', { name: /County Studio/i })).toBeEnabled();
@@ -481,7 +483,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(screen.queryByText('71.4%')).not.toBeInTheDocument();
   });
 
-  it('opens SalesForge and CompsForge from TerraForge Suite while flagging IncomeForge and keeping unverified standalone Forge apps locked', () => {
+  it('opens canonical primary TerraForge modules while keeping support and deferred Forge apps classified separately', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -502,8 +504,8 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(compsForgeCard).toHaveTextContent(/Statewide sales comp search/i);
     expect(compsForgeCard).not.toHaveTextContent(/Benton comps pool API/i);
     const incomeForgeCard = primaryApps.getByRole('button', { name: /IncomeForge/i });
-    expect(incomeForgeCard).toBeDisabled();
-    expect(incomeForgeCard).toHaveTextContent(/Fails current suite gate/i);
+    expect(incomeForgeCard).toBeEnabled();
+    expect(incomeForgeCard).toHaveTextContent(/Benton income approach API/i);
 
     const salesForgeCard = primaryApps.getByRole('button', { name: /SalesForge/i });
     expect(salesForgeCard).toBeEnabled();
@@ -536,7 +538,27 @@ describe('ForgeSuiteHome source honesty contract', () => {
 
     fireEvent.click(incomeForgeCard);
 
-    expect(activateModuleMock).not.toHaveBeenCalledWith('income-forge', expect.anything());
+    expect(activateModuleMock).toHaveBeenCalledWith('income-forge', {
+      source: 'system',
+      metadata: {
+        launchContext: 'terraforge-suite',
+        dataSource: 'terrafusion-api',
+        runtimePath: 'income-approach',
+        countyId: '19190019-1919-1919-1919-191919191919',
+        taxYear: 2026,
+      },
+    });
+
+    const reconciliationCard = primaryApps.getByRole('button', { name: /Reconciliation/i });
+    const camaCard = primaryApps.getByRole('button', { name: /CAMA Characteristics/i });
+    const defensibilityCard = primaryApps.getByRole('button', { name: /Valuation Notes \/ Defensibility/i });
+    fireEvent.click(reconciliationCard);
+    fireEvent.click(camaCard);
+    fireEvent.click(defensibilityCard);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('reconciliation', expect.objectContaining({ source: 'system' }));
+    expect(activateModuleMock).toHaveBeenCalledWith('cama-characteristics', expect.objectContaining({ source: 'system' }));
+    expect(activateModuleMock).toHaveBeenCalledWith('valuation-notes-defensibility', expect.objectContaining({ source: 'system' }));
   });
 
   it('opens CostForge from TerraForge Suite on the live triage API path', () => {
@@ -557,7 +579,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(runtimeStatus).toHaveTextContent(/SalesForge\s+runtime/i);
     expect(runtimeStatus).toHaveTextContent(/CostForge\s+live triage path/i);
     expect(runtimeStatus).toHaveTextContent(/CompsForge\s+runtime comps pool/i);
-    expect(runtimeStatus).toHaveTextContent(/IncomeForge\s+launch gap/i);
+    expect(runtimeStatus).toHaveTextContent(/IncomeForge\s+runtime income approach/i);
     expect(runtimeStatus).toHaveTextContent(/Metrics app-backed/i);
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
