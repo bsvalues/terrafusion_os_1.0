@@ -678,7 +678,7 @@ export default function ForgeSuiteHome() {
               <span className="forge-chip forge-chip--success">SalesForge runtime</span>
               <span className="forge-chip forge-chip--success">CostForge live triage path</span>
               <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
-              <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
+              <span className="forge-chip forge-chip--warn">IncomeForge launch gap</span>
               <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
               <span className={`forge-chip ${countyRollupChipClass}`}>
                 {countyRollupStatus}
