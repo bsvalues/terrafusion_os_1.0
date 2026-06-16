@@ -34,7 +34,7 @@ describe('TerraForge production proof workflow', () => {
     assert.ok(workflow.includes('Missing production PUBLIC_URL variable; refusing to run production proof with secrets.'));
   });
 
-  it('pins GitHub Actions and avoids persisted checkout credentials', () => {
+  it('pins GitHub Actions and disables persisted or implicit package-manager credentials/cache', () => {
     const actionRefs = [...workflow.matchAll(/uses:\s*([^\s#]+)/g)].map((match) => match[1]);
 
     assert.ok(workflow.includes('package-manager-cache: false'));
