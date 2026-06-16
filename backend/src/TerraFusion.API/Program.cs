@@ -2336,17 +2336,25 @@ using (var scope = app.Services.CreateScope())
 {
   try
   {
-    var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
-    await databaseInitializer.InitializeAsync();
+    if (app.Configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE"))
+    {
+      var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("StartupDatabaseMutation");
+      logger.LogInformation("Startup database mutation skipped because TF_SKIP_AUTO_MIGRATE=true");
+    }
+    else
+    {
+      var databaseInitializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializationService>();
+      await databaseInitializer.InitializeAsync();
 
-    var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
+      var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+      var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
 
-    var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
-        scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
-    await seeder.SeedAllGPTsAsync();
+      var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
+          scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
+      await seeder.SeedAllGPTsAsync();
 
-    logger.LogInformation("GPT configurations seeded successfully");
+      logger.LogInformation("GPT configurations seeded successfully");
+    }
   }
   catch (Exception ex)
   {

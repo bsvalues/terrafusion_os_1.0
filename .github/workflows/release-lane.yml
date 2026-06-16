@@ -19,6 +19,11 @@ on:
         required: false
         default: false
         type: boolean
+      allow_db_mutation:
+        description: Explicitly allow production/staging DB mutation during release
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -46,6 +51,7 @@ jobs:
       TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
       VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
       PROVISION_AUTH: ${{ inputs.provision_auth }}
+      ALLOW_DB_MUTATION: ${{ inputs.allow_db_mutation }}
       TF_EXPECTED_JUNE10_DB_NAME: ${{ vars.TF_EXPECTED_JUNE10_DB_NAME }}
       TF_EXPECTED_JUNE10_DB_PROVIDER: ${{ vars.TF_EXPECTED_JUNE10_DB_PROVIDER }}
     steps:
@@ -94,6 +100,16 @@ jobs:
           PUBLIC_URL="${PUBLIC_URL%/}"
           TF_EXPECTED_JUNE10_DB_NAME="${TF_EXPECTED_JUNE10_DB_NAME:-terrafusion.db}"
           TF_EXPECTED_JUNE10_DB_PROVIDER="${TF_EXPECTED_JUNE10_DB_PROVIDER:-Sqlite}"
+          if [ "${ALLOW_DB_MUTATION}" = "true" ]; then
+            TF_SKIP_AUTO_MIGRATE=false
+          else
+            TF_SKIP_AUTO_MIGRATE=true
+          fi
+
+          if [ "${PROVISION_AUTH}" = "true" ] && [ "${ALLOW_DB_MUTATION}" != "true" ]; then
+            echo "provision_auth requires allow_db_mutation=true"
+            exit 1
+          fi
 
           for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
             if [ -z "${!required:-}" ]; then
@@ -126,6 +142,7 @@ jobs:
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
+            printf 'TF_SKIP_AUTO_MIGRATE=%s\n' "$TF_SKIP_AUTO_MIGRATE"
             printf 'TF_EXPECTED_JUNE10_DB_NAME=%s\n' "$TF_EXPECTED_JUNE10_DB_NAME"
             printf 'TF_EXPECTED_JUNE10_DB_PROVIDER=%s\n' "$TF_EXPECTED_JUNE10_DB_PROVIDER"
           } >> "$GITHUB_ENV"
@@ -274,6 +291,7 @@ jobs:
           TF_PUBLIC_HOST=${PUBLIC_HOST}
           TF_BACKEND_IMAGE=${BACKEND_IMAGE}
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
+          TF_SKIP_AUTO_MIGRATE=${TF_SKIP_AUTO_MIGRATE}
           TF_EXPECTED_JUNE10_DB_NAME=${TF_EXPECTED_JUNE10_DB_NAME}
           TF_EXPECTED_JUNE10_DB_PROVIDER=${TF_EXPECTED_JUNE10_DB_PROVIDER}
           EOF

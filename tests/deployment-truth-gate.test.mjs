@@ -301,6 +301,47 @@ describe('D. CI release gate coverage', () => {
     assert.ok(hasTest, 'PR gate must include test step');
     assert.ok(hasLint, 'PR gate must include lint step');
   });
+
+  it('D8: release-lane.yml defaults production startup database mutation off', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(
+      content.includes('allow_db_mutation:'),
+      'Release lane must expose explicit allow_db_mutation approval',
+    );
+    assert.match(
+      content,
+      /allow_db_mutation:[\s\S]*?default:\s*false/,
+      'allow_db_mutation must default to false',
+    );
+    assert.ok(
+      content.includes('TF_SKIP_AUTO_MIGRATE=true'),
+      'Release lane must write TF_SKIP_AUTO_MIGRATE=true when mutation is not approved',
+    );
+    assert.ok(
+      content.includes('TF_SKIP_AUTO_MIGRATE=${TF_SKIP_AUTO_MIGRATE}'),
+      'Runtime release.env must carry the resolved startup mutation guard',
+    );
+  });
+
+  it('D9: release-lane.yml refuses AuthProvisioner without mutation approval', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(
+      content.includes('PROVISION_AUTH') && content.includes('ALLOW_DB_MUTATION'),
+      'Release lane must validate provision_auth against allow_db_mutation',
+    );
+    assert.ok(
+      content.includes('provision_auth requires allow_db_mutation=true'),
+      'Release lane must fail fast when AuthProvisioner is requested without mutation approval',
+    );
+  });
+
+  it('D10: runtime compose keeps startup migrations disabled unless release lane opts in', () => {
+    const content = readFileSync(join(ROOT, 'ops', 'prod', 'runtime-compose.template.yml'), 'utf8');
+    assert.ok(
+      content.includes("TF_SKIP_AUTO_MIGRATE: ${TF_SKIP_AUTO_MIGRATE:-true}"),
+      'Runtime compose must default TF_SKIP_AUTO_MIGRATE to true',
+    );
+  });
 });
 
 // ============================================================================

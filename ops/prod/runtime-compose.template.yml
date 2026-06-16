@@ -31,6 +31,7 @@ services:
       DatabaseProvider: Sqlite
       ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db
       TF_STATE_MESH_ENFORCE: 'true'
+      TF_SKIP_AUTO_MIGRATE: ${TF_SKIP_AUTO_MIGRATE:-true}
     volumes:
       - ./data:/app/data
       - ./docs/spec-lock:/app/docs/spec-lock:ro
