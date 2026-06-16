@@ -14,11 +14,13 @@
 The acceptance pass on 2026-06-16 is the first repo-owned, authenticated public production proof for the full TerraFusion OS route set after the realignment recovery work orders. That result needed a durable packet record so the exact run, release identity, and proof guardrails are preserved after PR #1038 merged.
 
 ## Proof
-- 2 passed | 0 failed | 0 skipped
+- 2 smoke proofs passed | 0 failed | 0 skipped
 - Files touched: `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`, `os-platform/core/pilot/ops/terrafusion-os-runtime-proven-production-pass-2026-06-16.md`
 - Acceptance run: `https://github.com/bsvalues/terrafusion_os_1.0/actions/runs/27640575591`
 - Proved release SHA: `6f7755090a21efc90fee423fe35b8d72805ef1e5`
 - Acceptance harness SHA: `2fa11f669bcc96f7758eb0518622b72b323fd01d`
+- Authenticated TerraFusion OS acceptance: `PASS`
+- TerraForge production matrix: `PASS`
 
 ## Release Posture Impact
 posture tightened
