@@ -265,7 +265,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target production -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
+          docker build --pull --target production --build-arg VITE_BUILD_SHA="$RELEASE_SHA" -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
           docker push "$FRONTEND_IMAGE"
 
       - name: Prepare runtime bundle
