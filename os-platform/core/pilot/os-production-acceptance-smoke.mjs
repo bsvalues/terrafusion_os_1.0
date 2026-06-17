@@ -177,10 +177,10 @@ async function main() {
         family: surface.family,
         path: surface.path,
         bodyText,
-        expectedReleaseSha,
+        expectedReleaseSha: expectedReleaseSha ?? evidence.releaseSha,
         pageErrors: routePageErrors,
       });
-      const pacsTextFound = surface.family !== 'feature' && /\bPACS\b|\bPacs\b|pacs_/.test(bodyText);
+      const pacsTextFound = truth.pacsTextFound;
       const ready = truth.ready;
       evidence.visibleReleaseSha ??= truth.visibleReleaseSha;
 

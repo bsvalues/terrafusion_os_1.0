@@ -46,6 +46,20 @@ describe('surface truth evaluation', () => {
     assert.equal(result.ready, false);
     assert.match(result.blockers.join(' | '), /visible shell sha/i);
   });
+
+  it('detects lowercase PACS runtime text on suite surfaces', () => {
+    const result = evaluateSurfaceObservation({
+      family: 'suite',
+      path: '/forge',
+      bodyText: `TerraForge\nSENTINEL CONSOLE\nSHA: ${EXPECTED_RELEASE_SHA}\npacs export source`,
+      expectedReleaseSha: EXPECTED_RELEASE_SHA,
+      pageErrors: [],
+    });
+
+    assert.equal(result.ready, false);
+    assert.equal(result.pacsTextFound, true);
+    assert.match(result.blockers.join(' | '), /PACS-facing runtime text/i);
+  });
 });
 
 describe('TerraForge primary capability classification', () => {
@@ -133,6 +147,56 @@ describe('TerraForge primary capability classification', () => {
       windowTitle: 'SalesForge',
       bodyText:
         'TerraForge · Sale Qualification\nSalesForge\nLive TerraFusion API\nQualified 128\nNon-qualified 14\nPending 9\nMedian ratio 0.97\nCOD 11.2\nPRD 1.01',
+    });
+
+    assert.equal(result.status, 'PASS');
+  });
+
+  it('fails HTTP errors for every capability before success-looking text', () => {
+    const result = classifyCapabilityObservation('costforge', {
+      cardVisible: true,
+      launchActionable: true,
+      launchedModuleId: 'costforge',
+      windowTitle: 'CostForge',
+      bodyText: 'CostForge\nHTTP 500\nParcels valued 128\nAvg cost/sqft $226',
+    });
+
+    assert.equal(result.status, 'FAIL');
+  });
+
+  it('checks shell-only blockers before success signals', () => {
+    const result = classifyCapabilityObservation('costforge', {
+      cardVisible: true,
+      launchActionable: true,
+      launchedModuleId: 'costforge',
+      windowTitle: 'CostForge',
+      bodyText:
+        'CostForge\nCounty scope required to load CostForge.\nParcels valued 128\nAvg cost/sqft $226',
+    });
+
+    assert.equal(result.status, 'SHELL ONLY');
+  });
+
+  it('does not count valuation-notes title text as runtime proof', () => {
+    const result = classifyCapabilityObservation('valuation-notes-defensibility', {
+      cardVisible: true,
+      launchActionable: true,
+      launchedModuleId: 'valuation-notes-defensibility',
+      windowTitle: 'Valuation Notes / Defensibility',
+      bodyText: 'Valuation Notes / Defensibility',
+    });
+
+    assert.equal(result.status, 'FAIL');
+  });
+
+  it('passes valuation-notes only when rationale and evidence are visible', () => {
+    const result = classifyCapabilityObservation('valuation-notes-defensibility', {
+      cardVisible: true,
+      launchActionable: true,
+      launchedModuleId: 'valuation-notes-defensibility',
+      windowTitle: 'Valuation Notes / Defensibility',
+      bodyText:
+        'Valuation Notes / Defensibility\nRationale: reconciled income and sales signals.\nEvidence: county valuation note packet.',
     });
 
     assert.equal(result.status, 'PASS');

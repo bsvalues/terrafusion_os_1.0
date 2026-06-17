@@ -6,6 +6,7 @@ import {
   classifyCapabilityObservation,
   evaluateTerraForgeProof,
   extractVisibleReleaseSha,
+  hasPacsRuntimeText,
 } from '../os-platform/core/pilot/acceptance-truth.mjs';
 
 const PRIMARY_CAPABILITIES = [
@@ -50,6 +51,56 @@ function requireSecret(name) {
     throw new Error(`Missing required environment variable ${name}.`);
   }
   return value;
+}
+
+async function moduleIds(page) {
+  return page
+    .locator('[data-testid="window-manager"] [data-module-id]')
+    .evaluateAll(nodes => nodes.map(node => node.getAttribute('data-module-id')).filter(Boolean));
+}
+
+async function waitForLaunchedModule(page, moduleIdsBefore) {
+  await page
+    .waitForFunction(
+      before =>
+        Array.from(document.querySelectorAll('[data-testid="window-manager"] [data-module-id]'))
+          .map(node => node.getAttribute('data-module-id'))
+          .filter(Boolean)
+          .some(moduleId => !before.includes(moduleId)),
+      moduleIdsBefore,
+      { timeout: 10000 }
+    )
+    .catch(() => undefined);
+
+  const moduleIdsAfter = await moduleIds(page);
+  const launchedModuleId =
+    moduleIdsAfter.find(moduleId => !moduleIdsBefore.includes(moduleId)) ??
+    moduleIdsAfter.at(-1) ??
+    null;
+
+  if (!launchedModuleId) {
+    return { launchedModuleId: null, moduleRoot: null };
+  }
+
+  const moduleRoot = page.locator(
+    `[data-testid="window-manager"] [data-module-id="${launchedModuleId}"]`
+  );
+  await moduleRoot.waitFor({ timeout: 10000 });
+  await page
+    .waitForFunction(
+      moduleId => {
+        const node = document.querySelector(
+          `[data-testid="window-manager"] [data-module-id="${moduleId}"]`
+        );
+        const text = node?.textContent ?? '';
+        return text.trim().length > 0 && !/\bLoading\b/i.test(text);
+      },
+      launchedModuleId,
+      { timeout: 10000 }
+    )
+    .catch(() => undefined);
+
+  return { launchedModuleId, moduleRoot };
 }
 
 async function writeEvidence(outputDir, evidence) {
@@ -137,6 +188,8 @@ async function main() {
     if (!healthResponse.ok()) {
       throw new Error(`/health returned HTTP ${healthResponse.status()}`);
     }
+    const effectiveReleaseSha = expectedReleaseSha ?? evidence.releaseSha;
+
     if (expectedReleaseSha && evidence.releaseSha !== expectedReleaseSha) {
       throw new Error(
         `Expected X-Release-Sha ${expectedReleaseSha}, got ${evidence.releaseSha ?? 'missing'}`
@@ -155,9 +208,12 @@ async function main() {
     await page.getByTestId('forge-support-applications').waitFor({ timeout: 30000 });
 
     const suiteBodyText = await page.locator('body').innerText();
+    const suiteGuardrailText = await page.locator('body').evaluate(body => body.innerHTML);
     evidence.visibleReleaseSha = extractVisibleReleaseSha(suiteBodyText);
-    evidence.guardrails.pacsRuntimeTextFound = /\bPACS\b|\bPacs\b|pacs_/.test(suiteBodyText);
-    evidence.guardrails.workbenchCountedAsProof = /\/property\/[^/\s]+\/forge/.test(suiteBodyText);
+    evidence.guardrails.pacsRuntimeTextFound = hasPacsRuntimeText(suiteBodyText);
+    evidence.guardrails.workbenchCountedAsProof =
+      /\/property\/[^/\s]+\/forge/.test(suiteBodyText) ||
+      /\/property\/[^/"'\s]+\/forge/.test(suiteGuardrailText);
 
     for (const [id, label] of PRIMARY_CAPABILITIES) {
       await page.goto(`${baseUrl}/forge`, { waitUntil: 'domcontentloaded' });
@@ -174,29 +230,17 @@ async function main() {
       let capabilityBodyText = '';
 
       if (cardVisible) {
-        const moduleIdsBefore = await page
-          .locator('[data-testid="window-manager"] [data-module-id]')
-          .evaluateAll(nodes =>
-            nodes.map(node => node.getAttribute('data-module-id')).filter(Boolean)
-          );
-        await card.click({ timeout: 10000 });
         launchActionable = !(await card.isDisabled());
-        await page.waitForTimeout(250);
-        const moduleIdsAfter = await page
-          .locator('[data-testid="window-manager"] [data-module-id]')
-          .evaluateAll(nodes =>
-            nodes.map(node => node.getAttribute('data-module-id')).filter(Boolean)
-          );
-        launchedModuleId =
-          moduleIdsAfter.find(moduleId => !moduleIdsBefore.includes(moduleId)) ??
-          moduleIdsAfter.at(-1) ??
-          null;
+      }
 
-        if (launchedModuleId) {
-          const moduleRoot = page.locator(
-            `[data-testid="window-manager"] [data-module-id="${launchedModuleId}"]`
-          );
-          await moduleRoot.waitFor({ timeout: 10000 });
+      if (cardVisible && launchActionable) {
+        const moduleIdsBefore = await moduleIds(page);
+        await card.click({ timeout: 10000 });
+        const launchedModule = await waitForLaunchedModule(page, moduleIdsBefore);
+        launchedModuleId = launchedModule.launchedModuleId;
+
+        if (launchedModule.moduleRoot) {
+          const moduleRoot = launchedModule.moduleRoot;
           capabilityBodyText = await moduleRoot.innerText();
           windowTitle =
             (await moduleRoot
@@ -238,13 +282,13 @@ async function main() {
     const missingSupport = evidence.supportCapabilities.filter(capability => !capability.visible);
 
     if (missingSupport.length > 0) {
-      throw new Error(
-        `Support/deferred TerraForge disclosure missing: ${missingSupport.map(item => item.id).join(', ')}`
-      );
+      const blocker = `Support/deferred TerraForge disclosure missing: ${missingSupport.map(item => item.id).join(', ')}`;
+      evidence.blockers.push(blocker);
+      throw new Error(blocker);
     }
 
     const truthResult = evaluateTerraForgeProof({
-      expectedReleaseSha,
+      expectedReleaseSha: effectiveReleaseSha,
       suiteBodyText,
       capabilityResults: evidence.primaryCapabilities,
       supportCapabilities: evidence.supportCapabilities,

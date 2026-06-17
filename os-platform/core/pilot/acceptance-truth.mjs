@@ -1,5 +1,5 @@
 const HTTP_ERROR_RE = /\bHTTP\s+(401|403|500)\b/i;
-const PACS_TEXT_RE = /\bPACS\b|\bPacs\b|pacs_/;
+const PACS_TEXT_RE = /\bpacs\b|pacs_/i;
 const VISIBLE_SHA_RE = /\bSHA:\s*([^\s]+)/i;
 
 const FORGE_SUITE_BLOCKERS = [
@@ -103,8 +103,8 @@ const CAPABILITY_RULES = {
       /Enter a parcel ID to read valuation signals and note headers\./i,
       /No sample packets or fallback notes are rendered\./i,
     ],
-    successPatterns: [/Valuation/i, /Notes/i, /Rationale/i, /Evidence/i],
-    minSuccessSignals: 2,
+    successPatterns: [/Rationale/i, /Evidence/i],
+    successMode: 'all',
   },
 };
 
@@ -123,6 +123,10 @@ function countMatches(text, patterns = []) {
 export function extractVisibleReleaseSha(bodyText) {
   const match = bodyText.match(VISIBLE_SHA_RE);
   return match?.[1] ?? null;
+}
+
+export function hasPacsRuntimeText(bodyText) {
+  return PACS_TEXT_RE.test(bodyText ?? '');
 }
 
 export function evaluateVisibleReleaseIdentity({ bodyText, expectedReleaseSha }) {
@@ -167,7 +171,8 @@ export function evaluateSurfaceObservation({
   if (releaseIdentity.status !== 'PASS') {
     blockers.push(releaseIdentity.reason);
   }
-  if (family !== 'feature' && PACS_TEXT_RE.test(bodyText)) {
+  const pacsTextFound = family !== 'feature' && hasPacsRuntimeText(bodyText);
+  if (pacsTextFound) {
     blockers.push(`${path} exposes PACS-facing runtime text.`);
   }
   if (pageErrors.length > 0) {
@@ -177,6 +182,7 @@ export function evaluateSurfaceObservation({
     ready: blockers.length === 0,
     blockers,
     visibleReleaseSha: releaseIdentity.visibleSha,
+    pacsTextFound,
   };
 }
 
@@ -235,6 +241,15 @@ export function classifyCapabilityObservation(capabilityId, observation) {
     };
   }
 
+  if (HTTP_ERROR_RE.test(bodyText)) {
+    return {
+      id: capabilityId,
+      label: rule.label,
+      status: 'FAIL',
+      reasons: matchedPatterns(bodyText, [HTTP_ERROR_RE]),
+    };
+  }
+
   if (hasTextMatch(bodyText, rule.failurePatterns)) {
     return {
       id: capabilityId,
@@ -262,21 +277,6 @@ export function classifyCapabilityObservation(capabilityId, observation) {
     };
   }
 
-  const successSignals = countMatches(bodyText, rule.successPatterns);
-  const requiredSignals =
-    rule.successMode === 'all'
-      ? rule.successPatterns?.length ?? 0
-      : rule.minSuccessSignals ?? (rule.successPatterns?.length ? 1 : 0);
-
-  if (requiredSignals > 0 && successSignals >= requiredSignals) {
-    return {
-      id: capabilityId,
-      label: rule.label,
-      status: 'PASS',
-      reasons,
-    };
-  }
-
   if (hasTextMatch(bodyText, rule.shellOnlyPatterns)) {
     return {
       id: capabilityId,
@@ -292,6 +292,21 @@ export function classifyCapabilityObservation(capabilityId, observation) {
       label: rule.label,
       status: 'PARTIAL',
       reasons: matchedPatterns(bodyText, rule.partialPatterns),
+    };
+  }
+
+  const successSignals = countMatches(bodyText, rule.successPatterns);
+  const requiredSignals =
+    rule.successMode === 'all'
+      ? rule.successPatterns?.length ?? 0
+      : rule.minSuccessSignals ?? (rule.successPatterns?.length ? 1 : 0);
+
+  if (requiredSignals > 0 && successSignals >= requiredSignals) {
+    return {
+      id: capabilityId,
+      label: rule.label,
+      status: 'PASS',
+      reasons,
     };
   }
 
