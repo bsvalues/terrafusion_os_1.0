@@ -54,9 +54,7 @@ type=bind  src=D:/TerraFusion_PACS_Verification/source-copy  dst=/mnt/pacs-copy
 
 ## Mutations
 
-- No drains run
-- No imports run
-- No promotions run
-- No TerraFusion DB mutations
-- No writes to `tf_mssql_data` volume
-- SQL Server may have written recovery logs to the LDF during attach (standard behavior — these writes are to the D: copy only, not the source volume)
+- **Original PACS source**: NOT touched. `tf_mssql_data` volume not mounted.
+- **TerraFusion DB**: NOT mutated.
+- **Drains / imports / promotions / projections**: NONE.
+- **D: verification copy**: SQL Server attach/recovery writes occurred to `pacs_oltp_log.ldf` on D: only. This is standard SQL Server attach behavior — the engine writes recovery completion markers to the log file. These writes are confined to the D: copy; the source volume is unaffected.
