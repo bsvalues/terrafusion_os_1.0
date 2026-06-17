@@ -2,6 +2,12 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  classifyCapabilityObservation,
+  evaluateTerraForgeProof,
+  extractVisibleReleaseSha,
+  hasPacsRuntimeText,
+} from '../os-platform/core/pilot/acceptance-truth.mjs';
 
 const PRIMARY_CAPABILITIES = [
   ['costforge', 'CostForge'],
@@ -47,11 +53,61 @@ function requireSecret(name) {
   return value;
 }
 
+async function moduleIds(page) {
+  return page
+    .locator('[data-testid="window-manager"] [data-module-id]')
+    .evaluateAll(nodes => nodes.map(node => node.getAttribute('data-module-id')).filter(Boolean));
+}
+
+async function waitForLaunchedModule(page, moduleIdsBefore) {
+  await page
+    .waitForFunction(
+      before =>
+        Array.from(document.querySelectorAll('[data-testid="window-manager"] [data-module-id]'))
+          .map(node => node.getAttribute('data-module-id'))
+          .filter(Boolean)
+          .some(moduleId => !before.includes(moduleId)),
+      moduleIdsBefore,
+      { timeout: 10000 }
+    )
+    .catch(() => undefined);
+
+  const moduleIdsAfter = await moduleIds(page);
+  const launchedModuleId =
+    moduleIdsAfter.find(moduleId => !moduleIdsBefore.includes(moduleId)) ??
+    moduleIdsAfter.at(-1) ??
+    null;
+
+  if (!launchedModuleId) {
+    return { launchedModuleId: null, moduleRoot: null };
+  }
+
+  const moduleRoot = page.locator(
+    `[data-testid="window-manager"] [data-module-id="${launchedModuleId}"]`
+  );
+  await moduleRoot.waitFor({ timeout: 10000 });
+  await page
+    .waitForFunction(
+      moduleId => {
+        const node = document.querySelector(
+          `[data-testid="window-manager"] [data-module-id="${moduleId}"]`
+        );
+        const text = node?.textContent ?? '';
+        return text.trim().length > 0 && !/\bLoading\b/i.test(text);
+      },
+      launchedModuleId,
+      { timeout: 10000 }
+    )
+    .catch(() => undefined);
+
+  return { launchedModuleId, moduleRoot };
+}
+
 async function writeEvidence(outputDir, evidence) {
   await mkdir(outputDir, { recursive: true });
   await writeFile(
     path.join(outputDir, 'terraforge-production-matrix-proof.json'),
-    `${JSON.stringify(evidence, null, 2)}\n`,
+    `${JSON.stringify(evidence, null, 2)}\n`
   );
   await writeFile(
     path.join(outputDir, 'terraforge-production-matrix-proof.md'),
@@ -67,14 +123,14 @@ async function writeEvidence(outputDir, evidence) {
       '',
       ...evidence.primaryCapabilities.map(
         capability =>
-          `- ${capability.label}: card=${capability.cardVisible ? 'visible' : 'missing'}, launch=${capability.launchActionable ? 'actionable' : 'blocked'}`,
+          `- ${capability.label}: status=${capability.status}, card=${capability.cardVisible ? 'visible' : 'missing'}, launch=${capability.launchActionable ? 'actionable' : 'blocked'}, visibleSha=${capability.visibleReleaseSha ?? 'missing'}`
       ),
       '',
       '## Support / Deferred',
       '',
       ...evidence.supportCapabilities.map(
         capability =>
-          `- ${capability.id}: ${capability.visible ? 'visible outside primary proof' : 'missing'}`,
+          `- ${capability.id}: ${capability.visible ? 'visible outside primary proof' : 'missing'}`
       ),
       '',
       '## Guardrails',
@@ -82,8 +138,15 @@ async function writeEvidence(outputDir, evidence) {
       `- Workbench counted as proof: \`${evidence.guardrails.workbenchCountedAsProof}\``,
       `- Endpoint-only proof accepted: \`${evidence.guardrails.endpointOnlyProofAccepted}\``,
       `- PACS-facing runtime text: \`${evidence.guardrails.pacsRuntimeTextFound}\``,
+      `- Visible release SHA: \`${evidence.visibleReleaseSha ?? 'missing'}\``,
       '',
-    ].join('\n'),
+      '## Blockers',
+      '',
+      ...(evidence.blockers.length > 0
+        ? evidence.blockers.map(blocker => `- ${blocker}`)
+        : ['- none']),
+      '',
+    ].join('\n')
   );
 }
 
@@ -109,6 +172,8 @@ async function main() {
     releaseSha: null,
     primaryCapabilities: [],
     supportCapabilities: [],
+    visibleReleaseSha: null,
+    blockers: [],
     guardrails: {
       workbenchCountedAsProof: false,
       endpointOnlyProofAccepted: false,
@@ -123,9 +188,11 @@ async function main() {
     if (!healthResponse.ok()) {
       throw new Error(`/health returned HTTP ${healthResponse.status()}`);
     }
+    const effectiveReleaseSha = expectedReleaseSha ?? evidence.releaseSha;
+
     if (expectedReleaseSha && evidence.releaseSha !== expectedReleaseSha) {
       throw new Error(
-        `Expected X-Release-Sha ${expectedReleaseSha}, got ${evidence.releaseSha ?? 'missing'}`,
+        `Expected X-Release-Sha ${expectedReleaseSha}, got ${evidence.releaseSha ?? 'missing'}`
       );
     }
 
@@ -140,53 +207,101 @@ async function main() {
     await page.getByTestId('forge-primary-applications').waitFor({ timeout: 30000 });
     await page.getByTestId('forge-support-applications').waitFor({ timeout: 30000 });
 
-    const bodyText = await page.locator('body').innerText();
-    evidence.guardrails.pacsRuntimeTextFound = /\bPACS\b|\bPacs\b|pacs_/.test(bodyText);
-    evidence.guardrails.workbenchCountedAsProof = /\/property\/[^/\s]+\/forge/.test(bodyText);
+    const suiteBodyText = await page.locator('body').innerText();
+    const suiteGuardrailText = await page.locator('body').evaluate(body => body.innerHTML);
+    evidence.visibleReleaseSha = extractVisibleReleaseSha(suiteBodyText);
+    evidence.guardrails.pacsRuntimeTextFound = hasPacsRuntimeText(suiteBodyText);
+    evidence.guardrails.workbenchCountedAsProof =
+      /\/property\/[^/\s]+\/forge/.test(suiteBodyText) ||
+      /\/property\/[^/"'\s]+\/forge/.test(suiteGuardrailText);
 
     for (const [id, label] of PRIMARY_CAPABILITIES) {
+      await page.goto(`${baseUrl}/forge`, { waitUntil: 'domcontentloaded' });
+      await page.getByTestId('suite-forge-root').waitFor({ timeout: 30000 });
+      await page.getByTestId('forge-primary-applications').waitFor({ timeout: 30000 });
+
       const card = page.locator(
-        `[data-terraforge-capability-id="${id}"][data-terraforge-production-proof="primary-required"]`,
+        `[data-terraforge-capability-id="${id}"][data-terraforge-production-proof="primary-required"]`
       );
       const cardVisible = await card.isVisible();
       let launchActionable = false;
+      let launchedModuleId = null;
+      let windowTitle = null;
+      let capabilityBodyText = '';
+
       if (cardVisible) {
-        await card.click({ trial: true, timeout: 10000 });
         launchActionable = !(await card.isDisabled());
       }
-      evidence.primaryCapabilities.push({ id, label, cardVisible, launchActionable });
+
+      if (cardVisible && launchActionable) {
+        const moduleIdsBefore = await moduleIds(page);
+        await card.click({ timeout: 10000 });
+        const launchedModule = await waitForLaunchedModule(page, moduleIdsBefore);
+        launchedModuleId = launchedModule.launchedModuleId;
+
+        if (launchedModule.moduleRoot) {
+          const moduleRoot = launchedModule.moduleRoot;
+          capabilityBodyText = await moduleRoot.innerText();
+          windowTitle =
+            (await moduleRoot
+              .locator('h1, h2, [aria-label="Application windows"] .window-title')
+              .first()
+              .textContent()
+              .catch(() => null)) ?? null;
+        }
+      }
+
+      const classification = classifyCapabilityObservation(id, {
+        cardVisible,
+        launchActionable,
+        launchedModuleId,
+        windowTitle,
+        bodyText: capabilityBodyText,
+      });
+
+      evidence.primaryCapabilities.push({
+        id,
+        label,
+        cardVisible,
+        launchActionable,
+        launchedModuleId,
+        windowTitle,
+        visibleReleaseSha: evidence.visibleReleaseSha,
+        reasons: classification.reasons,
+        status: classification.status,
+      });
     }
 
     for (const id of SUPPORT_CAPABILITIES) {
       const card = page.locator(
-        `[data-terraforge-capability-id="${id}"][data-terraforge-production-proof="support-or-deferred"]`,
+        `[data-terraforge-capability-id="${id}"][data-terraforge-production-proof="support-or-deferred"]`
       );
       evidence.supportCapabilities.push({ id, visible: await card.isVisible() });
     }
 
-    const missingPrimary = evidence.primaryCapabilities.filter(
-      capability => !capability.cardVisible || !capability.launchActionable,
-    );
     const missingSupport = evidence.supportCapabilities.filter(capability => !capability.visible);
 
-    if (missingPrimary.length > 0) {
-      throw new Error(
-        `Primary TerraForge capability proof failed: ${missingPrimary.map(item => item.id).join(', ')}`,
-      );
-    }
     if (missingSupport.length > 0) {
-      throw new Error(
-        `Support/deferred TerraForge disclosure missing: ${missingSupport.map(item => item.id).join(', ')}`,
-      );
+      const blocker = `Support/deferred TerraForge disclosure missing: ${missingSupport.map(item => item.id).join(', ')}`;
+      evidence.blockers.push(blocker);
+      throw new Error(blocker);
     }
-    if (evidence.guardrails.pacsRuntimeTextFound) {
-      throw new Error('PACS-facing runtime text found on /forge.');
-    }
-    if (evidence.guardrails.workbenchCountedAsProof) {
-      throw new Error('Workbench parcel-scoped route appeared in TerraForge suite proof.');
-    }
+
+    const truthResult = evaluateTerraForgeProof({
+      expectedReleaseSha: effectiveReleaseSha,
+      suiteBodyText,
+      capabilityResults: evidence.primaryCapabilities,
+      supportCapabilities: evidence.supportCapabilities,
+      workbenchCountedAsProof: evidence.guardrails.workbenchCountedAsProof,
+      pacsRuntimeTextFound: evidence.guardrails.pacsRuntimeTextFound,
+    });
+
+    evidence.blockers = [...truthResult.blockers];
     if (pageErrors.length > 0) {
-      throw new Error(`Browser page errors: ${pageErrors.join(' | ')}`);
+      evidence.blockers.push(`Browser page errors: ${pageErrors.join(' | ')}`);
+    }
+    if (evidence.blockers.length > 0) {
+      throw new Error(`TerraForge runtime truth proof failed: ${evidence.blockers.join(' || ')}`);
     }
 
     evidence.status = 'PASS';
