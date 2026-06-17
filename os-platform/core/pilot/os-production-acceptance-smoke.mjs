@@ -2,6 +2,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { evaluateSurfaceObservation } from './acceptance-truth.mjs';
 
 function readArg(name) {
   const index = process.argv.indexOf(name);
@@ -68,6 +69,7 @@ async function writeEvidence(outputDir, evidence) {
       `- TerraForge matrix required: \`${evidence.guardrails.terraforgeMatrixProofRequired}\``,
       `- Workbench search support only: \`${evidence.guardrails.workbenchSearchSupportOnly}\``,
       `- Parcel-scoped workbench route visited: \`${evidence.guardrails.workbenchParcelRouteVisited}\``,
+      `- Visible release SHA: \`${evidence.visibleReleaseSha ?? 'missing'}\``,
       '',
       '## Surfaces',
       '',
@@ -119,6 +121,7 @@ async function main() {
     harnessSha: process.env.GITHUB_SHA ?? null,
     authenticated: false,
     surfaces: [],
+    visibleReleaseSha: null,
     guardrails: {
       terraforgeMatrixProofRequired: contract.guardrails.terraforgeMatrixProofRequired,
       workbenchSearchSupportOnly: contract.guardrails.workbenchSearchSupportOnly,
@@ -169,10 +172,17 @@ async function main() {
         throw new Error(`${surface.path} missing required text "${surface.requiredText}".`);
       }
 
-      const pacsTextFound =
-        surface.family !== 'feature' && /\bPACS\b|\bPacs\b|pacs_/.test(bodyText);
       const routePageErrors = pageErrors.slice(priorErrorCount);
-      const ready = routePageErrors.length === 0 && !pacsTextFound;
+      const truth = evaluateSurfaceObservation({
+        family: surface.family,
+        path: surface.path,
+        bodyText,
+        expectedReleaseSha,
+        pageErrors: routePageErrors,
+      });
+      const pacsTextFound = surface.family !== 'feature' && /\bPACS\b|\bPacs\b|pacs_/.test(bodyText);
+      const ready = truth.ready;
+      evidence.visibleReleaseSha ??= truth.visibleReleaseSha;
 
       evidence.guardrails.workbenchParcelRouteVisited =
         evidence.guardrails.workbenchParcelRouteVisited ||
@@ -185,6 +195,7 @@ async function main() {
         path: surface.path,
         visitedPath: `${visitedUrl.pathname}${visitedUrl.search}`,
         ready,
+        blockers: truth.blockers,
         pacsTextFound,
         pageErrors: routePageErrors,
       });
