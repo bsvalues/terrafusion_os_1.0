@@ -33,6 +33,7 @@ import { resolve } from 'path';
 
 let suiteModuleGridSource: string;
 let forgeSuiteSource: string;
+let forgeInventorySource: string;
 let atlasSuiteSource: string;
 
 beforeAll(() => {
@@ -42,6 +43,10 @@ beforeAll(() => {
   );
   forgeSuiteSource = readFileSync(
     resolve(import.meta.dirname, '../../pages/suites/ForgeSuiteHome.tsx'),
+    'utf-8',
+  );
+  forgeInventorySource = readFileSync(
+    resolve(import.meta.dirname, '../../pages/suites/terraforgeCanonicalInventory.ts'),
     'utf-8',
   );
   atlasSuiteSource = readFileSync(
@@ -167,25 +172,24 @@ describe('directEntryCanonicalUrl', () => {
     expect(canonicalizeEntryUrl('/property/123/FORGEE')).toBe('/property/123');
   });
 
-  // ── Source: ForgeSuiteHome routes CompsForge to Property Workbench ───────
+  // ── Source: ForgeSuiteHome is not Workbench Forge proof ─────────────────
   //
-  // ForgeSuiteHome is mostly an application launcher, but CompsForge is the
-  // explicit parcel-scoped exception: desktop/window intent must resolve to
-  // Property Workbench -> Forge -> Sales instead of the old standalone surface.
+  // /forge is the TerraForge Suite surface. Parcel-scoped Forge support remains
+  // reachable through /property/:parcelId/forge, but ForgeSuiteHome must not
+  // count that Workbench path as suite proof.
 
-  it('ForgeSuiteHome routes only CompsForge through Property Workbench Forge Sales', () => {
-    const standaloneEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'standalone'/g)];
+  it('ForgeSuiteHome does not route canonical TerraForge suite apps through Property Workbench Forge', () => {
     const workbenchEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'workbench'/g)];
 
-    expect(standaloneEntries.length).toBeGreaterThan(0);
-    expect(workbenchEntries).toHaveLength(1);
-    expect(forgeSuiteSource).toContain("id: 'comps-forge'");
-    expect(forgeSuiteSource).toContain("workbenchTab: 'forge'");
-    expect(forgeSuiteSource).toContain("workbenchSubTab: 'sales'");
-    expect(forgeSuiteSource).toContain("moduleId: 'costforge'");
-    expect(forgeSuiteSource).toContain("moduleId: 'income-forge'");
-    expect(forgeSuiteSource).toContain("moduleId: 'sales-forge'");
-    expect(forgeSuiteSource).toContain("moduleId: 'cuforge'");
+    expect(workbenchEntries).toHaveLength(0);
+    expect(forgeSuiteSource).not.toContain("workbenchTab: 'forge'");
+    expect(forgeSuiteSource).not.toContain("workbenchSubTab: 'sales'");
+    expect(forgeSuiteSource).toContain('TERRAFORGE_CANONICAL_INVENTORY');
+    expect(forgeInventorySource).toContain("moduleId: 'costforge'");
+    expect(forgeInventorySource).toContain("moduleId: 'comps-forge'");
+    expect(forgeInventorySource).toContain("moduleId: 'income-forge'");
+    expect(forgeInventorySource).toContain("moduleId: 'sales-forge'");
+    expect(forgeInventorySource).toContain("proofSurface: 'suite'");
   });
 
   // ── Source: AtlasSuiteHome parcel modules all use workbench launchMode ────

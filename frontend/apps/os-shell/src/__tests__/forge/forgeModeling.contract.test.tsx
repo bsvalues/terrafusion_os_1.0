@@ -458,13 +458,13 @@ describe('Phase 10: Forge Modeling Contract', () => {
   // =========================================================================
 
   describe('ForgeSuiteHome', () => {
-    it('16. has data-testid on stats strip ("forge-stats"), module grid ("forge-primary-applications"), and queue ("forge-queue")', () => {
+    it('16. has data-testid on stats strip, module grid, and canonical sale qualification queue import point', () => {
       renderWithRouter(<ForgeSuiteHome />);
 
       expect(screen.getByTestId('suite-forge-root')).toBeInTheDocument();
       expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
       expect(screen.getByTestId('forge-primary-applications')).toBeInTheDocument();
-      expect(screen.getByTestId('forge-queue')).toBeInTheDocument();
+      expect(screen.getByTestId('sale-qualification-queue')).toBeInTheDocument();
     });
   });
 });

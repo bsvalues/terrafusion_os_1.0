@@ -52,15 +52,13 @@ describe('ForgeSuiteHome source honesty contract', () => {
     );
 
     expect(screen.getByTestId('forge-source-disclosure')).toBeInTheDocument();
-    // Match the prose currently produced by getSourceDisclosure() in
-    // ForgeSuiteHome (FROZEN file — see frontend/CLAUDE.md, restore commit 8da26658a).
     expect(
-      screen.getByText(/Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics\./i),
+      screen.getByText(/App-backed suite metrics read proven TerraFusion API paths/i),
     ).toBeInTheDocument();
     expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
   });
 
-  it('does not show the disclosure when live backend metrics are active', () => {
+  it('keeps the proof-freeze disclosure visible when live backend metrics are active', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -74,17 +72,14 @@ describe('ForgeSuiteHome source honesty contract', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByTestId('forge-source-disclosure')).not.toBeInTheDocument();
+    expect(screen.getByTestId('forge-source-disclosure')).toBeInTheDocument();
+    expect(
+      screen.getByText(/countywide KPI rollups and unverified standalone Forge modules stay preview-locked/i),
+    ).toBeInTheDocument();
     expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
   });
 
-  it('renders the frozen Forge primary module set with TerraDais handoff label available', () => {
-    // The frozen v1 ForgeSuiteHome (restore commit 8da26658a per
-    // frontend/CLAUDE.md) does not route appeal prep through this surface —
-    // appeals live in TerraDais directly. This contract verifies that:
-    //   1. The frozen primary modules render (CostForge / CompsForge / IncomeForge / SalesForge),
-    //   2. The component still owns the TerraDais workbench handoff string for any
-    //      future module that opts into workbenchTab: 'dais'.
+  it('renders the canonical Forge primary module set with suite-owned runtime surfaces', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -98,18 +93,18 @@ describe('ForgeSuiteHome source honesty contract', () => {
       </MemoryRouter>,
     );
 
-    // Primary frozen modules are rendered as forge-ops-cards
     expect(screen.getByText('CostForge')).toBeInTheDocument();
     expect(screen.getByText('CompsForge')).toBeInTheDocument();
     expect(screen.getByText('IncomeForge')).toBeInTheDocument();
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
+    expect(screen.getByTestId('forge-sale-qualification-queue')).toBeInTheDocument();
 
-    // The TerraDais handoff string lives in the component's getLaunchLabel —
-    // verify the source still defines it (proves the dais routing branch survives).
     const sourceFile = require('fs').readFileSync(
       require('path').resolve(__dirname, '../../pages/suites/ForgeSuiteHome.tsx'),
       'utf8',
     );
-    expect(sourceFile).toContain("workbenchTab === 'dais' ? 'Opens TerraDais workbench'");
+    expect(sourceFile).toContain('TERRAFORGE_CANONICAL_INVENTORY');
+    expect(sourceFile).toContain('<SaleQualificationQueue />');
+    expect(sourceFile).not.toContain("workbenchTab === 'dais' ? 'Opens TerraDais workbench'");
   });
 });

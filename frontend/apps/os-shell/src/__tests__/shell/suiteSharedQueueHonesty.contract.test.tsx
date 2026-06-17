@@ -109,22 +109,19 @@ describe('mounted suite shared queue honesty contract', () => {
     expectRecentParcelsQueue();
   });
 
-  it('labels the Forge suite queue as recent parcels', () => {
+  it('labels the Forge suite queue as a county-wide qualification queue', () => {
     render(
       <MemoryRouter>
         <ForgeSuiteHome />
       </MemoryRouter>,
     );
 
-    // ForgeSuiteHome (FROZEN — see frontend/CLAUDE.md, restore commit 8da26658a)
-    // renders its operational queue inline rather than through the shared
-    // OperationalQueue component, so we assert against the rendered DOM.
-    const forgeQueue = screen.getByTestId('forge-queue');
+    // WO-FORGE-002 moved /forge off the legacy recent-parcels queue contract.
+    // Forge now mounts the county-wide SaleQualificationQueue directly.
+    const forgeQueue = screen.getByTestId('forge-sale-qualification-queue');
     expect(forgeQueue).toBeInTheDocument();
-    // Eyebrow + heading and the empty-state message both follow the shared
-    // 'recent parcels' / 'No recent parcel activity' labeling contract.
-    expect(forgeQueue.textContent).toMatch(/Recent parcels/i);
-    expect(forgeQueue.textContent).toMatch(/No recent parcel activity/i);
+    expect(forgeQueue.textContent).toMatch(/County-wide qualification queue/i);
+    expect(forgeQueue.textContent).not.toMatch(/Recent parcels/i);
   });
 
   it('labels the Dais suite queue as recent parcels', () => {

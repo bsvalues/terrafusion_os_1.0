@@ -1,24 +1,26 @@
 /**
  * ForgeSuiteHome — Module List Contract Test
  *
- * These tests are a FREEZE GUARD. They will FAIL if anyone edits the
- * PRIMARY_MODULES array to the wrong apps.
+ * These tests are a FREEZE GUARD. They will FAIL if anyone drifts /forge away
+ * from the June 10 TerraForge canonical inventory.
  *
- * Verified correct layout (current HEAD):
- *   PRIMARY   : CostForge, CompsForge, IncomeForge, SalesForge, CUForge
- *   SECONDARY : Batch Cost Runs, Regression Studio, TerraGAMA,
- *               Coefficient Preview
- *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
+ * Canonical layout:
+ *   PRIMARY : CostForge, CompsForge, SalesForge, IncomeForge, Reconciliation,
+ *             Calibration / QC, CAMA Characteristics,
+ *             Valuation Notes / Defensibility
+ *   SUPPORT : Batch Cost Runs, Regression Studio, County Studio,
+ *             Coefficient Preview, Current-use Support
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
  * Studio's embedded/pop-out spatial surface; GeoForge is internal compatibility
  * infrastructure until retired.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import ForgeSuiteHome from '../ForgeSuiteHome';
+import { getTerraForgeCanonicalInventory } from '../terraforgeCanonicalInventory';
 
 const activateModuleMock = vi.hoisted(() => vi.fn());
 
@@ -76,13 +78,17 @@ describe('ForgeSuiteHome — frozen module list', () => {
     activateModuleMock.mockClear();
   });
 
-  it('renders the five primary approach cards', () => {
+  it('renders every June 10 primary capability card', () => {
     renderForge();
-    expect(screen.getByText('CostForge')).toBeInTheDocument();
-    expect(screen.getByText('CompsForge')).toBeInTheDocument();
-    expect(screen.getByText('IncomeForge')).toBeInTheDocument();
-    expect(screen.getByText('SalesForge')).toBeInTheDocument();
-    expect(screen.getByText('CUForge')).toBeInTheDocument();
+    const primarySection = screen.getByTestId('forge-primary-applications');
+    const primaryLabels = getTerraForgeCanonicalInventory()
+      .filter((capability) => capability.tier === 'primary')
+      .map((capability) => capability.label);
+
+    expect(within(primarySection).getAllByRole('button')).toHaveLength(8);
+    for (const label of primaryLabels) {
+      expect(within(primarySection).getByText(label)).toBeInTheDocument();
+    }
   });
 
   it('does not expose GeoForge or standalone Atlas as launcher products', () => {
@@ -92,21 +98,28 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Atlas Live View')).not.toBeInTheDocument();
   });
 
-  it('does not expose Statistics Studio after County Studio owns the analytics workflow', () => {
+  it('does not expose Statistics Studio or TerraGAMA after canon reclassification', () => {
     renderForge();
-    const secondarySection = screen.getByTestId('forge-secondary-applications');
-    expect(secondarySection).not.toHaveTextContent('Statistics Studio');
-    expect(secondarySection).not.toHaveTextContent(/legacy specialist/i);
+    const supportSection = screen.getByTestId('forge-support-applications');
+    expect(supportSection).not.toHaveTextContent('Statistics Studio');
+    expect(supportSection).not.toHaveTextContent('TerraGAMA');
+    expect(supportSection).not.toHaveTextContent(/legacy specialist/i);
   });
 
-  it('Regression Studio, TerraGAMA, and Coefficient Preview are enabled as live specialist modules', () => {
+  it('renders support and deferred tools outside primary suite proof', () => {
     renderForge();
-    expect(screen.getByText('Regression Studio')).toBeInTheDocument();
-    expect(screen.getByText('TerraGAMA')).toBeInTheDocument();
-    expect(screen.getByText('Coefficient Preview')).toBeInTheDocument();
-    expect(screen.getByText('Regression Studio').closest('button')).not.toBeDisabled();
-    expect(screen.getByText('TerraGAMA').closest('button')).not.toBeDisabled();
-    expect(screen.getByText('Coefficient Preview').closest('button')).not.toBeDisabled();
+    const supportSection = screen.getByTestId('forge-support-applications');
+    const supportLabels = getTerraForgeCanonicalInventory()
+      .filter((capability) => capability.tier !== 'primary')
+      .map((capability) => capability.label);
+
+    expect(within(supportSection).getAllByRole('button')).toHaveLength(5);
+    for (const label of supportLabels) {
+      expect(within(supportSection).getByText(label)).toBeInTheDocument();
+    }
+    expect(within(supportSection).getByText('County Studio').closest('button')).not.toBeDisabled();
+    expect(within(supportSection).getByText('Regression Studio').closest('button')).toBeDisabled();
+    expect(within(supportSection).getByText('Coefficient Preview').closest('button')).toBeDisabled();
   });
 
   it('does NOT render fabricated apps that were never in v1 scope', () => {
@@ -114,7 +127,6 @@ describe('ForgeSuiteHome — frozen module list', () => {
     // These appeared in bad merges — must never come back
     expect(screen.queryByText('Income Valuation')).not.toBeInTheDocument();
     expect(screen.queryByText('Comparable Sales')).not.toBeInTheDocument();
-    expect(screen.queryByText('Reconciliation')).not.toBeInTheDocument();
     expect(screen.queryByText('Value Audit')).not.toBeInTheDocument();
     expect(screen.queryByText('Governed Run')).not.toBeInTheDocument();
     expect(screen.queryByText('Cost Manual')).not.toBeInTheDocument();
@@ -136,49 +148,49 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(compsBtn).not.toBeDisabled();
   });
 
-  it('CompsForge launches the parcel-scoped Workbench Forge Sales desk, not the standalone countywide module', () => {
+  it('CompsForge launches the suite-level module, not parcel-scoped Workbench Forge', () => {
     renderForge();
 
     fireEvent.click(screen.getByText('CompsForge').closest('button')!);
 
-    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', {
+    expect(activateModuleMock).toHaveBeenCalledWith('comps-forge', {
       source: 'system',
       metadata: expect.objectContaining({
-        tab: 'forge',
-        tabId: 'forge',
-        subTab: 'sales',
+        launchContext: 'terraforge-suite',
+        runtimePath: 'compsforge-comps-pool',
       }),
     });
     expect(activateModuleMock).not.toHaveBeenCalledWith(
-      'comps-forge',
+      'property-workbench',
       expect.anything(),
     );
   });
 
-  it('all KPI values show — (never fake numbers)', () => {
+  it('runtime KPI strip does not show frozen fake county rollup numbers', () => {
     renderForge();
     const kpiSection = screen.getByTestId('forge-stats');
-    const values = kpiSection.querySelectorAll('[class*="forge-kpi-cell__value"]');
-    values.forEach((cell) => {
-      expect(cell.textContent).toBe('—');
-    });
+    expect(kpiSection).toHaveTextContent('SALE QUEUE');
+    expect(kpiSection).toHaveTextContent('COMPS POOL');
+    expect(kpiSection).toHaveTextContent('COST MATRIX');
+    expect(kpiSection).toHaveTextContent('INCOME REFS');
+    expect(kpiSection).toHaveTextContent('COUNTY ROLLUP');
+    expect(kpiSection).not.toHaveTextContent('128,784');
+    expect(kpiSection).not.toHaveTextContent('$469,565');
   });
 
-  it('primary section has exactly 5 cards', () => {
+  it('primary section has exactly 8 cards', () => {
     renderForge();
     const primarySection = screen.getByTestId('forge-primary-applications');
     const cards = primarySection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(8);
   });
 
-  it('renders County Studio in the county-operations section', () => {
+  it('renders County Studio as support, not primary TerraForge proof', () => {
     renderForge();
-    const countySection = screen.getByTestId('forge-county-applications');
-    expect(countySection).toBeInTheDocument();
-    expect(screen.getByText('County Studio')).toBeInTheDocument();
-    expect(screen.getByText('Default analytics workbench')).toBeInTheDocument();
-    expect(screen.getByText(/Operational Health, Statistics Compat/i)).toBeInTheDocument();
-    expect(screen.getByText(/embedded spatial review/i)).toBeInTheDocument();
-    expect(screen.getByText(/governed approval and publish remain downstream/i)).toBeInTheDocument();
+    const primarySection = screen.getByTestId('forge-primary-applications');
+    const supportSection = screen.getByTestId('forge-support-applications');
+    expect(within(primarySection).queryByText('County Studio')).not.toBeInTheDocument();
+    expect(within(supportSection).getByText('County Studio')).toBeInTheDocument();
+    expect(within(supportSection).getByText(/Countywide support workspace/i)).toBeInTheDocument();
   });
 });
