@@ -244,7 +244,7 @@ vi.mock('../../lib/apiBase', () => ({
 }));
 
 vi.mock('../../pages/suites/SaleQualificationQueue', () => ({
-  SaleQualificationQueue: () => <div data-testid="sale-qualification-queue" />,
+  SaleQualificationQueue: () => <div data-testid="forge-sale-qualification-queue" />,
 }));
 
 vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
@@ -464,7 +464,7 @@ describe('Phase 10: Forge Modeling Contract', () => {
       expect(screen.getByTestId('suite-forge-root')).toBeInTheDocument();
       expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
       expect(screen.getByTestId('forge-primary-applications')).toBeInTheDocument();
-      expect(screen.getByTestId('sale-qualification-queue')).toBeInTheDocument();
+      expect(screen.getByTestId('forge-sale-qualification-queue')).toBeInTheDocument();
     });
   });
 });

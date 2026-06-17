@@ -306,7 +306,11 @@ function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): Runti
 
     void fetchMetric<CountPage>('saleQueue', `/terraforge/sale-qualification?${saleParams}`, getCountFromPage);
     void fetchMetric<CountPage>('compsPool', `/terraforge/comps-pool?${compsParams}`, getCountFromPage);
-    void fetchMetric<CountResponse>('costMatrix', '/costforge/cost-matrix/benton', getCountFromResponse);
+    void fetchMetric<CountResponse>(
+      'costMatrix',
+      `/costforge/cost-matrix/${encodeURIComponent(countyScope.countyId)}`,
+      getCountFromResponse,
+    );
     void fetchMetric<CapRatesResponse>('incomeRefs', '/costforge/income-approach/cap-rates', getCapRateCount);
     void fetchMetric<CountyStatsRuntimeResponse>(
       'countyRollup',
@@ -525,7 +529,7 @@ export default function ForgeSuiteHome() {
   };
 
   const normalizeMorningBrief = (output: unknown): MorningBriefSummary => {
-    const parsed = parseToolOutput<MorningBriefToolOutput>(output, {
+    const defaults: MorningBriefSummary = {
       role: 'chief_appraiser',
       queueType: 'calibration_review',
       priority: 'medium',
@@ -534,24 +538,22 @@ export default function ForgeSuiteHome() {
       readyToAct: false,
       blockingDependencies: [],
       findings: [],
-    });
+    };
+
+    const parsed = parseToolOutput<MorningBriefToolOutput>(output, defaults);
 
     if (parsed.brief) {
       return {
+        ...defaults,
         ...parsed.brief,
-        findings: parsed.findings ?? [],
+        findings: parsed.findings ?? parsed.brief.findings ?? defaults.findings,
       };
     }
 
     return {
-      role: parsed.role ?? 'chief_appraiser',
-      queueType: parsed.queueType ?? 'calibration_review',
-      priority: parsed.priority ?? 'medium',
-      dueWindow: parsed.dueWindow ?? 'next business day',
-      recommendedTool: parsed.recommendedTool ?? 'rerun_ratio_study',
-      readyToAct: parsed.readyToAct ?? false,
-      blockingDependencies: parsed.blockingDependencies ?? [],
-      findings: parsed.findings ?? [],
+      ...defaults,
+      ...parsed,
+      findings: parsed.findings ?? defaults.findings,
     };
   };
 
