@@ -29,6 +29,34 @@ Run one tightly bounded controlled parcel pipeline drain:
 | Status | Succeeded |
 | BatchIds | e94d6de9, e66aafdc, 5a6c8328, fb5b0b83 (4 batches) |
 
+### Raw Response Payload
+
+```json
+{
+  "lane": "parcel",
+  "status": "Succeeded",
+  "batchIds": [
+    "e94d6de9-501c-4857-adeb-f3ced890e420",
+    "e66aafdc-0e50-4684-a78c-761009c73cfb",
+    "5a6c8328-e70d-49aa-8163-b183c6102e0d",
+    "fb5b0b83-c137-40c6-808d-c32643a330e5"
+  ],
+  "counts": {
+    "rowsLanded": 100,
+    "rowsPromotedToTruth": 100,
+    "rowsCanonicalized": 100,
+    "rowsQuarantinedThisLane": 0
+  },
+  "durationSec": 9.4142215,
+  "gateSummary": {
+    "totals": [{"status": "PASS", "count": 17}],
+    "recentFailures": []
+  },
+  "quarantineDelta": {"before": 0, "after": 0, "delta": 0},
+  "nextRecommendedLane": "owner-wsdor"
+}
+```
+
 ### Pipeline Counts
 
 | Stage | Count |
@@ -282,4 +310,16 @@ builder.Services.AddScoped<
 | ERRORS | None |
 | GATE_RESULTS | 17 PASS / 0 FAIL |
 | PR_OR_LOCAL_ARTIFACT | Local branch `docs/wo-data-004b-fix3-parcel-drain`, worktree `C:\Users\bsval\tf-docs-fix3` |
-| NEXT_WORK_ORDER | Operator decision — full corpus drain? next lane (owner-wsdor)? Program.cs DI commit? |
+| NEXT_WORK_ORDER | WO-DATA-004B-FIX4 — Controlled Owner/WSDOR Drain (FROZEN — pending Program.cs reconciliation) |
+
+---
+
+## STOP — Before Owner-WSDOR
+
+**Do NOT proceed to WO-DATA-004B-FIX4 (owner-wsdor) until:**
+
+1. Program.cs DI change committed in a separate minimal work order (`fix/wo-data-004b-parcel-di-registration`)
+2. DI gap audit run against the owner-wsdor drain endpoint before FIX4
+3. Operator explicitly approves FIX4
+
+See `PACS_SYNC_FIX3_RUNTIME_CONFIG_DELTA.md` for the full Program.cs analysis and recommendation.
