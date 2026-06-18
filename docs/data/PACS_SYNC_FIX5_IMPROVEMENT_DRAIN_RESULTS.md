@@ -144,6 +144,12 @@ are accounted for within the 588 quarantine cohort.
 
 **No code change required.** This is PACS source data.
 
+> **PRODUCTION REPORTING REQUIREMENT:** The known duplicate-key PACS issue (3 duplicate 6-key
+> `imprv_attr` tuples, gate `imprv-attr-key-uniqueness`) must **not be silently ignored** in
+> production reporting. It must appear as a flagged anomaly in any improvement lane drain report,
+> attributed to PACS source data, with the exact duplicate count recorded. Acceptance is conditional
+> on the count remaining at 3; any increase signals new PACS data corruption.
+
 ---
 
 ## Quarantine — 588 Rows
@@ -161,6 +167,12 @@ All are in `legacy_tf_unproven.unresolved_imprv_attr` — unresolvable attribute
 These are valid PACS imprv_attr codes not yet in the attribute dictionary. They are **not lost** —
 they await the `attr-drain-1` release pass (SYNC-DOCTRINE-4-V8 pattern). Not a blocker for lane
 progression.
+
+> **IMPROVEMENT LANE STATUS:** The improvement lane is operationally successful with quarantine
+> handling, **not fully clean**. Canonical data (`canonical_tf.tf_improvement`,
+> `canonical_tf.tf_improvement_feature`) is uncontaminated. The 588 unresolved attributes are
+> isolated in `legacy_tf_unproven.unresolved_imprv_attr` and require a future `attr-drain-1`
+> release pass before they can be promoted.
 
 ---
 
