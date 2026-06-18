@@ -3,7 +3,7 @@
 **Work Order:** WO-DATA-004B-FIX4
 **Date:** 2026-06-18
 **Worktree:** `C:\Users\bsval\tf-fix4-owner`
-**Branch:** `docs/wo-data-004b-fix4-owner-wsdor-drain` (from origin/main @ `a90e97ba7`)
+**Branch:** `docs/wo-data-004b-fix3-parcel-drain` (evidence branch; worktree origin/main @ `a90e97ba7`)
 **Status:** COMPLETE — drain succeeded
 
 ---
@@ -225,7 +225,7 @@ of the 100 parcels may have many historical supplement records.
 |---|---|
 | RESULT | **SUCCEEDED** |
 | WORKTREE | `C:\Users\bsval\tf-fix4-owner` (origin/main @ `a90e97ba7`) |
-| BRANCH | `docs/wo-data-004b-fix4-owner-wsdor-drain` |
+| BRANCH | `docs/wo-data-004b-fix3-parcel-drain` (evidence branch) |
 | FILES_CHANGED | None (docs only) |
 | DB_TARGET | `terrafusion_dev_clean` — PostgreSQL PG16 Docker, port 5432 |
 | PACS_SOURCE | `pacs_oltp_verify` — SQL Server 2022 port 21433 — D: copy |
@@ -238,5 +238,5 @@ of the 100 parcels may have many historical supplement records.
 | NON_OWNER_LANES | All at 0 — not touched |
 | SYNC_STATE | 49 PASS / 0 FAIL, 0 quarantine |
 | ERRORS | None |
-| PR_OR_LOCAL_ARTIFACT | Local branch `docs/wo-data-004b-fix4-owner-wsdor-drain`, this file |
+| PR_OR_LOCAL_ARTIFACT | `docs/wo-data-004b-fix3-parcel-drain` @ commit `d7c772a00`, worktree `C:\Users\bsval\tf-docs-fix3` |
 | NEXT_WORK_ORDER | WO-DATA-004B-FIX5 — Controlled Improvement Drain (awaiting operator approval) |
