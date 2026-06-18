@@ -81,7 +81,7 @@ The human operator still needs to configure Azure DevOps manually:
 - Create a pipeline from `azure-pipelines/pr-validation.yml`.
 - Create a pipeline from `azure-pipelines/build-main.yml`.
 - Add a branch policy on `main` requiring the PR validation pipeline.
-- Decide whether the main build pipeline should run automatically on pushes to `main`.
+- Verify the main build pipeline runs automatically on pushes to `main`.
 - Leave `master` untouched during this migration phase.
 
 No service connections or secrets are required for the Phase 2 pipeline files.
