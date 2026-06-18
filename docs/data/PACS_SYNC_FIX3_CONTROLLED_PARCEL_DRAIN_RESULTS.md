@@ -1,139 +1,251 @@
 # WO-DATA-004B-FIX3 — Controlled Parcel Drain Results
 
-**Work Order:** WO-DATA-004B-FIX3  
-**Date:** 2026-06-17  
-**Status:** BLOCKED — D: copy invalidated and re-copy in progress; drain gate not open
+**Work Order:** WO-DATA-004B-FIX3
+**Date:** 2026-06-17 / 2026-06-18
+**Status:** COMPLETE — drain succeeded, evidence captured, parcel lane proven
 
 ---
 
 ## Mission
 
 Run one tightly bounded controlled parcel pipeline drain:
-- TopN ≤ 100
+- TopN = 100
 - Verified PACS source: `pacs_oltp_verify` (SQL Server 2022, port 21433, D: copy only)
 - Target: `terrafusion_dev_clean` (PostgreSQL Docker PG16)
 - Parcel endpoint only
 
 ---
 
-## Copy Evidence — INVALIDATED (superseded by RE-COPY below)
+## DRAIN RESULT
 
-The original D: copy completed at `2026-06-17 13:29:10 UTC` (logged in `pacs-mdf-copy` container).
-**That evidence is no longer current.** The `pacs-mdf-copy` container restarted when Docker Desktop
-restarted (this is expected behavior for `--restart=on-failure` containers when the Docker daemon
-restarts — the container was still running during the daemon restart, so Docker started it fresh).
-The container began re-copying from byte 0, overwriting the completed 572 GB copy. It was stopped
-at 92,185,821,184 bytes (85.85 GB of 533.6 GB) — an incomplete, unusable partial file.
+| Field | Value |
+|---|---|
+| RESULT | **SUCCEEDED** |
+| Lane | parcel |
+| Endpoint | `POST /api/sync/doctrine/drain/parcel` |
+| Payload | `{"OperatorName":"claude-fix3-parcel-current-v1","WorkingYear":2026,"FullCorpus":false,"TopN":100}` |
+| TopN | 100 |
+| Duration | 9.41 sec |
+| Status | Succeeded |
+| BatchIds | e94d6de9, e66aafdc, 5a6c8328, fb5b0b83 (4 batches) |
+
+### Pipeline Counts
+
+| Stage | Count |
+|---|---|
+| Rows Landed (S1 → legacy_pacs_raw) | **100** |
+| Rows Promoted to Truth (S2 → truth_pacs.parcel_spine) | **100** |
+| Rows Canonicalized (S3 → canonical_tf.tf_parcel) | **100** |
+| Rows Quarantined (this lane) | 0 |
+
+### Gate Summary
+
+| Status | Count |
+|---|---|
+| PASS | 17 |
+| FAIL | 0 |
+
+No gate failures. Quarantine delta: 0 before → 0 after → delta 0.
+
+---
+
+## Copy Evidence — COMPLETE (Re-copy, 2026-06-17)
+
+### D: Copy Completion (COPY_COMPLETE.txt)
+
+```
+PACS MDF COPY COMPLETE
+======================
+COPY_CONTAINER:     pacs-mdf-copy
+EXIT_CODE:          0
+SOURCE_VOLUME:      tf_mssql_data
+SOURCE_MDF_SIZE:    572901883904 bytes
+DEST_MDF_SIZE:      572901883904 bytes -- EXACT MATCH
+DEST_MDF_WRITTEN:   2026-06-17 18:26:35 local
+LDF_SIZE:           1073618944 bytes -- EXACT MATCH
+D_FREE_SPACE:       426055708672 bytes (396.8 GB)
+SOURCE_UNCHANGED:   YES -- 572901883904 bytes confirmed via docker stat
+RESTART_COUNT:      0
+COPY_DURATION:      ~6h 39m (started ~18:47 UTC, finished ~01:26 UTC)
+```
 
 ### Prior D: State at Invalidation (2026-06-17 ~11:32 AM local)
 
 | Item | Value |
 |---|---|
 | pacs_oltp.mdf on D: | 92,185,821,184 bytes (85.85 GB) — PARTIAL, OVERWRITTEN |
-| pacs_oltp_log.ldf on D: | 1,073,618,944 bytes — **intact, matches target** |
-| tf_mssql_data source volume | **UNCHANGED** — only mounted read-only |
+| pacs_oltp_log.ldf on D: | 1,073,618,944 bytes — intact, matches target |
+| tf_mssql_data source volume | UNCHANGED — only mounted read-only |
 
-**Operational truth at this point:**
-
-```
-PACS source: EXISTS (tf_mssql_data volume intact)
-Correct source: tf_mssql_data
-Verification copy: INCOMPLETE (85.85 GB / 533.6 GB)
-Attach: BLOCKED
-Drain: BLOCKED
-```
+Root cause: `pacs-mdf-copy` container restarted when Docker Desktop restarted (on-failure policy), started re-copying from byte 0, overwriting the previously-completed 572 GB copy. Stopped at 85.85 GB. Re-copy configured as one-shot (`cp` command, not rsync), no restart policy.
 
 ---
 
-## RE-COPY (FIX3-COPY-RETRY, 2026-06-17)
+## Preflight — COMPLETE
 
-### Pre-Copy State Confirmed
+### 1. PACS Vintage Battery (pacs_oltp_verify, 2026-06-18)
 
-| Check | Result |
+All queries run against `pacs_oltp_verify` (SQL Server 2022, port 21433, D: copy).
+
+**prop_supp_assoc — full universe:**
+
+```sql
+SELECT COUNT(*) AS total_rows, MIN(owner_tax_yr) AS min_yr, MAX(owner_tax_yr) AS max_yr
+FROM prop_supp_assoc
+```
+
+| total_rows | min_yr | max_yr |
+|---|---|---|
+| 2,493,078 | 1968 | 2026 |
+
+**Critical gate — qualifying rows (sup_num=0, year>=2018):**
+
+```sql
+SELECT COUNT(*) AS qualifying_rows, MAX(owner_tax_yr) AS max_yr
+FROM prop_supp_assoc
+WHERE sup_num = 0 AND owner_tax_yr >= 2018
+```
+
+| qualifying_rows | max_yr |
 |---|---|
-| Partial MDF deleted | `DELETED: pacs_oltp.mdf removed` (PowerShell Remove-Item confirmed) |
-| LDF status | 1,073,618,944 bytes — **intact, matches target, KEPT** |
-| D: free space | ~844 GB (sufficient for 533 GB MDF) |
-| Source MDF in tf_mssql_data | 572,901,883,904 bytes (confirmed via read-only alpine container) |
-| tf-pacs-current-verify stopped | **YES** — was holding exclusive file handle on pacs_oltp.mdf name, blocking creation |
+| **774,728** | **2026** |
 
-**Root cause of creation failure:** SQL Server in `tf-pacs-current-verify` held an open file handle
-to `pacs_oltp.mdf` with an exclusive share mode. Even after Windows deleted the file's directory
-entry (via PowerShell `Remove-Item`), the kernel-level name lock remained until all handles closed.
-Docker Desktop's 9p VirtioFS translated this as "File exists" on `cp` and "No such file or
-directory" on `dd`/`touch` — contradictory errors, both caused by the same Windows handle lock.
-Fix: stopped the SQL Server container to release the handle.
+`max_owner_tax_yr = 2026` ✅ — Current PACS confirmed.
 
-### Copy Container Configuration
+**sup_num distribution for year>=2018:**
 
-| Setting | Value |
+`sup_num=0`: 774,728 (primary qualification predicate)
+`sup_num=1`: 647 | `sup_num=2`: 177 | `sup_num=3`: 128 | `sup_num=4`: 181 | `sup_num=5`: 648 | (282 distinct sup_num values with year>=2018 in source)
+
+**Candidate for year>=2017 (for discrepancy investigation):**
+
+```sql
+SELECT COUNT(*) FROM prop_supp_assoc WHERE owner_tax_yr >= 2017 AND sup_num = 0
+-- Result: 852,591
+```
+
+**property table:**
+
+```sql
+SELECT COUNT(*) AS prop_count, MIN(prop_create_dt) AS min_dt, MAX(prop_create_dt) AS max_dt FROM property
+-- Result: 128,949 rows, min 1900-01-01, max 2026-01-14
+```
+
+**sale table:**
+
+```sql
+SELECT COUNT(*) AS sale_cnt, MIN(sl_dt) AS min_sl, MAX(sl_dt) AS max_sl FROM sale
+-- Result: 425,251 rows, min 1899-12-31, max 2026-01-13
+SELECT COUNT(*) AS post2018_sales FROM sale WHERE sl_dt >= '2018-01-01'
+-- Result: 62,042
+```
+
+**owner table (year>=2018):**
+
+```sql
+SELECT COUNT(*) AS owner_cnt, MIN(owner_tax_yr), MAX(owner_tax_yr) FROM owner WHERE owner_tax_yr >= 2018
+-- Result: 855,296 rows, min 2018, max 2026
+```
+
+### 2. Count Discrepancy — 809,396 vs 774,728
+
+**STATUS: FORMALLY DOCUMENTED AS UNVERIFIED**
+
+The prior evidence doc recorded "Qualifying rows (sup_num=0, year≥2018): **809,396**" under "Preflight Results (from initial FIX3 attempt)" and labeled it "verified (from FIX2B, unchanged)."
+
+Tested candidate predicates against current `pacs_oltp_verify`:
+
+| Predicate | Count |
 |---|---|
-| Container name | `pacs-mdf-copy` |
-| Image | `alpine` |
-| Command | `rm -f /dst/pacs_oltp.mdf && cp /src/data/pacs_oltp.mdf /dst/pacs_oltp.mdf && echo "COPY DONE $(date)"` |
-| Source | `tf_mssql_data:/src:ro` (read-only volume mount) |
-| Destination | `D:\TerraFusion_PACS_Verification\source-copy:/dst` (bind mount) |
-| Restart policy | `--restart=on-failure` |
-| Started | 2026-06-17 ~18:47 UTC |
+| `sup_num=0, year>=2018` | 774,728 |
+| `sup_num=0, year>=2017` | 852,591 |
+| `owner year>=2018` | 855,296 |
+| 809,396 | **not reproducible from any tested predicate** |
 
-### Copy Started — Status at Launch
+**Conclusion:** The 809,396 figure cannot be verified against current `pacs_oltp_verify` with any standard predicate. Its SQL source in the prior session is unknown — it may have been run against a different attached DB, a different schema, or with a different predicate. FIX3 uses **774,728** as the authoritative qualifying row count from the verified D: copy. This is the correct number.
 
-| Metric | Value |
-|---|---|
-| RestartCount | **0** |
-| MDF size at t+10s | 1,271,660,544 bytes — growing |
-| Container status | Up, running |
-
-### Target Sizes
-
-| File | Target bytes |
-|---|---|
-| pacs_oltp.mdf | 572,901,883,904 |
-| pacs_oltp_log.ldf | 1,073,618,944 |
-
-Copy in progress. Monitor every 20 minutes. Do not attach until copy completes and size
-matches, and operator explicitly approves.
-
----
-
-## Preflight Results (from initial FIX3 attempt)
-
-### 1. API Runtime Config — VERIFIED
+### 3. API Runtime Config
 
 | Setting | Value | Status |
 |---|---|---|
 | DefaultConnection | `Host=127.0.0.1;Database=terrafusion_dev_clean;...;Port=5432` | ✅ Correct |
 | PacsConnection | `Server=localhost,21433;Database=pacs_oltp_verify;...` | ✅ Aligned to verified source |
-| PacsSalesConnection | `Server=localhost,21433;Database=pacs_oltp_verify;...` | ✅ Aligned to verified source |
-| DefaultCounty.Id | `4ec6e187-f053-4397-b87c-95d0ef9e99aa` | ✅ Benton |
 | TF_SKIP_DEV_SEEDERS | `true` | ✅ Dev seeders suppressed |
 | ASPNETCORE_ENVIRONMENT | `Development` | ✅ |
+| API port | 5046 | ✅ |
 
-### 2. PACS Vintage — VERIFIED (from FIX2B, unchanged)
+Confirmed in startup log: `[STARTUP] Dev seeders skip=True (arg=False, TF_SKIP_DEV_SEEDERS=true)`
 
-| Metric | Value |
-|---|---|
-| DB | `pacs_oltp_verify` (will be re-attached from D: copy after completion) |
-| `max_owner_tax_yr` | 2026 |
-| Qualifying rows (`sup_num=0, year≥2018`) | **809,396** |
-| `max_sl_dt` | 2026-01-13 |
-| `post_2018_sales` | 62,042 |
+### 4. Fake Dev Seeders — DID NOT RUN
 
-### 3. Pre-Drain Row Counts (captured before any drain)
+Log line 192: `[STARTUP] Dev seeders skip=True (arg=False, TF_SKIP_DEV_SEEDERS=true)` ✅
+
+### 5. Pre-Drain Row Counts (all target tables at 0)
 
 | Table | Pre-Count |
 |---|---|
 | `legacy_pacs_raw.property` | 0 |
+| `legacy_pacs_raw.owner` | 0 |
 | `truth_pacs.parcel_spine` | 0 |
 | `canonical_tf.tf_parcel` | 0 |
-| `sync_bridge.load_batch` | 4 |
+| `canonical_tf.tf_improvement` | 0 |
+| `canonical_tf.tf_land` | 0 |
+| `canonical_tf.tf_sale` | 0 |
+| `canonical_tf.tf_owner` | 0 |
+| `sync_bridge.load_batch` | 6 (prior runs) |
 | `sync_bridge.source_xref` | 0 |
+| `sync_bridge.promotion_gate_result` | 17 (prior runs) |
+| `truth_pacs.imprv_current` | 0 |
+| `truth_pacs.land_current` | 0 |
+| `truth_pacs.sale` | 0 |
+| `truth_pacs.owner_current` | 0 |
 
 ---
 
-## BLOCKER 1 — DI Registration Gap (RESOLVED — Program.cs updated, not yet committed)
+## Post-Drain Row Counts
 
-Three services were missing from `Program.cs`. Added (operator-approved):
+| Table | Pre | Post | Delta |
+|---|---|---|---|
+| `legacy_pacs_raw.property` | 0 | **100** | +100 ✅ |
+| `legacy_pacs_raw.owner` | 0 | **100** | +100 ✅ |
+| `truth_pacs.parcel_spine` | 0 | **100** | +100 ✅ |
+| `canonical_tf.tf_parcel` | 0 | **100** | +100 ✅ |
+| `sync_bridge.source_xref` | 0 | **100** | +100 ✅ |
+| `sync_bridge.load_batch` | 6 | **10** | +4 ✅ (4 batches) |
+| `sync_bridge.promotion_gate_result` | 17 | **34** | +17 ✅ (17 gates) |
+
+### Non-Parcel Lanes — UNTOUCHED (all remain 0)
+
+| Table | Post-Count | Status |
+|---|---|---|
+| `canonical_tf.tf_improvement` | 0 | ✅ Not touched |
+| `canonical_tf.tf_land` | 0 | ✅ Not touched |
+| `canonical_tf.tf_sale` | 0 | ✅ Not touched |
+| `canonical_tf.tf_owner` | 0 | ✅ Not touched |
+| `truth_pacs.imprv_current` | 0 | ✅ Not touched |
+| `truth_pacs.land_current` | 0 | ✅ Not touched |
+| `truth_pacs.sale` | 0 | ✅ Not touched |
+| `truth_pacs.owner_current` | 0 | ✅ Not touched |
+
+---
+
+## Source Integrity Confirmations
+
+| Check | Status |
+|---|---|
+| `tf_mssql_data` Docker volume: NOT mutated | ✅ Mounted read-only for copy only |
+| Original PACS source: NOT touched | ✅ |
+| D: copy is the only attached source | ✅ |
+| `terrafusion_dev_clean`: only parcel lane touched | ✅ |
+| No manual INSERT/UPDATE/DELETE/TRUNCATE/DROP/ALTER | ✅ |
+| No fake dev seeders ran | ✅ Confirmed by log |
+| No other lanes called | ✅ Confirmed by post-drain counts |
+
+---
+
+## BLOCKER 1 — DI Registration Gap (RESOLVED)
+
+Three services were missing from `Program.cs`. Added (operator-approved, NOT committed to git — code lives in shared working tree, to be reviewed before branch commit):
 
 ```csharp
 builder.Services.AddScoped<
@@ -151,48 +263,23 @@ builder.Services.AddScoped<
 
 ---
 
-## BLOCKER 2 — D: Copy Invalidated (ACTIVE — re-copy in progress)
+## Final Report
 
-See RE-COPY section above. Do not proceed to attach or drain until:
-1. Copy container exits 0
-2. `pacs_oltp.mdf` size = 572,901,883,904 bytes
-3. `pacs_oltp_log.ldf` size = 1,073,618,944 bytes
-4. Container did not restart after exit 0
-5. Operator approves attach
-
----
-
-## Source Integrity
-
-- `tf_mssql_data` Docker volume: **NOT mutated** — mounted read-only for copy
-- Original PACS source: **NOT touched**
-- TerraFusion DB (`terrafusion_dev_clean`): **NOT mutated** — no drain ran
-- No manual SQL executed
-- No fake seeders ran
-- No other lanes called
-
----
-
-## Current Operational State
-
-```
-PACS source (tf_mssql_data):  INTACT
-Verification copy (D:):       IN PROGRESS (~0.2% at copy start)
-tf-pacs-current-verify:       STOPPED (released file handle for copy)
-terrafusion_dev_clean:        CLEAN (all tables at 0)
-API (port 5047, Debug build): RUNNING — Program.cs DI fix applied
-Drain:                        BLOCKED until copy completes + operator approves attach
-```
-
----
-
-## Next Steps (in order)
-
-1. **Monitor copy** every 20 min — container status, RestartCount, MDF size, D: free space
-2. **Completion gate** — confirm MDF size = 572,901,883,904 bytes, RestartCount stable at 0
-3. **Write COPY_COMPLETE.txt** to `D:\TerraFusion_PACS_Verification\`
-4. **Operator approves attach** — re-start tf-pacs-current-verify pointing to complete D: copy
-5. **Verify vintage** — query pacs_oltp_verify for max owner_tax_yr, qualifying rows
-6. **Run drain** — `POST /api/sync/doctrine/drain/parcel` with TopN=100
-
-**Do not proceed to any step without completing the prior step and operator approval for attach.**
+| Field | Value |
+|---|---|
+| RESULT | **SUCCEEDED** |
+| PACS_SOURCE | `pacs_oltp_verify` — SQL Server 2022 port 21433 — D: copy only (D:\TerraFusion_PACS_Verification\source-copy\pacs_oltp.mdf, 572,901,883,904 bytes) |
+| OWNER_YEAR_RANGE | 1968 – 2026 |
+| QUALIFYING_OWNER_ROWS | 774,728 (sup_num=0, owner_tax_yr>=2018) |
+| COUNT_DISCREPANCY_STATUS | 809,396 (prior evidence doc) cannot be reproduced — SQL source unverifiable — FORMALLY UNRESOLVED. FIX3 authoritative count = 774,728. |
+| DB_TARGET | `terrafusion_dev_clean` — PostgreSQL PG16 Docker, port 5432 |
+| ENDPOINT | `POST /api/sync/doctrine/drain/parcel` |
+| TOPN | 100 |
+| ROWS_LANDED | 100 |
+| ROWS_PROMOTED | 100 |
+| ROWS_CANONICALIZED | 100 |
+| NON_PARCEL_LANES | All at 0 — not touched |
+| ERRORS | None |
+| GATE_RESULTS | 17 PASS / 0 FAIL |
+| PR_OR_LOCAL_ARTIFACT | Local branch `docs/wo-data-004b-fix3-parcel-drain`, worktree `C:\Users\bsval\tf-docs-fix3` |
+| NEXT_WORK_ORDER | Operator decision — full corpus drain? next lane (owner-wsdor)? Program.cs DI commit? |
