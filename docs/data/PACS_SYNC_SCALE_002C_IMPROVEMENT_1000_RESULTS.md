@@ -2,7 +2,7 @@
 
 **Work Order:** WO-DATA-004B-SCALE-002C
 **Date:** 2026-06-19
-**Status:** COMPLETE — 12,922 raw rows landed, 1,222 promoted to truth, 1,222 canonicalized, 52 PASS / 1 FAIL (known dup-key gate), 0 unresolved imprv_attr after ATTR-POP-1 + ATTR-POP-2.
+**Status:** ACCEPTED WITH EXPLICIT DUP-TUPLE WAIVER — pending Codex re-review. 12,922 raw rows landed, 1,222 promoted to truth, 5,055 canonical rows written at drain time (1,222 tf_improvement + 3,833 tf_improvement_feature from detail), 52 PASS / 1 FAIL (imprv-attr-key-uniqueness — waived, see §12a), 0 unresolved imprv_attr after ATTR-POP-1 + ATTR-POP-2.
 **Prerequisite:** SCALE-002B accepted (owner-wsdor TopN=2,500 proven)
 
 ---
@@ -155,14 +155,45 @@ All improvement tables confirmed at 0 before drain was executed.
 | `sync_bridge.source_xref` | 7,118 | **8,340** | +1,222 |
 | `sync_bridge.promotion_gate_result` | 66 | **119** | +53 (52P + 1F) |
 
-**Row count reconciliation:**
+**Row count reconciliation — four distinct dimensions:**
+
+**(a) API response `rowsCanonicalized=5,055` — canonical rows written at drain time:**
+
+`rowsCanonicalized=5,055` = rows written to canonical tables during the drain phase:
+- `canonical_tf.tf_improvement`: 1,222 rows (one per promoted truth row)
+- `canonical_tf.tf_improvement_feature` from `imprv_detail` projection: 3,833 rows
+- Total: 1,222 + 3,833 = **5,055**
+
+The 7,867 `imprv_attr` rows were quarantined at drain time (`rowsQuarantinedThisLane=7,867`), not canonicalized — they appear in `unresolved_imprv_attr`, not in `tf_improvement_feature`. ATTR-POP resolved them into an additional 7,867 `tf_improvement_feature` attribute rows after the drain completed. These are NOT included in `rowsCanonicalized`.
+
+**(b) Canonical table row deltas:**
+
+| Table | Pre-drain | Post-drain (before ATTR-POP) | Post-ATTR-POP (final) |
+|---|---|---|---|
+| `canonical_tf.tf_improvement` | 0 | **1,222** | **1,222** (unchanged) |
+| `canonical_tf.tf_improvement_feature` | 0 | **3,833** (detail rows) | **11,700** (+7,867 attr rows from ATTR-POP) |
+| `canonical_tf.attribute_definition` | 0 | 0 | **35 total / 34 active** |
+
+**(c) `source_xref` delta:**
+
+`source_xref` 7,118 → 8,340 = **+1,222** = entity-level cross-reference entries for improvement entities only. `imprv_detail` and `imprv_attr` sub-rows are projected into features but do not each get their own source_xref entry.
+
+**(d) ATTR-POP / reprojection effects (NOT part of drain `rowsCanonicalized`):**
+
+- ATTR-POP-1: populated `attribute_definition` (35 rows), reprojected all 1,222 truth rows → 11,672 `tf_improvement_feature` rows, resolved 7,839 attr quarantine rows
+- ATTR-POP-2: resolved remaining 28 quarantined attr rows → final `tf_improvement_feature` = 11,700
+- ATTR-POP does not add `source_xref` rows
+
+**Summary reconciliation:**
 
 | Component | Count | Meaning |
 |---|---|---|
-| `rowsLanded` | 12,922 | Total raw rows (1,222 imprv + 3,833 imprv_detail + 7,867 imprv_attr) |
+| `rowsLanded` | 12,922 | Raw rows across all improvement sub-tables (1,222 imprv + 3,833 imprv_detail + 7,867 imprv_attr) |
 | `rowsPromotedToTruth` | 1,222 | `truth_pacs.imprv_current` rows |
-| `rowsCanonicalized` | 5,055 | Cumulative source_xref: parcel(2,500)+assessment_wsdor(2,499)+owner(2,119)+improvement(1,222)=8,340 — note: 5,055 is the lane delta added to prior cumulative |
-| `rowsQuarantinedThisLane` | 7,867 | All `imprv_attr` rows — expected on fresh DB with empty `attribute_definition` |
+| `rowsCanonicalized` | **5,055** | Canonical rows written at drain time: tf_improvement(1,222) + tf_improvement_feature from detail(3,833). Does NOT include ATTR-POP feature rows. |
+| `rowsQuarantinedThisLane` | 7,867 | `imprv_attr` rows quarantined at drain (empty attribute_definition on fresh DB) — resolved to 0 by ATTR-POP |
+| source_xref delta | +1,222 | Entity-level xrefs for improvements only (not per-feature) |
+| tf_improvement_feature (final) | **11,700** | 3,833 from drain (detail) + 7,867 from ATTR-POP (attr) |
 
 ---
 
@@ -313,6 +344,32 @@ SELECT-only query run against `terrafusion_scale_proof` after ATTR-POP-1 + ATTR-
 
 ---
 
+## 12a. Duplicate Tuple Stop-Condition Waiver
+
+**Stop condition triggered:** The original work order defined a stop condition: if the `imprv-attr-key-uniqueness` duplicate tuple count changed from the SCALE-001 observed value of 3, drain must stop for review. This count changed: **3 → 6**.
+
+**Operator waiver — SCALE-002C only:**
+
+> The duplicate PACS improvement attr tuple count changed from 3 to 6 during SCALE-002C. This triggers the original stop condition. Operator waiver granted for SCALE-002C only because:
+> 1. The duplicate condition remains the same known PACS source-data class (`imprv-attr-key-uniqueness`, `SOURCE_TO_RAW` stage — duplicates detected before raw landing, not a code failure).
+> 2. ATTR-POP-1 and ATTR-POP-2 resolved all staged attributes — `unresolved_imprv_attr` final = 0.
+> 3. No new FAIL gate class appeared; gate structure remained 52 PASS / 1 FAIL (same gate, same name, same stage as SCALE-001).
+> 4. The 2× count increase is proportional to the 2× TopN increase, consistent with sampling more of the same underlying PACS data anomaly.
+
+| Field | Value |
+|---|---|
+| SCALE-001 observed baseline | **3** |
+| SCALE-002C observed count | **6** |
+| Stop condition triggered? | **Yes** |
+| Waiver scope | **SCALE-002C only** |
+| New SCALE-002 observed baseline | **6** |
+| Future rule | Any count increase beyond 6 in SCALE-002D, SCALE-002E, or SCALE-003 requires stop and review unless separately waived by operator |
+| Waiver authority | Operator (explicit, documented here) |
+
+**This waiver does not constitute a production acceptance rule. It is a single-lane, single-run exception for SCALE-002C.**
+
+---
+
 ## 13. Runtime Log Proof — FullCorpus and TopN
 
 **Serilog file sink status:** File sink captures only health heartbeats (5-minute `System Health` entries). Drain-specific controller logs go to stdout and are not file-captured.
@@ -419,14 +476,14 @@ DUP_KEY count scaling 3→6 at 2× data confirms proportional scaling of a known
 
 ## 19. Secret Scan
 
-**Checked for literals:**
+**Checked for literals (patterns searched — not reproduced here):**
 
-| Pattern | Result |
+| Pattern class | Result |
 |---|---|
-| `devpassword123` | **Not present** ✓ |
-| `TfVerify2026` | **Not present** ✓ |
-| `PGPASSWORD=` followed by literal password | **Not present** ✓ |
-| `Password=` followed by literal value | **Not present** ✓ |
+| Dev Postgres password literal | **Not present** ✓ |
+| PACS SA password literal | **Not present** ✓ |
+| Postgres env var with literal value | **Not present** ✓ |
+| `Password=` with literal value | **Not present** ✓ |
 
 No credentials or secrets in this document.
 
@@ -436,7 +493,7 @@ No credentials or secrets in this document.
 
 | Field | Value |
 |---|---|
-| RESULT | **SUCCEEDED** |
+| RESULT | **ACCEPTED WITH EXPLICIT DUP-TUPLE WAIVER — pending Codex re-review** |
 | DB_TARGET | `terrafusion_scale_proof` |
 | PACS_SOURCE | `pacs_oltp_verify` (localhost:21433, D: copy) |
 | ENDPOINT | `POST /api/sync/doctrine/drain/improvement` |
@@ -444,11 +501,11 @@ No credentials or secrets in this document.
 | FULL_CORPUS | false |
 | ROWS_LANDED | 12,922 (1,222 imprv + 3,833 detail + 7,867 attr) |
 | ROWS_PROMOTED | 1,222 |
-| ROWS_CANONICALIZED | 1,222 improvement rows (source_xref cumulative = 8,340) |
+| ROWS_CANONICALIZED | **5,055** at drain time = tf_improvement(1,222) + tf_improvement_feature from detail(3,833). source_xref delta = +1,222. ATTR-POP added 7,867 more tf_improvement_feature rows post-drain. Final tf_improvement_feature = 11,700. See §8 for full reconciliation. |
 | ATTR_POP_STATUS | ATTR-POP-1 COMPLETE (7,839/7,867 resolved) + ATTR-POP-2 COMPLETE (28/28 resolved) |
 | UNRESOLVED_ATTRS_FINAL | **0** |
-| DUP_KEY_COUNT | **6** (2× proportional scaling from TopN=500 value of 3 — same gate, same known PACS condition) |
-| GATE_STATUS | 52 PASS / 1 FAIL (imprv-attr-key-uniqueness — known, non-blocking) |
+| DUP_KEY_COUNT | **6** — stop condition triggered (3→6). OPERATOR WAIVER GRANTED for SCALE-002C only. New SCALE-002 observed baseline = 6. See §12a. |
+| GATE_STATUS | 52 PASS / 1 FAIL (imprv-attr-key-uniqueness — waived per §12a) |
 | QUARANTINE_STATUS | 7,867 quarantined at drain → 0 after ATTR-POP-1 + ATTR-POP-2 |
 | NON_IMPROVEMENT_LANES | land/sales = 0 ✓ (section 15) |
 | DEV_CLEAN_TOUCHED | No — 83,326/83,687/61/137 unchanged ✓ (section 16) |
@@ -460,4 +517,4 @@ No credentials or secrets in this document.
 | PACS_VINTAGE | max_owner_tax_yr=2026, qualifying_rows=289,166 (established SCALE-002A). |
 | SECRET_SCAN | CLEAN — no credentials or passwords in this document. |
 | LOCAL_ARTIFACT | `tf-scale-001z/docs/data/PACS_SYNC_SCALE_002C_IMPROVEMENT_1000_RESULTS.md` |
-| NEXT_WORK_ORDER | SCALE-002D — land drain TopN=2,500 |
+| SCALE_002D_READINESS | **NOT READY** — SCALE-002D land may proceed only after Codex re-review passes. |
