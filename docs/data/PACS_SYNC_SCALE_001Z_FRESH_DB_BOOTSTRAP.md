@@ -29,11 +29,13 @@ This is a clean baseline for SCALE-001A (parcel TopN=500) and subsequent scale p
 ## 2. Database Creation
 
 ```bash
-PGPASSWORD=devpassword123 psql -U postgres -h 127.0.0.1 -p 5432 \
+PGPASSWORD=<dev-postgres-password> psql -U postgres -h 127.0.0.1 -p 5432 \
   -c "CREATE DATABASE terrafusion_scale_proof;"
-PGPASSWORD=devpassword123 psql -U postgres -h 127.0.0.1 -p 5432 -d terrafusion_scale_proof \
+PGPASSWORD=<dev-postgres-password> psql -U postgres -h 127.0.0.1 -p 5432 -d terrafusion_scale_proof \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
+
+Use the local development Postgres password from the operator environment; do not commit literal passwords.
 
 **pgvector version installed:** 0.8.2
 
@@ -147,7 +149,7 @@ This clean migrated DB is a viable reusable snapshot baseline. Recommended appro
 
 1. Take a pg_dump before first drain:
    ```bash
-   PGPASSWORD=devpassword123 pg_dump -U postgres -h 127.0.0.1 -p 5432 \
+   PGPASSWORD=<dev-postgres-password> pg_dump -U postgres -h 127.0.0.1 -p 5432 \
      -Fc terrafusion_scale_proof > terrafusion_scale_proof_premigration_snapshot.dump
    ```
 2. Keep dump as a recovery point — lets scale proof restart from empty state without re-running
