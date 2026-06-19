@@ -517,4 +517,4 @@ No credentials or secrets in this document.
 | PACS_VINTAGE | max_owner_tax_yr=2026, qualifying_rows=289,166 (established SCALE-002A). |
 | SECRET_SCAN | CLEAN — no credentials or passwords in this document. |
 | LOCAL_ARTIFACT | `tf-scale-001z/docs/data/PACS_SYNC_SCALE_002C_IMPROVEMENT_1000_RESULTS.md` |
-| SCALE_002D_READINESS | **NOT READY** — SCALE-002D land may proceed only after Codex re-review passes. |
+| SCALE_002D_READINESS | **READY** — Codex re-review PASS. Operator authorized SCALE-002D land TopN=2,500. Duplicate tuple baseline = 6; any count >6 stops for review. |
