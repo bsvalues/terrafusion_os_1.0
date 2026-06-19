@@ -1637,14 +1637,14 @@ public class DoctrineDrainController : ControllerBase
         return (cs, null);
     }
 
-    private static (string OperatorName, short WorkingYear, bool FullCorpus, int? TopN)
+    internal static (string OperatorName, short WorkingYear, bool FullCorpus, int? TopN)
         NormalizeRequest(DoctrineDrainRequest? request, string laneName)
     {
         var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
             ? $"doctrine-drain-{laneName}"
             : request!.OperatorName!.Trim();
         var workingYear = (short)(request?.WorkingYear ?? 2026);
-        var fullCorpus = request?.FullCorpus ?? true;
+        var fullCorpus = request?.FullCorpus ?? false;
         var topN = request?.TopN;
         return (operatorName, workingYear, fullCorpus, topN);
     }
