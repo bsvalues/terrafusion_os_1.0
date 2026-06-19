@@ -10,7 +10,7 @@
 ## 1. Current Controlled Slice State
 
 All five non-geometry lanes proven at TopN=100 against `pacs_oltp_verify` (SA auth,
-port 21433) writing to `terrafusion_dev_clean` (PG16, port 5432).
+port `${TF_PACS_SQL_PORT:-21433}`) writing to `terrafusion_dev_clean` (PG16, port `${TF_POSTGRES_PORT:-5432}`).
 
 | Lane | Endpoint | TopN | Landed | Promoted | Canonicalized | Quarantine | Gates |
 |---|---|---|---|---|---|---|---|
@@ -39,8 +39,9 @@ run report. None are silently resolved between work orders.
 - **Resolution path:** Future `attr-drain-1` release pass after dictionary seeding.
 - **Scale impact:** The 250 improvement TopN is partly in response to this. A larger
   improvement batch will produce additional quarantine rows proportionally. This is
-  expected and acceptable, not a stop condition — unless the quarantine rate increases
-  significantly beyond the TopN=100 ratio (~5.65 attr rows quarantined per parcel).
+  expected and acceptable. For TopN=250, stop if unresolved improvement attribute
+  quarantine exceeds 1,176 rows (2× the TopN=100 observed count of 588). This is a
+  scale-safety threshold, not a production acceptance threshold.
 
 ### 2.2 Improvement — 3 Duplicate PACS 6-Key Tuples
 
@@ -49,9 +50,8 @@ run report. None are silently resolved between work orders.
   not a pipeline defect).
 - **Acceptance threshold:** Count must stay at 3. If count changes at a higher TopN
   (more or fewer), investigate before accepting.
-- **Scale impact:** Marginal. 3 duplicates in 100 imprv rows is a low rate. At 250
-  the count may grow proportionally. Any increase beyond reasonable linear scaling
-  is a stop condition.
+- **Scale impact:** Any change from the known duplicate count of 3 is a stop condition —
+  regardless of batch size.
 
 ### 2.3 Sales — WARN noSuppPointer=4
 
@@ -64,7 +64,7 @@ run report. None are silently resolved between work orders.
 ### 2.4 Sales — +60 Parcel Stubs
 
 - **Location:** `canonical_tf.tf_parcel` grew from 100 → 160 after sales drain.
-- **Root cause:** Sales drain created 61 canonical parcel stubs for sale-referenced
+- **Root cause:** Sales drain created 60 canonical parcel stubs for sale-referenced
   properties not already in `tf_parcel` from the initial parcel slice.
 - **Scale impact:** At higher TopN, the sales drain will continue to create parcel
   stubs for properties outside the parcel batch. This is by design — the sales drain
@@ -133,7 +133,7 @@ Stop immediately (do not proceed to next lane) if any of the following occur:
 |---|---|---|
 | Any FAIL gate that was PASS at TopN=100 | Any new FAIL | Stop, report, do not continue |
 | Improvement dup-key count changes from 3 | Any delta | Stop, investigate PACS source |
-| Improvement quarantine rate > 2× TopN=100 rate | > ~11.3 per parcel | Stop, review attr dictionary |
+| Improvement quarantine count > 1,176 rows at TopN=250 | Absolute count (2× TopN=100 observed) | Stop, review attr dictionary |
 | Any 500-series API error | Any 500 | Stop, do not rerun |
 | DB row counts in non-target tables change unexpectedly | Any unexpected mutation | Stop |
 | Schema error (type mismatch, truncation, constraint violation) | Any | Stop |
@@ -142,7 +142,6 @@ Stop immediately (do not proceed to next lane) if any of the following occur:
 **Not stop conditions (expected, document and continue):**
 - WARN `truth-pacs-supp-aware-join` noSuppPointer (sales) — report count
 - New parcel stubs from sales drain — report count
-- Improvement quarantine growing proportionally (within 2× rate)
 
 ---
 
@@ -153,8 +152,8 @@ Before running any SCALE-001 drain:
 ```text
 1. API source: fresh origin/main Release build in a dedicated worktree (NOT shared checkout)
 2. TF_SKIP_DEV_SEEDERS=true confirmed in environment before drain call
-3. pacs_oltp_verify reachable: SQL Server port 21433, SA auth TfVerify2026!Secure
-4. terrafusion_dev_clean reachable: PG16 port 5432
+3. pacs_oltp_verify reachable: SQL Server port ${TF_PACS_SQL_PORT:-21433}, SA auth ${TF_PACS_SA_PASSWORD}
+4. terrafusion_dev_clean reachable: PG16 port ${TF_POSTGRES_PORT:-5432}
 5. No geometry endpoint called under any circumstance
 6. No drain with TopN > lane recommendation without new operator approval
 7. No full-corpus flag or missing TopN — confirm endpoint accepts and honors TopN param
@@ -162,6 +161,11 @@ Before running any SCALE-001 drain:
 9. Document post-drain row counts and gate summary immediately after each lane
 10. Stop on first unexpected 500 — do not retry automatically
 ```
+
+> **Follow-up required (separate PR after #1049):** The evidence docs committed in PR #1047
+> (`PACS_SYNC_CONTROLLED_SLICE_FINAL_SUMMARY.md` and related files) contain the literal
+> verification credential that has been redacted above. Those files are already on main.
+> Scrub them in a dedicated cleanup PR before any public exposure of this branch.
 
 ---
 
