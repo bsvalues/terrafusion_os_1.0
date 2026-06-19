@@ -173,6 +173,52 @@ Snapshot `terrafusion_scale_proof_scale002_postseed_baseline.dump` (721K) confir
 
 ---
 
+## 10a. Count Reconciliation — Promoted and Canonicalized Decomposition
+
+### rowsPromotedToTruth = 4,999 decomposition
+
+| Truth table | Count | Description |
+|---|---|---|
+| `truth_pacs.owner_current` | **2,500** | One current-year owner record per parcel |
+| `truth_pacs.wash_prop_owner_val` | **2,499** | WSDOR assessed value per parcel/owner (1 missing = 1 parcel with no WSDOR assessment) |
+| **Total** | **4,999** | Matches `rowsPromotedToTruth` ✓ |
+
+### rowsCanonicalized = 7,118 decomposition (cumulative source_xref total)
+
+| `sync_bridge.source_xref` EntityType | Count | Lane | Cumulative? |
+|---|---|---|---|
+| `parcel` | 2,500 | SCALE-002A | carry-forward ✓ |
+| `assessment_wsdor` | 2,499 | SCALE-002B | new this lane |
+| `owner` | 2,119 | SCALE-002B | new this lane |
+| **Total** | **7,118** | | Cumulative total = `rowsCanonicalized` ✓ |
+
+**SCALE-002B lane delta (source_xref new entries):** +4,618 = 2,499 (assessment_wsdor) + 2,119 (owner)
+
+### Canonical component tables (post-drain SELECT)
+
+| Table | Count | Description |
+|---|---|---|
+| `canonical_tf.tf_owner` | **2,119** | Distinct de-duplicated owners; source_xref `owner` = 2,119 ✓ |
+| `canonical_tf.tf_parcel_owner_link` | **2,500** | Parcel-to-owner mapping; sub-artifact (not in source_xref separately) |
+| `canonical_tf.tf_assessment_wsdor` | **2,499** | WSDOR assessments; source_xref `assessment_wsdor` = 2,499 ✓ |
+
+**Math proof:** `tf_owner`(2,119) + `tf_assessment_wsdor`(2,499) + `tf_parcel_owner_link`(2,500) + SCALE-002A `tf_parcel`(2,500) accounts for all data movements. Source_xref total 7,118 = 2,500 + 2,499 + 2,119 = 7,118 ✓
+
+---
+
+## 10b. Runtime Control Proof — Explicit Negative Checks
+
+**From request body (section 6):**
+- `"FullCorpus": false` — explicitly set to false in the JSON body sent to the endpoint
+- `"TopN": 2500` — explicitly set; not null, not omitted
+
+**Negative confirmations:**
+- `FullCorpus=True` was **NOT** present in the request. A `FullCorpus=true` drain would produce ~178,000+ rows (89,247 parcels × ~2 WSDOR years). Actual `rowsLanded=4,999` confirms this was not a full-corpus drain.
+- `TopN=null` was **NOT** present. A null TopN would produce an unbounded drain against the PACS source. The 4,999 row response is bounded, consistent with TopN=2,500 parcels × 2 WSDOR assessment years.
+- No zero-body POST was sent (the `NormalizeRequest ?? false` patch on PR #1051 would reject it).
+
+---
+
 ## 11. Non-Owner Lane Proof
 
 | Table | Post-drain | Expected |
@@ -192,7 +238,7 @@ Snapshot `terrafusion_scale_proof_scale002_postseed_baseline.dump` (721K) confir
 | Rows promoted | 999 | 4,999 | 5× |
 | truth_pacs.owner_current | ~500 | 2,500 | 5× |
 | canonical_tf.tf_owner | ~420 | 2,119 | 5× |
-| Gate count | ~10 PASS | 49 PASS | 4.9× |
+| Gate count | 49 PASS | 49 PASS | same |
 | Duration | ~13s | 66.6s | 5.1× |
 | Quarantine | 0 | 0 | same |
 
@@ -256,7 +302,7 @@ Snapshot `terrafusion_scale_proof_scale002_postseed_baseline.dump` (721K) confir
 | FULL_CORPUS | false |
 | ROWS_LANDED | 4,999 (WSDOR cross-join tuples) |
 | ROWS_PROMOTED | 4,999 |
-| ROWS_CANONICALIZED | 7,118 (cumulative source_xref incl. parcel 2,500) |
+| ROWS_CANONICALIZED | 7,118 (cumulative source_xref total: parcel 2,500 + assessment_wsdor 2,499 + owner 2,119; lane delta = +4,618) |
 | TRUTH_OWNER_CURRENT | 2,500 (one per parcel, current year) |
 | CANONICAL_TF_OWNER | 2,119 (de-duplicated distinct owners) |
 | GATE_STATUS | 49/49 PASS, 0 WARN, 0 FAIL |
