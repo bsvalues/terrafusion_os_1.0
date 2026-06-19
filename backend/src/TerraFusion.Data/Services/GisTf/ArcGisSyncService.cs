@@ -73,7 +73,7 @@ public sealed class ArcGisSyncService : IArcGisSyncService
         try
         {
             var features = await _client
-                .FetchParcelsAsync(countyId, cancellationToken)
+                .FetchParcelsAsync(countyId, topN: null, cancellationToken)
                 .ConfigureAwait(false);
 
             // Lock in the source query hash from the first feature's

@@ -34,6 +34,7 @@ public interface IArcGisRawLandingService
     Task<ArcGisRawLandingResult> LandParcelGeomsAsync(
         Guid countyId,
         string operatorName,
+        int? topN,
         CancellationToken cancellationToken = default);
 }
 
