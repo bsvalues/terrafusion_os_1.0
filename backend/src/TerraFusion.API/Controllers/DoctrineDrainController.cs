@@ -2131,9 +2131,10 @@ public class DoctrineDrainController : ControllerBase
     /// <param name="OperatorName">Audit anchor on every batch this lane writes.</param>
     /// <param name="WorkingYear">PACS prop_val_yr filter for the year-grain stages
     /// (improvement, land). Default 2026 — Benton's active assessment year.</param>
-    /// <param name="FullCorpus">When true (the default), the seed source's TopN
-    /// is null (full corpus drain). When false, <paramref name="TopN"/> applies
-    /// (or a per-lane safe default if TopN is also null).</param>
+    /// <param name="FullCorpus">When true, the seed source's TopN is null
+    /// (full corpus drain). When false or omitted (the safe default),
+    /// <paramref name="TopN"/> applies (or a per-lane safe default if TopN
+    /// is also null: 200 for parcel/owner/improvement/land, 500 for sales).</param>
     /// <param name="TopN">Override the per-lane safe-default sample size. Only
     /// effective when <paramref name="FullCorpus"/> is false.</param>
     /// <param name="LaneResultId">SYNC-COMPLETE-2-V2: when supplied (typically by

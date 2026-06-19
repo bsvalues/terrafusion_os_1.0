@@ -61,6 +61,23 @@ public sealed class DoctrineDrainNormalizeRequestTests
         operatorName.Should().Be("doctrine-drain-owner-wsdor");
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Body_with_missing_or_whitespace_operator_name_defaults_to_lane_scoped_name(string? operatorNameFromBody)
+    {
+        var request = new DoctrineDrainController.DoctrineDrainRequest(
+            OperatorName: operatorNameFromBody,
+            WorkingYear: 2026,
+            FullCorpus: false,
+            TopN: 100);
+
+        var (operatorName, _, _, _) = DoctrineDrainController.NormalizeRequest(request, "owner-wsdor");
+
+        operatorName.Should().Be("doctrine-drain-owner-wsdor");
+    }
+
     [Fact]
     public void NullBody_working_year_defaults_to_2026()
     {

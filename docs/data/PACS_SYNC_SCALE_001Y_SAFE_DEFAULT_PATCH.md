@@ -37,7 +37,7 @@ committed. See `PACS_SYNC_SCALE_001X_TOPN_PROPAGATION_FAILURE.md` for the full i
 ## 2. The Fix
 
 **File:** `backend/src/TerraFusion.API/Controllers/DoctrineDrainController.cs`
-**Location:** `NormalizeRequest` private method, line 1647
+**Location:** `NormalizeRequest` internal method, line 1647
 
 ```csharp
 // After (SCALE-001Y patch):
@@ -54,7 +54,7 @@ to enable direct unit testing via the existing `InternalsVisibleTo` grant to `Te
 
 | Call pattern | `request` | `FullCorpus` resolved | `seedTopN` | Effect |
 |---|---|---|---|---|
-| No body (curl without -d) | `null` | `false` ← patched | `200` (per-lane default) | Bounded 200-row slice |
+| No body (curl without -d) | `null` | `false` ← patched | `200` (parcel/owner/improvement/land default) or `500` (sales default) | Bounded slice |
 | `{"FullCorpus":false,"TopN":500}` | not null | `false` | `500` | Bounded 500-row slice |
 | `{"FullCorpus":true}` | not null | `true` | `null` | Full corpus (explicit) |
 | `{"TopN":100}` (no FullCorpus key) | not null | `false` (null-coalesce) | `100` | Bounded 100-row slice |
@@ -69,12 +69,15 @@ bounded rather than full-corpus.
 The downstream logic is unchanged. Only the `FullCorpus` default changed:
 
 ```csharp
-// Parcel lane (line ~269) — same pattern in all lanes:
+// Parcel/owner/improvement/land lanes (e.g. line ~269):
 var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
+
+// Sales lane (line ~1331) — higher safe default:
+var saleTopN = fullCorpus ? (int?)null : (topN ?? 500);
 ```
 
 With the patch:
-- `FullCorpus=false` and no `TopN` → `seedTopN = 200` (per-lane safe default, not unbounded)
+- `FullCorpus=false` and no `TopN` → `seedTopN = 200` for parcel/owner/improvement/land; `500` for sales (per-lane safe defaults, not unbounded)
 - `FullCorpus=false` and `TopN=500` → `seedTopN = 500`
 - `FullCorpus=true` → `seedTopN = null` (full corpus, SQL has no TOP clause)
 
@@ -136,20 +139,20 @@ query-string TopN binding.
 
 ```bash
 # Bounded drain (recommended for scale proof):
-curl -X POST "http://localhost:5046/api/sync/doctrine/drain/parcel" \
+curl -X POST "http://localhost:${TF_API_PORT:-5046}/api/sync/doctrine/drain/parcel" \
   -H "Content-Type: application/json" \
   -d '{"OperatorName":"scale-001a-parcel","WorkingYear":2026,"FullCorpus":false,"TopN":500}'
 
 # Full corpus (explicit opt-in):
-curl -X POST "http://localhost:5046/api/sync/doctrine/drain/parcel" \
+curl -X POST "http://localhost:${TF_API_PORT:-5046}/api/sync/doctrine/drain/parcel" \
   -H "Content-Type: application/json" \
   -d '{"OperatorName":"full-corpus-run","WorkingYear":2026,"FullCorpus":true}'
 ```
 
-The following call form is NOW SAFE (no body → bounded at 200 rows, not full corpus):
+The following call form is NOW SAFE (no body → bounded at per-lane default, not full corpus):
 ```bash
-curl -X POST "http://localhost:5046/api/sync/doctrine/drain/parcel"
-# Resolves: FullCorpus=false, TopN=null → seedTopN=200
+curl -X POST "http://localhost:${TF_API_PORT:-5046}/api/sync/doctrine/drain/parcel"
+# Resolves: FullCorpus=false, TopN=null → seedTopN=200 (parcel/owner/improvement/land) or 500 (sales)
 ```
 
 ---
@@ -159,7 +162,7 @@ curl -X POST "http://localhost:5046/api/sync/doctrine/drain/parcel"
 | File | Change |
 |---|---|
 | `backend/src/TerraFusion.API/Controllers/DoctrineDrainController.cs` | `?? true` → `?? false` on line 1647; `private static` → `internal static` on `NormalizeRequest` |
-| `backend/tests/TerraFusion.Unit.Tests/Sync/Doctrine/DoctrineDrainNormalizeRequestTests.cs` | New file — 5 unit tests |
+| `backend/tests/TerraFusion.Unit.Tests/Sync/Doctrine/DoctrineDrainNormalizeRequestTests.cs` | New file — 8 unit tests (5 facts + 1 theory × 3 inline data) |
 | `docs/data/PACS_SYNC_SCALE_001Y_SAFE_DEFAULT_PATCH.md` | This file |
 
 ---
