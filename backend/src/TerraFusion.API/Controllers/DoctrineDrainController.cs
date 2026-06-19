@@ -1558,6 +1558,24 @@ public class DoctrineDrainController : ControllerBase
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
 
+            // Geometry lane safety: ArcGIS config is keyed by KnownBentonCountyId.
+            // If the DB already has a Benton row under a different GUID (e.g. from a
+            // prior failed seeder run), silently using that GUID would produce a
+            // GetForCounty() miss and a confusing ArcGIS config error mid-drain.
+            // Refuse explicitly before any network call so the operator can resolve
+            // the county identity conflict first.
+            if (bentonCountyId != KnownBentonCountyId)
+            {
+                return StatusCode(409, new
+                {
+                    error = $"Benton CountyId mismatch: ArcGIS config requires {KnownBentonCountyId}, " +
+                            $"but the existing county row has Id={bentonCountyId}. " +
+                            "Geometry drain refused before ArcGIS fetch.",
+                    requiredCountyId = KnownBentonCountyId,
+                    actualCountyId = bentonCountyId,
+                });
+            }
+
             // Stage 1: ArcGis-D1.
             int d1FeaturesLanded = 0;
             if (resume.ShouldSkip("ArcGis-D1"))

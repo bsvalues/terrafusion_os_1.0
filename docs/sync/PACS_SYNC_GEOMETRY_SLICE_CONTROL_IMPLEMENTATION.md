@@ -29,7 +29,7 @@ provenance ambiguous between runs of different sizes.
 - No DB mutation beyond build/test artifacts
 - No PACS drains
 - No touching `terrafusion_dev_clean`
-- Credential `TfVerify2026!Secure` stays in gitignored local settings; never committed
+- Credential `<local-verification-password>` stays in gitignored local settings; never committed. Local verification credentials are environment/operator-provided and must not be committed literally.
 - No literal passwords in any evidence doc
 - All work in worktree `tf-geom-002` — no mutation to shared `main` checkout
 
@@ -184,8 +184,54 @@ var gisD1 = await gisRawSvc.LandParcelGeomsAsync(
 
 ```
 Build succeeded.
-Passed!  - Failed: 0, Passed: 9, Skipped: 0, Total: 9, Duration: 71 ms
+Passed!  - Failed: 0, Passed: 18, Skipped: 0, Total: 18, Duration: 2 s
 ```
+
+Includes original 9 URL/guard/geomTopN tests plus 9 new blocker-patch tests (see below).
+
+---
+
+## Blocker Patch (Codex Review Round 1)
+
+### Credential redaction
+Literal credential removed from this doc. Replaced with `<local-verification-password>`.
+Local verification credentials are environment/operator-provided and must not be committed literally.
+
+### CountyId mismatch guard (geometry lane only)
+
+After `ResolveOrCreateBentonCountyAsync`, the geometry lane now checks:
+
+```csharp
+if (bentonCountyId != KnownBentonCountyId)
+{
+    return StatusCode(409, new
+    {
+        error = $"Benton CountyId mismatch: ArcGIS config requires {KnownBentonCountyId}, " +
+                $"but the existing county row has Id={bentonCountyId}. " +
+                "Geometry drain refused before ArcGIS fetch.",
+        requiredCountyId = KnownBentonCountyId,
+        actualCountyId = bentonCountyId,
+    });
+}
+```
+
+This prevents a stale wrong-GUID Benton row (e.g. from a prior failed seeder run) from silently
+causing a `GetForCounty()` miss mid-drain. The drain refuses with an explicit 409 before any
+ArcGIS network call.
+
+### New focused tests (GeomSliceControlV2Tests.cs — 9 tests)
+
+| Test | Behavior verified |
+|------|-------------------|
+| `DrainGeometry_NullRequest_Returns400` | Real controller action: null request → BadRequest |
+| `DrainGeometry_TopNNull_FullCorpusFalse_Returns400` | Real controller action: guard fires → BadRequest |
+| `DrainGeometry_TopNProvided_PassesGuard_DoesNotReturn400` | TopN=100 clears guard |
+| `SourceQueryDescriptor_TopN100_DiffersFrom_TopN500` | TopN=100 and TopN=500 produce distinct descriptors and hashes |
+| `SourceQueryDescriptor_FullCorpus_DiffersFrom_BoundedTopN100` | FullCorpus=true and TopN=100 produce distinct descriptors and hashes |
+| `SourceQueryHash_TopN100_ContainsTopNString` | Descriptor contains `topN=100` and `orderByFields=OBJECTID+ASC` |
+| `SourceQueryHash_FullCorpus_ContainsFullCorpusString` | Descriptor contains `fullCorpus=true`, not `topN=` |
+| `DrainGeometry_MismatchedBentonCountyId_Returns409` | Wrong-GUID Benton row → 409 before ArcGIS fetch |
+| `DrainGeometry_MismatchedBentonCountyId_NeverCallsLandParcelGeoms` | Mocked `LandParcelGeomsAsync` never called on mismatch |
 
 ---
 
