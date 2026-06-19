@@ -138,7 +138,7 @@ All SCALE-002 evidence documents must follow these rules (carry-forward from SCA
 
 | Rule | Requirement |
 |---|---|
-| No literal passwords | All shell examples use `PGPASSWORD=<dev-postgres-password>`. Never `devpassword123` or any literal value. |
+| No literal passwords | All shell examples use `PGPASSWORD=<dev-postgres-password>`. Never embed a literal password value. |
 | `promotion_gate_result` delta required | Every evidence doc includes pre/post/delta for `sync_bridge.promotion_gate_result`. |
 | `source_xref` delta required | Every evidence doc includes pre/post/delta for `sync_bridge.source_xref`, broken down by entity type where relevant. |
 | Parcel stub accounting required (sales) | Sales evidence must account for `tf_parcel` growth beyond parcel TopN. Source_xref entity breakdown (parcel vs sale vs other) must be shown. |
