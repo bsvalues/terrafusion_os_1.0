@@ -237,7 +237,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         public FakeArcGisClient(IEnumerable<ArcGisParcelFeature> features)
             => _features = features.ToList();
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
-            Guid countyId, CancellationToken cancellationToken = default)
+            Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromResult(_features);
     }
 
@@ -246,7 +246,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         private readonly Exception _ex;
         public FailingArcGisClient(Exception ex) => _ex = ex;
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
-            Guid countyId, CancellationToken cancellationToken = default)
+            Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromException<IReadOnlyList<ArcGisParcelFeature>>(_ex);
     }
 }

@@ -33,6 +33,7 @@ public interface IArcGisFeatureServiceClient
     /// </exception>
     Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
         Guid countyId,
+        int? topN,
         CancellationToken cancellationToken = default);
 }
 

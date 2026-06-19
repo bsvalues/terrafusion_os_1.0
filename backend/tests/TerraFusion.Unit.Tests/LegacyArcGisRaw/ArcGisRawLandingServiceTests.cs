@@ -91,7 +91,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 2, apn: "100-002"),
             Feature(countyId, 3, apn: "100-003"));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         result.Status.Should().Be("COMPLETED");
         result.FeaturesConsidered.Should().Be(3);
@@ -118,7 +118,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
         var countyId = Guid.NewGuid();
         var client = new FakeClient(Feature(countyId, 1));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         var batch = await _db.SyncBridgeLoadBatches.SingleAsync();
         batch.LoadBatchId.Should().Be(result.LoadBatchId);
@@ -142,7 +142,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             areaSqFt: 12345.67);
         var client = new FakeClient(feature);
 
-        await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         var landed = await _db.LegacyArcGisRawParcelGeoms.SingleAsync();
         landed.ArcGisObjectId.Should().Be(42);
@@ -164,7 +164,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
         var countyId = Guid.NewGuid();
         var client = new FakeClient(Feature(countyId, 1, apn: null));
 
-        await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         var landed = await _db.LegacyArcGisRawParcelGeoms.SingleAsync();
         landed.ArcGisApn.Should().BeNull();
@@ -182,7 +182,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 1, apn: "duplicate-of-1"),
             Feature(countyId, 2));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         result.Status.Should().Be("COMPLETED");
         result.FeaturesConsidered.Should().Be(3);
@@ -209,7 +209,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(benton, 1, apn: "benton-1"),
             Feature(franklin, 1, apn: "franklin-1"));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(benton, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(benton, "d1-test", topN: null);
 
         result.DuplicateObjectIds.Should().Be(0,
             "(benton,1) and (franklin,1) are distinct natural keys");
@@ -225,7 +225,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
         var countyId = Guid.NewGuid();
         var client = new FakeClient(/* no features */);
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         result.Status.Should().Be("COMPLETED");
         result.FeaturesConsidered.Should().Be(0);
@@ -255,7 +255,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 1, areaSqFt: 1000.0),
             Feature(countyId, 2, areaSqFt: 2000.0));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         var gates = await _db.SyncBridgePromotionGateResults
             .Where(g => g.LoadBatchId == result.LoadBatchId)
@@ -277,7 +277,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 2, areaSqFt: 2500.25),
             Feature(countyId, 3, areaSqFt: 1000.0));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         result.AreaSqFtSum.Should().BeApproximately(5000.75, 0.01);
 
@@ -297,7 +297,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 1),
             Feature(countyId, 2));
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         var gate = await _db.SyncBridgePromotionGateResults
             .SingleAsync(g => g.GateName == "arcgis-raw-provenance-coverage");
@@ -312,7 +312,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
         var countyId = Guid.NewGuid();
         var client = new FakeClient(throwOnFetch: true);
 
-        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test");
+        var result = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-test", topN: null);
 
         result.Status.Should().Be("FAILED");
         result.FeaturesConsidered.Should().Be(0);
@@ -336,8 +336,8 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             Feature(countyId, 1, apn: "100-001"),
             Feature(countyId, 2, apn: "100-002"));
 
-        var run1 = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-run1");
-        var run2 = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-run2");
+        var run1 = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-run1", topN: null);
+        var run2 = await BuildService(client).LandParcelGeomsAsync(countyId, "d1-run2", topN: null);
 
         run1.LoadBatchId.Should().NotBe(run2.LoadBatchId,
             "every run gets a fresh batch id");
@@ -384,6 +384,7 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
 
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
             Guid countyId,
+            int? topN,
             CancellationToken cancellationToken = default)
         {
             if (_throwOnFetch)

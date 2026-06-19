@@ -58,13 +58,15 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
     public async Task<ArcGisRawLandingResult> LandParcelGeomsAsync(
         Guid countyId,
         string operatorName,
+        int? topN,
         CancellationToken cancellationToken = default)
     {
-        // Stable hash of the "query" we're about to issue. The G1-C
-        // client embeds the FeatureService URL + standard query
-        // string; we capture that as the SourceQueryHash input so
-        // re-runs against the same county produce identical hashes.
-        var queryDescriptor = $"county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true";
+        // Stable hash encodes the exact query parameters so TopN=100 and TopN=500
+        // (or full-corpus) produce distinct hashes, enabling provenance traceability.
+        var topNPart = topN.HasValue
+            ? $" topN={topN.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)} orderByFields=OBJECTID+ASC"
+            : " fullCorpus=true";
+        var queryDescriptor = $"county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true{topNPart}";
         var queryHash = ComputeStableHash(queryDescriptor);
 
         var batch = new LoadBatch
@@ -82,7 +84,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
 
         try
         {
-            var features = await _client.FetchParcelsAsync(countyId, cancellationToken)
+            var features = await _client.FetchParcelsAsync(countyId, topN, cancellationToken)
                 .ConfigureAwait(false);
 
             var considered = features.Count;

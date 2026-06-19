@@ -1526,7 +1526,21 @@ public class DoctrineDrainController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         const string LaneName = "geometry";
-        var (operatorName, _, _, _) = NormalizeRequest(request, LaneName);
+        var (operatorName, _, fullCorpus, topN) = NormalizeRequest(request, LaneName);
+
+        // Full-corpus guard: operator must explicitly opt in to FullCorpus=true.
+        // Null TopN + FullCorpus=false would silently pull ~80k features.
+        if (topN is null && !fullCorpus)
+        {
+            return BadRequest(new
+            {
+                error = "Geometry drain requires either TopN (bounded slice) or FullCorpus=true (full county). " +
+                        "Refusing to run without an explicit slice or full-corpus authorization.",
+            });
+        }
+
+        // null geomTopN → no resultRecordCount (full-corpus ArcGIS pull).
+        var geomTopN = fullCorpus ? (int?)null : topN;
         var startedAt = DateTime.UtcNow;
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
         // SYNC-COMPLETE-2-V2.
@@ -1544,6 +1558,24 @@ public class DoctrineDrainController : ControllerBase
         {
             var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
 
+            // Geometry lane safety: ArcGIS config is keyed by KnownBentonCountyId.
+            // If the DB already has a Benton row under a different GUID (e.g. from a
+            // prior failed seeder run), silently using that GUID would produce a
+            // GetForCounty() miss and a confusing ArcGIS config error mid-drain.
+            // Refuse explicitly before any network call so the operator can resolve
+            // the county identity conflict first.
+            if (bentonCountyId != KnownBentonCountyId)
+            {
+                return StatusCode(409, new
+                {
+                    error = $"Benton CountyId mismatch: ArcGIS config requires {KnownBentonCountyId}, " +
+                            $"but the existing county row has Id={bentonCountyId}. " +
+                            "Geometry drain refused before ArcGIS fetch.",
+                    requiredCountyId = KnownBentonCountyId,
+                    actualCountyId = bentonCountyId,
+                });
+            }
+
             // Stage 1: ArcGis-D1.
             int d1FeaturesLanded = 0;
             if (resume.ShouldSkip("ArcGis-D1"))
@@ -1553,7 +1585,7 @@ public class DoctrineDrainController : ControllerBase
             else
             {
                 _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
-                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, geomTopN, cancellationToken);
                 batchIds.Add(d1.LoadBatchId);
                 if (!IsCompleted(d1.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
@@ -1649,6 +1681,12 @@ public class DoctrineDrainController : ControllerBase
         return (operatorName, workingYear, fullCorpus, topN);
     }
 
+    // Anchor GUID matches appsettings.Development.json ArcGisFeatureServices.Counties key
+    // and DatabaseSeeder.BentonCountyId. If ResolveOrCreate falls through to creation,
+    // using this ID ensures GetForCounty(bentonCountyId) always resolves the ArcGIS config.
+    private static readonly Guid KnownBentonCountyId =
+        Guid.Parse("19190019-1919-1919-1919-191919191919");
+
     /// <summary>
     /// Resolve Benton (WA) county id by FIPS, then by Name+State, then
     /// create. Mirrors CanonicalDebugController's implementation.
@@ -1670,6 +1708,7 @@ public class DoctrineDrainController : ControllerBase
 
         var county = new County
         {
+            Id = KnownBentonCountyId,
             Name = "Benton",
             State = "WA",
             FipsCode = "53005",

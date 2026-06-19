@@ -57,6 +57,7 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
 
     public async Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
         Guid countyId,
+        int? topN,
         CancellationToken cancellationToken = default)
     {
         var county = _options.Value.GetForCounty(countyId)
@@ -69,7 +70,7 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
                 $"County {countyId} has empty ParcelFeatureServiceUrl.");
         }
 
-        var queryUrl = BuildQueryUrl(county);
+        var queryUrl = BuildQueryUrl(county, topN);
         using var http = _httpClientFactory.CreateClient(HttpClientName);
         http.Timeout = TimeSpan.FromSeconds(county.RequestTimeoutSeconds);
 
@@ -121,12 +122,15 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
         return results;
     }
 
-    private static string BuildQueryUrl(CountyArcGisOptions county)
+    private static string BuildQueryUrl(CountyArcGisOptions county, int? topN = null)
     {
         var separator = county.ParcelFeatureServiceUrl.EndsWith('/') ? "query" : "/query";
         var sr = county.OutSpatialReferenceEpsg.ToString(CultureInfo.InvariantCulture);
+        var limit = topN.HasValue
+            ? $"&resultRecordCount={topN.Value.ToString(CultureInfo.InvariantCulture)}&orderByFields=OBJECTID+ASC"
+            : string.Empty;
         return $"{county.ParcelFeatureServiceUrl}{separator}" +
-               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true";
+               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true{limit}";
     }
 
     private ArcGisParcelFeature? TryProject(
