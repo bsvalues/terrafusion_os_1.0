@@ -4,6 +4,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using ArcGisFeatureServiceOptions = TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions;
 using TerraFusion.API.Monitoring;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Sync.Corpus;
@@ -265,7 +267,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // Stage 1: Owner-Seed-S1.
@@ -432,7 +435,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var ownerTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // OWNER-CURSOR (2026-06-05): keyset-paginate by prop_id so each bounded
@@ -777,7 +781,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             // PERF (2026-05-28): suppress per-row audit logging for the ENTIRE bulk
             // improvement drain. Landing + promotion + projection share this scoped
             // DbContext, so one toggle covers all stages. Audit-per-row (one AuditLog
@@ -1206,7 +1211,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // ADVANCEMENT CURSOR (2026-06-03, land lane): bounded land drains keyset-
@@ -1528,7 +1534,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var src = new SqlServerPacsExemptionSource(pacsCs!, taxYear);
             _logger.LogInformation("[Drain:exemption] year={Yr} (active-supplement)", taxYear);
 
@@ -1604,7 +1611,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var src = new SqlServerPacsJurisdictionSource(pacsCs!);
             _logger.LogInformation("[Drain:jurisdiction] year={Yr} (active-supplement)", taxYear);
 
@@ -1676,7 +1684,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var src = new SqlServerPacsBillSource(pacsCs!);
             _logger.LogInformation("[Drain:revenue] year={Yr} (active L bills)", taxYear);
 
@@ -1738,7 +1747,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var src = new SqlServerPacsAssessmentBillSource(pacsCs!);
             _logger.LogInformation("[Drain:assessment-bill] year={Yr} (active A bills)", taxYear);
 
@@ -1816,7 +1826,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var saleTopN = fullCorpus ? (int?)null : (topN ?? 500);
 
             // SALES-CURSOR (2026-06-03): bounded sales drains keyset-paginate by
@@ -2054,6 +2065,7 @@ public class DoctrineDrainController : ControllerBase
         [FromServices] IArcGisRawLandingService rawLandingSvc,
         [FromServices] IArcGisTruthPromotionService truthPromotionSvc,
         [FromServices] IArcGisCanonicalProjector canonicalProjector,
+        [FromServices] IOptions<ArcGisFeatureServiceOptions> arcGisOptions,
         [FromBody] DoctrineDrainRequest? request,
         CancellationToken cancellationToken = default)
     {
@@ -2074,7 +2086,19 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
+
+            if (string.IsNullOrEmpty(bentonCounty.FipsCode))
+                return BadRequest(new { error = "County has no FipsCode — cannot resolve ArcGIS config." });
+
+            if (!arcGisOptions.Value.Counties.TryGetValue(bentonCounty.FipsCode, out _))
+                return StatusCode(404, new
+                {
+                    error = $"No ArcGIS config entry for FIPS={bentonCounty.FipsCode}. " +
+                            "Add an entry to ArcGisFeatureServices:Counties in appsettings.",
+                    fipsCode = bentonCounty.FipsCode
+                });
 
             // Stage 1: ArcGis-D1.
             int d1FeaturesLanded = 0;
@@ -2084,8 +2108,9 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
-                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid} fips={Fips}",
+                    bentonCountyId, bentonCounty.FipsCode);
+                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCounty.FipsCode, bentonCountyId, operatorName, cancellationToken);
                 batchIds.Add(d1.LoadBatchId);
                 if (!IsCompleted(d1.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
@@ -2182,15 +2207,17 @@ public class DoctrineDrainController : ControllerBase
     }
 
     /// <summary>
-    /// Resolve Benton (WA) county id by FIPS, then by Name+State, then
-    /// create. Mirrors CanonicalDebugController's implementation.
+    /// Resolve Benton (WA) county by FIPS, then by Name+State, then
+    /// create. Returns the full entity so callers can read FipsCode
+    /// for stable ArcGIS config resolution.
+    /// Mirrors CanonicalDebugController's implementation.
     /// </summary>
-    private async Task<Guid> ResolveOrCreateBentonCountyAsync(CancellationToken cancellationToken)
+    private async Task<County> ResolveOrCreateBentonCountyAsync(CancellationToken cancellationToken)
     {
         var byFips = await _db.Counties
             .FirstOrDefaultAsync(c => c.FipsCode == "53005", cancellationToken)
             .ConfigureAwait(false);
-        if (byFips is not null) return byFips.Id;
+        if (byFips is not null) return byFips;
 
         var byName = await _db.Counties
             .FirstOrDefaultAsync(c =>
@@ -2198,7 +2225,7 @@ public class DoctrineDrainController : ControllerBase
                 EF.Functions.ILike(c.State, "WA"),
                 cancellationToken)
             .ConfigureAwait(false);
-        if (byName is not null) return byName.Id;
+        if (byName is not null) return byName;
 
         var county = new County
         {
@@ -2211,7 +2238,7 @@ public class DoctrineDrainController : ControllerBase
         _db.Counties.Add(county);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         _logger.LogInformation("[DoctrineDrain] Created Benton county row id={Id}", county.Id);
-        return county.Id;
+        return county;
     }
 
     private static bool IsCompleted(string? status) =>

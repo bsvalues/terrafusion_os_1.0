@@ -34,16 +34,16 @@ public sealed class ArcGisFeatureServiceOptions
 
     /// <summary>
     /// Type-safe lookup: returns the <see cref="CountyArcGisOptions"/>
-    /// for the given <paramref name="countyId"/>, or <c>null</c> if
-    /// no configuration was bound for that county. Performs a
-    /// case-insensitive Guid-string match.
+    /// for the given <paramref name="fipsCode"/>, or <c>null</c> if
+    /// no configuration was bound for that FIPS code. Performs a
+    /// case-insensitive string match so appsettings key casing does
+    /// not matter.
     /// </summary>
-    public CountyArcGisOptions? GetForCounty(Guid countyId)
+    public CountyArcGisOptions? GetForCounty(string fipsCode)
     {
-        var canonical = countyId.ToString();
         foreach (var kvp in Counties)
         {
-            if (string.Equals(kvp.Key, canonical, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(kvp.Key, fipsCode, StringComparison.OrdinalIgnoreCase))
             {
                 return kvp.Value;
             }
@@ -95,4 +95,12 @@ public sealed class CountyArcGisOptions
     /// no token is required.
     /// </summary>
     public string? BearerToken { get; set; }
+
+    /// <summary>
+    /// TerraFusion DB county row GUID for this FIPS entry. Required
+    /// by the nightly sync hosted service to stamp geometry rows;
+    /// optional for the raw landing path (which uses FIPS only for
+    /// config resolution and accepts the countyId as a caller argument).
+    /// </summary>
+    public Guid? CountyId { get; set; }
 }

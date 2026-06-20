@@ -21,17 +21,22 @@ public interface IArcGisFeatureServiceClient
 {
     /// <summary>
     /// Fetches every active parcel polygon from the configured
-    /// feature service for <paramref name="countyId"/>.
+    /// feature service for the county identified by
+    /// <paramref name="fipsCode"/>. The county database Id
+    /// (<paramref name="countyId"/>) is used only to tag landed rows;
+    /// config resolution uses <paramref name="fipsCode"/> so that
+    /// volatile DB Guids do not affect ArcGIS binding.
     /// </summary>
     /// <exception cref="ArcGisFeatureServiceConfigurationException">
     /// Thrown when no feature-service configuration is bound for
-    /// <paramref name="countyId"/>, or when the bound URL is empty.
+    /// <paramref name="fipsCode"/>, or when the bound URL is empty.
     /// </exception>
     /// <exception cref="ArcGisFeatureServiceTransportException">
     /// Thrown on HTTP transport failure (timeout, non-success status,
     /// invalid JSON).
     /// </exception>
     Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
+        string fipsCode,
         Guid countyId,
         CancellationToken cancellationToken = default);
 }

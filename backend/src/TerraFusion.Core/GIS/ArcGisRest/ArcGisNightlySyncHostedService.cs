@@ -111,20 +111,26 @@ public sealed class ArcGisNightlySyncHostedService : BackgroundService
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!Guid.TryParse(key, out var countyId))
+            // Config keys are now FIPS codes (e.g. "53005"). The county DB GUID
+            // is stored alongside the service config as CountyArcGisOptions.CountyId.
+            if (!arcgis.Counties.TryGetValue(key, out var countyOpts) ||
+                countyOpts.CountyId is null)
             {
                 _logger.LogWarning(
-                    "ArcGIS nightly sync: skipping malformed county key '{Key}' (not a GUID).",
+                    "ArcGIS nightly sync: skipping FIPS '{Key}' — no CountyId configured in ArcGisFeatureServices:Counties:{Key}:CountyId.",
                     key);
                 continue;
             }
+
+            var fipsCode = key;
+            var countyId = countyOpts.CountyId.Value;
 
             try
             {
                 using var scope = _scopeFactory.CreateScope();
                 var sync = scope.ServiceProvider.GetRequiredService<IArcGisSyncService>();
                 var result = await sync
-                    .SyncCountyAsync(countyId, operatorName, cancellationToken)
+                    .SyncCountyAsync(fipsCode, countyId, operatorName, cancellationToken)
                     .ConfigureAwait(false);
 
                 _logger.LogInformation(

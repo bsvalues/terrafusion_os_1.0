@@ -21,12 +21,14 @@ namespace TerraFusion.Core.GIS.ArcGisRest;
 public interface IArcGisSyncService
 {
     /// <summary>
-    /// Runs one full pull-and-persist cycle for <paramref name="countyId"/>:
-    /// fetch every parcel polygon from the configured feature service,
-    /// upsert into <c>gis_tf.tf_parcel_geom</c>, soft-delete absent
-    /// features, write provenance, and close the load batch.
+    /// Runs one full pull-and-persist cycle for the county identified by
+    /// <paramref name="fipsCode"/> (config key) and <paramref name="countyId"/>
+    /// (DB row identity): fetch every parcel polygon from the configured
+    /// feature service, upsert into <c>gis_tf.tf_parcel_geom</c>,
+    /// soft-delete absent features, write provenance, and close the load batch.
     /// </summary>
     Task<ArcGisSyncResult> SyncCountyAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         CancellationToken cancellationToken = default);

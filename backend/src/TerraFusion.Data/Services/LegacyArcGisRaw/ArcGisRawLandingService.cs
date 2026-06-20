@@ -56,6 +56,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
     }
 
     public async Task<ArcGisRawLandingResult> LandParcelGeomsAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         CancellationToken cancellationToken = default)
@@ -64,7 +65,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
         // client embeds the FeatureService URL + standard query
         // string; we capture that as the SourceQueryHash input so
         // re-runs against the same county produce identical hashes.
-        var queryDescriptor = $"county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true";
+        var queryDescriptor = $"county={countyId} fips={fipsCode} f=geojson where=1=1 outSR=4326 returnGeometry=true";
         var queryHash = ComputeStableHash(queryDescriptor);
 
         var batch = new LoadBatch
@@ -82,7 +83,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
 
         try
         {
-            var features = await _client.FetchParcelsAsync(countyId, cancellationToken)
+            var features = await _client.FetchParcelsAsync(fipsCode, countyId, cancellationToken)
                 .ConfigureAwait(false);
 
             var considered = features.Count;

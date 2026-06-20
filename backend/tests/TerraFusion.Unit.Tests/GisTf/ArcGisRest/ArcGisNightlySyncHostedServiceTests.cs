@@ -17,6 +17,9 @@ namespace TerraFusion.Unit.Tests.GisTf.ArcGisRest;
 /// </summary>
 public sealed class ArcGisNightlySyncHostedServiceTests
 {
+    private const string FipsA = "53005";
+    private const string FipsB = "53011";
+    private const string FipsC = "53013";
     private static readonly Guid CountyA = Guid.Parse("19190019-1919-1919-1919-191919191919");
     private static readonly Guid CountyB = Guid.Parse("20200020-2020-2020-2020-202020202020");
     private static readonly Guid CountyC = Guid.Parse("30300030-3030-3030-3030-303030303030");
@@ -71,9 +74,9 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
-            [CountyB.ToString()] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0" },
-            [CountyC.ToString()] = new() { ParcelFeatureServiceUrl = "https://c/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
+            [FipsB] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0", CountyId = CountyB },
+            [FipsC] = new() { ParcelFeatureServiceUrl = "https://c/FeatureServer/0", CountyId = CountyC },
         };
         var (svc, recorder) = Build(counties);
 
@@ -92,7 +95,7 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
         };
         var scheduler = new ArcGisSyncSchedulerOptions
         {
@@ -111,9 +114,9 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
-            [CountyB.ToString()] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0" },
-            [CountyC.ToString()] = new() { ParcelFeatureServiceUrl = "https://c/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
+            [FipsB] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0", CountyId = CountyB },
+            [FipsC] = new() { ParcelFeatureServiceUrl = "https://c/FeatureServer/0", CountyId = CountyC },
         };
         var (svc, recorder) = Build(
             counties,
@@ -128,19 +131,21 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     }
 
     [Fact]
-    public async Task RunOneCycle_MalformedCountyKey_IsSkipped_NotCounted()
+    public async Task RunOneCycle_MissingCountyId_IsSkipped_NotCounted()
     {
+        // FIPS entries without CountyId are skipped — the hosted service
+        // cannot resolve which DB row to stamp geometry against.
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
-            ["not-a-guid"] = new() { ParcelFeatureServiceUrl = "https://x/FeatureServer/0" },
-            [CountyB.ToString()] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
+            ["99999"] = new() { ParcelFeatureServiceUrl = "https://x/FeatureServer/0" /* CountyId omitted */ },
+            [FipsB] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0", CountyId = CountyB },
         };
         var (svc, recorder) = Build(counties);
 
         var touched = await svc.RunOneCycleAsync(CancellationToken.None);
 
-        // Two valid GUIDs visited; malformed key skipped (continue).
+        // Two entries have CountyId; the one without is skipped.
         touched.Should().Be(2);
         recorder.Calls.Select(c => c.CountyId).Should().BeEquivalentTo(new[] { CountyA, CountyB });
     }
@@ -150,8 +155,8 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
-            [CountyB.ToString()] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
+            [FipsB] = new() { ParcelFeatureServiceUrl = "https://b/FeatureServer/0", CountyId = CountyB },
         };
         using var cts = new CancellationTokenSource();
         var (svc, recorder) = Build(
@@ -182,7 +187,7 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         var counties = new Dictionary<string, CountyArcGisOptions>
         {
-            [CountyA.ToString()] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0" },
+            [FipsA] = new() { ParcelFeatureServiceUrl = "https://a/FeatureServer/0", CountyId = CountyA },
         };
         var (svc, _) = Build(counties);
 
@@ -212,7 +217,7 @@ public sealed class ArcGisNightlySyncHostedServiceTests
     {
         private readonly Func<Guid, ArcGisSyncResult>? _resultFactory;
         private readonly Func<Guid, Exception>? _throwFactory;
-        public List<(Guid CountyId, string OperatorName)> Calls { get; } = new();
+        public List<(string FipsCode, Guid CountyId, string OperatorName)> Calls { get; } = new();
 
         public RecordingSyncService(
             Func<Guid, ArcGisSyncResult>? resultFactory,
@@ -223,9 +228,12 @@ public sealed class ArcGisNightlySyncHostedServiceTests
         }
 
         public Task<ArcGisSyncResult> SyncCountyAsync(
-            Guid countyId, string operatorName, CancellationToken cancellationToken = default)
+            string fipsCode,
+            Guid countyId,
+            string operatorName,
+            CancellationToken cancellationToken = default)
         {
-            Calls.Add((countyId, operatorName));
+            Calls.Add((fipsCode, countyId, operatorName));
 
             var ex = _throwFactory?.Invoke(countyId);
             if (ex is not null)

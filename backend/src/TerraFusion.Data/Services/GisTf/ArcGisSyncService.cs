@@ -53,6 +53,7 @@ public sealed class ArcGisSyncService : IArcGisSyncService
     }
 
     public async Task<ArcGisSyncResult> SyncCountyAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         CancellationToken cancellationToken = default)
@@ -61,7 +62,7 @@ public sealed class ArcGisSyncService : IArcGisSyncService
         {
             SourceFamily = SourceFamilies.ArcGisRest,
             SourceSystem = "county-arcgis-rest",
-            SourceFileOrDatabase = $"county:{countyId}",
+            SourceFileOrDatabase = $"county:{countyId} fips={fipsCode}",
             SourceQueryHash = string.Empty, // populated below once URL known
             Operator = operatorName,
             Status = "IN_PROGRESS",
@@ -73,7 +74,7 @@ public sealed class ArcGisSyncService : IArcGisSyncService
         try
         {
             var features = await _client
-                .FetchParcelsAsync(countyId, cancellationToken)
+                .FetchParcelsAsync(fipsCode, countyId, cancellationToken)
                 .ConfigureAwait(false);
 
             // Lock in the source query hash from the first feature's

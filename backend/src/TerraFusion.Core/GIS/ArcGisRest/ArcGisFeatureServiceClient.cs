@@ -56,12 +56,13 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
     }
 
     public async Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
+        string fipsCode,
         Guid countyId,
         CancellationToken cancellationToken = default)
     {
-        var county = _options.Value.GetForCounty(countyId)
+        var county = _options.Value.GetForCounty(fipsCode)
             ?? throw new ArcGisFeatureServiceConfigurationException(
-                $"No ArcGIS feature-service configuration bound for county {countyId}.");
+                $"No ArcGIS feature-service configuration bound for FIPS={fipsCode} (county {countyId}).");
 
         if (string.IsNullOrWhiteSpace(county.ParcelFeatureServiceUrl))
         {
