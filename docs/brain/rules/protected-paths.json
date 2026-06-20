@@ -1,0 +1,22 @@
+{
+  "_source": ".github/AGENT_ENTRYPOINT.md (FORBIDDEN SCOPE) + seal-gate-fast.yml governance-fast job",
+  "_note": "Local mirror of paths SEAL already blocks in CI. The Brain pre-flights these BEFORE commit so bypass is caught earlier, not at PR time. SEAL remains the authority.",
+  "_scope_note": "Brain pre-flight = AGENT_ENTRYPOINT explicit FORBIDDEN scope (no false positives on config files). SEAL governance-fast applies the STRICTER 'any frontend/ except allowlist' rule in CI and remains the authority.",
+  "forbidden": [
+    { "glob": "**/ARCHIVE/**", "reason": "archived; never modify" },
+    { "glob": "specialized/**", "reason": "AGENTS.md forbidden path" },
+    { "glob": "applications/**", "reason": "AGENTS.md forbidden path" },
+    {
+      "glob": "os-platform/ai-systems/ai-systems/ai-swarm/**",
+      "reason": "production AI swarm — frozen"
+    },
+    {
+      "glob": "frontend/src/**",
+      "reason": "legacy root (97+ errors) — use frontend/apps/os-shell/**"
+    },
+    {
+      "glob": "frontend/components/**",
+      "reason": "old component tree — use frontend/apps/os-shell/**"
+    }
+  ]
+}
