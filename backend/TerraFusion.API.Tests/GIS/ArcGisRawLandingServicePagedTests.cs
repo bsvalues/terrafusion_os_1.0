@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TerraFusion.Core.Entities.LegacyArcGisRaw;
 using TerraFusion.Core.GIS.ArcGisRest;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.LegacyArcGisRaw;
@@ -201,9 +202,45 @@ public sealed class ArcGisRawLandingServicePagedTests
             svc.LandParcelGeomsPagedAsync(TestFips, TestCountyId, "op", pageSize: -1, topN: null));
     }
 
+    // ── GEOM-011B-H1: ChangeTracker does not accumulate geometry across pages ──
+
+    [Fact]
+    public async Task LandParcelGeomsPagedAsync_DoesNotAccumulateTrackedGeometryEntitiesAcrossPages()
+    {
+        var (svc, client, db) = BuildWithDb();
+
+        // 3 full pages of 1000 → 3000 landed across multiple page saves.
+        client.Setup(c => c.FetchCountAsync(TestFips, It.IsAny<CancellationToken>()))
+              .ReturnsAsync(3000);
+        client.SetupSequence(c => c.FetchPageAsync(
+                TestFips, TestCountyId, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((MakeFeatures(1, 1000), false))
+            .ReturnsAsync((MakeFeatures(1001, 1000), false))
+            .ReturnsAsync((MakeFeatures(2001, 1000), false))
+            .ReturnsAsync((Array.Empty<ArcGisParcelFeature>(), false));
+
+        var result = await svc.LandParcelGeomsPagedAsync(
+            TestFips, TestCountyId, "op", pageSize: 1000, topN: null);
+
+        Assert.Equal("COMPLETED", result.Status);
+        Assert.Equal(3000, result.FeaturesLanded);
+
+        // Hardening contract: landed geometry entities are detached after each page save,
+        // so the ChangeTracker retains none of the 3000 rows. Without the fix this would
+        // equal 3000 (full accumulation across the run).
+        var trackedGeoms = db.ChangeTracker.Entries<LegacyArcGisRawParcelGeom>().Count();
+        Assert.Equal(0, trackedGeoms);
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────
 
     private static (ArcGisRawLandingService svc, Mock<IArcGisFeatureServiceClient> client) Build()
+    {
+        var (svc, client, _) = BuildWithDb();
+        return (svc, client);
+    }
+
+    private static (ArcGisRawLandingService svc, Mock<IArcGisFeatureServiceClient> client, TerraFusionDbContext db) BuildWithDb()
     {
         var dbName = Guid.NewGuid().ToString();
         var configMock = new Mock<IConfiguration>();
@@ -217,7 +254,7 @@ public sealed class ArcGisRawLandingServicePagedTests
         var client = new Mock<IArcGisFeatureServiceClient>();
         var svc = new ArcGisRawLandingService(db, client.Object, NullLogger<ArcGisRawLandingService>.Instance);
 
-        return (svc, client);
+        return (svc, client, db);
     }
 
     private static IReadOnlyList<ArcGisParcelFeature> MakeFeatures(long startObjectId, int count)
