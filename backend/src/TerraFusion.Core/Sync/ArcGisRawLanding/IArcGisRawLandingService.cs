@@ -32,6 +32,7 @@ namespace TerraFusion.Core.Sync.ArcGisRawLanding;
 public interface IArcGisRawLandingService
 {
     Task<ArcGisRawLandingResult> LandParcelGeomsAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         int? topN,

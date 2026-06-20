@@ -1897,7 +1897,7 @@ public class CanonicalDebugController : ControllerBase
             // ── A. D1 raw landing (full-county pull from ArcGIS REST). ──
             _logger.LogInformation("[GisPop1] A. Raw ArcGIS landing for countyId={Cid}", bentonCountyId);
             var d1 = await rawLandingSvc.LandParcelGeomsAsync(
-                bentonCountyId, operatorName, topN: null, cancellationToken);
+                "53005", bentonCountyId, operatorName, topN: null, cancellationToken);
             if (!string.Equals(d1.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
                 return StatusCode(500, new { stage = "ArcGis-D1", error = d1.ErrorSummary, d1 });
 
@@ -2170,7 +2170,7 @@ public class CanonicalDebugController : ControllerBase
             object? gisLane = null;
             if (!skipGeometry)
             {
-                var gisD1 = await gisRawSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, topN: null, cancellationToken);
+                var gisD1 = await gisRawSvc.LandParcelGeomsAsync("53005", bentonCountyId, operatorName, topN: null, cancellationToken);
                 var gisD2 = await gisTruthSvc.PromoteCountyAsync(bentonCountyId, operatorName, cancellationToken);
                 var gisD3 = await gisCanonicalProjector.ProjectCountyAsync(bentonCountyId, operatorName, cancellationToken);
                 gisLane = new { lane = "Geometry", gisD1.FeaturesLanded, gisD3.RowsProjected, gisD3.ApnCrosswalkResolved, gisD3.ApnCrosswalkUnresolved };

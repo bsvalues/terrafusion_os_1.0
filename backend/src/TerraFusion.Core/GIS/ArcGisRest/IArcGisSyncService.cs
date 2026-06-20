@@ -27,6 +27,7 @@ public interface IArcGisSyncService
     /// features, write provenance, and close the load batch.
     /// </summary>
     Task<ArcGisSyncResult> SyncCountyAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         CancellationToken cancellationToken = default);

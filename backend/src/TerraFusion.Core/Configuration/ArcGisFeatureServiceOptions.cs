@@ -23,27 +23,26 @@ public sealed class ArcGisFeatureServiceOptions
     public const string SectionName = "ArcGisFeatureServices";
 
     /// <summary>
-    /// Per-county feature service definitions, keyed by the canonical
-    /// Guid string form of the CountyId. String keys (rather than
-    /// <see cref="Guid"/>) are required because
-    /// <c>Microsoft.Extensions.Configuration</c> only binds
-    /// dictionaries with string keys natively.
+    /// Per-county feature service definitions, keyed by FIPS code (e.g. "53005"
+    /// for Benton County WA). FIPS codes are immutable across DB provisioning;
+    /// County.Id GUIDs are not. String keys are required because
+    /// <c>Microsoft.Extensions.Configuration</c> only binds dictionaries with
+    /// string keys natively.
     /// </summary>
     public IDictionary<string, CountyArcGisOptions> Counties { get; set; }
         = new Dictionary<string, CountyArcGisOptions>();
 
     /// <summary>
-    /// Type-safe lookup: returns the <see cref="CountyArcGisOptions"/>
-    /// for the given <paramref name="countyId"/>, or <c>null</c> if
-    /// no configuration was bound for that county. Performs a
-    /// case-insensitive Guid-string match.
+    /// GEOM-005: type-safe lookup by FIPS code. Returns the
+    /// <see cref="CountyArcGisOptions"/> for the given
+    /// <paramref name="fipsCode"/>, or <c>null</c> if no configuration
+    /// was bound for that FIPS code. Case-insensitive.
     /// </summary>
-    public CountyArcGisOptions? GetForCounty(Guid countyId)
+    public CountyArcGisOptions? GetForCounty(string fipsCode)
     {
-        var canonical = countyId.ToString();
         foreach (var kvp in Counties)
         {
-            if (string.Equals(kvp.Key, canonical, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(kvp.Key, fipsCode, StringComparison.OrdinalIgnoreCase))
             {
                 return kvp.Value;
             }
@@ -95,4 +94,12 @@ public sealed class CountyArcGisOptions
     /// no token is required.
     /// </summary>
     public string? BearerToken { get; set; }
+
+    /// <summary>
+    /// GEOM-005: optional DB identity of this county. Used by the nightly
+    /// sync hosted service to resolve which row to stamp geometry against
+    /// when iterating FIPS-keyed config entries. Not required by the drain
+    /// controller (it resolves CountyId from the DB via FipsCode).
+    /// </summary>
+    public Guid? CountyId { get; set; }
 }

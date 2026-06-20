@@ -56,6 +56,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
     }
 
     public async Task<ArcGisRawLandingResult> LandParcelGeomsAsync(
+        string fipsCode,
         Guid countyId,
         string operatorName,
         int? topN,
@@ -66,14 +67,14 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
         var topNPart = topN.HasValue
             ? $" topN={topN.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)} orderByFields=OBJECTID+ASC"
             : " fullCorpus=true";
-        var queryDescriptor = $"county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true{topNPart}";
+        var queryDescriptor = $"fips={fipsCode} county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true{topNPart}";
         var queryHash = ComputeStableHash(queryDescriptor);
 
         var batch = new LoadBatch
         {
             SourceFamily = SourceFamilies.ArcGisRest,
             SourceSystem = "arcgis-feature-service",
-            SourceFileOrDatabase = $"county={countyId}",
+            SourceFileOrDatabase = $"county:{countyId} fips={fipsCode}",
             SourceQueryHash = queryHash,
             Operator = operatorName,
             Status = "IN_PROGRESS",
@@ -84,7 +85,7 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
 
         try
         {
-            var features = await _client.FetchParcelsAsync(countyId, topN, cancellationToken)
+            var features = await _client.FetchParcelsAsync(fipsCode, countyId, topN, cancellationToken)
                 .ConfigureAwait(false);
 
             var considered = features.Count;
