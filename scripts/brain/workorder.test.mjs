@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { writeFileSync, rmSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { classify } from './canon.mjs';
 import {
   derivePolicy,
@@ -8,6 +11,7 @@ import {
   reviewAgainstPolicy,
   slugify,
   globToRe,
+  loadWorkOrderPolicy,
 } from './workorder.mjs';
 
 const c = classify('fix dais appeal persistence');
@@ -58,4 +62,28 @@ test('slugify + globToRe basics', () => {
   assert.equal(slugify('Wire X into Y!'), 'wire-x-into-y');
   assert.ok(globToRe('frontend/src/**').test('frontend/src/legacy/A.tsx'));
   assert.ok(!globToRe('frontend/src/**').test('frontend/apps/os-shell/A.tsx'));
+});
+
+test('loadWorkOrderPolicy: matches exact WO id and not longer numeric prefixes', () => {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const dir = path.join(repoRoot, 'docs', 'brain', 'workorders', 'active');
+  const exact = path.join(dir, 'WO-8811-scope.md');
+  const longer = path.join(dir, 'WO-88110-prefix-collision.md');
+  try {
+    writeFileSync(
+      exact,
+      '# WO-8811\n\n```json\n{"id":"WO-8811","allowed_files":["exact"],"forbidden_patterns":[]}\n```\n',
+      'utf8'
+    );
+    writeFileSync(
+      longer,
+      '# WO-88110\n\n```json\n{"id":"WO-88110","allowed_files":["longer"],"forbidden_patterns":[]}\n```\n',
+      'utf8'
+    );
+    const found = loadWorkOrderPolicy(repoRoot, 'WO-8811');
+    assert.deepEqual(found?.allowed_files, ['exact']);
+  } finally {
+    rmSync(exact, { force: true });
+    rmSync(longer, { force: true });
+  }
 });

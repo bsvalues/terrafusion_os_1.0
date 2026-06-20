@@ -10,7 +10,7 @@
  * (R2+ requires a work order). Exit 0 = valid, 1 = invalid.
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { REPO_ROOT } from './canon.mjs';
 
 const SCHEMA = JSON.parse(
@@ -23,7 +23,8 @@ function validateAgainstSchema(p) {
     if (
       p[field] === undefined ||
       p[field] === null ||
-      (Array.isArray(p[field]) && p[field].length === 0)
+      (Array.isArray(p[field]) && p[field].length === 0) ||
+      (typeof p[field] === 'string' && p[field].trim() === '')
     ) {
       errs.push(`missing/empty required field: ${field}`);
     }
@@ -35,6 +36,8 @@ function validateAgainstSchema(p) {
       errs.push(`${field}="${v}" not in [${def.enum.join('|')}]`);
     if (def.pattern && typeof v === 'string' && !new RegExp(def.pattern).test(v))
       errs.push(`${field}="${v}" fails pattern ${def.pattern}`);
+    if (def.minLength && typeof v === 'string' && v.trim().length < def.minLength)
+      errs.push(`${field} needs >= ${def.minLength} chars`);
     if (def.minItems && Array.isArray(v) && v.length < def.minItems)
       errs.push(`${field} needs >= ${def.minItems} items`);
   }
@@ -44,8 +47,14 @@ function validateAgainstSchema(p) {
 function crossCheck(p) {
   const errs = [];
   // work order must exist
-  if (p.work_order && !existsSync(join(REPO_ROOT, p.work_order))) {
-    errs.push(`work_order not found: ${p.work_order}`);
+  if (p.work_order) {
+    const workOrderAbs = resolve(REPO_ROOT, p.work_order);
+    const workOrderRoot = resolve(REPO_ROOT, 'docs', 'brain', 'workorders') + sep;
+    if (!workOrderAbs.startsWith(workOrderRoot)) {
+      errs.push(`work_order must be under docs/brain/workorders/: ${p.work_order}`);
+    } else if (!existsSync(workOrderAbs)) {
+      errs.push(`work_order not found: ${p.work_order}`);
+    }
   }
   // risk routing: R2+ requires a real work order reference
   if (['R2', 'R3', 'R4', 'R5'].includes(p.risk) && !p.work_order) {

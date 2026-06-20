@@ -149,7 +149,9 @@ export function parsePolicy(mdText) {
 export function loadWorkOrderPolicy(repoRoot, woId) {
   const dir = join(repoRoot, ...WO_DIR);
   if (!existsSync(dir)) return null;
-  const file = readdirSync(dir).find(f => f.startsWith(woId) || f.includes(`${woId}-`));
+  const quoted = woId.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const re = new RegExp(`^${quoted}(?:-|\.|$)`, 'i');
+  const file = readdirSync(dir).find(f => re.test(f));
   if (!file) return null;
   return parsePolicy(readFileSync(join(dir, file), 'utf8'));
 }

@@ -47,6 +47,30 @@ function stagedFiles() {
   }
 }
 
+function diffFiles() {
+  const seen = new Set();
+  const all = [];
+  const add = items => {
+    for (const item of items) {
+      if (!item || seen.has(item)) continue;
+      seen.add(item);
+      all.push(item);
+    }
+  };
+  for (const args of [
+    ['diff', '--name-only'],
+    ['diff', '--cached', '--name-only'],
+    ['ls-files', '--others', '--exclude-standard'],
+  ]) {
+    try {
+      add(run('git', args).trim().split('\n').filter(Boolean));
+    } catch {
+      // no-op: empty surfaces are expected sometimes
+    }
+  }
+  return all;
+}
+
 /** One-line staged-file warning for status/next (commit-race hardening, observed 2x). */
 function warnStaged() {
   const staged = stagedFiles();
@@ -376,10 +400,7 @@ function cmdReviewDiff(sub) {
       console.log(`❌ ${name}\n   ${out}`);
     }
   }
-  let files = [];
-  try {
-    files = run('git', ['diff', '--name-only']).trim().split('\n').filter(Boolean);
-  } catch {}
+  const files = diffFiles();
   const suites = new Set();
   files.forEach(f => {
     const m = f.toLowerCase().match(/forge|atlas|dais|dossier/);
@@ -501,10 +522,7 @@ function cmdNext() {
 function cmdCommitPlan(sub) {
   const woIdx = sub.indexOf('--workorder');
   const woId = woIdx >= 0 ? sub[woIdx + 1] : null;
-  let files = [];
-  try {
-    files = run('git', ['diff', '--name-only']).trim().split('\n').filter(Boolean);
-  } catch {}
+  const files = diffFiles();
   // also surface untracked files (new Brain files won't show in `git diff`)
   let untracked = [];
   try {
