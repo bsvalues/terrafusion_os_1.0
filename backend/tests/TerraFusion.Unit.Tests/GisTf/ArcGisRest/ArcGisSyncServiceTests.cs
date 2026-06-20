@@ -239,6 +239,11 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
             string fipsCode, Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromResult(_features);
+        public Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+            string fipsCode, Guid countyId, int offset, int pageSize, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
+        public Task<int> FetchCountAsync(string fipsCode, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
     }
 
     private sealed class FailingArcGisClient : IArcGisFeatureServiceClient
@@ -248,5 +253,10 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
             string fipsCode, Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromException<IReadOnlyList<ArcGisParcelFeature>>(_ex);
+        public Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+            string fipsCode, Guid countyId, int offset, int pageSize, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
+        public Task<int> FetchCountAsync(string fipsCode, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
     }
 }
