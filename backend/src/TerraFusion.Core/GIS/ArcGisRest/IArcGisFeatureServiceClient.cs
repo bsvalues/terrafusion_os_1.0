@@ -36,6 +36,25 @@ public interface IArcGisFeatureServiceClient
         Guid countyId,
         int? topN,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// GEOM-011: fetches one page of parcel polygons using resultOffset pagination.
+    /// Returns the features and whether the server signalled exceededTransferLimit.
+    /// </summary>
+    Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+        string fipsCode,
+        Guid countyId,
+        int offset,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// GEOM-011: returns the total feature count from the ArcGIS service
+    /// via returnCountOnly=true. Used as a preflight before paged landing.
+    /// </summary>
+    Task<int> FetchCountAsync(
+        string fipsCode,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

@@ -395,5 +395,12 @@ public sealed class ArcGisRawLandingServiceTests : IDisposable
             }
             return Task.FromResult(_features);
         }
+
+        public Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+            string fipsCode, Guid countyId, int offset, int pageSize, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
+
+        public Task<int> FetchCountAsync(string fipsCode, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
     }
 }
