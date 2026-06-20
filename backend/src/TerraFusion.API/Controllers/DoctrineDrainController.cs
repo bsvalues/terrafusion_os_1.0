@@ -1521,8 +1521,8 @@ public class DoctrineDrainController : ControllerBase
 
     /// <summary>
     /// Drain the geometry lane. ArcGIS REST D1 raw → D2 truth → D3
-    /// canonical (tf_parcel_geom + APN crosswalk). FullCorpus/TopN are
-    /// not used — the ArcGIS service pulls the full county feature set.
+    /// canonical (tf_parcel_geom + APN crosswalk). TopN bounds the
+    /// ArcGIS pull via resultRecordCount; FullCorpus=true clears the cap.
     /// </summary>
     [HttpPost("geometry")]
     public async Task<IActionResult> DrainGeometry(
@@ -1572,7 +1572,7 @@ public class DoctrineDrainController : ControllerBase
             if (string.IsNullOrEmpty(bentonCounty.FipsCode))
                 return BadRequest(new { error = "Benton county row has no FipsCode — geometry drain refused." });
 
-            if (!arcGisOptions.Value.Counties.ContainsKey(bentonCounty.FipsCode))
+            if (arcGisOptions.Value.GetForCounty(bentonCounty.FipsCode) is null)
                 return NotFound(new { error = $"No ArcGIS config entry for FIPS {bentonCounty.FipsCode}." });
 
             // Stage 1: ArcGis-D1.
@@ -1680,9 +1680,9 @@ public class DoctrineDrainController : ControllerBase
         return (operatorName, workingYear, fullCorpus, topN);
     }
 
-    // Anchor GUID matches appsettings.Development.json ArcGisFeatureServices.Counties key
-    // and DatabaseSeeder.BentonCountyId. If ResolveOrCreate falls through to creation,
-    // using this ID ensures GetForCounty(bentonCountyId) always resolves the ArcGIS config.
+    // Anchor GUID matches DatabaseSeeder.BentonCountyId. If ResolveOrCreate falls through
+    // to creation, this ID keeps the county row stable across reseeds. ArcGIS config is
+    // now keyed by FipsCode ("53005"), not by this GUID.
     private static readonly Guid KnownBentonCountyId =
         Guid.Parse("19190019-1919-1919-1919-191919191919");
 
