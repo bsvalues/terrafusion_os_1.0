@@ -173,6 +173,185 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
         }
     }
 
+    public async Task<ArcGisRawLandingResult> LandParcelGeomsPagedAsync(
+        string fipsCode,
+        Guid countyId,
+        string operatorName,
+        int pageSize,
+        int? topN,
+        CancellationToken cancellationToken = default)
+    {
+        // Preflight: get total feature count so we know when to stop and can set the safety cap.
+        int preflightCount;
+        try
+        {
+            preflightCount = await _client.FetchCountAsync(fipsCode, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            var countErr = $"FetchCountAsync failed: {ex.GetType().Name}: {ex.Message}";
+            _logger.LogError(ex, "ArcGIS paged landing: preflight count failed for fips={Fips}", fipsCode);
+            return new ArcGisRawLandingResult
+            {
+                LoadBatchId = Guid.Empty,
+                Status = "FAILED",
+                FeaturesConsidered = 0,
+                FeaturesLanded = 0,
+                DuplicateObjectIds = 0,
+                AreaSqFtSum = 0d,
+                ErrorSummary = countErr,
+            };
+        }
+
+        _logger.LogInformation(
+            "ArcGIS paged landing preflight: fips={Fips} county={CountyId} preflightCount={Count} pageSize={PageSize} topN={TopN}",
+            fipsCode, countyId, preflightCount, pageSize, topN);
+
+        // Effective max: topN cap or full preflight count.
+        var effectiveMax = topN.HasValue ? Math.Min(topN.Value, preflightCount) : preflightCount;
+        // Safety cap: 2× pages needed plus 1.
+        var maxPages = (int)Math.Ceiling((double)preflightCount / pageSize) * 2 + 1;
+
+        var baseDescriptor = $"fips={fipsCode} county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true paged=true pageSize={pageSize.ToString(CultureInfo.InvariantCulture)}";
+
+        var batch = new LoadBatch
+        {
+            SourceFamily = SourceFamilies.ArcGisRest,
+            SourceSystem = "arcgis-feature-service",
+            SourceFileOrDatabase = $"county:{countyId} fips={fipsCode}",
+            SourceQueryHash = ComputeStableHash(baseDescriptor),
+            Operator = operatorName,
+            Status = "IN_PROGRESS",
+            StartedAt = DateTime.UtcNow,
+        };
+        _db.SyncBridgeLoadBatches.Add(batch);
+        await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            var seenKeys = new HashSet<(Guid, long)>();
+            int totalConsidered = 0, totalLanded = 0, totalDuplicates = 0;
+            double totalAreaSum = 0d;
+            int pageIndex = 0;
+
+            while (pageIndex < maxPages && totalLanded < effectiveMax)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var offset = pageIndex * pageSize;
+                var remaining = effectiveMax - totalLanded;
+                var thisPageSize = Math.Min(pageSize, remaining);
+
+                var (features, exceededLimit) = await _client.FetchPageAsync(
+                    fipsCode, countyId, offset, thisPageSize, cancellationToken).ConfigureAwait(false);
+
+                totalConsidered += features.Count;
+
+                if (features.Count == 0)
+                {
+                    _logger.LogInformation("[Paged:D1] page={Page} returned 0 features — stopping", pageIndex);
+                    break;
+                }
+
+                var now = DateTime.UtcNow;
+                var pageDescriptor = $"{baseDescriptor} offset={offset.ToString(CultureInfo.InvariantCulture)}";
+                var pageQueryHash = ComputeStableHash(pageDescriptor);
+
+                foreach (var feature in features)
+                {
+                    var key = (feature.CountyId, feature.ArcGisObjectId);
+                    if (!seenKeys.Add(key))
+                    {
+                        totalDuplicates++;
+                        continue;
+                    }
+
+                    _db.LegacyArcGisRawParcelGeoms.Add(new LegacyArcGisRawParcelGeom
+                    {
+                        CountyId = feature.CountyId,
+                        ArcGisObjectId = feature.ArcGisObjectId,
+                        ArcGisApn = feature.ArcGisApn,
+                        GeomWkt = feature.GeomWkt,
+                        CentroidLat = feature.CentroidLat,
+                        CentroidLon = feature.CentroidLon,
+                        AreaSqFt = feature.AreaSqFt,
+                        SourceServiceUrl = feature.SourceServiceUrl,
+                        LoadBatchId = batch.LoadBatchId,
+                        SourceQueryHash = pageQueryHash,
+                        SourceRowHash = ComputeRowHash(feature),
+                        LandedAt = now,
+                    });
+                    totalLanded++;
+                    totalAreaSum += feature.AreaSqFt;
+                }
+
+                // Per-page save keeps memory bounded across large corpus.
+                await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+                _logger.LogInformation(
+                    "[Paged:D1] page={Page} offset={Offset} features={Count} exceeded={Exceeded} totalLanded={Total}",
+                    pageIndex, offset, features.Count, exceededLimit, totalLanded);
+
+                pageIndex++;
+
+                // Stop: no more pages signalled, short page, or landed everything.
+                if (!exceededLimit || features.Count < thisPageSize)
+                    break;
+            }
+
+            await WriteGatesAsync(
+                batch, totalConsidered, totalLanded, totalDuplicates, totalAreaSum,
+                cancellationToken).ConfigureAwait(false);
+
+            batch.Status = "COMPLETED";
+            batch.CompletedAt = DateTime.UtcNow;
+            batch.RowsExtracted = totalConsidered;
+            batch.RowsPromoted = totalLanded;
+            await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation(
+                "ArcGIS paged landing COMPLETED. batch={BatchId} county={CountyId} pages={Pages} considered={Considered} landed={Landed} dupes={Dups}",
+                batch.LoadBatchId, countyId, pageIndex, totalConsidered, totalLanded, totalDuplicates);
+
+            return new ArcGisRawLandingResult
+            {
+                LoadBatchId = batch.LoadBatchId,
+                Status = "COMPLETED",
+                FeaturesConsidered = totalConsidered,
+                FeaturesLanded = totalLanded,
+                DuplicateObjectIds = totalDuplicates,
+                AreaSqFtSum = totalAreaSum,
+                TotalPages = pageIndex,
+                PaginatedMode = true,
+            };
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            var summary = $"{ex.GetType().Name}: {ex.Message}";
+            batch.Status = "FAILED";
+            batch.CompletedAt = DateTime.UtcNow;
+            batch.ErrorSummary = summary;
+            await _db.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+            _logger.LogError(ex,
+                "ArcGIS paged landing FAILED. batch={BatchId} county={CountyId} summary={Summary}",
+                batch.LoadBatchId, countyId, summary);
+
+            return new ArcGisRawLandingResult
+            {
+                LoadBatchId = batch.LoadBatchId,
+                Status = "FAILED",
+                FeaturesConsidered = 0,
+                FeaturesLanded = 0,
+                DuplicateObjectIds = 0,
+                AreaSqFtSum = 0d,
+                ErrorSummary = summary,
+                TotalPages = 0,
+                PaginatedMode = true,
+            };
+        }
+    }
+
     private async Task WriteGatesAsync(
         LoadBatch batch,
         int considered,

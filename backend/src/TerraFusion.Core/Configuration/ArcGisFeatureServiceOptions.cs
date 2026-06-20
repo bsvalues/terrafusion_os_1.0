@@ -102,4 +102,11 @@ public sealed class CountyArcGisOptions
     /// controller (it resolves CountyId from the DB via FipsCode).
     /// </summary>
     public Guid? CountyId { get; set; }
+
+    /// <summary>
+    /// GEOM-011: number of features to request per page when using ArcGIS
+    /// pagination (resultOffset + resultRecordCount). Defaults to 1000.
+    /// Must not exceed the ArcGIS server's maxRecordCount (~2000 for Benton).
+    /// </summary>
+    public int PageSize { get; set; } = 1000;
 }

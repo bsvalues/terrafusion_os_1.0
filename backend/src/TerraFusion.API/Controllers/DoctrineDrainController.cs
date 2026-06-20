@@ -1572,8 +1572,23 @@ public class DoctrineDrainController : ControllerBase
             if (string.IsNullOrEmpty(bentonCounty.FipsCode))
                 return BadRequest(new { error = "Benton county row has no FipsCode — geometry drain refused." });
 
-            if (arcGisOptions.Value.GetForCounty(bentonCounty.FipsCode) is null)
+            var arcGisCounty = arcGisOptions.Value.GetForCounty(bentonCounty.FipsCode);
+            if (arcGisCounty is null)
                 return NotFound(new { error = $"No ArcGIS config entry for FIPS {bentonCounty.FipsCode}." });
+
+            // GEOM-011: identity guard — if config has an explicit CountyId it must match the DB row.
+            if (arcGisCounty.CountyId.HasValue && arcGisCounty.CountyId.Value != bentonCounty.Id)
+            {
+                return StatusCode(409, new
+                {
+                    error = $"ArcGIS config CountyId ({arcGisCounty.CountyId}) does not match Benton DB row Id ({bentonCounty.Id}). " +
+                            "Resolve identity conflict before running the geometry drain.",
+                });
+            }
+
+            // GEOM-011: paged when FullCorpus=true or topN exceeds a single ArcGIS page.
+            var pageSize = arcGisCounty.PageSize;
+            var usePaged = fullCorpus || (geomTopN.HasValue && geomTopN.Value > pageSize);
 
             // Stage 1: ArcGis-D1.
             int d1FeaturesLanded = 0;
@@ -1583,8 +1598,14 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
-                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCounty.FipsCode, bentonCountyId, operatorName, geomTopN, cancellationToken);
+                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid} paged={Paged}", bentonCountyId, usePaged);
+                ArcGisRawLandingResult d1;
+                if (usePaged)
+                    d1 = await rawLandingSvc.LandParcelGeomsPagedAsync(
+                        bentonCounty.FipsCode, bentonCountyId, operatorName, pageSize, geomTopN, cancellationToken);
+                else
+                    d1 = await rawLandingSvc.LandParcelGeomsAsync(
+                        bentonCounty.FipsCode, bentonCountyId, operatorName, geomTopN, cancellationToken);
                 batchIds.Add(d1.LoadBatchId);
                 if (!IsCompleted(d1.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,

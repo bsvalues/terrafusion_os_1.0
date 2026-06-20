@@ -20,8 +20,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using TerraFusion.API.Controllers;
+using TerraFusion.Core.Configuration;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.GisTf;
 using TerraFusion.Core.GIS.ArcGisRest;
@@ -46,6 +48,7 @@ public sealed class GeomSliceControlV2Tests
             rawLandingSvc: null!,
             truthPromotionSvc: null!,
             canonicalProjector: null!,
+            arcGisOptions: BuildArcGisOptions(KnownBentonId),
             request: null,
             cancellationToken: CancellationToken.None);
 
@@ -60,6 +63,7 @@ public sealed class GeomSliceControlV2Tests
             rawLandingSvc: null!,
             truthPromotionSvc: null!,
             canonicalProjector: null!,
+            arcGisOptions: BuildArcGisOptions(KnownBentonId),
             request: new DoctrineDrainController.DoctrineDrainRequest(null, null, false, null),
             cancellationToken: CancellationToken.None);
 
@@ -78,7 +82,8 @@ public sealed class GeomSliceControlV2Tests
         var (controller, _) = BuildController();
         var mockSvc = new Mock<IArcGisRawLandingService>();
         mockSvc
-            .Setup(s => s.LandParcelGeomsAsync(It.IsAny<Guid>(), It.IsAny<string>(),
+            .Setup(s => s.LandParcelGeomsAsync(
+                It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
                 It.IsAny<int?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ArcGisRawLandingResult
             {
@@ -95,6 +100,7 @@ public sealed class GeomSliceControlV2Tests
             rawLandingSvc: mockSvc.Object,
             truthPromotionSvc: null!,
             canonicalProjector: null!,
+            arcGisOptions: BuildArcGisOptions(KnownBentonId),
             request: new DoctrineDrainController.DoctrineDrainRequest(null, null, false, 100),
             cancellationToken: CancellationToken.None);
 
@@ -157,6 +163,7 @@ public sealed class GeomSliceControlV2Tests
             rawLandingSvc: mockSvc.Object,
             truthPromotionSvc: null!,
             canonicalProjector: null!,
+            arcGisOptions: BuildArcGisOptions(KnownBentonId),
             request: new DoctrineDrainController.DoctrineDrainRequest(null, null, false, 100),
             cancellationToken: CancellationToken.None);
 
@@ -175,13 +182,14 @@ public sealed class GeomSliceControlV2Tests
             rawLandingSvc: mockSvc.Object,
             truthPromotionSvc: null!,
             canonicalProjector: null!,
+            arcGisOptions: BuildArcGisOptions(KnownBentonId),
             request: new DoctrineDrainController.DoctrineDrainRequest(null, null, false, 100),
             cancellationToken: CancellationToken.None);
 
         // LandParcelGeomsAsync must never be called when county identity is wrong.
         mockSvc.Verify(
             s => s.LandParcelGeomsAsync(
-                It.IsAny<Guid>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
                 It.IsAny<int?>(), It.IsAny<CancellationToken>()),
             Times.Never,
             "ArcGIS fetch must not be initiated when BentonCountyId does not match the configured GUID");
@@ -227,6 +235,17 @@ public sealed class GeomSliceControlV2Tests
             NullLogger<DoctrineDrainController>.Instance);
 
         return (controller, db);
+    }
+
+    private static IOptions<ArcGisFeatureServiceOptions> BuildArcGisOptions(Guid? configuredCountyId = null)
+    {
+        var opts = new ArcGisFeatureServiceOptions();
+        opts.Counties["53005"] = new CountyArcGisOptions
+        {
+            ParcelFeatureServiceUrl = "https://fake.arcgis.example/FeatureServer/0",
+            CountyId = configuredCountyId,
+        };
+        return Options.Create(opts);
     }
 
     // Mirrors the queryDescriptor logic in ArcGisRawLandingService.LandParcelGeomsAsync.

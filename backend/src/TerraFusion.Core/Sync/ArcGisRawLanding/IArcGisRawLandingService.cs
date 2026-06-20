@@ -37,6 +37,19 @@ public interface IArcGisRawLandingService
         string operatorName,
         int? topN,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// GEOM-011: paged variant — uses ArcGIS resultOffset pagination to
+    /// land more features than the server's single-request maxRecordCount.
+    /// Routes to this method when FullCorpus=true or topN &gt; pageSize.
+    /// </summary>
+    Task<ArcGisRawLandingResult> LandParcelGeomsPagedAsync(
+        string fipsCode,
+        Guid countyId,
+        string operatorName,
+        int pageSize,
+        int? topN,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>Slice D1: outcome of one landing run.</summary>
@@ -65,4 +78,10 @@ public sealed record ArcGisRawLandingResult
     public required double AreaSqFtSum { get; init; }
 
     public string? ErrorSummary { get; init; }
+
+    /// <summary>GEOM-011: total pages fetched (0 for non-paged runs).</summary>
+    public int TotalPages { get; init; }
+
+    /// <summary>GEOM-011: true when LandParcelGeomsPagedAsync was used.</summary>
+    public bool PaginatedMode { get; init; }
 }
