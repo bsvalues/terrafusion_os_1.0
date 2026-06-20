@@ -297,6 +297,18 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
                 // Per-page save keeps memory bounded across large corpus.
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+                // GEOM-011B-H1: detach the geometry entities just persisted so the EF
+                // ChangeTracker does not accumulate thousands of landed rows across pages
+                // during a full-corpus (~80k row) run — a memory/throughput risk flagged in
+                // GEOM-011B review. Only the page's LegacyArcGisRawParcelGeom entries are
+                // detached; the LoadBatch entity stays tracked so the COMPLETED finalize
+                // below (and the FAILED update in the catch path) still persist correctly.
+                // A blanket ChangeTracker.Clear() would detach the batch and break those
+                // updates, so detaching by type is the batch-safe equivalent.
+                foreach (var entry in _db.ChangeTracker
+                             .Entries<LegacyArcGisRawParcelGeom>().ToList())
+                    entry.State = EntityState.Detached;
+
                 if (exceededLimit)
                     _logger.LogDebug(
                         "[Paged:D1] page={Page} server set exceededTransferLimit (advisory — continuing to next page)",
