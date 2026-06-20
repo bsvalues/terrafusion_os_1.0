@@ -127,5 +127,5 @@ No proof runs were executed in this implementation slice per work order.
 - No ArcGIS calls outside authorized probe runs
 - No DB mutated outside authorized drains
 - No PACS touched
-- Git mutations confined to worktree `C:\Users\bsval\tf-geom-011-pagination` only
+- Git mutations confined to the dedicated GEOM-011 worktree only
 - No secrets committed
