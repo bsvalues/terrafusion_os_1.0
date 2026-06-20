@@ -111,25 +111,31 @@ public sealed class ArcGisNightlySyncHostedService : BackgroundService
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!Guid.TryParse(key, out var countyId))
+            // GEOM-005: config is now keyed by FIPS code. Entries that lack
+            // CountyId cannot be stamped against a DB row — skip with a warning.
+            if (!arcgis.Counties.TryGetValue(key, out var countyOpts) ||
+                countyOpts.CountyId is null)
             {
                 _logger.LogWarning(
-                    "ArcGIS nightly sync: skipping malformed county key '{Key}' (not a GUID).",
+                    "ArcGIS nightly sync: skipping FIPS key '{Key}' — no CountyId configured.",
                     key);
                 continue;
             }
+
+            var fipsCode = key;
+            var countyId = countyOpts.CountyId.Value;
 
             try
             {
                 using var scope = _scopeFactory.CreateScope();
                 var sync = scope.ServiceProvider.GetRequiredService<IArcGisSyncService>();
                 var result = await sync
-                    .SyncCountyAsync(countyId, operatorName, cancellationToken)
+                    .SyncCountyAsync(fipsCode, countyId, operatorName, cancellationToken)
                     .ConfigureAwait(false);
 
                 _logger.LogInformation(
-                    "ArcGIS nightly sync: county {CountyId} {Status} (fetched={Fetched} upserted={Upserted} softDeleted={SoftDeleted})",
-                    countyId, result.Status, result.FeaturesFetched,
+                    "ArcGIS nightly sync: FIPS {FipsCode} county {CountyId} {Status} (fetched={Fetched} upserted={Upserted} softDeleted={SoftDeleted})",
+                    fipsCode, countyId, result.Status, result.FeaturesFetched,
                     result.FeaturesUpserted, result.FeaturesSoftDeleted);
             }
             catch (OperationCanceledException)
@@ -145,8 +151,8 @@ public sealed class ArcGisNightlySyncHostedService : BackgroundService
                 // anything outside its try/catch (DI scope
                 // construction, options resolution, etc.).
                 _logger.LogError(ex,
-                    "ArcGIS nightly sync: unexpected failure for county {CountyId}; continuing cycle.",
-                    countyId);
+                    "ArcGIS nightly sync: unexpected failure for FIPS {FipsCode} county {CountyId}; continuing cycle.",
+                    fipsCode, countyId);
             }
             finally
             {

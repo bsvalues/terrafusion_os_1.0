@@ -32,6 +32,7 @@ public interface IArcGisFeatureServiceClient
     /// invalid JSON).
     /// </exception>
     Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
+        string fipsCode,
         Guid countyId,
         int? topN,
         CancellationToken cancellationToken = default);
