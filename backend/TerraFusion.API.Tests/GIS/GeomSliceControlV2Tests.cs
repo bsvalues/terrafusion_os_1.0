@@ -29,6 +29,7 @@ using TerraFusion.Core.Entities.GisTf;
 using TerraFusion.Core.GIS.ArcGisRest;
 using TerraFusion.Core.Sync.ArcGisRawLanding;
 using TerraFusion.Data;
+using TfDb = TerraFusion.Data.TerraFusionDbContext;
 using Xunit;
 
 namespace TerraFusion.API.Tests.GIS;
@@ -203,18 +204,18 @@ public sealed class GeomSliceControlV2Tests
     /// (simulating a stale random-GUID row); when null the DB starts empty so
     /// ResolveOrCreate will create the canonical KnownBentonId row.
     /// </summary>
-    private static (DoctrineDrainController controller, TerraFusionDbContext db)
+    private static (DoctrineDrainController controller, TfDb db)
         BuildController(Guid? bentonIdOverride = null)
     {
         var dbName = Guid.NewGuid().ToString();
         var configMock = new Mock<IConfiguration>();
         configMock.Setup(c => c["ConnectionStrings:DefaultConnection"]).Returns($"Data Source={dbName}.db");
 
-        var opts = new DbContextOptionsBuilder<TerraFusionDbContext>()
+        var opts = new DbContextOptionsBuilder<TfDb>()
             .UseInMemoryDatabase(databaseName: dbName)
             .Options;
 
-        var db = new TerraFusionDbContext(opts, configMock.Object);
+        var db = new TfDb(opts, configMock.Object);
 
         if (bentonIdOverride.HasValue)
         {

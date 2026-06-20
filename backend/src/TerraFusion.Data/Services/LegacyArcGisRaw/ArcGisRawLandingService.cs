@@ -181,6 +181,9 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
         int? topN,
         CancellationToken cancellationToken = default)
     {
+        if (pageSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, "PageSize must be greater than zero.");
+
         // Preflight: get total feature count so we know when to stop and can set the safety cap.
         int preflightCount;
         try
@@ -209,8 +212,11 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
 
         // Effective max: topN cap or full preflight count.
         var effectiveMax = topN.HasValue ? Math.Min(topN.Value, preflightCount) : preflightCount;
+        // targetCount: how many features to collect before stopping.
+        // Drive the loop on this, not on exceededTransferLimit (advisory only).
+        var targetCount = Math.Min(preflightCount, effectiveMax);
         // Safety cap: 2× pages needed plus 1.
-        var maxPages = (int)Math.Ceiling((double)preflightCount / pageSize) * 2 + 1;
+        var maxPages = (int)Math.Ceiling((double)targetCount / pageSize) * 2 + 1;
 
         var baseDescriptor = $"fips={fipsCode} county={countyId} f=geojson where=1=1 outSR=4326 returnGeometry=true paged=true pageSize={pageSize.ToString(CultureInfo.InvariantCulture)}";
 
@@ -234,12 +240,15 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
             double totalAreaSum = 0d;
             int pageIndex = 0;
 
-            while (pageIndex < maxPages && totalLanded < effectiveMax)
+            while (pageIndex < maxPages)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // Primary termination: we've seen enough of the corpus.
+                if (totalConsidered >= targetCount) break;
+
                 var offset = pageIndex * pageSize;
-                var remaining = effectiveMax - totalLanded;
+                var remaining = targetCount - totalConsidered;
                 var thisPageSize = Math.Min(pageSize, remaining);
 
                 var (features, exceededLimit) = await _client.FetchPageAsync(
@@ -288,15 +297,16 @@ public sealed class ArcGisRawLandingService : IArcGisRawLandingService
                 // Per-page save keeps memory bounded across large corpus.
                 await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+                if (exceededLimit)
+                    _logger.LogDebug(
+                        "[Paged:D1] page={Page} server set exceededTransferLimit (advisory — continuing to next page)",
+                        pageIndex);
+
                 _logger.LogInformation(
-                    "[Paged:D1] page={Page} offset={Offset} features={Count} exceeded={Exceeded} totalLanded={Total}",
-                    pageIndex, offset, features.Count, exceededLimit, totalLanded);
+                    "[Paged:D1] page={Page} offset={Offset} features={Count} exceeded={Exceeded} totalConsidered={Total}",
+                    pageIndex, offset, features.Count, exceededLimit, totalConsidered);
 
                 pageIndex++;
-
-                // Stop: no more pages signalled, short page, or landed everything.
-                if (!exceededLimit || features.Count < thisPageSize)
-                    break;
             }
 
             await WriteGatesAsync(

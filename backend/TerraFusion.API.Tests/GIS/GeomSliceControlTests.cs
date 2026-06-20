@@ -21,6 +21,7 @@ public class GeomSliceControlTests
 {
     private static readonly Guid BentonId =
         Guid.Parse("19190019-1919-1919-1919-191919191919");
+    private const string BentonFips = "53005";
 
     // ── URL construction ──────────────────────────────────────────────────
 
@@ -28,7 +29,7 @@ public class GeomSliceControlTests
     public async Task FetchParcels_TopN100_UrlContainsResultRecordCount()
     {
         var (sut, h) = Build();
-        await sut.FetchParcelsAsync(BentonId, topN: 100, CancellationToken.None);
+        await sut.FetchParcelsAsync(BentonFips, BentonId, 100, CancellationToken.None);
         Assert.Contains("resultRecordCount=100", h.CapturedUri ?? string.Empty);
     }
 
@@ -36,7 +37,7 @@ public class GeomSliceControlTests
     public async Task FetchParcels_TopN100_UrlContainsOrderByObjectId()
     {
         var (sut, h) = Build();
-        await sut.FetchParcelsAsync(BentonId, topN: 100, CancellationToken.None);
+        await sut.FetchParcelsAsync(BentonFips, BentonId, 100, CancellationToken.None);
         Assert.Contains("orderByFields=OBJECTID", h.CapturedUri ?? string.Empty);
     }
 
@@ -44,7 +45,7 @@ public class GeomSliceControlTests
     public async Task FetchParcels_NullTopN_UrlHasNoResultRecordCount()
     {
         var (sut, h) = Build();
-        await sut.FetchParcelsAsync(BentonId, topN: null, CancellationToken.None);
+        await sut.FetchParcelsAsync(BentonFips, BentonId, null, CancellationToken.None);
         Assert.DoesNotContain("resultRecordCount", h.CapturedUri ?? string.Empty);
     }
 
@@ -54,8 +55,8 @@ public class GeomSliceControlTests
         var (sut100, h100) = Build();
         var (sut500, h500) = Build();
 
-        await sut100.FetchParcelsAsync(BentonId, topN: 100, CancellationToken.None);
-        await sut500.FetchParcelsAsync(BentonId, topN: 500, CancellationToken.None);
+        await sut100.FetchParcelsAsync(BentonFips, BentonId, 100, CancellationToken.None);
+        await sut500.FetchParcelsAsync(BentonFips, BentonId, 500, CancellationToken.None);
 
         Assert.NotEqual(h100.CapturedUri, h500.CapturedUri);
     }
@@ -116,7 +117,7 @@ public class GeomSliceControlTests
         var factory = new StubHttpClientFactory(http);
 
         var opts = new ArcGisFeatureServiceOptions();
-        opts.Counties[BentonId.ToString()] = new CountyArcGisOptions
+        opts.Counties[BentonFips] = new CountyArcGisOptions
         {
             ParcelFeatureServiceUrl = "https://test.arcgis.example/FeatureServer/0",
             ApnAttributeName = "geo_id",
