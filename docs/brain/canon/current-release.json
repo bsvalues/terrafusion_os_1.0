@@ -1,8 +1,8 @@
 {
   "_note": "The release Cortex is currently serving. Keep in sync with docs/brain/memory/release-gates.md.",
   "name": "TerraFusion OS 1.0",
-  "branch": "fix/projector-delete-insert-atomicity",
-  "active_gate": "TerraDais persistence verification (WO-001) + write-lane manifest drift (D-004)",
+  "branch": "main",
+  "active_gate": "Governance Fast Gate + Brain/Cortex Phase 0 advisory-first rollout (D-004 resolved; TerraDais persistence verified under WO-0001)",
   "must_ship": [
     "green build",
     "TerraDais persistence verified (CountyId isolation)",
