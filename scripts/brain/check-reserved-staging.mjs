@@ -11,7 +11,7 @@
  * Exit 0 = no new reserved-suite controllers; 1 = footprint grew (update the register + decide).
  */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { REPO_ROOT } from './canon.mjs';
 
 const reg = JSON.parse(
@@ -26,10 +26,17 @@ const frozen = new Set(
 const RESERVED = /^(Clerk|Treasury|Audit|Recorder)Controller\.cs$/;
 
 const ctrlDir = join(REPO_ROOT, 'backend', 'src', 'TerraFusion.API', 'Controllers');
+
+function walk(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const abs = join(dir, entry.name);
+    return entry.isDirectory() ? walk(abs) : [abs];
+  });
+}
 const found = existsSync(ctrlDir)
-  ? readdirSync(ctrlDir)
-      .filter(f => RESERVED.test(f))
-      .map(f => `backend/src/TerraFusion.API/Controllers/${f}`)
+  ? walk(ctrlDir)
+      .filter(abs => RESERVED.test(abs.split(/[/\\]/).pop()))
+      .map(abs => relative(REPO_ROOT, abs).replace(/\\/g, '/'))
   : [];
 
 const novel = found.filter(f => !frozen.has(f));

@@ -15,6 +15,7 @@ import { execFileSync } from 'node:child_process';
 import { REPO_ROOT } from './canon.mjs';
 
 const BANNED = [/localhost:3000\b/, /localhost:5000\b/, /:3000\b(?![0-9])/, /:5000\b(?![0-9])/];
+const ENV_DRIVEN = /(process\.env|import\.meta\.env|TF_FRONTEND_PORT|TF_API_PORT|:-3102|:-5046)/;
 const SCAN_EXT = /\.(ts|tsx|js|jsx|mjs|cjs|cs|json|yml|yaml|env)$/i;
 const SKIP =
   /(node_modules|\/dist\/|\/bin\/|\/obj\/|pnpm-lock|package-lock|\.min\.|docs\/|scripts\/brain\/check-hardcoded-ports)/;
@@ -44,12 +45,7 @@ for (const f of files) {
   if (!existsSync(abs) || statSync(abs).isDirectory()) continue;
   const lines = readFileSync(abs, 'utf8').split('\n');
   lines.forEach((line, i) => {
-    if (
-      BANNED.some(re => re.test(line)) &&
-      !/process\.env|import\.meta\.env|TF_FRONTEND_PORT|TF_API_PORT|fallback|:-3102|:-5046/.test(
-        line
-      )
-    ) {
+    if (BANNED.some(re => re.test(line)) && !ENV_DRIVEN.test(line)) {
       hits.push({ file: f, line: i + 1, text: line.trim().slice(0, 100) });
     }
   });
