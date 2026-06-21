@@ -1,0 +1,98 @@
+{
+  "_source": "docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md (TF-052) + .github/AGENT_ENTRYPOINT.md",
+  "_note": "Machine-readable digest. TF-052 is authoritative; if this disagrees, TF-052 wins. JSON (not YAML) for zero-dependency loading in scripts/brain/.",
+  "active": {
+    "forge": {
+      "display": "TerraForge",
+      "domain": "Valuation",
+      "owns": [
+        "valuation models",
+        "cost approach",
+        "income approach",
+        "sales comparison",
+        "comparable selections",
+        "model calibration",
+        "CAMA characteristics",
+        "valuation notes"
+      ]
+    },
+    "atlas": {
+      "display": "TerraAtlas",
+      "domain": "GIS",
+      "owns": [
+        "GIS layers",
+        "layer symbology",
+        "parcel geometry",
+        "spatial annotations",
+        "map bookmarks",
+        "neighborhood definitions"
+      ]
+    },
+    "dais": {
+      "display": "TerraDais",
+      "domain": "Assessor Admin",
+      "owns": [
+        "permit records",
+        "exemption records",
+        "appeal records",
+        "notice generation/queue",
+        "certification checklists",
+        "task assignments",
+        "workflow state"
+      ]
+    },
+    "dossier": {
+      "display": "TerraDossier",
+      "domain": "Records/Evidence",
+      "owns": [
+        "documents",
+        "narratives",
+        "evidence items",
+        "packets",
+        "case files"
+      ]
+    },
+    "gpt": {
+      "display": "TerraGPT",
+      "domain": "AI",
+      "owns": [
+        "GPT configurations",
+        "RAG metadata",
+        "RAG embeddings",
+        "usage/cost metrics",
+        "conversation history"
+      ]
+    }
+  },
+  "os_features": {
+    "pilot": {
+      "display": "TerraPilot",
+      "type": "Personal Copilot",
+      "note": "Pilot mode acts; Muse mode is read/explain/draft only and never writes."
+    },
+    "trace": {
+      "display": "TerraTrace",
+      "type": "Audit Spine",
+      "note": "Append-only, tamper-evident operational trace ledger. NOT domain truth."
+    },
+    "property-workbench": {
+      "display": "Property Workbench",
+      "type": "OS Surface",
+      "note": "Tier-0 center of gravity for parcel-scoped work. Owned by OS, not a suite."
+    }
+  },
+  "reserved": {
+    "terraclerk": { "display": "TerraClerk", "for": "County Clerk" },
+    "terratreasury": { "display": "TerraTreasury", "for": "County Treasurer" },
+    "terraaudit": { "display": "TerraAudit", "for": "County Auditor" },
+    "terrarecorder": { "display": "TerraRecorder", "for": "County Recorder" }
+  },
+  "workbench_tab_order": [
+    "Summary",
+    "Forge",
+    "Atlas",
+    "Dais",
+    "Dossier",
+    "Pilot"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "_note": "Ordered backlog for `brain next` when no P0/P1 drift is open. Human-editable data, not code. brain next recommends [0] and lists the rest as 'why not yet'.",
+  "_done": [
+    "Land the Brain governance commit — DONE 2026-06-09: ebe4b558e, c9b89902e, dd4e8fb39, 59ae265e0, 2298a8afa (doctrine)",
+    "D-010 — RESOLVED 2026-06-09 (TOLERATE, WO-0004, abc10e4b4)",
+    "Shell-Contract verification — DONE 2026-06-09 (WO-0005 verify + WO-0006 D-012 bridge 9207893a3 + WO-0008 D-011 retarget f81a8efa6; suites 45/45 + 33/33)",
+    "UI honesty sweep (full) — DONE 2026-06-09 (WO-0009, 09710b215; battery 105/106, scanner 0 hits; D-013 residual = fleet lane)",
+    "Brain production readiness + commit-race hardening — DONE 2026-06-09 (WO-0011, bc7f375d7; 24/24)",
+    "D-009 token nit — RESOLVED 2026-06-09 (WO-0012; 3 lines tracking-[0.22em] → tracking-widest; token-police CLEAN, type-check clean, gating tests 6/6)"
+  ],
+  "_external_lane": [
+    "D-013 (P2): ForgeSuiteHome dropped 'DB/API-backed Benton proof path' disclosure phrase — FLEET-owned file (DO-NOT-EDIT header); fleet restores phrase or retargets the pinned-prose assertion. Not in this lane's queue."
+  ],
+  "queue": [
+    {
+      "title": "Product gate: ServiceRegistry activation verification",
+      "why_now": "Listed P1 in the 1.0 priority stack; never measured this cycle.",
+      "risk": "R2",
+      "files": ["read-only inspection + existing tests; evidence note"],
+      "stop_conditions": [
+        "activation requires backend behavior change (own WO + operator approval)"
+      ],
+      "proof": ["evidence artifact: active or honestly not + gap list"]
+    },
+    {
+      "title": "Product gate: live-DB migration verify (Dais)",
+      "why_now": "D-002 verified behavior on the in-memory provider; live-DB apply unverified.",
+      "risk": "R2",
+      "files": [
+        "dotnet ef migrations list/apply against terrafusion dev DB; evidence note"
+      ],
+      "stop_conditions": [
+        "any migration would mutate schema unexpectedly (stop + operator)",
+        "dev DB contention with fleet"
+      ],
+      "proof": [
+        "migrations list clean; AddDaisEntities applied; evidence artifact"
+      ]
+    },
+    {
+      "title": "Product gate: dock/top-bar deep sweep (launch-surface truth table)",
+      "why_now": "WO-0005 deferred the frontend launchSurface/shellTruthAudit deep batch; D-013's one failure is known.",
+      "risk": "R2",
+      "files": [
+        "run frontend launch-surface + shell-truth vitest batches; evidence note"
+      ],
+      "stop_conditions": ["fixes require shell routing changes (R4)"],
+      "proof": [
+        "batch results recorded; failures classified mine-vs-fleet-vs-stale"
+      ]
+    },
+    {
+      "title": "TF-LOCALOPS-001 chain head: execute WO-LOCALOPS-000 (planning envelope)",
+      "why_now": "Benton server survival infrastructure: TerraPilot LocalOps Mode (local-only AI, no cloud fallback, local RAG, read-only diagnostics, trace events, in-shell UI). Chain WO-LOCALOPS-000..008 created 2026-06-09 under docs/brain/workorders/active/; execute strictly in order, one WO per slice. Operator approved the goal; WO-LOCALOPS-006 (shell UI, R4) still requires explicit architect sign-off at dispatch.",
+      "risk": "R1 (chain head; later WOs R2-R4 per their files)",
+      "files": [
+        "docs/brain/workorders/active/WO-LOCALOPS-000-planning-envelope.md (chain map inside)"
+      ],
+      "stop_conditions": [
+        "any chain WO stop condition fires",
+        "hard boundary touched: autonomous repair / shell agent / auto-migrations / AI mutation of property or valuation records / county doc indexing without approval rules / model marketplace / agent swarm / self-healing production writes"
+      ],
+      "proof": [
+        "per-WO required_proof blocks; chain done-definition = WO-LOCALOPS-008 runtime proof report"
+      ]
+    },
+    {
+      "title": "Hardening: per-agent worktree isolation (commit-race full fix)",
+      "why_now": "Deferred unless the race bites a third time or becomes cheap; guard (WO-0011) currently mitigates.",
+      "risk": "R2",
+      "files": ["docs/brain process doctrine + possibly git worktree tooling"],
+      "stop_conditions": [
+        "requires changing other agents' workflows without operator sign-off"
+      ],
+      "proof": ["isolation procedure documented + trialed on one slice"]
+    }
+  ]
+}
