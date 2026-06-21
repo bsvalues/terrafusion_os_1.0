@@ -90,18 +90,18 @@ describe('SuiteModuleGrid launch contract (WO-SUITE-ROUTING-001)', () => {
       <SuiteModuleGrid
         modules={[
           makeModule({
-            id: 'income',
-            label: 'Income',
+            id: 'summary',
+            label: 'Summary',
             launchMode: 'workbench',
-            workbenchTab: 'income' as SuiteModuleDef['workbenchTab'],
+            workbenchTab: 'summary',
           }),
         ]}
       />,
     );
 
-    await userEvent.click(screen.getByText('Income'));
+    await userEvent.click(screen.getByText('Summary'));
 
-    expect(mockNavigate).toHaveBeenCalledWith('/property?openTab=income');
+    expect(mockNavigate).toHaveBeenCalledWith('/property?openTab=summary');
     expect(mockActivateModule).not.toHaveBeenCalled();
   });
 
@@ -111,18 +111,18 @@ describe('SuiteModuleGrid launch contract (WO-SUITE-ROUTING-001)', () => {
       <SuiteModuleGrid
         modules={[
           makeModule({
-            id: 'income',
-            label: 'Income',
+            id: 'summary',
+            label: 'Summary',
             launchMode: 'workbench',
-            workbenchTab: 'income' as SuiteModuleDef['workbenchTab'],
+            workbenchTab: 'summary',
           }),
         ]}
       />,
     );
 
-    await userEvent.click(screen.getByText('Income'));
+    await userEvent.click(screen.getByText('Summary'));
 
-    expect(mockNavigate).toHaveBeenCalledWith('/property/P-123/income');
+    expect(mockNavigate).toHaveBeenCalledWith('/property/P-123/summary');
     expect(mockActivateModule).not.toHaveBeenCalled();
   });
 });
