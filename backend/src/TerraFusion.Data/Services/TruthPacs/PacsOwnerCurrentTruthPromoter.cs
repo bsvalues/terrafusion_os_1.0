@@ -39,7 +39,9 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
     // WO-OWNER-PERF-001: chunk truth-entity saves to bound EF ChangeTracker
     // growth during full-corpus runs (~809k owner rows). Without chunking,
     // a single SaveChangesAsync for the full corpus times out at production scale.
-    private const int OwnerTruthChunkSize = 10_000;
+    // Production default is 10,000. The internal constructor allows tests to
+    // inject a smaller value to exercise the chunk-boundary code path directly.
+    private readonly int _chunkSize;
 
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<PacsOwnerCurrentTruthPromoter> _logger;
@@ -47,9 +49,18 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
     public PacsOwnerCurrentTruthPromoter(
         TerraFusionDbContext db,
         ILogger<PacsOwnerCurrentTruthPromoter> logger)
+        : this(db, logger, chunkSize: 10_000) { }
+
+    // For unit tests only — allows chunk size override to exercise the
+    // in-loop SaveChangesAsync boundary without seeding 10k+ rows.
+    internal PacsOwnerCurrentTruthPromoter(
+        TerraFusionDbContext db,
+        ILogger<PacsOwnerCurrentTruthPromoter> logger,
+        int chunkSize)
     {
         _db = db;
         _logger = logger;
+        _chunkSize = chunkSize;
     }
 
     public async Task<PacsOwnerCurrentTruthResult> PromoteAsync(
@@ -209,11 +220,11 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                 });
                 promoted++;
 
-                // WO-OWNER-PERF-001: flush and detach every OwnerTruthChunkSize rows so
+                // WO-OWNER-PERF-001: flush and detach every _chunkSize rows so
                 // the EF ChangeTracker does not accumulate the full corpus (~809k entities)
                 // before the first write. Only TruthPacsOwnerCurrent entities are detached —
                 // LoadBatch and gate entities remain tracked for later updates.
-                if (promoted % OwnerTruthChunkSize == 0)
+                if (promoted % _chunkSize == 0)
                 {
                     await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                     foreach (var entry in _db.ChangeTracker
@@ -238,7 +249,7 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                     groupPctSums[groupKey] = null; // NULL infects
                 }
             }
-            // Final flush for the last partial chunk (< OwnerTruthChunkSize rows).
+            // Final flush for the last partial chunk (< _chunkSize rows).
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             // Detach the remainder so no TruthPacsOwnerCurrent entities
             // linger in the ChangeTracker after promotion completes.

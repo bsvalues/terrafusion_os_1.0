@@ -1,8 +1,8 @@
-# OWNER_WSDOR_STAGE7_CHUNKING_IMPLEMENTATION
+﻿# OWNER_WSDOR_STAGE7_CHUNKING_IMPLEMENTATION
 
-Work Order: WO-OWNER-PERF-001  
-Date: 2026-06-20  
-Branch: fix/owner-truth-chunk-save  
+Work Order: WO-OWNER-PERF-001
+Date: 2026-06-20
+Branch: fix/owner-truth-chunk-save
 
 ---
 
@@ -35,7 +35,7 @@ pass. Owner scope not changed. Full owner-wsdor not rerun.
 `PacsOwnerCurrentTruthPromoter.PromoteAsync` iterated all ~809k owner rows,
 calling `_db.TruthPacsOwnerCurrents.Add(...)` per row, then called
 `SaveChangesAsync` once after the loop. EF Core's ChangeTracker tracked all
-~809k Added entities simultaneously — both the object-graph overhead and the
+~809k Added entities simultaneously â€” both the object-graph overhead and the
 resulting single large-transaction Save caused the lane to exceed 2 hours at
 Benton full-corpus scale.
 
@@ -49,8 +49,8 @@ at the truth-promotion layer.
 `10,000` entities per flush (`private const int OwnerTruthChunkSize = 10_000`).
 
 At 809,396 total owner rows: ~81 chunk saves during the loop + 1 final flush.
-Each chunk save persists ≤10k rows and detaches them before the next chunk begins.
-Estimated Stage 7 wall-clock with this change: **2–5 minutes** (vs. >60 min before).
+Each chunk save persists â‰¤10k rows and detaches them before the next chunk begins.
+Estimated Stage 7 wall-clock with this change: **2â€“5 minutes** (vs. >60 min before).
 
 ---
 
@@ -60,7 +60,7 @@ Estimated Stage 7 wall-clock with this change: **2–5 minutes** (vs. >60 min be
 - Source query: `sup_num = 0 AND owner_tax_yr >= 2018`
 - Total rows: 809,396
 - Pre-2018 rows: excluded (migration artifacts, not touched)
-- Canonical output: identical — same rows, same keys, same gates
+- Canonical output: identical â€” same rows, same keys, same gates
 
 ---
 
@@ -68,7 +68,7 @@ Estimated Stage 7 wall-clock with this change: **2–5 minutes** (vs. >60 min be
 
 Two detach points added:
 
-1. **Inside the promotion loop** — after every `OwnerTruthChunkSize` promoted rows:
+1. **Inside the promotion loop** â€” after every `OwnerTruthChunkSize` promoted rows:
    ```csharp
    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
    foreach (var entry in _db.ChangeTracker
@@ -76,7 +76,7 @@ Two detach points added:
        entry.State = EntityState.Detached;
    ```
 
-2. **After the final post-loop flush** — cleans up the last partial chunk:
+2. **After the final post-loop flush** â€” cleans up the last partial chunk:
    ```csharp
    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
    foreach (var entry in _db.ChangeTracker
@@ -84,7 +84,7 @@ Two detach points added:
        entry.State = EntityState.Detached;
    ```
 
-Targeted detach (type-scoped) — NOT `ChangeTracker.Clear()`. The `LoadBatch`
+Targeted detach (type-scoped) â€” NOT `ChangeTracker.Clear()`. The `LoadBatch`
 entity and `PromotionGateResult` entities added by gate writers remain tracked,
 which is required for the batch status update and gate writes that follow.
 
@@ -93,7 +93,7 @@ In-memory state unaffected: `groupPctSums`, rejection counters (`rejectedNoSupp`
 C# variables with no EF dependency. ChangeTracker detach does not alter them.
 
 Gate query safety: `WriteRemainingGatesAsync` counts unprovenanced truth rows via
-`CountAsync` against the DB — not the ChangeTracker. Detaching truth entities
+`CountAsync` against the DB â€” not the ChangeTracker. Detaching truth entities
 before this call is safe.
 
 ---
@@ -108,7 +108,7 @@ before this call is safe.
 | `ChunkSave_NoTrackedOwnerCurrentEntities_AfterFullPromote` | Zero `TruthPacsOwnerCurrent` entities tracked in ChangeTracker after promotion completes |
 | `ChunkSave_SmallBatch_CompletesWithoutChunkBoundary` | Single-row path (final-flush only, no chunk boundary) still works correctly |
 
-All 24 `PacsOwnerCurrentTruthPromoterTests` pass.  
+All 24 `PacsOwnerCurrentTruthPromoterTests` pass.
 Full suite: **3420/3420 pass, 0 fail, 0 skip.**
 
 ---
@@ -126,7 +126,7 @@ Passed! Failed: 0, Passed: 3420, Skipped: 0, Total: 3420
 
 **Not run.** Full owner-wsdor drain is deferred to:
 
-**WO-DATA-FINALIZE-OWNER-002 — Rerun Full Owner-WSDOR From S1b Snapshot**
+**WO-DATA-FINALIZE-OWNER-002 â€” Rerun Full Owner-WSDOR From S1b Snapshot**
 
 That work order is separately authorized. The S1b snapshot is intact:
 - `D:/TerraFusion_PACS_Verification/terrafusion_benton_demo_S1b_post_parcel.dump`
