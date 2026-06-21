@@ -36,6 +36,11 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
 {
     private const decimal FullPctTolerance = 0.01m;
 
+    // WO-OWNER-PERF-001: chunk truth-entity saves to bound EF ChangeTracker
+    // growth during full-corpus runs (~809k owner rows). Without chunking,
+    // a single SaveChangesAsync for the full corpus times out at production scale.
+    private const int OwnerTruthChunkSize = 10_000;
+
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<PacsOwnerCurrentTruthPromoter> _logger;
 
@@ -204,6 +209,21 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                 });
                 promoted++;
 
+                // WO-OWNER-PERF-001: flush and detach every OwnerTruthChunkSize rows so
+                // the EF ChangeTracker does not accumulate the full corpus (~809k entities)
+                // before the first write. Only TruthPacsOwnerCurrent entities are detached —
+                // LoadBatch and gate entities remain tracked for later updates.
+                if (promoted % OwnerTruthChunkSize == 0)
+                {
+                    await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    foreach (var entry in _db.ChangeTracker
+                                 .Entries<TruthPacsOwnerCurrent>().ToList())
+                        entry.State = EntityState.Detached;
+                    _logger.LogInformation(
+                        "[OwnerTruth] chunk persisted; promoted={Promoted} considered={Considered}",
+                        promoted, considered);
+                }
+
                 var groupKey = (owner.PropId, owner.OwnerTaxYr);
                 if (!groupPctSums.TryGetValue(groupKey, out var existing))
                 {
@@ -218,7 +238,13 @@ public sealed class PacsOwnerCurrentTruthPromoter : IPacsOwnerCurrentTruthPromot
                     groupPctSums[groupKey] = null; // NULL infects
                 }
             }
+            // Final flush for the last partial chunk (< OwnerTruthChunkSize rows).
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            // Detach the remainder so no TruthPacsOwnerCurrent entities
+            // linger in the ChangeTracker after promotion completes.
+            foreach (var entry in _db.ChangeTracker
+                         .Entries<TruthPacsOwnerCurrent>().ToList())
+                entry.State = EntityState.Detached;
 
             var pctViolations = groupPctSums.Values.Count(s =>
                 !s.HasValue || Math.Abs(s.Value - 100m) > FullPctTolerance);
