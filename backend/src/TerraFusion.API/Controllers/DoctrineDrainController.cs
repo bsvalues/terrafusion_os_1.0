@@ -35,6 +35,8 @@ using TerraFusion.Core.Sync.PacsWashPropOwnerValTruth;
 using TerraFusion.Core.Sync.PacsWsdorCanonical;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.PacsSources;
+using Microsoft.Extensions.Options;
+using ArcGisFeatureServiceOptions = TerraFusion.Core.Configuration.ArcGisFeatureServiceOptions;
 
 namespace TerraFusion.API.Controllers;
 
@@ -265,7 +267,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // Stage 1: Owner-Seed-S1.
@@ -432,7 +435,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var ownerTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // Stage 1: Owner-S1.
@@ -742,7 +746,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // Stage 1: Owner-Seed-S1.
@@ -1090,7 +1095,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var seedTopN = fullCorpus ? (int?)null : (topN ?? 200);
 
             // Stage 1: Owner-Seed-S1.
@@ -1327,7 +1333,8 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
             var saleTopN = fullCorpus ? (int?)null : (topN ?? 500);
 
             // Stage 1: Sale-S1.
@@ -1514,19 +1521,34 @@ public class DoctrineDrainController : ControllerBase
 
     /// <summary>
     /// Drain the geometry lane. ArcGIS REST D1 raw → D2 truth → D3
-    /// canonical (tf_parcel_geom + APN crosswalk). FullCorpus/TopN are
-    /// not used — the ArcGIS service pulls the full county feature set.
+    /// canonical (tf_parcel_geom + APN crosswalk). TopN bounds the
+    /// ArcGIS pull via resultRecordCount; FullCorpus=true clears the cap.
     /// </summary>
     [HttpPost("geometry")]
     public async Task<IActionResult> DrainGeometry(
         [FromServices] IArcGisRawLandingService rawLandingSvc,
         [FromServices] IArcGisTruthPromotionService truthPromotionSvc,
         [FromServices] IArcGisCanonicalProjector canonicalProjector,
+        [FromServices] IOptions<ArcGisFeatureServiceOptions> arcGisOptions,
         [FromBody] DoctrineDrainRequest? request,
         CancellationToken cancellationToken = default)
     {
         const string LaneName = "geometry";
-        var (operatorName, _, _, _) = NormalizeRequest(request, LaneName);
+        var (operatorName, _, fullCorpus, topN) = NormalizeRequest(request, LaneName);
+
+        // Full-corpus guard: operator must explicitly opt in to FullCorpus=true.
+        // Null TopN + FullCorpus=false would silently pull ~80k features.
+        if (topN is null && !fullCorpus)
+        {
+            return BadRequest(new
+            {
+                error = "Geometry drain requires either TopN (bounded slice) or FullCorpus=true (full county). " +
+                        "Refusing to run without an explicit slice or full-corpus authorization.",
+            });
+        }
+
+        // null geomTopN → no resultRecordCount (full-corpus ArcGIS pull).
+        var geomTopN = fullCorpus ? (int?)null : topN;
         var startedAt = DateTime.UtcNow;
         var quarantineBefore = await CountQuarantineAsync(cancellationToken);
         // SYNC-COMPLETE-2-V2.
@@ -1542,7 +1564,31 @@ public class DoctrineDrainController : ControllerBase
 
         try
         {
-            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCounty = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var bentonCountyId = bentonCounty.Id;
+
+            // GEOM-005: config is keyed by FIPS code, not GUID.
+            // Refuse before any ArcGIS network call if FipsCode is unset or has no config entry.
+            if (string.IsNullOrEmpty(bentonCounty.FipsCode))
+                return BadRequest(new { error = "Benton county row has no FipsCode — geometry drain refused." });
+
+            var arcGisCounty = arcGisOptions.Value.GetForCounty(bentonCounty.FipsCode);
+            if (arcGisCounty is null)
+                return NotFound(new { error = $"No ArcGIS config entry for FIPS {bentonCounty.FipsCode}." });
+
+            // GEOM-011: identity guard — if config has an explicit CountyId it must match the DB row.
+            if (arcGisCounty.CountyId.HasValue && arcGisCounty.CountyId.Value != bentonCounty.Id)
+            {
+                return StatusCode(409, new
+                {
+                    error = $"ArcGIS config CountyId ({arcGisCounty.CountyId}) does not match Benton DB row Id ({bentonCounty.Id}). " +
+                            "Resolve identity conflict before running the geometry drain.",
+                });
+            }
+
+            // GEOM-011: paged when FullCorpus=true or topN exceeds a single ArcGIS page.
+            var pageSize = arcGisCounty.PageSize;
+            var usePaged = fullCorpus || (geomTopN.HasValue && geomTopN.Value > pageSize);
 
             // Stage 1: ArcGis-D1.
             int d1FeaturesLanded = 0;
@@ -1552,8 +1598,14 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid}", bentonCountyId);
-                var d1 = await rawLandingSvc.LandParcelGeomsAsync(bentonCountyId, operatorName, cancellationToken);
+                _logger.LogInformation("[Drain:geometry] D1 ArcGIS landing for county={Cid} paged={Paged}", bentonCountyId, usePaged);
+                ArcGisRawLandingResult d1;
+                if (usePaged)
+                    d1 = await rawLandingSvc.LandParcelGeomsPagedAsync(
+                        bentonCounty.FipsCode, bentonCountyId, operatorName, pageSize, geomTopN, cancellationToken);
+                else
+                    d1 = await rawLandingSvc.LandParcelGeomsAsync(
+                        bentonCounty.FipsCode, bentonCountyId, operatorName, geomTopN, cancellationToken);
                 batchIds.Add(d1.LoadBatchId);
                 if (!IsCompleted(d1.Status))
                     return await FailLaneAsync(LaneName, "ArcGis-D1", d1.ErrorSummary,
@@ -1637,28 +1689,34 @@ public class DoctrineDrainController : ControllerBase
         return (cs, null);
     }
 
-    private static (string OperatorName, short WorkingYear, bool FullCorpus, int? TopN)
+    internal static (string OperatorName, short WorkingYear, bool FullCorpus, int? TopN)
         NormalizeRequest(DoctrineDrainRequest? request, string laneName)
     {
         var operatorName = string.IsNullOrWhiteSpace(request?.OperatorName)
             ? $"doctrine-drain-{laneName}"
             : request!.OperatorName!.Trim();
         var workingYear = (short)(request?.WorkingYear ?? 2026);
-        var fullCorpus = request?.FullCorpus ?? true;
+        var fullCorpus = request?.FullCorpus ?? false;
         var topN = request?.TopN;
         return (operatorName, workingYear, fullCorpus, topN);
     }
+
+    // Anchor GUID matches DatabaseSeeder.BentonCountyId. If ResolveOrCreate falls through
+    // to creation, this ID keeps the county row stable across reseeds. ArcGIS config is
+    // now keyed by FipsCode ("53005"), not by this GUID.
+    private static readonly Guid KnownBentonCountyId =
+        Guid.Parse("19190019-1919-1919-1919-191919191919");
 
     /// <summary>
     /// Resolve Benton (WA) county id by FIPS, then by Name+State, then
     /// create. Mirrors CanonicalDebugController's implementation.
     /// </summary>
-    private async Task<Guid> ResolveOrCreateBentonCountyAsync(CancellationToken cancellationToken)
+    private async Task<County> ResolveOrCreateBentonCountyAsync(CancellationToken cancellationToken)
     {
         var byFips = await _db.Counties
             .FirstOrDefaultAsync(c => c.FipsCode == "53005", cancellationToken)
             .ConfigureAwait(false);
-        if (byFips is not null) return byFips.Id;
+        if (byFips is not null) return byFips;
 
         var byName = await _db.Counties
             .FirstOrDefaultAsync(c =>
@@ -1666,10 +1724,11 @@ public class DoctrineDrainController : ControllerBase
                 EF.Functions.ILike(c.State, "WA"),
                 cancellationToken)
             .ConfigureAwait(false);
-        if (byName is not null) return byName.Id;
+        if (byName is not null) return byName;
 
         var county = new County
         {
+            Id = KnownBentonCountyId,
             Name = "Benton",
             State = "WA",
             FipsCode = "53005",
@@ -1679,7 +1738,7 @@ public class DoctrineDrainController : ControllerBase
         _db.Counties.Add(county);
         await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         _logger.LogInformation("[DoctrineDrain] Created Benton county row id={Id}", county.Id);
-        return county.Id;
+        return county;
     }
 
     private static bool IsCompleted(string? status) =>
@@ -2131,9 +2190,10 @@ public class DoctrineDrainController : ControllerBase
     /// <param name="OperatorName">Audit anchor on every batch this lane writes.</param>
     /// <param name="WorkingYear">PACS prop_val_yr filter for the year-grain stages
     /// (improvement, land). Default 2026 — Benton's active assessment year.</param>
-    /// <param name="FullCorpus">When true (the default), the seed source's TopN
-    /// is null (full corpus drain). When false, <paramref name="TopN"/> applies
-    /// (or a per-lane safe default if TopN is also null).</param>
+    /// <param name="FullCorpus">When true, the seed source's TopN is null
+    /// (full corpus drain). When false or omitted (the safe default),
+    /// <paramref name="TopN"/> applies (or a per-lane safe default if TopN
+    /// is also null: 200 for parcel/owner/improvement/land, 500 for sales).</param>
     /// <param name="TopN">Override the per-lane safe-default sample size. Only
     /// effective when <paramref name="FullCorpus"/> is false.</param>
     /// <param name="LaneResultId">SYNC-COMPLETE-2-V2: when supplied (typically by

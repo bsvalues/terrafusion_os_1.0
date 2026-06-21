@@ -1,0 +1,20 @@
+{
+  "_note": "Not every issue blocks every day, but every issue must be classified. Prevents perfectionism while stopping chaos.",
+  "budget": {
+    "P0": { "allowed": 0, "rule": "release blocker — block merge if > 0" },
+    "P1": {
+      "allowed": 0,
+      "rule": "must fix before 1.0 — block if a NEW P1 is introduced"
+    },
+    "P2": {
+      "allowed": "with_ticket",
+      "rule": "allowed only with a drift-ledger row"
+    },
+    "P3": { "allowed": "defer", "rule": "documented deferral" }
+  },
+  "ci_rules": [
+    "If P0 > 0 -> block",
+    "If a new P1 is introduced by the change -> block",
+    "If P2 introduced without a drift-ledger row -> block"
+  ]
+}

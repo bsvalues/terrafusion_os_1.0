@@ -1,0 +1,47 @@
+{
+  "_source": "TerraFusion five-layer architecture model + .github/AGENT_ENTRYPOINT.md (Property Workbench routing)",
+  "layers": [
+    {
+      "n": 1,
+      "id": "os-shell",
+      "name": "OS Shell",
+      "desc": "Department-agnostic chrome (dock, top bar). Owns no domain data.",
+      "owns_domain": false
+    },
+    {
+      "n": 2,
+      "id": "home-scene",
+      "name": "Home Scene",
+      "desc": "Landing / scene.",
+      "owns_domain": false
+    },
+    {
+      "n": 3,
+      "id": "suite-workspace",
+      "name": "Suite Workspaces",
+      "desc": "Departmental homes (Forge/Atlas/Dais/Dossier).",
+      "owns_domain": true
+    },
+    {
+      "n": 4,
+      "id": "workbench",
+      "name": "Tier-0 Workbench",
+      "desc": "Property Workbench. Center of gravity for parcel-scoped work.",
+      "owns_domain": true
+    },
+    {
+      "n": 5,
+      "id": "full-app",
+      "name": "Full Applications",
+      "desc": "Tools hosted inside higher layers.",
+      "owns_domain": true
+    }
+  ],
+  "workbench_routing": {
+    "parcel_search": "property-workbench",
+    "parcel_actions": "property-workbench",
+    "pilot": "in-shell OS surface",
+    "trace": "in-shell OS surface",
+    "invariant": "Dock / top bar / desktop chrome must remain preserved during launches. Never bypass Property Workbench for parcel-scoped actions."
+  }
+}

@@ -132,6 +132,10 @@ const DaisHome = lazy(() => import('./pages/suites/DaisSuiteHome'));
 const DossierHome = lazy(() => import('./pages/suites/DossierSuiteHome'));
 const GptHome = lazy(() => import('./pages/suites/GptSuiteHome'));
 
+// TerraFusion Academy — Institutional Intelligence layer (doctrine,
+// evidence standards, operational memory) + reusable Teach Me Why panel.
+const AcademyHome = lazy(() => import('./pages/academy/AcademyHome'));
+
 // GovernanceLock - Pilot Console (single choke point UI)
 const PilotConsole = lazy(() => import('./pages/PilotConsole'));
 // Slice 6: Standalone Home Shell for Pilot
@@ -303,6 +307,9 @@ const Router: React.FC = () => {
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
                   <Route path='gpt' element={<GptHome />} />
+
+                  {/* TerraFusion Academy — Institutional Intelligence layer */}
+                  <Route path='academy' element={<AcademyHome />} />
 
                   {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
                   <Route path='pilot' element={<PilotHome />} />

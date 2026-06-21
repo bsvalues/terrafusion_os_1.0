@@ -72,7 +72,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         });
         var svc = BuildService(client);
 
-        var result = await svc.SyncCountyAsync(BentonId, "test-op");
+        var result = await svc.SyncCountyAsync("53005", BentonId, "test-op");
 
         result.Status.Should().Be("COMPLETED");
         result.FeaturesFetched.Should().Be(2);
@@ -101,8 +101,8 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         var client = new FakeArcGisClient(fixedFeatures);
         var svc = BuildService(client);
 
-        await svc.SyncCountyAsync(BentonId, "test-op");
-        await svc.SyncCountyAsync(BentonId, "test-op");
+        await svc.SyncCountyAsync("53005", BentonId, "test-op");
+        await svc.SyncCountyAsync("53005", BentonId, "test-op");
 
         // Two batches; one row-set; one source_xref per geometry.
         (await _db.SyncBridgeLoadBatches.CountAsync()).Should().Be(2);
@@ -124,14 +124,14 @@ public sealed class ArcGisSyncServiceTests : IDisposable
             MakeFeature(1, "APN-1"),
             MakeFeature(2, "APN-2"),
         });
-        await BuildService(clientA).SyncCountyAsync(BentonId, "test-op");
+        await BuildService(clientA).SyncCountyAsync("53005", BentonId, "test-op");
 
         // Run 2: only feature 1 remains in source.
         var clientB = new FakeArcGisClient(new[]
         {
             MakeFeature(1, "APN-1-renamed"),
         });
-        var result = await BuildService(clientB).SyncCountyAsync(BentonId, "test-op");
+        var result = await BuildService(clientB).SyncCountyAsync("53005", BentonId, "test-op");
 
         result.FeaturesUpserted.Should().Be(1);
         result.FeaturesSoftDeleted.Should().Be(1);
@@ -152,7 +152,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
             MakeFeature(20, "Y"),
             MakeFeature(30, "Z"),
         });
-        await BuildService(client).SyncCountyAsync(BentonId, "test-op");
+        await BuildService(client).SyncCountyAsync("53005", BentonId, "test-op");
 
         var activeIds = await _db.TfParcelGeoms
             .Where(g => g.IsActive)
@@ -179,7 +179,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
     public async Task SyncRecordsCompletionGate_OnSuccess()
     {
         var client = new FakeArcGisClient(new[] { MakeFeature(1, "X") });
-        await BuildService(client).SyncCountyAsync(BentonId, "test-op");
+        await BuildService(client).SyncCountyAsync("53005", BentonId, "test-op");
 
         var completionGate = await _db.SyncBridgePromotionGateResults
             .SingleAsync(g => g.GateName == "gis-tf:arcgis-sync-completion");
@@ -194,7 +194,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
             new ArcGisFeatureServiceTransportException("simulated 500"));
         var svc = BuildService(client);
 
-        var result = await svc.SyncCountyAsync(BentonId, "test-op");
+        var result = await svc.SyncCountyAsync("53005", BentonId, "test-op");
 
         result.Status.Should().Be("FAILED");
         result.ErrorSummary.Should().Contain("simulated 500");
@@ -220,7 +220,7 @@ public sealed class ArcGisSyncServiceTests : IDisposable
             new ArcGisFeatureServiceConfigurationException("no county bound"));
         var svc = BuildService(client);
 
-        var result = await svc.SyncCountyAsync(BentonId, "test-op");
+        var result = await svc.SyncCountyAsync("53005", BentonId, "test-op");
 
         result.Status.Should().Be("FAILED");
         result.ErrorSummary.Should().Contain("no county bound");
@@ -237,8 +237,13 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         public FakeArcGisClient(IEnumerable<ArcGisParcelFeature> features)
             => _features = features.ToList();
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
-            Guid countyId, CancellationToken cancellationToken = default)
+            string fipsCode, Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromResult(_features);
+        public Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+            string fipsCode, Guid countyId, int offset, int pageSize, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
+        public Task<int> FetchCountAsync(string fipsCode, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
     }
 
     private sealed class FailingArcGisClient : IArcGisFeatureServiceClient
@@ -246,7 +251,12 @@ public sealed class ArcGisSyncServiceTests : IDisposable
         private readonly Exception _ex;
         public FailingArcGisClient(Exception ex) => _ex = ex;
         public Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
-            Guid countyId, CancellationToken cancellationToken = default)
+            string fipsCode, Guid countyId, int? topN, CancellationToken cancellationToken = default)
             => Task.FromException<IReadOnlyList<ArcGisParcelFeature>>(_ex);
+        public Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+            string fipsCode, Guid countyId, int offset, int pageSize, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
+        public Task<int> FetchCountAsync(string fipsCode, CancellationToken cancellationToken = default)
+            => throw new NotImplementedException();
     }
 }

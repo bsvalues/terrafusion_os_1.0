@@ -56,20 +56,22 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
     }
 
     public async Task<IReadOnlyList<ArcGisParcelFeature>> FetchParcelsAsync(
+        string fipsCode,
         Guid countyId,
+        int? topN,
         CancellationToken cancellationToken = default)
     {
-        var county = _options.Value.GetForCounty(countyId)
+        var county = _options.Value.GetForCounty(fipsCode)
             ?? throw new ArcGisFeatureServiceConfigurationException(
-                $"No ArcGIS feature-service configuration bound for county {countyId}.");
+                $"No ArcGIS feature-service configuration bound for FIPS {fipsCode} (county {countyId}).");
 
         if (string.IsNullOrWhiteSpace(county.ParcelFeatureServiceUrl))
         {
             throw new ArcGisFeatureServiceConfigurationException(
-                $"County {countyId} has empty ParcelFeatureServiceUrl.");
+                $"FIPS {fipsCode} (county {countyId}) has empty ParcelFeatureServiceUrl.");
         }
 
-        var queryUrl = BuildQueryUrl(county);
+        var queryUrl = BuildQueryUrl(county, topN);
         using var http = _httpClientFactory.CreateClient(HttpClientName);
         http.Timeout = TimeSpan.FromSeconds(county.RequestTimeoutSeconds);
 
@@ -121,12 +123,143 @@ public sealed class ArcGisFeatureServiceClient : IArcGisFeatureServiceClient
         return results;
     }
 
-    private static string BuildQueryUrl(CountyArcGisOptions county)
+    public async Task<(IReadOnlyList<ArcGisParcelFeature> Features, bool ExceededLimit)> FetchPageAsync(
+        string fipsCode,
+        Guid countyId,
+        int offset,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var county = _options.Value.GetForCounty(fipsCode)
+            ?? throw new ArcGisFeatureServiceConfigurationException(
+                $"No ArcGIS feature-service configuration bound for FIPS {fipsCode} (county {countyId}).");
+
+        if (string.IsNullOrWhiteSpace(county.ParcelFeatureServiceUrl))
+            throw new ArcGisFeatureServiceConfigurationException(
+                $"FIPS {fipsCode} (county {countyId}) has empty ParcelFeatureServiceUrl.");
+
+        var queryUrl = BuildPageUrl(county, offset, pageSize);
+        using var http = _httpClientFactory.CreateClient(HttpClientName);
+        http.Timeout = TimeSpan.FromSeconds(county.RequestTimeoutSeconds);
+
+        if (!string.IsNullOrEmpty(county.BearerToken))
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", county.BearerToken);
+
+        ArcGisGeoJsonFeatureCollection? payload;
+        try
+        {
+            payload = await http.GetFromJsonAsync<ArcGisGeoJsonFeatureCollection>(
+                queryUrl, JsonOptions, cancellationToken).ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS page request failed for county {countyId} offset={offset}: {ex.Message}", ex);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS page request timed out after {county.RequestTimeoutSeconds}s for county {countyId} offset={offset}.", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS page response was not valid JSON for county {countyId} offset={offset}: {ex.Message}", ex);
+        }
+
+        if (payload?.Features is null || payload.Features.Count == 0)
+            return (Array.Empty<ArcGisParcelFeature>(), false);
+
+        var pageResults = new List<ArcGisParcelFeature>(payload.Features.Count);
+        foreach (var feature in payload.Features)
+        {
+            var projected = TryProject(feature, countyId, county);
+            if (projected is not null)
+                pageResults.Add(projected);
+        }
+        return (pageResults, payload.ExceededTransferLimit);
+    }
+
+    public async Task<int> FetchCountAsync(
+        string fipsCode,
+        CancellationToken cancellationToken = default)
+    {
+        var county = _options.Value.GetForCounty(fipsCode)
+            ?? throw new ArcGisFeatureServiceConfigurationException(
+                $"No ArcGIS feature-service configuration bound for FIPS {fipsCode}.");
+
+        if (string.IsNullOrWhiteSpace(county.ParcelFeatureServiceUrl))
+            throw new ArcGisFeatureServiceConfigurationException(
+                $"FIPS {fipsCode} has empty ParcelFeatureServiceUrl.");
+
+        var countUrl = BuildCountUrl(county);
+        using var http = _httpClientFactory.CreateClient(HttpClientName);
+        http.Timeout = TimeSpan.FromSeconds(county.RequestTimeoutSeconds);
+
+        if (!string.IsNullOrEmpty(county.BearerToken))
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", county.BearerToken);
+
+        ArcGisCountResponse? response;
+        try
+        {
+            response = await http.GetFromJsonAsync<ArcGisCountResponse>(
+                countUrl, JsonOptions, cancellationToken).ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS count request failed for FIPS {fipsCode}: {ex.Message}", ex);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS count request timed out after {county.RequestTimeoutSeconds}s for FIPS {fipsCode}.", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new ArcGisFeatureServiceTransportException(
+                $"ArcGIS count response was not valid JSON for FIPS {fipsCode}: {ex.Message}", ex);
+        }
+
+        return response?.Count ?? 0;
+    }
+
+    private static string BuildQueryUrl(CountyArcGisOptions county, int? topN = null)
+    {
+        var separator = county.ParcelFeatureServiceUrl.EndsWith('/') ? "query" : "/query";
+        var sr = county.OutSpatialReferenceEpsg.ToString(CultureInfo.InvariantCulture);
+        var limit = topN.HasValue
+            ? $"&resultRecordCount={topN.Value.ToString(CultureInfo.InvariantCulture)}&orderByFields=OBJECTID+ASC"
+            : string.Empty;
+        return $"{county.ParcelFeatureServiceUrl}{separator}" +
+               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true{limit}";
+    }
+
+    // GEOM-011: paged query URL — resultOffset + resultRecordCount + deterministic OBJECTID order.
+    private static string BuildPageUrl(CountyArcGisOptions county, int offset, int pageSize)
     {
         var separator = county.ParcelFeatureServiceUrl.EndsWith('/') ? "query" : "/query";
         var sr = county.OutSpatialReferenceEpsg.ToString(CultureInfo.InvariantCulture);
         return $"{county.ParcelFeatureServiceUrl}{separator}" +
-               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true";
+               $"?f=geojson&where=1%3D1&outFields=*&outSR={sr}&returnGeometry=true" +
+               $"&resultRecordCount={pageSize.ToString(CultureInfo.InvariantCulture)}" +
+               $"&resultOffset={offset.ToString(CultureInfo.InvariantCulture)}" +
+               $"&orderByFields=OBJECTID+ASC";
+    }
+
+    // GEOM-011: count-only URL for preflight; returns {"count": N} not GeoJSON.
+    private static string BuildCountUrl(CountyArcGisOptions county)
+    {
+        var separator = county.ParcelFeatureServiceUrl.EndsWith('/') ? "query" : "/query";
+        return $"{county.ParcelFeatureServiceUrl}{separator}?f=json&where=1%3D1&returnCountOnly=true";
+    }
+
+    // JsonOptions has PropertyNameCaseInsensitive=true, so "count" → Count without an attribute.
+    private sealed record ArcGisCountResponse
+    {
+        public int Count { get; init; }
     }
 
     private ArcGisParcelFeature? TryProject(
