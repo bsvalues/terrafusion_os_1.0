@@ -502,7 +502,11 @@ public class DoctrineDrainController : ControllerBase
             }
             else
             {
-                var suppSrc = new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys);
+                // For full-corpus runs (~809k keys), the keyed OR-clause approach fires
+                // ~810 round-trips. Use the bulk streaming source instead.
+                IPacsPropSuppAssocSource suppSrc = fullCorpus
+                    ? new SqlServerPacsPropSuppAssocSource(pacsCs!, topN: null, filterToQualified: true)
+                    : new KeyedSqlServerPacsPropSuppAssocSource(pacsCs!, distinctSuppKeys);
                 var suppS1 = await assocSvc.LandPropSuppAssocsAsync(suppSrc, operatorName, cancellationToken);
                 batchIds.Add(suppS1.LoadBatchId);
                 if (!IsCompleted(suppS1.Status))

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260622062147_WO_IMPROVEMENT_TfImprovementFeature_WidenCodes")]
+    partial class WO_IMPROVEMENT_TfImprovementFeature_WidenCodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7752,8 +7755,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("IAttrValCd")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<long>("IAttrValId")
                         .HasColumnType("bigint");
@@ -8128,8 +8131,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)
@@ -17399,8 +17402,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)

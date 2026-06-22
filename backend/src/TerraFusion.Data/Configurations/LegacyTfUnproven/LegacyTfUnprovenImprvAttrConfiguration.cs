@@ -26,7 +26,7 @@ public sealed class LegacyTfUnprovenImprvAttrConfiguration
         builder.Property(x => x.ImprvDetId).IsRequired();
         builder.Property(x => x.IAttrValId).IsRequired();
 
-        builder.Property(x => x.IAttrValCd).HasMaxLength(32).IsRequired();
+        builder.Property(x => x.IAttrValCd).HasMaxLength(64).IsRequired();
         builder.Property(x => x.AttrValueText).HasMaxLength(255);
         builder.Property(x => x.AttrValueNumeric).HasPrecision(18, 4);
 
