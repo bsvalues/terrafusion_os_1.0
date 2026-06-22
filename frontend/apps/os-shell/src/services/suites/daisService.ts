@@ -31,6 +31,27 @@ function authHeadersReadOnly(): Record<string, string> {
   return headers;
 }
 
+/**
+ * Optional read scope for Dais queries. When provided, county/taxYear are sent
+ * as query params so reads are EXPLICITLY scoped instead of relying on backend
+ * defaults (authenticated county + current UTC year).
+ */
+export interface DaisQueryScope {
+  countyId?: string;
+  taxYear?: number;
+}
+
+function scopeQuery(scope?: DaisQueryScope): string {
+  if (!scope) return '';
+  const params = new URLSearchParams();
+  if (scope.countyId) params.set('county', scope.countyId);
+  if (typeof scope.taxYear === 'number' && Number.isFinite(scope.taxYear) && scope.taxYear > 0) {
+    params.set('taxYear', String(scope.taxYear));
+  }
+  const q = params.toString();
+  return q ? `?${q}` : '';
+}
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -96,8 +117,8 @@ export async function getAppeals(parcelId: string): Promise<Appeal[]> {
   return res.json();
 }
 
-export async function getAllAppeals(): Promise<Appeal[]> {
-  const res = await fetch(`${API}/appeals`, { headers: authHeadersReadOnly() });
+export async function getAllAppeals(scope?: DaisQueryScope): Promise<Appeal[]> {
+  const res = await fetch(`${API}/appeals${scopeQuery(scope)}`, { headers: authHeadersReadOnly() });
   if (!res.ok) throw new Error(`Failed to fetch appeals: ${res.statusText}`);
   return res.json();
 }
@@ -188,8 +209,8 @@ export async function processExemption(
 // Certification / Roll Readiness
 // ============================================================================
 
-export async function getCertificationStatus(): Promise<CertificationStatus[]> {
-  const res = await fetch(`${API}/cert/status`, { headers: authHeadersReadOnly() });
+export async function getCertificationStatus(scope?: DaisQueryScope): Promise<CertificationStatus[]> {
+  const res = await fetch(`${API}/cert/status${scopeQuery(scope)}`, { headers: authHeadersReadOnly() });
   if (!res.ok) throw new Error(`Failed to fetch certification status: ${res.statusText}`);
   const data = await res.json();
   // Backend returns either an array or a single roll-status object
