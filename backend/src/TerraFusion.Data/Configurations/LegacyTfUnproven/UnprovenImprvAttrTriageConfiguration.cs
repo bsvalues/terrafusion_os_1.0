@@ -26,7 +26,7 @@ public sealed class UnprovenImprvAttrTriageConfiguration
         builder.Property(x => x.Status).HasMaxLength(20).IsRequired();
 
         builder.Property(x => x.RoutedToUniverse).HasMaxLength(50);
-        builder.Property(x => x.RoutedToIAttrValCd).HasMaxLength(32);
+        builder.Property(x => x.RoutedToIAttrValCd).HasMaxLength(64);
 
         builder.Property(x => x.DismissalReason).HasMaxLength(50);
         builder.Property(x => x.OperatorNote).HasMaxLength(1000);
