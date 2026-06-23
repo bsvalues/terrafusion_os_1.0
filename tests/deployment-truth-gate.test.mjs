@@ -340,7 +340,11 @@ describe('D. CI release gate coverage', () => {
     );
     assert.ok(
       content.includes('LOGIN_RESPONSE="$(curl -fsS --max-time 30'),
-      'Release lane must give the post-deploy DB-backed login smoke enough time for cold auth/session persistence while still requiring a real token',
+      'Release lane must give the post-deploy DB-backed login smoke enough time for cold auth/session persistence',
+    );
+    assert.ok(
+      content.includes('did not receive a token'),
+      'Release lane must still fail the provisioned auth smoke when the login response did not receive a token',
     );
     assert.ok(
       content.includes('PROFILE_RESPONSE="$(curl -fsS --max-time 30') &&
