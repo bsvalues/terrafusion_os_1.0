@@ -699,7 +699,7 @@ export default function IncomeForge(_props: IncomeForgeProps = {}) {
           <button
             key={tab.id}
             type="button"
-            className={`rounded border px-3 py-1.5 text-sm ${activeTab === tab.id ? 'bg-blue-600 text-white' : 'bg-background hover:bg-muted'}`}
+            className={`rounded border px-3 py-1.5 text-sm ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'}`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
