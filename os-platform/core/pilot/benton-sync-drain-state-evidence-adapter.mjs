@@ -110,13 +110,25 @@ function normalizeConnectionString(value) {
 }
 
 function defaultConnectionString() {
-  return normalizeConnectionString(
+  const envConnectionString =
     process.env.TF_BENTON_SYNC_DB_URL ??
-      process.env.TF_SYNC_DB_URL ??
-      process.env.TERRAFUSION_DB_URL ??
-      process.env.DATABASE_URL ??
-      process.env.ConnectionStrings__DefaultConnection ??
+    process.env.TF_SYNC_DB_URL ??
+    process.env.TERRAFUSION_DB_URL ??
+    process.env.DATABASE_URL ??
+    process.env.ConnectionStrings__DefaultConnection;
+
+  if (envConnectionString) {
+    return normalizeConnectionString(envConnectionString);
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    return normalizeConnectionString(
       "Host=localhost;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
+    );
+  }
+
+  throw new Error(
+    "No database connection string configured. Please set one of TF_BENTON_SYNC_DB_URL, TF_SYNC_DB_URL, TERRAFUSION_DB_URL, DATABASE_URL, or ConnectionStrings__DefaultConnection."
   );
 }
 
