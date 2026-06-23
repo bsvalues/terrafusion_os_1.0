@@ -94,7 +94,14 @@ else
 
   if [ -n "$PM" ]; then
     log "INFO: Installing frontend dependencies..."
-    if ! $PM install >>"$LOG_FILE" 2>&1; then
+    if [ "$PM" = "pnpm" ]; then
+      install_cmd=(pnpm --dir "$ROOT_DIR" install --frozen-lockfile --filter "./frontend..." --child-concurrency=1)
+    else
+      install_cmd=(npm install)
+    fi
+
+    log "INFO: Frontend install command: ${install_cmd[*]}"
+    if ! "${install_cmd[@]}" >>"$LOG_FILE" 2>&1; then
       log "ERROR: Frontend dependency install failed."
       increment_error
     else
