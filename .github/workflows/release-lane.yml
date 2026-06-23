@@ -85,6 +85,14 @@ jobs:
             sed -i 's|dotnet restore TerraFusion\.sln|dotnet restore src/TerraFusion.API/TerraFusion.API.csproj|g' backend/Dockerfile
           fi
 
+          if grep -q 'TerraFusion.AuthProvisioner' backend/Dockerfile && [ ! -d backend/tools/TerraFusion.AuthProvisioner ]; then
+            echo "Patching Dockerfile: target SHA has no AuthProvisioner tool"
+            sed -i '/COPY tools\/TerraFusion\.AuthProvisioner/d' backend/Dockerfile
+            sed -i '/RUN dotnet restore tools\/TerraFusion\.AuthProvisioner/d' backend/Dockerfile
+            sed -i '/RUN dotnet publish tools\/TerraFusion\.AuthProvisioner/,/--verbosity minimal/d' backend/Dockerfile
+            sed -i '/COPY --from=build \/app\/auth-provisioner/d' backend/Dockerfile
+          fi
+
           if grep -q 'RUN npx vite build --outDir /app/dist' frontend/Dockerfile; then
             echo "Patching frontend Dockerfile: raise Node heap for Vite production build"
             sed -i 's|RUN npx vite build --outDir /app/dist|RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist|g' frontend/Dockerfile
