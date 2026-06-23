@@ -41,7 +41,7 @@ Generated: 2026-06-06T21:30:07.992Z
 
 ## Rules
 
-- Read-only evidence collector only.
+- Read-only evidence collector.
 - Unavailable DB connection reports UNKNOWN, not PASS.
 - Partial seed may enable real dev readiness, not production proof.
 - Production and operational proof remain false.
