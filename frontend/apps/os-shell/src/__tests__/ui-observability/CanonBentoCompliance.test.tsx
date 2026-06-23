@@ -163,12 +163,12 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     localStorage.clear();
   });
 
-  it('exposes a labelled tablist wrapping all seven role=tab buttons', () => {
+  it('exposes a labelled tablist wrapping all eight role=tab buttons', () => {
     render(<CanonHome />);
     const tablist = screen.getByRole('tablist', { name: /bottom panel/i });
     const tabs = within(tablist).getAllByRole('tab');
-    // Gates / Terminal / Problems / Runtime (#924) / Console (#928) / Evidence (#930) / Gate Runner
-    expect(tabs).toHaveLength(7);
+    // Gates / Terminal / Problems / Runtime (#924) / Console (#928) / Evidence (#930) / Gate Runner (#931) / Diff & Risk
+    expect(tabs).toHaveLength(8);
     expect(within(tablist).getByRole('tab', { name: 'Gates' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Problems' })).toBeInTheDocument();
@@ -176,6 +176,7 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     expect(within(tablist).getByRole('tab', { name: 'Console' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Evidence' })).toBeInTheDocument();
     expect(within(tablist).getByRole('tab', { name: 'Gate Runner' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Diff & Risk' })).toBeInTheDocument();
   });
 
   it('applies the ARIA tab attributes to the Gate Runner tab too', () => {
@@ -185,6 +186,15 @@ describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
     expect(gateRunnerTab).toHaveAttribute('aria-controls');
     expect(gateRunnerTab).toHaveAttribute('tabindex', '-1');
     expect(gateRunnerTab.id).toBeTruthy();
+  });
+
+  it('applies the ARIA tab attributes to the Diff & Risk tab too', () => {
+    render(<CanonHome />);
+    const diffRiskTab = screen.getByRole('tab', { name: 'Diff & Risk' });
+    expect(diffRiskTab).toHaveAttribute('aria-selected', 'false');
+    expect(diffRiskTab).toHaveAttribute('aria-controls');
+    expect(diffRiskTab).toHaveAttribute('tabindex', '-1');
+    expect(diffRiskTab.id).toBeTruthy();
   });
 
   it('applies the ARIA tab attributes to the Evidence tab too', () => {
