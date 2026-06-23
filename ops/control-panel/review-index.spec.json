@@ -1,0 +1,211 @@
+{
+  "id": "terrafusion-control-panel-review-index",
+  "version": 1,
+  "status": "seed-contract",
+  "reviewLedgerIdentity": {
+    "reviewIndexVersion": 1,
+    "createdAt": "2026-06-23T00:00:00Z",
+    "updatedAt": "2026-06-23T00:00:00Z",
+    "maintainedBy": "human-operator",
+    "scope": "manual review and disposition ledger for accepted CP-002 monitor reports",
+    "sourceContract": "CP-002 report-intake contract",
+    "authorityBoundary": {
+      "mode": "manual_static_review_ledger_only",
+      "controlPanelRole": "cockpit_prepare_console_findings_viewer",
+      "notBrainOrCortex": true,
+      "notAutonomousQueue": true,
+      "notRuntimeAgent": true,
+      "scopeStatement": [
+        "This review index is manual/static.",
+        "This review index does not discover reports.",
+        "This review index does not ingest reports.",
+        "This review index does not read files.",
+        "This review index does not fetch APIs.",
+        "This review index does not execute commands.",
+        "This review index does not activate automations.",
+        "This review index does not mutate queue, canon, or runtime state.",
+        "This review index does not create Brain/Cortex authority."
+      ],
+      "forbiddenCapabilities": [
+        "discover reports",
+        "ingest reports",
+        "read local files live from HTML",
+        "fetch files or APIs from HTML",
+        "execute commands from the Control Panel",
+        "activate automations",
+        "mutate repo state",
+        "change queue truth",
+        "promote canon",
+        "claim runtime authority",
+        "create a second Brain or Cortex",
+        "create an autonomous queue"
+      ]
+    }
+  },
+  "reviewRecordStructure": {
+    "required": [
+      "reviewId",
+      "reportId",
+      "reportFilename",
+      "monitorId",
+      "laneId",
+      "reviewedAt",
+      "reviewedBy",
+      "reviewStatus",
+      "disposition",
+      "severity",
+      "linkedFindingIds",
+      "linkedEvidenceIds",
+      "notes",
+      "finalHandling"
+    ],
+    "optional": [
+      "proposedWorkOrderIds",
+      "createdWorkOrderIds",
+      "rejectedFindingIds",
+      "deferredFindingIds",
+      "blockedFindingIds",
+      "evidenceRefs",
+      "reportEvidenceIds",
+      "evidenceSummary",
+      "evidenceLocation",
+      "confidence",
+      "reviewerNotes",
+      "workOrderStatus"
+    ],
+    "fields": {
+      "reviewId": "Stable identifier for this manual review record.",
+      "reportId": "Accepted CP-002 report identifier being reviewed.",
+      "reportFilename": "Static report filename, if known.",
+      "monitorId": "Monitor identifier from the CP-002 report.",
+      "laneId": "Control Panel lane identifier from the approved lane vocabulary.",
+      "reviewedAt": "UTC ISO-8601 timestamp for manual review.",
+      "reviewedBy": "Human operator who performed the review.",
+      "reviewStatus": "One of the allowed manual review statuses.",
+      "disposition": "One of the allowed manual dispositions.",
+      "severity": "Highest relevant severity/classification for the reviewed item.",
+      "linkedFindingIds": "Finding IDs from the source report or manual review.",
+      "linkedEvidenceIds": "Evidence IDs from the source report or manual review.",
+      "proposedWorkOrderIds": "Work Order IDs suggested by the report or reviewer.",
+      "createdWorkOrderIds": "Work Order IDs actually created after human decision.",
+      "rejectedFindingIds": "Finding IDs rejected by manual review.",
+      "deferredFindingIds": "Finding IDs deferred by manual review.",
+      "blockedFindingIds": "Finding IDs blocked pending decision or evidence.",
+      "notes": "Short non-sensitive operator notes.",
+      "finalHandling": "Final handling value for the reviewed item."
+    }
+  },
+  "allowedReviewStatuses": [
+    "pending-review",
+    "in-review",
+    "reviewed",
+    "needs-human-decision",
+    "converted-to-wo",
+    "deferred",
+    "rejected",
+    "blocked",
+    "resolved"
+  ],
+  "allowedDispositions": [
+    "accept-as-evidence",
+    "prepare-work-order",
+    "request-clarification",
+    "defer",
+    "reject",
+    "block-pending-decision",
+    "resolved-no-action"
+  ],
+  "allowedLaneIds": [
+    "daily-pulse",
+    "open-work-orders",
+    "governance-drift",
+    "ai-sidecar",
+    "ci-azure-health",
+    "gap-risk-register"
+  ],
+  "allowedSeverities": [
+    "P0",
+    "P1",
+    "P2",
+    "Deferred",
+    "Needs Decision",
+    "Info"
+  ],
+  "evidenceLinkage": {
+    "allowedReferenceFields": [
+      "evidenceRefs",
+      "reportEvidenceIds",
+      "linkedEvidenceIds",
+      "evidenceSummary",
+      "evidenceLocation",
+      "confidence",
+      "reviewerNotes"
+    ],
+    "rules": [
+      "Reference evidence IDs or report evidence IDs without embedding protected data or raw evidence content.",
+      "Use evidenceSummary for short non-sensitive operator summaries only.",
+      "Use evidenceLocation for static path, report ID, or external run URL references only.",
+      "Do not include secrets, credentials, county data, PACS data, owner-sensitive data, appeals evidence, exemptions evidence, valuation evidence, or protected data."
+    ]
+  },
+  "workOrderLinkage": {
+    "proposedWorkOrderIds": "Suggested Work Order IDs from the report or reviewer. These do not authorize mutation.",
+    "createdWorkOrderIds": "Work Order IDs actually created after a human decision.",
+    "allowedWorkOrderStatuses": [
+      "proposed",
+      "created",
+      "rejected",
+      "deferred",
+      "closed"
+    ],
+    "rule": "A proposed Work Order remains a proposal until a separate Work Order is created and approved by the human operator."
+  },
+  "rejectionRules": {
+    "reviewRecordMustRejectOrBlockIf": [
+      "lacks reportId or monitorId",
+      "lacks evidence for P0/P1 claims",
+      "attempts to activate automations",
+      "asks the Control Panel to execute commands",
+      "asks the HTML page to fetch/read local files",
+      "mutates repo state",
+      "changes queue truth",
+      "promotes canon",
+      "claims runtime authority",
+      "creates a second Brain/Cortex or autonomous queue",
+      "contains secrets",
+      "contains credentials",
+      "contains PACS data",
+      "contains county SQL data",
+      "contains owner-sensitive data",
+      "contains appeals evidence",
+      "contains exemptions evidence",
+      "contains valuation evidence",
+      "contains protected data"
+    ],
+    "p0P1EvidenceRule": "P0 and P1 review records require at least one linked evidence ID or report evidence ID.",
+    "protectedDataRule": "Use metadata, redacted references, or synthetic examples only. Do not embed protected operational data in the review index."
+  },
+  "finalHandlingModel": {
+    "allowedFinalHandling": [
+      "no-action",
+      "evidence-only",
+      "proposed-wo",
+      "wo-created",
+      "deferred",
+      "rejected",
+      "blocked",
+      "resolved"
+    ],
+    "meanings": {
+      "no-action": "Reviewed and no further action is needed.",
+      "evidence-only": "Retained as review evidence only.",
+      "proposed-wo": "Converted into a proposed Work Order prompt or ID.",
+      "wo-created": "A separate Work Order was created after human decision.",
+      "deferred": "Explicitly not now.",
+      "rejected": "Rejected by manual review.",
+      "blocked": "Blocked pending evidence, decision, or boundary correction.",
+      "resolved": "Resolved without additional mutation authority."
+    }
+  },
+  "exampleFile": "ops/control-panel/examples/review-index.example.json"
+}
