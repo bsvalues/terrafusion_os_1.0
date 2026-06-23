@@ -12,11 +12,21 @@ const navigateMock = vi.fn();
 const storeState: {
   activeParcel: unknown;
   activeParcelLoading: boolean;
+  activeParcelLoadingParcelId: string | null;
   activeParcelError: { status?: number; message: string; path?: string } | null;
 } = {
   activeParcel: null,
   activeParcelLoading: false,
+  activeParcelLoadingParcelId: null,
   activeParcelError: null,
+};
+
+const authState = {
+  isAuthenticated: true,
+  countyId: 'benton',
+  userId: 'u-smoke',
+  roles: ['Assessor'],
+  token: 'jwt' as string | null,
 };
 
 vi.mock('../../stores/propertyStore', () => ({
@@ -42,13 +52,7 @@ vi.mock('../../auth/useSession', () => ({
 }));
 
 vi.mock('../../auth/useAuthContext', () => ({
-  useAuthContext: () => ({
-    isAuthenticated: true,
-    countyId: 'benton',
-    userId: 'u-smoke',
-    roles: ['Assessor'],
-    token: 'jwt',
-  }),
+  useAuthContext: () => authState,
   toOsActor: () => ({ countyId: 'benton', userId: 'u-smoke', roles: ['Assessor'] }),
 }));
 
@@ -96,8 +100,36 @@ describe('PropertyWorkbench production smoke blockers', () => {
     Object.assign(storeState, {
       activeParcel: null,
       activeParcelLoading: false,
+      activeParcelLoadingParcelId: null,
       activeParcelError: null,
     });
+    Object.assign(authState, {
+      isAuthenticated: true,
+      countyId: 'benton',
+      userId: 'u-smoke',
+      roles: ['Assessor'],
+      token: 'jwt',
+    });
+  });
+
+  it('loads the route parcel through the store without requiring a Workbench bootstrap token', () => {
+    authState.token = null;
+
+    renderWorkbench();
+
+    expect(screen.queryByTestId('workbench-auth-bootstrap')).not.toBeInTheDocument();
+    expect(selectParcelMock).toHaveBeenCalledTimes(1);
+    expect(selectParcelMock).toHaveBeenCalledWith('GATE-TEST-001');
+  });
+
+  it('does not duplicate the same parcel load while it is already in flight', () => {
+    storeState.activeParcelLoading = true;
+    storeState.activeParcelLoadingParcelId = 'GATE-TEST-001';
+
+    renderWorkbench();
+
+    expect(screen.getByText(/Loading property GATE-TEST-001/i)).toBeInTheDocument();
+    expect(selectParcelMock).not.toHaveBeenCalled();
   });
 
   it('renders a hard property evidence blocker when authenticated parcel load returns 401', () => {
