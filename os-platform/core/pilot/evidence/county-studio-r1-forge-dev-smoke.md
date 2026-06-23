@@ -1,10 +1,10 @@
 # County Studio R1 Forge Dev Smoke
 
-Generated: 2026-06-07T17:34:36.042Z
+Generated: 2026-06-07T18:22:05.299Z
 
-Status: `FORGE_DEV_SMOKE_CANONICAL_READY_BACKEND_HEALTH_BLOCKED`
+Status: `FORGE_DEV_SMOKE_PREFLIGHT_CHAIN_READY_FULL_DEV_NOT_RERUN`
 
-## Previous Command
+## Command
 
 ```bash
 pnpm run dev:county-studio:real-benton
@@ -16,43 +16,36 @@ Working directory:
 C:\Users\bsval\.codex-worktrees\county-studio-r1-packet-payloads
 ```
 
-Previous smoke log:
-
-```text
-C:\Users\bsval\AppData\Local\Temp\county-studio-port-conflict-resolution-smoke-20260607-095557.log
-```
-
 ## Current Preflight Chain
 
 | Gate | Status | Passed |
 | --- | --- | --- |
 | Port preflight | `REAL_DEV_PORT_PREFLIGHT_PASS` | true |
-| Live DB readiness | `REAL_DEV_SERVER_BLOCKED` | false |
-| Real-dev activation | `NOT_REACHED_IN_CURRENT_PREFLIGHT_CHAIN` | false |
+| Backend health | `REAL_DEV_BACKEND_HEALTH_PASS` | true |
+| Live DB readiness | `REAL_DEV_DATA_AVAILABLE` | true |
+| Real-dev activation | `REAL_DEV_ACTIVATION_READY` | true |
 
-## Canonical Parcel Readiness
-
-The previous canonical blocker is resolved:
-
-```text
-canonical_tf.tf_parcel=3,198,979
-canonicalParcelBlocksForgeDev=false
-forgeDevRequiresCanonicalParcel=false
-productionProofRequiresCanonicalParcel=true
-```
-
-Canonical parcel remains production-proof relevant, but it is not the current Forge-dev blocker.
-
-## Current Blocker
-
-The latest live readiness refresh is blocked by backend health:
+Backend health:
 
 ```text
-backend health: Backend health is not proven.
-localhost:5000 and localhost:5046 are not responding.
+healthEndpoint=http://localhost:5000/health
+backendLaunchCommand=pnpm run dev:backend:api
+backendStartedByDevCommand=false
 ```
 
-So this is not a clean full dev-server smoke and does not claim production or operational proof.
+## Interpretation
+
+The backend health bootstrap gate removes the vague backend-health failure from the real Benton dev command. The current preflight chain is ready.
+
+The long-running `cross-env ... pnpm run dev` stage was not rerun in this backend health bootstrap slice, so this artifact does not claim `cleanFullDevSmokePassed=true`.
+
+## Proof Posture
+
+```text
+forgeDevAllowed=true
+productionProofAllowed=false
+operationalProofAllowed=false
+```
 
 ## Boundaries
 
