@@ -165,6 +165,17 @@ public sealed class PacsImprvDetailLandingService : IPacsImprvDetailLandingServi
                 ImprvDetAreaSum = imprvDetAreaSum,
             };
         }
+        catch (OperationCanceledException)
+        {
+            batch.Status = "CANCELLED";
+            batch.CompletedAt = DateTime.UtcNow;
+            batch.ErrorSummary = "Cancelled by caller (request timeout or explicit cancellation).";
+            await _db.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+            _logger.LogWarning(
+                "PACS imprv_detail landing CANCELLED. batch={BatchId}", batch.LoadBatchId);
+            throw;
+        }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             var summary = $"{ex.GetType().Name}: {ex.Message}";

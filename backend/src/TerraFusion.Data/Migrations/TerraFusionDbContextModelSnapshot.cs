@@ -2519,8 +2519,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("ConditionCd")
                         .HasMaxLength(8)
@@ -2535,12 +2535,12 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("FeatureCode")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("MethodCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int?>("NumUnits")
                         .HasColumnType("integer");
@@ -2552,8 +2552,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SubClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<Guid>("TfImprovementId")
                         .HasColumnType("uuid");
@@ -7083,8 +7083,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("IAttrValCd")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<long>("IAttrValId")
                         .HasColumnType("bigint");
@@ -7752,8 +7752,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("IAttrValCd")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<long>("IAttrValId")
                         .HasColumnType("bigint");
@@ -8128,8 +8128,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)
@@ -17399,8 +17399,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)

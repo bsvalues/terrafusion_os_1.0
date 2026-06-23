@@ -1,0 +1,34 @@
+{
+  "_source": "TF-052 Articles II, VIII (Blocked Words, Audit vs Trace)",
+  "_enforced_by": "tools/naming/naming-lint.mjs (config: tools/naming/naming-lint.config.json)",
+  "reserved_suite_names": [
+    "terraclerk",
+    "terratreasury",
+    "terraaudit",
+    "terrarecorder"
+  ],
+  "reserved_module_prefixes": [
+    "terra-clerk-",
+    "terra-treasury-",
+    "terra-audit-",
+    "terra-recorder-"
+  ],
+  "blocked_words_in_assessor_modules": [
+    "clerk",
+    "treasury",
+    "auditor",
+    "recorder"
+  ],
+  "audit_vs_trace": {
+    "rule": "audit is reserved for the future Auditor office (financial/compliance). Forbidden for Assessor activity tracking.",
+    "use_instead": ["trace", "compliance", "activity"]
+  },
+  "fixed_meaning_words": {
+    "audit": "Financial/compliance audit (Auditor office) — never activity logging",
+    "forge": "Valuation modeling only",
+    "atlas": "GIS/spatial only",
+    "dais": "Assessor admin only",
+    "dossier": "Records/evidence only",
+    "pilot": "Personal copilot only"
+  }
+}

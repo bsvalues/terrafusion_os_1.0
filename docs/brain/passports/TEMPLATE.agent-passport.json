@@ -1,0 +1,24 @@
+{
+  "task_id": "TFB-2026-0000",
+  "agent": "builder",
+  "mode": "pilot",
+  "work_order": "docs/brain/workorders/TFB-2026-0000.json",
+  "risk": "R2",
+  "affected_layer": "Layer 3 / Suite Workspace",
+  "affected_suite": "dais",
+  "write_lane": "workflow state",
+  "allowed_files": ["backend/src/TerraFusion.Core/Entities/Appeal.cs"],
+  "forbidden_domains": [
+    "TerraForge valuation artifacts",
+    "TerraAtlas geometry",
+    "TerraDossier documents"
+  ],
+  "required_checks": [
+    "dotnet build",
+    "pnpm run type-check",
+    "pnpm brain check"
+  ],
+  "graphify_report_hash": "sha256:REPLACE_WITH_GRAPH_REPORT_HASH",
+  "entrypoint_hash": "sha256:REPLACE_WITH_ENTRYPOINT_HASH",
+  "status": "draft"
+}
