@@ -474,13 +474,6 @@ export default function ForgeSuiteHome() {
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
-      : mod.id === 'sales-forge'
-      ? {
-          launchContext: 'terraforge-suite',
-          dataSource: 'terrafusion-api',
-          countyId: runtimeCountyId,
-          taxYear: 2026,
-        }
       : mod.id === 'salesforge'
       ? {
           launchContext: 'terraforge-suite',
@@ -493,14 +486,6 @@ export default function ForgeSuiteHome() {
           launchContext: 'terraforge-suite',
           dataSource: 'terrafusion-api',
           runtimePath: 'compsforge-comps-pool',
-          countyId: runtimeCountyId,
-          taxYear: 2026,
-        }
-      : mod.id === 'income-forge'
-      ? {
-          launchContext: 'terraforge-suite',
-          dataSource: 'terrafusion-api',
-          runtimePath: 'income-approach',
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
