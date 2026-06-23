@@ -1,0 +1,128 @@
+{
+  "id": "terrafusion-control-panel-report-schema",
+  "version": 1,
+  "status": "seed",
+  "classificationLevels": ["P0", "P1", "P2", "Deferred", "Needs Decision"],
+  "commonFields": {
+    "result": "green | yellow | red | paused | unknown",
+    "lastRun": "ISO-8601 timestamp or human-readable run label",
+    "topFinding": "single highest-signal finding",
+    "blocker": "single blocking condition or none",
+    "recommendedNextAction": "operator-approved next action",
+    "evidence": "report path, pasted report reference, or unavailable"
+  },
+  "automationReports": [
+    {
+      "automationId": "terrafusion-daily-pulse",
+      "title": "TerraFusion Daily Pulse",
+      "requiredSections": [
+        "RESULT",
+        "CURRENT_BRANCH_AND_WORKTREE_STATUS",
+        "RECENT_CHANGES",
+        "ACTIVE_WORK_ORDERS",
+        "OPEN_BLOCKERS",
+        "TOP_5_NEXT_ACTIONS",
+        "HUMAN_DECISIONS_NEEDED",
+        "RISKS",
+        "SAFE_NEXT_STEP"
+      ]
+    },
+    {
+      "automationId": "work-order-and-todo-tracker",
+      "title": "Work Order and Todo Tracker",
+      "requiredSections": [
+        "RESULT",
+        "OPEN_WORK_ORDERS",
+        "ACTIVE_TODOS",
+        "BLOCKERS",
+        "DEFERRED_ITEMS",
+        "STALE_ITEMS",
+        "DUPLICATE_OR_CONFLICTING_ITEMS",
+        "PRIORITY_RECOMMENDATION",
+        "PROPOSED_NEXT_WORK_ORDER",
+        "HUMAN_DECISIONS_REQUIRED"
+      ]
+    },
+    {
+      "automationId": "governance-drift-monitor",
+      "title": "Governance Drift Monitor",
+      "requiredSections": [
+        "RESULT",
+        "AUTHORITY_STACK_STATUS",
+        "PATH_CANON_STATUS",
+        "CONFLICTING_AUTHORITY_CLAIMS",
+        "STALE_OR_HISTORICAL_DOC_RISKS",
+        "DUPLICATE_TRUTH_RISKS",
+        "MISSING_CANON_LINKS",
+        "RECOMMENDED_BANNER_OR_DOC_FIXES",
+        "PROPOSED_WORK_ORDER",
+        "HUMAN_DECISIONS_REQUIRED"
+      ]
+    },
+    {
+      "automationId": "ai-sidecar-governance-monitor",
+      "title": "AI Improvement Sidecar Monitor",
+      "requiredSections": [
+        "RESULT",
+        "SIDECAR_ARTIFACT_INVENTORY",
+        "CANONICAL_LOCATION_STATUS",
+        "MIRROR_OR_REFERENCE_STATUS",
+        "DRIFT_FINDINGS",
+        "AUTHORITY_CONFLICTS",
+        "MISSING_FILES",
+        "RATIFICATION_READINESS",
+        "PROPOSED_WORK_ORDER",
+        "HUMAN_DECISIONS_REQUIRED",
+        "NEXT_SAFE_ACTION"
+      ]
+    },
+    {
+      "automationId": "ci-azure-pipeline-health-monitor",
+      "title": "CI Azure Pipeline Health Monitor",
+      "requiredSections": [
+        "RESULT",
+        "PIPELINE_FILES_STATUS",
+        "PR_VALIDATION_STATUS",
+        "MAIN_BUILD_STATUS",
+        "FIRST_RUN_FAILURES",
+        "YAML_OR_PATH_ISSUES",
+        "SECRET_OR_DEPLOYMENT_CREEP_RISKS",
+        "GITHUB_AZURE_SPLIT_BRAIN_RISKS",
+        "ALLOWED_FIXES_ONLY",
+        "PROPOSED_WORK_ORDER",
+        "HUMAN_DECISIONS_REQUIRED"
+      ]
+    },
+    {
+      "automationId": "project-gap-and-risk-register-monitor",
+      "title": "Project Gap and Risk Register Monitor",
+      "requiredSections": [
+        "RESULT",
+        "P0_CONTAINMENT_ITEMS",
+        "P1_EXECUTION_GAPS",
+        "P2_PLANNED_GAPS",
+        "DEFERRED_ITEMS",
+        "NEEDS_HUMAN_DECISION",
+        "RESOLVED_THIS_WEEK",
+        "NEW_THIS_WEEK",
+        "STALE_OR_REPEATED_GAPS",
+        "RECOMMENDED_NEXT_3_WORK_ORDERS",
+        "BLOCKERS"
+      ]
+    }
+  ],
+  "readinessRules": [
+    {
+      "id": "ready-for-ratification",
+      "description": "A lane may be marked ready for ratification when all required artifacts exist, no authority conflicts remain, no missing files are reported, and the proposed Work Order is scoped to human-approved promotion."
+    },
+    {
+      "id": "blocked-by-dirty-worktree",
+      "description": "A dirty or ambiguous worktree is a blocker for mutation, but not for read-only monitoring."
+    },
+    {
+      "id": "blocked-by-authority-conflict",
+      "description": "Conflicting canon, path identity, queue truth, or architecture authority claims require human decision before a governed prompt or Work Order proceeds."
+    }
+  ]
+}
