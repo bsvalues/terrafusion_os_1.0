@@ -26,6 +26,7 @@ import {
   type TerraFusionObjectType,
   type ObjectClassification,
 } from '../contracts/objectPlacement';
+import { navigateToCanonicalWorkbenchRoute } from '../navigation/workbenchRoute';
 import { shellEventBus } from './shellEventBus';
 
 // ============================================================================
@@ -512,44 +513,37 @@ export const useDesktopStore = create<DesktopState>()(
         }
 
         if (verdict.decision === 'route-to-workbench') {
-          // Parcel-scoped apps and overlays must route through workbench.
-          // Open the workbench instead, injecting the requested tab into metadata.
-          const workbenchModuleId = 'property-workbench';
-          const routedMetadata = {
-            ...metadata,
-            _routedTab: moduleId,
-            _routeReason: verdict.reason,
-          };
-
-          // Check if workbench is already open — focus it and switch tab
-          const { windows } = get();
-          const existingWorkbench = windows.find(
-            (w) => w.moduleId === workbenchModuleId
+          // Parcel-scoped apps and overlays must route to the canonical
+          // /property/:parcelId/* Workbench, not the desktop window adapter.
+          const route = navigateToCanonicalWorkbenchRoute(
+            typeof metadata?.parcelId === 'string' ? metadata.parcelId : null,
+            typeof metadata?.tabId === 'string'
+              ? metadata.tabId
+              : typeof metadata?.tab === 'string'
+                ? metadata.tab
+                : moduleId
           );
-          if (existingWorkbench) {
-            // Update metadata to switch tabs, then focus
-            set({
-              windows: windows.map((w) =>
-                w.id === existingWorkbench.id
-                  ? { ...w, metadata: { ...w.metadata, ...routedMetadata } }
-                  : w
-              ),
-            });
-            get().focusWindow(existingWorkbench.id);
-            shellEventBus.fire('spawn_routed_to_workbench', existingWorkbench.id, moduleId, {
-              reason: verdict.reason,
-              reusedExisting: true,
-            });
-            return existingWorkbench.id;
-          }
+          shellEventBus.fire('spawn_routed_to_workbench', null, moduleId, {
+            reason: verdict.reason,
+            route,
+          });
+          return '';
+        }
 
-          // No workbench open — spawn it with the routed tab
-          return get().openWindow(
-            workbenchModuleId,
-            'Property Workbench',
-            'workbench',
-            routedMetadata
+        if (moduleId === 'property-workbench') {
+          const route = navigateToCanonicalWorkbenchRoute(
+            typeof metadata?.parcelId === 'string' ? metadata.parcelId : null,
+            typeof metadata?.tabId === 'string'
+              ? metadata.tabId
+              : typeof metadata?.tab === 'string'
+                ? metadata.tab
+                : null
           );
+          shellEventBus.fire('spawn_routed_to_workbench', null, moduleId, {
+            reason: 'canonical-route-workbench',
+            route,
+          });
+          return '';
         }
 
         // ── Phase 9: Window Spawn — lawful open ────────────────────────

@@ -309,6 +309,57 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsLandCurrent>
     TruthPacsLandCurrents { get; set; } = null!;
 
+  // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current — current
+  // operational-year assessed/market/appraised value at the ACTIVE
+  // supplement, one live row per parcel-year.
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsAssessmentCurrent>
+    TruthPacsAssessmentCurrents { get; set; } = null!;
+
+  // ASSESSMENT-VALUE-SEAL: canonical_tf.tf_assessment — parcel-keyed
+  // current assessment value rollup (distinct from tf_assessment_wsdor).
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessment>
+    TfAssessments { get; set; } = null!;
+
+  // EXEMPTION-FACT-SEAL: current-year active-supplement exemption facts.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyExemption>
+    LegacyPacsRawPropertyExemptions { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.TruthPacs.TruthPacsExemptionCurrent>
+    TruthPacsExemptionCurrents { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfExemption>
+    TfExemptions { get; set; } = null!;
+
+  // JURISDICTION-SPINE: parcel→tax-area assignment + tax-area/district dicts + TCA→district map.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyTaxArea>
+    LegacyPacsRawPropertyTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxArea>
+    TfTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxDistrict>
+    TfTaxDistricts { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfParcelTaxArea>
+    TfParcelTaxAreas { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxAreaDistrict>
+    TfTaxAreaDistricts { get; set; } = null!;
+
+  // REVENUE-SPINE Stage 1: current-year levy tax bill explanation read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawTaxBillLine>
+    LegacyPacsRawTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfLevyRate>
+    TfLevyRates { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillLine>
+    TfTaxBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfTaxBillCurrent>
+    TfTaxBillCurrents { get; set; } = null!;
+
+  // REVENUE-SPINE Stage 2B: current-year special-assessment bill read model.
+  public DbSet<TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAssessmentBillLine>
+    LegacyPacsRawAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentAgency>
+    TfAssessmentAgencies { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillLine>
+    TfAssessmentBillLines { get; set; } = null!;
+  public DbSet<TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillCurrent>
+    TfAssessmentBillCurrents { get; set; } = null!;
+
   // Slice S3: canonical_tf.tf_sale — TerraFusion-native sale identity
   // backed by sync_bridge.source_xref lineage. Sales whose parcel
   // cannot be resolved are quarantined to legacy_tf_unproven.sale.
@@ -1143,6 +1194,53 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // current land segment snapshot.
     modelBuilder.ApplyConfiguration(
       new TerraFusion.Data.Configurations.TruthPacs.TruthPacsLandCurrentConfiguration());
+
+    // ASSESSMENT-VALUE-SEAL: truth_pacs.assessment_current + canonical_tf.tf_assessment.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsAssessmentCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentConfiguration());
+
+    // EXEMPTION-FACT-SEAL: legacy_pacs_raw.property_exemption +
+    // truth_pacs.exemption_current + canonical_tf.tf_exemption.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyExemptionConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.TruthPacs.TruthPacsExemptionCurrentConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfExemptionConfiguration());
+
+    // JURISDICTION-SPINE: tax-area/district dicts + parcel assignment + TCA→district map.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawPropertyTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxDistrictConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfParcelTaxAreaConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxAreaDistrictConfiguration());
+
+    // REVENUE-SPINE Stage 1: levy tax bill explanation read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfLevyRateConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfTaxBillCurrentConfiguration());
+
+    // REVENUE-SPINE Stage 2B: special-assessment bill read model.
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.LegacyPacsRaw.LegacyPacsRawAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentAgencyConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillLineConfiguration());
+    modelBuilder.ApplyConfiguration(
+      new TerraFusion.Data.Configurations.CanonicalTf.TfAssessmentBillCurrentConfiguration());
 
     // Slice B3: canonical_tf.tf_owner + tf_parcel_owner_link with
     // PII redaction; legacy_tf_unproven.owner_current quarantine.

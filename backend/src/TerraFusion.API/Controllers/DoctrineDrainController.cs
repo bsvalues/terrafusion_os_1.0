@@ -1428,6 +1428,351 @@ public class DoctrineDrainController : ControllerBase
     }
 
     // ════════════════════════════════════════════════════════════════════
+    // ASSESSMENT drain (ASSESSMENT-VALUE-SEAL) — current-year
+    // active-supplement property_val value → assessment truth →
+    // tf_assessment canonical. Resolves the parcel against the EXISTING
+    // parcel xref (the parcel chain is already sealed), so no parcel
+    // re-drain. Default year = 2025 (current operational year).
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("assessment")]
+    public async Task<IActionResult> DrainAssessment(
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentValueLandingService assessSvc,
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCurrentTruthPromoter assessTruthPromoter,
+        [FromServices] TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCanonicalProjector assessCanonProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "assessment";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var assessmentYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            _logger.LogInformation("[Drain:assessment] year={Yr} (active-supplement)", assessmentYear);
+
+            // Stage 1: Assessment-S1 — land active-supplement values.
+            var src = new SqlServerPacsAssessmentValueSource(pacsCs!, assessmentYear);
+            var s1 = await assessSvc.LandAssessmentValuesAsync(src, operatorName, cancellationToken);
+            batchIds.Add(s1.LoadBatchId);
+            if (!IsCompleted(s1.Status))
+                return await FailLaneAsync(LaneName, "Assessment-S1", s1.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = s1.RowsLanded;
+
+            // Stage 2: Assessment-Truth.
+            var truth = await assessTruthPromoter.PromoteAsync(s1.LoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(truth.PromotionLoadBatchId);
+            if (!IsCompleted(truth.Status))
+                return await FailLaneAsync(LaneName, "Assessment-Truth", truth.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsPromotedToTruth = truth.Promoted;
+
+            // Stage 3: Assessment-Canonical.
+            var canon = await assessCanonProjector.ProjectAsync(
+                truth.PromotionLoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(canon.PromotionLoadBatchId);
+            if (!IsCompleted(canon.Status))
+                return await FailLaneAsync(LaneName, "Assessment-Canonical", canon.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsCanonicalized = canon.AssessmentsProjected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:assessment] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // EXEMPTION drain (EXEMPTION-FACT-SEAL) — populate dict_exemption_type
+    // from exmpt_type → current-year active-supplement property_exemption →
+    // exemption truth → tf_exemption canonical. Parcel resolved via existing
+    // parcel xref. Default year = 2025 (current operational year).
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("exemption")]
+    public async Task<IActionResult> DrainExemption(
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionDictPopulator dictPop,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionLandingService exemptSvc,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCurrentTruthPromoter exemptTruthPromoter,
+        [FromServices] TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCanonicalProjector exemptCanonProjector,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "exemption";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsExemptionSource(pacsCs!, taxYear);
+            _logger.LogInformation("[Drain:exemption] year={Yr} (active-supplement)", taxYear);
+
+            // Stage 0: Exemption-Dict — populate dict_exemption_type from exmpt_type.
+            var dict = await dictPop.PopulateAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(dict.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Dict", dict.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 1: Exemption-S1 — land active-supplement exemption facts.
+            var s1 = await exemptSvc.LandExemptionsAsync(src, operatorName, cancellationToken);
+            batchIds.Add(s1.LoadBatchId);
+            if (!IsCompleted(s1.Status))
+                return await FailLaneAsync(LaneName, "Exemption-S1", s1.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = s1.RowsLanded;
+
+            // Stage 2: Exemption-Truth.
+            var truth = await exemptTruthPromoter.PromoteAsync(s1.LoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(truth.PromotionLoadBatchId);
+            if (!IsCompleted(truth.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Truth", truth.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsPromotedToTruth = truth.Promoted;
+
+            // Stage 3: Exemption-Canonical.
+            var canon = await exemptCanonProjector.ProjectAsync(
+                truth.PromotionLoadBatchId, operatorName, cancellationToken);
+            batchIds.Add(canon.PromotionLoadBatchId);
+            if (!IsCompleted(canon.Status))
+                return await FailLaneAsync(LaneName, "Exemption-Canonical", canon.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsCanonicalized = canon.ExemptionsProjected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:exemption] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // JURISDICTION drain (JURISDICTION-SPINE) — tax_area + tax_district dicts
+    // → TCA→district map → current-year active-supplement parcel→tax-area
+    // assignment (parcel resolved via existing parcel xref). Revenue concepts
+    // (levy/fund/rate/bill) excluded. Default year = 2025.
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("jurisdiction")]
+    public async Task<IActionResult> DrainJurisdiction(
+        [FromServices] TerraFusion.Core.Sync.PacsJurisdiction.IPacsJurisdictionService jurisSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "jurisdiction";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsJurisdictionSource(pacsCs!);
+            _logger.LogInformation("[Drain:jurisdiction] year={Yr} (active-supplement)", taxYear);
+
+            // Stage 1: TaxArea-Dict.
+            var ta = await jurisSvc.PopulateTaxAreaDictAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(ta.Status))
+                return await FailLaneAsync(LaneName, "TaxArea-Dict", ta.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 2: TaxDistrict-Dict.
+            var td = await jurisSvc.PopulateTaxDistrictDictAsync(src, bentonCountyId, operatorName, cancellationToken);
+            if (!IsCompleted(td.Status))
+                return await FailLaneAsync(LaneName, "TaxDistrict-Dict", td.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 3: TaxAreaDistrict-Map.
+            var tad = await jurisSvc.PopulateTaxAreaDistrictAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            if (!IsCompleted(tad.Status))
+                return await FailLaneAsync(LaneName, "TaxAreaDistrict-Map", tad.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 4: ParcelTaxArea.
+            var pta = await jurisSvc.ProjectParcelTaxAreaAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            batchIds.Add(pta.PromotionLoadBatchId);
+            if (!IsCompleted(pta.Status))
+                return await FailLaneAsync(LaneName, "ParcelTaxArea", pta.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = pta.Landed;
+            rowsCanonicalized = pta.Projected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:jurisdiction] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // REVENUE drain Stage 1 (REVENUE-SPINE) — levy rate populate → current-year
+    // active levy tax bill line (bill ⋈ levy_bill, bill_type='L', is_active=1)
+    // + parcel rollup. Read-only PACS amounts; balance = due − paid. No payment
+    // transactions / A bills / fund / delinquency / history. Default year=2025.
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("revenue")]
+    public async Task<IActionResult> DrainRevenue(
+        [FromServices] TerraFusion.Core.Sync.PacsBill.IPacsBillService billSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "revenue";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsBillSource(pacsCs!);
+            _logger.LogInformation("[Drain:revenue] year={Yr} (active L bills)", taxYear);
+
+            // Stage 1: LevyRate.
+            var lr = await billSvc.PopulateLevyRateAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            if (!IsCompleted(lr.Status))
+                return await FailLaneAsync(LaneName, "LevyRate", lr.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 2: TaxBillLine (+ parcel rollup).
+            var bl = await billSvc.ProjectTaxBillLineAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            batchIds.Add(bl.PromotionLoadBatchId);
+            if (!IsCompleted(bl.Status))
+                return await FailLaneAsync(LaneName, "TaxBillLine", bl.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = bl.Landed;
+            rowsCanonicalized = bl.Projected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:revenue] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ASSESSMENT-BILL drain (REVENUE-SPINE Stage 2B) — special-assessment agency
+    // dict populate → current-year active special-assessment bill line
+    // (bill ⋈ assessment_bill, bill_type='A', is_active=1) + parcel rollup.
+    // Agency-backed, rate-free. Read-only PACS amounts; balance = due − paid.
+    // No payment transactions / fund / distribution / delinquency / history.
+    // Default year=2025.
+    // ════════════════════════════════════════════════════════════════════
+    [HttpPost("assessment-bill")]
+    public async Task<IActionResult> DrainAssessmentBill(
+        [FromServices] TerraFusion.Core.Sync.PacsAssessmentBill.IPacsAssessmentBillService asmtSvc,
+        [FromServices] IConfiguration config,
+        [FromBody] DoctrineDrainRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        const string LaneName = "assessment-bill";
+        var (pacsCs, validationError) = ResolveConnectionString(config);
+        if (validationError is not null) return validationError;
+
+        var (operatorName, workingYear, _, _) = NormalizeRequest(request, LaneName);
+        var taxYear = (short)(workingYear > 0 ? workingYear : 2025);
+        var startedAt = DateTime.UtcNow;
+        var quarantineBefore = await CountQuarantineAsync(cancellationToken);
+        var batchIds = new List<Guid>();
+        int rowsLanded = 0, rowsPromotedToTruth = 0, rowsCanonicalized = 0;
+
+        try
+        {
+            var bentonCountyId = await ResolveOrCreateBentonCountyAsync(cancellationToken);
+            var src = new SqlServerPacsAssessmentBillSource(pacsCs!);
+            _logger.LogInformation("[Drain:assessment-bill] year={Yr} (active A bills)", taxYear);
+
+            // Stage 1: Agency dict.
+            var ag = await asmtSvc.PopulateAgencyAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            if (!IsCompleted(ag.Status))
+                return await FailLaneAsync(LaneName, "Agency", ag.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+
+            // Stage 2: AssessmentBillLine (+ parcel rollup).
+            var bl = await asmtSvc.ProjectAssessmentBillLineAsync(src, bentonCountyId, taxYear, operatorName, cancellationToken);
+            batchIds.Add(bl.PromotionLoadBatchId);
+            if (!IsCompleted(bl.Status))
+                return await FailLaneAsync(LaneName, "AssessmentBillLine", bl.ErrorSummary,
+                    batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+            rowsLanded = bl.Landed;
+            rowsCanonicalized = bl.Projected;
+
+            return await OkLaneAsync(
+                LaneName, batchIds,
+                rowsLanded: rowsLanded,
+                rowsPromotedToTruth: rowsPromotedToTruth,
+                rowsCanonicalized: rowsCanonicalized,
+                startedAt, quarantineBefore, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Drain:assessment-bill] FAILED");
+            return await FailLaneAsync(LaneName, "Exception", SerializeExceptionChain(ex),
+                batchIds, rowsLanded, startedAt, quarantineBefore, cancellationToken);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
     // SALES drain — sale → keyed supp → sale truth → tf_sale canonical.
     // Independent of the parcel-anchored lanes; uses its own DESC-ordered
     // sale seed, then targets a parcel chain at the promoted sales' prop_ids.

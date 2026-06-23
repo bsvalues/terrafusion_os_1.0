@@ -26,10 +26,13 @@ import {
 import {
     clearParcelContext,
     getParcelContext,
+    openWorkbenchWindow,
     setParcelContext,
     useParcelContextStore,
     type ParcelContext,
 } from '../../context/parcelContext';
+import { activateModule } from '../../orchestration/moduleActivation';
+import { useDesktopStore } from '../../stores/desktopStore';
 
 // ============================================================================
 // Test Constants
@@ -44,6 +47,12 @@ const TEST_PARCEL_NAME = 'Test Parcel';
 
 function resetStore() {
   useParcelContextStore.setState({ context: null });
+  useDesktopStore.setState({
+    windows: [],
+    activeWindowId: null,
+    nextZIndex: 1000,
+  });
+  window.history.pushState({}, '', '/');
   // Clear session storage
   try {
     sessionStorage.removeItem('tf:parcel-context');
@@ -59,6 +68,41 @@ function resetStore() {
 describe('Parcel Context Navigation Contract', () => {
   beforeEach(() => {
     resetStore();
+  });
+
+  describe('Canonical Workbench Launcher', () => {
+    it('opens a parcel on the canonical route Workbench, not the window adapter', () => {
+      openWorkbenchWindow('101040000000000');
+
+      expect(window.location.pathname).toBe('/property/101040000000000');
+      expect(useDesktopStore.getState().windows).toEqual([]);
+    });
+
+    it('opens a parcel tab on the canonical route Workbench', () => {
+      openWorkbenchWindow('101040000000000', 'forge');
+
+      expect(window.location.pathname).toBe('/property/101040000000000/forge');
+      expect(useDesktopStore.getState().windows).toEqual([]);
+    });
+
+    it('opens no-parcel workbench intent on Property Search, not a blank workbench window', () => {
+      openWorkbenchWindow();
+
+      expect(window.location.pathname).toBe('/property');
+      expect(useDesktopStore.getState().windows).toEqual([]);
+    });
+
+    it('routes property-workbench module activation to the canonical route', async () => {
+      await activateModule('property-workbench', {
+        source: 'system',
+        showNotification: false,
+        warmLoad: false,
+        metadata: { parcelId: '101040000000000', tab: 'forge' },
+      });
+
+      expect(window.location.pathname).toBe('/property/101040000000000/forge');
+      expect(useDesktopStore.getState().windows).toEqual([]);
+    });
   });
 
   // ==========================================================================

@@ -190,17 +190,42 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
   it('4. County status info renders', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
-    expect(screen.getByText('Cross-suite county posture')).toBeInTheDocument();
+    expect(screen.getAllByText('Statewide county operating model').length).toBeGreaterThan(0);
   });
 
   it('5. County status info renders', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('county-status-strip')).toBeInTheDocument();
-    expect(screen.getByText('Benton County, WA')).toBeInTheDocument();
+    expect(screen.getByText('Washington County Runtime')).toBeInTheDocument();
+    expect(screen.getAllByText('Benton Runtime Pilot').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('38 counties Onboarding / Provenance / Intake').length).toBeGreaterThan(0);
     expect(screen.getByText('Parcel count unavailable')).toBeInTheDocument();
   });
 
-  it('6. Search is NOT the hero surface — no prominent search bar', () => {
+  it('6. June 10 shell frames Benton runtime proof without statewide runtime overclaim', () => {
+    render(<StageZeroState />);
+    const stageZero = screen.getByTestId('stage-zero-state');
+
+    expect(stageZero).toHaveTextContent('Benton Runtime Pilot');
+    expect(stageZero).toHaveTextContent('TerraFusion DB/API-backed');
+    expect(stageZero).toHaveTextContent('38 counties Onboarding / Provenance / Intake');
+    expect(stageZero).not.toHaveTextContent('Benton absent by design');
+    expect(stageZero).not.toHaveTextContent('38-county runtime preview');
+  });
+
+  it('6b. non-Benton county path is onboarding/provenance only and blocks runtime enablement', () => {
+    render(<StageZeroState />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Yakima County' }));
+    const stageZero = screen.getByTestId('stage-zero-state');
+
+    expect(stageZero).toHaveTextContent('Onboarding / Provenance Inventory');
+    expect(stageZero).toHaveTextContent('Not Runtime Enabled');
+    expect(stageZero).toHaveTextContent('County Data Intake');
+    expect(stageZero).toHaveTextContent('canonicalImportAllowed: false');
+  });
+
+  it('7. Search is NOT the hero surface — no prominent search bar', () => {
     render(<StageZeroState />);
     const stageZero = screen.getByTestId('stage-zero-state');
     // No search input elements on the home surface

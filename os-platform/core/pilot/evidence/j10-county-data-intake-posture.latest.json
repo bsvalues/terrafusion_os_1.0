@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-06-07T18:19:25.129Z",
+  "verdict": "J10_COUNTY_DATA_INTAKE_MVP_POSTURE_LOCKED",
+  "status": "DESIGN_MVP_GOVERNED_INTAKE_MODEL",
+  "june10Role": "Governed onboarding lane for counties that begin with assessor exports, GIS packages, spreadsheets, or source packets instead of direct legacy database connectivity.",
+  "canonicalImportAllowed": false,
+  "productionMutationAllowed": false,
+  "productionDbBindingChangeAllowed": false,
+  "syncProductClaimAllowed": false,
+  "runtimeClaimAllowed": false,
+  "runtimePromotionRule": "validated_data_must_be_promoted_into_terrafusion_db_and_pass_api_proof_gates",
+  "june10OperatingModel": [
+    {
+      "id": "runtime_lane",
+      "name": "Runtime Lane",
+      "scope": "Benton County runtime pilot",
+      "claim": "TerraFusion DB/API-backed operational snapshot",
+      "status": "Runtime proof lane"
+    },
+    {
+      "id": "sovereignty_lane",
+      "name": "Sovereignty Lane",
+      "scope": "All 39 Washington counties",
+      "claim": "County identity, role context, source posture, and readiness state",
+      "status": "Launch posture lane"
+    },
+    {
+      "id": "provenance_onboarding_lane",
+      "name": "Provenance / Onboarding Lane",
+      "scope": "38 non-Benton counties",
+      "claim": "Source discovery, public/ArcGIS posture, and readiness inventory",
+      "status": "No runtime claim without county-specific DB/API proof"
+    },
+    {
+      "id": "county_data_intake_lane",
+      "name": "County Data Intake Lane",
+      "scope": "Assessor-provided exports and governed upload packages",
+      "claim": "Receipt, validation, rejected rows, dry-run report, and approval boundary",
+      "status": "Design/MVP lane only"
+    }
+  ],
+  "acceptedSourcePackageTypes": [
+    "csv",
+    "txt",
+    "xlsx",
+    "fgdb_directory",
+    "zipped_fgdb",
+    "zip_generic"
+  ],
+  "requiredWorkflow": [
+    "county/FIPS binding",
+    "SHA-256 receipt",
+    "file safety screening",
+    "no-secret scan",
+    "schema validation",
+    "rejected-row report",
+    "dry-run import report",
+    "reviewer approval stub"
+  ],
+  "stagingStates": [
+    "UPLOADED",
+    "VALIDATING",
+    "VALIDATED",
+    "PENDING_APPROVAL",
+    "APPROVED_FOR_IMPORT",
+    "REJECTED"
+  ],
+  "evidencePathTemplate": "os-platform/core/pilot/evidence/county-data-intake/<intakeId>/",
+  "visibleLabels": [
+    "Intake MVP",
+    "Dry Run Only",
+    "Not Runtime Enabled",
+    "Future Canonical Import Required"
+  ],
+  "proofRequirements": [
+    "receipt schema exists",
+    "dry-run report declares canonicalImportAllowed: false",
+    "secret-like files rejected by spec",
+    "county/FIPS conflict rejects intake",
+    "approval does not imply DB mutation"
+  ],
+  "forbiddenClaims": [
+    "County Data Intake is production import.",
+    "Uploaded files become live immediately.",
+    "The intake lane mutates TerraFusion DB.",
+    "All counties can upload and operate live on June 10."
+  ],
+  "finalClaimSheetAddition": "For counties without direct legacy DB access, TerraFusion defines a governed County Data Intake Lane for assessor-provided exports, GIS packages, spreadsheets, and source packets. The MVP creates receipts, validates county/FIPS binding, screens unsafe material, produces rejected-row and dry-run reports, and requires human approval. It does not write to canonical production tables.",
+  "packetHash": "1db38a336a764babd6cfabbfdc6a3b8669a494e41476b5e91cf3e30cbfd018e6"
+}

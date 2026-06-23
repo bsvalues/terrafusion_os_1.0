@@ -13,7 +13,9 @@
  *
  * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
  * - Recent Work: live parcel browsing history from OS session state.
- * - Parcel count: from useParcelCount() API data; unavailable stays unavailable.
+ * - Parcel count: not rendered on the June 10 shell unless owned by a verified
+ *   Benton runtime proof endpoint. /api/government/stats is intentionally not
+ *   used here because it is not the launch proof contract.
  * - Today's Work: TerraDais queue API data only; unavailable state renders
  *   explicitly and never falls back to seeded sample tasks.
  * - County status strip: Last sync, appeal count, and system status fields render
@@ -38,12 +40,12 @@ import {
   Shield,
   Compass,
   FolderOpen,
+  Database,
 } from 'lucide-react';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
-import { useParcelCount } from '../../hooks/useParcelCount';
 import { LiquidPanel } from '../../ui/materials';
 import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
@@ -84,6 +86,9 @@ interface ExecutivePostureState {
     correlationId?: string;
   };
 }
+
+const isDev39ControlledRuntimePreview = (): boolean =>
+  typeof window !== 'undefined' && window.location.hostname === 'dev39.terrafusionmarket.com';
 
 // ============================================================================
 // Sub-components
@@ -216,30 +221,212 @@ function parseToolOutput<T>(output: unknown): T | null {
 }
 
 // ============================================================================
-// County Map — Mapbox GL satellite map with parcel layer
+// Active County Workspace Overview
 // ============================================================================
-import BentonCountyMap from './BentonCountyMap';
+const CountyWorkspaceOverview: React.FC<{
+  onOpenAtlas: () => void;
+  onOpenWorkbench: () => void;
+  onSearchParcels: () => void;
+}> = ({ onOpenAtlas, onOpenWorkbench, onSearchParcels }) => {
+  const [selectedCounty, setSelectedCounty] = useState<'benton' | 'yakima'>('benton');
+  const isBenton = selectedCounty === 'benton';
 
-/**
- * Real Mapbox GL satellite map of Benton County WA.
- * Parcel click → opens PropertyWorkbench for that parcel.
- */
-const CountyMapOverview: React.FC<{
-  onParcelSelect: (parcelId: string) => void;
-}> = ({ onParcelSelect }) => (
-  <div
-    className='relative w-full h-full rounded-xl overflow-hidden'
-    aria-label='Benton County WA — satellite GIS map'
-  >
-    <span className='sr-only' role='img' aria-label='Open TerraAtlas for full county map' />
+  return (
+  <div className='relative w-full h-full rounded-xl overflow-hidden' aria-label='Active county workspace'>
+    <div
+      className='w-full h-full p-6 text-left'
+      style={{
+        color: 'hsl(var(--tf-text))',
+        background: 'hsl(var(--tf-surface-1) / 0.24)',
+      }}
+    >
+      <div className='flex h-full flex-col gap-5'>
+        <div>
+          <div className='flex items-start justify-between gap-4'>
+            <div>
+              <div className='text-[10px] font-semibold uppercase tracking-[0.18em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                {isBenton ? 'Benton County Operations' : 'Source / Onboarding Workspace'}
+              </div>
+              <div className='mt-2 text-2xl font-semibold leading-tight'>
+                {isBenton ? 'Benton County' : 'Yakima County'}
+              </div>
+              <div className='mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold'>
+                <span
+                  className='rounded-full px-2.5 py-1'
+                  style={{ border: '1px solid hsl(var(--tf-border) / 0.65)', background: 'hsl(var(--tf-text) / 0.04)' }}
+                >
+                  {isBenton ? "Assessor's Office" : 'County Workspace'}
+                </span>
+                <span
+                  className='rounded-full px-2.5 py-1'
+                  style={{
+                    border: isBenton
+                      ? '1px solid hsl(var(--tf-success-hs) 45% / 0.65)'
+                      : '1px solid hsl(var(--tf-warning-hs) 50% / 0.65)',
+                    background: isBenton
+                      ? 'hsl(var(--tf-success-hs) 35% / 0.14)'
+                      : 'hsl(var(--tf-warning-hs) 45% / 0.12)',
+                    color: isBenton ? 'hsl(var(--tf-success-hs) 58%)' : 'hsl(var(--tf-warning-hs) 58%)',
+                  }}
+                >
+                  {isBenton ? 'Runtime Pilot' : 'Runtime: Not Runtime Enabled'}
+                </span>
+              </div>
+            </div>
+            <div className='flex flex-wrap gap-2 justify-end'>
+              <button
+                type='button'
+                onClick={() => setSelectedCounty('benton')}
+                className='rounded-lg px-3 py-2 text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+                style={{
+                  border: '1px solid hsl(var(--tf-border) / 0.65)',
+                  background: isBenton ? 'hsl(var(--tf-success-hs) 30% / 0.16)' : 'hsl(var(--tf-text) / 0.04)',
+                }}
+              >
+                Benton County
+              </button>
+              <button
+                type='button'
+                onClick={() => setSelectedCounty('yakima')}
+                className='rounded-lg px-3 py-2 text-xs font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+                style={{
+                  border: '1px solid hsl(var(--tf-border) / 0.65)',
+                  background: !isBenton ? 'hsl(var(--tf-warning-hs) 50% / 0.14)' : 'hsl(var(--tf-text) / 0.04)',
+                }}
+              >
+                Yakima County
+              </button>
+            </div>
+          </div>
 
-    {/* Mapbox GL satellite map */}
-    <BentonCountyMap
-      onParcelSelect={onParcelSelect}
-      className='w-full h-full'
-    />
+          <div
+            className='mt-5 rounded-xl p-4'
+            style={{ border: '1px solid hsl(var(--tf-border) / 0.55)', background: 'hsl(var(--tf-text) / 0.035)' }}
+          >
+            {isBenton ? (
+              <div>
+                <div className='text-xs font-semibold tracking-[0.08em]' style={{ color: 'hsl(var(--tf-success-hs) 42%)' }}>
+                  TerraFusion DB/API-backed property work
+                </div>
+                <div className='mt-2 text-sm font-semibold'>TerraFusion DB/API-backed Benton property data</div>
+                <div className='mt-1 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  PACS-derived Benton data is loaded into TerraFusion DB and served through TerraFusion API. Use Property Workbench for the operational parcel path; parcel 101040000000000 is the proof-path demo parcel.
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className='text-xs font-semibold tracking-[0.08em]' style={{ color: 'hsl(var(--tf-warning-hs) 50%)' }}>
+                  Yakima County Source / Onboarding Workspace
+                </div>
+                <div className='mt-2 text-sm font-semibold'>Not Runtime Enabled</div>
+                <div className='mt-1 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Available posture: public / ArcGIS source review, assessor export planning, future PACS/Proval/Ascend or direct legacy path review, and County Data Intake. canonicalImportAllowed: false.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {isBenton ? (
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+            <button
+              type='button'
+              onClick={onOpenWorkbench}
+              className='rounded-xl p-4 text-left transition-all hover:bg-[hsl(var(--tf-text)_/_0.05)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+              style={{ border: '1px solid hsl(var(--tf-success-hs) 45% / 0.65)', background: 'hsl(var(--tf-success-hs) 35% / 0.12)' }}
+            >
+              <Database className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-success-hs) 55%)' }}>
+                Primary
+              </div>
+              <div className='mt-3 text-base font-semibold'>Open Benton Property Workbench</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Parcel lookup and property detail from the Benton TerraFusion DB/API path.
+              </div>
+            </button>
+
+            <button
+              type='button'
+              onClick={onSearchParcels}
+              className='rounded-xl p-4 text-left transition-all hover:bg-[hsl(var(--tf-text)_/_0.05)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+              style={{ border: '1px solid hsl(var(--tf-border) / 0.65)' }}
+            >
+              <Search className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Parcel
+              </div>
+              <div className='mt-3 text-base font-semibold'>Search Parcel</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Use command search for Benton parcel work.
+              </div>
+            </button>
+
+            <div
+              className='rounded-xl p-4'
+              style={{ border: '1px solid hsl(var(--tf-border) / 0.65)', background: 'hsl(var(--tf-text) / 0.025)' }}
+            >
+              <Shield className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Provenance
+              </div>
+              <div className='mt-3 text-base font-semibold'>PACS-derived</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Source provenance is visible without making PACS a runtime dependency.
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+            <button
+              type='button'
+              onClick={onOpenAtlas}
+              className='rounded-xl p-4 text-left transition-all hover:bg-[hsl(var(--tf-text)_/_0.05)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]'
+              style={{ border: '1px solid hsl(var(--tf-warning-hs) 50% / 0.55)', background: 'hsl(var(--tf-warning-hs) 45% / 0.08)' }}
+            >
+              <Map className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-warning-hs) 58%)' }}>
+                Source posture
+              </div>
+              <div className='mt-3 text-base font-semibold'>View public / ArcGIS sources</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                County workspace can show known external source paths before runtime promotion.
+              </div>
+            </button>
+
+            <div
+              className='rounded-xl p-4'
+              style={{ border: '1px solid hsl(var(--tf-border) / 0.65)', background: 'hsl(var(--tf-text) / 0.025)' }}
+            >
+              <FileSearch className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                County Data Intake
+              </div>
+              <div className='mt-3 text-base font-semibold'>Governed upload path</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                File/export intake is optional onboarding. canonicalImportAllowed: false.
+              </div>
+            </div>
+
+            <div
+              className='rounded-xl p-4'
+              style={{ border: '1px solid hsl(var(--tf-border) / 0.65)', background: 'hsl(var(--tf-text) / 0.025)' }}
+            >
+              <Shield className='h-4 w-4 mb-3 opacity-70' />
+              <div className='text-xs font-semibold uppercase tracking-[0.1em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Blocked
+              </div>
+              <div className='mt-3 text-base font-semibold'>Runtime parcel operations blocked</div>
+              <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                No operational parcel work until TerraFusion DB/API proof exists for this county.
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   </div>
-);
+  );
+};
 
 // ============================================================================
 // Main Component
@@ -249,10 +436,6 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
-  const { data: statsData } = useParcelCount();
-  const parcelCountLabel = typeof statsData?.totalParcels === 'number'
-    ? `${statsData.totalParcels.toLocaleString()} parcels`
-    : 'Parcel count unavailable';
   const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
     dais: { status: 'idle' },
     forge: { status: 'idle' },
@@ -293,6 +476,28 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
     let cancelled = false;
 
     async function loadExecutivePosture() {
+      if (isDev39ControlledRuntimePreview()) {
+        setExecutivePosture({
+          dais: {
+            status: 'error',
+            summary: 'TerraDais live briefing is intentionally disabled for the June 10 Benton Runtime Pilot surface.',
+          },
+          forge: {
+            status: 'error',
+            summary: 'TerraForge briefing is intentionally disabled for the June 10 Benton Runtime Pilot surface.',
+          },
+          atlas: {
+            status: 'error',
+            summary: 'TerraAtlas briefing is intentionally disabled for the June 10 Benton Runtime Pilot surface.',
+          },
+          dossier: {
+            status: 'error',
+            summary: 'TerraDossier briefing is intentionally disabled for the June 10 Benton Runtime Pilot surface.',
+          },
+        });
+        return;
+      }
+
       const taxYear = new Date().getFullYear();
 
       setExecutivePosture({
@@ -305,19 +510,19 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
       const [daisResult, forgeResult, atlasResult, dossierResult] = await Promise.allSettled([
         invokeTool({
           toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'assessor_leadership', taxYear },
+        params: { county: 'benton-runtime-pilot', role: 'operator_leadership', taxYear },
         }),
         invokeTool({
           toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'chief_appraiser', taxYear },
+        params: { county: 'benton-runtime-pilot', role: 'runtime_pilot_lead', taxYear },
         }),
         invokeTool({
           toolId: 'explain_spatial_anomaly',
-          params: { county: 'benton', taxYear, metric: 'residual_cluster', geographyId: 'BENTON-COUNTY' },
+          params: { county: 'benton-runtime-pilot', taxYear, metric: 'runtime_identity_posture', geographyId: 'BENTON-RUNTIME-PILOT' },
         }),
         invokeTool({
           toolId: 'open_appeal_packet',
-          params: { county: 'benton', appealId: 'BOE-2026-001' },
+          params: { county: 'benton-runtime-pilot', appealId: 'J10-BENTON-RUNTIME-PILOT' },
         }),
       ]);
 
@@ -435,7 +640,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           {/* ═══ Center: County Overview ═══ */}
           <div data-testid='county-map-center' className='flex-1 min-w-0'>
             <GlassCard className='h-full p-2'>
-              <CountyMapOverview onParcelSelect={handleSelectParcel} />
+              <CountyWorkspaceOverview
+                onOpenAtlas={handleOpenAtlas}
+                onOpenWorkbench={handleOpenWorkbench}
+                onSearchParcels={openCommandPalette}
+              />
             </GlassCard>
           </div>
 
@@ -493,11 +702,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
                   Executive Command Surface
                 </div>
                 <div className='text-sm font-semibold mt-1' style={{ color: 'hsl(var(--tf-text))' }}>
-                  Cross-suite county posture
+                  County operations command surface
                 </div>
               </div>
               <div className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                Benton County • Governed summaries only
+                Benton Runtime Pilot • 38 counties Onboarding / Provenance / Intake
               </div>
             </div>
 
@@ -581,9 +790,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
           <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
             <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
-              Benton County, WA
+              Washington County Operating Model
             </span>
-            <span>{parcelCountLabel}</span>
+            <span>Benton Runtime Pilot</span>
+            <span>38 counties Onboarding / Provenance / Intake</span>
+            <span>Parcel count: proof path only</span>
             <span>Last sync: –</span>
             <span>Appeals: –</span>
             <span className='flex items-center gap-1'>

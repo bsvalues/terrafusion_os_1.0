@@ -4,11 +4,11 @@ import { render, screen } from '@testing-library/react';
 import { WorkbenchSourceBadge } from '../../components/workbench/WorkbenchSourceBadge';
 
 describe('WorkbenchSourceBadge', () => {
-  it('renders Live badge for live source', () => {
+  it('renders TerraFusion DB/API-backed badge for live source', () => {
     render(<WorkbenchSourceBadge source="live" />);
     const badge = screen.getByTestId('workbench-source-badge');
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent('Live');
+    expect(badge).toHaveTextContent('TerraFusion DB/API-backed');
     expect(badge).toHaveAttribute('data-source', 'live');
   });
 

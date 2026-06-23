@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import SalesForge from '../SalesForge';
 import { RunningStatsPanel } from '../components/RunningStatsPanel';
 import { RatioAuditPanel } from '../panels/RatioAuditPanel';
 import { useSalesForgeStore } from '../salesForgeStore';
@@ -121,5 +122,12 @@ describe('SalesForge contract posture', () => {
     expect(statisticsAPI.contractMetadata).toBe(statisticsApiContractMetadata);
     expect(typeof statisticsAPI.getStrata).toBe('function');
     expect(typeof statisticsAPI.getOutliers).toBe('function');
+  });
+
+  it('does not claim Live TerraFusion API for the June 10 SalesForge surface', () => {
+    render(<SalesForge />);
+
+    expect(screen.queryByText(/Live TerraFusion API/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Not part of June 10 proof path/i)).toBeInTheDocument();
   });
 });

@@ -35,6 +35,7 @@ interface PropertyState {
   // Active parcel (selected via search or navigation)
   activeParcel: Property | null;
   activeParcelLoading: boolean;
+  activeParcelError: string | null;
 
   // Search
   searchQuery: string;
@@ -73,6 +74,7 @@ export const usePropertyStore = create<PropertyState>()(
       // Initial state
       activeParcel: null,
       activeParcelLoading: false,
+      activeParcelError: null,
       searchQuery: '',
       searchResults: [],
       searchTotalCount: 0,
@@ -107,12 +109,16 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
-        set({ activeParcelLoading: true });
+        set({ activeParcelLoading: true, activeParcelError: null });
         try {
           const provider = getDataProvider();
           const parcel = await provider.getParcel(parcelId);
           if (!parcel) {
-            set({ activeParcel: null, activeParcelLoading: false });
+            set({
+              activeParcel: null,
+              activeParcelLoading: false,
+              activeParcelError: `Property data unavailable for parcel ${parcelId}.`,
+            });
             return;
           }
 
@@ -153,10 +159,18 @@ export const usePropertyStore = create<PropertyState>()(
             recordings,
             auditTrail,
             operations,
+            activeParcelError: null,
             activeParcelLoading: false,
           });
-        } catch {
-          set({ activeParcelLoading: false });
+        } catch (error) {
+          const detail = error instanceof Error && error.message
+            ? error.message
+            : `Property data unavailable for parcel ${parcelId}.`;
+          set({
+            activeParcel: null,
+            activeParcelError: detail,
+            activeParcelLoading: false,
+          });
         }
       },
 
@@ -164,6 +178,7 @@ export const usePropertyStore = create<PropertyState>()(
       clearParcel: () => {
         set({
           activeParcel: null,
+          activeParcelError: null,
           assessments: [],
           documents: [],
           appeals: [],

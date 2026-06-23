@@ -18,7 +18,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React, { Suspense, lazy } from 'react';
 import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -26,6 +26,10 @@ import { vi } from 'vitest';
 // ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
+
+const mockUseParcelCount = vi.hoisted(() => vi.fn());
+const mockOpenWorkbenchWindow = vi.hoisted(() => vi.fn());
+const mockSelectRecentParcel = vi.hoisted(() => vi.fn());
 
 // Mock zustand stores used by StageZeroState
 vi.mock('../../stores/commandPaletteStore', () => {
@@ -55,8 +59,8 @@ vi.mock('../../stores/commandPaletteStore', () => {
 vi.mock('../../context/parcelContext', () => ({
   __esModule: true,
   useRecentParcels: () => [],
-  openWorkbenchWindow: vi.fn(),
-  selectRecentParcel: vi.fn(),
+  openWorkbenchWindow: mockOpenWorkbenchWindow,
+  selectRecentParcel: mockSelectRecentParcel,
 }));
 
 // Mock module activation
@@ -138,7 +142,7 @@ vi.mock('../../hooks/useTodaysWork', () => ({
 // Mock useParcelCount — no QueryClientProvider in this test tree
 vi.mock('../../hooks/useParcelCount', () => ({
   __esModule: true,
-  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
+  useParcelCount: () => mockUseParcelCount(),
 }));
 
 // Import the REAL StageZeroState (with mocked dependencies above)
@@ -196,6 +200,13 @@ const Phase7Router: React.FC<{ initialRoute: string }> = ({ initialRoute }) => {
 // ---------------------------------------------------------------------------
 
 describe('Phase 7: Home Scene Contract', () => {
+  beforeEach(() => {
+    mockUseParcelCount.mockReturnValue({ data: undefined, isLoading: false, error: null });
+    mockOpenWorkbenchWindow.mockClear();
+    mockSelectRecentParcel.mockClear();
+    sessionStorage.clear();
+  });
+
   /**
    * Test 1: /home redirects to /
    *
@@ -266,8 +277,8 @@ describe('Phase 7: Home Scene Contract', () => {
     // Quick Actions section header
     expect(screen.getByText('Quick Actions')).toBeInTheDocument();
 
-    // County map SVG — check for the Benton County map elements
-    expect(screen.getByLabelText('Open TerraAtlas for full county map')).toBeInTheDocument();
+    // County workspace — the default home surface for the active county
+    expect(screen.getByLabelText('Active county workspace')).toBeInTheDocument();
     expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
   });
 
@@ -322,5 +333,72 @@ describe('Phase 7: Home Scene Contract', () => {
     // Verify the store's open function is accessible
     const { _openFn } = await import('../../stores/commandPaletteStore') as any;
     expect(typeof _openFn).toBe('function');
+  });
+
+  it('renders Benton operational workspace by default without launch-board or unverified count language', async () => {
+    mockUseParcelCount.mockReturnValue({
+      data: { totalParcels: 128788, dataSource: 'LIVE_DB', stubbed: false },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/Benton County Operations/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Benton County/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Assessor's Office/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Runtime Pilot/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/TerraFusion DB\/API-backed property work/i)).toBeInTheDocument();
+    const center = screen.getByTestId('county-map-center');
+    expect(center).toHaveTextContent(/Open Benton Property Workbench/i);
+    expect(center).toHaveTextContent(/Search Parcel/i);
+
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Continue to Desktop/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/June 10 Launch Briefing/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Statewide county operating model/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Washington County Runtime/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/128,788 parcels/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Washington County Operating Model/i)).toBeInTheDocument();
+  });
+
+  it('opens the Benton Property Workbench from the default Benton workspace', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Open Benton Property Workbench/i }));
+
+    await waitFor(() => {
+      expect(mockOpenWorkbenchWindow).toHaveBeenCalled();
+    });
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Benton County Operations/i)).toBeInTheDocument();
+  });
+
+  it('shows a sovereign non-Benton source workspace without enabling runtime parcel operations', async () => {
+    render(<Phase7Router initialRoute="/" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('stage-zero-state')).toBeInTheDocument();
+    });
+
+    const center = screen.getByTestId('county-map-center');
+    fireEvent.click(screen.getByRole('button', { name: /Yakima County/i }));
+
+    expect(screen.queryByText(/June 10 launch board/i)).not.toBeInTheDocument();
+    expect(center).toHaveTextContent(/Yakima County Source \/ Onboarding Workspace/i);
+    expect(center).toHaveTextContent(/Runtime: Not Runtime Enabled/i);
+    expect(center).toHaveTextContent(/public \/ ArcGIS/i);
+    expect(center).toHaveTextContent(/County Data Intake/i);
+    expect(center).toHaveTextContent(/canonicalImportAllowed: false/i);
+    expect(center).toHaveTextContent(/Runtime parcel operations blocked/i);
+    expect(center).not.toHaveTextContent(/Open Benton Property Workbench/i);
   });
 });

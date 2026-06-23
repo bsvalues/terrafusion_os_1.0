@@ -37,7 +37,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     vi.clearAllMocks();
   });
 
-  it('discloses snapshot-backed county aggregates on the mounted route', () => {
+  it('discloses TerraForge exclusion from the June 10 proof path on the mounted route', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -52,15 +52,13 @@ describe('ForgeSuiteHome source honesty contract', () => {
     );
 
     expect(screen.getByTestId('forge-source-disclosure')).toBeInTheDocument();
-    // Match the prose currently produced by getSourceDisclosure() in
-    // ForgeSuiteHome (FROZEN file — see frontend/CLAUDE.md, restore commit 8da26658a).
     expect(
-      screen.getByText(/Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics\./i),
+      screen.getByText(/TerraForge is not part of the June 10 runtime proof path/i),
     ).toBeInTheDocument();
     expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
   });
 
-  it('does not show the disclosure when live backend metrics are active', () => {
+  it('does not present TerraForge aggregates as June 10 live proof even when provider mode is live', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -74,8 +72,35 @@ describe('ForgeSuiteHome source honesty contract', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByTestId('forge-source-disclosure')).not.toBeInTheDocument();
+    expect(screen.getByTestId('forge-source-disclosure')).toHaveTextContent(
+      /TerraForge is not part of the June 10 runtime proof path/i,
+    );
+    expect(screen.queryByText(/Live metrics/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Live regression/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Live spatial/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Live preview/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/live Forge applications/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('120,850')).not.toBeInTheDocument();
     expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
+  });
+
+  it('blocks standalone Forge module launches during the June 10 proof freeze', () => {
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    const salesForgeCard = screen.getByRole('button', { name: /SalesForge/i });
+    expect(salesForgeCard).toBeDisabled();
+    expect(screen.getAllByText(/Not part of June 10 proof path/i).length).toBeGreaterThan(0);
   });
 
   it('renders the frozen Forge primary module set with TerraDais handoff label available', () => {

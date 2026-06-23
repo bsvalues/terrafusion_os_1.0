@@ -39,14 +39,17 @@ const LoginPage: React.FC = () => {
   return (
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900' data-testid='login-page'>
       <div className='w-full max-w-md p-8 rounded-2xl bg-gray-800/80 border border-cyan-500/30 shadow-lg'>
-        <h1 className='text-2xl font-bold text-cyan-400 mb-2 text-center'>TerraFusion OS</h1>
+        <p className='text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-300/80 text-center'>
+          Statewide county operating model
+        </p>
+        <h1 className='mt-2 text-2xl font-bold text-cyan-400 mb-2 text-center'>TerraFusion OS</h1>
         <p className='text-gray-400 text-sm text-center mb-6'>
-          Your session has expired. Please sign in to continue.
+          Sign in to the Benton Runtime Pilot and Washington county onboarding posture.
         </p>
         <div className='mb-5 rounded-lg border border-cyan-500/20 bg-slate-900/70 px-4 py-3 text-sm text-slate-300'>
-          <p className='font-semibold text-cyan-300'>Provisioned access only</p>
+          <p className='font-semibold text-cyan-300'>Benton Runtime Pilot access</p>
           <p className='mt-1 text-slate-400'>
-            Public self-signup is disabled. Use the operator account issued by the TerraFusion administrator.
+            Public self-signup is disabled. Non-Benton counties remain onboarding, provenance, and intake workspaces until TerraFusion DB/API runtime proof exists.
           </p>
         </div>
         {error && (

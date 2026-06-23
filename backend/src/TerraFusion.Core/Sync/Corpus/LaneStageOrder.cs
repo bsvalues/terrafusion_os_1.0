@@ -132,6 +132,53 @@ public static class LaneStageOrder
                 "Land-Canonical",
             },
 
+            // assessment: ASSESSMENT-VALUE-SEAL — current-year
+            // active-supplement property_val value → assessment truth →
+            // tf_assessment canonical (parcel resolved via existing xref).
+            ["assessment"] = new[]
+            {
+                "Assessment-S1",
+                "Assessment-Truth",
+                "Assessment-Canonical",
+            },
+
+            // exemption: EXEMPTION-FACT-SEAL — populate dict from exmpt_type →
+            // current-year active-supplement exemption facts → tf_exemption.
+            ["exemption"] = new[]
+            {
+                "Exemption-Dict",
+                "Exemption-S1",
+                "Exemption-Truth",
+                "Exemption-Canonical",
+            },
+
+            // jurisdiction: JURISDICTION-SPINE — tax-area + tax-district dicts
+            // → TCA→district map → parcel→tax-area assignment (active-supp).
+            ["jurisdiction"] = new[]
+            {
+                "TaxArea-Dict",
+                "TaxDistrict-Dict",
+                "TaxAreaDistrict-Map",
+                "ParcelTaxArea",
+            },
+
+            // revenue: REVENUE-SPINE Stage 1 — levy rate populate → current-year
+            // active levy tax bill line (+ parcel rollup). Read-only.
+            ["revenue"] = new[]
+            {
+                "LevyRate",
+                "TaxBillLine",
+            },
+
+            // assessment-bill: REVENUE-SPINE Stage 2B — special-assessment agency
+            // dict populate → current-year active 'A' assessment bill line
+            // (+ parcel rollup). Agency-backed, rate-free. Read-only.
+            ["assessment-bill"] = new[]
+            {
+                "Agency",
+                "AssessmentBillLine",
+            },
+
             // sales: independent sale seed → keyed supp → sale truth
             // → targeted parcel chain → tf_sale canonical.
             ["sales"] = new[]

@@ -96,77 +96,47 @@ interface PropertiesPagedResult {
   pageSize: number;
 }
 
-/** Legacy county assessment property detail endpoint */
-interface AssessmentSourcePropertyDetailDto {
-  propId: number;
-  geoId: string;
-  address: string;
-  ownerName: string;
-  assessedValue: number;
-  marketValue: number;
-  landValue: number;
-  improvementValue: number;
-  propertyType: string;
-  legalDescription: string;
-  appraisalYear: number | null;
-  lastModified: string | null;
-  source: string;
-}
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
 const LEGACY_ASSESSMENT_PROPERTIES_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/properties`;
-const LEGACY_ASSESSMENT_PROPERTY_ROUTE = `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property`;
 const LEGACY_ASSESSMENT_HEALTH_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/health`;
+const LOCAL_BACKEND_ORIGIN = 'http://localhost:5000';
+
+function shouldTryLocalBackendFallback(path: string, status: number): boolean {
+  if (status < 500) return false;
+  if (!path.startsWith('/api/') && !path.startsWith('/ops/')) return false;
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname === 'localhost' && ['5173', '5174'].includes(window.location.port);
+}
+
+async function fetchWithLocalBackendFallback(
+  path: string,
+  init: RequestInit | undefined,
+  headers: Record<string, string>,
+): Promise<Response> {
+  const res = await fetch(path, { ...init, headers });
+  if (res.ok || !shouldTryLocalBackendFallback(path, res.status)) {
+    return res;
+  }
+
+  return fetch(`${LOCAL_BACKEND_ORIGIN}${path}`, { ...init, headers });
+}
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = { ...(init?.headers as Record<string, string> | undefined) };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(path, { ...init, headers });
+  const res = await fetchWithLocalBackendFallback(path, init, headers);
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
   return res.json();
 }
 
-function mapAssessmentSourceDetailToProperty(dto: AssessmentSourcePropertyDetailDto): Property {
-  // Parse city from composite address (e.g. "123 Main St, Kennewick, WA, 99336")
-  const parts = (dto.address ?? '').split(',').map((s) => s.trim());
-  const streetAddr = parts[0] ?? dto.address ?? '';
-  const city = parts[1] ?? '';
-  const state = parts[2] ?? 'WA';
-  const zip = parts[3] ?? '';
-
-  return {
-    parcelId: dto.geoId,
-    countyCode: 'benton',
-    address: streetAddr,
-    city,
-    state,
-    zip,
-    legalDescription: dto.legalDescription ?? '',
-    ownerName: dto.ownerName ?? '',
-    propertyType: (dto.propertyType ?? '') as any,
-    landAcreage: 0,
-    yearBuilt: 0,
-    buildingSquareFeet: 0,
-    landValue: dto.landValue ?? 0,
-    improvementValue: dto.improvementValue ?? 0,
-    totalAssessedValue: dto.assessedValue ?? 0,
-    marketValue: dto.marketValue ?? dto.assessedValue ?? 0,
-    taxableValue: dto.assessedValue ?? 0,
-    exemptionAmount: 0,
-    assessmentStatus: 'active',
-    assessmentYear: dto.appraisalYear ?? 0,
-    assessmentDate: dto.lastModified ?? '',
-    lastUpdated: dto.lastModified ?? '',
-    hasActivePermits: false,
-    hasAppeals: false,
-    dataSource: 'live',
-  };
+function isApiAuthFailure(error: unknown): boolean {
+  return error instanceof Error && /^API (401|403):/.test(error.message);
 }
 
 function mapAssessmentSourceSummaryToSearchResult(dto: AssessmentSourceSummaryDto): PropertySearchResult {
@@ -323,17 +293,8 @@ export class LiveDataProvider implements DataProvider {
         `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
       );
       return mapPropertiesDtoToProperty(dto);
-    } catch {
-      // no-op; try compatibility endpoint below.
-    }
-
-    // Fallback: legacy county assessment property endpoint.
-    try {
-      const dto = await apiFetch<AssessmentSourcePropertyDetailDto>(
-        `${LEGACY_ASSESSMENT_PROPERTY_ROUTE}/${encodeURIComponent(parcelId)}`,
-      );
-      return mapAssessmentSourceDetailToProperty(dto);
-    } catch {
+    } catch (error) {
+      if (isApiAuthFailure(error)) throw error;
       return null;
     }
   }

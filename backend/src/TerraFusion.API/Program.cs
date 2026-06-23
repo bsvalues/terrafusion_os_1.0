@@ -2081,6 +2081,53 @@ builder.Services.AddScoped<
     TerraFusion.Core.Sync.PacsLandCanonical.IPacsLandCanonicalProjector,
     TerraFusion.Data.Services.CanonicalTf.PacsLandCanonicalProjector>();
 
+// ASSESSMENT-VALUE-SEAL (2026-06-07): current-year active-supplement
+// property_val assessment value → truth_pacs.assessment_current →
+// canonical_tf.tf_assessment.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentValueLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsAssessmentValueLandingService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsAssessmentCurrentTruthPromoter>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessment.IPacsAssessmentCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsAssessmentCanonicalProjector>();
+
+// EXEMPTION-FACT-SEAL (2026-06-07): current-year active-supplement
+// property_exemption → truth_pacs.exemption_current → canonical_tf.tf_exemption
+// (+ dict_exemption_type populate from PACS exmpt_type).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionDictPopulator,
+    TerraFusion.Data.Services.CanonicalTf.PacsExemptionDictPopulator>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionLandingService,
+    TerraFusion.Data.Services.LegacyPacsRaw.PacsExemptionLandingService>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCurrentTruthPromoter,
+    TerraFusion.Data.Services.TruthPacs.PacsExemptionCurrentTruthPromoter>();
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsExemption.IPacsExemptionCanonicalProjector,
+    TerraFusion.Data.Services.CanonicalTf.PacsExemptionCanonicalProjector>();
+
+// JURISDICTION-SPINE (2026-06-07): tax-area/district dicts + parcel→tax-area
+// assignment + TCA→district map.
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsJurisdiction.IPacsJurisdictionService,
+    TerraFusion.Data.Services.CanonicalTf.PacsJurisdictionService>();
+
+// REVENUE-SPINE Stage 1 (2026-06-07): levy rate + current-year levy tax bill
+// explanation read model (tf_levy_rate / tf_tax_bill_line / tf_tax_bill_current).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsBill.IPacsBillService,
+    TerraFusion.Data.Services.CanonicalTf.PacsBillService>();
+
+// REVENUE-SPINE Stage 2B (2026-06-07): special-assessment bill read model
+// (tf_assessment_agency / tf_assessment_bill_line / tf_assessment_bill_current).
+builder.Services.AddScoped<
+    TerraFusion.Core.Sync.PacsAssessmentBill.IPacsAssessmentBillService,
+    TerraFusion.Data.Services.CanonicalTf.PacsAssessmentBillService>();
+
 // Slice B5': read-only WSDOR roll reader for the
 // /api/parcels/{tfParcelId}/wsdor-roll endpoint. Read-only by
 // contract: AsNoTracking, deterministic ordering by AssessedVal,

@@ -32,7 +32,7 @@ function getLabel(
       : 'Partial';
   }
   const LABELS: Record<Exclude<DisclosureSource, 'partial'>, string> = {
-    live: 'Live',
+    live: 'TerraFusion DB/API-backed',
     fallback: 'Non-live data',
     unavailable: 'Unavailable',
   };

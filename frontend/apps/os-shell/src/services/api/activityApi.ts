@@ -15,6 +15,7 @@
 
 import type { ActivitySeverity } from '../../components/workbench/ActivityFeed';
 import type { BadgeOwner } from '../../contracts/workbench';
+import { getToken } from '../../auth/authStorage';
 
 // ============================================================================
 // Types
@@ -45,6 +46,7 @@ export interface ParsedActivityEntry {
 // ============================================================================
 
 const CACHE_TTL_MS = 30_000; // 30 seconds
+const ACTIVITY_API_ENABLED = import.meta.env.VITE_TF_WORKBENCH_ACTIVITY_API === '1';
 
 interface CacheEntry {
   data: ParsedActivityEntry[];
@@ -98,8 +100,14 @@ function parseEvents(raw: RawActivityEvent[]): ParsedActivityEntry[] {
 
 async function doFetch(parcelId: string): Promise<ParsedActivityEntry[] | null> {
   try {
+    if (!ACTIVITY_API_ENABLED) return null;
+
+    const token = getToken();
+    if (!token) return null;
+
     const res = await fetch(
-      `/api/properties/parcel/${encodeURIComponent(parcelId)}/activity`
+      `/api/properties/parcel/${encodeURIComponent(parcelId)}/activity`,
+      { headers: { Authorization: `Bearer ${token}` } },
     );
     if (!res.ok) return null;
     const json = await res.json();

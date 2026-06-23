@@ -211,8 +211,8 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
             <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? handoff.countyName ?? 'County scope required'} County</span>
-            <span className="forge-chip forge-chip--success">
-              {launchDataMode ? 'Washington launch data package' : 'Live TerraFusion API'}
+            <span className="forge-chip forge-chip--warn">
+              {launchDataMode ? 'Washington launch data package' : 'Not part of June 10 proof path'}
             </span>
           </div>
         </div>

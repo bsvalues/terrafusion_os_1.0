@@ -172,14 +172,28 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const propertyLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const activeParcelLoadingParcelId = usePropertyStore((s) => s.activeParcelLoadingParcelId);
+  const activeParcelError = usePropertyStore((s) => s.activeParcelError);
   const selectParcel = usePropertyStore((s) => s.selectParcel);
 
-  // Load parcel via store when parcelId changes (if not already loaded)
+  // Guards: never duplicate an in-flight load for the same parcel, and never
+  // retry a parcel that already failed (until parcelId changes).
+  const isTargetParcelLoading = Boolean(parcelId && activeParcelLoadingParcelId === parcelId);
+  const isCurrentParcelBlocked = Boolean(
+    activeParcelError && (!activeParcelError.parcelId || activeParcelError.parcelId === parcelId)
+  );
+
+  // Load parcel via store when parcelId changes. Fix C: the API/auth layer is
+  // the AUTHORITY for authorization — a client-side token heuristic must NOT
+  // suppress the first load attempt. The prior `hasWorkbenchAuth` gate produced
+  // a silent dead-end (0 parcel API calls, Loading forever, no 401/403). Now
+  // selectParcel always fires for a fresh/unloaded parcel; a 401/403 from the
+  // API surfaces an explicit, observable error state instead.
   useEffect(() => {
-    if (parcelId && activeParcel?.parcelId !== parcelId) {
+    if (parcelId && activeParcel?.parcelId !== parcelId && !isTargetParcelLoading && !isCurrentParcelBlocked) {
       selectParcel(parcelId);
     }
-  }, [parcelId, activeParcel?.parcelId, selectParcel]);
+  }, [parcelId, activeParcel?.parcelId, isTargetParcelLoading, isCurrentParcelBlocked, selectParcel]);
 
   const propertyData = useMemo(
     () => ({
@@ -334,8 +348,12 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     );
   }
 
+  const parcelLoadPending = Boolean(
+    parcelId && activeParcel?.parcelId !== parcelId && !activeParcelError
+  );
+
   // ── Loading ──
-  if (propertyLoading) {
+  if (propertyLoading || parcelLoadPending) {
     return (
       <div
         className="flex items-center justify-center h-full"
@@ -352,6 +370,54 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
             }}
           />
           <p style={{ color: 'hsl(var(--tf-muted))' }}>Loading property {parcelId}…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Failed parcel load ──
+  if (activeParcelError) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center h-full gap-4 p-8"
+        style={{ color: 'hsl(var(--tf-text) / 0.72)', background: 'hsl(var(--tf-bg))' }}
+        data-testid="workbench-parcel-load-error"
+        role="alert"
+      >
+        <div
+          className="text-[11px] uppercase tracking-[0.22em]"
+          style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}
+        >
+          Property Workbench
+        </div>
+        <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+          Parcel data unavailable
+        </h2>
+        <p className="text-sm text-center max-w-lg">
+          {activeParcelError.message}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate('/property')}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              background: 'hsl(var(--tf-accent))',
+              color: 'hsl(var(--tf-text))',
+            }}
+          >
+            Search Properties
+          </button>
+          <button
+            onClick={handleBack}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              background: 'hsl(var(--tf-surface))',
+              color: 'hsl(var(--tf-text))',
+              border: '1px solid hsl(var(--tf-border) / 0.45)',
+            }}
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );

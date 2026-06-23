@@ -2297,6 +2297,300 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("dict_situs_legal", "canonical_tf");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfAssessment", b =>
+                {
+                    b.Property<Guid>("TfAssessmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AgMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AgUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AppraisedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AssessedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<short>("AssessmentYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("ConversionEra")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("HsCapNewVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HsCapPrevVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("MarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PropertyUseCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("TimberMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TimberUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfAssessmentId");
+
+                    b.HasIndex("ConversionEra")
+                        .HasDatabaseName("ix_tf_assessment_conversion_era");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_assessment_promotion_batch");
+
+                    b.HasIndex("CountyId", "AssessmentYear")
+                        .HasDatabaseName("ix_tf_assessment_county_year");
+
+                    b.HasIndex("TfParcelId", "AssessmentYear")
+                        .HasDatabaseName("ix_tf_assessment_parcel_year");
+
+                    b.ToTable("tf_assessment", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfAssessmentAgency", b =>
+                {
+                    b.Property<Guid>("TfAssessmentAgencyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AgencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AssessmentCd")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("AssessmentDescription")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("AssessmentTypeCd")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfAssessmentAgencyId");
+
+                    b.HasIndex("CountyId", "AgencyId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tf_assessment_agency_key");
+
+                    b.ToTable("tf_assessment_agency", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillCurrent", b =>
+                {
+                    b.Property<Guid>("TfAssessmentBillCurrentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AgencyCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BillCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SourceLineCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("TotalAmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TotalBalanceAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TotalCurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfAssessmentBillCurrentId");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_assessment_bill_current_promotion_batch");
+
+                    b.HasIndex("CountyId", "TaxYr")
+                        .HasDatabaseName("ix_tf_assessment_bill_current_county_year");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_assessment_bill_current_parcel_year");
+
+                    b.ToTable("tf_assessment_bill_current", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfAssessmentBillLine", b =>
+                {
+                    b.Property<Guid>("TfAssessmentBillLineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AgencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("AssessmentCd")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<decimal?>("BalanceAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BillType")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("CurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfAssessmentBillLineId");
+
+                    b.HasIndex("BillId")
+                        .HasDatabaseName("ix_tf_assessment_bill_line_billid");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_assessment_bill_line_promotion_batch");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_assessment_bill_line_parcel_year");
+
+                    b.HasIndex("CountyId", "TaxYr", "AgencyId")
+                        .HasDatabaseName("ix_tf_assessment_bill_line_county_year_agency");
+
+                    b.ToTable("tf_assessment_bill_line", "canonical_tf");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfAssessmentWsdor", b =>
                 {
                     b.Property<Guid>("TfAssessmentWsdorId")
@@ -2414,6 +2708,88 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("tf_assessment_wsdor", "canonical_tf");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfExemption", b =>
+                {
+                    b.Property<Guid>("TfExemptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConversionEra")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EffectiveDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("EffectiveTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("ExemptionPct")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("numeric(9,4)");
+
+                    b.Property<string>("ExmptSubtypeCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("ExmptTypeCd")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<short?>("OwnerTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short?>("QualifyYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<long>("SourceOwnerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("TerminationDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfExemptionId");
+
+                    b.HasIndex("ExmptTypeCd")
+                        .HasDatabaseName("ix_tf_exemption_type");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_exemption_promotion_batch");
+
+                    b.HasIndex("CountyId", "TaxYr")
+                        .HasDatabaseName("ix_tf_exemption_county_year");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_exemption_parcel_year");
+
+                    b.ToTable("tf_exemption", "canonical_tf");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfImprovement", b =>
                 {
                     b.Property<Guid>("TfImprovementId")
@@ -2519,8 +2895,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ConditionCd")
                         .HasMaxLength(8)
@@ -2535,12 +2911,12 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("FeatureCode")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("MethodCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int?>("NumUnits")
                         .HasColumnType("integer");
@@ -2552,8 +2928,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SubClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<Guid>("TfImprovementId")
                         .HasColumnType("uuid");
@@ -2683,6 +3059,53 @@ namespace TerraFusion.Data.Migrations
                         .HasDatabaseName("ix_tf_land_parcel");
 
                     b.ToTable("tf_land", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfLevyRate", b =>
+                {
+                    b.Property<Guid>("TfLevyRateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LevyCd")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<decimal?>("LevyRate")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfLevyRateId");
+
+                    b.HasIndex("CountyId", "TaxYr", "TaxDistrictId", "LevyCd")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tf_levy_rate_key");
+
+                    b.ToTable("tf_levy_rate", "canonical_tf");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfOwner", b =>
@@ -2861,6 +3284,53 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("tf_parcel_owner_link", "canonical_tf");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfParcelTaxArea", b =>
+                {
+                    b.Property<Guid>("TfParcelTaxAreaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfParcelTaxAreaId");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_parcel_tax_area_promotion_batch");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_parcel_tax_area_parcel_year");
+
+                    b.HasIndex("CountyId", "TaxYr", "TaxAreaId")
+                        .HasDatabaseName("ix_tf_parcel_tax_area_county_year_taxarea");
+
+                    b.ToTable("tf_parcel_tax_area", "canonical_tf");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfSale", b =>
                 {
                     b.Property<Guid>("TfSaleId")
@@ -2952,6 +3422,315 @@ namespace TerraFusion.Data.Migrations
                         .HasDatabaseName("ix_tf_sale_promotionbatch_chgofowner");
 
                     b.ToTable("tf_sale", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfTaxArea", b =>
+                {
+                    b.Property<Guid>("TfTaxAreaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("InactiveAfterYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<bool>("IsInactiveAfterYear")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TaxAreaDescription")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaxAreaNumber")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("TaxAreaState")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfTaxAreaId");
+
+                    b.HasIndex("CountyId", "TaxAreaId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tf_tax_area_county_taxarea");
+
+                    b.ToTable("tf_tax_area", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfTaxAreaDistrict", b =>
+                {
+                    b.Property<Guid>("TfTaxAreaDistrictId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfTaxAreaDistrictId");
+
+                    b.HasIndex("CountyId", "TaxYr", "TaxAreaId")
+                        .HasDatabaseName("ix_tf_tax_area_district_area");
+
+                    b.HasIndex("CountyId", "TaxYr", "TaxAreaId", "TaxDistrictId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tf_tax_area_district_key");
+
+                    b.ToTable("tf_tax_area_district", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfTaxBillCurrent", b =>
+                {
+                    b.Property<Guid>("TfTaxBillCurrentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BillCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DistrictCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SourceLineCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("TotalAmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TotalBalanceAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TotalCurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TotalTaxableVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfTaxBillCurrentId");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_tax_bill_current_promotion_batch");
+
+                    b.HasIndex("CountyId", "TaxYr")
+                        .HasDatabaseName("ix_tf_tax_bill_current_county_year");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_tax_bill_current_parcel_year");
+
+                    b.ToTable("tf_tax_bill_current", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfTaxBillLine", b =>
+                {
+                    b.Property<Guid>("TfTaxBillLineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("BalanceAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BillType")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("CurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LevyCd")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<decimal?>("LevyRate")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SourcePropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("TaxableVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfTaxBillLineId");
+
+                    b.HasIndex("BillId")
+                        .HasDatabaseName("ix_tf_tax_bill_line_billid");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_tf_tax_bill_line_promotion_batch");
+
+                    b.HasIndex("TfParcelId", "TaxYr")
+                        .HasDatabaseName("ix_tf_tax_bill_line_parcel_year");
+
+                    b.HasIndex("CountyId", "TaxYr", "TaxDistrictId")
+                        .HasDatabaseName("ix_tf_tax_bill_line_county_year_district");
+
+                    b.ToTable("tf_tax_bill_line", "canonical_tf");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CanonicalTf.TfTaxDistrict", b =>
+                {
+                    b.Property<Guid>("TfTaxDistrictId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LocationCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TaxDistrictCd")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("TaxDistrictDesc")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaxDistrictTypeCd")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TfTaxDistrictId");
+
+                    b.HasIndex("TaxDistrictTypeCd")
+                        .HasDatabaseName("ix_tf_tax_district_type");
+
+                    b.HasIndex("CountyId", "TaxDistrictId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_tf_tax_district_county_district");
+
+                    b.ToTable("tf_tax_district", "canonical_tf");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.CertificationStep", b =>
@@ -6648,6 +7427,69 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("account", "legacy_pacs_raw");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawAssessmentBillLine", b =>
+                {
+                    b.Property<Guid>("LandedRowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AgencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BillType")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<decimal?>("CurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LandedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("SourceRowHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("LandedRowId");
+
+                    b.HasIndex("LoadBatchId")
+                        .HasDatabaseName("ix_legacy_pacs_raw_assessment_bill_line_loadbatch");
+
+                    b.HasIndex("PropId", "TaxYr")
+                        .HasDatabaseName("ix_legacy_pacs_raw_assessment_bill_line_prop_year");
+
+                    b.ToTable("assessment_bill_line", "legacy_pacs_raw");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawImprv", b =>
                 {
                     b.Property<Guid>("LandedRowId")
@@ -7161,7 +8003,80 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("property", "legacy_pacs_raw");
                 });
 
-            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyVal", b =>
+            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyExemption", b =>
+                {
+                    b.Property<Guid>("LandedRowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("EffectiveDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("EffectiveTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("ExemptionPct")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("numeric(9,4)");
+
+                    b.Property<string>("ExmptSubtypeCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<short>("ExmptTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("ExmptTypeCd")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTime>("LandedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<short?>("OwnerTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("QualifyYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("SourceRowHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("TerminationDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("LandedRowId");
+
+                    b.HasIndex("LoadBatchId")
+                        .HasDatabaseName("ix_legacy_pacs_raw_property_exemption_loadbatch");
+
+                    b.HasIndex("PropId", "ExmptTaxYr")
+                        .HasDatabaseName("ix_legacy_pacs_raw_property_exemption_prop_year");
+
+                    b.ToTable("property_exemption", "legacy_pacs_raw");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyTaxArea", b =>
                 {
                     b.Property<Guid>("LandedRowId")
                         .ValueGeneratedOnAdd()
@@ -7172,6 +8087,95 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<Guid>("LoadBatchId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("SourceRowHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("LandedRowId");
+
+                    b.HasIndex("LoadBatchId")
+                        .HasDatabaseName("ix_legacy_pacs_raw_property_tax_area_loadbatch");
+
+                    b.HasIndex("PropId", "TaxYr")
+                        .HasDatabaseName("ix_legacy_pacs_raw_property_tax_area_prop_year");
+
+                    b.ToTable("property_tax_area", "legacy_pacs_raw");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawPropertyVal", b =>
+                {
+                    b.Property<Guid>("LandedRowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AgMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AgUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AppraisedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AssessedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HsCapNewVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HsCapPrevVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("LandedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("MarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("PropId")
                         .HasColumnType("integer");
@@ -7198,6 +8202,14 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<short>("SupNum")
                         .HasColumnType("smallint");
+
+                    b.Property<decimal?>("TimberMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TimberUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.HasKey("LandedRowId");
 
@@ -7285,6 +8297,80 @@ namespace TerraFusion.Data.Migrations
                         .HasDatabaseName("ix_legacy_pacs_raw_sale_sl_dt");
 
                     b.ToTable("sale", "legacy_pacs_raw");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawTaxBillLine", b =>
+                {
+                    b.Property<Guid>("LandedRowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<long>("BillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BillType")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<decimal?>("CurrentAmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LandedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LevyCd")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("LoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceQueryHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("SourceRowHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("TaxableVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("LandedRowId");
+
+                    b.HasIndex("LoadBatchId")
+                        .HasDatabaseName("ix_legacy_pacs_raw_tax_bill_line_loadbatch");
+
+                    b.HasIndex("PropId", "TaxYr")
+                        .HasDatabaseName("ix_legacy_pacs_raw_tax_bill_line_prop_year");
+
+                    b.ToTable("tax_bill_line", "legacy_pacs_raw");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.LegacyPacsRaw.LegacyPacsRawWashPropOwnerVal", b =>
@@ -15821,6 +16907,180 @@ namespace TerraFusion.Data.Migrations
                         .HasDatabaseName("ux_truth_arcgis_parcel_geom_county_objectid");
 
                     b.ToTable("parcel_geom_current", "truth_arcgis");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.TruthPacs.TruthPacsAssessmentCurrent", b =>
+                {
+                    b.Property<Guid>("TruthAssessmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AgMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AgUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AppraisedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("AssessedVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<short>("AssessmentYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("ConversionEra")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal?>("HsCapNewVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HsCapPrevVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("ImprvNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("LandNonHstdVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("MarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("PromotedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PropertyUseCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<Guid>("PropertyValLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SourcePropertyValLandedRowId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("TimberMarketVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("TimberUseVal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("TruthAssessmentId");
+
+                    b.HasIndex("ConversionEra")
+                        .HasDatabaseName("ix_truth_pacs_assessment_conversion_era");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_truth_pacs_assessment_promotion_batch");
+
+                    b.HasIndex("PropId", "AssessmentYear")
+                        .HasDatabaseName("ix_truth_pacs_assessment_prop_year");
+
+                    b.ToTable("assessment_current", "truth_pacs");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.TruthPacs.TruthPacsExemptionCurrent", b =>
+                {
+                    b.Property<Guid>("TruthExemptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConversionEra")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("EffectiveDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("EffectiveTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("ExemptionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("ExemptionPct")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("numeric(9,4)");
+
+                    b.Property<string>("ExmptSubtypeCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("ExmptTypeCd")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<short?>("OwnerTaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("PromotedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PromotionLoadBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PropId")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("QualifyYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("SourceExemptionLandedRowId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("SupNum")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("TaxYr")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("TerminationDt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TruthExemptionId");
+
+                    b.HasIndex("PromotionLoadBatchId")
+                        .HasDatabaseName("ix_truth_pacs_exemption_promotion_batch");
+
+                    b.HasIndex("PropId", "TaxYr", "OwnerId", "ExmptTypeCd")
+                        .HasDatabaseName("ix_truth_pacs_exemption_natural_key");
+
+                    b.ToTable("exemption_current", "truth_pacs");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.TruthPacs.TruthPacsImprvCurrent", b =>
