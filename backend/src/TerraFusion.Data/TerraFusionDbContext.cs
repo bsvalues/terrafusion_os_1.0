@@ -7,6 +7,7 @@ using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
 using TerraFusion.Core.Entities.Sync.Mapping;
 using TerraFusion.Core.Entities.Sync.Profile;
+using TerraFusion.Core.Entities.Forge;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
@@ -36,6 +37,17 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TaxLevy> TaxLevies { get; set; }
   public DbSet<GovernmentUser> GovernmentUsers { get; set; }
   public DbSet<AuditLog> AuditLogs { get; set; }
+
+  // WS-1 Forge Cost Reference — TF-native valuation reference data (county-scoped, versioned, audit-stamped)
+  public DbSet<CostFactorSet> CostFactorSets { get; set; }
+  public DbSet<CostFactor> CostFactors { get; set; }
+  public DbSet<DepreciationSchedule> DepreciationSchedules { get; set; }
+  public DbSet<DepreciationFactor> DepreciationFactors { get; set; }
+  public DbSet<LandScheduleSet> LandScheduleSets { get; set; }
+  public DbSet<LandRate> LandRates { get; set; }
+  public DbSet<CapRateSet> CapRateSets { get; set; }
+  public DbSet<CapRate> CapRates { get; set; }
+  public DbSet<ParcelValuation> ParcelValuations { get; set; }
 
   // AI System Entities
   public DbSet<AIAgent> AIAgents { get; set; }

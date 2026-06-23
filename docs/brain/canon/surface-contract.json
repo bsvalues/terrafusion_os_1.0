@@ -1,0 +1,82 @@
+{
+  "_source": "Operator directive 2026-06-09 (June 10 production loop) + TF-052 + .github/AGENT_ENTRYPOINT.md layers",
+  "_note": "OS surface contract — anti-drift doctrine. The Brain holds this so agents stop forgetting it. Brain remembers the contract. Agents execute the slice. Browser proves the truth. Brain is memory + doctrine + decision register + anti-drift referee — NEVER a product builder, UI designer, or source of new architecture.",
+  "truths": [
+    "TerraFusion OS launches the work.",
+    "TerraForge Suite = /forge launched through OS Dock.",
+    "Property Workbench = parcel workspace.",
+    "Workbench Forge tab != TerraForge Suite.",
+    "Home Scene = GIS/county orientation.",
+    "Benton = runtime-real.",
+    "Other 38 counties = source/provenance/onboarding/intake.",
+    "County Data Intake = optional governed intake lane (canonicalImportAllowed: false; no canonical DB writes; no production mutation).",
+    "No mock/fallback/random data.",
+    "Local proof != Hostinger proof.",
+    "Pilot ok:true != product readiness."
+  ],
+  "pre_slice_check": {
+    "_note": "Before every implementation slice, the agent must answer these against the proposed work. Any YES blocks the slice until resolved or escalated to the architect.",
+    "questions": [
+      "Does this task violate the OS surface contract?",
+      "Is the agent confusing Workbench with TerraForge Suite?",
+      "Is the agent proving a route instead of OS navigation?",
+      "Is the agent locking a required feature instead of finishing it?",
+      "Is the agent adding mock/fallback data?",
+      "Is the agent claiming local proof as production proof?",
+      "Is the agent touching files outside the slice?"
+    ],
+    "must_validate": [
+      "target surface",
+      "expected OS navigation path",
+      "allowed files",
+      "runtime data source",
+      "forbidden claims",
+      "definition of done"
+    ],
+    "on_conflict": "If Brain doctrine conflicts with the proposed implementation, stop and report. Do not improvise architecture."
+  },
+  "forbidden_confusions": [
+    {
+      "a": "/forge",
+      "b": "/property/:parcelId/forge",
+      "rule": "Suite home vs parcel-level Forge context — never interchangeable."
+    },
+    {
+      "a": "Workbench Forge tab",
+      "b": "TerraForge Suite",
+      "rule": "Tab is parcel-scoped Layer 4; Suite is Layer 3 launched from the Dock."
+    },
+    {
+      "a": "route proof",
+      "b": "product proof",
+      "rule": "A 200 on a route is not a working product surface."
+    },
+    {
+      "a": "local proof",
+      "b": "production proof",
+      "rule": "localhost evidence never closes a public-deployment gate."
+    },
+    {
+      "a": "locking broken tools",
+      "b": "completing tools",
+      "rule": "A lock is honest posture, not completion. Required visible surfaces must be finished."
+    },
+    {
+      "a": "evidence files",
+      "b": "visible runtime truth",
+      "rule": "Docs do not substitute for what the browser shows."
+    }
+  ],
+  "compsforge_pool_doctrine": {
+    "decided": "2026-06-09",
+    "facts": [
+      "CompsForge data is real: ComparableSales holds 259,102 real Benton sales (PACS-converted, 1900-2026).",
+      "The original 36-row pool was a business-rule/data-window defect (SalesYear == taxYear only), not sample data.",
+      "CompsForge must use an assessor-credible lookback window: tax year N pools SalesYear N-3..N (2026 -> 2023-2026), SaleDate window fallback when SalesYear is null.",
+      "Qualification screen stays on the visible pool; rejected/disqualified sales are counted and disclosed, never silently included or hidden.",
+      "The UI must show the active comp window and the separated population counts (candidate / qualified / rejected / displayed)."
+    ],
+    "completion_rule": "Do not call CompsForge complete until browser proof shows a meaningful Benton comp pool AND the active comp window, reached through OS Dock -> Forge -> CompsForge.",
+    "resolution": "TERRAFORGE-COMPS-LOOKBACK-RULE landed at aae00fda9: pool 36 -> 9,102 pool-eligible of 13,900 candidates, browser-proven 2026-06-09."
+  }
+}

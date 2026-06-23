@@ -1,0 +1,3 @@
+# Track markdown docs in this directory; the root .gitignore pattern
+# "data/" would otherwise suppress it.
+!*.md

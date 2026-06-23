@@ -32,7 +32,7 @@ public sealed class WorkbenchCommitDecisionLinkConfiguration
             .IsRequired();
 
         builder.Property(x => x.RoutedToUniverse).HasMaxLength(50);
-        builder.Property(x => x.RoutedToIAttrValCd).HasMaxLength(32);
+        builder.Property(x => x.RoutedToIAttrValCd).HasMaxLength(64);
         builder.Property(x => x.DismissalReason).HasMaxLength(50);
 
         builder.Property(x => x.CreatedAt).IsRequired();
