@@ -61,7 +61,7 @@
       "laneId": "governance-drift",
       "reviewedAt": "2026-06-23T16:15:00Z",
       "reviewedBy": "human-operator",
-      "reviewStatus": "converted-to-wo",
+      "reviewStatus": "needs-human-decision",
       "disposition": "prepare-work-order",
       "severity": "Needs Decision",
       "linkedFindingIds": [
