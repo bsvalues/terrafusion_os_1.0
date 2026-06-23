@@ -1,0 +1,45 @@
+{
+  "reportId": "rpt-reject-0001",
+  "monitorId": "governance-drift-monitor",
+  "monitorName": "Governance Drift Monitor",
+  "generatedAt": "2026-06-23T14:45:00Z",
+  "sourceType": "manual-paste",
+  "workspace": "${TERRAFUSION_WORKSPACE}",
+  "branch": "codex/example-read-only",
+  "status": "rejected",
+  "summary": "Synthetic rejected example. It is rejected because it asks the Control Panel to execute a command.",
+  "findings": [
+    {
+      "findingId": "find-reject-0001",
+      "title": "Rejected command execution request",
+      "severity": "P1",
+      "lane": "governance-drift",
+      "description": "This synthetic finding is rejected because the proposed action asks the Control Panel to execute a command.",
+      "evidenceRefs": [
+        "ev-reject-0001"
+      ],
+      "affectedPaths": [],
+      "proposedAction": "Execute a command from the Control Panel.",
+      "proposedWorkOrderId": null,
+      "rejectionReason": "Control Panel must not execute commands; it may only prepare governed prompts and decision packets."
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-reject-0001",
+      "type": "human-note",
+      "source": "Synthetic example only",
+      "timestamp": "2026-06-23T14:45:00Z",
+      "confidence": "verified",
+      "notes": "No protected data is included."
+    }
+  ],
+  "recommendedActions": [],
+  "humanDecisionsRequired": [
+    "Confirm rejection and request a prepare-only report if the finding is still relevant."
+  ],
+  "blockers": [
+    "Report violates the Control Panel authority boundary."
+  ],
+  "nextSafeAction": "Reject this report and request a compliant static report."
+}

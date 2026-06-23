@@ -1,0 +1,53 @@
+{
+  "reportId": "rpt-gov-0001",
+  "monitorId": "governance-drift-monitor",
+  "monitorName": "Governance Drift Monitor",
+  "generatedAt": "2026-06-23T14:30:00Z",
+  "sourceType": "manual-paste",
+  "sourceRunId": null,
+  "sourceRunUrl": null,
+  "workspace": "${TERRAFUSION_WORKSPACE}",
+  "branch": "codex/example-read-only",
+  "commitSha": "0000000000000000000000000000000000000000",
+  "status": "new",
+  "summary": "Synthetic example report showing accepted report intake shape. No protected data is included.",
+  "findings": [
+    {
+      "findingId": "find-gov-0001",
+      "title": "Static authority wording needs review",
+      "severity": "Needs Decision",
+      "lane": "governance-drift",
+      "description": "Synthetic finding: a document title may sound authoritative and should be reviewed before planning depends on it.",
+      "evidenceRefs": [
+        "ev-gov-0001"
+      ],
+      "affectedPaths": [
+        "docs/example-authority-note.md"
+      ],
+      "proposedAction": "Prepare a scoped Work Order prompt for human review.",
+      "proposedWorkOrderId": "WO-CANON-EXAMPLE",
+      "rejectionReason": null
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-gov-0001",
+      "type": "human-note",
+      "source": "Synthetic example only",
+      "path": "docs/example-authority-note.md",
+      "command": null,
+      "excerpt": "Example excerpt without protected content.",
+      "timestamp": "2026-06-23T14:30:00Z",
+      "confidence": "medium",
+      "notes": "This example is safe for documentation because it contains no operational data."
+    }
+  ],
+  "recommendedActions": [
+    "Prepare a Work Order prompt; do not mutate files from the Control Panel."
+  ],
+  "humanDecisionsRequired": [
+    "Decide whether this synthetic authority wording would require a doc cleanup Work Order."
+  ],
+  "blockers": [],
+  "nextSafeAction": "Human reviews the finding and decides whether to prepare a Work Order prompt."
+}
