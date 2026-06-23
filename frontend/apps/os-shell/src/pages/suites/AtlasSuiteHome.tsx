@@ -203,7 +203,7 @@ export default function AtlasSuiteHome() {
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>GIS geometry rows</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(GIS_GEOMETRIES_AVAILABLE)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>RingJson geometries</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(RING_JSON_GEOMETRIES_AVAILABLE)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Active parcel count</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Not verified</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>PACS rows</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Hidden from Suite UI</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Legacy source rows</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>Hidden from Suite UI</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Proof parcel</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{PROOF_PARCEL_ID}</span></div>
         </div>
       )}

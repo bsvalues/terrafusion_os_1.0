@@ -244,7 +244,7 @@ vi.mock('../../lib/apiBase', () => ({
 }));
 
 vi.mock('../../pages/suites/SaleQualificationQueue', () => ({
-  SaleQualificationQueue: () => <div data-testid="sale-qualification-queue" />,
+  SaleQualificationQueue: () => <div data-testid="forge-sale-qualification-queue" />,
 }));
 
 vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
@@ -458,13 +458,13 @@ describe('Phase 10: Forge Modeling Contract', () => {
   // =========================================================================
 
   describe('ForgeSuiteHome', () => {
-    it('16. has data-testid on stats strip ("forge-stats"), module grid ("forge-primary-applications"), and queue ("forge-queue")', () => {
+    it('16. has data-testid on stats strip, module grid, and canonical sale qualification queue import point', () => {
       renderWithRouter(<ForgeSuiteHome />);
 
       expect(screen.getByTestId('suite-forge-root')).toBeInTheDocument();
       expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
       expect(screen.getByTestId('forge-primary-applications')).toBeInTheDocument();
-      expect(screen.getByTestId('forge-queue')).toBeInTheDocument();
+      expect(screen.getByTestId('forge-sale-qualification-queue')).toBeInTheDocument();
     });
   });
 });

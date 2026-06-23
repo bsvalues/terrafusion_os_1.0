@@ -216,7 +216,7 @@ describe('Forge Analytical Entry Points', () => {
     expect(screen.getByTestId('suite-forge-root')).toBeDefined();
     expect(screen.getByTestId('forge-stats')).toBeDefined();
     expect(screen.getByTestId('forge-primary-applications')).toBeDefined();
-    expect(screen.getByTestId('forge-queue')).toBeDefined();
+    expect(screen.getByTestId('forge-sale-qualification-queue')).toBeDefined();
   });
 
   // ForgeSuiteHome uses an inline primary-applications section (not SuiteModuleGrid).
@@ -318,19 +318,24 @@ describe('Cross-Suite Entry Point Consistency', () => {
 
   it('all 3 suites expose stats, module surface, and queue structural sections', () => {
     const suites = [
-      { Component: DaisSuiteHome, prefix: 'dais', moduleTestId: 'dais-modules' },
-      { Component: ForgeSuiteHome, prefix: 'forge', moduleTestId: 'forge-primary-applications' },
-      { Component: AtlasSuiteHome, prefix: 'atlas', moduleTestId: 'atlas-modules' },
+      { Component: DaisSuiteHome, prefix: 'dais', moduleTestId: 'dais-modules', queueTestId: 'dais-queue' },
+      {
+        Component: ForgeSuiteHome,
+        prefix: 'forge',
+        moduleTestId: 'forge-primary-applications',
+        queueTestId: 'forge-sale-qualification-queue',
+      },
+      { Component: AtlasSuiteHome, prefix: 'atlas', moduleTestId: 'atlas-modules', queueTestId: 'atlas-queue' },
     ];
 
-    for (const { Component, prefix, moduleTestId } of suites) {
+    for (const { Component, prefix, moduleTestId, queueTestId } of suites) {
       const { unmount } = render(<MemoryRouter><Component /></MemoryRouter>);
       // Every suite home has the constitutional 3-section structure
       expect(screen.getByTestId(`${prefix}-stats`)).toBeDefined();
       expect(screen.getByTestId(moduleTestId)).toBeDefined();
-      // Queue section is always present (Dais/Atlas use OperationalQueue mock;
-      // Forge implements its own inline queue — both carry the ${prefix}-queue testid)
-      expect(screen.getByTestId(`${prefix}-queue`)).toBeDefined();
+      // Queue section is always present. Dais/Atlas use OperationalQueue;
+      // Forge uses the canonical SaleQualificationQueue surface.
+      expect(screen.getByTestId(queueTestId)).toBeDefined();
       unmount();
     }
   });

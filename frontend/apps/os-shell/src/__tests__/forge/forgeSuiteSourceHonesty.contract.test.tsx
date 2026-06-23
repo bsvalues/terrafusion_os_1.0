@@ -1,15 +1,15 @@
 /**
  * forgeSuiteSourceHonesty.contract.test.tsx
  *
- * CONTRACT: ForgeSuiteHome must display sourceDisclosure that matches
- * the actual DataProvider mode — never derive it from an independent
- * network call that can disagree with the provider singleton.
+ * CONTRACT: ForgeSuiteHome must display source posture honestly. During the
+ * June 10 proof freeze, /forge always shows the suite posture disclosure even
+ * when the county stats provider is live, because full TerraForge suite proof
+ * is not established by a live county stats provider alone.
  *
  * These tests verify:
  *   1. When provider is snapshot → disclosure banner appears
- *   2. When provider is live    → no disclosure banner
- *   3. sourceDisclosure originates from useCountyStats (provider-aware),
- *      not from a hardcoded string in the component
+ *   2. When provider is live    → June 10 suite posture banner remains
+ *   3. sourceDisclosure remains provider-aware when proof freeze is lifted
  *   4. Diagnostics pill absent in test env (VITE_SHOW_MODE_DIAGNOSTICS not set)
  */
 
@@ -105,16 +105,20 @@ describe('ForgeSuiteHome — source honesty contract', () => {
     expect(screen.getByTestId('forge-source-disclosure')).toBeDefined();
   });
 
-  it('does NOT show source disclosure when provider mode is live', async () => {
+  it('shows June 10 suite posture disclosure when provider mode is live', async () => {
     await renderWithStats({ source: 'live', sourceDisclosure: null });
 
-    expect(screen.queryByTestId('forge-source-disclosure')).toBeNull();
+    expect(screen.getByTestId('forge-source-disclosure')).toHaveTextContent(
+      'TerraForge is part of the Benton operating model',
+    );
   });
 
-  it('does NOT show source disclosure when source is null (loading)', async () => {
+  it('shows June 10 suite posture disclosure when source is null (loading)', async () => {
     await renderWithStats({ source: null, sourceDisclosure: null });
 
-    expect(screen.queryByTestId('forge-source-disclosure')).toBeNull();
+    expect(screen.getByTestId('forge-source-disclosure')).toHaveTextContent(
+      'unverified standalone Forge modules stay preview-locked',
+    );
   });
 
   it('diagnostics pill absent when VITE_SHOW_MODE_DIAGNOSTICS is not set', async () => {

@@ -6,7 +6,7 @@
  * Tracks: cost calculations, income analyses, comp selections,
  * reconciliations, appeal filings/decisions, manual overrides.
  *
- * Source: Harris PACS change_of_value_report + TerraTrace audit spine
+ * Source: TerraFusion valuation change feed + TerraTrace audit spine
  *
  * DATA POSTURE:
  * - `loadAuditEntries()` is the only source for this surface.

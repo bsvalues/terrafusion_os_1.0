@@ -148,9 +148,12 @@ describe('Phase 4 — DataProvider boundary: suite homes render provider-supplie
     vi.restoreAllMocks();
   });
 
-  it('ForgeSuiteHome renders totalParcels from provider (73,419), not a hardcoded value', () => {
+  it('ForgeSuiteHome renders proof-freeze runtime KPI lanes instead of the legacy provider parcel rollup', () => {
     render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
-    expect(screen.getByTestId('forge-stats').textContent).toContain('73,419');
+    const forgeStats = screen.getByTestId('forge-stats').textContent ?? '';
+    expect(forgeStats).toContain('SALE QUEUE');
+    expect(forgeStats).toContain('COUNTY ROLLUP');
+    expect(forgeStats).not.toContain('73,419');
   });
 
   it('AtlasSuiteHome does not present provider totalParcels as verified GIS parcel truth', () => {

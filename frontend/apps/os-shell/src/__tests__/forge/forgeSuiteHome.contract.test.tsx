@@ -8,11 +8,12 @@
  * because a test failed, the zombie is back. Find the wrong component source
  * and kill it again.
  *
- * Locked taxonomy (IAAO three-approaches-to-value + sale qualification + current use):
- *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge · CUForge
- *   SECONDARY: Batch Cost Runs · Regression Studio ·
- *              TerraGAMA · Coefficient Preview
- *   DEFAULT ANALYTICS: County Studio
+ * Locked taxonomy (June 10 TerraForge canonical inventory):
+ *   PRIMARY:   CostForge · CompsForge · SalesForge · IncomeForge ·
+ *              Reconciliation · Calibration / QC · CAMA Characteristics ·
+ *              Valuation Notes / Defensibility
+ *   SUPPORT:   Batch Cost Runs · Regression Studio · County Studio ·
+ *              Coefficient Preview · Current-use Support
  *   QUEUE:     SaleQualificationQueue (the only panel surface)
  *
  * BANNED from suite home:
@@ -20,13 +21,14 @@
  *   - ComparableSales, Reconciliation, Appeals, Value Audit (workbench openers)
  *   - RatioStudyPanel (removed surface)
  *   - "Parcel adapters, references, and planned scenes" heading
- *   - Legacy standalone ComparableSales/Reconciliation/Appeals workbench-opener cards
+ *   - Any card that opens a property workbench from suite home
  */
 
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getTerraForgeCanonicalInventory } from '../../pages/suites/terraforgeCanonicalInventory';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -88,11 +90,11 @@ describe('TerraForge suite home — taxonomy contract', () => {
 
   // ── Primary tier ────────────────────────────────────────────────────────────
 
-  it('renders exactly five primary valuation scenes — three approaches to value plus SalesForge and CUForge', async () => {
+  it('renders every June 10 primary capability', async () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
     const cards = within(primary).getAllByRole('button');
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(8);
   });
 
   it('renders CostForge in the primary tier', async () => {
@@ -119,50 +121,62 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(within(primary).getByText('SalesForge')).toBeDefined();
   });
 
-  it('renders CUForge in the primary tier', async () => {
+  it('renders Reconciliation, Calibration / QC, CAMA Characteristics, and Valuation Notes as primary capability lanes', async () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
-    expect(within(primary).getByText('CUForge')).toBeDefined();
+
+    expect(within(primary).getByText('Reconciliation')).toBeDefined();
+    expect(within(primary).getByText('Calibration / QC')).toBeDefined();
+    expect(within(primary).getByText('CAMA Characteristics')).toBeDefined();
+    expect(within(primary).getByText('Valuation Notes / Defensibility')).toBeDefined();
   });
 
-  // ── Secondary tier ──────────────────────────────────────────────────────────
+  // ── Support / deferred tier ────────────────────────────────────────────────
 
-  it('renders exactly four secondary/specialist scenes', async () => {
+  it('renders exactly five support/deferred tools outside primary proof', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    const cards = within(secondary).getAllByRole('button');
-    expect(cards).toHaveLength(4);
+    const support = screen.getByTestId('forge-support-applications');
+    const cards = within(support).getAllByRole('button');
+    expect(cards).toHaveLength(5);
   });
 
-  it('does not render Statistics Studio in the secondary tier', async () => {
+  it('does not render Statistics Studio or TerraGAMA in support/deferred tools', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).queryByText('Statistics Studio')).toBeNull();
-    expect(within(secondary).queryByText(/legacy specialist/i)).toBeNull();
+    const support = screen.getByTestId('forge-support-applications');
+    expect(within(support).queryByText('Statistics Studio')).toBeNull();
+    expect(within(support).queryByText('TerraGAMA')).toBeNull();
+    expect(within(support).queryByText(/legacy specialist/i)).toBeNull();
   });
 
-  it('renders Batch Cost Runs in the secondary tier', async () => {
+  it('renders Batch Cost Runs in the support/deferred tier', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).getByText('Batch Cost Runs')).toBeDefined();
+    const support = screen.getByTestId('forge-support-applications');
+    expect(within(support).getByText('Batch Cost Runs')).toBeDefined();
   });
 
-  it('renders Regression Studio in the secondary tier', async () => {
+  it('renders Regression Studio in the support/deferred tier', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).getByText('Regression Studio')).toBeDefined();
+    const support = screen.getByTestId('forge-support-applications');
+    expect(within(support).getByText('Regression Studio')).toBeDefined();
   });
 
-  it('renders TerraGAMA in the secondary tier', async () => {
+  it('renders County Studio, Coefficient Preview, and Current-use Support in the support/deferred tier', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).getByText('TerraGAMA')).toBeDefined();
+    const support = screen.getByTestId('forge-support-applications');
+    expect(within(support).getByText('County Studio')).toBeDefined();
+    expect(within(support).getByText('Coefficient Preview')).toBeDefined();
+    expect(within(support).getByText('Current-use Support')).toBeDefined();
   });
 
-  it('renders Coefficient Preview in the secondary tier', async () => {
+  it('matches the canonical inventory labels rendered on /forge', async () => {
     await renderForgeSuiteHome();
-    const secondary = screen.getByTestId('forge-secondary-applications');
-    expect(within(secondary).getByText('Coefficient Preview')).toBeDefined();
+    const primary = screen.getByTestId('forge-primary-applications');
+    const support = screen.getByTestId('forge-support-applications');
+
+    for (const capability of getTerraForgeCanonicalInventory()) {
+      const surface = capability.tier === 'primary' ? primary : support;
+      expect(within(surface).getByText(capability.label)).toBeDefined();
+    }
   });
 
   // ── Queue / panel surface ───────────────────────────────────────────────────
@@ -195,9 +209,11 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(screen.queryByText('Comparable Sales')).toBeNull();
   });
 
-  it('BANNED: does not render Reconciliation card', async () => {
+  it('renders Reconciliation only as a primary canonical lane, not as a workbench-opener card', async () => {
     await renderForgeSuiteHome();
-    expect(screen.queryByText('Reconciliation')).toBeNull();
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByText('Reconciliation')).toBeDefined();
+    expect(screen.queryByText('Open Property Workbench')).toBeNull();
   });
 
   it('BANNED: does not render Appeals card', async () => {
@@ -222,9 +238,13 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(screen.queryByText(/ratio study/i)).toBeNull();
   });
 
-  it('BANNED: does not render CompsPoolBrowser', async () => {
+  it('BANNED: does not render CompsPoolBrowser as a suite proof card', async () => {
     await renderForgeSuiteHome();
-    expect(screen.queryByText(/comps pool/i)).toBeNull();
+    const primary = screen.getByTestId('forge-primary-applications');
+    const support = screen.getByTestId('forge-support-applications');
+
+    expect(within(primary).queryByText(/comps pool/i)).toBeNull();
+    expect(within(support).queryByText(/comps pool/i)).toBeNull();
   });
 
   // ── Wrong-suite items ───────────────────────────────────────────────────────
