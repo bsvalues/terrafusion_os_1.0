@@ -218,7 +218,7 @@ export function makeRuntimeDbQueryRunner({
 
     const failures = [];
     if (runtime === "direct" || (runtime === "auto" && connectionString)) {
-      const direct = queryViaDirectPsql({ name, sql, connectionString, psqlPath, spawn });
+      const direct = queryViaDirectPsql({ name, sql, connectionString, psqlPath, queryTimeoutMs, spawn });
       if (!direct?.unavailable) return direct;
       failures.push(`direct psql: ${direct.reason}`);
       if (runtime === "direct") return direct;
