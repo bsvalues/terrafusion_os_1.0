@@ -45,10 +45,9 @@ test('non-Benton counties are onboarding/provenance workspaces with runtime oper
   assert.equal(nonBenton.length, 38);
   assert.equal(nonBenton.every(county => county.runtimeOperationsAllowed === false), true);
   assert.equal(
-    nonBenton.every(county =>
-      ['onboarding', 'provenance_inventory', 'not_runtime_enabled'].includes(county.mode)
-    ),
+    nonBenton.every((county) => ['onboarding', 'provenance_inventory'].includes(county.mode)),
     true
+  );
   );
   assert.equal(
     nonBenton.every(county => county.runtimeGate === 'blocked_until_county_specific_db_api_proof'),
