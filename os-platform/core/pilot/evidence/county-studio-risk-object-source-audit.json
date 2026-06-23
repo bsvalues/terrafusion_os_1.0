@@ -1,0 +1,98 @@
+{
+  "generatedAtUtc": "2026-06-07T05:35:26.515Z",
+  "gate": "county-studio-risk-object-source-audit",
+  "status": "RISK_OBJECT_SOURCE_AUDITED_DEV_DERIVED",
+  "classification": "DEV_DERIVED_FROM_REAL_INPUTS",
+  "decisions": {
+    "riskObjectsRequiredForForgeDev": true,
+    "riskObjectsRequiredForProductionProof": true,
+    "riskObjectsCanBeDevDerived": true,
+    "productionProofAllowed": false,
+    "operationalProofAllowed": false
+  },
+  "sourcePath": {
+    "frontendFile": "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx",
+    "apiRoute": "GET /county-study/studies/{studyId}/health-summary",
+    "backendServiceOrController": "CountyStudyHealthService + risk surface derivation",
+    "dbTableOrView": "CountySegments / derived risk metrics",
+    "joinKey": "studyId + segmentId + riskObjectId",
+    "countyId": "19190019-1919-1919-1919-191919191919",
+    "taxYear": 2026,
+    "studyId": "runtime-selected-study"
+  },
+  "evidence": {
+    "realInputSurfaces": [
+      {
+        "surface": "parcel/property identity source",
+        "classification": "SYNC_DERIVED",
+        "observedCount": 3199335,
+        "realDevReady": true
+      },
+      {
+        "surface": "property characteristics source",
+        "classification": "SYNC_DERIVED",
+        "observedCount": 3199335,
+        "realDevReady": true
+      },
+      {
+        "surface": "valuation metrics source",
+        "classification": "SYNC_DERIVED",
+        "observedCount": 83682,
+        "realDevReady": true
+      },
+      {
+        "surface": "ratio-study context source",
+        "classification": "SYNC_DERIVED",
+        "observedCount": 83682,
+        "realDevReady": true
+      },
+      {
+        "surface": "geometry/map context source",
+        "classification": "SYNC_DERIVED_GEOMETRY",
+        "observedCount": 80075,
+        "realDevReady": true
+      }
+    ],
+    "sourceScan": {
+      "frontendRiskSurfaceUsesSegments": true,
+      "frontendGroupsRiskRowsFromSegments": true,
+      "frontendLedgerConsumesRiskSurfaceRows": true,
+      "backendHealthUsesCountySegments": true,
+      "backendHealthComputesCompositeRisk": true,
+      "segmentDerivationUsesProperties": true,
+      "segmentDerivationUsesCamaCharacteristics": true,
+      "segmentDerivationUsesComparableSales": true,
+      "segmentDerivationUsesPacsValuation": true,
+      "persistedRiskObjectTableFound": false,
+      "persistedRiskObjectClassification": null,
+      "persistedRiskObjectTable": null,
+      "mockOrFixtureRiskPathFound": false,
+      "fallbackRiskPathFound": false,
+      "generatedPlaceholderRiskPathFound": false,
+      "sourceFiles": {
+        "frontendRiskSurfaces": "frontend/apps/os-shell/src/pages/forge/county-studio/utils/riskSurfaces.ts",
+        "frontendCommandCenter": "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx",
+        "backendHealth": "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+        "backendSegmentDerivation": "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs"
+      }
+    },
+    "currentForgeWiringClassification": "GENERATED",
+    "observedRiskObjectCount": 83682
+  },
+  "failureReason": "Risk objects are deterministic development derivations from real Benton segment, valuation, ratio, CAMA, and TerraAtlas geometry inputs; production proof still requires canonical reconciliation.",
+  "requiredProofToUpgrade": "Recompute risk objects from canonical Benton valuation, CAMA, sales, segment, and geometry rows; prove same-study map/ledger/inspector alignment before production proof.",
+  "validFollowUps": [
+    "Reclassify risk objects as DEV_DERIVED_FROM_REAL_INPUTS if deterministic real-input derivation remains proven.",
+    "Wire risk objects to a real seeded/sync-derived persisted source if one exists.",
+    "Keep risk objects GENERATED and degraded for Forge dev if synthetic placeholders remain."
+  ],
+  "boundaries": [
+    "This audit does not touch County Studio UI.",
+    "This audit does not invent risk objects.",
+    "This audit does not add mock or fallback risk data.",
+    "This audit does not mutate TerraFusion Sync.",
+    "This audit does not change DB seeding.",
+    "This audit does not set productionProofAllowed=true.",
+    "This audit does not set operationalProofAllowed=true."
+  ]
+}
