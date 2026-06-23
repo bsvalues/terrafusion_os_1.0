@@ -213,6 +213,18 @@ function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): Runti
     const fetchFreshMetricHeaders = async (): Promise<Record<string, string>> => {
       const headers = { ...countyScope.headers };
 
+      const flag = (value: unknown) => String(value ?? '').toLowerCase() === 'true';
+      const devPreview =
+        flag(import.meta.env.VITE_USE_MOCK_DATA) ||
+        flag(import.meta.env.VITE_DEV_PREVIEW_BYPASS_AUTH) ||
+        (import.meta.env.DEV &&
+          String(import.meta.env.MODE ?? '').toLowerCase() === 'development' &&
+          !flag(import.meta.env.VITE_ENFORCE_AUTH_IN_DEV));
+
+      if (!devPreview) {
+        return headers;
+      }
+
       try {
         const response = await apiFetch('/auth/dev-token', { signal: abortController.signal });
         if (!response.ok) {
