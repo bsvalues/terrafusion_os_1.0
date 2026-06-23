@@ -144,7 +144,7 @@ test("uses canonical Docker psql runtime when workstation psql is unavailable", 
   const calls = [];
   const runner = makeRuntimeDbQueryRunner({
     dbRuntime: "auto",
-    connectionString: "postgresql://postgres:postgres@localhost:5432/terrafusion",
+    connectionString: "postgresql://postgres:postgres@localhost/terrafusion",
     dockerPath: "docker",
     pgContainer: "terrafusion-postgres-dev",
     pgDatabase: "terrafusion",
