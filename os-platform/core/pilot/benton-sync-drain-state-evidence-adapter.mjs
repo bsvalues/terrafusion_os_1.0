@@ -177,13 +177,13 @@ function dockerPsqlArgs({ pgContainer, pgDatabase, pgUser, sql }) {
   ];
 }
 
-function queryViaDirectPsql({ name, sql, connectionString, psqlPath, spawn }) {
+function queryViaDirectPsql({ name, sql, connectionString, psqlPath, queryTimeoutMs, spawn }) {
   if (!connectionString) return { unavailable: true, reason: "No database connection string configured." };
   return psqlOutputToValue(
     name,
     spawn(psqlPath, directPsqlArgs(connectionString, sql), {
       encoding: "utf8",
-      timeout: 10000
+      timeout: queryTimeoutMs ?? 10000
     })
   );
 }
