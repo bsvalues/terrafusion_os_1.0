@@ -81,10 +81,6 @@ function readinessDependencyBlockers(readinessReport) {
 function productionBlockedDependencies(dataTruthReport) {
   const proofAreas = Array.isArray(dataTruthReport?.proofAreas) ? dataTruthReport.proofAreas : [];
   return proofAreas
-    .filter((area) => {
-      const classification = normalizeClassification(area.classification);
-      return PRODUCTION_BLOCKING_CLASSIFICATIONS.has(classification) || area.productionProofAllowed !== true;
-    })
     .filter((area) => PRODUCTION_BLOCKING_CLASSIFICATIONS.has(normalizeClassification(area.classification)))
     .map((area) => ({
       area: area.area,
