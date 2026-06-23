@@ -27,6 +27,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { usePropertyStore } from '../../stores/propertyStore';
+import { activateModule } from '../../orchestration/moduleActivation';
 
 export interface SuiteModuleDef {
   id: string;
@@ -82,7 +83,11 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
       if (!targetId) {
         return;
       }
-      navigate(`/${targetId}`);
+      // Canonical open path (same as desktop icons, command palette, start menu,
+      // and the suite homes): activate the module → focus/open a desktop window.
+      // Bare `navigate('/${targetId}')` had no registered route and silently
+      // no-op'd for every standalone suite tile. See WO-SUITE-ROUTING-001.
+      void activateModule(targetId, { source: 'system' });
     }
   };
 

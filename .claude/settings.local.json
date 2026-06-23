@@ -375,7 +375,8 @@
       "Bash(GITHUB_REF_NAME=main VITE_DATA_MODE=snapshot VITE_ALLOW_NON_LIVE_MODE=1 bash scripts/ci/assert-frontend-data-mode.sh)",
       "Bash(rustc --version)",
       "Bash(cargo --version)",
-      "Bash(cargo build:*)"
+      "Bash(cargo build:*)",
+      "Bash(mkdir -p /home/user/terrafusion_os_1.0/.claude/memory)"
     ],
     "deny": [],
     "ask": [],

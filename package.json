@@ -49,6 +49,7 @@
     "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs",
     "prepare": "husky install",
     "tf": "node tools/bin/tf.mjs",
+    "brain": "node scripts/brain/brain.mjs",
     "tf:ship": "node tools/dev/tf-ship.mjs",
     "tf:slice": "node tools/dev/tf-slice.mjs",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
@@ -564,5 +565,10 @@
       "Port": 5000
     },
     "Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM"
+  },
+  "pnpm": {
+    "overrides": {
+      "shell-quote": ">=1.8.4"
+    }
   }
 }

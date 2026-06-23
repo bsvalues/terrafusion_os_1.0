@@ -328,3 +328,105 @@ export {
   type LocalAgentReleaseRunbook,
   type LocalAgentRunbookArtifact,
 } from './releaseRunbook.js';
+
+export {
+  AI_PROFILE_ENV,
+  AI_PROFILES,
+  DEFAULT_AI_PROFILE,
+  DEFAULT_LOCAL_KB_PATH,
+  DEFAULT_RUNBOOK_PATH,
+  AiProfileError,
+  isAiProfileName,
+  resolveAiProfile,
+  redactedAiProfileSummary,
+  type AiProfileName,
+  type AiProfileConfig,
+} from './aiProfile.js';
+
+export {
+  LOCAL_PROVIDER_IDS,
+  EXTERNAL_PROVIDER_IDS,
+  createLocalOpsProvider,
+  isLocalOpsProblem,
+  isLocalOpsSuccess,
+  type LocalOpsProvider,
+  type LocalOpsProviderKind,
+  type LocalOpsProviderStatus,
+  type LocalOpsOutcomeStatus,
+  type LocalOpsProblem,
+  type LocalOpsSuccess,
+  type LocalOpsResult,
+  type LocalOpsRefusalCode,
+  type CreateLocalOpsProviderOptions,
+} from './localOpsProvider.js';
+
+export {
+  LOCALOPS_EVENT_TYPES,
+  LOCALOPS_TRACE_SCHEMA_VERSION,
+  LocalOpsTrace,
+  createLocalOpsTrace,
+  noopLocalOpsTraceSink,
+  createJsonlLocalOpsTraceSink,
+  createRecordingLocalOpsTraceSink,
+  type LocalOpsEventType,
+  type LocalOpsTraceEvent,
+  type LocalOpsTraceSink,
+  type RecordingLocalOpsTraceSink,
+  type LocalOpsTraceOptions,
+} from './localOpsTrace.js';
+
+export {
+  KB_ALLOWED_ROOT_PREFIXES,
+  LocalOpsKb,
+  createLocalOpsKb,
+  type KbSourceRef,
+  type KbRetrieveResult,
+  type KbStatus,
+  type CreateLocalOpsKbOptions,
+} from './localOpsKb.js';
+
+export {
+  READONLY_DIAGNOSTICS,
+  LocalOpsDiagnostics,
+  createLocalOpsDiagnostics,
+  isDiagnosticRefusal,
+  isDiagnosticName,
+  type DiagnosticName,
+  type DiagnosticStatus,
+  type DiagnosticResult,
+  type DiagnosticRefusal,
+  type DiagnosticReasonCode,
+  type DiagnosticOutcome,
+  type CreateLocalOpsDiagnosticsOptions,
+} from './localOpsDiagnostics.js';
+
+export {
+  mapLocalOpsEventToTraceInput,
+  createTerraTraceBridgeSink,
+  composeLocalOpsTraceSinks,
+  type TerraTraceEmitter,
+  type TerraTraceBridgeContext,
+  type CreateTerraTraceBridgeSinkOptions,
+} from './localOpsTraceBridge.js';
+
+export {
+  createLocalOpsEngine,
+  type LocalOpsEngine,
+  type LocalOpsViewModel,
+  type LocalOpsAnswer,
+  type LocalOpsDiagnosticView,
+  type LocalOpsRefusalView,
+  type LocalOpsSourceView,
+  type LocalOpsTraceView,
+  type CreateLocalOpsEngineOptions,
+} from './localOpsEngine.js';
+
+// WO-AI-CONSOLIDATION-005 — assessor-domain advisory capability (read-only).
+export {
+  createExemptionAdvisor,
+  type ExemptionAdvisor,
+  type ExemptionAdvisory,
+  type ExemptionAdvisoryVerdict,
+  type ExemptionReviewInput,
+  type CreateExemptionAdvisorOptions,
+} from './exemptionAdvisor.js';

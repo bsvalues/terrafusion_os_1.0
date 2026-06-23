@@ -50,12 +50,13 @@ namespace TerraFusion.Core.Services
                 Success = true
             };
 
-            await Task.Delay(1200);
+            // Honesty (WO-CF-b2g): stub — no live CAMA+ connector. Zeroed.
+            await Task.Delay(10);
 
-            result.RecordsProcessed = 75000;
-            result.RecordsUpdated = 1450;
-            result.RecordsAdded = 67;
-            result.RecordsSkipped = 15;
+            result.RecordsProcessed = 0;
+            result.RecordsUpdated = 0;
+            result.RecordsAdded = 0;
+            result.RecordsSkipped = 0;
             result.SyncEndTime = DateTime.UtcNow;
 
             return result;

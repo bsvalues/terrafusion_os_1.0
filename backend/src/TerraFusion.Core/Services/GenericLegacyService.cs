@@ -50,12 +50,13 @@ namespace TerraFusion.Core.Services
                 Success = true
             };
 
-            await Task.Delay(500);
+            // Honesty (WO-CF-b2g): stub — no live generic legacy connector. Zeroed.
+            await Task.Delay(10);
 
-            result.RecordsProcessed = 25000;
-            result.RecordsUpdated = 450;
-            result.RecordsAdded = 15;
-            result.RecordsSkipped = 3;
+            result.RecordsProcessed = 0;
+            result.RecordsUpdated = 0;
+            result.RecordsAdded = 0;
+            result.RecordsSkipped = 0;
             result.SyncEndTime = DateTime.UtcNow;
 
             return result;

@@ -48,6 +48,9 @@ public sealed class PacsOwnerCurrentTruthPromoterTests : IDisposable
     private PacsOwnerCurrentTruthPromoter BuildPromoter()
         => new(_db, NullLogger<PacsOwnerCurrentTruthPromoter>.Instance);
 
+    private PacsOwnerCurrentTruthPromoter BuildPromoterWithChunkSize(int chunkSize)
+        => new(_db, NullLogger<PacsOwnerCurrentTruthPromoter>.Instance, chunkSize);
+
     private async Task<Guid> SeedBatchAsync(string label, string status = "COMPLETED")
     {
         var b = new LoadBatch
@@ -521,5 +524,127 @@ public sealed class PacsOwnerCurrentTruthPromoterTests : IDisposable
                                   ConversionEraGate.Lanes.Owner));
         gate.Status.Should().Be("PASS");
         gate.Detail.Should().Contain("preConversion=0");
+    }
+
+    // ── WO-OWNER-PERF-001: chunked save ──────────────────────────────────
+
+    [Fact]
+    public async Task ChunkSave_MultipleOwners_AllPromotedAndNoTrackedEntitiesRemain()
+    {
+        // 3 owners — well below the default 10k chunk boundary, so only
+        // the post-loop final flush runs. Verifies that multiple owners
+        // all persist correctly through the final-flush path.
+        // The in-loop chunk-boundary path is exercised by
+        // ChunkSave_BoundaryExactlyHit_PersistedMidLoopAndAllPromoted.
+        const int ownerCount = 3;
+        var ownerBatch = await SeedBatchAsync("owner");
+        var accountBatch = await SeedBatchAsync("account");
+        var suppBatch = await SeedBatchAsync("supp");
+
+        for (var i = 1; i <= ownerCount; i++)
+        {
+            await SeedSuppAsync(suppBatch, propId: i, year: 2026, sup: 0);
+            await SeedAccountAsync(accountBatch, acctId: i);
+            await SeedOwnerAsync(ownerBatch, propId: i, ownerId: i, pct: 100m);
+        }
+
+        var result = await BuildPromoter()
+            .PromoteAsync(ownerBatch, accountBatch, suppBatch, "test-op");
+
+        result.Status.Should().Be("COMPLETED");
+        result.OwnersPromoted.Should().Be(ownerCount);
+
+        // All rows must be persisted (chunk flush + final flush both committed).
+        var dbCount = await _db.TruthPacsOwnerCurrents.CountAsync();
+        dbCount.Should().Be(ownerCount,
+            "every promoted owner must survive after ChangeTracker detach between chunks");
+    }
+
+    [Fact]
+    public async Task ChunkSave_NoTrackedOwnerCurrentEntities_AfterFullPromote()
+    {
+        // After promotion completes, TruthPacsOwnerCurrent entities must
+        // not linger in the ChangeTracker (they are detached between chunks
+        // and the final flush also detaches on success).
+        var ownerBatch = await SeedBatchAsync("owner");
+        var accountBatch = await SeedBatchAsync("account");
+        var suppBatch = await SeedBatchAsync("supp");
+
+        await SeedSuppAsync(suppBatch, propId: 1, year: 2026, sup: 0);
+        await SeedAccountAsync(accountBatch, acctId: 1);
+        await SeedOwnerAsync(ownerBatch, propId: 1, ownerId: 1, pct: 100m);
+
+        await BuildPromoter().PromoteAsync(ownerBatch, accountBatch, suppBatch, "test-op");
+
+        // After the final SaveChangesAsync, the chunk-flush logic has detached
+        // all TruthPacsOwnerCurrent entities.  The ChangeTracker should retain
+        // LoadBatch and gate-result entities (unchanged) but zero Added/Modified
+        // TruthPacsOwnerCurrent rows.
+        var tracked = _db.ChangeTracker
+            .Entries<TruthPacsOwnerCurrent>()
+            .Count();
+        tracked.Should().Be(0,
+            "chunk-flush detaches TruthPacsOwnerCurrent entities after each save " +
+            "to prevent ChangeTracker accumulation at production scale");
+    }
+
+    [Fact]
+    public async Task ChunkSave_SmallBatch_CompletesWithoutChunkBoundary()
+    {
+        // A single owner is well below the 10k chunk boundary.
+        // Verify the final-flush path works (no chunk boundary is ever hit,
+        // so only the post-loop SaveChangesAsync executes).
+        var ownerBatch = await SeedBatchAsync("owner");
+        var accountBatch = await SeedBatchAsync("account");
+        var suppBatch = await SeedBatchAsync("supp");
+
+        await SeedSuppAsync(suppBatch, propId: 1, year: 2026, sup: 0);
+        await SeedAccountAsync(accountBatch, acctId: 1);
+        await SeedOwnerAsync(ownerBatch, propId: 1, ownerId: 1, pct: 100m);
+
+        var result = await BuildPromoter()
+            .PromoteAsync(ownerBatch, accountBatch, suppBatch, "test-op");
+
+        result.Status.Should().Be("COMPLETED");
+        result.OwnersPromoted.Should().Be(1);
+        (await _db.TruthPacsOwnerCurrents.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task ChunkSave_BoundaryExactlyHit_PersistedMidLoopAndAllPromoted()
+    {
+        // Uses chunkSize=3 with 4 owners so the in-loop SaveChangesAsync
+        // fires exactly once (at promoted=3), then the post-loop final flush
+        // handles the 4th row. This directly exercises the
+        // `if (promoted % _chunkSize == 0)` branch that was unreachable
+        // with the default 10k chunk size in a unit test.
+        const int chunkSize = 3;
+        const int ownerCount = chunkSize + 1; // crosses exactly one boundary
+
+        var ownerBatch = await SeedBatchAsync("owner");
+        var accountBatch = await SeedBatchAsync("account");
+        var suppBatch = await SeedBatchAsync("supp");
+
+        for (var i = 1; i <= ownerCount; i++)
+        {
+            await SeedSuppAsync(suppBatch, propId: i, year: 2026, sup: 0);
+            await SeedAccountAsync(accountBatch, acctId: i);
+            await SeedOwnerAsync(ownerBatch, propId: i, ownerId: i, pct: 100m);
+        }
+
+        var result = await BuildPromoterWithChunkSize(chunkSize)
+            .PromoteAsync(ownerBatch, accountBatch, suppBatch, "test-op");
+
+        result.Status.Should().Be("COMPLETED");
+        result.OwnersPromoted.Should().Be(ownerCount);
+
+        // All 4 rows must be in the DB: the first 3 committed at the chunk
+        // boundary (in-loop SaveChangesAsync), the 4th by the post-loop flush.
+        (await _db.TruthPacsOwnerCurrents.CountAsync()).Should().Be(ownerCount,
+            "chunk-boundary save (promoted=3) and final-flush (promoted=4) must both commit");
+
+        // All TruthPacsOwnerCurrent entities must be detached after promotion.
+        _db.ChangeTracker.Entries<TruthPacsOwnerCurrent>().Count().Should().Be(0,
+            "targeted detach after each chunk flush must clear the ChangeTracker");
     }
 }

@@ -11,20 +11,24 @@
 import { fileURLToPath } from 'node:url';
 
 /**
- * @typedef {Readonly<{ strict: boolean, json: boolean, paths: ReadonlyArray<string> }>} GateArgs
+ * @typedef {Readonly<{ strict: boolean, json: boolean, flags: ReadonlySet<string>, paths: ReadonlyArray<string> }>} GateArgs
  * @typedef {Readonly<{ path?: string, detail: string }>} Finding
  */
 
 /**
- * Parse gate CLI args: flags --strict/--json, everything else is a path.
+ * Parse gate CLI args: any `--x` token becomes a flag; everything else a path.
+ * `strict`/`json` are surfaced directly; `flags` exposes the rest (e.g.
+ * `--canon-owned-only`).
  * @param {ReadonlyArray<string>} argv
  * @returns {GateArgs}
  */
 export function parseArgs(argv) {
   const a = Array.isArray(argv) ? argv : [];
+  const flags = new Set(a.filter((x) => typeof x === 'string' && x.startsWith('--')).map((x) => x.slice(2)));
   return Object.freeze({
-    strict: a.includes('--strict'),
-    json: a.includes('--json'),
+    strict: flags.has('strict'),
+    json: flags.has('json'),
+    flags,
     paths: Object.freeze(a.filter((x) => typeof x === 'string' && !x.startsWith('--'))),
   });
 }

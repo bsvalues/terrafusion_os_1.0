@@ -1,0 +1,25 @@
+{
+  "_source": "Hardened-Brain spec §15 + TerraPilot Pilot/Muse split (TF-052 Article VII)",
+  "levels": {
+    "R0": { "name": "read_only", "approval": "none" },
+    "R1": { "name": "docs_or_tests", "approval": "auto" },
+    "R2": { "name": "single_suite_code", "approval": "work_order_required" },
+    "R3": { "name": "persistence_or_api", "approval": "human_review_required" },
+    "R4": {
+      "name": "shell_or_write_lane",
+      "approval": "explicit_architect_approval"
+    },
+    "R5": {
+      "name": "constitution_or_security",
+      "approval": "locked_manual_only"
+    }
+  },
+  "routing": {
+    "R0": "agent may proceed",
+    "R1": "agent may proceed",
+    "R2": "passport required",
+    "R3": "tests required + passport",
+    "R4": "ADR required + passport",
+    "R5": "manual only — no agent"
+  }
+}

@@ -83,7 +83,9 @@ public class CostForgeAIService : ICostForgeAIService
           .ToList();
 
       if (recentData.Count == 0)
-        return 847m; // Default baseline
+        // Honesty (WO-CF-b2f): no recorded throughput → report 0, not a fabricated 847
+        // baseline. The computed branch below derives from real _performanceHistory timings.
+        return 0m;
 
       var avgResponseTime = recentData.Average(d => d.Value);
       return Math.Max(1000m / Math.Max(avgResponseTime, 1m), 100m);
@@ -92,17 +94,39 @@ public class CostForgeAIService : ICostForgeAIService
 
   private decimal CalculateCurrentAccuracy()
   {
+    // Snapshot the count once — _agents is a ConcurrentDictionary, so checking emptiness and
+    // reading Count separately would race (the fleet could empty in between) and could throw
+    // DivideByZeroException (WO-AI-CONSOLIDATION-004c-b2c).
+    var agentCount = _agents.Count;
+
+    // Honesty (WO-AI-CONSOLIDATION-004c-b2d): an empty fleet has no live accuracy to report.
+    // Return 0 rather than the quantum-derived ~99.9% so the operator-visible AccuracyRate does
+    // not imply live performance when AgentsActive=0 / SystemStatus=critical.
+    if (agentCount == 0)
+      return 0m;
+
     // Calculate current accuracy based on quantum factor and system performance
     var baseAccuracy = _targetAccuracy * 100;
     var quantumBonus = (_quantumFactor - 900) * 0.01m;
-    var systemLoadPenalty = (_agents.Values.Count(a => a.Status == "busy") / (decimal)_agents.Count) * 0.5m;
+    var systemLoadPenalty = (_agents.Values.Count(a => a.Status == "busy") / (decimal)agentCount) * 0.5m;
 
     return Math.Min(baseAccuracy + quantumBonus - systemLoadPenalty, 99.9m);
   }
 
   private string DetermineSystemStatus()
   {
-    var activePercentage = _agents.Values.Count(a => a.Status == "active") / (decimal)_agents.Count;
+    // Honesty/safety (WO-AI-CONSOLIDATION-004c-b2c): no agents configured/running (default
+    // fleet is 0, not a fabricated 1008). Snapshot the count once — _agents is a
+    // ConcurrentDictionary, so checking emptiness and reading Count separately would race and
+    // still throw DivideByZeroException. Take an explicit empty-fleet path instead of dividing
+    // by an empty count. "critical" is the safest EXISTING status — it is the only one that
+    // does not falsely imply a healthy or operational fleet (no NoAgentsConfigured status
+    // exists in this contract).
+    var agentCount = _agents.Count;
+    if (agentCount == 0)
+      return "critical";
+
+    var activePercentage = _agents.Values.Count(a => a.Status == "active") / (decimal)agentCount;
     var modelsHealthy = _mlModels.Count == _modelLastUpdated.Count;
 
     if (activePercentage >= 0.8m && modelsHealthy)
@@ -314,18 +338,39 @@ public class CostForgeAIService : ICostForgeAIService
   {
     await System.Threading.Tasks.Task.Delay(10);
 
-    var activeAgents = _agents.Values.Count(a => a.Status == "active");
-    var idleAgents = _agents.Values.Count(a => a.Status == "idle");
-    var busyAgents = _agents.Values.Count(a => a.Status == "busy");
+    // Coherence (WO-CF-b2e): _agents is a ConcurrentDictionary that can change between reads
+    // (e.g. via ScaleAIAgentsAsync). Take ONE snapshot and derive every field from it so the
+    // returned DTO is internally consistent — counts cannot exceed TotalAgents, and the Agents
+    // sample matches the same generation. Behavior-neutral apart from that consistency.
+    var snapshot = _agents.Values.ToList();
+    var totalAgents = snapshot.Count;
+
+    // Single pass: read each agent's Status exactly once so an agent is classified into at most
+    // one bucket (no double-counting across passes), and avoid three O(n) enumerations.
+    var activeAgents = 0;
+    var idleAgents = 0;
+    var busyAgents = 0;
+    foreach (var agent in snapshot)
+    {
+      switch (agent.Status)
+      {
+        case "active": activeAgents++; break;
+        case "idle": idleAgents++; break;
+        case "busy": busyAgents++; break;
+      }
+    }
 
     return new AIAgentStatusDto
     {
-      TotalAgents = _agents.Count,
+      TotalAgents = totalAgents,
       ActiveAgents = activeAgents,
       IdleAgents = idleAgents,
       BusyAgents = busyAgents,
-      AverageUtilization = (double)87.3m,
-      Agents = _agents.Values.Take(10).Cast<object>().ToList() // Return first 10 for performance
+      // Honesty (WO-CF-b2f): the agent Status values are Random-assigned simulations, so any
+      // utilization derived from them is fabricated. Report 0 in all states — there is no
+      // trustworthy live utilization to surface (supersedes the b2d empty-only guard).
+      AverageUtilization = 0.0,
+      Agents = snapshot.Take(10).Cast<object>().ToList() // Return first 10 for performance
     };
   }
 
@@ -356,18 +401,21 @@ public class CostForgeAIService : ICostForgeAIService
   {
     await System.Threading.Tasks.Task.Delay(10);
 
+    // Honesty (WO-CF-b2f): these were fabricated constants with no real telemetry backing —
+    // zeroed so the surfaced metrics do not imply live performance. HistoricalData below is
+    // real (written by RecordPerformanceMetrics during actual valuations) and is preserved.
     return new PerformanceMetricsDto
     {
-      AverageResponseTime = 1.2m,
-      ThroughputPerSecond = 847m,
-      ErrorRate = 0.03m,
-      MemoryUsage = 2048m,
-      CpuUsage = 23.5m,
+      AverageResponseTime = 0m,
+      ThroughputPerSecond = 0m,
+      ErrorRate = 0m,
+      MemoryUsage = 0m,
+      CpuUsage = 0m,
       CustomMetrics = new Dictionary<string, decimal>
       {
-        ["quantum_acceleration"] = 379000000m,
-        ["harris_sync_rate"] = 99.7m,
-        ["championship_score"] = 98.7m
+        ["quantum_acceleration"] = 0m,
+        ["harris_sync_rate"] = 0m,
+        ["championship_score"] = 0m
       },
       HistoricalData = _performanceHistory.TakeLast(100).ToList()
     };
@@ -375,16 +423,21 @@ public class CostForgeAIService : ICostForgeAIService
 
   public async System.Threading.Tasks.Task<HarrisSyncResultDto> SyncWithHarrisPACSAsync(HarrisSyncRequestDto request)
   {
-    _logger.LogInformation("Starting Harris PACS sync for county {CountyId}", request.CountyId);
+    // Honesty (WO-CF-b2g): this stub returned fabricated sync counts (89,247
+    // processed, 1247 updated, 23 added, fake harris_version "12.4.7").
+    // No controller calls this method — the real endpoint is
+    // CostForgeController.SyncWithHarrisPACS which queries the actual DB.
+    // Zeroed so these fabrications cannot resurface through a future wiring.
+    _logger.LogInformation("Harris PACS sync stub invoked for county {CountyId} — no live connector", request.CountyId);
 
     var startTime = DateTime.UtcNow;
-    await System.Threading.Tasks.Task.Delay(2000); // Simulate sync operation
+    await System.Threading.Tasks.Task.Delay(10);
 
     return new HarrisSyncResultDto
     {
-      RecordsProcessed = 89_247, // CARD-10: Benton County parcel count stub
-      RecordsUpdated = 1247,
-      RecordsAdded = 23,
+      RecordsProcessed = 0,
+      RecordsUpdated = 0,
+      RecordsAdded = 0,
       RecordsSkipped = 0,
       SyncStartTime = startTime,
       SyncEndTime = DateTime.UtcNow,
@@ -393,9 +446,9 @@ public class CostForgeAIService : ICostForgeAIService
       Errors = new List<string>(),
       SyncMetadata = new Dictionary<string, object>
       {
-        ["harris_version"] = "12.4.7",
         ["sync_type"] = request.FullSync ? "full" : "incremental",
-        ["county"] = request.CountyId
+        ["county"] = request.CountyId,
+        ["note"] = "stub — no live Harris PACS connector"
       }
     };
   }
@@ -409,9 +462,12 @@ public class CostForgeAIService : ICostForgeAIService
       Status = TerraFusion.Core.Enums.HealthStatus.Healthy,
       LastHealthCheck = DateTime.UtcNow,
       Uptime = DateTime.UtcNow - _startTime,
-      MemoryUsage = 2048,
-      CpuUsage = 23.5,
-      ActiveConnections = 1008,
+      // Honesty (WO-CF-b2f): fabricated telemetry constants with no real backing → 0.
+      MemoryUsage = 0,
+      CpuUsage = 0,
+      // Honesty (WO-AI-CONSOLIDATION-004c-b2a): no governed AI agent swarm runs,
+      // so there are no live agent connections to report.
+      ActiveConnections = 0,
       ErrorCount = 0,
       WarningCount = 0
     };
@@ -438,43 +494,30 @@ public class CostForgeAIService : ICostForgeAIService
     var start = startDate ?? DateTime.UtcNow.AddDays(-30);
     var end = endDate ?? DateTime.UtcNow;
 
+    // Honesty (WO-CF-b2g): fabricated analytics constants (98.7m accuracy,
+    // 2847392000m total value, hardcoded CalculationsByType/PerformanceTrends)
+    // zeroed. TotalCalculations is real (from Interlocked counter during actual
+    // valuations) and preserved. No controller calls this method today.
     return new AnalyticsDto
     {
       StartDate = start,
       EndDate = end,
       TotalCalculations = Interlocked.Read(ref _totalCalculations),
-      AverageAccuracy = 98.7m,
-      TotalValueCalculated = 2847392000m,
-      CalculationsByType = new Dictionary<string, int>
-      {
-        ["residential"] = 1247,
-        ["commercial"] = 423,
-        ["industrial"] = 89,
-        ["agricultural"] = 156
-      },
-      PerformanceTrends = new Dictionary<string, decimal>
-      {
-        ["accuracy_trend"] = 0.3m,
-        ["speed_trend"] = 12.7m,
-        ["efficiency_trend"] = 8.9m
-      },
-      TopPerformingAgents = _agents.Values
-            .OrderByDescending(a => a.PerformanceScore)
-            .Take(5)
-            .Select(a => new TopPerformingAgentDto
-            {
-              AgentId = a.AgentId,
-              TasksCompleted = a.TasksCompleted,
-              AverageAccuracy = 98.7m,
-              PerformanceScore = a.PerformanceScore
-            })
-            .ToList()
+      AverageAccuracy = 0m,
+      TotalValueCalculated = 0m,
+      CalculationsByType = new Dictionary<string, int>(),
+      PerformanceTrends = new Dictionary<string, decimal>(),
+      TopPerformingAgents = new List<TopPerformingAgentDto>()
     };
   }
 
   private void InitializeQuantumAgents()
   {
-    var targetAgentCount = _configuration.GetValue<int>("costforge:target_agent_count", 1008);
+    // Honesty (WO-AI-CONSOLIDATION-004c-b2c): default to 0, not a fabricated 1008.
+    // There is no running agent fleet; this only seeds an internal simulation when an
+    // operator explicitly configures costforge:target_agent_count. A 0 default means the
+    // surfaced agent metrics reflect the real (empty) state by default.
+    var targetAgentCount = _configuration.GetValue<int>("costforge:target_agent_count", 0);
 
     _logger.LogInformation("Initializing {AgentCount} quantum-enhanced AI agents", targetAgentCount);
 

@@ -20,6 +20,9 @@ internal sealed class ArcGisGeoJsonFeatureCollection
 
     [JsonPropertyName("features")]
     public List<ArcGisGeoJsonFeature> Features { get; set; } = new();
+
+    [JsonPropertyName("exceededTransferLimit")]
+    public bool ExceededTransferLimit { get; set; }
 }
 
 internal sealed class ArcGisGeoJsonFeature

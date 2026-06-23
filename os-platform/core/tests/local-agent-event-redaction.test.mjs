@@ -73,6 +73,37 @@ test('redact: SSN-shaped values are scrubbed', () => {
   assert.equal(redactStringValue('ssn 123-45-6789'), 'ssn [REDACTED:ssn]');
 });
 
+// WO-SEC-LOCALOPS-001 — close the phone-number gap so the local-agent redactor
+// (used by LocalOps trace) agrees with the canonical trace audit redactor.
+test('redact: phone numbers are scrubbed (dash/dot/bare formats)', () => {
+  assert.equal(redactStringValue('call 509-555-1234 now'), 'call [REDACTED:phone] now');
+  assert.equal(redactStringValue('call 509.555.1234 now'), 'call [REDACTED:phone] now');
+  assert.equal(redactStringValue('call 5095551234 now'), 'call [REDACTED:phone] now');
+});
+
+test('redact: phone is distinct from SSN and both are scrubbed together', () => {
+  assert.equal(
+    redactStringValue('SSN 123-45-6789 phone 360-555-9999'),
+    'SSN [REDACTED:ssn] phone [REDACTED:phone]',
+  );
+});
+
+test('redact: SSN/phone/email all scrubbed from one string (I4 invariant)', () => {
+  const out = redactStringValue(
+    'owner 111-22-3333, ph 509-555-0000, email owner@county.gov',
+  );
+  for (const pii of ['111-22-3333', '509-555-0000', 'owner@county.gov']) {
+    assert.equal(out.includes(pii), false, `raw PII must not survive: ${pii}`);
+  }
+});
+
+test('redact: phone matcher does not broaden — non-phone numbers survive', () => {
+  // Short numbers, ports, years, and >10-digit runs are not phone-shaped and
+  // must pass through unchanged (no over-redaction).
+  const clean = 'port 11434, year 2026, count 42, id 1700000000000';
+  assert.equal(redactStringValue(clean), clean);
+});
+
 test('redact: Windows user paths preserve directory shape', () => {
   const out = redactStringValue('opening C:\\Users\\bsval\\terrafusion_os_1.0\\file.log');
   assert.match(out, /[Cc]:\\Users\\\[redacted-user\]\\terrafusion_os_1\.0\\file\.log/);

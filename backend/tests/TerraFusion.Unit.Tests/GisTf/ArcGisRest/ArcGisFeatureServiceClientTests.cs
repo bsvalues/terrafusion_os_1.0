@@ -29,7 +29,7 @@ public sealed class ArcGisFeatureServiceClientTests
         {
             Counties = new Dictionary<string, CountyArcGisOptions>
             {
-                [BentonId.ToString()] = new CountyArcGisOptions
+                ["53005"] = new CountyArcGisOptions
                 {
                     ParcelFeatureServiceUrl = url,
                     ApnAttributeName = apnAttr,
@@ -75,7 +75,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.OK, body);
         var client = BuildClient(OptionsForBenton(), handler);
 
-        var result = await client.FetchParcelsAsync(BentonId);
+        var result = await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         result.Should().HaveCount(1);
         var f = result[0];
@@ -103,7 +103,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.OK, body);
         var client = BuildClient(OptionsForBenton(), handler);
 
-        var result = await client.FetchParcelsAsync(BentonId);
+        var result = await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         result.Should().BeEmpty();
     }
@@ -136,7 +136,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.OK, body);
         var client = BuildClient(OptionsForBenton(), handler);
 
-        var result = await client.FetchParcelsAsync(BentonId);
+        var result = await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         result.Should().HaveCount(1);
         result[0].ArcGisObjectId.Should().Be(2);
@@ -169,7 +169,7 @@ public sealed class ArcGisFeatureServiceClientTests
             objectIdAttr: "FEATUREID");
         var client = BuildClient(options, handler);
 
-        var result = await client.FetchParcelsAsync(BentonId);
+        var result = await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         result.Should().HaveCount(1);
         result[0].ArcGisObjectId.Should().Be(7);
@@ -184,7 +184,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var client = BuildClient(options, handler);
 
         var act = async () =>
-            await client.FetchParcelsAsync(Guid.NewGuid());
+            await client.FetchParcelsAsync("99999", Guid.NewGuid(), topN: null);
 
         await act.Should()
             .ThrowAsync<ArcGisFeatureServiceConfigurationException>()
@@ -198,7 +198,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.OK, "{}");
         var client = BuildClient(options, handler);
 
-        var act = async () => await client.FetchParcelsAsync(BentonId);
+        var act = async () => await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         await act.Should()
             .ThrowAsync<ArcGisFeatureServiceConfigurationException>()
@@ -211,7 +211,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.InternalServerError, "boom");
         var client = BuildClient(OptionsForBenton(), handler);
 
-        var act = async () => await client.FetchParcelsAsync(BentonId);
+        var act = async () => await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         await act.Should().ThrowAsync<ArcGisFeatureServiceTransportException>();
     }
@@ -222,7 +222,7 @@ public sealed class ArcGisFeatureServiceClientTests
         var handler = new StubHttpMessageHandler(HttpStatusCode.OK, "{ this is not json");
         var client = BuildClient(OptionsForBenton(), handler);
 
-        var act = async () => await client.FetchParcelsAsync(BentonId);
+        var act = async () => await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         await act.Should().ThrowAsync<ArcGisFeatureServiceTransportException>();
     }
@@ -238,7 +238,7 @@ public sealed class ArcGisFeatureServiceClientTests
             url: "https://services.arcgis.com/abc/arcgis/rest/services/Parcels/FeatureServer/0/");
         var client = BuildClient(options, handler);
 
-        await client.FetchParcelsAsync(BentonId);
+        await client.FetchParcelsAsync("53005", BentonId, topN: null);
 
         handler.LastRequestUri!.AbsolutePath.Should().EndWith("/query");
         handler.LastRequestUri.AbsolutePath.Should().NotContain("//query");

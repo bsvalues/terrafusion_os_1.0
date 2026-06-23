@@ -39,6 +39,7 @@ export default defineConfig({
       'os-platform/core/terratrc/**/*.test.ts',
       'frontend/apps/os-shell/src/__tests__/**/*.test.{ts,tsx}',
       'frontend/apps/os-shell/src/**/__tests__/**/*.test.{ts,tsx}',
+      'packages/os-core/src/**/__tests__/**/*.test.ts',
     ],
     exclude: [
       'node_modules/**',

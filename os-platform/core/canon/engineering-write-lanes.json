@@ -33,6 +33,13 @@
       "manualReviewRequired": true
     },
     {
+      "owner": "canon-gates",
+      "paths": ["os-platform/core/gates/**"],
+      "risk": "high",
+      "requiredGates": ["canon-query", "typecheck"],
+      "manualReviewRequired": false
+    },
+    {
       "owner": "canon-docs",
       "paths": ["docs/TerraCanon/**"],
       "risk": "low",

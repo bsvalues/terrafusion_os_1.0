@@ -1,0 +1,26 @@
+{
+  "_note": "Agents earn access; the system stops treating all AI output equally. Max risk an agent may take without escalation. Trust is adjusted via incidents (learning loop).",
+  "trust_levels": {
+    "T0": { "max_risk": "R0", "desc": "read-only" },
+    "T1": { "max_risk": "R1", "desc": "docs/tests" },
+    "T2": { "max_risk": "R2", "desc": "single-file / UI changes" },
+    "T3": { "max_risk": "R3", "desc": "bounded multi-file, with reviewer" },
+    "T4": { "max_risk": "R4", "desc": "persistence/API with human review" },
+    "T5": {
+      "max_risk": "R5",
+      "desc": "shell/architecture — explicit human authorization only"
+    }
+  },
+  "agents": {
+    "claude_code": {
+      "trust": "T3",
+      "notes": "strong multi-file backend; requires reviewer"
+    },
+    "copilot": {
+      "trust": "T2",
+      "notes": "good UI wiring; weaker architecture discipline"
+    },
+    "codex": { "trust": "T2", "notes": "good for sweeps and tests" },
+    "unknown": { "trust": "T0", "notes": "read-only until earned" }
+  }
+}

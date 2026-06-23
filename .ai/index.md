@@ -1,12 +1,20 @@
 # TerraFusion .ai Directory Index
 
+> **⚠️ Accuracy & status (WO-AI-DOCS-001).** This index describes **design / aspirational alpha**, not a
+> running production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root
+> `README.md`): the **1,008-agent swarm is target architecture, NOT a running runtime** (the
+> runtime-proven AI path is **LocalOps / local-agent**); **FISMA-HIGH is a posture target, not an
+> accreditation**; **Tyler Technologies is NOT in Benton County's stack**; and the **3.9x ROI / 95% /
+> 99.9%** figures are **aspirational and unvalidated**. Capability labels:
+> **[implemented] · [partial] · [planned] · [target architecture]**.
+
 ## Directory Overview
 
 **Location**: `/.ai/`  
-**Purpose**: Advanced AI infrastructure, Claude-Flow integration, and government
-AI orchestration  
-**Classification**: Core AI Platform Infrastructure  
-**Security Level**: Government-Grade AI Operations
+**Purpose**: AI infrastructure design — Claude-Flow integration scaffolding and government AI
+orchestration *(design / alpha)*  
+**Classification**: AI platform design docs — **not** a description of a running system  
+**Status**: Alpha — design/aspirational, not production-accredited
 
 ## Architecture Summary
 
@@ -32,21 +40,21 @@ AI orchestration
 
 ### Key Capabilities
 
-- **AI Suite Architecture**: 1,008 agents across 32 government modules
-- **Claude-Flow Integration**: v2.0.0 AI workflow orchestration
-- **Model Context Protocol**: Advanced AI tool integration
-- **Government AI Training**: Custom model development for public sector
-- **Workflow Automation**: Property assessment, compliance, revenue optimization
+- **AI Suite Architecture**: designed 1,008-agent hierarchy across 32 government modules *([target architecture])*
+- **Claude-Flow Integration**: v2.0.0 AI workflow orchestration scaffolding *([partial])*
+- **Model Context Protocol**: AI tool integration *([partial])*
+- **Government AI Training**: custom model development for public sector *([planned])*
+- **Workflow Automation**: property assessment, compliance, revenue optimization *([planned])*
 
 ## Core AI Infrastructure
 
 ### AI Suite Architecture (11KB Documentation)
 
-- **Swarm Orchestration**: 1,008 AI agents across Tier 1-3 modules
-- **Agent Distribution**: Revenue hunters, assessors, compliance monitors
-- **Government Integration**: Harris PACS, Tyler Technologies, legacy systems
-- **Performance Monitoring**: Real-time agent health and efficiency tracking
-- **ROI Framework**: Realistic 3.9x performance improvements (validated)
+- **Swarm Orchestration**: designed 1,008-agent hierarchy across Tier 1-3 modules *([target architecture]; not running)*
+- **Agent Distribution**: revenue hunters, assessors, compliance monitors *(designed)*
+- **Government Integration**: Harris PACS (legacy source DB; [partial]); **Tyler is NOT in Benton's stack**
+- **Performance Monitoring**: real-time agent health and efficiency tracking *([planned])*
+- **ROI Framework**: 3.9x performance improvement is a **target, unvalidated** (not measured)
 
 ### AI Training Platform (12KB Documentation)
 
@@ -137,7 +145,7 @@ docker build -f claude-flow/Dockerfile.dev -t claude-flow-dev .
 
 - **Workflow Orchestration**: Government process automation
 - **AI Tool Integration**: MCP protocol implementation
-- **Legacy System Bridges**: Harris PACS, Tyler Technologies
+- **Legacy System Bridges**: Harris PACS (legacy source DB; [partial]) — **Tyler is NOT in Benton's stack**
 - **Audit Trail Management**: Complete AI decision tracking
 
 ## Government AI Applications
@@ -251,20 +259,20 @@ interface AIGovernance {
 
 ## Performance Metrics
 
-### AI System Performance
+### AI System Performance *(targets — unvalidated)*
 
-- **Response Time**: <100ms average AI inference
-- **Throughput**: 1,000+ concurrent AI operations
-- **Availability**: 99.9% uptime target
-- **Accuracy**: 95%+ AI decision accuracy rate
-- **Cost Efficiency**: 60% reduction in manual processing costs
+- **Response Time**: <100ms average AI inference *(target)*
+- **Throughput**: 1,000+ concurrent AI operations *(target)*
+- **Availability**: 99.9% uptime *(target, unvalidated)*
+- **Accuracy**: 95%+ AI decision accuracy *(target, unvalidated)*
+- **Cost Efficiency**: 60% reduction in manual processing costs *(target, unvalidated)*
 
-### Government Workload Metrics
+### Government Workload Targets *(unvalidated)*
 
-- **Property Assessment**: 500 parcels/hour automated processing
-- **Compliance Monitoring**: Real-time regulatory validation
-- **Revenue Discovery**: 3.9x improvement in revenue identification
-- **Workflow Automation**: 80% reduction in manual government processes
+- **Property Assessment**: 500 parcels/hour automated processing *(target)*
+- **Compliance Monitoring**: real-time regulatory validation *([planned])*
+- **Revenue Discovery**: 3.9x improvement in revenue identification *(target, unvalidated)*
+- **Workflow Automation**: 80% reduction in manual government processes *(target, unvalidated)*
 
 ## Deployment and Operations
 
@@ -310,7 +318,7 @@ npm run test:compliance
 
 ### AI System Monitoring
 
-- **Agent Health**: Real-time 1,008 agent status monitoring
+- **Agent Health**: real-time agent status monitoring for the designed 1,008-agent hierarchy *([planned]; no swarm runs)*
 - **Model Performance**: AI model accuracy and speed metrics
 - **Resource Usage**: CPU, memory, and GPU utilization tracking
 - **Integration Health**: Legacy system connectivity monitoring

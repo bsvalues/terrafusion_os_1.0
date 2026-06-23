@@ -103,3 +103,38 @@ export {
   validateSuiteRendering,
   validateWorkbenchHost,
 } from './objectPlacement';
+
+export type {
+  PulseActivityEvent,
+  PulseActivityKind,
+  PulseCondition,
+  PulseConditionLevel,
+  PulseCountyRef,
+  PulseDestination,
+  PulseEvidenceItem,
+  PulseEvidenceKind,
+  PulseEvidenceRef,
+  PulseEvidenceSummary,
+  PulseFunction,
+  PulseHomeBrief,
+  PulseHomeSnapshot,
+  PulseLive,
+  PulseLoading,
+  PulsePriorityAction,
+  PulseRead,
+  PulseReadState,
+  PulseSourceAttribution,
+  PulseUnavailable,
+  PulseUrgency,
+} from './pulseHome';
+
+export {
+  formatPulseSource,
+  isPulseLive,
+  isPulseLoading,
+  isPulseUnavailable,
+  pulseDataOrNull,
+  pulseLive,
+  pulseLoading,
+  pulseUnavailable,
+} from './pulseHome';
