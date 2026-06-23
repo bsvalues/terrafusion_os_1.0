@@ -6,8 +6,8 @@
   "authority": {
     "mode": "read_only_operator_surface",
     "identityBoundary": "cockpit_prompt_launcher_findings_viewer_not_brain_or_runtime_agent",
-    "canonicalWorkspace": "C:\\Users\\bsval\\terrafusion_os_1.0",
-    "referenceWorkspace": "C:\\Users\\bsval\\TerraFusion-Platform",
+    "canonicalWorkspace": "${TERRAFUSION_WORKSPACE}",
+    "referenceWorkspace": "${TERRAFUSION_PLATFORM_ROOT}",
     "allowedOutputs": [
       "governance findings report",
       "prioritized blocker list",

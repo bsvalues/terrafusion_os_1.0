@@ -110,6 +110,7 @@ Repair CI
 |-------|--------|----------------|
 | JSON validity | Parse all JSON files | All JSON files parse successfully |
 | HTML static load | Open `ops/control-panel/index.html` | Cards and launch prompt panel render |
+| Config integration | Open HTML and inspect browser console | JSON-backed lanes and launch actions display without console errors |
 | No runtime wiring | Inspect deliverables | No local command execution, scheduler API, or repo mutation wiring exists |
 | Scope containment | Git diff/path review | Changes are limited to authorized operations paths |
 

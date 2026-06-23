@@ -329,7 +329,7 @@
     <p class="subtitle">Read-only operator console for turning automation findings into governed Work Orders, evidence packets, and human decisions.</p>
     <section class="authority" aria-label="Authority boundaries">
       <div class="metric"><span>Mode</span><strong>Prompt-launch only</strong></div>
-      <div class="metric"><span>Workspace</span><strong>C:\Users\bsval\terrafusion_os_1.0</strong></div>
+      <div class="metric"><span>Workspace</span><strong>${TERRAFUSION_WORKSPACE}</strong></div>
       <div class="metric"><span>Mutation</span><strong>Separate approval required</strong></div>
       <div class="metric"><span>Work Order</span><strong>WO-OPS-CP-001</strong></div>
     </section>
@@ -358,6 +358,19 @@
   </main>
 
   <script>
+    const WORKSPACE = "${TERRAFUSION_WORKSPACE}";
+    const SIDECAR_REFERENCE = "${TERRAFUSION_PLATFORM_SIDECAR_PATH}";
+    const sharedPromptRules = [
+      "Read and follow AGENTS.md before acting.",
+      "Respect PATH_CANON_REGISTER.md and CANON_INDEX.md when present.",
+      "Do not edit files unless this prompt explicitly authorizes mutation.",
+      "Do not stage files.",
+      "Do not commit.",
+      "Do not open pull requests.",
+      "Do not change canon or queue truth unless the Work Order explicitly authorizes it.",
+      "Report findings, blockers, validation steps, and next safe action."
+    ].join(" ");
+
     const lanes = [
       {
         id: "daily-pulse",
@@ -452,16 +465,16 @@
     ];
 
     const prompts = {
-      "draft-work-order": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nDraft a governed TerraFusion Work Order from the latest provided automation report. Read AGENTS.md, CANON_INDEX.md, PATH_CANON_REGISTER.md, and any lane-specific authority files before drafting. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output only: RESULT, PROPOSED_WORK_ORDER, AUTHORITY_REFERENCES, SCOPE, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.",
-      "run-read-only-recon": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nRun read-only reconnaissance for the selected TerraFusion lane. Inspect only the paths named by the operator or by the relevant automation report. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Produce: RESULT, WORKSPACES_CHECKED, FILES_INSPECTED, FINDINGS, AUTHORITY_CONFLICTS, BLOCKERS, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.",
-      "open-codex-prompt": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nUse the selected lane report as context and propose the smallest governed next action. Do not modify files or automation wiring. Do not promote anything into canon. Return a Codex-ready prompt with: objective, allowed paths, forbidden actions, validation gates, expected report sections, and human approval points.",
-      "create-evidence-packet": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nPrepare an evidence packet outline for the selected finding. Read relevant authority documents first. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, EVIDENCE_SOURCES, BEFORE_STATE, CLAIMS_TO_VERIFY, VALIDATION_COMMANDS, EXPECTED_PROOF, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.",
-      "prepare-pr-plan": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nPrepare a PR plan for the selected Work Order without editing files. Identify exact allowed paths, forbidden paths, required gates, rollback class, evidence outputs, and review risks. Do not stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, PR_SCOPE, FILES_ALLOWED, FILES_FORBIDDEN, VALIDATION_GATES, ROLLBACK_PLAN, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.",
+      "draft-work-order": `Workspace: ${WORKSPACE}\n\nDraft a governed TerraFusion Work Order from the latest provided automation report. Read AGENTS.md, CANON_INDEX.md, PATH_CANON_REGISTER.md, and any lane-specific authority files before drafting. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output only: RESULT, PROPOSED_WORK_ORDER, AUTHORITY_REFERENCES, SCOPE, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`,
+      "run-read-only-recon": `Workspace: ${WORKSPACE}\n\nRun read-only reconnaissance for the selected TerraFusion lane. Inspect only the paths named by the operator or by the relevant automation report. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Produce: RESULT, WORKSPACES_CHECKED, FILES_INSPECTED, FINDINGS, AUTHORITY_CONFLICTS, BLOCKERS, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
+      "open-codex-prompt": `Workspace: ${WORKSPACE}\n\nUse the selected lane report as context and propose the smallest governed next action. ${sharedPromptRules} Do not modify automation wiring. Do not promote anything into canon. Return a Codex-ready prompt with: objective, allowed paths, forbidden actions, validation gates, expected report sections, and human approval points.`,
+      "create-evidence-packet": `Workspace: ${WORKSPACE}\n\nPrepare an evidence packet outline for the selected finding. Read relevant authority documents first. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, EVIDENCE_SOURCES, BEFORE_STATE, CLAIMS_TO_VERIFY, VALIDATION_COMMANDS, EXPECTED_PROOF, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
+      "prepare-pr-plan": `Workspace: ${WORKSPACE}\n\nPrepare a PR plan for the selected Work Order without editing files. Identify exact allowed paths, forbidden paths, required gates, rollback class, evidence outputs, and review risks. Do not stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, PR_SCOPE, FILES_ALLOWED, FILES_FORBIDDEN, VALIDATION_GATES, ROLLBACK_PLAN, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
       "mark-reviewed": "Operator action only. Record outside this seed panel that the report was reviewed. No agent execution is required.",
       "defer": "Operator action only. Defer the finding with a reason and revisit date. No repo mutation is authorized by this control panel seed.",
-      "escalate-human-decision": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nSummarize the selected blocker as a human decision memo. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, DECISION_REQUIRED, CONTEXT, OPTIONS, RISKS, RECOMMENDATION, CONSEQUENCE_OF_NO_DECISION, NEXT_SAFE_ACTION.",
-      "prepare-ai-sidecar-ratification": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\nReference path if present: C:\\Users\\bsval\\TerraFusion-Platform\\terrafusion_ai_improvement_sidecar_dev_package\n\nDraft WO-AI-SIDECAR-001 - Ratify AI Improvement Sidecar Constitution. Mode: docs/control only. Authority: human approved. Mutation: only after explicit approval in a separate execution step. Inspect the sidecar constitution, queue template, eval/trace pipeline design, README, and operator HTML where present. Do not edit files, stage files, commit, open PRs, promote canon, update queues, modify automation wiring, or mutate runtime behavior. Output: RESULT, ARTIFACT_INVENTORY, CANONICAL_LOCATION_RECOMMENDATION, DRIFT_FINDINGS, RATIFICATION_SCOPE, EXCLUSIONS, VALIDATION_PLAN, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.",
-      "prepare-canon-cleanup": "Workspace: C:\\Users\\bsval\\terrafusion_os_1.0\n\nDraft WO-CANON-001 - Document Authority Cleanup. Mode: scoped doc banners/index only. Mutation requires worktree plus PR after explicit approval. Inspect authority stack files and identify stale or conflicting documents. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, AUTHORITY_STACK_STATUS, PATH_CANON_STATUS, CONFLICTS, PROPOSED_DOC_FIXES, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION."
+      "escalate-human-decision": `Workspace: ${WORKSPACE}\n\nSummarize the selected blocker as a human decision memo. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, DECISION_REQUIRED, CONTEXT, OPTIONS, RISKS, RECOMMENDATION, CONSEQUENCE_OF_NO_DECISION, NEXT_SAFE_ACTION.`,
+      "prepare-ai-sidecar-ratification": `Workspace: ${WORKSPACE}\nReference path if present: ${SIDECAR_REFERENCE}\n\nDraft WO-AI-SIDECAR-001 - Ratify AI Improvement Sidecar Constitution. Mode: docs/control only. Authority: human approved. Mutation: only after explicit approval in a separate execution step. Inspect the sidecar constitution, queue template, eval/trace pipeline design, README, and operator HTML where present. Do not edit files, stage files, commit, open PRs, promote canon, update queues, modify automation wiring, or mutate runtime behavior. Output: RESULT, ARTIFACT_INVENTORY, CANONICAL_LOCATION_RECOMMENDATION, DRIFT_FINDINGS, RATIFICATION_SCOPE, EXCLUSIONS, VALIDATION_PLAN, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`,
+      "prepare-canon-cleanup": `Workspace: ${WORKSPACE}\n\nDraft WO-CANON-001 - Document Authority Cleanup. Mode: scoped doc banners/index only. Mutation requires worktree plus PR after explicit approval. Inspect authority stack files and identify stale or conflicting documents. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, AUTHORITY_STACK_STATUS, PATH_CANON_STATUS, CONFLICTS, PROPOSED_DOC_FIXES, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`
     };
 
     const labels = {

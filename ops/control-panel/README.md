@@ -52,6 +52,16 @@ This seed version is prompt-launch only:
 - It does not call the Codex scheduler.
 - It does not write report state back to the repo.
 
+## Workspace Placeholders
+
+The seed uses placeholders instead of developer-local paths:
+
+- `${TERRAFUSION_WORKSPACE}`: canonical TerraFusion OS workspace.
+- `${TERRAFUSION_PLATFORM_ROOT}`: optional platform reference workspace.
+- `${TERRAFUSION_PLATFORM_SIDECAR_PATH}`: optional AI sidecar package path.
+
+Operators must replace these placeholders before copying prompts into an agent session.
+
 ## Activation Sequence
 
 1. Keep all six monitors paused until the operator approves useful signal levels.
