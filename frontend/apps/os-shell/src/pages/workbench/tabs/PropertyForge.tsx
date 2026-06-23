@@ -89,7 +89,7 @@ export const PropertyForge: React.FC = () => {
   /* Probe the cost endpoint to determine if the Forge API is reachable */
   const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
 
-  /* PACS year layers for this parcel */
+  /* Canonical valuation year layers for this parcel */
   const parcelYears = useParcelYears(parcelId);
 
   /* Shared state */
@@ -117,7 +117,7 @@ export const PropertyForge: React.FC = () => {
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
-      {/* PACS Year Selector */}
+      {/* Canonical Year Selector */}
       <ForgeYearSelector
         parcelId={parcelId}
         taxYear={taxYear}

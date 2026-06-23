@@ -458,18 +458,20 @@ describe('ForgeSuiteHome source honesty contract', () => {
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
     expect(primaryApps.getByRole('button', { name: /SalesForge/i })).toBeEnabled();
-    expect(primaryApps.getByRole('button', { name: /CostForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /Cost \+ land valuation/i })).toBeEnabled();
     expect(primaryApps.getByRole('button', { name: /CompsForge/i })).toBeEnabled();
     expect(primaryApps.getByRole('button', { name: /IncomeForge/i })).toBeEnabled();
-    expect(primaryApps.getByRole('button', { name: /CUForge/i })).toBeDisabled();
+    expect(primaryApps.getByRole('button', { name: /Reconciliation/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /CAMA Characteristics/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /Valuation Notes \/ Defensibility/i })).toBeEnabled();
 
-    const countyApps = within(screen.getByTestId('forge-county-applications'));
+    const countyApps = within(screen.getByTestId('forge-support-applications'));
     expect(countyApps.getByRole('button', { name: /County Studio/i })).toBeEnabled();
 
-    const secondaryApps = within(screen.getByTestId('forge-secondary-applications'));
+    const secondaryApps = within(screen.getByTestId('forge-support-applications'));
     expect(secondaryApps.getByRole('button', { name: /Batch Cost Runs/i })).toBeDisabled();
     expect(secondaryApps.getByRole('button', { name: /Regression Studio/i })).toBeDisabled();
-    expect(secondaryApps.getByRole('button', { name: /TerraGAMA/i })).toBeDisabled();
+    expect(within(screen.getByTestId('forge-support-applications')).queryByText('TerraGAMA')).toBeNull();
     expect(secondaryApps.getByRole('button', { name: /Coefficient Preview/i })).toBeDisabled();
 
     expect(screen.queryByText(/Full TerraForge is done/i)).not.toBeInTheDocument();
@@ -481,7 +483,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(screen.queryByText('71.4%')).not.toBeInTheDocument();
   });
 
-  it('opens SalesForge, CompsForge, and IncomeForge from TerraForge Suite while keeping unverified standalone Forge apps locked', () => {
+  it('opens canonical primary TerraForge modules while keeping support and deferred Forge apps classified separately', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
       loading: false,
@@ -496,7 +498,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     );
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
-    expect(primaryApps.getByRole('button', { name: /CostForge/i })).toBeEnabled();
+    expect(primaryApps.getByRole('button', { name: /Cost \+ land valuation/i })).toBeEnabled();
     const compsForgeCard = primaryApps.getByRole('button', { name: /CompsForge/i });
     expect(compsForgeCard).toBeEnabled();
     expect(compsForgeCard).toHaveTextContent(/Statewide sales comp search/i);
@@ -508,7 +510,6 @@ describe('ForgeSuiteHome source honesty contract', () => {
     const salesForgeCard = primaryApps.getByRole('button', { name: /SalesForge/i });
     expect(salesForgeCard).toBeEnabled();
     expect(salesForgeCard).toHaveTextContent(/Benton sale qualification API/i);
-    expect(screen.getAllByText(/Standalone preview locked/i).length).toBeGreaterThan(0);
 
     fireEvent.click(salesForgeCard);
 
@@ -547,6 +548,17 @@ describe('ForgeSuiteHome source honesty contract', () => {
         taxYear: 2026,
       },
     });
+
+    const reconciliationCard = primaryApps.getByRole('button', { name: /Reconciliation/i });
+    const camaCard = primaryApps.getByRole('button', { name: /CAMA Characteristics/i });
+    const defensibilityCard = primaryApps.getByRole('button', { name: /Valuation Notes \/ Defensibility/i });
+    fireEvent.click(reconciliationCard);
+    fireEvent.click(camaCard);
+    fireEvent.click(defensibilityCard);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('reconciliation', expect.objectContaining({ source: 'system' }));
+    expect(activateModuleMock).toHaveBeenCalledWith('cama-characteristics', expect.objectContaining({ source: 'system' }));
+    expect(activateModuleMock).toHaveBeenCalledWith('valuation-notes-defensibility', expect.objectContaining({ source: 'system' }));
   });
 
   it('opens CostForge from TerraForge Suite on the live triage API path', () => {
@@ -571,7 +583,7 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(runtimeStatus).toHaveTextContent(/Metrics app-backed/i);
 
     const primaryApps = within(screen.getByTestId('forge-primary-applications'));
-    const costForgeCard = primaryApps.getByRole('button', { name: /CostForge/i });
+    const costForgeCard = primaryApps.getByRole('button', { name: /Cost \+ land valuation/i });
     expect(costForgeCard).toBeEnabled();
     expect(costForgeCard).toHaveTextContent(/Benton CostForge triage API/i);
 
@@ -606,10 +618,10 @@ describe('ForgeSuiteHome source honesty contract', () => {
     const runtimeStatus = screen.getByTestId('forge-runtime-status');
     expect(runtimeStatus).toHaveTextContent(/County Studio\s+runtime studies/i);
 
-    const countyApps = within(screen.getByTestId('forge-county-applications'));
+    const countyApps = within(screen.getByTestId('forge-support-applications'));
     const countyStudioCard = countyApps.getByRole('button', { name: /County Studio/i });
     expect(countyStudioCard).toBeEnabled();
-    expect(countyStudioCard).toHaveTextContent(/Benton County Studio studies API/i);
+    expect(countyStudioCard).toHaveTextContent(/Support: County Studio studies API/i);
     expect(screen.queryByRole('button', { name: /County Studio preview locked/i })).not.toBeInTheDocument();
 
     fireEvent.click(countyStudioCard);
@@ -765,13 +777,11 @@ describe('ForgeSuiteHome source honesty contract', () => {
     expect(screen.getByText('IncomeForge')).toBeInTheDocument();
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
 
-    // The TerraDais handoff string lives in the component's getLaunchLabel —
-    // verify the source still defines it (proves the dais routing branch survives).
     const sourceFile = require('fs').readFileSync(
       require('path').resolve(__dirname, '../../pages/suites/ForgeSuiteHome.tsx'),
       'utf8',
     );
-    expect(sourceFile).toContain("workbenchTab === 'dais' ? 'Opens TerraDais workbench'");
+    expect(sourceFile).toContain('parcel-scoped Workbench Forge views are support only');
     expect(sourceFile).not.toContain('<ParcelContextBanner');
   });
 });

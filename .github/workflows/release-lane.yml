@@ -14,6 +14,16 @@ on:
         description: Full git SHA to deploy
         required: true
         type: string
+      provision_auth:
+        description: Run approved production AuthProvisioner before auth smoke
+        required: false
+        default: false
+        type: boolean
+      allow_db_mutation:
+        description: Explicitly allow production/staging DB mutation during release
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -37,9 +47,16 @@ jobs:
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      TF_PROVISIONED_AUTH_EMAIL: ${{ secrets.TF_PROVISIONED_AUTH_EMAIL }}
+      TF_PROVISIONED_AUTH_PASSWORD: ${{ secrets.TF_PROVISIONED_AUTH_PASSWORD }}
+      VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
+      PROVISION_AUTH: ${{ inputs.provision_auth }}
+      ALLOW_DB_MUTATION: ${{ inputs.allow_db_mutation }}
+      TF_EXPECTED_JUNE10_DB_NAME: ${{ vars.TF_EXPECTED_JUNE10_DB_NAME }}
+      TF_EXPECTED_JUNE10_DB_PROVIDER: ${{ vars.TF_EXPECTED_JUNE10_DB_PROVIDER }}
     steps:
       - name: Checkout requested SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.release_sha }}
           fetch-depth: 0
@@ -50,10 +67,10 @@ jobs:
           set -euo pipefail
           # Deploy infrastructure (Caddyfile, compose template) lives on the default
           # branch and must match the pipeline expectations (service names, health
-          # headers, etc.).  Always overlay from main — old release SHAs may have
-          # incompatible versions (e.g. wrong service names in Caddyfile).
+          # headers, etc.). Build inputs must come from the requested release SHA so
+          # auth/runtime changes cannot be silently replaced by main during deploy.
           git fetch origin main --no-tags --depth=1 2>/dev/null || true
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml frontend/Dockerfile backend/Dockerfile; do
+          for path in ops/proxy/Caddyfile ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml; do
             dir="$(dirname "$path")"
             mkdir -p "$dir"
             echo "Overlaying $path from origin/main"
@@ -76,6 +93,11 @@ jobs:
             sed -i '/COPY --from=build \/app\/auth-provisioner/d' backend/Dockerfile
           fi
 
+          if grep -q 'RUN npx vite build --outDir /app/dist' frontend/Dockerfile; then
+            echo "Patching frontend Dockerfile: raise Node heap for Vite production build"
+            sed -i 's|RUN npx vite build --outDir /app/dist|RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist|g' frontend/Dockerfile
+          fi
+
       - name: Validate environment configuration
         shell: bash
         run: |
@@ -84,8 +106,20 @@ jobs:
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
           PUBLIC_URL="${PUBLIC_URL%/}"
+          TF_EXPECTED_JUNE10_DB_NAME="${TF_EXPECTED_JUNE10_DB_NAME:-terrafusion.db}"
+          TF_EXPECTED_JUNE10_DB_PROVIDER="${TF_EXPECTED_JUNE10_DB_PROVIDER:-Sqlite}"
+          if [ "${ALLOW_DB_MUTATION}" = "true" ]; then
+            TF_SKIP_AUTO_MIGRATE=false
+          else
+            TF_SKIP_AUTO_MIGRATE=true
+          fi
 
-          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY; do
+          if [ "${PROVISION_AUTH}" = "true" ] && [ "${ALLOW_DB_MUTATION}" != "true" ]; then
+            echo "provision_auth requires allow_db_mutation=true"
+            exit 1
+          fi
+
+          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_PROVISIONED_AUTH_EMAIL TF_PROVISIONED_AUTH_PASSWORD; do
             if [ -z "${!required:-}" ]; then
               echo "Missing required environment configuration: ${required}"
               exit 1
@@ -116,6 +150,9 @@ jobs:
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
+            printf 'TF_SKIP_AUTO_MIGRATE=%s\n' "$TF_SKIP_AUTO_MIGRATE"
+            printf 'TF_EXPECTED_JUNE10_DB_NAME=%s\n' "$TF_EXPECTED_JUNE10_DB_NAME"
+            printf 'TF_EXPECTED_JUNE10_DB_PROVIDER=%s\n' "$TF_EXPECTED_JUNE10_DB_PROVIDER"
           } >> "$GITHUB_ENV"
 
       - name: Configure SSH key
@@ -186,7 +223,7 @@ jobs:
           exit 1
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -199,11 +236,31 @@ jobs:
           docker build --pull --target runtime -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
           docker push "$BACKEND_IMAGE"
 
+      - name: Reclaim runner disk before frontend image
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Docker disk usage before cleanup:"
+          docker system df || true
+
+          # The backend image is already pushed to GHCR. Hosted runners can run
+          # out of disk when the frontend install/build starts with backend
+          # layers and BuildKit cache still resident.
+          docker image rm "$BACKEND_IMAGE" || true
+          docker builder prune -af || true
+          docker image prune -af || true
+
+          echo "Docker disk usage after cleanup:"
+          docker system df || true
+
       - name: Build and push frontend image
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target production -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
+          docker build --pull --target production -f frontend/Dockerfile \
+            --build-arg VITE_BUILD_SHA="$RELEASE_SHA" \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${VITE_MAPBOX_ACCESS_TOKEN:-}" \
+            -t "$FRONTEND_IMAGE" .
           docker push "$FRONTEND_IMAGE"
 
       - name: Prepare runtime bundle
@@ -215,6 +272,10 @@ jobs:
           cp ops/proxy/Caddyfile runtime/Caddyfile
           cp ops/prod/runtime-compose.template.yml runtime/runtime-compose.yml
           cp -R docs/spec-lock/. runtime/docs/spec-lock/
+          cp sovereign.yaml runtime/sovereign.yaml
+          if ! grep -q './sovereign.yaml:/app/sovereign.yaml:ro' runtime/runtime-compose.yml; then
+            sed -i '/- \.\/docs\/spec-lock:\/app\/docs\/spec-lock:ro/a\      - ./sovereign.yaml:/app/sovereign.yaml:ro' runtime/runtime-compose.yml
+          fi
           sed -i "s/ASPNETCORE_ENVIRONMENT: Production/ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENV_LABEL}/" runtime/runtime-compose.yml
           if [ "$TARGET_ENV" = "staging" ]; then
             cat > runtime/config/appsettings.Staging.json <<'EOF'
@@ -231,12 +292,16 @@ jobs:
           cat > runtime/release.env <<EOF
           COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
           TF_RELEASE_SHA=${RELEASE_SHA}
+          TF_GIT_SHA=${RELEASE_SHA}
           TF_RELEASE_ENV=${TARGET_ENV}
           TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
           TF_PUBLIC_URL=${PUBLIC_URL}
           TF_PUBLIC_HOST=${PUBLIC_HOST}
           TF_BACKEND_IMAGE=${BACKEND_IMAGE}
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
+          TF_SKIP_AUTO_MIGRATE=${TF_SKIP_AUTO_MIGRATE}
+          TF_EXPECTED_JUNE10_DB_NAME=${TF_EXPECTED_JUNE10_DB_NAME}
+          TF_EXPECTED_JUNE10_DB_PROVIDER=${TF_EXPECTED_JUNE10_DB_PROVIDER}
           EOF
 
       - name: Upload runtime bundle to VPS
@@ -244,6 +309,28 @@ jobs:
         run: |
           set -euo pipefail
           scp -P "$DEPLOY_PORT" -r runtime/* "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/"
+
+      - name: Preflight - remote Docker disk cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          set -euo pipefail
+          echo "Docker disk before remote cleanup:"
+          docker system df || true
+
+          # Run this while the current app stack is still up. Active release
+          # images remain protected by running containers, while stale release
+          # images and build cache can be reclaimed before edge bootstrap stops
+          # the target stack.
+          docker container prune -f || true
+          docker builder prune -af || true
+          docker image prune -af || true
+
+          echo "Docker disk after remote cleanup:"
+          docker system df || true
+          df -h /
+          SSH
 
       - name: Bootstrap shared edge proxy
         shell: bash
@@ -284,6 +371,13 @@ jobs:
             "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
+          available_kb="$(df --output=avail / | tail -1 | tr -d ' ')"
+          if [ "${available_kb:-0}" -lt 4194304 ]; then
+            echo "ERROR: Less than 4 GiB available on / after Docker cleanup; refusing deploy before image pull."
+            df -h /
+            exit 1
+          fi
+
           echo "Pulling backend image..."
           docker pull "$BACKEND_IMAGE"
           echo "Pulling frontend image..."
@@ -341,6 +435,81 @@ jobs:
 
           grep -iE '^HTTP/.* 200' curl_headers.txt
 
+      - name: Set up .NET SDK for AuthProvisioner
+        if: ${{ inputs.provision_auth }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Provision production operator auth
+        if: ${{ inputs.provision_auth }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${TF_PROVISIONED_AUTH_EMAIL}"
+          echo "::add-mask::${TF_PROVISIONED_AUTH_PASSWORD}"
+          echo "=== Approved production AuthProvisioner run ==="
+
+          dotnet publish backend/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj \
+            -m:1 \
+            -c Release \
+            --self-contained false \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
+            -o auth-provisioner
+
+          tar -C auth-provisioner -czf auth-provisioner.tgz .
+          scp -P "$DEPLOY_PORT" auth-provisioner.tgz "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/auth-provisioner-${RELEASE_SHA}.tgz"
+
+          quoted_app_root="$(printf '%q' "$APP_ROOT")"
+          quoted_release_sha="$(printf '%q' "$RELEASE_SHA")"
+          quoted_email="$(printf '%q' "$TF_PROVISIONED_AUTH_EMAIL")"
+          quoted_password="$(printf '%q' "$TF_PROVISIONED_AUTH_PASSWORD")"
+
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT=$quoted_app_root RELEASE_SHA=$quoted_release_sha TF_PROVISIONED_AUTH_EMAIL=$quoted_email TF_PROVISIONED_AUTH_PASSWORD=$quoted_password bash -s" <<'SSH' | tee auth-provisioner-output.txt
+          set -euo pipefail
+          db="$APP_ROOT/data/terrafusion.db"
+          backup="$APP_ROOT/data/terrafusion.db.pre-authprovisioner-$(date +%Y%m%d%H%M%S)"
+
+          test -s "$db"
+          cp "$db" "$backup"
+          test -s "$backup"
+          echo "AUTH_PROVISIONER_DB_BACKUP_PATH=$backup"
+
+          provisioner_dir="$APP_ROOT/auth-provisioner-$RELEASE_SHA"
+          container_provisioner_dir="/tmp/auth-provisioner-$RELEASE_SHA"
+          rm -rf "$provisioner_dir"
+          install -d "$provisioner_dir"
+          tar -xzf "$APP_ROOT/auth-provisioner-${RELEASE_SHA}.tgz" -C "$provisioner_dir"
+
+          cd "$APP_ROOT"
+          docker compose -f runtime-compose.yml --env-file release.env cp "$provisioner_dir/." "backend:$container_provisioner_dir"
+          docker compose -f runtime-compose.yml --env-file release.env exec -T \
+            -e TF_PROVISIONED_AUTH_EMAIL="$TF_PROVISIONED_AUTH_EMAIL" \
+            -e TF_PROVISIONED_AUTH_PASSWORD="$TF_PROVISIONED_AUTH_PASSWORD" \
+            backend \
+            dotnet "$container_provisioner_dir/TerraFusion.AuthProvisioner.dll" \
+            --provider Sqlite \
+            --connection-string "Data Source=data/terrafusion.db" \
+            --email "$TF_PROVISIONED_AUTH_EMAIL" \
+            --password-env TF_PROVISIONED_AUTH_PASSWORD \
+            --first-name Provisioned \
+            --last-name Operator \
+            --roles GovernmentUser,Administrator \
+            --permissions read:parcel,ecosystem:view \
+            --county-name Benton \
+            --county-state WA \
+            --county-fips 53005
+          SSH
+
+          backup_path="$(awk -F= '/^AUTH_PROVISIONER_DB_BACKUP_PATH=/ {print $2}' auth-provisioner-output.txt | tail -1)"
+          if [ -z "$backup_path" ]; then
+            echo "AuthProvisioner backup path was not reported."
+            exit 1
+          fi
+          echo "AUTH_PROVISIONER_DB_BACKUP_PATH=$backup_path" >> "$GITHUB_ENV"
+
       - name: Shell route contract smoke
         shell: bash
         run: |
@@ -366,6 +535,98 @@ jobs:
           probe "/"
           probe "/property"
           echo "Shell route contract intact after deploy"
+
+      - name: Provisioned auth contract smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Provisioned auth contract smoke ==="
+
+          restore_auth_backup() {
+            if [ "${PROVISION_AUTH:-false}" != "true" ] || [ -z "${AUTH_PROVISIONER_DB_BACKUP_PATH:-}" ]; then
+              return 0
+            fi
+
+            echo "Restoring production DB backup after failed provisioned auth smoke."
+            quoted_app_root="$(printf '%q' "$APP_ROOT")"
+            quoted_backup="$(printf '%q' "$AUTH_PROVISIONER_DB_BACKUP_PATH")"
+            ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+              "APP_ROOT=$quoted_app_root AUTH_PROVISIONER_DB_BACKUP_PATH=$quoted_backup bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          test -s "$AUTH_PROVISIONER_DB_BACKUP_PATH"
+          cp "$AUTH_PROVISIONER_DB_BACKUP_PATH" data/terrafusion.db
+          test -s data/terrafusion.db
+          docker compose -f runtime-compose.yml --env-file release.env restart backend
+          SSH
+          }
+
+          POLICY_JSON="$(curl -fsS --max-time 10 "${PUBLIC_URL}/api/auth/access-policy")"
+          POLICY_JSON="$POLICY_JSON" node <<'NODE'
+          const policy = JSON.parse(process.env.POLICY_JSON || "{}");
+          if (policy.signupMode !== "provisioned_access_only") {
+            throw new Error(`Expected signupMode=provisioned_access_only, got ${policy.signupMode}`);
+          }
+          if (policy.publicSignupEnabled !== false) {
+            throw new Error("Expected publicSignupEnabled=false");
+          }
+          console.log("Access policy is provisioned-access-only");
+          NODE
+
+          LOGIN_PAYLOAD="$(node <<'NODE'
+          process.stdout.write(JSON.stringify({
+            email: process.env.TF_PROVISIONED_AUTH_EMAIL,
+            password: process.env.TF_PROVISIONED_AUTH_PASSWORD
+          }));
+          NODE
+          )"
+
+          LOGIN_RESPONSE=""
+          for attempt in $(seq 1 6); do
+            set +e
+            LOGIN_RESPONSE="$(curl -fsS --max-time 30 \
+              -H 'Content-Type: application/json' \
+              -d "$LOGIN_PAYLOAD" \
+              "${PUBLIC_URL}/api/auth/login" 2>login_error.txt)"
+            rc=$?
+            set -e
+
+            if [ "$rc" -eq 0 ] && [ -n "$LOGIN_RESPONSE" ]; then
+              break
+            fi
+
+            echo "Provisioned auth login smoke attempt ${attempt}/6 failed with curl exit ${rc}."
+            if [ -s login_error.txt ]; then
+              sed 's/^/  curl: /' login_error.txt
+            fi
+            if [ "$attempt" -lt 6 ]; then
+              sleep 10
+            fi
+          done
+
+          if [ -z "$LOGIN_RESPONSE" ]; then
+            echo "Provisioned auth login smoke did not receive a response after retries."
+            restore_auth_backup
+            exit 1
+          fi
+
+          if ! LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
+          const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
+          const token = response.token || response.Token;
+          const email = response.email || response.Email || response.user?.email || response.User?.Email;
+          const roles = response.roles || response.Roles || response.user?.roles || response.User?.Roles || [];
+          if (!token) {
+            throw new Error("Provisioned auth smoke did not receive a token");
+          }
+          if (email !== process.env.TF_PROVISIONED_AUTH_EMAIL) {
+            throw new Error(`Provisioned auth smoke returned unexpected email: ${email}`);
+          }
+          console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
+          NODE
+          then
+            restore_auth_backup
+            exit 1
+          fi
 
       - name: Finalize current SHA on VPS
         shell: bash
@@ -451,7 +712,7 @@ jobs:
           done
 
       - name: Upload deploy evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: evidence-${{ inputs.target_env }}-${{ inputs.release_sha }}
           path: evidence/

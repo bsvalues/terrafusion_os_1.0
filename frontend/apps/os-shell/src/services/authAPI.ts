@@ -7,7 +7,14 @@ export type LoginRequest = {
 
 export type LoginResult = { token: string };
 
+export type AccessPolicy = {
+  signupMode: string;
+  publicSignupEnabled: boolean;
+  message: string;
+};
+
 const LOGIN_PATH = '/auth/login';
+const ACCESS_POLICY_PATH = '/auth/access-policy';
 
 function normalizeToken(data: unknown): string | null {
   if (!data || typeof data !== 'object') return null;
@@ -25,7 +32,31 @@ export async function login(req: LoginRequest): Promise<LoginResult> {
     return { token };
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status;
-    if (status === 401 || status === 403) throw new Error('Invalid credentials');
+    const message = (err as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+    if (status === 401 || status === 403) {
+      throw new Error(typeof message === 'string' && message ? message : 'Invalid credentials');
+    }
     throw new Error('Network error');
+  }
+}
+
+export async function getAccessPolicy(): Promise<AccessPolicy> {
+  try {
+    const res = await api.get(ACCESS_POLICY_PATH);
+    const data = res?.data as Partial<AccessPolicy> | undefined;
+    return {
+      signupMode: data?.signupMode ?? 'provisioned_access_only',
+      publicSignupEnabled: data?.publicSignupEnabled === true,
+      message:
+        data?.message ??
+        'Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available.',
+    };
+  } catch {
+    return {
+      signupMode: 'provisioned_access_only',
+      publicSignupEnabled: false,
+      message:
+        'Access is issued through TerraFusion administration for authorized Washington county operators. No public signup is available.',
+    };
   }
 }

@@ -2,7 +2,7 @@
  * forge/ForgeYearContextPanel.tsx
  *
  * Compact contextual strip displayed below the year selector in
- * PropertyForge. Shows the selected year's PACS layer attributes:
+ * PropertyForge. Shows the selected year's canonical layer attributes:
  *   - Lock state (certified vs open roll)
  *   - PropState code
  *   - Earliest known layer (migration baseline) flag

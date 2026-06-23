@@ -17,20 +17,31 @@ public class DatabaseInitializationService : IDatabaseInitializationService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<DatabaseInitializationService> _logger;
+    private readonly IConfiguration _configuration;
     private bool _isInitialized = false;
     private bool _isInitializing = false;
     private string _lastError = string.Empty;
 
     public DatabaseInitializationService(
         IServiceScopeFactory serviceScopeFactory,
-        ILogger<DatabaseInitializationService> logger)
+        ILogger<DatabaseInitializationService> logger,
+        IConfiguration configuration)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async System.Threading.Tasks.Task InitializeAsync()
     {
+        if (_configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE"))
+        {
+            _isInitialized = true;
+            _lastError = string.Empty;
+            _logger.LogInformation("Startup database initialization skipped because TF_SKIP_AUTO_MIGRATE=true");
+            return;
+        }
+
         if (_isInitialized || _isInitializing)
         {
             _logger.LogInformation("Database already initialized or initializing");

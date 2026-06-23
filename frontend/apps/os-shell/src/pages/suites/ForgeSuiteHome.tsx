@@ -1,43 +1,27 @@
 /**
  * TerraFusion OS — TerraForge Suite Home
  *
- * TerraForge launcher posture is governed by the current Suite layer contract:
- * County Studio is the countywide workbench; Atlas is its embedded/pop-out
- * spatial surface; GeoForge remains internal compatibility infrastructure.
- *
- * The PRIMARY_MODULES and SECONDARY_MODULES arrays below define the v1
- * TerraForge app list. This list was verified correct at commit 8da26658a.
- *
- * IF THIS FILE LOOKS WRONG (wrong apps, wrong labels, wrong grouping):
- *   git checkout 8da26658a -- frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx
- *
- * DO NOT rewrite the module list from memory or "fix" it by editing.
- * Restore from git. That is the only correct action.
- *
- * Verified layout (matches screenshot from 2026-04-09):
- *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
- *               CompsForge (sales comparison, standalone React module)
- *               IncomeForge (income approach, live)
- *   SPECIALIST: Batch Cost Runs (batch execution)
- *               Regression Studio / TerraGAMA / Coefficient Preview live
- *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
- *                      Statistics Compat + VEI exploration)
+ * TerraForge launcher posture is governed by the June 10 canonical inventory
+ * in terraforgeCanonicalInventory.ts. /forge is the TerraForge Suite surface;
+ * parcel-scoped Workbench Forge views are support only and are not counted as
+ * suite proof here.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getToken, setToken as persistToken } from '../../auth/authStorage';
 import { invokeTool } from '../../api/pilotApi';
 import { getSession } from '../../auth/session';
-import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { apiFetch } from '../../lib/apiBase';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
-import { usePropertyStore } from '../../stores/propertyStore';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import { CompsPoolBrowser } from './CompsPoolBrowser';
+import {
+  TERRAFORGE_CANONICAL_INVENTORY,
+  type TerraForgeCanonicalCapability,
+} from './terraforgeCanonicalInventory';
 import './ForgeSuiteHome.css';
 
-type LaunchMode = 'standalone' | 'workbench';
 type TruthState = 'live' | 'queued';
 
 const JUNE_10_PROOF_FREEZE = true;
@@ -48,17 +32,7 @@ const JUNE_10_FORGE_NOTICE =
 const JUNE_10_FORGE_ACTION_LOCK_NOTICE =
   'Unverified TerraForge suite action locked for June 10 proof freeze.';
 
-interface ForgeModuleDef {
-  id: string;
-  label: string;
-  description: string;
-  priority: 'primary' | 'secondary';
-  launchMode: LaunchMode;
-  chipLabel?: string;
-  truthState?: TruthState;
-  workbenchTab?: WorkbenchTabSlug;
-  moduleId?: string;
-}
+type ForgeModuleDef = TerraForgeCanonicalCapability & { truthState?: TruthState };
 
 interface CountyFindingSummary {
   findingType: string;
@@ -141,108 +115,15 @@ interface CountyStatsRuntimeResponse {
   assessmentCompletionPercent?: number;
 }
 
-const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'costforge',
-    label: 'CostForge',
-    description:
-      'County-wide cost approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD',
-    priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'costforge',
-    chipLabel: 'Cost approach',
-  },
-  {
-    id: 'comps-forge',
-    label: 'CompsForge',
-    description:
-      'County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends',
-    priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'comps-forge',
-    chipLabel: 'Sales comparison',
-  },
-  {
-    id: 'income-forge',
-    label: 'IncomeForge',
-    description:
-      'County-wide income approach — cap rates, NOI modeling, and rent schedules for commercial properties',
-    priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'income-forge',
-    chipLabel: 'Income approach',
-  },
-  {
-    id: 'sales-forge',
-    label: 'SalesForge',
-    description:
-      'Sale qualification & ratio audit — qualify sales, audit WAC codes, review IAAO stats, and export DOR-certified study',
-    priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'sales-forge',
-    chipLabel: 'Sale qualification',
-  },
-  {
-    id: 'cuforge',
-    label: 'CUForge',
-    description:
-      'Current Use Program — DFL/CUFA/CUOS/CUTL enrollment, RCW 84.34.108 rollback calculator, DOR interest rates, and removal proceedings',
-    priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'cuforge',
-    chipLabel: 'Current use',
-  },
-] as const;
+const PRIMARY_MODULES: readonly ForgeModuleDef[] = TERRAFORGE_CANONICAL_INVENTORY.filter(
+  (capability) => capability.tier === 'primary',
+);
 
-const COUNTY_STUDIO_MODULE: ForgeModuleDef = {
-  id: 'county-studio',
-  label: 'County Studio',
-  description:
-    'Countywide operating workspace for valuation analysis, Operational Health, Statistics Compat, segment review, scenario preview, and evidence defense.',
-  priority: 'primary',
-  launchMode: 'standalone',
-  moduleId: 'county-studio',
-  chipLabel: 'County operations',
-};
+const SUPPORT_MODULES: readonly ForgeModuleDef[] = TERRAFORGE_CANONICAL_INVENTORY.filter(
+  (capability) => capability.tier !== 'primary',
+);
 
-const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'batch-cost-run',
-    label: 'Batch Cost Runs',
-    description: 'County-wide cost model runs with strata, neighborhood, and class filters',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'batch-cost-run',
-    chipLabel: 'Batch execution',
-  },
-  {
-    id: 'regression-studio',
-    label: 'Regression Studio',
-    description: 'MRA regression models with R² diagnostics for market modeling',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'regression-studio',
-    chipLabel: 'Regression preview',
-  },
-  {
-    id: 'terra-gama',
-    label: 'TerraGAMA',
-    description: 'Geospatial automated mass appraisal with spatial lag models',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'terra-gama',
-    chipLabel: 'Spatial preview',
-  },
-  {
-    id: 'coefficient-preview',
-    label: 'Coefficient Preview',
-    description: 'Preview adjustment coefficients before table publication',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'coefficient-preview',
-    chipLabel: 'Coefficient preview',
-  },
-] as const;
+const COUNTY_STUDIO_MODULE = SUPPORT_MODULES.find((mod) => mod.id === 'county-studio');
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
@@ -440,11 +321,7 @@ function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): Runti
 }
 
 function isJune10RuntimeForgeModule(mod: ForgeModuleDef): boolean {
-  return mod.id === 'sales-forge'
-    || mod.id === 'costforge'
-    || mod.id === 'comps-forge'
-    || mod.id === 'income-forge'
-    || mod.id === 'county-studio';
+  return mod.status === 'active' && Boolean(mod.moduleId);
 }
 
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
@@ -461,37 +338,47 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
 }
 
 function getLaunchLabel(mod: ForgeModuleDef): string {
-  if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) {
-    return 'Standalone preview locked';
+  if (mod.status === 'deferred') {
+    return 'Deferred by June 10 canon';
+  }
+  if (mod.status === 'honest-unavailable') {
+    return 'Unavailable in /forge runtime';
+  }
+  if (mod.status === 'fail') {
+    return 'Fails current suite gate';
   }
   if (mod.id === 'costforge') {
     return 'Benton CostForge triage API';
   }
-  if (mod.id === 'comps-forge') {
+  if (mod.id === 'compsforge') {
     return 'Statewide sales comp search';
   }
-  if (mod.id === 'income-forge') {
+  if (mod.id === 'incomeforge') {
     return 'Benton income approach API';
   }
+  if (mod.id === 'reconciliation') {
+    return 'Open value reconciliation';
+  }
+  if (mod.id === 'cama-characteristics') {
+    return 'Read CAMA characteristics';
+  }
+  if (mod.id === 'valuation-notes-defensibility') {
+    return 'Open defensibility notes';
+  }
   if (mod.id === 'county-studio') {
-    return 'Benton County Studio studies API';
+    return 'Support: County Studio studies API';
+  }
+  if (mod.id === 'calibration-qc') {
+    return 'Benton CostForge calibration API';
   }
   if (isJune10RuntimeForgeModule(mod)) {
     return 'Benton sale qualification API';
   }
-  if (mod.truthState === 'queued') {
-    return 'Queued surface';
-  }
-  if (mod.launchMode === 'workbench') {
-    return mod.workbenchTab === 'dais' ? 'Opens TerraDais workbench' : 'Opens Property Workbench';
-  }
-  return 'Launches in window';
+  return 'Support tool';
 }
 
 export default function ForgeSuiteHome() {
   const { stats, loading, error, source } = useCountyStats();
-  const activeParcel = usePropertyStore((s) => s.activeParcel);
-  const recentParcels = usePropertyStore((s) => s.recentParcels);
   const runtimeCountyId = getSession()?.countyId ?? 'benton';
   const runtimeTaxYear = 2026;
   const runtimeMetrics = useRuntimeForgeMetrics(runtimeCountyId, runtimeTaxYear);
@@ -560,7 +447,7 @@ export default function ForgeSuiteHome() {
       ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
-    if (JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) {
+    if (!isJune10RuntimeForgeModule(mod)) {
       return;
     }
 
@@ -568,19 +455,10 @@ export default function ForgeSuiteHome() {
       return;
     }
 
-    if (mod.launchMode === 'workbench') {
-      if (!mod.workbenchTab) {
-        return;
-      }
-      const parcelId = activeParcel?.parcelId;
-      void activateModule('property-workbench', {
-        source: 'system',
-        metadata: { tab: mod.workbenchTab, ...(parcelId ? { parcelId } : {}) },
-      });
+    const targetId = mod.moduleId;
+    if (!targetId) {
       return;
     }
-
-    const targetId = mod.moduleId ?? mod.id;
     const metadata = mod.id === 'costforge'
       ? {
           launchContext: 'terraforge-suite',
@@ -596,7 +474,14 @@ export default function ForgeSuiteHome() {
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
-      : mod.id === 'comps-forge'
+      : mod.id === 'salesforge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'compsforge'
       ? {
           launchContext: 'terraforge-suite',
           dataSource: 'terrafusion-api',
@@ -612,6 +497,46 @@ export default function ForgeSuiteHome() {
           countyId: runtimeCountyId,
           taxYear: 2026,
         }
+      : mod.id === 'incomeforge'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'income-approach',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'reconciliation'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'value-reconciliation',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'cama-characteristics'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'cama-characteristics',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'valuation-notes-defensibility'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'valuation-defensibility',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
+      : mod.id === 'calibration-qc'
+      ? {
+          launchContext: 'terraforge-suite',
+          dataSource: 'terrafusion-api',
+          runtimePath: 'costforge-calibration',
+          countyId: runtimeCountyId,
+          taxYear: 2026,
+        }
       : mod.id === 'county-studio'
       ? {
           launchContext: 'terraforge-suite',
@@ -622,13 +547,6 @@ export default function ForgeSuiteHome() {
         }
       : undefined;
     void activateModule(targetId, { source: 'system', ...(metadata ? { metadata } : {}) });
-  };
-
-  const handleParcelOpen = (parcelId: string) => {
-    void activateModule('property-workbench', {
-      source: 'system',
-      metadata: { parcelId },
-    });
   };
 
   const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
@@ -794,6 +712,9 @@ export default function ForgeSuiteHome() {
               <span className="forge-chip forge-chip--success">CostForge live triage path</span>
               <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
               <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
+              <span className="forge-chip forge-chip--success">Reconciliation runtime module</span>
+              <span className="forge-chip forge-chip--success">CAMA characteristics runtime lane</span>
+              <span className="forge-chip forge-chip--success">Defensibility notes runtime lane</span>
               <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
               <span className={`forge-chip ${countyRollupChipClass}`}>
                 {countyRollupStatus}
@@ -948,13 +869,15 @@ export default function ForgeSuiteHome() {
                     >
                       Open CostForge
                     </button>
-                    <button
-                      type="button"
-                      className="forge-ops-btn forge-ops-btn--ghost"
-                      onClick={() => handleModuleLaunch(COUNTY_STUDIO_MODULE)}
-                    >
-                      Open County Studio
-                    </button>
+                    {COUNTY_STUDIO_MODULE && (
+                      <button
+                        type="button"
+                        className="forge-ops-btn forge-ops-btn--ghost"
+                        onClick={() => handleModuleLaunch(COUNTY_STUDIO_MODULE)}
+                      >
+                        Open County Studio
+                      </button>
+                    )}
                   </div>
                 </div>
                 {memoState.status === 'success' && memoState.result && (
@@ -989,12 +912,19 @@ export default function ForgeSuiteHome() {
                   key={mod.id}
                   type="button"
                   className="forge-card forge-card--primary"
+                  data-terraforge-capability-id={mod.id}
+                  data-terraforge-tier={mod.tier}
+                  data-terraforge-proof-surface={mod.proofSurface}
+                  data-terraforge-production-proof="primary-required"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={(JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) || mod.truthState === 'queued'}
-                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
+                  title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
                 >
                   <div className="forge-card__rail">
-                    {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
+                    <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>
+                    <span className={`forge-chip ${mod.status === 'active' ? 'forge-chip--success' : 'forge-chip--warn'}`}>
+                      {mod.status.replace(/-/g, ' ')}
+                    </span>
                     <span className="forge-card__foot">{getLaunchLabel(mod)}</span>
                   </div>
                   <div className="forge-card__title">{mod.label}</div>
@@ -1004,26 +934,32 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
-          {/* Secondary / Specialist Applications */}
-          <section className="forge-panel" data-testid="forge-secondary-applications">
+          <section className="forge-panel" data-testid="forge-support-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist &amp; Legacy Tools</p>
-                <h2 className="forge-panel__title">Temporary shells outside County Studio</h2>
+                <p className="forge-panel__eyebrow">Support &amp; deferred tools</p>
+                <h2 className="forge-panel__title">Outside primary TerraForge proof</h2>
               </div>
             </div>
             <div className="forge-primary-grid">
-              {SECONDARY_MODULES.map((mod) => (
+              {SUPPORT_MODULES.map((mod) => (
                 <button
                   key={mod.id}
                   type="button"
                   className="forge-card forge-card--secondary"
+                  data-terraforge-capability-id={mod.id}
+                  data-terraforge-tier={mod.tier}
+                  data-terraforge-proof-surface={mod.proofSurface}
+                  data-terraforge-production-proof="support-or-deferred"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={(JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod)) || mod.truthState === 'queued'}
-                  title={JUNE_10_PROOF_FREEZE && mod.launchMode === 'standalone' && !isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
+                  title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
                 >
                   <div className="forge-card__rail">
-                    {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
+                    <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>
+                    <span className={`forge-chip ${mod.status === 'active' ? 'forge-chip--success' : 'forge-chip--warn'}`}>
+                      {mod.status.replace(/-/g, ' ')}
+                    </span>
                     <span className="forge-card__foot">{getLaunchLabel(mod)}</span>
                   </div>
                   <div className="forge-card__title">{mod.label}</div>
@@ -1031,34 +967,6 @@ export default function ForgeSuiteHome() {
                 </button>
               ))}
             </div>
-          </section>
-
-          {/* County Studio — segment-first countywide valuation workspace */}
-          <section className="forge-panel" data-testid="forge-county-applications">
-            <div className="forge-panel__header">
-              <div>
-                <p className="forge-panel__eyebrow">County Operations</p>
-                <h2 className="forge-panel__title">County Studio · Analysis, Scenario, Defense</h2>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="forge-card forge-card--primary"
-              style={{ width: '100%', textAlign: 'left' }}
-              onClick={() => handleModuleLaunch(COUNTY_STUDIO_MODULE)}
-            >
-              <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--success">Runtime studies path</span>
-                <span className="forge-card__foot">{getLaunchLabel(COUNTY_STUDIO_MODULE)}</span>
-              </div>
-              <div className="forge-card__title">County Studio</div>
-              <p className="forge-card__description">
-                The countywide operating workspace for valuation analysis, Operational Health, Statistics Compat,
-                embedded spatial review, cohort creation, scenario preview, correction routing, and evidence defense.
-                Atlas map review opens inside County Studio or as a pop-out for the same study session; governed
-                approval and publish remain downstream workflow steps.
-              </p>
-            </button>
           </section>
 
           {JUNE_10_RUNTIME_PANELS_ENABLED && (
@@ -1070,39 +978,6 @@ export default function ForgeSuiteHome() {
               <CompsPoolBrowser />
             </>
           )}
-
-
-          <section className="forge-panel" data-testid="forge-queue">
-            <div className="forge-panel__header">
-              <div>
-                <p className="forge-panel__eyebrow">Operational Queue</p>
-                <h2 className="forge-panel__title">Recent parcels</h2>
-              </div>
-            </div>
-
-            {recentParcels.length === 0 ? (
-              <div className="forge-queue forge-queue--empty">No recent parcel activity.</div>
-            ) : (
-              <div className="forge-queue">
-                {recentParcels.slice(0, 8).map((parcel) => (
-                  <button
-                    key={parcel.parcelId}
-                    type="button"
-                    className="forge-queue__row"
-                    onClick={() => handleParcelOpen(parcel.parcelId)}
-                  >
-                    <div className="forge-queue__identity">
-                      <div className="forge-queue__address">{parcel.address}</div>
-                      <div className="forge-queue__meta">
-                        {parcel.parcelId} · {parcel.city}
-                      </div>
-                    </div>
-                    <div className="forge-queue__value">{fmtCurrency(parcel.totalAssessedValue)}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
         </div>
       </main>
     </div>

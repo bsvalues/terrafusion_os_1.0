@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TerraFusion.API.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("health")]
 public class SimpleHealthController : ControllerBase
@@ -23,6 +25,7 @@ public class SimpleHealthController : ControllerBase
             Status = "Healthy",
             Timestamp = DateTime.UtcNow,
             Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            GitSha = Environment.GetEnvironmentVariable("TF_GIT_SHA") ?? "unknown",
             Version = "1.0.0",
             Service = "TerraFusion OS API - Basic Mode"
         });

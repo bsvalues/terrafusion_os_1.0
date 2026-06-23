@@ -19,6 +19,11 @@ function LoginStub() {
   return <div data-testid='login-page'>Login Page</div>;
 }
 
+function validJwt() {
+  const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+  return `header.${payload}.signature`;
+}
+
 function renderGuardedRoute(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
@@ -53,7 +58,7 @@ describe('RequireAuth / AuthGuard route guard', () => {
 
   it('authenticated_renders_children', () => {
     // Pre-seed token in storage
-    authStorage.setToken('VALID_TOKEN');
+    authStorage.setToken(validJwt());
 
     renderGuardedRoute('/dashboard');
 
@@ -69,11 +74,32 @@ describe('RequireAuth / AuthGuard route guard', () => {
   });
 
   it('authenticated_user_can_access_home', () => {
-    authStorage.setToken('VALID_TOKEN');
+    authStorage.setToken(validJwt());
 
     renderGuardedRoute('/');
 
     expect(screen.getByTestId('home')).toBeInTheDocument();
+  });
+
+  it('authenticated_login_redirects_to_os_shell_home_not_canon', () => {
+    authStorage.setToken(validJwt());
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <AuthGuard>
+            <Routes>
+              <Route path='/login' element={<LoginStub />} />
+              <Route path='/' element={<div data-testid='os-shell-home'>OS Shell Home</div>} />
+              <Route path='/canon' element={<div data-testid='canon-ide'>Canon IDE</div>} />
+            </Routes>
+          </AuthGuard>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('os-shell-home')).toBeInTheDocument();
+    expect(screen.queryByTestId('canon-ide')).not.toBeInTheDocument();
   });
 
   it('dev_preview_mode_bypasses_login_redirect_without_token', () => {

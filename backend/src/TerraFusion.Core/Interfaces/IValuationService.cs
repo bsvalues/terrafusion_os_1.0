@@ -5,8 +5,8 @@ namespace TerraFusion.Core.Interfaces;
 /// <summary>
 /// Phase 10 — PropertyForge valuation API contract.
 /// Four approaches: cost, sales-comparison, income, and reconciliation.
-/// Implementations query PACS tables for real data and return structured fallback
-/// where PACS data is incomplete.
+/// Implementations query canonical TerraFusion runtime tables and return structured
+/// unavailable states where canonical data is incomplete.
 ///
 /// Year-layer model: callers are responsible for year selection. Use GetAvailableYearsAsync
 /// to discover which layers exist for a parcel before requesting approach data.
@@ -15,7 +15,7 @@ namespace TerraFusion.Core.Interfaces;
 public interface IValuationService
 {
     /// <summary>
-    /// Returns all pacs_valuations year layers for a parcel with program enrollment metadata.
+    /// Returns canonical valuation year layers for a parcel with program enrollment metadata.
     /// Call this on parcel load to populate the year selector. DefaultYear is the recommended
     /// starting point (most recent base-roll layer).
     /// </summary>
