@@ -21,9 +21,9 @@ Result: PASS
 
 Runtime used for local proof capture:
 
-- Frontend: http://localhost:5174/
-- Backend: http://localhost:5000/
-- Note: port 5173 was already occupied by another local Vite process, so the main repo shell started on 5174 for proof capture.
+- Frontend: http://localhost:${TF_FRONTEND_PORT:-3102}/
+- Backend: http://localhost:${TF_API_PORT:-5046}/
+- Note: if the default frontend port is occupied, set TF_FRONTEND_PORT (or use Vite’s chosen port) and capture that value in the run log.
 
 Verified:
 
