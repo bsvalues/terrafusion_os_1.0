@@ -14,14 +14,20 @@ public sealed class SqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSource
 {
     private readonly string _connectionString;
     private readonly int? _topN;
+    private readonly bool _filterToQualified;
 
     /// <param name="topN">SYNC-POP-2 proof-run row cap. Null = full drain.</param>
-    public SqlServerPacsPropSuppAssocSource(string connectionString, int? topN = null)
+    /// <param name="filterToQualified">
+    /// When true (and topN is null), apply WHERE sup_num=0 AND owner_tax_yr&gt;=2018 without
+    /// a row cap. Use for full-corpus drains that need qualified rows only.
+    /// </param>
+    public SqlServerPacsPropSuppAssocSource(string connectionString, int? topN = null, bool filterToQualified = false)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("PACS connection string is required.", nameof(connectionString));
         _connectionString = connectionString;
         _topN = topN;
+        _filterToQualified = filterToQualified;
     }
 
     public string SourceSystem => "JCHARRISPACS";
@@ -44,7 +50,8 @@ public sealed class SqlServerPacsPropSuppAssocSource : IPacsPropSuppAssocSource
         // the supp index has the (prop_id, year) tuples our recent-sales
         // sample needs to promote. Production drains all rows.
         var topClause = _topN.HasValue ? $"TOP {_topN.Value} " : "";
-        var filter = _topN.HasValue
+        var applyFilter = _topN.HasValue || _filterToQualified;
+        var filter = applyFilter
             ? "WHERE owner_tax_yr >= 2018 AND sup_num = 0"
             : "";
         var sql = $@"

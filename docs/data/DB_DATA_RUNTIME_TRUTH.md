@@ -1,9 +1,9 @@
 # DB/Data Runtime Truth Gate
 
-**Work Order:** WO-DATA-000  
-**Date:** 2026-06-13  
-**Type:** READ-ONLY audit  
-**Branch:** `claude/wo-data-000-db-data-truth-gate`  
+**Work Order:** WO-DATA-000
+**Date:** 2026-06-13
+**Type:** READ-ONLY audit
+**Branch:** `claude/wo-data-000-db-data-truth-gate`
 **Base:** `3f420185e` (origin/main after PR #1004)
 
 ---

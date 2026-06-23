@@ -170,6 +170,11 @@ static bool ShouldSkipDevSeeders(string[] args)
         || HasSkipDevSeedersArg(args);
 }
 
+static bool ShouldSkipDoctrineSeeders()
+{
+    return IsTruthySkipSeedersValue(Environment.GetEnvironmentVariable("TF_SKIP_DOCTRINE_SEEDERS")?.Trim());
+}
+
 static IHostBuilder CreateCanonicalHostBuilder(string[] args, string environmentName)
 {
     var apiContentRoot = ResolveApiContentRoot();
@@ -1004,6 +1009,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     EnvironmentName = runtimeEnvironment
 });
 var shouldSkipStartupSeeders = ShouldSkipDevSeeders(args);
+var shouldSkipDoctrineSeeders = ShouldSkipDoctrineSeeders();
 
 builder.Host.UseContentRoot(apiContentRoot);
 builder.Configuration.SetBasePath(apiContentRoot);
@@ -1850,7 +1856,9 @@ builder.Services.AddScoped<
 // SYNC-DOCTRINE-2 (B2): hosted service runs the seeder once at
 // startup so the doctrine table is populated before the first sale
 // truth-promotion call. Idempotent + non-fatal on failure.
-if (!shouldSkipStartupSeeders)
+// WO-DATA-004B-P1: gated by TF_SKIP_DOCTRINE_SEEDERS (not TF_SKIP_DEV_SEEDERS)
+// so doctrine seeds even when fake dev seeders are blocked.
+if (!shouldSkipDoctrineSeeders)
 {
     builder.Services.AddHostedService<
         TerraFusion.Data.Services.Doctrine.DoctrineRatioPolicySeederHostedService>();
@@ -1876,7 +1884,7 @@ builder.Services.AddScoped<
 // SYNC-DOCTRINE-4: hosted service runs both seeders at startup.
 // Idempotent; non-fatal on failure (classifier emits UNKNOWN until
 // successful seed).
-if (!shouldSkipStartupSeeders)
+if (!shouldSkipDoctrineSeeders)
 {
     builder.Services.AddHostedService<
         TerraFusion.Data.Services.Doctrine.DoctrinePropertyUniverseSeederHostedService>();
@@ -1890,7 +1898,7 @@ builder.Services.AddScoped<
     TerraFusion.Data.Services.Doctrine.DoctrineSalesAuditService>();
 builder.Services.AddScoped<
     TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeeder>();
-if (!shouldSkipStartupSeeders)
+if (!shouldSkipDoctrineSeeders)
 {
     builder.Services.AddHostedService<
         TerraFusion.Data.Services.Doctrine.SalesQualificationCodesSeederHostedService>();
@@ -1930,7 +1938,7 @@ builder.Services.AddScoped<
 // imprv_attr rows quarantine with UNKNOWN_I_ATTR_VAL_CD until an
 // operator manually runs /api/debug/attr-drain-1/run-drain. Idempotent
 // + non-fatal on failure.
-if (!shouldSkipStartupSeeders)
+if (!shouldSkipDoctrineSeeders)
 {
     builder.Services.AddHostedService<
         TerraFusion.Data.Services.PacsImprvAttr.ImprvAttrDictionaryRefreshHostedService>();
@@ -2469,9 +2477,7 @@ if (!builder.Configuration.GetValue<bool>("TF_SKIP_AUTO_MIGRATE", defaultValue: 
 builder.Services.AddDbContext<LevyDbContext>(options =>
 {
   var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
-                ?? builder.Configuration.GetConnectionString("LevyDatabase")
-                ?? builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+                ?? builder.Configuration.GetConnectionString("LevyDatabase");
   var provider = builder.Configuration["DatabaseProvider"];
 
   if (!string.IsNullOrWhiteSpace(levyConn) && string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))

@@ -1,0 +1,107 @@
+{
+  "_decision": "FORWARD-STAGE (Option B), recorded 2026-06-09 (ADR-0010). REFINED by FU-1 (ADR-0011): the footprint is LARGER and the frontend tabs are ACTIVE \u2014 see _correction.",
+  "_correction": "ADR-0010 said 'no 1.0 frontend dependency.' That was WRONG \u2014 it checked API route strings, not components. FU-1 found PropertyClerk/PropertyTreasury/PropertyAudit Workbench tab components (frontend/apps/os-shell/src/pages/workbench/tabs/, 427-517 lines each), lazy-loaded in Router.tsx, registered enabled:true in PropertyWorkbenchSurface.tsx:57-59, and tested. The reserved offices are LIVE Workbench tabs.",
+  "_rule": {
+    "id": "reserved_code_presence_does_not_imply_activation",
+    "statement": "Code presence does not equal constitutional activation. Reserved-suite code may exist ONLY if: (1) recorded here; (2) NO active frontend dependency presents it as active; (3) NO active suite manifest presents it as active; (4) release canon marks it deferred; (5) the ratchet prevents growth. Do not let real code accidentally amend the Constitution.",
+    "current_status": "SATISFIED on both exposure surfaces. (2) Frontend (FU-2A, ADR-0012): Workbench nav gates clerk/treasury/audit behind VITE_TF_ENABLE_FORWARD_STAGED_OFFICES (default false) \u2192 canonical 6 restored, D-007 RESOLVED. (3) Runtime (FU-2B, ADR-0013): dev-pilot-runtime loads a filtered manifest copy behind TF_ENABLE_FORWARD_STAGED_OFFICES (default false) \u2192 reserved-office tools NOT exposed. Only the STATIC manifest validation (write-lanes/SEAL) remains red because the manifest file still declares the suites (code preserved by design)."
+  },
+  "status": "forward-staged; BOTH exposure surfaces gated off by default (FU-2A frontend + FU-2B runtime); static write-lane gate teaches an exact, self-revoking exemption (FU-2C, ADR-0014) so `brain check` reflects post-gate truth. D-004/D-005/D-007 resolved. Activation = future R5 TF-052 amendment.",
+  "gate": {
+    "frontend": {
+      "flag": "VITE_TF_ENABLE_FORWARD_STAGED_OFFICES",
+      "default": false,
+      "impl": "PropertyWorkbenchSurface.tsx applyForwardStagedGate()",
+      "test": "reservedOfficeGating.test.ts (3/3)",
+      "decision": "ADR-0012"
+    },
+    "runtime": {
+      "flag": "TF_ENABLE_FORWARD_STAGED_OFFICES",
+      "default": false,
+      "impl": "forwardStagedGate.mjs + dev-pilot-runtime.resolveTerrapilotManifestPath() (filtered manifest copy; on-disk manifest untouched)",
+      "test": "forwardStagedGate.test.mjs (3/3)",
+      "decision": "ADR-0013"
+    },
+    "policy": "Same policy, two surfaces + two env names (VITE_ prefix for the Vite frontend, plain for the Node runtime)."
+  },
+  "footprint": {
+    "backend_controllers": [
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/ClerkController.cs",
+        "reserved_suite": "terraclerk",
+        "provenance": "PR #656",
+        "statute": "RCW 36.18.010"
+      },
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/TreasuryController.cs",
+        "reserved_suite": "terratreasury",
+        "provenance": "PR #656",
+        "statute": "RCW 84.56, 84.64"
+      },
+      {
+        "file": "backend/src/TerraFusion.API/Controllers/AuditController.cs",
+        "reserved_suite": "terraaudit",
+        "provenance": "PR #656",
+        "statute": "RCW 84.48, 84.52, 84.55"
+      }
+    ],
+    "frontend_tabs": [
+      {
+        "file": "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyClerk.tsx",
+        "tab_id": "clerk",
+        "enabled": true,
+        "registered_in": "PropertyWorkbenchSurface.tsx:57"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyTreasury.tsx",
+        "tab_id": "treasury",
+        "enabled": true,
+        "registered_in": "PropertyWorkbenchSurface.tsx:58"
+      },
+      {
+        "file": "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAudit.tsx",
+        "tab_id": "audit",
+        "enabled": true,
+        "registered_in": "PropertyWorkbenchSurface.tsx:59"
+      }
+    ],
+    "manifest_tools": {
+      "file": "tools/registry/terrapilot.tools.json",
+      "count": 19,
+      "suites": ["clerk", "treasury", "audit"],
+      "classification": "BACK ACTIVE UI + LOADED BY RUNTIME \u2014 the 19 tools are invoked by the live PropertyClerk/Treasury/Audit tabs AND the manifest is loaded into the TerraPilot tool runtime by os-platform/core/pilot/dev-pilot-runtime.mjs:566 (registry.initialize). PROVEN consumer (not just suspected). Therefore NOT safely quarantinable: removing them would break active Workbench tabs and the pilot tool registry.",
+      "ids": {
+        "clerk": [
+          "search_recorded_documents",
+          "get_title_chain",
+          "explain_recording_fees",
+          "record_document",
+          "release_lien",
+          "summarize_parcel_recordings"
+        ],
+        "treasury": [
+          "get_tax_statement",
+          "explain_tax_breakdown",
+          "record_payment",
+          "check_delinquency_status",
+          "create_installment_plan",
+          "summarize_collection_stats",
+          "initiate_tax_sale"
+        ],
+        "audit": [
+          "export_audit_bundle",
+          "audit_roll_summary",
+          "check_levy_compliance",
+          "submit_audit_finding",
+          "reconcile_cross_office",
+          "generate_compliance_report"
+        ]
+      }
+    }
+  },
+  "ratchet": "scripts/brain/check-reserved-staging.mjs blocks NEW reserved-office controllers beyond footprint.backend_controllers.",
+  "follow_ups": [
+    "FU-1 RESULT: direct tool quarantine is UNSAFE because the tools back runtime + Workbench paths. FU-2 was the correct lever; after FU-2C/ADR-0014 the static write-lane exception is recorded and D-004 is resolved under the forward-staged policy.",
+    "FU-2 (R5, human/constitution \u2014 NOW LOAD-BEARING): decide \u2014 amend TF-052 to ACTIVATE Clerk/Treasury/Audit (add to \u00a74.1 tab order + VALID_SUITES + move out of deferred), OR gate the tabs (enabled:false) until activation. The system currently presents them as active; canon says reserved. One of the two must change."
+  ]
+}

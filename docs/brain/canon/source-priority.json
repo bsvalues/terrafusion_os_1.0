@@ -1,0 +1,42 @@
+{
+  "_note": "What wins when sources conflict. Higher = more authoritative. Old docs are CONTEXT, not law. Cortex must never let a lower-priority source override a higher one.",
+  "priority": [
+    {
+      "rank": 1,
+      "source": ".github/AGENT_ENTRYPOINT.md",
+      "weight": "law (agent bootloader)"
+    },
+    {
+      "rank": 2,
+      "source": "docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md",
+      "weight": "law (TF-052)"
+    },
+    {
+      "rank": 3,
+      "source": "docs/brain/canon/*.json",
+      "weight": "machine digest of law"
+    },
+    {
+      "rank": 4,
+      "source": "docs/architecture/specs/terrafusion/**",
+      "weight": "specs (write-lanes v3.1 etc.)"
+    },
+    {
+      "rank": 5,
+      "source": "docs/brain/memory/decisions-adr.md (active ADRs)",
+      "weight": "accepted decisions"
+    },
+    {
+      "rank": 6,
+      "source": "docs/brain/memory/release-gates.md + canon/current-release.json",
+      "weight": "current release truth"
+    },
+    { "rank": 7, "source": "graphify-out/**", "weight": "graph evidence" },
+    { "rank": 8, "source": "other docs/**", "weight": "context, not law" },
+    {
+      "rank": 9,
+      "source": "**/ARCHIVE/**",
+      "weight": "historical only — never cite as authority"
+    }
+  ]
+}

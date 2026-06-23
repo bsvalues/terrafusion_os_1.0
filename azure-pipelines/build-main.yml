@@ -1,0 +1,80 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  nodeVersion: '20.x'
+  pnpmVersion: '9.0.0'
+  dotnetVersion: '8.0.x'
+
+jobs:
+  - job: backend_build
+    displayName: Main Build - Backend
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: UseDotNet@2
+        displayName: Use .NET SDK $(dotnetVersion)
+        inputs:
+          packageType: sdk
+          version: $(dotnetVersion)
+
+      - script: dotnet restore backend/TerraFusion.sln
+        displayName: Restore backend solution
+
+      - script: dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror
+        displayName: Build backend solution
+
+  - job: frontend_build
+    displayName: Main Build - Frontend
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: NodeTool@0
+        displayName: Use Node.js $(nodeVersion)
+        inputs:
+          versionSpec: $(nodeVersion)
+
+      - script: |
+          corepack enable
+          corepack prepare pnpm@$(pnpmVersion) --activate
+          pnpm --version
+        displayName: Use pnpm $(pnpmVersion)
+
+      - script: pnpm install --frozen-lockfile
+        displayName: Install dependencies
+
+      - script: pnpm -C frontend run build
+        displayName: Build frontend
+
+  - job: generated_core_check
+    displayName: Main Build - Generated Core Check
+    dependsOn: frontend_build
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: NodeTool@0
+        displayName: Use Node.js $(nodeVersion)
+        inputs:
+          versionSpec: $(nodeVersion)
+
+      - script: |
+          corepack enable
+          corepack prepare pnpm@$(pnpmVersion) --activate
+          pnpm --version
+        displayName: Use pnpm $(pnpmVersion)
+
+      - script: pnpm install --frozen-lockfile
+        displayName: Install dependencies
+
+      - script: pnpm run check:generated
+        displayName: Check generated core JavaScript

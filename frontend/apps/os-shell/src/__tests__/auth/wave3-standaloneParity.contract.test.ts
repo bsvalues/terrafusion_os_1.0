@@ -31,8 +31,12 @@ describe('Gate 1 — SuiteModuleGrid route handoff', () => {
     expect(src).toContain('activeParcel');
   });
 
-  it('navigates standalone modules by route instead of direct activation', () => {
-    expect(src).toContain('navigate(`/${targetId}`)');
+  it('activates standalone modules through the canonical module activation flow', () => {
+    // WO-SUITE-ROUTING-001: standalone tiles must open via activateModule
+    // (same path as desktop icons / start menu / command palette), not a bare
+    // navigate(`/${targetId}`) that has no registered route and no-ops.
+    expect(src).toContain("activateModule(targetId, { source: 'system' })");
+    expect(src).not.toContain('navigate(`/${targetId}`)');
   });
 
   it('navigates workbench launches through parcel or property-search routes', () => {

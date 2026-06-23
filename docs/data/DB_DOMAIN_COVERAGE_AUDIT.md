@@ -1,7 +1,7 @@
 # DB Domain Coverage Audit
 
-**Work Order:** WO-DATA-000  
-**Date:** 2026-06-13  
+**Work Order:** WO-DATA-000
+**Date:** 2026-06-13
 **Type:** READ-ONLY audit (source-code analysis only)
 
 ---
