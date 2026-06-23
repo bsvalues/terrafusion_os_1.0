@@ -137,7 +137,7 @@ describe('Forge PACS boundary guard', () => {
     'frontend/apps/os-shell/src/services/suites',
   ];
   const allowedPathParts = new Set(['sync', 'provenance', 'intake', '__tests__']);
-  const forbidden = /\bPACS\b|\bPacs\b|\bpacs_/;
+  const forbidden = /\bpacs\b|pacs_/i;
 
   function listFiles(root: string): string[] {
     const absoluteRoot = resolve(repoRoot, root);
