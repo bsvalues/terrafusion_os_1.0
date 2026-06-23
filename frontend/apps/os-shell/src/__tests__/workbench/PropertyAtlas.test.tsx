@@ -51,6 +51,13 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 describe('PropertyAtlas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Re-establish the default 'unavailable' boundary so per-test overrides don't leak
+    mockUseParcelBoundary.mockReturnValue({
+      data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+    });
+    mockUseParcelLayers.mockReturnValue({
+      data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+    });
   });
 
   describe('Rendering', () => {
@@ -73,6 +80,15 @@ describe('PropertyAtlas', () => {
     });
 
     it('displays map placeholder area', () => {
+      // Map container renders once a centroid is available (MapLibre migration)
+      mockUseParcelBoundary.mockReturnValue({
+        data: {
+          centroid: { lat: 46.2304, lng: -119.2117, derivedFrom: 'arcgis' },
+          ringJson: null, situsDisplay: '', areaAcres: 0, areaSqFt: 0,
+          dimensions: null, ownerName: '',
+        },
+        loading: false, error: null, source: 'live', refetch: vi.fn(),
+      });
       render(<TestWrapper parcelId='12345-001' />);
 
       // Should have a map container

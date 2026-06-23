@@ -1011,6 +1011,12 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
+      {/* ── Honesty disclosure: full GIS geometry is not exposed on this route ── */}
+      <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
+        This route shows boundary previews and layer availability only.
+        Full GIS geometry rendering is reserved for the dedicated Atlas suite.
+      </div>
+
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
       {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">
@@ -1142,11 +1148,14 @@ export const PropertyAtlas: React.FC = () => {
               <div className="text-[11px] tf-text-dim" data-testid="atlas-results-source">
                 Layer availability returned from query_parcel_layers (correlationId{queryState.correlationId ? `: ${queryState.correlationId.slice(0, 16)}` : ''}).
               </div>
-              <div className="text-[11px] tf-text-dim">
+              <div className="text-[11px] tf-text-dim space-y-1">
                 <p>
-                  Layer availability confirmed from county-scoped Atlas query.
-                  Boundary geometry rendered from ArcGIS sync data when available.
+                  Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches. Full parcel geometry is reserved for the dedicated Atlas suite.
                 </p>
+                <p>
+                  Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches and are not the canonical authoritative geometry.
+                </p>
+                <p>Not exposed on this route yet: full geometry rendering, neighbor parcels, and live overlay editing.</p>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (

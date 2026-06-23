@@ -13,6 +13,11 @@ class MockMapboxMap {
     return this;
   }
   off() { return this; }
+  once(_event: string, handler?: unknown) {
+    if (typeof handler === 'function') queueMicrotask(() => (handler as () => void)());
+    return this;
+  }
+  setStyle() { return this; }
   addControl() { return this; }
   addSource() { return this; }
   getSource() { return undefined; }
