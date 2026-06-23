@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-06-07T16:10:13.357Z",
+  "name": "Benton Owner Sweep Monitor Checkpoint",
+  "productionTouched": false,
+  "databaseMutation": false,
+  "activeSyncTouched": false,
+  "monitorOnly": true,
+  "monitorStatus": "OWNER_SWEEP_MONITORING_PARTIAL",
+  "sweep": {
+    "commit": "74a11168f",
+    "taskId": "b2xc9tahr",
+    "posture": "monitor_only_no_parameter_changes"
+  },
+  "metrics": {
+    "cursor": null,
+    "truthOwnerRows": null,
+    "truthOwnerDistinctRows": null,
+    "truthOwnerDuplication": null,
+    "canonicalOwnerRows": 312532,
+    "ownerLinkRows": 2111805,
+    "wsdorTruthRows": null,
+    "wsdorTruthDistinctRows": null,
+    "wsdorTruthDuplication": null,
+    "wsdorCanonicalRows": null,
+    "latestCompletedChunkDurationSeconds": 2303.816811,
+    "latestCompletedChunkRowsExtracted": 816849,
+    "latestCompletedChunkRowsPromoted": 97523,
+    "activeChunkInProgress": true,
+    "activeChunkAgeSeconds": 142822.14557
+  },
+  "failures": {
+    "statusCounts": {
+      "COMPLETED": 148,
+      "IN_PROGRESS": 2
+    },
+    "failedBatches": 0,
+    "quarantineTableFound": false,
+    "quarantineRows": null
+  },
+  "sealedLaneIntegrity": {
+    "status": "NOT_PROVEN_BY_LATEST_EVIDENCE",
+    "latestEvidenceGeneratedAt": null,
+    "latestEvidenceVerdict": null,
+    "latestEvidenceHash": null
+  },
+  "blockedProbes": ["cursor", "truthOwner", "wsdorTruth", "wsdorCanonical"],
+  "probeErrors": {
+    "cursor": "spawnSync docker ETIMEDOUT",
+    "truthOwner": "spawnSync docker ETIMEDOUT",
+    "wsdorTruth": "spawnSync docker ETIMEDOUT",
+    "wsdorCanonical": "spawnSync docker ETIMEDOUT"
+  },
+  "stopConditionsTriggered": [],
+  "forbiddenActions": [
+    "change TopN",
+    "alter owner logic",
+    "restart sweep blindly",
+    "touch sealed lanes",
+    "optimize mid-sweep",
+    "claim owner seal from checkpoint alone"
+  ],
+  "nextAction": "continue_monitoring",
+  "packetHash": "a956afc305dcd1087a7090be717ae11a434389d411561b32fa0df5ede87c1176"
+}
