@@ -224,15 +224,20 @@ describe('AiDiagnosisPanel — Data-class populated', () => {
     expect(screen.getByTestId('diagnosis-evidence-dict-ZERO_SALES')).toBeInTheDocument();
   });
 
-  it('fires activateModule(property-workbench) on parcel-hint chip click', async () => {
+  it('fires activateModule(property-workbench) with city-free valuation context on parcel-hint chip click', async () => {
     state.diagnosis = dataClassDiagnosis();
     render(<AiDiagnosisPanel segmentId="s1" />);
     const user = userEvent.setup();
     await user.click(screen.getByTestId('diagnosis-parcel-chip-HP-1001'));
     expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', {
       source: 'system',
-      metadata: expect.objectContaining({ parcelId: 'HP-1001', segmentId: 's1' }),
+      metadata: expect.objectContaining({
+        parcelId: 'HP-1001',
+        segmentId: 's1',
+        neighborhoodCode: 'NBHD-K3',
+      }),
     });
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata).not.toHaveProperty('city');
   });
 });
 
@@ -250,6 +255,36 @@ describe('AiDiagnosisPanel — Model-class populated', () => {
         diagnosisActionCode: 'RECALIBRATE_COST_TABLE',
       }),
     });
+  });
+
+  it('removes city metadata from AI action handoffs and preserves valuation context', async () => {
+    state.diagnosis = modelClassDiagnosis();
+    state.diagnosis.recommendedActions[0].prebuiltContext = {
+      segmentId: 's2',
+      city: 'Kennewick',
+      cityName: 'Kennewick',
+      municipality: 'Kennewick',
+      rollupScope: 'city',
+      stratumKey: 'R',
+      revalArea: 7,
+    };
+
+    render(<AiDiagnosisPanel segmentId="s2" />);
+    const user = userEvent.setup();
+    await user.click(screen.getByTestId('diagnosis-action-fire-RECALIBRATE_COST_TABLE'));
+
+    const metadata = activateModuleMock.mock.calls.at(-1)?.[1].metadata;
+    expect(metadata).toMatchObject({
+      segmentId: 's2',
+      neighborhoodCode: 'NBHD-K1',
+      revalArea: 7,
+      stratumKey: 'R',
+      diagnosisActionCode: 'RECALIBRATE_COST_TABLE',
+    });
+    expect(metadata).not.toHaveProperty('city');
+    expect(metadata).not.toHaveProperty('cityName');
+    expect(metadata).not.toHaveProperty('municipality');
+    expect(metadata).not.toHaveProperty('rollupScope');
   });
 
   it('shows priority and target badge', () => {

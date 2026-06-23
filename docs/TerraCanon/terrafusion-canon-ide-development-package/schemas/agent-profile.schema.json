@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/agent-profile.schema.json",
+  "title": "AgentProfile",
+  "type": "object",
+  "required": [
+    "agentId",
+    "role",
+    "permissions"
+  ],
+  "properties": {
+    "agentId": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockedPermissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "defaultModelClass": {
+      "enum": [
+        "fast",
+        "balanced",
+        "reasoning",
+        "local"
+      ]
+    },
+    "requiresApprovalFor": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

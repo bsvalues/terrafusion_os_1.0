@@ -100,6 +100,8 @@ export interface AtlasCompatibilityMapData {
   parcels: ParcelTileCollection | null;
 }
 
+const DEFAULT_COMPATIBILITY_LAYER_TIMEOUT_MS = 12000;
+
 function normalizeCountyName(value: string): string {
   return value
     .replace(/\s+county$/i, '')
@@ -220,19 +222,36 @@ export async function fetchAtlasCompatibilityMapData(
   taxYear: number,
   neighborhoodCode: string | null,
   signal?: AbortSignal,
+  layerTimeoutMs = DEFAULT_COMPATIBILITY_LAYER_TIMEOUT_MS,
 ): Promise<AtlasCompatibilityMapData> {
   if (countyCode !== '005') {
     return { outlines: null, parcels: null };
   }
 
+  const withLayerTimeout = async <T,>(loader: () => Promise<T>): Promise<T | null> => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    try {
+      return await Promise.race([
+        loader(),
+        new Promise<null>((resolve) => {
+          timeoutId = setTimeout(() => resolve(null), layerTimeoutMs);
+        }),
+      ]);
+    } catch {
+      return null;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  };
+
   const [outlines, parcels] = await Promise.all([
-    fetchGeoForgeCompatibilityOutlines(taxYear, signal),
-    fetchGeoForgeCompatibilityParcels({
+    withLayerTimeout(() => fetchGeoForgeCompatibilityOutlines(taxYear, signal)),
+    withLayerTimeout(() => fetchGeoForgeCompatibilityParcels({
       taxYear,
       neighborhoodCode,
       limit: 5000,
       signal,
-    }),
+    })),
   ]);
 
   return { outlines, parcels };

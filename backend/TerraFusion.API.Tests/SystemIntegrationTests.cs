@@ -164,8 +164,11 @@ namespace TerraFusion.API.Tests
             metrics.SecurityScore.Should().BeGreaterThan(95.0, "Security score should be > 95%");
             metrics.CompliancePercentage.Should().BeGreaterThan(95.0, "Compliance should be > 95%");
 
-            // AI metrics
-            metrics.ActiveAIAgents.Should().Be(1008, "Should have 1,008 active AI agents");
+            // AI metrics — WO-DOCS-TEST-HONESTY-013a: do NOT pin a fabricated 1,008-agent swarm.
+            // This assertion verifies only that the count is a sane NON-NEGATIVE value; there is no
+            // running swarm to check an exact count against (consciousness is target architecture /
+            // stubbed). It intentionally does not detect a missing field (default 0).
+            metrics.ActiveAIAgents.Should().BeGreaterThanOrEqualTo(0, "agent count must be a non-negative value, not a fabricated 1,008");
             metrics.AITasksCompleted.Should().BeGreaterThan(0);
 
             _output.WriteLine($"Total Requests: {metrics.TotalRequests:N0} (Success: {successRate:F2}%)");
@@ -243,7 +246,7 @@ namespace TerraFusion.API.Tests
                 test.TestName.Should().NotBeNullOrEmpty();
                 test.Score.Should().BeInRange(0, 100);
 
-                _output.WriteLine($"  {(test.Status == "passed" ? "✓" : "�--")} {test.TestName}: {test.Score:F1} ({test.Duration:F1}s)");
+                _output.WriteLine($"  {(test.Status == "passed" ? "✓" : "�--")} {test.TestName}: {test.Score:F1} ({test.Duration:F1}s)");
             }
         }
 

@@ -2519,8 +2519,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("ConditionCd")
                         .HasMaxLength(8)
@@ -2535,12 +2535,12 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("FeatureCode")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("MethodCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int?>("NumUnits")
                         .HasColumnType("integer");
@@ -2552,8 +2552,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SubClassCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<Guid>("TfImprovementId")
                         .HasColumnType("uuid");
@@ -5769,6 +5769,344 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("Exemptions", (string)null);
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CapRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CapRateSetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("CapitalizationRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("IncomePropertyClass")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CapRateSetId");
+
+                    b.ToTable("CapRates");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CapRateSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EffectiveYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProvenanceAuthor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RevalCycle")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CapRateSets");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CostFactor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CostFactorSetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImprovementClassCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("SizeBandMaxSqFt")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SizeBandMinSqFt")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitCostPerSqFt")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostFactorSetId");
+
+                    b.ToTable("CostFactors");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CostFactorSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EffectiveYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProvenanceAuthor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RevalCycle")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CostFactorSets");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.DepreciationFactor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AgeMaxYears")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AgeMinYears")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("DepreciationFraction")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("DepreciationScheduleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepreciationScheduleId");
+
+                    b.ToTable("DepreciationFactors");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.DepreciationSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EffectiveYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProvenanceAuthor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RevalCycle")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DepreciationSchedules");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.LandRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("CurrentUseUnitValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("LandScheduleSetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("MarketUnitValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Neighborhood")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LandScheduleSetId");
+
+                    b.ToTable("LandRates");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.LandScheduleSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EffectiveYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProvenanceAuthor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RevalCycle")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LandScheduleSets");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.ParcelValuation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BreakdownJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CalibrationStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EngineVersion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Explanation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Found")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("IndicatedValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PropertyType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TfParcelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ParcelValuations");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.GPTConfiguration", b =>
                 {
                     b.Property<int>("Id")
@@ -6745,8 +7083,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("IAttrValCd")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<long>("IAttrValId")
                         .HasColumnType("bigint");
@@ -7414,8 +7752,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("IAttrValCd")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<long>("IAttrValId")
                         .HasColumnType("bigint");
@@ -7790,8 +8128,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)
@@ -17061,8 +17399,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("RoutedToIAttrValCd")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RoutedToUniverse")
                         .HasMaxLength(50)
@@ -18056,6 +18394,42 @@ namespace TerraFusion.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("County");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CapRate", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Forge.CapRateSet", null)
+                        .WithMany("Rates")
+                        .HasForeignKey("CapRateSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CostFactor", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Forge.CostFactorSet", null)
+                        .WithMany("Factors")
+                        .HasForeignKey("CostFactorSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.DepreciationFactor", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Forge.DepreciationSchedule", null)
+                        .WithMany("Factors")
+                        .HasForeignKey("DepreciationScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.LandRate", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Forge.LandScheduleSet", null)
+                        .WithMany("Rates")
+                        .HasForeignKey("LandScheduleSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.GPTConversation", b =>
@@ -19220,6 +19594,26 @@ namespace TerraFusion.Data.Migrations
             modelBuilder.Entity("TerraFusion.Core.Entities.DossierPacket", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CapRateSet", b =>
+                {
+                    b.Navigation("Rates");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.CostFactorSet", b =>
+                {
+                    b.Navigation("Factors");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.DepreciationSchedule", b =>
+                {
+                    b.Navigation("Factors");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Forge.LandScheduleSet", b =>
+                {
+                    b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.MatrixVersion", b =>

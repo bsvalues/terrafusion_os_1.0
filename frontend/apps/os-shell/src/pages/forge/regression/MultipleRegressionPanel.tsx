@@ -28,6 +28,16 @@ export function MultipleRegressionPanel({ result, isLoading }: MultipleRegressio
     );
   }
 
+  if (result.unavailableReason) {
+    return (
+      <div className="rounded-lg border border-border/30 p-8 text-center">
+        <p className="text-muted-foreground">
+          {result.unavailableReason}
+        </p>
+      </div>
+    );
+  }
+
   const { coefficients, modelStats } = result;
 
   return (

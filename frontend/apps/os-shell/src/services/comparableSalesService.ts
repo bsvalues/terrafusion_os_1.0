@@ -52,8 +52,8 @@ export interface SubjectProperty {
   yearBuilt: number;
   bedrooms: number;
   bathrooms: number;
-  condition: string;
-  qualityGrade: string;
+  condition: string | null;
+  qualityGrade: string | null;
   propertyType: string;
   assessedValue: number;
 }
@@ -124,6 +124,17 @@ interface LaunchSaleRecord {
   neighborhoodCode: string | null;
   currentNeighborhoodCode: string | null;
   reviewStatus: string | null;
+  grossLivingArea?: number | string | null;
+  buildingSquareFeet?: number | string | null;
+  gla?: number | string | null;
+  lotSizeSqft?: number | string | null;
+  yearBuilt?: number | string | null;
+  bedrooms?: number | string | null;
+  bathrooms?: number | string | null;
+  condition?: string | null;
+  propertyCondition?: string | null;
+  qualityGrade?: string | null;
+  quality?: string | null;
   flags: {
     needsReview: boolean;
   };
@@ -249,7 +260,23 @@ function numberOrNull(value: number | string | null | undefined): number | null 
   return null;
 }
 
+function firstNumberOrNull(values: Array<number | string | null | undefined>): number | null {
+  for (const value of values) {
+    const parsed = numberOrNull(value);
+    if (parsed != null) return parsed;
+  }
+  return null;
+}
+
+function firstStringOrNull(values: Array<string | null | undefined>): string | null {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim();
+  }
+  return null;
+}
+
 function toComparableSale(record: LaunchSaleRecord): ComparableSale {
+  const acres = numberOrNull(record.acres);
   return {
     parcelId: record.parcelNumber ?? '',
     saleDate: record.saleDate ?? '',
@@ -261,18 +288,26 @@ function toComparableSale(record: LaunchSaleRecord): ComparableSale {
     city: record.situsCity,
     neighborhoodCode: record.neighborhoodCode,
     currentNeighborhoodCode: record.currentNeighborhoodCode,
-    grossLivingArea: null,
-    lotSizeSqft: (() => {
-      const acres = numberOrNull(record.acres);
-      return acres != null && acres > 0 ? Math.round(acres * 43560) : null;
-    })(),
-    yearBuilt: null,
-    bedrooms: null,
-    bathrooms: null,
-    condition: null,
-    qualityGrade: null,
+    grossLivingArea: firstNumberOrNull([
+      record.grossLivingArea,
+      record.buildingSquareFeet,
+      record.gla,
+    ]),
+    lotSizeSqft:
+      firstNumberOrNull([record.lotSizeSqft]) ??
+      (acres != null && acres > 0 ? Math.round(acres * 43560) : null),
+    yearBuilt: firstNumberOrNull([record.yearBuilt]),
+    bedrooms: firstNumberOrNull([record.bedrooms]),
+    bathrooms: firstNumberOrNull([record.bathrooms]),
+    condition: firstStringOrNull([record.condition, record.propertyCondition]),
+    qualityGrade: firstStringOrNull([record.qualityGrade, record.quality]),
     saleQualification: record.flags.needsReview ? 'review_required' : record.reviewStatus,
   };
+}
+
+export function clearComparableSalesCacheForTests(): void {
+  if (import.meta.env.MODE !== 'test') return;
+  countyShardCache.clear();
 }
 
 export async function loadCountyComps(countyCode: string): Promise<ComparableSale[]> {

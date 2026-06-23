@@ -12,6 +12,16 @@ import {
   emitToolSucceeded,
   emitToolFailed,
 } from '@/services/terraTrace';
+import { getToken } from '../auth/authStorage';
+
+function buildJsonAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 // ---------------------------------------------------------------------------
 // Request / Response types — Explain
@@ -69,7 +79,7 @@ export async function explain(req: ExplainRequest): Promise<ExplainResponse> {
   try {
     const res = await fetch('/api/pilot/explain', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildJsonAuthHeaders(),
       body: JSON.stringify(req),
     });
 
@@ -174,7 +184,7 @@ export async function createDraft(req: CreateDraftRequest): Promise<DraftRespons
   try {
     const res = await fetch('/api/pilot/drafts', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildJsonAuthHeaders(),
       body: JSON.stringify(req),
     });
     if (!res.ok) {
@@ -230,7 +240,7 @@ export async function approveDraft(draftId: string, req: ApproveDraftRequest): P
   try {
     const res = await fetch(`/api/pilot/drafts/${draftId}/approve`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildJsonAuthHeaders(),
       body: JSON.stringify(req),
     });
     if (!res.ok) {
@@ -286,7 +296,7 @@ export async function rejectDraft(draftId: string, req: RejectDraftRequest): Pro
   try {
     const res = await fetch(`/api/pilot/drafts/${draftId}/reject`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildJsonAuthHeaders(),
       body: JSON.stringify(req),
     });
     if (!res.ok) {

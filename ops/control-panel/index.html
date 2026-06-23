@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TerraFusion Operations Control Panel</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f9fb;
+      --panel: #ffffff;
+      --ink: #16202a;
+      --muted: #5b6876;
+      --line: #d9e1ea;
+      --green: #1b7f45;
+      --yellow: #a66b00;
+      --red: #b42318;
+      --paused: #667085;
+      --blue: #1d5f99;
+      --blue-dark: #153f66;
+      --soft-blue: #e9f3fb;
+      --soft-green: #eaf7ef;
+      --soft-yellow: #fff4db;
+      --soft-red: #fdecec;
+      --soft-gray: #eef1f4;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      background: #102334;
+      color: #fff;
+      padding: 24px clamp(18px, 4vw, 44px);
+      border-bottom: 4px solid #3a8bc2;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      max-width: 860px;
+      color: #d6e5f1;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .authority {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .metric {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      padding: 12px;
+      border-radius: 6px;
+      min-height: 78px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .metric span {
+      display: block;
+      color: #b8ccdc;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    main {
+      padding: 22px clamp(18px, 4vw, 44px) 42px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: inline-flex;
+      padding: 3px;
+      background: var(--soft-gray);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      gap: 3px;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 5px;
+      padding: 9px 12px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(16, 35, 52, 0.12);
+    }
+
+    .summary {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(16, 35, 52, 0.05);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .green {
+      color: var(--green);
+      background: var(--soft-green);
+    }
+
+    .yellow {
+      color: var(--yellow);
+      background: var(--soft-yellow);
+    }
+
+    .red {
+      color: var(--red);
+      background: var(--soft-red);
+    }
+
+    .paused,
+    .unknown {
+      color: var(--paused);
+      background: var(--soft-gray);
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 8px 10px;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    dt {
+      color: var(--muted);
+    }
+
+    dd {
+      margin: 0;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .action {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+      border-radius: 6px;
+      padding: 9px 11px;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .action.secondary {
+      background: #fff;
+      color: var(--blue-dark);
+    }
+
+    .panel {
+      margin-top: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .panel h2 {
+      margin-bottom: 12px;
+    }
+
+    .prompt-box {
+      width: 100%;
+      min-height: 210px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--ink);
+      background: #fbfcfd;
+    }
+
+    .copy-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+      .authority,
+      .grid {
+        grid-template-columns: repeat(2, minmax(240px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .authority,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      dl {
+        grid-template-columns: 1fr;
+      }
+
+      dt {
+        font-weight: 700;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topline">
+      <h1>TerraFusion Operations Control Panel</h1>
+      <span class="badge paused">Seed</span>
+    </div>
+    <p class="subtitle">Read-only operator console for turning automation findings into governed Work Orders, evidence packets, and human decisions.</p>
+    <section class="authority" aria-label="Authority boundaries">
+      <div class="metric"><span>Mode</span><strong>Prompt-launch only</strong></div>
+      <div class="metric"><span>Workspace</span><strong>${TERRAFUSION_WORKSPACE}</strong></div>
+      <div class="metric"><span>Mutation</span><strong>Separate approval required</strong></div>
+      <div class="metric"><span>Work Order</span><strong>WO-OPS-CP-001</strong></div>
+    </section>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div class="tabs" aria-label="Lane filters">
+        <button class="tab active" data-filter="all">All</button>
+        <button class="tab" data-filter="paused">Paused</button>
+        <button class="tab" data-filter="attention">Attention</button>
+      </div>
+      <div class="summary">Six monitors are paused for review. Operator launch actions produce prompts, not autonomous runs.</div>
+    </div>
+
+    <section class="grid" id="laneGrid" aria-label="Operations lanes"></section>
+
+    <section class="panel" aria-label="Launch prompt">
+      <h2>Launch Prompt</h2>
+      <textarea id="promptBox" class="prompt-box" readonly>Select a lane action to prepare a governed prompt.</textarea>
+      <div class="copy-row">
+        <button class="action" id="copyPrompt">Copy Prompt</button>
+        <span class="notice" id="copyStatus">No prompt selected.</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const WORKSPACE = "${TERRAFUSION_WORKSPACE}";
+    const SIDECAR_REFERENCE = "${TERRAFUSION_PLATFORM_SIDECAR_PATH}";
+    const sharedPromptRules = [
+      "Read and follow AGENTS.md before acting.",
+      "Respect PATH_CANON_REGISTER.md and CANON_INDEX.md when present.",
+      "Do not edit files unless this prompt explicitly authorizes mutation.",
+      "Do not stage files.",
+      "Do not commit.",
+      "Do not open pull requests.",
+      "Do not change canon or queue truth unless the Work Order explicitly authorizes it.",
+      "Report findings, blockers, validation steps, and next safe action."
+    ].join(" ");
+
+    const lanes = [
+      {
+        id: "daily-pulse",
+        title: "Daily Pulse",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "Awaiting first operator-approved run.",
+        blocker: "Automation paused.",
+        next: "Activate after review if useful.",
+        actions: ["mark-reviewed", "open-codex-prompt"]
+      },
+      {
+        id: "open-work-orders",
+        title: "Open Work Orders",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "WO/TODO tracker is defined but paused.",
+        blocker: "No report baseline yet.",
+        next: "Run after Daily Pulse signal is accepted.",
+        actions: ["draft-work-order", "defer"]
+      },
+      {
+        id: "blockers",
+        title: "Blockers",
+        status: "unknown",
+        lastRun: "Derived lane",
+        topFinding: "No blocker report has been ingested.",
+        blocker: "Needs source report.",
+        next: "Escalate only after a monitor identifies a decision.",
+        actions: ["escalate-human-decision", "create-evidence-packet"]
+      },
+      {
+        id: "gap-risk-register",
+        title: "Gap / Risk Register",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "Weekly gap register is defined but paused.",
+        blocker: "No evidence baseline yet.",
+        next: "Use after Daily Pulse and tracker establish cadence.",
+        actions: ["create-evidence-packet", "draft-work-order"]
+      },
+      {
+        id: "governance-drift",
+        title: "Governance Drift",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "Canon/path authority monitor is defined but paused.",
+        blocker: "No drift report baseline yet.",
+        next: "Run read-only recon before any doc cleanup WO.",
+        actions: ["run-read-only-recon", "prepare-canon-cleanup"]
+      },
+      {
+        id: "ai-sidecar",
+        title: "AI Sidecar",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "Sidecar monitor is defined but paused.",
+        blocker: "Constitution is not ratified into canon yet.",
+        next: "Draft ratification WO after monitor report.",
+        actions: ["prepare-ai-sidecar-ratification", "create-evidence-packet"]
+      },
+      {
+        id: "ci-azure-health",
+        title: "CI / Azure Health",
+        status: "paused",
+        lastRun: "Not active",
+        topFinding: "Pipeline health monitor is defined but paused.",
+        blocker: "No activation report baseline yet.",
+        next: "Prepare PR plan only after repo-side evidence review.",
+        actions: ["prepare-pr-plan", "run-read-only-recon"]
+      },
+      {
+        id: "human-decisions",
+        title: "Human Decisions Needed",
+        status: "unknown",
+        lastRun: "Derived lane",
+        topFinding: "No decision queue has been compiled.",
+        blocker: "Needs findings from active monitors.",
+        next: "Create a decision memo from the selected blocker.",
+        actions: ["escalate-human-decision", "defer"]
+      },
+      {
+        id: "prepare-next-work-order",
+        title: "Prepare Next Work Order",
+        status: "unknown",
+        lastRun: "Operator-driven",
+        topFinding: "Next WO depends on monitor findings.",
+        blocker: "Human selection required.",
+        next: "Choose the smallest governed action.",
+        actions: ["draft-work-order", "open-codex-prompt"]
+      }
+    ];
+
+    const prompts = {
+      "draft-work-order": `Workspace: ${WORKSPACE}\n\nDraft a governed TerraFusion Work Order from the latest provided automation report. Read AGENTS.md, CANON_INDEX.md, PATH_CANON_REGISTER.md, and any lane-specific authority files before drafting. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output only: RESULT, PROPOSED_WORK_ORDER, AUTHORITY_REFERENCES, SCOPE, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`,
+      "run-read-only-recon": `Workspace: ${WORKSPACE}\n\nRun read-only reconnaissance for the selected TerraFusion lane. Inspect only the paths named by the operator or by the relevant automation report. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Produce: RESULT, WORKSPACES_CHECKED, FILES_INSPECTED, FINDINGS, AUTHORITY_CONFLICTS, BLOCKERS, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
+      "open-codex-prompt": `Workspace: ${WORKSPACE}\n\nUse the selected lane report as context and propose the smallest governed next action. ${sharedPromptRules} Do not modify automation wiring. Do not promote anything into canon. Return a Codex-ready prompt with: objective, allowed paths, forbidden actions, validation gates, expected report sections, and human approval points.`,
+      "create-evidence-packet": `Workspace: ${WORKSPACE}\n\nPrepare an evidence packet outline for the selected finding. Read relevant authority documents first. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, EVIDENCE_SOURCES, BEFORE_STATE, CLAIMS_TO_VERIFY, VALIDATION_COMMANDS, EXPECTED_PROOF, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
+      "prepare-pr-plan": `Workspace: ${WORKSPACE}\n\nPrepare a PR plan for the selected Work Order without editing files. Identify exact allowed paths, forbidden paths, required gates, rollback class, evidence outputs, and review risks. Do not stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, PR_SCOPE, FILES_ALLOWED, FILES_FORBIDDEN, VALIDATION_GATES, ROLLBACK_PLAN, BLOCKERS, HUMAN_DECISIONS_REQUIRED, NEXT_SAFE_ACTION.`,
+      "mark-reviewed": "Operator action only. Record outside this seed panel that the report was reviewed. No agent execution is required.",
+      "defer": "Operator action only. Defer the finding with a reason and revisit date. No repo mutation is authorized by this control panel seed.",
+      "escalate-human-decision": `Workspace: ${WORKSPACE}\n\nSummarize the selected blocker as a human decision memo. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, DECISION_REQUIRED, CONTEXT, OPTIONS, RISKS, RECOMMENDATION, CONSEQUENCE_OF_NO_DECISION, NEXT_SAFE_ACTION.`,
+      "prepare-ai-sidecar-ratification": `Workspace: ${WORKSPACE}\nReference path if present: ${SIDECAR_REFERENCE}\n\nDraft WO-AI-SIDECAR-001 - Ratify AI Improvement Sidecar Constitution. Mode: docs/control only. Authority: human approved. Mutation: only after explicit approval in a separate execution step. Inspect the sidecar constitution, queue template, eval/trace pipeline design, README, and operator HTML where present. Do not edit files, stage files, commit, open PRs, promote canon, update queues, modify automation wiring, or mutate runtime behavior. Output: RESULT, ARTIFACT_INVENTORY, CANONICAL_LOCATION_RECOMMENDATION, DRIFT_FINDINGS, RATIFICATION_SCOPE, EXCLUSIONS, VALIDATION_PLAN, PROPOSED_WORK_ORDER, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`,
+      "prepare-canon-cleanup": `Workspace: ${WORKSPACE}\n\nDraft WO-CANON-001 - Document Authority Cleanup. Mode: scoped doc banners/index only. Mutation requires worktree plus PR after explicit approval. Inspect authority stack files and identify stale or conflicting documents. Do not edit files, stage files, commit, open PRs, change canon, change queue truth, or mutate runtime behavior. Output: RESULT, AUTHORITY_STACK_STATUS, PATH_CANON_STATUS, CONFLICTS, PROPOSED_DOC_FIXES, EXCLUSIONS, VALIDATION_PLAN, HUMAN_DECISIONS_REQUIRED, BLOCKERS, NEXT_SAFE_ACTION.`
+    };
+
+    const labels = {
+      "draft-work-order": "Draft Work Order",
+      "run-read-only-recon": "Run Read-Only Recon",
+      "open-codex-prompt": "Open Codex Prompt",
+      "create-evidence-packet": "Create Evidence Packet",
+      "prepare-pr-plan": "Prepare PR Plan",
+      "mark-reviewed": "Mark Reviewed",
+      "defer": "Defer",
+      "escalate-human-decision": "Escalate to Human Decision",
+      "prepare-ai-sidecar-ratification": "Prepare AI Sidecar Ratification",
+      "prepare-canon-cleanup": "Prepare Canon Cleanup Plan"
+    };
+
+    const grid = document.getElementById("laneGrid");
+    const promptBox = document.getElementById("promptBox");
+    const copyStatus = document.getElementById("copyStatus");
+
+    function render(filter) {
+      grid.innerHTML = "";
+      lanes
+        .filter((lane) => {
+          if (filter === "paused") return lane.status === "paused";
+          if (filter === "attention") return lane.status === "yellow" || lane.status === "red" || lane.status === "unknown";
+          return true;
+        })
+        .forEach((lane) => {
+          const card = document.createElement("article");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="card-head">
+              <h2>${lane.title}</h2>
+              <span class="badge ${lane.status}">${lane.status.toUpperCase()}</span>
+            </div>
+            <dl>
+              <dt>Last Run</dt><dd>${lane.lastRun}</dd>
+              <dt>Top Finding</dt><dd>${lane.topFinding}</dd>
+              <dt>Blocker</dt><dd>${lane.blocker}</dd>
+              <dt>Next Action</dt><dd>${lane.next}</dd>
+            </dl>
+            <div class="actions">
+              ${lane.actions.map((action, index) => `<button class="action ${index ? "secondary" : ""}" data-action="${action}" data-lane="${lane.title}">${labels[action]}</button>`).join("")}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+    }
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        render(tab.dataset.filter);
+      });
+    });
+
+    grid.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const prompt = prompts[button.dataset.action] || "";
+      promptBox.value = `Lane: ${button.dataset.lane}\nAction: ${labels[button.dataset.action]}\n\n${prompt}`;
+      copyStatus.textContent = "Prompt prepared.";
+    });
+
+    document.getElementById("copyPrompt").addEventListener("click", async () => {
+      if (!promptBox.value || promptBox.value === "Select a lane action to prepare a governed prompt.") {
+        copyStatus.textContent = "No prompt selected.";
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(promptBox.value);
+        copyStatus.textContent = "Prompt copied.";
+      } catch {
+        promptBox.select();
+        copyStatus.textContent = "Prompt selected for manual copy.";
+      }
+    });
+
+    render("all");
+  </script>
+</body>
+</html>

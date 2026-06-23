@@ -1,0 +1,126 @@
+{
+  "version": "0.1.0",
+  "paths": [
+    {
+      "pattern": "frontend/apps/os-shell/src/shell/**",
+      "owner": "os-shell",
+      "risk": "high",
+      "requiredGates": [
+        "frontend:typecheck",
+        "shell:launch-surface-contract"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "frontend/apps/os-shell/src/orchestration/**",
+      "owner": "os-shell",
+      "risk": "critical",
+      "requiredGates": [
+        "frontend:typecheck",
+        "shell:launch-surface-contract"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "frontend/apps/os-shell/src/modules/os-canon/**",
+      "owner": "os-canon",
+      "risk": "medium",
+      "requiredGates": [
+        "frontend:typecheck",
+        "canon:runtime"
+      ],
+      "manualReview": false
+    },
+    {
+      "pattern": "os-platform/canon/**",
+      "owner": "canon-runtime",
+      "risk": "critical",
+      "requiredGates": [
+        "canon:runtime",
+        "canon:write-lane",
+        "trace:evidence-bundle"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "os-platform/agents/**",
+      "owner": "agent-runtime",
+      "risk": "high",
+      "requiredGates": [
+        "agent:state-machine",
+        "security:command-policy"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "os-platform/gates/**",
+      "owner": "gate-runtime",
+      "risk": "high",
+      "requiredGates": [
+        "gates:self-test",
+        "trace:evidence-bundle"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "os-platform/trace/**",
+      "owner": "trace-runtime",
+      "risk": "critical",
+      "requiredGates": [
+        "trace:evidence-bundle",
+        "security:redaction"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "backend/src/**/Forge/**",
+      "owner": "terraforge",
+      "risk": "high",
+      "requiredGates": [
+        "backend:build",
+        "canon:write-lane"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "backend/src/**/Dais/**",
+      "owner": "terradais",
+      "risk": "high",
+      "requiredGates": [
+        "backend:build",
+        "canon:write-lane"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "backend/src/**/Dossier/**",
+      "owner": "terradossier",
+      "risk": "high",
+      "requiredGates": [
+        "backend:build",
+        "canon:write-lane"
+      ],
+      "manualReview": true
+    },
+    {
+      "pattern": "ARCHIVE/**",
+      "owner": "protected",
+      "risk": "critical",
+      "requiredGates": [
+        "security:protected-path"
+      ],
+      "manualReview": true,
+      "defaultAction": "block"
+    },
+    {
+      "pattern": "specialized/**",
+      "owner": "protected",
+      "risk": "critical",
+      "requiredGates": [
+        "security:protected-path"
+      ],
+      "manualReview": true,
+      "defaultAction": "block"
+    }
+  ]
+}

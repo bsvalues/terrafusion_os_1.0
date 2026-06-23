@@ -248,14 +248,10 @@ public class AtlasGisController : ControllerBase
     [HttpGet("parcels/{parcelId}/boundary")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelBoundary(string parcelId, CancellationToken ct)
     {
         _logger.LogInformation("Atlas parcel boundary: {ParcelId}", parcelId);
         var result = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
-
-        if (result.Source == "unavailable")
-            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
 
         return Ok(result);
     }
@@ -284,15 +280,11 @@ public class AtlasGisController : ControllerBase
     [HttpGet("parcels/{parcelId}")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcel(string parcelId, CancellationToken ct)
     {
         _logger.LogInformation("Atlas parcel combined: {ParcelId}", parcelId);
         // Both methods share the same underlying query — no extra DB hit
         var boundary = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
-
-        if (boundary.Source == "unavailable")
-            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
 
         var layers = await _gisData.GetParcelLayersAsync(parcelId, ct);
         return Ok(new { boundary, layers });

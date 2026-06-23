@@ -2,8 +2,8 @@
   /* Derive all forge-local vars from canonical TF tokens (terrafusion-tokens.css) */
   --forge-bg: hsl(var(--tf-bg));
   --forge-stage: hsl(var(--tf-bg));
-  --forge-panel: hsl(var(--tf-surface));
-  --forge-panel-hover: hsl(var(--tf-surface) / 0.85);
+  --forge-panel: hsl(var(--tf-surface) / 0.96);
+  --forge-panel-hover: hsl(var(--tf-surface) / 0.9);
   --forge-border: hsl(var(--tf-border));
   --forge-border-strong: hsl(var(--tf-border));
   --forge-text: hsl(var(--tf-text));
@@ -12,7 +12,7 @@
   --forge-info: hsl(var(--tf-suite-forge));
   --forge-success: hsl(var(--tf-success-hs) var(--tf-l-50));
   --forge-warn: hsl(var(--tf-warning-amber));
-  --forge-shadow: 0 8px 24px hsl(var(--tf-text) / 0.06);
+  --forge-shadow: 0 12px 34px hsl(var(--tf-text) / 0.05);
   min-height: 100%;
   background: hsl(var(--tf-bg));
   color: var(--forge-text);
@@ -30,7 +30,7 @@
   width: 100%;
   max-width: 1480px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px 24px 112px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -49,7 +49,7 @@
 .forge-panel__eyebrow {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--forge-subtle);
 }
@@ -57,8 +57,8 @@
 .forge-workspace__title {
   margin-top: 6px;
   font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 760;
+  letter-spacing: 0;
   line-height: 1;
 }
 
@@ -78,7 +78,7 @@
 
 .forge-workspace__notice {
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1px solid var(--forge-border-strong);
   background: hsla(210, 20%, 98%, 0.03);
   font-size: 12px;
@@ -118,16 +118,16 @@
 .forge-kpi-cell__label {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--forge-subtle);
 }
 
 .forge-kpi-cell__value {
   margin-top: 8px;
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: 28px;
+  font-weight: 760;
+  letter-spacing: 0;
   line-height: 1;
   color: var(--forge-text);
 }
@@ -136,12 +136,10 @@
   color: var(--forge-text);
 }
 
-/* Pending count — neon-amber status signal */
 .forge-kpi-cell__value--warn {
   color: var(--forge-warn);
 }
 
-/* Completion % — neon-lime success signal */
 .forge-kpi-cell__value--success {
   color: var(--forge-success);
 }
@@ -162,7 +160,7 @@
   margin-top: 6px;
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .forge-primary-grid {
@@ -219,7 +217,7 @@
   margin-top: 16px;
   font-size: 17px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .forge-card__description {
@@ -233,7 +231,7 @@
   margin-top: 16px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--forge-subtle);
 }
@@ -268,7 +266,7 @@
 .forge-ops-card__title {
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   color: var(--forge-text);
 }
 
@@ -295,7 +293,7 @@
   padding: 7px 12px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
   transition: opacity 120ms, background 120ms, border-color 120ms;
@@ -348,7 +346,7 @@
   display: block;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--forge-subtle);
 }
@@ -414,15 +412,14 @@
   border-radius: 999px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-/* Functional category signal — neon-cyan per Layer 4 spec */
 .forge-chip--neutral {
-  border: 1px solid hsla(190, 100%, 60%, 0.20);
-  background: hsla(190, 100%, 60%, 0.09);
-  color: hsl(var(--tf-info-hs) var(--tf-l-60));
+  border: 1px solid hsla(190, 70%, 60%, 0.18);
+  background: hsla(190, 60%, 55%, 0.07);
+  color: hsl(var(--tf-info-hs) var(--tf-l-65));
 }
 
 .forge-chip--warn {
@@ -508,7 +505,7 @@
 
 @media (max-width: 720px) {
   .forge-workspace__stage {
-    padding: 16px;
+    padding: 16px 16px 104px;
   }
 
   .forge-ops-grid,

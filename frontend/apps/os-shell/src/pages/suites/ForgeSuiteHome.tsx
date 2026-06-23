@@ -2,6 +2,7 @@
  * TerraFusion OS — TerraForge Suite Home
  *
  * TerraForge launcher posture is governed by the current Suite layer contract:
+ * Temporary shells outside County Studio remain bounded launch surfaces.
  * County Studio is the countywide workbench; Atlas is its embedded/pop-out
  * spatial surface; GeoForge remains internal compatibility infrastructure.
  *
@@ -16,10 +17,10 @@
  *
  * Verified layout (matches screenshot from 2026-04-09):
  *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
- *               CompsForge (sales comparison, standalone React module)
- *               IncomeForge (income approach, queued)
+ *               CompsForge (parcel-scoped sales comparison in Property Workbench)
+ *               IncomeForge (income approach, live)
  *   SPECIALIST: Batch Cost Runs (batch execution)
- *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ *               Regression Studio / TerraGAMA / Coefficient Preview live
  *   DEFAULT ANALYTICS: County Studio (study-anchored Operational Health +
  *                      Statistics Compat + VEI exploration)
  */
@@ -46,6 +47,7 @@ interface ForgeModuleDef {
   chipLabel?: string;
   truthState?: TruthState;
   workbenchTab?: WorkbenchTabSlug;
+  workbenchSubTab?: string;
   moduleId?: string;
 }
 
@@ -103,10 +105,11 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'comps-forge',
     label: 'CompsForge',
     description:
-      'County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends',
+      'Parcel-scoped sales comparison — comp quality, adjustment defensibility, and review-ready reconciliation',
     priority: 'primary',
-    launchMode: 'standalone',
-    moduleId: 'comps-forge',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+    workbenchSubTab: 'sales',
     chipLabel: 'Sales comparison',
   },
   {
@@ -117,7 +120,6 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'primary',
     launchMode: 'standalone',
     moduleId: 'income-forge',
-    truthState: 'queued',
     chipLabel: 'Income approach',
   },
   {
@@ -129,6 +131,16 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     launchMode: 'standalone',
     moduleId: 'sales-forge',
     chipLabel: 'Sale qualification',
+  },
+  {
+    id: 'cuforge',
+    label: 'CUForge',
+    description:
+      'Current Use Program — DFL/CUFA/CUOS/CUTL enrollment, RCW 84.34.108 rollback calculator, DOR interest rates, and removal proceedings',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'cuforge',
+    chipLabel: 'Current use',
   },
 ] as const;
 
@@ -149,8 +161,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live regression',
   },
   {
     id: 'terra-gama',
@@ -159,8 +170,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live spatial',
   },
   {
     id: 'coefficient-preview',
@@ -169,8 +179,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'coefficient-preview',
-    truthState: 'queued',
-    chipLabel: 'Planned scene',
+    chipLabel: 'Live preview',
   },
 ] as const;
 
@@ -233,7 +242,12 @@ export default function ForgeSuiteHome() {
       const parcelId = activeParcel?.parcelId;
       void activateModule('property-workbench', {
         source: 'system',
-        metadata: { tab: mod.workbenchTab, ...(parcelId ? { parcelId } : {}) },
+        metadata: {
+          tab: mod.workbenchTab,
+          tabId: mod.workbenchTab,
+          ...(mod.workbenchSubTab ? { subTab: mod.workbenchSubTab } : {}),
+          ...(parcelId ? { parcelId } : {}),
+        },
       });
       return;
     }
@@ -349,9 +363,9 @@ export default function ForgeSuiteHome() {
         <div className="forge-workspace__stage">
           <header className="forge-workspace__header">
             <div>
-              <p className="forge-workspace__eyebrow">Suite-Forge · County-Wide Workspace</p>
+              <p className="forge-workspace__eyebrow">TerraForge · County valuation workspace</p>
               <h1 className="forge-workspace__title">TerraForge</h1>
-              <p className="forge-workspace__subtitle">Property Valuation &amp; Cost Analysis Engine</p>
+              <p className="forge-workspace__subtitle">County valuation operations, model review, and evidence-ready assessment workflows.</p>
             </div>
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
@@ -390,7 +404,7 @@ export default function ForgeSuiteHome() {
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">County Calibration Desk</p>
-                <h2 className="forge-panel__title">Chief appraiser command posture</h2>
+                <h2 className="forge-panel__title">County calibration posture</h2>
               </div>
             </div>
 
@@ -399,7 +413,7 @@ export default function ForgeSuiteHome() {
                 <div className="forge-ops-card__head">
                   <div>
                     <div className="forge-ops-card__title">Morning Brief</div>
-                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for Benton County.</div>
+                    <div className="forge-ops-card__sub">Ranked findings and recommended next action for Benton County valuation review.</div>
                   </div>
                   <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
                     {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}
@@ -479,7 +493,7 @@ export default function ForgeSuiteHome() {
                 <div className="forge-ops-card__head">
                   <div>
                     <div className="forge-ops-card__title">Board Memo Packet</div>
-                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and jump directly into the live Forge applications.</div>
+                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and open the supporting Forge applications.</div>
                   </div>
                   <div className="forge-ops-actions">
                     <button type="button" className="forge-ops-btn" onClick={handleDraftBoardMemo} disabled={memoState.status === 'loading'}>
@@ -554,8 +568,8 @@ export default function ForgeSuiteHome() {
           <section className="forge-panel" data-testid="forge-secondary-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist &amp; Legacy Tools</p>
-                <h2 className="forge-panel__title">Temporary shells outside County Studio</h2>
+                <p className="forge-panel__eyebrow">Specialist Valuation Tools</p>
+                <h2 className="forge-panel__title">Focused model review and batch operations</h2>
               </div>
             </div>
             <div className="forge-primary-grid">

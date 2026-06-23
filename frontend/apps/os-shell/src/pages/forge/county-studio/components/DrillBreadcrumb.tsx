@@ -1,10 +1,8 @@
 // frontend/apps/os-shell/src/pages/forge/county-studio/components/DrillBreadcrumb.tsx
 //
-// County → City → Neighborhood → Segment breadcrumb. Each crumb is a
-// button that collapses the drill back to that level when clicked. The
-// final segment crumb (if any) is driven by selectedSegmentId — when set,
-// shows the segment name but is non-clickable (clicking it would be a no-op
-// because we're already at the leaf).
+// County -> Risk Surface -> Parcel Evidence breadcrumb. Legacy city crumbs
+// can still appear when old city rollup routes call drillToCity, but the
+// primary Benton command path keeps city out of the analytical hierarchy.
 
 import React from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
@@ -69,6 +67,18 @@ export function DrillBreadcrumb() {
           >
             {selectedCity}
           </button>
+        </>
+      )}
+
+      {selectedNeighborhood && !selectedCity && (
+        <>
+          <Separator />
+          <span
+            data-testid="crumb-risk-surface"
+            style={crumbStyle(false, false)}
+          >
+            Risk Surface
+          </span>
         </>
       )}
 

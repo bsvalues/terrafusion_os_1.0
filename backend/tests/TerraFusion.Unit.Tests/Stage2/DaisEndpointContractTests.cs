@@ -468,6 +468,22 @@ public sealed class DaisEndpointContractTests
     }
 
     [Fact]
+    public async Task GetAllQueueItems_WhenQueueTableExistsAndNoRows_ReturnsOkEmptyList()
+    {
+        await using var db = CreateDbContext(nameof(GetAllQueueItems_WhenQueueTableExistsAndNoRows_ReturnsOkEmptyList));
+        await SeedCounty(db, BentonCountyId);
+
+        var realQueueSvc = new QueueService(db, NullLogger<QueueService>.Instance);
+        var controller = CreateDaisController(db, queueSvc: realQueueSvc);
+
+        var result = await controller.GetAllQueueItems(status: null, assignedTo: null, taskType: null);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        var items = ok.Value.Should().BeAssignableTo<IEnumerable<QueueItem>>().Subject;
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GetCertificationStatus_WhenNoRowsExist_PersistsCanonicalSteps()
     {
         await using var db = CreateDbContext(nameof(GetCertificationStatus_WhenNoRowsExist_PersistsCanonicalSteps));

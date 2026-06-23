@@ -1,8 +1,8 @@
-using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.API.Security;
+using TerraFusion.API.Security.Services;
 using Xunit;
 
 using CoreAuth = TerraFusion.Core.Services;
@@ -23,18 +23,12 @@ public sealed class InMemorySecurityServiceFailClosedTests
 {
     private static CoreAuth.ISecurityService BuildSut()
     {
-        // The concrete InMemorySecurityService is internal; resolve via DI.
         var services = new ServiceCollection();
         services.AddLogging();
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["JwtSettings:SecretKey"] = "test-failclosed-key-at-least-32-chars-long-for-hmac-sha256",
-                ["JwtSettings:Issuer"] = "TerraFusion.Test",
-                ["JwtSettings:Audience"] = "TerraFusion.Test",
-            })
-            .Build();
+        var config = CreateConfig();
+        services.AddSingleton<IConfiguration>(config);
         services.AddTerraFusionAuthentication(config);
+
         var provider = services.BuildServiceProvider();
         return provider.GetRequiredService<CoreAuth.ISecurityService>();
     }
@@ -85,24 +79,32 @@ public sealed class InMemorySecurityServiceFailClosedTests
     }
 
     [Fact]
-    public void InMemorySecurityService_IsRegisteredAsFallback()
+    public async Task AddTerraFusionAuthentication_WithoutDbContext_ResolvesFailClosedFallback()
     {
-        // Cross-check the registration is still TryAddSingleton (fallback,
-        // not unconditional). This is the contract that lets a real
-        // ISecurityService implementation replace it later without code edits.
         var services = new ServiceCollection();
         services.AddLogging();
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["JwtSettings:SecretKey"] = "test-fallback-registration-key-32-chars-long-hmac-sha256-padding",
-            })
-            .Build();
+        var config = CreateConfig();
+        services.AddSingleton<IConfiguration>(config);
         services.AddTerraFusionAuthentication(config);
 
-        var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(CoreAuth.ISecurityService));
-        descriptor.Should().NotBeNull("ISecurityService must be registered");
-        // ServiceLifetime.Singleton is what TryAddSingleton uses.
-        descriptor!.Lifetime.Should().Be(ServiceLifetime.Singleton);
+        using var provider = services.BuildServiceProvider();
+        var security = provider.GetRequiredService<CoreAuth.ISecurityService>();
+        var provisioned = provider.GetRequiredService<IProvisionedUserContextProvider>();
+
+        security.GetType().Name.Should().Be("InMemorySecurityService");
+        (await provisioned.GetProvisionedUserContextAsync("user@county.")).Should().NotBeNull(
+            "legacy/test lanes still need a provisioned-user context bridge before credential validation can fail closed");
+    }
+
+    private static IConfiguration CreateConfig()
+    {
+        return new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["JwtSettings:SecretKey"] = "test-failclosed-key-at-least-32-chars-long-for-hmac-sha256",
+                ["JwtSettings:Issuer"] = "TerraFusion.Test",
+                ["JwtSettings:Audience"] = "TerraFusion.Test",
+            })
+            .Build();
     }
 }

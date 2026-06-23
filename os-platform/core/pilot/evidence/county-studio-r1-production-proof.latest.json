@@ -1,0 +1,653 @@
+{
+  "checkedAt": "2026-06-06T06:32:29.487Z",
+  "slice": "county-studio-r1-production-proof",
+  "status": "PASS",
+  "decision": "COUNTY_STUDIO_R1_RUNTIME_PRODUCTION_PROOF_READY",
+  "scope": {
+    "included": [
+      "County Studio",
+      "TerraForge suite handoffs",
+      "core pilot evidence gate"
+    ],
+    "excluded": {
+      "syncAndDbSeeding": true,
+      "paths": [
+        "packages/terra-sync/**",
+        ".claude/worktrees/**",
+        "DB seeding lanes"
+      ]
+    }
+  },
+  "invariants": {
+    "primaryDrillPathsMustNotDependOnCity": true
+  },
+  "checks": [
+    {
+      "id": "endpoint-contract.frontend-backend-county-study-routes",
+      "passed": true,
+      "detail": "required=31, missingFrontend=0, missingBackend=0",
+      "payload": {
+        "requiredRoutes": [
+          "GET studies",
+          "POST studies",
+          "GET study detail",
+          "PATCH study status",
+          "POST derive segments",
+          "GET segment sets",
+          "POST segment sets",
+          "GET segments",
+          "GET cohorts",
+          "POST cohorts",
+          "GET scenarios",
+          "POST scenarios",
+          "SAVE scenario",
+          "PREVIEW scenario",
+          "COMPARE scenarios",
+          "PROMOTE scenario",
+          "GET adjustment sets",
+          "GET apply handoff receipts",
+          "PATCH approval state",
+          "PUT apply handoff receipt",
+          "GET exceptions",
+          "GET downstream receipts",
+          "GET city rollup reference",
+          "GET neighborhood rollup",
+          "GET health summary",
+          "GET statistics compat",
+          "GET segment detail",
+          "GET segment action context",
+          "GET segment diagnosis",
+          "GET study diagnosis",
+          "GET evidence packet"
+        ],
+        "missingFrontend": [],
+        "missingBackend": [],
+        "routeProof": [
+          {
+            "name": "GET studies",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:115",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:222"
+          },
+          {
+            "name": "POST studies",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:136",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:182"
+          },
+          {
+            "name": "GET study detail",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:121",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:296"
+          },
+          {
+            "name": "PATCH study status",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:148",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:323"
+          },
+          {
+            "name": "POST derive segments",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:157",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:270"
+          },
+          {
+            "name": "GET segment sets",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:172",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:668"
+          },
+          {
+            "name": "POST segment sets",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:172",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:642"
+          },
+          {
+            "name": "GET segments",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:175",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:694"
+          },
+          {
+            "name": "GET cohorts",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:192",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:753"
+          },
+          {
+            "name": "POST cohorts",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:205",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:723"
+          },
+          {
+            "name": "GET scenarios",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:218",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:834"
+          },
+          {
+            "name": "POST scenarios",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:241",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:808"
+          },
+          {
+            "name": "SAVE scenario",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:254",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:887"
+          },
+          {
+            "name": "PREVIEW scenario",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:224",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:914"
+          },
+          {
+            "name": "COMPARE scenarios",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:258",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:940"
+          },
+          {
+            "name": "PROMOTE scenario",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:266",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:976"
+          },
+          {
+            "name": "GET adjustment sets",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:273",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1002"
+          },
+          {
+            "name": "GET apply handoff receipts",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:276",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1028"
+          },
+          {
+            "name": "PATCH approval state",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:283",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1057"
+          },
+          {
+            "name": "PUT apply handoff receipt",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:276",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1087"
+          },
+          {
+            "name": "GET exceptions",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:388",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1182"
+          },
+          {
+            "name": "GET downstream receipts",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:391",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1274"
+          },
+          {
+            "name": "GET city rollup reference",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:474",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:358"
+          },
+          {
+            "name": "GET neighborhood rollup",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:482",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:394"
+          },
+          {
+            "name": "GET health summary",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:495",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:432"
+          },
+          {
+            "name": "GET statistics compat",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:505",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:465"
+          },
+          {
+            "name": "GET segment detail",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:518",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:496"
+          },
+          {
+            "name": "GET segment action context",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:527",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:529"
+          },
+          {
+            "name": "GET segment diagnosis",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:628",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:567"
+          },
+          {
+            "name": "GET study diagnosis",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:628",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:605"
+          },
+          {
+            "name": "GET evidence packet",
+            "frontend": "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts:620",
+            "backend": "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs:1420"
+          }
+        ]
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudyApi.ts",
+        "backend/src/TerraFusion.API/Controllers/CountyStudyController.cs"
+      ]
+    },
+    {
+      "id": "data-flow.real-canonical-county-study-services",
+      "passed": true,
+      "detail": "County Studio services derive health, segments, AI diagnosis, and inspector evidence from EF-backed canonical tables.",
+      "payload": {
+        "requiredCanonicalSources": [
+          "Properties",
+          "CamaCharacteristics",
+          "ComparableSales",
+          "PacsValuation",
+          "CountySegments"
+        ],
+        "missing": [],
+        "entityFrameworkEvidence": true,
+        "serviceFiles": [
+          "backend/src/TerraFusion.Core/Services/CountyStudyService.cs",
+          "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs",
+          "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs",
+          "backend/src/TerraFusion.Core/Services/CountyStudyInspectorService.cs",
+          "backend/src/TerraFusion.Core/Services/CountyStudioAiService.cs"
+        ]
+      },
+      "proof": [
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:3",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:3",
+        "backend/src/TerraFusion.Core/Services/CountyStudySegmentDerivationService.cs:74",
+        "backend/src/TerraFusion.Core/Services/CountyStudyHealthService.cs:73"
+      ]
+    },
+    {
+      "id": "mock-audit.no-county-studio-production-mocks",
+      "passed": true,
+      "detail": "No mock/stub/fixture/fake/sample-data markers in County Studio production paths.",
+      "payload": {
+        "scannedFiles": 47,
+        "hits": []
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/AdjustmentSetPanel.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/AiDiagnosisPanel.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/BottomDeck.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CityInspector.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CityRollupTable.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CohortCreationDialog.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ContractLineage.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CorrectionDefensePanel.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyCommandStrip.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyDiagnosisModal.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyHealthPanel.tsx",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/CountyStatisticsWorkbenchPanel.tsx"
+      ]
+    },
+    {
+      "id": "city-doctrine.city-reference-only-primary-path-clean",
+      "passed": true,
+      "detail": "invariant=true, sanitizer=true, riskSurfaceLeaks=0, healthPanelLeaks=0",
+      "payload": {
+        "invariant": "Primary drill paths must not depend on city.",
+        "cityReferenceOnly": true,
+        "riskSurfaceLeaks": [],
+        "healthPanelLeaks": []
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/countyStudioInvariants.ts:1",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:215",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/utils/cityPrimarySanitizer.ts:1"
+      ]
+    },
+    {
+      "id": "gis-contract.embedded-atlas-primary-center-surface",
+      "passed": true,
+      "detail": "missingEmbeddedTokens=0, commandCenterEmbeds=true, atlasGeometryContracts=3, popOutOnly=false, countyStudioGisWriteHits=0",
+      "payload": {
+        "requiredEmbeddedTokens": [
+          "county-studio-atlas-workspace",
+          "county-studio-embedded-atlas-canvas",
+          "primary-center-surface",
+          "useAtlasMapData",
+          "GeoForgeV2Map",
+          "AtlasOverlayManager",
+          "Parcels",
+          "Parcel boundaries",
+          "Neighborhoods",
+          "County segments",
+          "Reval areas",
+          "Taxing districts",
+          "Layer configuration",
+          "Valuation risk",
+          "Ratio / COD / PRD risk",
+          "Comparable sales clusters",
+          "Model groups",
+          "Value tiers",
+          "CAMA characteristic anomalies",
+          "Segment health",
+          "activateModule('property-workbench'",
+          "initialTab: 'atlas'",
+          "forge: 'parcel-valuation'",
+          "dossier: 'evidence'"
+        ],
+        "missingEmbeddedTokens": [],
+        "commandCenterEmbeds": true,
+        "atlasGeometryContracts": [
+          "fetchAtlasCompatibilityMapData",
+          "fetchGeoForgeCompatibilityOutlines",
+          "fetchGeoForgeCompatibilityParcels"
+        ],
+        "popOutOnly": false,
+        "countyStudioGisWriteHits": [],
+        "ownership": {
+          "terraAtlas": [
+            "geometry",
+            "layers",
+            "symbology",
+            "boundaries",
+            "annotations",
+            "bookmarks",
+            "neighborhood definitions"
+          ],
+          "terraForge": [
+            "valuation risk overlay",
+            "ratio/COD/PRD context",
+            "model groups",
+            "value tiers",
+            "segment health"
+          ]
+        }
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:280",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:7",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/EmbeddedAtlasGisWorkspace.tsx:215",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/RiskSurfaceCommandCenter.tsx:9",
+        "frontend/apps/os-shell/src/pages/forge/atlas-live/atlasLiveApi.ts:220"
+      ]
+    },
+    {
+      "id": "handoffs.atlas-dossier-workbench-valuation-context",
+      "passed": true,
+      "detail": "Atlas, Dossier, Workbench, evidence export, and apply handoff paths carry valuation context through city sanitizers.",
+      "payload": {
+        "missing": []
+      },
+      "proof": [
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:37",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx:863",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/AdjustmentSetPanel.tsx:343",
+        "frontend/apps/os-shell/src/pages/forge/county-studio/components/ExportPacketModal.tsx:7"
+      ]
+    },
+    {
+      "id": "tools.cli-redis-rust-prometheus-inventory",
+      "passed": true,
+      "detail": "cli=3, redis=3, rustEngines=3, prometheus=4",
+      "payload": {
+        "cli": [
+          "tools/tdc/cli/src/index.ts",
+          "tools/bin/commands/FORGE_CLI.md",
+          "os-platform/core/pilot/local-agent/help.ts"
+        ],
+        "redis": [
+          "backend/src/TerraFusion.Core/Services/RedisCacheService.cs",
+          "backend/src/TerraFusion.Core/Services/Monitoring/HealthChecks/RedisHealthCheck.cs",
+          "config/redis/redis-master.conf"
+        ],
+        "rustEngines": [
+          "packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml",
+          "packages/terrabuild/kernels/terraforge.kernel.cost/Cargo.toml",
+          "tools/tf-designctl-rust/Cargo.toml"
+        ],
+        "prometheus": [
+          "backend/src/TerraFusion.API/Monitoring/PrometheusConfig.cs",
+          "backend/monitoring/prometheus.yml",
+          "compose/prometheus.yml",
+          "backend/tests/TerraFusion.Unit.Tests/Observability/PrometheusLaneMetricsTests.cs"
+        ],
+        "excludedAsNotCodexScope": [
+          "packages/terra-sync/**",
+          ".claude/worktrees/**",
+          "DB seeding lanes"
+        ],
+        "note": "Inventory proves these layers exist; this gate does not claim County Studio uses every engine or that Prometheus/Redis are deployed in the current runtime."
+      },
+      "proof": [
+        "tools/tdc/cli/src/index.ts",
+        "tools/bin/commands/FORGE_CLI.md",
+        "os-platform/core/pilot/local-agent/help.ts",
+        "backend/src/TerraFusion.Core/Services/RedisCacheService.cs",
+        "backend/src/TerraFusion.Core/Services/Monitoring/HealthChecks/RedisHealthCheck.cs",
+        "config/redis/redis-master.conf",
+        "packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml",
+        "packages/terrabuild/kernels/terraforge.kernel.cost/Cargo.toml",
+        "tools/tf-designctl-rust/Cargo.toml",
+        "backend/src/TerraFusion.API/Monitoring/PrometheusConfig.cs",
+        "backend/monitoring/prometheus.yml",
+        "compose/prometheus.yml",
+        "backend/tests/TerraFusion.Unit.Tests/Observability/PrometheusLaneMetricsTests.cs"
+      ]
+    },
+    {
+      "id": "runtime.screenshot-contract-ready",
+      "passed": true,
+      "detail": "missingVisibleSignals=0, disallowedVisibleHits=0, embeddedCanvasCount=1, mapCanvasCount=1, prometheusRiskLabelCount=3, segmentCount=1393, riskObjectCount=688, atlasLiveVisible=true, loadingHealthMetricsVisible=false, mapDoesNotOverlapAnalytics=true, mapDoesNotOverlapRightRail=true, dockDoesNotOverlapCommandSurface=true, dockDoesNotOverlapBottomQueue=true, consoleErrors=0",
+      "payload": {
+        "mode": "runtime",
+        "url": "http://127.0.0.1:5177/forge/county-studio",
+        "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
+        "requiredVisibleSignals": [
+          "County Studio",
+          "Roll Posture",
+          "Embedded TerraAtlas GIS",
+          "Lens: Roll Readiness",
+          "Layers: Atlas live",
+          "Roll Readiness",
+          "Critical equity failure",
+          "Not defensible for certification",
+          "Unified Risk Ledger",
+          "Open in TerraAtlas"
+        ],
+        "missingVisibleSignals": [],
+        "disallowedVisibleSignals": [
+          "City Rollups",
+          "Mapbox token missing",
+          "Atlas map data unavailable",
+          "map-unavailable",
+          "ATLAS DISCONNECTED",
+          "Living County Risk Map",
+          "TerraAtlas-owned layers",
+          "Forge-owned overlays",
+          "Selected Risk Object",
+          "Operational Focus",
+          "Next best action",
+          "Statistics Compat",
+          "command-metric-ratio"
+        ],
+        "disallowedVisibleHits": [],
+        "embeddedCanvasCount": 1,
+        "mapCanvasCount": 1,
+        "prometheusRiskLabelCount": 3,
+        "segmentCount": 1393,
+        "riskObjectCount": 688,
+        "atlasLiveVisible": true,
+        "studyOpenVisible": true,
+        "loadingHealthMetricsVisible": false,
+        "layoutGeometry": {
+          "stage": {
+            "top": 403.03125,
+            "right": 1080,
+            "bottom": 734.03125,
+            "left": 210,
+            "width": 870,
+            "height": 331
+          },
+          "analytics": {
+            "top": 734.03125,
+            "right": 1080,
+            "bottom": 908.03125,
+            "left": 210,
+            "width": 870,
+            "height": 174
+          },
+          "visibleAnalytics": {
+            "top": 734.03125,
+            "right": 1080,
+            "bottom": 878,
+            "left": 210,
+            "width": 870,
+            "height": 143.96875
+          },
+          "rightRail": {
+            "top": 180.203125,
+            "right": 1440,
+            "bottom": 878,
+            "left": 1080,
+            "width": 360,
+            "height": 697.796875
+          },
+          "commandSurface": {
+            "top": 216.203125,
+            "right": 1080,
+            "bottom": 878,
+            "left": 210,
+            "width": 870,
+            "height": 661.796875
+          },
+          "dock": {
+            "top": 916,
+            "right": 924,
+            "bottom": 980,
+            "left": 516,
+            "width": 408,
+            "height": 64
+          },
+          "mapDoesNotOverlapAnalytics": true,
+          "mapDoesNotOverlapRightRail": true,
+          "dockDoesNotOverlapCommandSurface": true,
+          "dockDoesNotOverlapBottomQueue": true
+        },
+        "consoleErrors": []
+      },
+      "proof": [
+        "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png"
+      ]
+    }
+  ],
+  "failures": [],
+  "runtime": {
+    "mode": "runtime",
+    "url": "http://127.0.0.1:5177/forge/county-studio",
+    "screenshot": "os-platform/core/pilot/evidence/screenshots/county-studio-r1-production-proof.png",
+    "requiredVisibleSignals": [
+      "County Studio",
+      "Roll Posture",
+      "Embedded TerraAtlas GIS",
+      "Lens: Roll Readiness",
+      "Layers: Atlas live",
+      "Roll Readiness",
+      "Critical equity failure",
+      "Not defensible for certification",
+      "Unified Risk Ledger",
+      "Open in TerraAtlas"
+    ],
+    "missingVisibleSignals": [],
+    "disallowedVisibleSignals": [
+      "City Rollups",
+      "Mapbox token missing",
+      "Atlas map data unavailable",
+      "map-unavailable",
+      "ATLAS DISCONNECTED",
+      "Living County Risk Map",
+      "TerraAtlas-owned layers",
+      "Forge-owned overlays",
+      "Selected Risk Object",
+      "Operational Focus",
+      "Next best action",
+      "Statistics Compat",
+      "command-metric-ratio"
+    ],
+    "disallowedVisibleHits": [],
+    "embeddedCanvasCount": 1,
+    "mapCanvasCount": 1,
+    "prometheusRiskLabelCount": 3,
+    "segmentCount": 1393,
+    "riskObjectCount": 688,
+    "atlasLiveVisible": true,
+    "studyOpenVisible": true,
+    "loadingHealthMetricsVisible": false,
+    "layoutGeometry": {
+      "stage": {
+        "top": 403.03125,
+        "right": 1080,
+        "bottom": 734.03125,
+        "left": 210,
+        "width": 870,
+        "height": 331
+      },
+      "analytics": {
+        "top": 734.03125,
+        "right": 1080,
+        "bottom": 908.03125,
+        "left": 210,
+        "width": 870,
+        "height": 174
+      },
+      "visibleAnalytics": {
+        "top": 734.03125,
+        "right": 1080,
+        "bottom": 878,
+        "left": 210,
+        "width": 870,
+        "height": 143.96875
+      },
+      "rightRail": {
+        "top": 180.203125,
+        "right": 1440,
+        "bottom": 878,
+        "left": 1080,
+        "width": 360,
+        "height": 697.796875
+      },
+      "commandSurface": {
+        "top": 216.203125,
+        "right": 1080,
+        "bottom": 878,
+        "left": 210,
+        "width": 870,
+        "height": 661.796875
+      },
+      "dock": {
+        "top": 916,
+        "right": 924,
+        "bottom": 980,
+        "left": 516,
+        "width": 408,
+        "height": 64
+      },
+      "mapDoesNotOverlapAnalytics": true,
+      "mapDoesNotOverlapRightRail": true,
+      "dockDoesNotOverlapCommandSurface": true,
+      "dockDoesNotOverlapBottomQueue": true
+    },
+    "consoleErrors": []
+  },
+  "tooling": {
+    "cli": [
+      "tools/tdc/cli/src/index.ts",
+      "tools/bin/commands/FORGE_CLI.md",
+      "os-platform/core/pilot/local-agent/help.ts"
+    ],
+    "redis": [
+      "backend/src/TerraFusion.Core/Services/RedisCacheService.cs",
+      "backend/src/TerraFusion.Core/Services/Monitoring/HealthChecks/RedisHealthCheck.cs",
+      "config/redis/redis-master.conf"
+    ],
+    "rustEngines": [
+      "packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml",
+      "packages/terrabuild/kernels/terraforge.kernel.cost/Cargo.toml",
+      "tools/tf-designctl-rust/Cargo.toml"
+    ],
+    "prometheus": [
+      "backend/src/TerraFusion.API/Monitoring/PrometheusConfig.cs",
+      "backend/monitoring/prometheus.yml",
+      "compose/prometheus.yml",
+      "backend/tests/TerraFusion.Unit.Tests/Observability/PrometheusLaneMetricsTests.cs"
+    ]
+  }
+}

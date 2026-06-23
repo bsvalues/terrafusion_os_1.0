@@ -1,0 +1,27 @@
+{
+  "taskId": "canon-task-fix-os-canon-launch-drift",
+  "intent": "Fix os-canon shell launch drift.",
+  "surface": "os-canon",
+  "agentLanes": [
+    "explorer",
+    "planner",
+    "implementer",
+    "reviewer",
+    "governor",
+    "git-agent"
+  ],
+  "canonRulesLoaded": [
+    "surface.os-canon.in-shell"
+  ],
+  "filesRead": [],
+  "filesChanged": [],
+  "commandsRun": [],
+  "approvals": [],
+  "diffHash": "sha256-placeholder",
+  "gateResults": [],
+  "riskScore": 70,
+  "commitHash": "",
+  "prUrl": "",
+  "traceHash": "",
+  "sealed": false
+}

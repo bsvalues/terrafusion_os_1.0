@@ -58,24 +58,38 @@ const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
 
 const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
 
-function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
+function readLaunchStateSubTab(state: unknown): ForgeSubTab | null {
+  if (!state || typeof state !== 'object') return null;
+
+  const launchState = state as Record<string, unknown>;
+  const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
+  if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
+    return rawSubTab as ForgeSubTab;
+  }
+
+  if (launchState.moduleId === 'comparable-sales') {
+    return 'sales';
+  }
+
+  return null;
+}
+
+function readInitialSubTab(
+  search: string,
+  state: unknown,
+  launchMetadata?: Record<string, unknown>
+): ForgeSubTab {
   const params = new URLSearchParams(search);
   const queryHint = params.get('tab') ?? params.get('subTab') ?? params.get('initialSubTab');
   if (queryHint && FORGE_SUB_TABS.has(queryHint as ForgeSubTab)) {
     return queryHint as ForgeSubTab;
   }
 
-  if (state && typeof state === 'object') {
-    const launchState = state as Record<string, unknown>;
-    const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
-    if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
-      return rawSubTab as ForgeSubTab;
-    }
+  const routeStateSubTab = readLaunchStateSubTab(state);
+  if (routeStateSubTab) return routeStateSubTab;
 
-    if (launchState.moduleId === 'comparable-sales') {
-      return 'sales';
-    }
-  }
+  const desktopMetadataSubTab = readLaunchStateSubTab(launchMetadata);
+  if (desktopMetadataSubTab) return desktopMetadataSubTab;
 
   return 'overview';
 }
@@ -84,17 +98,17 @@ function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
 
 export const PropertyForge: React.FC = () => {
   const location = useLocation();
-  const { parcelId } = useWorkbenchTab();
+  const { parcelId, launchMetadata } = useWorkbenchTab();
 
   /* Probe the cost endpoint to determine if the Forge API is reachable */
   const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
 
-  /* PACS year layers for this parcel */
+  /* Tax-year layers for this parcel */
   const parcelYears = useParcelYears(parcelId);
 
   /* Shared state */
   const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
-    readInitialSubTab(location.search, location.state)
+    readInitialSubTab(location.search, location.state, launchMetadata)
   );
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
@@ -117,7 +131,7 @@ export const PropertyForge: React.FC = () => {
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
-      {/* PACS Year Selector */}
+      {/* Tax-year selector */}
       <ForgeYearSelector
         parcelId={parcelId}
         taxYear={taxYear}
@@ -129,7 +143,7 @@ export const PropertyForge: React.FC = () => {
 
       <div className="flex items-center justify-between gap-3" data-testid="forge-baseline-disclosure">
         <p className="text-xs tf-text-dim">
-          Cost, comp, and income approaches are requested via governed tooling;
+          Forge valuation approaches are requested through governed tooling;
           values shown are returned from the live workbench API.
         </p>
         <WorkbenchSourceBadge source={forgeProbe.source} />
@@ -149,15 +163,15 @@ export const PropertyForge: React.FC = () => {
             aria-controls={`forge-panel-${tab.id}`}
             onClick={() => setActiveSubTab(tab.id)}
             className={`
-              flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full
+              flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md
               transition-all
               ${activeSubTab === tab.id
-                ? 'tf-suite-accent-text ring-1 ring-current/30'
+                ? 'tf-suite-accent-text ring-1 ring-current/30 bg-[hsl(var(--tf-text)_/_0.04)]'
                 : 'tf-text-tertiary hover:tf-text-secondary'
               }
             `}
           >
-            <span>{tab.icon}</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" aria-hidden="true" />
             <span>{tab.label}</span>
           </button>
         ))}

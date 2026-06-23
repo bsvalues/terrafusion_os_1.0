@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Moq;
+using TerraFusion.API.Security.Services;
 using TerraFusion.Core.Services;
 using Xunit;
 using ApiProgram = TerraFusion.API.Program;
@@ -203,12 +204,15 @@ public sealed class R1Week5Cx16RealLoginE2ETests
         var jwt = handler.ReadJwtToken(token);
 
         var countyId = jwt.Claims.FirstOrDefault(c => c.Type == "countyId")?.Value;
-        var countyCode = jwt.Claims.FirstOrDefault(c => c.Type == "countyCode")?.Value;
+        var countyName = jwt.Claims.FirstOrDefault(c => c.Type == "countyName")?.Value;
+        var countyFipsCode = jwt.Claims.FirstOrDefault(c => c.Type == "countyFipsCode")?.Value;
 
         countyId.Should().Be(Cx16RealLoginFactory.BentonCountyId.ToString(),
-            "dev login token must carry DefaultCounty:Id from config");
-        countyCode.Should().Be("benton",
-            "dev login token must carry DefaultCounty:Code from config");
+            "DB-backed login token must carry provisioned county ID from the user context");
+        countyName.Should().Be("Benton",
+            "DB-backed login token must carry provisioned county name from the user context");
+        countyFipsCode.Should().Be("53005",
+            "DB-backed login token must carry provisioned county FIPS from the user context");
     }
 
     // ── 4. GovernmentUser (no assessor) → dossier read still 200 ─────
@@ -314,7 +318,10 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
             services.AddScoped(_ => new Mock<ICostForgeAIService>().Object);
 
             services.RemoveAll<ISecurityService>();
-            services.AddSingleton<ISecurityService, Cx16TestSecurityService>();
+            services.RemoveAll<IProvisionedUserContextProvider>();
+            services.AddSingleton<Cx16TestSecurityService>();
+            services.AddSingleton<ISecurityService>(provider => provider.GetRequiredService<Cx16TestSecurityService>());
+            services.AddSingleton<IProvisionedUserContextProvider>(provider => provider.GetRequiredService<Cx16TestSecurityService>());
 
             // Disable HTTPS metadata requirement for test host (no TLS in TestServer)
             // and ensure the signing key matches the key used by JwtTokenService.
@@ -390,15 +397,21 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
         }
     }
 
-    private sealed class Cx16TestSecurityService : ISecurityService
+    private sealed class Cx16TestSecurityService : ISecurityService, IProvisionedUserContextProvider
     {
         private const string Password = "Government2026!";
 
-        private static readonly IReadOnlyDictionary<string, string[]> Users =
-            new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        private static readonly IReadOnlyDictionary<string, (Guid UserId, string[] Roles, string[] Permissions)> Users =
+            new Dictionary<string, (Guid UserId, string[] Roles, string[] Permissions)>(StringComparer.OrdinalIgnoreCase)
             {
-                ["assessor@terrafusionmarket.com"] = ["PropertyAssessor", "GovernmentUser"],
-                ["user@terrafusionmarket.com"] = ["GovernmentUser"],
+                ["assessor@terrafusionmarket.com"] = (
+                    Guid.Parse("16160016-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                    ["PropertyAssessor", "GovernmentUser"],
+                    ["read:dossier", "write:dossier", "read:properties", "read:parcel", "access:costforge"]),
+                ["user@terrafusionmarket.com"] = (
+                    Guid.Parse("16160016-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                    ["GovernmentUser"],
+                    ["read:dossier", "read:properties", "read:parcel"]),
             };
 
         public Task<bool> IsValidGovernmentUserAsync(string email)
@@ -418,8 +431,8 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
 
         public Task<IEnumerable<string>> GetUserRolesAsync(string email)
         {
-            Users.TryGetValue(email, out var roles);
-            return Task.FromResult<IEnumerable<string>>(roles ?? Array.Empty<string>());
+            Users.TryGetValue(email, out var user);
+            return Task.FromResult<IEnumerable<string>>(user.Roles ?? Array.Empty<string>());
         }
 
         public Task<bool> IsAccountLockedAsync(string email) => Task.FromResult(false);
@@ -439,5 +452,39 @@ public sealed class Cx16RealLoginFactory : WebApplicationFactory<ApiProgram>
         public Task<bool> HasPermissionAsync(string userId, string permission) => Task.FromResult(true);
 
         public Task<bool> HasModuleAccessAsync(string userId, string moduleId) => Task.FromResult(true);
+
+        public Task<ProvisionedUserAuthContext?> GetProvisionedUserContextAsync(string email)
+        {
+            if (!Users.TryGetValue(email, out var user))
+            {
+                return Task.FromResult<ProvisionedUserAuthContext?>(null);
+            }
+
+            return Task.FromResult<ProvisionedUserAuthContext?>(new ProvisionedUserAuthContext(
+                user.UserId,
+                email,
+                user.Roles,
+                user.Permissions,
+                BentonCountyId,
+                "Benton",
+                "WA",
+                "53005"));
+        }
+
+        public Task<bool> IsUserSessionValidAsync(Guid userId, string? sessionToken)
+        {
+            return Task.FromResult(!string.IsNullOrWhiteSpace(sessionToken));
+        }
+
+        public Task RecordUserSessionAsync(
+            Guid userId,
+            string sessionToken,
+            string refreshToken,
+            DateTime expiresAtUtc,
+            string? ipAddress,
+            string? userAgent)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

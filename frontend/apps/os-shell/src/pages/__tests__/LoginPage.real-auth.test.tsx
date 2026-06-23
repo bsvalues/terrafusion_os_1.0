@@ -78,7 +78,7 @@ describe('LoginPage real auth exchange', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('states that public signup is disabled and access is provisioned', () => {
+  it('presents controlled operator access without public signup or request flow', () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthProvider>
@@ -87,7 +87,10 @@ describe('LoginPage real auth exchange', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/provisioned access only/i)).toBeInTheDocument();
-    expect(screen.getByText(/public self-signup is disabled/i)).toBeInTheDocument();
+    expect(screen.getByText(/government operations access/i)).toBeInTheDocument();
+    expect(screen.getByText(/authorized operator access only/i)).toBeInTheDocument();
+    expect(screen.getByText(/credentials are provisioned through terrafusion administration/i)).toBeInTheDocument();
+    expect(screen.queryByText(/request access/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/public signup/i)).not.toBeInTheDocument();
   });
 });

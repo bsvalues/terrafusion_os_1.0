@@ -83,6 +83,8 @@ export function useInspectorData(segmentId: string | null): UseInspectorDataResu
       setContextLoading(false);
       return;
     }
+    setDetail(null);
+    setContext(null);
     void loadDetail(segmentId);
     void loadContext(segmentId);
   }, [segmentId, loadDetail, loadContext]);

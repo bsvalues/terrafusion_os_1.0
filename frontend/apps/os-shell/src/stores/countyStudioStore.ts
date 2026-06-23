@@ -80,8 +80,8 @@ export interface CountyStudioState {
   // ── Drill-lattice state (Task B) ───────────────────────────────────────
   /**
    * Current drill level — governs which table the center panel renders.
-   *   'county'       — CityRollupTable visible, selectedCity/selectedNeighborhood null.
-   *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
+   *   'county'       — Benton risk surfaces + unified risk ledger visible.
+   *   'city'         — legacy/reference-only NeighborhoodRollupTable filtered to selectedCity.
    *   'neighborhood' — SegmentTable filtered to segments with GeographyRef ===
    *     selectedNeighborhood and, when present, segment.RevalArea ===
    *     selectedNeighborhoodRevalArea.
@@ -135,7 +135,7 @@ export interface CountyStudioState {
   /** Store the most recent health summary response. null = never-loaded or 409. */
   setHealthSummary: (summary: CountyHealthSummaryDto | null) => void;
   /**
-   * Collapse drill back to the county view (CityRollupTable). Clears both
+   * Collapse drill back to the county risk-surface view. Clears both
    * selectedCity and selectedNeighborhood so the "stale selection" class of
    * bug (e.g. filtered segment table showing no rows after breadcrumb click)
    * is mechanically impossible.
@@ -146,20 +146,50 @@ export interface CountyStudioState {
    * stale selectedNeighborhood. Also clears selectedSegmentId so the
    * RightRail's ObjectInspector doesn't show a detail for a segment that
    * isn't in the new scope.
+   * Legacy/reference-only path retained for older city rollup components.
    */
   drillToCity: (city: string) => void;
   /**
    * Advance drill to a specific neighborhood within a city. Both city and
-   * neighborhood are required so the state machine can never land at
-   * drillLevel='neighborhood' without a parent city.
+   * neighborhood are required for this legacy city-scoped route.
+   * Legacy/reference path: new County Studio command work should prefer
+   * drillToRiskSurfaceNeighborhood so city does not become the operating lens.
    */
   drillToNeighborhood: (city: string, neighborhoodCode: string, revalArea?: number | null) => void;
+  /**
+   * Open neighborhood parcel evidence from a Benton risk surface. City remains
+   * null because city is reference metadata, not a primary analytical parent.
+   */
+  drillToRiskSurfaceNeighborhood: (
+    neighborhoodCode: string,
+    revalArea?: number | null,
+    segmentId?: string | null
+  ) => void;
+  /**
+   * Open specific segment evidence from a Benton risk surface. This is the
+   * primary county-health alert path: it preserves valuation context while
+   * keeping city as metadata only.
+   */
+  drillToRiskSurfaceSegment: (
+    neighborhoodCode: string,
+    segmentId: string,
+    revalArea?: number | null
+  ) => void;
+  /**
+   * Focus an object on the embedded Atlas surface without changing the primary
+   * drill level. This keeps map/ledger/inspector coordination city-free while
+   * preserving the user's current workspace surface.
+   */
+  focusRiskSurfaceMapObject: (
+    neighborhoodCode: string | null,
+    segmentId?: string | null,
+    revalArea?: number | null
+  ) => void;
   setSegmentSeverityFilter: (filter: SegmentSeverityFilter) => void;
   /**
-   * Jump straight to a specific segment — parent city + neighborhood are both
-   * required so the drill state stays consistent. Used by CountyHealthPanel
-   * top-5 alerts to navigate directly from the county-landing to a segment
-   * that lives in a different city/neighborhood than the current selection.
+   * Legacy/reference path that jumps straight to a specific segment under a
+   * city scope. New County Studio command work should prefer
+   * drillToRiskSurfaceSegment so primary drill paths do not depend on city.
    * Sets drillLevel='neighborhood' (so the SegmentTable renders) and pre-selects
    * the segment via selectedSegmentId (so RightRail shows its detail).
    */
@@ -335,6 +365,43 @@ export const useCountyStudioStore = create<CountyStudioState>()(
           },
           false,
           `drillToNeighborhood/${city}/${neighborhoodCode}/${revalArea ?? 'na'}`
+        ),
+      drillToRiskSurfaceNeighborhood: (neighborhoodCode, revalArea = null, segmentId = null) =>
+        set(
+          {
+            drillLevel: 'neighborhood',
+            selectedCity: null,
+            selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
+            selectedSegmentId: segmentId,
+            segmentSeverityFilter: 'all',
+          },
+          false,
+          `drillToRiskSurfaceNeighborhood/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId ?? 'na'}`
+        ),
+      drillToRiskSurfaceSegment: (neighborhoodCode, segmentId, revalArea = null) =>
+        set(
+          {
+            drillLevel: 'neighborhood',
+            selectedCity: null,
+            selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
+            selectedSegmentId: segmentId,
+            segmentSeverityFilter: 'all',
+          },
+          false,
+          `drillToRiskSurfaceSegment/${neighborhoodCode}/${revalArea ?? 'na'}/${segmentId}`
+        ),
+      focusRiskSurfaceMapObject: (neighborhoodCode, segmentId = null, revalArea = null) =>
+        set(
+          {
+            selectedCity: null,
+            selectedNeighborhood: neighborhoodCode,
+            selectedNeighborhoodRevalArea: revalArea,
+            selectedSegmentId: segmentId,
+          },
+          false,
+          `focusRiskSurfaceMapObject/${neighborhoodCode ?? 'na'}/${revalArea ?? 'na'}/${segmentId ?? 'na'}`
         ),
       drillToSegment: (city, neighborhoodCode, segmentId, revalArea = null) =>
         set(

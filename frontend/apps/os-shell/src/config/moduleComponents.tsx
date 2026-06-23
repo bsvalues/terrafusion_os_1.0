@@ -122,9 +122,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   pilot: 'os-pilot',
   trace: 'os-trace',
   canon: 'os-canon',
+  localops: 'os-localops',
   terrapilot: 'os-pilot',
   terratrace: 'os-trace',
   terracanon: 'os-canon',
+  terralocalops: 'os-localops',
 
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
@@ -161,6 +163,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'federation-dashboard',
   'costforge',
   'comps-forge',
+  'income-forge',
   'terra-gaia',
   'levy-calculator',
   'gis-viewer',
@@ -217,6 +220,9 @@ export const MODULE_REGISTRY = new Set<string>([
   'os-pilot',
   'os-trace',
   'os-canon',
+  // LocalOps — registered OS feature whose ONLY operator surface is the shell
+  // side panel (LocalOpsSurface). The window home is a truthful redirect to it.
+  'os-localops',
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard',
   'mass-appraisal-gis',
@@ -239,6 +245,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'county-studio',
   // Atlas Live View — study-aware spatial surface (session subscriber)
   'atlas-live-view',
+  // CUForge — Current Use Program (RCW 84.33/84.34)
+  'cuforge',
 ]);
 
 /**
@@ -334,6 +342,9 @@ const SovereignDashboardWindow = lazy(() =>
 const CompsForgeModule = lazy(
   () => import('../pages/suites/modules/CompsForgeModule')
 );
+const IncomeForge = lazy(
+  () => import('../pages/forge/income/IncomeForge')
+);
 
 // ============================================================================
 // Phase C: Rehosted Module Components
@@ -346,6 +357,9 @@ const BatchCostRun = lazy(
 );
 const CoefficientPreview = lazy(
   () => import('../pages/forge/batch/CoefficientPreview')
+);
+const TerraGamaPage = lazy(
+  () => import('../pages/atlas/TerraGamaPage')
 );
 // Phase 36: Atlas & Forge standalone modules
 const GeoEquityDashboard = lazy(
@@ -416,6 +430,16 @@ const AtlasLivePage = lazy(() =>
   import('../pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
 );
 
+// CUForge — Current Use Program (RCW 84.33/84.34)
+const CUForge = lazy(() => import('../pages/forge/current-use/CUForge'));
+
+// TerraNotice — Governed Civic Communications Console (TerraDais suite).
+// OS-native operator console: 12 governed areas (command center, policy packs,
+// template governance, batch ops, freeze snapshots, vendor dispatch, exceptions,
+// citizen portal preview, telemetry, audit vault, release console). Runs on
+// clearly-labeled County Sandbox fixtures until a backend is wired.
+const TerraNoticeConsole = lazy(() => import('../pages/notice/TerraNoticeConsole'));
+
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
@@ -431,6 +455,7 @@ const PropertyWorkbenchWindow = lazy(
 const PilotHome = lazy(() => import('../pages/PilotHome'));
 const TraceHome = lazy(() => import('../pages/TraceHome'));
 const CanonHome = lazy(() => import('../pages/CanonHome'));
+const LocalOpsHome = lazy(() => import('../pages/LocalOpsHome'));
 
 // ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
@@ -476,14 +501,19 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   // Forge standalone modules (Tranche 1D)
   'batch-cost-run': { Component: BatchCostRun },
   'coefficient-preview': { Component: CoefficientPreview },
+  'income-forge': { Component: IncomeForge },
   // Forge standalone modules (Gen2)
   'regression-studio': { Component: RegressionStudio },
+  'terra-gama': { Component: TerraGamaPage },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
+  'terra-notice': { Component: TerraNoticeConsole },
   // OS Features (in-shell windows)
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
   'os-canon': { Component: CanonHome },
+  // LocalOps window home is a thin in-window redirect to the shell side panel.
+  'os-localops': { Component: LocalOpsHome },
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard': { Component: GeoEquityDashboard },
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
@@ -749,6 +779,14 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
+    // IncomeForge — income approach valuation with CostForge API authority.
+    case 'income-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <IncomeForge metadata={metadata as Record<string, unknown> | undefined} />
+        </Suspense>
+      );
+
     // TerraGaia - Natural Language AI Assistant
     case 'terra-gaia':
       return (
@@ -859,18 +897,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <AppFrame
-          moduleId="terra-gama"
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading TerraGAMA...</span></div>}>
+          <TerraGamaPage />
+        </Suspense>
       );
 
     // TerraPilt — OS-native PILT module (no iframe, no external server).
@@ -964,13 +993,12 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         />
       );
 
+    // TerraNotice — Governed Civic Communications Console (OS-native operator surface).
     case 'terra-notice':
       return (
-        <QueuedModuleSurface
-          name="TerraNotice"
-          description="Notice templates, batch generation, and mail queue — assessment notice production and delivery tracking."
-          moduleId="terra-notice"
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraNoticeConsole />
+        </Suspense>
       );
 
     // Analytics - Real-time Reporting
@@ -1144,6 +1172,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <CanonHome />
+        </Suspense>
+      );
+
+    case 'os-localops':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <LocalOpsHome />
         </Suspense>
       );
 
@@ -1403,6 +1438,17 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           }
         >
           <AtlasLivePage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // CUFORGE — Current Use Program (RCW 84.33/84.34)
+    // ========================================================================
+
+    case 'cuforge':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading CUForge...</span></div>}>
+          <CUForge metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 

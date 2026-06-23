@@ -91,7 +91,7 @@ describe('PropertyForge', () => {
       expect(screen.getByRole('button', { name: /explain valuation/i })).toBeInTheDocument();
       // Disclosure prose now describes the governed-tooling request model.
       expect(screen.getByTestId('forge-baseline-disclosure')).toHaveTextContent(
-        /Cost, comp, and income approaches are requested via governed tooling/i,
+        /Forge valuation approaches are requested through governed tooling/i,
       );
       expect(screen.getByTestId('forge-baseline-disclosure')).toHaveTextContent(
         /values shown are returned from the live workbench API/i,

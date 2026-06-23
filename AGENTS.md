@@ -3,6 +3,66 @@
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.
 
+## BRAIN GOVERNANCE & DOMAIN KNOWLEDGE PACKS
+
+> **One TerraFusion Brain. Many packs. No competing brains.**
+
+There is exactly **one** TerraFusion Brain / Cortex. It is the single OS-level authority for:
+**queue, sequencing, work orders, risk classification, proof, review-diff, and commit-plan.**
+Suites do **not** get separate brains and do **not** get a suite-local queue or autonomous
+governance. Suites get **domain knowledge packs** (`brain/packs/**`) that provide local knowledge
+only: what a domain owns, what it must never touch, where work routes, what proof is required, and
+when a human must approve.
+
+### Authority hierarchy (higher wins on conflict)
+
+1. **TerraFusion Constitution** — `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (TF-052)
+2. **Brain / Cortex** — OS-level queue, sequencing, work orders, risk, proof, review-diff, commit-plan
+3. **Domain knowledge packs** — `brain/packs/**`
+4. **Directory-local `AGENTS.md` files** — nearest-scope overrides
+5. **Existing implementation patterns**
+6. **Agent judgment**
+
+### Rules for agents
+
+- **Before modifying files, read the relevant domain pack** in `brain/packs/` (see
+  `brain/packs/README.md` for the domain→path map), then read any nearer `AGENTS.md`.
+- **Preserve one-Brain governance.** Do **not** create a second brain or a suite-local queue.
+- **Do not create separate suite brains** or suite-local autonomous governance.
+- Route work through Brain **work orders, review-diff, proof, and commit-plan**.
+- Respect each pack's **Forbidden Writes** and **Escalation Triggers**; never write across a
+  write-lane boundary you do not own.
+
+### Human approval triggers (always stop and ask)
+
+1. Constitutional decision (changing TF-052 / canon)
+2. Destructive operation (delete, redact, irreversible)
+3. Product behavior change
+4. Branch / merge strategy
+5. Production deployment authorization
+6. Conflicting canon (two sources disagree)
+7. Credentials / secrets
+
+## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021)
+
+**No two agents may operate in the same mutable working tree.**
+
+Each agent must use a dedicated git worktree tied to exactly one work order.
+The shared/main working tree is for human-controlled sync only.
+
+- One worktree = one work order = one branch = one PR.
+- Before the first write, every agent runs and reports: `pwd`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git status --short`. If toplevel = main repo root and the agent was not explicitly assigned there, **STOP** and create a worktree.
+- If foreign staged or unstaged files are present, **STOP** and report.
+- No `git reset --hard` / `git clean` / force checkout / broad stash / `git add -A` without human approval.
+- PR is the sync boundary. Agents open draft PRs; humans merge.
+- If a recovery plan's assumptions diverge from current repo state, the plan is stale — do not execute it.
+- If the shared checkout state is uncertain, **quarantine** it (do not clean/recover).
+
+Full policy: `docs/agents/AGENT_WORKTREE_ISOLATION.md`
+Quarantine protocol: `docs/agents/SHARED_WORKTREE_QUARANTINE.md`
+Recovery protocol: `docs/agents/SHARED_WORKTREE_RECOVERY.md`
+Branch/PR policy: `docs/branching/BRANCH_AND_WORKTREE_POLICY.md`
+
 ## CORE GOVERNANCE SURFACE (ALLOWED SCOPE)
 Only modify files under:
 - os-platform/core/pilot/**

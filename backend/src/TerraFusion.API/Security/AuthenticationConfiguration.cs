@@ -15,6 +15,7 @@ using CoreAuth = TerraFusion.Core.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Security
 {
@@ -99,20 +100,32 @@ namespace TerraFusion.API.Security
                 };
             });
 
+            services.TryAddSingleton(configuration);
             services.AddSingleton<IJwtAuthService, JwtAuthService>();
             services.AddScoped<IAuthValidator, JwtAuthValidator>();
             services.AddDistributedMemoryCache();
             services.AddScoped<TerraFusion.API.Services.IJwtTokenService, TerraFusion.API.Services.JwtTokenService>();
             services.AddScoped<CoreAuth.IJwtTokenService, ApiJwtTokenServiceAdapter>();
             services.AddScoped<CoreAuth.IAuthenticationService, CoreAuth.AuthenticationService>();
+            services.AddScoped<DatabaseProvisionedSecurityService>();
             if (ConfiguredBootstrapSecurityService.HasBootstrapCredentials(configuration))
             {
-                services.AddSingleton<CoreAuth.ISecurityService>(provider =>
+                services.AddSingleton(provider =>
                     new ConfiguredBootstrapSecurityService(
                         configuration,
                         provider.GetRequiredService<ILogger<ConfiguredBootstrapSecurityService>>()));
             }
-            services.TryAddSingleton<CoreAuth.ISecurityService, InMemorySecurityService>();
+            services.TryAddSingleton<InMemorySecurityService>();
+            services.TryAddScoped<LegacyProvisionedUserContextProvider>();
+            services.TryAddScoped<CoreAuth.ISecurityService>(provider =>
+                provider.GetService<DataDbContext>() is not null
+                    ? provider.GetRequiredService<DatabaseProvisionedSecurityService>()
+                    : (CoreAuth.ISecurityService?)provider.GetService<ConfiguredBootstrapSecurityService>()
+                        ?? provider.GetRequiredService<InMemorySecurityService>());
+            services.TryAddScoped<IProvisionedUserContextProvider>(provider =>
+                provider.GetService<DataDbContext>() is not null
+                    ? provider.GetRequiredService<DatabaseProvisionedSecurityService>()
+                    : provider.GetRequiredService<LegacyProvisionedUserContextProvider>());
             services.AddHostedService<CoreAuth.RevocationCleanupBackgroundService>();
 
             services.AddAuthorization(options =>
@@ -403,6 +416,85 @@ namespace TerraFusion.API.Security
             var expectedBytes = Encoding.UTF8.GetBytes(expected);
             return providedBytes.Length == expectedBytes.Length
                 && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
+        }
+    }
+
+    internal sealed class LegacyProvisionedUserContextProvider : IProvisionedUserContextProvider
+    {
+        private readonly CoreAuth.ISecurityService _securityService;
+        private readonly IConfiguration _configuration;
+
+        public LegacyProvisionedUserContextProvider(
+            CoreAuth.ISecurityService securityService,
+            IConfiguration configuration)
+        {
+            _securityService = securityService;
+            _configuration = configuration;
+        }
+
+        public async Task<ProvisionedUserAuthContext?> GetProvisionedUserContextAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)
+                || !await _securityService.IsValidGovernmentUserAsync(email))
+            {
+                return null;
+            }
+
+            var normalizedEmail = email.Trim();
+            var roles = (await _securityService.GetUserRolesAsync(normalizedEmail))
+                .Where(role => !string.IsNullOrWhiteSpace(role))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (roles.Length == 0)
+            {
+                roles = ["GovernmentUser"];
+            }
+
+            return new ProvisionedUserAuthContext(
+                CreateStableUserId(normalizedEmail),
+                normalizedEmail,
+                roles,
+                Array.Empty<string>(),
+                ReadCountyId(),
+                ReadOptional("DefaultCounty:Name"),
+                ReadOptional("DefaultCounty:State"),
+                ReadOptional("DefaultCounty:FipsCode"));
+        }
+
+        public Task<bool> IsUserSessionValidAsync(Guid userId, string? sessionToken)
+        {
+            return Task.FromResult(!string.IsNullOrWhiteSpace(sessionToken));
+        }
+
+        public Task RecordUserSessionAsync(
+            Guid userId,
+            string sessionToken,
+            string refreshToken,
+            DateTime expiresAtUtc,
+            string? ipAddress,
+            string? userAgent)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Guid? ReadCountyId()
+        {
+            var raw = ReadOptional("DefaultCounty:Id");
+            return Guid.TryParse(raw, out var countyId) ? countyId : null;
+        }
+
+        private string? ReadOptional(string key)
+        {
+            var value = _configuration[key];
+            return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
+        private static Guid CreateStableUserId(string email)
+        {
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(email.ToUpperInvariant()));
+            Span<byte> bytes = stackalloc byte[16];
+            hash.AsSpan(0, 16).CopyTo(bytes);
+            return new Guid(bytes);
         }
     }
 

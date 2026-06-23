@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getPilotTrace, listPilotTraces } from '../../api/pilotApi';
+import { getPilotTrace, invokePilotTool, listPilotTraces } from '../../api/pilotApi';
 
 vi.mock('../../auth/session', () => ({
   getSession: () => null,
@@ -69,5 +69,28 @@ describe('pilotApi trace normalization', () => {
     const response = await listPilotTraces({ parcelId: 'P-1' });
 
     expect(response.events[0]?.type).toBe('tool_succeeded');
+  });
+
+  it('invokes tools through the backend /api/pilot/invoke route', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          correlationId: 'corr-invoke',
+          result: { accepted: true },
+        }),
+      })
+    );
+
+    await invokePilotTool({
+      toolId: 'explain_value_change',
+      params: { parcelId: 'P-1' },
+      mode: 'muse',
+    });
+
+    expect(vi.mocked(fetch).mock.calls[0]?.[0]).toBe('/api/pilot/invoke');
   });
 });

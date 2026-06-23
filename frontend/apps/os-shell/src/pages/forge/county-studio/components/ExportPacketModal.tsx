@@ -4,11 +4,16 @@
 import React, { useState, useEffect } from 'react';
 import { evidencePacketApi, type EvidencePacketDto } from '../countyStudyApi';
 import { evidencePacketToMarkdown } from '../utils/evidencePacketMarkdown';
+import { stripCityPrimaryKeys } from '../utils/cityPrimarySanitizer';
 
 interface Props {
   studyId: string;
   scenarioId?: string;
   onClose: () => void;
+}
+
+function sanitizeEvidencePacketForExport(packet: EvidencePacketDto): EvidencePacketDto {
+  return stripCityPrimaryKeys(packet);
 }
 
 export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
@@ -26,7 +31,7 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
 
   const handleDownloadJson = () => {
     if (!packet) return;
-    const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(sanitizeEvidencePacketForExport(packet), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -37,7 +42,7 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
 
   const handleCopyMarkdown = async () => {
     if (!packet) return;
-    const md = evidencePacketToMarkdown(packet);
+    const md = evidencePacketToMarkdown(sanitizeEvidencePacketForExport(packet));
     await navigator.clipboard.writeText(md);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

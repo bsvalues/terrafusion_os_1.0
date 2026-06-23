@@ -1,0 +1,272 @@
+npm warn config ignoring workspace config at /home/ubuntu/terrafusion_os_1.0/frontend/.npmrc
+
+ RUN  v1.6.1 /home/ubuntu/terrafusion_os_1.0/frontend
+
+ ✓ apps/os-shell/src/__tests__/forge/reportGeneration.contract.test.ts  (44 tests) 18ms
+ ✓ apps/os-shell/src/__tests__/forge/forgeStatisticsStore.contract.test.tsx  (13 tests) 10ms
+ ✓ apps/os-shell/src/__tests__/forge/terraforgeFullSuite.contract.test.ts  (106 tests) 48ms
+stderr | apps/os-shell/src/__tests__/forge/forgeModeling.contract.test.tsx > Phase 10: Forge Modeling Contract > CostForgeDashboard > 1. renders with data-testid="cost-forge-dashboard"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+stderr | apps/os-shell/src/__tests__/forge/forgeModeling.contract.test.tsx > Phase 10: Forge Modeling Contract > MarketTrendsPage > 14. renders with data-testid="market-trends"
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+
+stderr | apps/os-shell/src/__tests__/forge/forgeModeling.contract.test.tsx > Phase 10: Forge Modeling Contract > MarketTrendsPage > 15. no light-mode classes
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+Warning: An update to MarketTrendsPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at MarketTrendsPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/market/MarketTrendsPage.tsx:16:57)
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeModeling.contract.test.tsx  (16 tests) 244ms
+stderr | apps/os-shell/src/__tests__/forge/forgeModeling.contract.test.tsx > Phase 10: Forge Modeling Contract > ForgeSuiteHome > 16. has data-testid on stats strip ("forge-stats"), module grid ("forge-primary-applications"), and queue ("forge-queue")
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | apps/os-shell/src/__tests__/forge/forgeAnalytics.contract.test.tsx > Phase 10: Forge Analytics Contract > RatioStudyPanel > renders with data-testid="ratio-study-panel"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+stderr | apps/os-shell/src/__tests__/forge/forgeAnalytics.contract.test.tsx > Phase 10: Forge Analytics Contract > DataQualityPage > renders with data-testid="data-quality"
+Warning: An update to DataQualityPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at DataQualityPage (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/quality/DataQualityPage.tsx:23:51)
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeAnalytics.contract.test.tsx  (12 tests) 307ms
+stderr | apps/os-shell/src/__tests__/forge/forgeSuiteHome.contract.test.tsx > TerraForge suite home — taxonomy contract > renders exactly four primary valuation scenes — three approaches to value plus SalesForge
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeSuiteHome.contract.test.tsx  (23 tests) 1153ms
+ ✓ apps/os-shell/src/__tests__/forge/forgeModelComparison.contract.test.tsx  (20 tests) 921ms
+stderr | apps/os-shell/src/__tests__/forge/forgeModelComparison.contract.test.tsx > Phase 16: ModelComparisonPanel Contract > Structure > renders with data-testid="model-comparison"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/costforge/costforgeDomain.contract.test.ts  (40 tests) 18ms
+stderr | apps/os-shell/src/__tests__/forge/forgeRegressionStudio.contract.test.tsx > Phase 16B: RegressionStudio Contract > Structure > renders with data-testid="regression-studio"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeRegressionStudio.contract.test.tsx  (13 tests) 1130ms
+ ✓ apps/os-shell/src/__tests__/forge/salesforge/salesforgeDomain.contract.test.ts  (40 tests) 12ms
+stderr | apps/os-shell/src/__tests__/forge/forgeRegressionStore.contract.test.tsx > Phase 16B: forgeRegressionStore Contract > Initial State > starts with empty models array
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeRegressionStore.contract.test.tsx  (16 tests) 15ms
+ ✓ apps/os-shell/src/__tests__/forge/levyforge/levyforgeDomain.contract.test.ts  (19 tests) 11ms
+ ✓ apps/os-shell/src/__tests__/forge/forgeOutlierReview.contract.test.tsx  (16 tests) 3498ms
+stderr | apps/os-shell/src/__tests__/forge/forgeOutlierReview.contract.test.tsx > Phase 16: OutlierReviewPanel Contract > Structure > renders with data-testid="outlier-review"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeCoefficients.contract.test.tsx  (16 tests) 597ms
+stderr | apps/os-shell/src/__tests__/forge/forgeCoefficients.contract.test.tsx > Phase 16B: CoefficientPanel Contract > Structure > renders with data-testid="coefficient-panel"
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/reconciliation-commit.contract.test.ts  (10 tests) 29ms
+ ✓ apps/os-shell/src/__tests__/forge/cuforge/cuforgeApi.contract.test.ts  (22 tests) 25ms
+ ✓ apps/os-shell/src/__tests__/forge/costforge/costforgeModule.contract.test.ts  (34 tests) 26ms
+stderr | apps/os-shell/src/__tests__/forge/forgeSuiteSourceHonesty.contract.test.tsx > ForgeSuiteHome — source honesty contract > shows source disclosure when provider mode is snapshot
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ apps/os-shell/src/__tests__/forge/forgeSuiteSourceHonesty.contract.test.tsx  (7 tests) 381ms
+ ✓ apps/os-shell/src/__tests__/forge/comps-commit.contract.test.ts  (10 tests) 10ms
+ ✓ apps/os-shell/src/__tests__/forge/salesforge/salesforgeModule.contract.test.ts  (28 tests) 11ms
+ ✓ apps/os-shell/src/__tests__/forge/levyforge/levyforgeModule.contract.test.ts  (20 tests) 8ms
+ ✓ apps/os-shell/src/__tests__/forge/appeal-draft.contract.test.ts  (11 tests) 17ms
+ ✓ apps/os-shell/src/__tests__/forge/cuforge/cuforgeDomain.contract.test.ts  (20 tests) 11ms
+ ✓ apps/os-shell/src/__tests__/forge/dataProvider.modeResolution.contract.test.ts  (12 tests) 14ms
+ ✓ apps/os-shell/src/__tests__/forge/costforgeCountyScope.contract.test.ts  (4 tests) 12ms
+ ✓ apps/os-shell/src/__tests__/forge/cost-commit.contract.test.ts  (10 tests) 12ms
+ ✓ apps/os-shell/src/__tests__/forge/countyStudioSovereignty.contract.test.ts  (4 tests) 7ms
+ ✓ apps/os-shell/src/__tests__/forge/cuforge/cuforgeModule.contract.test.ts  (16 tests) 8ms
+stderr | apps/os-shell/src/__tests__/forge/costManual.honesty.contract.test.tsx > CostManual honesty contract > renders an explicit unavailable state instead of sample replacement when the live page fetch fails
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+
+stderr | apps/os-shell/src/__tests__/forge/costManual.honesty.contract.test.tsx > CostManual honesty contract > renders governed primary and secondary live rows when the live page fetch succeeds
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+Warning: An update to CostManual inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CostManual (/home/ubuntu/terrafusion_os_1.0/frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx:36:53)
+
+ ✓ apps/os-shell/src/__tests__/forge/costManual.honesty.contract.test.tsx  (3 tests) 426ms
+ ✓ apps/os-shell/src/__tests__/forge/useDataMode.unifiedSource.contract.test.ts  (6 tests) 50ms
+ ✓ apps/os-shell/src/__tests__/forge/statisticsStudioCountyTruth.contract.test.ts  (3 tests) 6ms
+ ✓ apps/os-shell/src/__tests__/forge/terraforgeModuleBoundaries.contract.test.ts  (2 tests) 3ms
+stderr | apps/os-shell/src/__tests__/forge/segmentDiscoveryDashboard.honesty.contract.test.tsx > SegmentDiscoveryDashboard honesty contract > renders explicit unavailable state instead of fixture fallback when discovery fails
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+ ✓ apps/os-shell/src/__tests__/forge/segmentDiscoveryDashboard.honesty.contract.test.tsx  (2 tests) 179ms
+ ✓ apps/os-shell/src/__tests__/forge/valueAuditModule.honesty.contract.test.tsx  (2 tests) 316ms
+stderr | apps/os-shell/src/__tests__/forge/valueAuditModule.honesty.contract.test.tsx > ValueAuditModule honesty contract > renders explicit unavailable state when no governed audit entries exist
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+
+ Test Files  34 passed (34)
+      Tests  620 passed (620)
+   Start at  23:15:31
+   Duration  13.35s (transform 1.57s, setup 4.30s, collect 6.56s, tests 9.53s, environment 27.20s, prepare 5.81s)
+

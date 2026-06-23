@@ -1,11 +1,21 @@
 # .ai Directory - Claude Development Guide
 
+> **⚠️ Accuracy & status (WO-AI-DOCS-001).** This guide is **design / aspirational alpha**, not a
+> description of a running production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`,
+> `CLAUDE.md`, root `README.md`): the **1,008-agent swarm (and any larger counts) is target
+> architecture, NOT a running runtime** (the runtime-proven AI path is **LocalOps / local-agent**);
+> **FISMA-HIGH is a posture target, not an accreditation**; **Tyler Technologies is NOT in Benton
+> County's stack**; the **3.9x ROI / 95% / 99.9%** figures are **aspirational and unvalidated**; and the
+> TypeScript/JSON samples below are **illustrative design** — several classes, services, vendor versions,
+> and commands are not implemented. Capability labels:
+> **[implemented] · [partial] · [planned] · [target architecture]**.
+
 ## Overview
 
-The `.ai` directory contains the core AI infrastructure for TerraFusion OS,
-including Claude-Flow v2.0.0 integration, AI agent management, and
-government-specific AI workflows. This represents the most advanced AI
-capabilities within the platform, designed for production government operations.
+The `.ai` directory contains the AI-infrastructure **design** for TerraFusion OS — Claude-Flow v2.0.0
+integration scaffolding, AI agent-management design, and government-specific AI workflow designs. It is
+an aspirational architecture for government operations, **not** a description of a running production
+system.
 
 ## Architecture Deep Dive
 
@@ -111,7 +121,7 @@ export class AIAgentManager {
   private performanceMonitor: PerformanceMonitor;
 
   async deployAgentSwarm(config: SwarmConfig): Promise<SwarmDeployment> {
-    // Deploy 1,008 agents across government operations
+    // Designed deployment of the 1,008-agent hierarchy (target architecture — not implemented)
     const agentDistribution = {
       property_assessor: 300, // Property assessment and valuation
       revenue_hunter: 200, // Tax optimization and revenue discovery
@@ -126,9 +136,9 @@ export class AIAgentManager {
     }
 
     return {
-      totalAgents: 50000,
+      totalAgents: 0, // designed capacity 1,008; no swarm runs
       county: config.county,
-      status: 'operational',
+      status: 'not_running', // target architecture, not operational
     };
   }
 
@@ -394,7 +404,7 @@ export class GovernmentIntegrationBridge {
       { properties, county }
     );
 
-    // 3. Tyler Technologies ERP integration
+    // 3. ERP integration (illustrative only — Tyler is NOT in Benton's stack)
     await this.tylerClient.updateAssessments({
       county,
       properties: enhancedProperties,
@@ -541,7 +551,7 @@ describe('Government AI Workflows', () => {
 ```typescript
 interface AISystemMetrics {
   agentHealth: {
-    totalAgents: 50000;
+    totalAgents: number; // designed capacity 1,008; 0 running today
     activeAgents: number;
     errorAgents: number;
     averagePerformance: number;
@@ -689,6 +699,6 @@ export class AIEthicsFramework {
 
 ---
 
-**Classification**: Government AI Infrastructure - Production Ready  
-**Last Updated**: August 27, 2025  
+**Classification**: Government AI Infrastructure — **design / alpha** (not production-accredited)  
+**Canon**: see `AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root `README.md` for current truth  
 **Version**: Claude-Flow v2.0.0-alpha / TerraFusion OS 1.0

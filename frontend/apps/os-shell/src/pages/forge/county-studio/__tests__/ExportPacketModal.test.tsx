@@ -9,6 +9,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ExportPacketModal } from '../components/ExportPacketModal';
 import { evidencePacketApi } from '../countyStudyApi';
 import type { EvidencePacketDto } from '../countyStudyApi';
+import { evidencePacketToMarkdown } from '../utils/evidencePacketMarkdown';
 
 vi.mock('../countyStudyApi', () => ({
   evidencePacketApi: { get: vi.fn() },
@@ -17,7 +18,7 @@ vi.mock('../countyStudyApi', () => ({
 }));
 
 vi.mock('../utils/evidencePacketMarkdown', () => ({
-  evidencePacketToMarkdown: () => '# Markdown stub',
+  evidencePacketToMarkdown: vi.fn(() => '# Markdown stub'),
 }));
 
 const MOCK_PACKET: EvidencePacketDto = {
@@ -71,6 +72,7 @@ const MOCK_PACKET: EvidencePacketDto = {
 };
 
 const mockGet = evidencePacketApi.get as ReturnType<typeof vi.fn>;
+const mockEvidencePacketToMarkdown = vi.mocked(evidencePacketToMarkdown);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -113,6 +115,51 @@ describe('ExportPacketModal', () => {
     expect(screen.getByTestId('export-copy-markdown')).toBeInTheDocument();
   });
 
+  it('Download JSON strips city-primary keys from runtime packet artifacts', async () => {
+    const packetWithRuntimeCityLeak = {
+      ...MOCK_PACKET,
+      city: 'Kennewick',
+      selectedCity: 'Kennewick',
+      topRiskSegments: [
+        {
+          ...MOCK_PACKET.topRiskSegments[0],
+          city: 'Kennewick',
+          cityName: 'Kennewick',
+          rollupScope: 'city',
+        },
+      ],
+    } as unknown as EvidencePacketDto;
+    mockGet.mockResolvedValueOnce(packetWithRuntimeCityLeak);
+
+    const originalBlob = globalThis.Blob;
+    let downloadedJson = '';
+    const blobSpy = vi.spyOn(globalThis, 'Blob').mockImplementation(((parts: BlobPart[], options?: BlobPropertyBag) => {
+      downloadedJson = String(parts[0]);
+      return new originalBlob(parts, options);
+    }) as typeof Blob);
+    const originalCreateObjectUrl = URL.createObjectURL;
+    const originalRevokeObjectUrl = URL.revokeObjectURL;
+    URL.createObjectURL = vi.fn().mockReturnValue('blob:evidence-packet');
+    URL.revokeObjectURL = vi.fn();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+
+    render(<ExportPacketModal studyId="study-1" onClose={vi.fn()} />);
+    await screen.findByTestId('export-download-json');
+    fireEvent.click(screen.getByTestId('export-download-json'));
+
+    const exported = JSON.parse(downloadedJson);
+    expect(exported.city).toBeUndefined();
+    expect(exported.selectedCity).toBeUndefined();
+    expect(exported.topRiskSegments[0].city).toBeUndefined();
+    expect(exported.topRiskSegments[0].cityName).toBeUndefined();
+    expect(exported.topRiskSegments[0].rollupScope).toBeUndefined();
+
+    blobSpy.mockRestore();
+    clickSpy.mockRestore();
+    URL.createObjectURL = originalCreateObjectUrl;
+    URL.revokeObjectURL = originalRevokeObjectUrl;
+  });
+
   it('Copy Markdown button shows "✓ Copied!" feedback then resets', async () => {
     mockGet.mockResolvedValueOnce(MOCK_PACKET);
     const writeText = vi.fn().mockResolvedValue(undefined);
@@ -125,6 +172,40 @@ describe('ExportPacketModal', () => {
     await waitFor(() => {
       expect(screen.getByTestId('export-copy-markdown')).toHaveTextContent('✓ Copied!');
     });
+    expect(writeText).toHaveBeenCalledWith('# Markdown stub');
+  });
+
+  it('Copy Markdown strips city-primary keys before generating packet narrative', async () => {
+    const packetWithRuntimeCityLeak = {
+      ...MOCK_PACKET,
+      city: 'Kennewick',
+      selectedCity: 'Kennewick',
+      topRiskSegments: [
+        {
+          ...MOCK_PACKET.topRiskSegments[0],
+          city: 'Kennewick',
+          cityName: 'Kennewick',
+          rollupScope: 'city',
+        },
+      ],
+    } as unknown as EvidencePacketDto;
+    mockGet.mockResolvedValueOnce(packetWithRuntimeCityLeak);
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    render(<ExportPacketModal studyId="study-1" onClose={vi.fn()} />);
+    await screen.findByTestId('export-copy-markdown');
+    fireEvent.click(screen.getByTestId('export-copy-markdown'));
+
+    expect(mockEvidencePacketToMarkdown).toHaveBeenCalledOnce();
+    const exported = mockEvidencePacketToMarkdown.mock.calls[0][0] as unknown as Record<string, unknown> & {
+      topRiskSegments: Array<Record<string, unknown>>;
+    };
+    expect(exported.city).toBeUndefined();
+    expect(exported.selectedCity).toBeUndefined();
+    expect(exported.topRiskSegments[0].city).toBeUndefined();
+    expect(exported.topRiskSegments[0].cityName).toBeUndefined();
+    expect(exported.topRiskSegments[0].rollupScope).toBeUndefined();
     expect(writeText).toHaveBeenCalledWith('# Markdown stub');
   });
 

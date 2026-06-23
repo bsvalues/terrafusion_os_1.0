@@ -13,7 +13,7 @@ describe('TerraForge module boundaries contract', () => {
     expect(suiteHome).toContain('Temporary shells outside County Studio');
     expect(suiteHome).toContain('The countywide operating workspace for valuation analysis, Operational Health, Statistics Compat');
     expect(suiteHome).toContain('County-wide cost approach');
-    expect(suiteHome).toContain('County-wide sales comparison');
+    expect(suiteHome).toContain('Parcel-scoped sales comparison');
     expect(suiteHome).toContain('Sale qualification & ratio audit');
   });
 

@@ -32,7 +32,10 @@ export async function login(req: LoginRequest): Promise<LoginResult> {
     return { token };
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status;
-    if (status === 401 || status === 403) throw new Error('Invalid credentials');
+    const message = (err as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+    if (status === 401 || status === 403) {
+      throw new Error(typeof message === 'string' && message ? message : 'Invalid credentials');
+    }
     throw new Error('Network error');
   }
 }
@@ -46,13 +49,14 @@ export async function getAccessPolicy(): Promise<AccessPolicy> {
       publicSignupEnabled: data?.publicSignupEnabled === true,
       message:
         data?.message ??
-        'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     };
   } catch {
     return {
       signupMode: 'provisioned_access_only',
       publicSignupEnabled: false,
-      message: 'TerraFusion access is provisioned by an administrator. Public self-signup is disabled.',
+      message:
+        'TerraFusion access is provisioned by an administrator. Public self-signup and public access requests are disabled.',
     };
   }
 }

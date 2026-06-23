@@ -11,9 +11,13 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel"],
+      "touches": [
+        "parcel"
+      ],
       "description": "Navigate user to Property Workbench for a given parcel",
-      "uiSurfaces": ["workbench_tab"],
+      "uiSurfaces": [
+        "workbench_tab"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only"
     },
@@ -24,11 +28,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Assign a workflow task to a user or queue",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["workflow_update", "operator_correction"],
+      "reasonCodes": [
+        "workflow_update",
+        "operator_correction"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "officeScope": "assessor"
@@ -40,7 +49,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Query certification status for a parcel or batch",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -53,7 +64,10 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "forge",
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Execute valuation model and persist results",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
@@ -82,12 +96,20 @@
           },
           "modelType": {
             "type": "string",
-            "enum": ["cost", "income", "sales"],
+            "enum": [
+              "cost",
+              "income",
+              "sales"
+            ],
             "default": "cost",
             "description": "Valuation approach"
           }
         },
-        "required": ["county", "parcelId", "taxYear"]
+        "required": [
+          "county",
+          "parcelId",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -98,12 +120,20 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "dais",
-      "touches": ["workflow", "dossier"],
+      "touches": [
+        "workflow",
+        "dossier"
+      ],
       "description": "Assemble Board of Equalization packet from dossier artifacts",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["appeal_response", "board_directive"],
-      "crossSuiteReads": ["dossier"],
+      "reasonCodes": [
+        "appeal_response",
+        "board_directive"
+      ],
+      "crossSuiteReads": [
+        "dossier"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -116,11 +146,16 @@
       "mode": "muse",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["notice"],
+      "touches": [
+        "notice"
+      ],
       "description": "Generate draft notice document for review",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["taxpayer_request", "operator_correction"],
+      "reasonCodes": [
+        "taxpayer_request",
+        "operator_correction"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "officeScope": "assessor"
@@ -132,11 +167,17 @@
       "mode": "muse",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["notice", "dossier"],
+      "touches": [
+        "notice",
+        "dossier"
+      ],
       "description": "Draft an appeal response letter/memo for assessor review. Full draft stored as payloadRef in dossier store; trace records only summary and payload reference.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["appeal_response", "operator_correction"],
+      "reasonCodes": [
+        "appeal_response",
+        "operator_correction"
+      ],
       "requiresSupervisorApproval": false,
       "supervisorRoles": [],
       "piiHandling": "payload_ref",
@@ -155,12 +196,19 @@
           },
           "position": {
             "type": "string",
-            "enum": ["uphold", "adjust", "partial"],
+            "enum": [
+              "uphold",
+              "adjust",
+              "partial"
+            ],
             "default": "uphold"
           },
           "tone": {
             "type": "string",
-            "enum": ["formal", "neutral"],
+            "enum": [
+              "formal",
+              "neutral"
+            ],
             "default": "formal"
           },
           "includeEvidenceRefs": {
@@ -168,7 +216,10 @@
             "default": true
           }
         },
-        "required": ["parcelId", "appealId"]
+        "required": [
+          "parcelId",
+          "appealId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -179,7 +230,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Generate natural language explanation of value delta",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -204,12 +258,20 @@
           },
           "audience": {
             "type": "string",
-            "enum": ["internal", "taxpayer"],
+            "enum": [
+              "internal",
+              "taxpayer"
+            ],
             "default": "internal",
             "description": "Target audience for explanation"
           }
         },
-        "required": ["county", "parcelId", "fromYear", "toYear"]
+        "required": [
+          "county",
+          "parcelId",
+          "fromYear",
+          "toYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -220,7 +282,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Explain valuation/model outputs (drivers, deltas, confidence, comps influence) in plain language for review and appeal preparation. Trace stores summary only; all text sanitized.",
       "requiresConfirmation": false,
       "reasonCodeRequired": false,
@@ -247,11 +312,17 @@
           },
           "audience": {
             "type": "string",
-            "enum": ["internal", "taxpayer"],
+            "enum": [
+              "internal",
+              "taxpayer"
+            ],
             "default": "internal"
           }
         },
-        "required": ["parcelId", "taxYear"]
+        "required": [
+          "parcelId",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -262,7 +333,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["dossier"],
+      "touches": [
+        "dossier"
+      ],
       "description": "Summarize a dossier/case file into an executive brief for review, BOE prep, or internal handoff. Stores full output as payloadRef; trace records only a summary.",
       "requiresConfirmation": false,
       "reasonCodeRequired": false,
@@ -281,16 +354,27 @@
           },
           "focus": {
             "type": "string",
-            "enum": ["appeal", "permit", "exemption", "general"],
+            "enum": [
+              "appeal",
+              "permit",
+              "exemption",
+              "general"
+            ],
             "default": "general"
           },
           "length": {
             "type": "string",
-            "enum": ["short", "standard", "detailed"],
+            "enum": [
+              "short",
+              "standard",
+              "detailed"
+            ],
             "default": "standard"
           }
         },
-        "required": ["dossierId"]
+        "required": [
+          "dossierId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -301,7 +385,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["dossier"],
+      "touches": [
+        "dossier"
+      ],
       "description": "Synthesize evidence from multiple dossier sources",
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
@@ -315,9 +401,14 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow", "dossier"],
+      "touches": [
+        "workflow",
+        "dossier"
+      ],
       "description": "Generate draft memo for commissioner review",
-      "crossSuiteReads": ["dossier"],
+      "crossSuiteReads": [
+        "dossier"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "officeScope": "assessor"
@@ -329,9 +420,13 @@
       "mode": "pilot",
       "risk": "irreversible",
       "writeLane": "os",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Request redaction of PII from stored payloads - REQUIRES supervisor approval. Emits redaction_requested event (append-only) and marks payloads for secure deletion.",
-      "endpoints": ["/api/pilot/redaction"],
+      "endpoints": [
+        "/api/pilot/redaction"
+      ],
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
       "reasonCodes": [
@@ -341,7 +436,11 @@
         "legal_compliance"
       ],
       "requiresSupervisorApproval": true,
-      "supervisorRoles": ["supervisor", "administrator", "compliance_officer"],
+      "supervisorRoles": [
+        "supervisor",
+        "administrator",
+        "compliance_officer"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "secure-blob"
@@ -353,7 +452,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "exemption"],
+      "touches": [
+        "parcel",
+        "exemption"
+      ],
       "description": "Explains how senior/disabled exemptions affect assessed value, taxable value, and estimated taxes for a Benton County parcel (taxpayer-friendly).",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -366,7 +468,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["dossier", "parcel"],
+      "touches": [
+        "dossier",
+        "parcel"
+      ],
       "description": "Summarizes the dossier/casefile for a parcel (appeal history, key events, documents) with PII-safe trace handling.",
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
@@ -386,12 +491,20 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": ["notices", "appeals", "permits", "sales"]
+              "enum": [
+                "notices",
+                "appeals",
+                "permits",
+                "sales"
+              ]
             },
             "description": "Sections to include in summary"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -402,7 +515,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Compares assessed value year-over-year and explains drivers (market, new construction, corrections) in plain language.",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -415,7 +531,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["levy", "parcel"],
+      "touches": [
+        "levy",
+        "parcel"
+      ],
       "description": "Breaks down estimated levy rate components (state/school/local) and explains why taxes can change without value change.",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -435,7 +554,10 @@
             "description": "Taxing district code"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -446,7 +568,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Explains which model inputs matter most (quality, size, location, effective age) and what could justify a review.",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -459,11 +584,17 @@
       "mode": "muse",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["notice", "parcel"],
+      "touches": [
+        "notice",
+        "parcel"
+      ],
       "description": "Drafts a value change notice text for review (non-final), including rationale and next-step instructions.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["annual_certification", "operator_correction"],
+      "reasonCodes": [
+        "annual_certification",
+        "operator_correction"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -476,11 +607,17 @@
       "mode": "muse",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["notice", "dossier"],
-      "description": "Drafts an initial appeal response narrative (position-aware) for BOE review—facts, rationale, and recommended resolution.",
+      "touches": [
+        "notice",
+        "dossier"
+      ],
+      "description": "Drafts an initial appeal response narrative (position-aware) for BOE review\u2014facts, rationale, and recommended resolution.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["appeal_response", "operator_correction"],
+      "reasonCodes": [
+        "appeal_response",
+        "operator_correction"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -493,7 +630,10 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Summarizes comp selection logic and adjustments at a high level (no raw PII) for taxpayer-facing explanation.",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -506,9 +646,17 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow", "dossier", "parcel"],
+      "touches": [
+        "workflow",
+        "dossier",
+        "parcel"
+      ],
       "description": "Generate a ranked morning work brief for an assessor staff lane using governed findings and county scope.",
-      "crossSuiteReads": ["forge", "atlas", "dossier"],
+      "crossSuiteReads": [
+        "forge",
+        "atlas",
+        "dossier"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -545,7 +693,11 @@
             ]
           }
         },
-        "required": ["county", "role", "taxYear"]
+        "required": [
+          "county",
+          "role",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -556,9 +708,17 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model", "map"],
+      "touches": [
+        "parcel",
+        "model",
+        "map"
+      ],
       "description": "Classify a county signal into a governed finding type, staff lane, and next tool recommendation.",
-      "crossSuiteReads": ["atlas", "dais", "dossier"],
+      "crossSuiteReads": [
+        "atlas",
+        "dais",
+        "dossier"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -604,7 +764,10 @@
             "default": true
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -615,9 +778,15 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["model", "parcel"],
+      "touches": [
+        "model",
+        "parcel"
+      ],
       "description": "Preview a county or neighborhood rate adjustment and show the working impact before any write is attempted.",
-      "crossSuiteReads": ["atlas", "dossier"],
+      "crossSuiteReads": [
+        "atlas",
+        "dossier"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -651,7 +820,11 @@
             "description": "Optional target scope identifier"
           }
         },
-        "required": ["county", "taxYear", "draftVersion"]
+        "required": [
+          "county",
+          "taxYear",
+          "draftVersion"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -662,7 +835,10 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "forge",
-      "touches": ["model", "workflow"],
+      "touches": [
+        "model",
+        "workflow"
+      ],
       "description": "Apply a governed rate adjustment to the working draft and produce a sign-off packet reference.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
@@ -701,7 +877,10 @@
             "description": "Echoed reason code for downstream packets"
           }
         },
-        "required": ["county", "draftVersion"]
+        "required": [
+          "county",
+          "draftVersion"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -712,7 +891,10 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["model", "parcel"],
+      "touches": [
+        "model",
+        "parcel"
+      ],
       "description": "Recompute ratio study metrics for a county or draft scope without applying any valuation changes.",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -743,7 +925,10 @@
             "default": "county"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -754,7 +939,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["model"],
+      "touches": [
+        "model"
+      ],
       "description": "Compare two matrix versions and summarize the changed cells and affected scopes.",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -774,7 +961,11 @@
             "description": "Candidate matrix version"
           }
         },
-        "required": ["county", "baseVersion", "compareVersion"]
+        "required": [
+          "county",
+          "baseVersion",
+          "compareVersion"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -785,11 +976,17 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "forge",
-      "touches": ["parcel", "workflow"],
+      "touches": [
+        "parcel",
+        "workflow"
+      ],
       "description": "Route a parcel-level defect into the correction lane with explicit upstream finding linkage.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["operator_correction", "workflow_update"],
+      "reasonCodes": [
+        "operator_correction",
+        "workflow_update"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -823,7 +1020,11 @@
             "description": "Echoed reason code for downstream workflows"
           }
         },
-        "required": ["county", "parcelId", "findingId"]
+        "required": [
+          "county",
+          "parcelId",
+          "findingId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -834,9 +1035,14 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["map", "parcel"],
+      "touches": [
+        "map",
+        "parcel"
+      ],
       "description": "Translate residual clusters and map anomalies into a governed explanation and handoff recommendation.",
-      "crossSuiteReads": ["forge"],
+      "crossSuiteReads": [
+        "forge"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -852,14 +1058,23 @@
           },
           "metric": {
             "type": "string",
-            "enum": ["prd", "prb", "cod", "residual_cluster"]
+            "enum": [
+              "prd",
+              "prb",
+              "cod",
+              "residual_cluster"
+            ]
           },
           "geographyId": {
             "type": "string",
             "description": "Optional neighborhood or residual cluster identifier"
           }
         },
-        "required": ["county", "taxYear", "metric"]
+        "required": [
+          "county",
+          "taxYear",
+          "metric"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -870,9 +1085,15 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["dossier", "workflow"],
+      "touches": [
+        "dossier",
+        "workflow"
+      ],
       "description": "Open the current appeal packet view and return the packet reference and chain-of-custody summary.",
-      "crossSuiteReads": ["dais", "forge"],
+      "crossSuiteReads": [
+        "dais",
+        "forge"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -888,7 +1109,10 @@
             "description": "Appeal case identifier"
           }
         },
-        "required": ["county", "appealId"]
+        "required": [
+          "county",
+          "appealId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -899,7 +1123,10 @@
       "mode": "muse",
       "risk": "write_low",
       "writeLane": "forge",
-      "touches": ["model", "dossier"],
+      "touches": [
+        "model",
+        "dossier"
+      ],
       "description": "Generate a defensible calibration memo draft with impact preview and sign-off sections.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
@@ -908,7 +1135,11 @@
         "annual_certification",
         "operator_correction"
       ],
-      "crossSuiteReads": ["atlas", "dossier", "dais"],
+      "crossSuiteReads": [
+        "atlas",
+        "dossier",
+        "dais"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -925,7 +1156,11 @@
           },
           "audience": {
             "type": "string",
-            "enum": ["internal", "board", "dor"],
+            "enum": [
+              "internal",
+              "board",
+              "dor"
+            ],
             "default": "internal"
           },
           "reasonCode": {
@@ -933,7 +1168,10 @@
             "description": "Echoed reason code for downstream packets"
           }
         },
-        "required": ["county", "draftVersion"]
+        "required": [
+          "county",
+          "draftVersion"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -944,12 +1182,22 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dossier",
-      "touches": ["dossier", "workflow"],
+      "touches": [
+        "dossier",
+        "workflow"
+      ],
       "description": "Export the county equalization evidence package for certification review.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["annual_certification", "board_directive"],
-      "crossSuiteReads": ["forge", "atlas", "dais"],
+      "reasonCodes": [
+        "annual_certification",
+        "board_directive"
+      ],
+      "crossSuiteReads": [
+        "forge",
+        "atlas",
+        "dais"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -973,7 +1221,11 @@
             "description": "Echoed reason code for downstream exports"
           }
         },
-        "required": ["county", "draftVersion", "taxYear"]
+        "required": [
+          "county",
+          "draftVersion",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -984,7 +1236,11 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "audit",
-      "touches": ["dossier", "workflow", "trace"],
+      "touches": [
+        "dossier",
+        "workflow",
+        "trace"
+      ],
       "description": "Export an audit-ready bundle that links packet artifacts and trace references for review.",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
@@ -993,7 +1249,12 @@
         "board_directive",
         "legal_compliance"
       ],
-      "crossSuiteReads": ["forge", "atlas", "dais", "dossier"],
+      "crossSuiteReads": [
+        "forge",
+        "atlas",
+        "dais",
+        "dossier"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "audit",
@@ -1010,7 +1271,11 @@
           },
           "bundleScope": {
             "type": "string",
-            "enum": ["county", "appeal", "neighborhood"],
+            "enum": [
+              "county",
+              "appeal",
+              "neighborhood"
+            ],
             "default": "county"
           },
           "subjectId": {
@@ -1022,7 +1287,10 @@
             "description": "Echoed reason code for downstream exports"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1033,7 +1301,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "OS-only trace lookup helper used by admins/auditors to fetch events by correlationId (visibility still enforced by access control).",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1045,7 +1315,9 @@
             "description": "Correlation ID to search for trace events"
           }
         },
-        "required": ["correlationId"]
+        "required": [
+          "correlationId"
+        ]
       }
     },
     {
@@ -1055,11 +1327,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dossier",
-      "touches": ["dossier"],
+      "touches": [
+        "dossier"
+      ],
       "description": "Adds a case note to the dossier for internal workflow continuity (PII-safe trace via payload ref).",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["workflow_update", "operator_correction"],
+      "reasonCodes": [
+        "workflow_update",
+        "operator_correction"
+      ],
       "piiHandling": "payload_ref",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1080,12 +1357,20 @@
           },
           "type": {
             "type": "string",
-            "enum": ["case_note", "review_note", "correction"],
+            "enum": [
+              "case_note",
+              "review_note",
+              "correction"
+            ],
             "default": "case_note",
             "description": "Note type"
           }
         },
-        "required": ["county", "parcelId", "content"]
+        "required": [
+          "county",
+          "parcelId",
+          "content"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1096,7 +1381,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel"],
+      "touches": [
+        "parcel"
+      ],
       "description": "Query GIS layers and parcel boundary data for mapping visualization. Returns parcel geometry, available layers, and overlay metadata.",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1116,11 +1403,17 @@
           },
           "format": {
             "type": "string",
-            "enum": ["geojson", "wkt", "summary"],
+            "enum": [
+              "geojson",
+              "wkt",
+              "summary"
+            ],
             "default": "summary"
           }
         },
-        "required": ["parcelId"]
+        "required": [
+          "parcelId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1131,7 +1424,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Calculate Payment In Lieu of Taxes for federal lands (Hanford Nuclear Reservation) with district-level distribution",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1147,7 +1442,10 @@
             "description": "Fiscal year for PILT calculation"
           }
         },
-        "required": ["county", "fiscalYear"]
+        "required": [
+          "county",
+          "fiscalYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1158,7 +1456,10 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Calculate property value using the income capitalization approach (NOI / cap rate) with Benton County market data",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1185,7 +1486,12 @@
           },
           "propertyType": {
             "type": "string",
-            "enum": ["residential", "commercial", "industrial", "mixed"],
+            "enum": [
+              "residential",
+              "commercial",
+              "industrial",
+              "mixed"
+            ],
             "default": "commercial"
           },
           "location": {
@@ -1193,7 +1499,10 @@
             "description": "Sub-market location for premium adjustment"
           }
         },
-        "required": ["county", "annualRentalIncome"]
+        "required": [
+          "county",
+          "annualRentalIncome"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1204,7 +1513,10 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["parcel", "model"],
+      "touches": [
+        "parcel",
+        "model"
+      ],
       "description": "Compute physical, functional, and external depreciation using Benton County bracket table with condition-based adjustment",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1227,13 +1539,24 @@
           },
           "condition": {
             "type": "string",
-            "enum": ["poor", "fair", "average", "good", "excellent"],
+            "enum": [
+              "poor",
+              "fair",
+              "average",
+              "good",
+              "excellent"
+            ],
             "default": "average",
             "description": "Physical condition rating"
           },
           "quality": {
             "type": "string",
-            "enum": ["low", "average", "above-average", "high"],
+            "enum": [
+              "low",
+              "average",
+              "above-average",
+              "high"
+            ],
             "default": "average",
             "description": "Construction quality classification"
           },
@@ -1243,7 +1566,9 @@
             "default": 0
           }
         },
-        "required": ["county"]
+        "required": [
+          "county"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1254,7 +1579,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Check senior/disabled exemption eligibility per RCW 84.36.381 with income threshold validation",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1282,7 +1609,10 @@
             "description": "Whether applicant has qualifying disability"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1293,11 +1623,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Process annual exemption renewal with documentation verification",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["annual_renewal", "documentation_update"],
+      "reasonCodes": [
+        "annual_renewal",
+        "documentation_update"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1317,7 +1652,11 @@
             "description": "Tax year for renewal"
           }
         },
-        "required": ["county", "exemptionId", "taxYear"]
+        "required": [
+          "county",
+          "exemptionId",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1328,11 +1667,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "File a new Board of Equalization appeal for a property assessment",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["property_owner_request", "assessor_review"],
+      "reasonCodes": [
+        "property_owner_request",
+        "assessor_review"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1360,7 +1704,11 @@
             "description": "Requested assessed value"
           }
         },
-        "required": ["county", "parcelId", "grounds"]
+        "required": [
+          "county",
+          "parcelId",
+          "grounds"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1371,11 +1719,16 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Schedule a Board of Equalization hearing with panel assignment",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["scheduled_hearing", "rescheduled_hearing"],
+      "reasonCodes": [
+        "scheduled_hearing",
+        "rescheduled_hearing"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1402,7 +1755,11 @@
             "description": "Panel member names"
           }
         },
-        "required": ["county", "appealId", "requestedDate"]
+        "required": [
+          "county",
+          "appealId",
+          "requestedDate"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1413,7 +1770,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Get assessment roll certification progress with checklist and blockers",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1429,7 +1788,10 @@
             "description": "Tax year"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1440,11 +1802,16 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Sign off a certification checklist step for assessment roll certification",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["step_verified", "conditional_approval"],
+      "reasonCodes": [
+        "step_verified",
+        "conditional_approval"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1472,7 +1839,12 @@
             "description": "Sign-off notes"
           }
         },
-        "required": ["county", "taxYear", "stepId", "signedBy"]
+        "required": [
+          "county",
+          "taxYear",
+          "stepId",
+          "signedBy"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1483,11 +1855,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Queue generated notices for batch mailing with delivery tracking",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["batch_mail", "priority_mail"],
+      "reasonCodes": [
+        "batch_mail",
+        "priority_mail"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1507,11 +1884,18 @@
           },
           "deliveryMethod": {
             "type": "string",
-            "enum": ["usps_first_class", "usps_certified", "electronic"],
+            "enum": [
+              "usps_first_class",
+              "usps_certified",
+              "electronic"
+            ],
             "default": "usps_first_class"
           }
         },
-        "required": ["county", "noticeIds"]
+        "required": [
+          "county",
+          "noticeIds"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1522,7 +1906,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Get task queue statistics with SLA compliance metrics",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1542,7 +1928,9 @@
             "description": "Filter by assignee"
           }
         },
-        "required": ["county"]
+        "required": [
+          "county"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1553,11 +1941,17 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "dais",
-      "touches": ["workflow"],
+      "touches": [
+        "workflow"
+      ],
       "description": "Escalate an overdue or high-priority task with reason tracking",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["sla_breach", "priority_override", "supervisor_request"],
+      "reasonCodes": [
+        "sla_breach",
+        "priority_override",
+        "supervisor_request"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "dossier",
@@ -1581,7 +1975,11 @@
             "description": "Person or role to escalate to"
           }
         },
-        "required": ["county", "taskId", "reason"]
+        "required": [
+          "county",
+          "taskId",
+          "reason"
+        ]
       },
       "officeScope": "assessor"
     },
@@ -1592,7 +1990,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Search clerk recordings by parcel, grantor, grantee, or document type",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1617,11 +2017,19 @@
           },
           "documentType": {
             "type": "string",
-            "enum": ["deed", "lien", "mortgage", "easement", "all"],
+            "enum": [
+              "deed",
+              "lien",
+              "mortgage",
+              "easement",
+              "all"
+            ],
             "default": "all"
           }
         },
-        "required": ["county"]
+        "required": [
+          "county"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1632,7 +2040,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Retrieve the chain of title for a parcel with chronological ownership history",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1648,7 +2058,10 @@
             "description": "Parcel identifier"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1659,7 +2072,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Explain the fee schedule for document recording with statutory references",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1672,14 +2087,22 @@
           },
           "documentType": {
             "type": "string",
-            "enum": ["deed", "lien", "mortgage", "easement"]
+            "enum": [
+              "deed",
+              "lien",
+              "mortgage",
+              "easement"
+            ]
           },
           "pageCount": {
             "type": "integer",
             "description": "Number of pages"
           }
         },
-        "required": ["county", "documentType"]
+        "required": [
+          "county",
+          "documentType"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1690,11 +2113,16 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "clerk",
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Record a new document (deed, lien, mortgage) in the county recording system",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["new_recording", "corrective_recording"],
+      "reasonCodes": [
+        "new_recording",
+        "corrective_recording"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "clerk",
@@ -1711,7 +2139,12 @@
           },
           "documentType": {
             "type": "string",
-            "enum": ["deed", "lien", "mortgage", "easement"]
+            "enum": [
+              "deed",
+              "lien",
+              "mortgage",
+              "easement"
+            ]
           },
           "grantor": {
             "type": "string",
@@ -1726,7 +2159,13 @@
             "description": "Consideration amount"
           }
         },
-        "required": ["county", "parcelId", "documentType", "grantor", "grantee"]
+        "required": [
+          "county",
+          "parcelId",
+          "documentType",
+          "grantor",
+          "grantee"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1737,11 +2176,17 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "clerk",
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Release an existing lien on a parcel",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["satisfied", "discharged", "expired"],
+      "reasonCodes": [
+        "satisfied",
+        "discharged",
+        "expired"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "clerk",
@@ -1761,7 +2206,10 @@
             "description": "Reason for release"
           }
         },
-        "required": ["county", "lienId"]
+        "required": [
+          "county",
+          "lienId"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1772,7 +2220,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["recording"],
+      "touches": [
+        "recording"
+      ],
       "description": "Summarize all recordings for a parcel with narrative overview",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1788,7 +2238,10 @@
             "description": "Parcel identifier"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "clerk"
     },
@@ -1799,7 +2252,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Retrieve the current property tax statement with levy breakdown",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1819,7 +2274,10 @@
             "description": "Tax year"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1830,7 +2288,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Explain the levy components on a tax statement in plain language",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1850,7 +2310,10 @@
             "description": "Tax year"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1861,11 +2324,17 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "treasury",
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Record a property tax payment",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["regular_payment", "partial_payment", "penalty_waiver"],
+      "reasonCodes": [
+        "regular_payment",
+        "partial_payment",
+        "penalty_waiver"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "treasury",
@@ -1886,11 +2355,20 @@
           },
           "paymentMethod": {
             "type": "string",
-            "enum": ["check", "cash", "electronic", "escrow"],
+            "enum": [
+              "check",
+              "cash",
+              "electronic",
+              "escrow"
+            ],
             "default": "check"
           }
         },
-        "required": ["county", "parcelId", "amount"]
+        "required": [
+          "county",
+          "parcelId",
+          "amount"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1901,7 +2379,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Check delinquency status and deadlines for a parcel",
       "piiHandling": "sanitize",
       "tracePolicy": "summary_only",
@@ -1917,7 +2397,10 @@
             "description": "Parcel identifier"
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1928,11 +2411,16 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "treasury",
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Create a statutory-compliant installment payment plan for delinquent taxes",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["hardship", "standard_plan"],
+      "reasonCodes": [
+        "hardship",
+        "standard_plan"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "treasury",
@@ -1953,7 +2441,10 @@
             "default": 12
           }
         },
-        "required": ["county", "parcelId"]
+        "required": [
+          "county",
+          "parcelId"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1964,7 +2455,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Summarize tax collection statistics for the county",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -1980,7 +2473,9 @@
             "description": "Tax year"
           }
         },
-        "required": ["county"]
+        "required": [
+          "county"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -1991,11 +2486,16 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "treasury",
-      "touches": ["tax"],
+      "touches": [
+        "tax"
+      ],
       "description": "Initiate tax sale process for delinquent property per RCW 84.64",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["statutory_delinquency", "three_year_default"],
+      "reasonCodes": [
+        "statutory_delinquency",
+        "three_year_default"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "treasury",
@@ -2018,7 +2518,11 @@
             "description": "Delinquent tax years"
           }
         },
-        "required": ["county", "parcelId", "delinquentYears"]
+        "required": [
+          "county",
+          "parcelId",
+          "delinquentYears"
+        ]
       },
       "officeScope": "treasurer"
     },
@@ -2029,7 +2533,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["compliance"],
+      "touches": [
+        "compliance"
+      ],
       "description": "Summarize assessment roll audit status with parcel statistics",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2045,7 +2551,10 @@
             "description": "Tax year"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "auditor"
     },
@@ -2056,7 +2565,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["compliance"],
+      "touches": [
+        "compliance"
+      ],
       "description": "Verify levy limit compliance against RCW 84.52 and 84.55",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2076,7 +2587,10 @@
             "description": "Taxing district code"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "auditor"
     },
@@ -2087,7 +2601,9 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "audit",
-      "touches": ["compliance"],
+      "touches": [
+        "compliance"
+      ],
       "description": "Submit an audit finding for a parcel or district",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
@@ -2112,7 +2628,11 @@
           },
           "findingType": {
             "type": "string",
-            "enum": ["valuation", "procedural", "statutory"]
+            "enum": [
+              "valuation",
+              "procedural",
+              "statutory"
+            ]
           },
           "description": {
             "type": "string",
@@ -2120,11 +2640,20 @@
           },
           "severity": {
             "type": "string",
-            "enum": ["low", "medium", "high", "critical"],
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
             "default": "medium"
           }
         },
-        "required": ["county", "findingType", "description"]
+        "required": [
+          "county",
+          "findingType",
+          "description"
+        ]
       },
       "officeScope": "auditor"
     },
@@ -2135,11 +2664,16 @@
       "mode": "pilot",
       "risk": "write_high",
       "writeLane": "audit",
-      "touches": ["compliance"],
+      "touches": [
+        "compliance"
+      ],
       "description": "Cross-office financial reconciliation between Assessor values and Treasurer collections",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["annual_reconciliation", "discrepancy_investigation"],
+      "reasonCodes": [
+        "annual_reconciliation",
+        "discrepancy_investigation"
+      ],
       "piiHandling": "sanitize",
       "tracePolicy": "payload_ref",
       "payloadStore": "audit",
@@ -2162,7 +2696,10 @@
             "description": "Offices to reconcile"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "auditor"
     },
@@ -2173,7 +2710,9 @@
       "mode": "muse",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["compliance"],
+      "touches": [
+        "compliance"
+      ],
       "description": "Generate a compliance report with statutory references and findings summary",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2190,11 +2729,18 @@
           },
           "scope": {
             "type": "string",
-            "enum": ["full", "levy_only", "roll_only"],
+            "enum": [
+              "full",
+              "levy_only",
+              "roll_only"
+            ],
             "default": "full"
           }
         },
-        "required": ["county", "taxYear"]
+        "required": [
+          "county",
+          "taxYear"
+        ]
       },
       "officeScope": "auditor"
     },
@@ -2218,7 +2764,9 @@
             "maxLength": 160
           }
         },
-        "required": ["echo"]
+        "required": [
+          "echo"
+        ]
       }
     },
     {
@@ -2229,7 +2777,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Run TerraCanon system diagnostics — checks workspace health, governance gates, and service connectivity",
+      "description": "Run TerraCanon system diagnostics \u2014 checks workspace health, governance gates, and service connectivity",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2246,7 +2794,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Quick governance gate validation — runs type-check and Phase 83 tool tests without full CI",
+      "description": "Quick governance gate validation \u2014 runs type-check and Phase 83 tool tests without full CI",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2263,7 +2811,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Returns the Golden Corpus lock status — artifact inventory, SHA256 hashes, release tag, and ledger state",
+      "description": "Returns the Golden Corpus lock status \u2014 artifact inventory, SHA256 hashes, release tag, and ledger state",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2280,7 +2828,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Lists files and directories within an allowed path — enforces path allowlist, rejects traversal",
+      "description": "Lists files and directories within an allowed path \u2014 enforces path allowlist, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2291,7 +2839,9 @@
             "description": "Relative directory path within the repository"
           }
         },
-        "required": ["dirPath"]
+        "required": [
+          "dirPath"
+        ]
       }
     },
     {
@@ -2302,7 +2852,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Reads file content from an allowed path — enforces path allowlist, 512KB limit, rejects traversal",
+      "description": "Reads file content from an allowed path \u2014 enforces path allowlist, 512KB limit, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2313,7 +2863,9 @@
             "description": "Relative file path within the repository"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2323,13 +2875,19 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "os",
-      "touches": ["canon_file"],
-      "description": "Writes file content to an allowed path — enforces path allowlist, 1MB limit, rejects traversal",
+      "touches": [
+        "canon_file"
+      ],
+      "description": "Writes file content to an allowed path \u2014 enforces path allowlist, 1MB limit, rejects traversal",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["canon_edit", "canon_save", "canon_refactor"],
+      "reasonCodes": [
+        "canon_edit",
+        "canon_save",
+        "canon_refactor"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
@@ -2342,7 +2900,10 @@
             "description": "File content to write"
           }
         },
-        "required": ["filePath", "content"]
+        "required": [
+          "filePath",
+          "content"
+        ]
       }
     },
     {
@@ -2353,7 +2914,7 @@
       "risk": "read_only",
       "writeLane": null,
       "touches": [],
-      "description": "Searches for text across files in allowed paths — case-insensitive, optional regex, returns matching lines with context",
+      "description": "Searches for text across files in allowed paths \u2014 case-insensitive, optional regex, returns matching lines with context",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "paramsSchema": {
@@ -2376,7 +2937,9 @@
             "description": "Maximum results to return (default 100)"
           }
         },
-        "required": ["query"]
+        "required": [
+          "query"
+        ]
       }
     },
     {
@@ -2387,12 +2950,16 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Executes an allowlisted command in the Canon IDE terminal — governance gates, type-check, build, and test commands only",
+      "description": "Executes an allowlisted command in the Canon IDE terminal \u2014 governance gates, type-check, build, and test commands only",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["governance_gate", "build_verify", "test_run"],
+      "reasonCodes": [
+        "governance_gate",
+        "build_verify",
+        "test_run"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
@@ -2401,7 +2968,9 @@
             "description": "Allowlisted command to execute (e.g. type-check, build:core-js)"
           }
         },
-        "required": ["command"]
+        "required": [
+          "command"
+        ]
       }
     },
     {
@@ -2412,12 +2981,16 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Creates a new file in an allowed Canon IDE path — rejects if the file already exists to prevent accidental overwrites",
+      "description": "Creates a new file in an allowed Canon IDE path \u2014 rejects if the file already exists to prevent accidental overwrites",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["file_create", "scaffold", "workspace_setup"],
+      "reasonCodes": [
+        "file_create",
+        "scaffold",
+        "workspace_setup"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
@@ -2430,7 +3003,9 @@
             "description": "Initial file content (max 1 MB)"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2441,7 +3016,7 @@
       "risk": "write_high",
       "writeLane": "os",
       "touches": [],
-      "description": "Deletes an existing file in an allowed Canon IDE path — requires confirmation since deletion is irreversible",
+      "description": "Deletes an existing file in an allowed Canon IDE path \u2014 requires confirmation since deletion is irreversible",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2459,7 +3034,9 @@
             "description": "Relative path within the repo (must match an allowed prefix)"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2470,7 +3047,7 @@
       "risk": "write_low",
       "writeLane": "os",
       "touches": [],
-      "description": "Renames or moves a file within allowed Canon IDE paths — both source and destination must be in the allowlist",
+      "description": "Renames or moves a file within allowed Canon IDE paths \u2014 both source and destination must be in the allowlist",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
@@ -2492,7 +3069,10 @@
             "description": "New relative path for the file (must match an allowed prefix)"
           }
         },
-        "required": ["oldPath", "newPath"]
+        "required": [
+          "oldPath",
+          "newPath"
+        ]
       }
     },
     {
@@ -2519,7 +3099,10 @@
             "description": "Relative path of the right (modified) file to compare"
           }
         },
-        "required": ["leftPath", "rightPath"]
+        "required": [
+          "leftPath",
+          "rightPath"
+        ]
       }
     },
     {
@@ -2565,7 +3148,9 @@
             "description": "Relative path of the file to extract symbols from (must match an allowed prefix)"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2604,14 +3189,23 @@
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["bookmark_add", "bookmark_remove", "bookmark_clear"],
+      "reasonCodes": [
+        "bookmark_add",
+        "bookmark_remove",
+        "bookmark_clear"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
           "action": {
             "type": "string",
             "description": "Action to perform: 'add', 'remove', 'list', or 'clear'",
-            "enum": ["add", "remove", "list", "clear"]
+            "enum": [
+              "add",
+              "remove",
+              "list",
+              "clear"
+            ]
           },
           "filePath": {
             "type": "string",
@@ -2626,7 +3220,9 @@
             "description": "Optional label for the bookmark"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -2665,21 +3261,30 @@
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["recent_add", "recent_clear"],
+      "reasonCodes": [
+        "recent_add",
+        "recent_clear"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
           "action": {
             "type": "string",
             "description": "Action to perform: 'add', 'list', or 'clear'",
-            "enum": ["add", "list", "clear"]
+            "enum": [
+              "add",
+              "list",
+              "clear"
+            ]
           },
           "filePath": {
             "type": "string",
             "description": "File path to record for 'add' action"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -2706,7 +3311,9 @@
             "description": "Maximum results to return (default 50)"
           }
         },
-        "required": ["query"]
+        "required": [
+          "query"
+        ]
       }
     },
     {
@@ -2727,7 +3334,12 @@
           "action": {
             "type": "string",
             "description": "Action to perform: create, list, delete, or insert",
-            "enum": ["create", "list", "delete", "insert"]
+            "enum": [
+              "create",
+              "list",
+              "delete",
+              "insert"
+            ]
           },
           "id": {
             "type": "string",
@@ -2754,7 +3366,9 @@
             "description": "Optional description of the snippet"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -2777,7 +3391,9 @@
             "description": "Path to the file to analyze for minimap data"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2797,7 +3413,11 @@
         "properties": {
           "action": {
             "type": "string",
-            "enum": ["get", "set", "reset"],
+            "enum": [
+              "get",
+              "set",
+              "reset"
+            ],
             "description": "Action to perform: get current settings, set (merge) new values, or reset to defaults"
           },
           "settings": {
@@ -2805,7 +3425,9 @@
             "description": "Partial settings object to merge (only for set action)"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -2821,13 +3443,21 @@
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["find_replace", "refactor", "bulk_rename"],
+      "reasonCodes": [
+        "find_replace",
+        "refactor",
+        "bulk_rename"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
           "action": {
             "type": "string",
-            "enum": ["find", "replace", "replaceAll"],
+            "enum": [
+              "find",
+              "replace",
+              "replaceAll"
+            ],
             "description": "Action: find (search only), replace (single match), replaceAll (all matches)"
           },
           "query": {
@@ -2851,7 +3481,10 @@
             "description": "Optional: limit search to a single file"
           }
         },
-        "required": ["action", "query"]
+        "required": [
+          "action",
+          "query"
+        ]
       }
     },
     {
@@ -2867,7 +3500,11 @@
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["format_file", "code_style", "cleanup"],
+      "reasonCodes": [
+        "format_file",
+        "code_style",
+        "cleanup"
+      ],
       "paramsSchema": {
         "type": "object",
         "properties": {
@@ -2888,7 +3525,9 @@
             "description": "Ensure file ends with a newline (default: true)"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2898,7 +3537,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Get or set the editor split layout mode (single, split-vertical, split-horizontal)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2908,16 +3549,25 @@
         "properties": {
           "action": {
             "type": "string",
-            "enum": ["get", "set"],
+            "enum": [
+              "get",
+              "set"
+            ],
             "description": "Action to perform: get current layout or set new layout"
           },
           "mode": {
             "type": "string",
-            "enum": ["single", "split-vertical", "split-horizontal"],
+            "enum": [
+              "single",
+              "split-vertical",
+              "split-horizontal"
+            ],
             "description": "Editor layout mode (required for set action)"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -2927,7 +3577,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Compute foldable code regions for a file (functions, classes, imports, comment blocks)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2940,7 +3592,9 @@
             "description": "Path to the file to compute folding ranges for"
           }
         },
-        "required": ["filePath"]
+        "required": [
+          "filePath"
+        ]
       }
     },
     {
@@ -2950,7 +3604,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Add, remove, or list line markers and decorations (diagnostics, bookmarks, modified indicators)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -2960,7 +3616,11 @@
         "properties": {
           "action": {
             "type": "string",
-            "enum": ["list", "set", "clear"],
+            "enum": [
+              "list",
+              "set",
+              "clear"
+            ],
             "description": "Action to perform: list current markers, set markers, or clear all markers"
           },
           "filePath": {
@@ -2973,23 +3633,47 @@
             "items": {
               "type": "object",
               "properties": {
-                "id": { "type": "string" },
-                "line": { "type": "number" },
+                "id": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "number"
+                },
                 "severity": {
                   "type": "string",
-                  "enum": ["error", "warning", "info", "hint"]
+                  "enum": [
+                    "error",
+                    "warning",
+                    "info",
+                    "hint"
+                  ]
                 },
                 "kind": {
                   "type": "string",
-                  "enum": ["diagnostic", "bookmark", "modified"]
+                  "enum": [
+                    "diagnostic",
+                    "bookmark",
+                    "modified"
+                  ]
                 },
-                "message": { "type": "string" }
+                "message": {
+                  "type": "string"
+                }
               },
-              "required": ["id", "line", "severity", "kind", "message"]
+              "required": [
+                "id",
+                "line",
+                "severity",
+                "kind",
+                "message"
+              ]
             }
           }
         },
-        "required": ["action", "filePath"]
+        "required": [
+          "action",
+          "filePath"
+        ]
       }
     },
     {
@@ -2999,7 +3683,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Get hover information for a symbol at a given file position (type, JSDoc, parameters)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -3024,7 +3710,11 @@
             "description": "Optional file content (sent to avoid re-reading)"
           }
         },
-        "required": ["filePath", "line", "column"]
+        "required": [
+          "filePath",
+          "line",
+          "column"
+        ]
       }
     },
     {
@@ -3034,7 +3724,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Find the definition location for a symbol at a given file position (F12 / Ctrl+Click)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -3063,7 +3755,11 @@
             "description": "Optional file content (sent to avoid re-reading)"
           }
         },
-        "required": ["filePath", "line", "column"]
+        "required": [
+          "filePath",
+          "line",
+          "column"
+        ]
       }
     },
     {
@@ -3073,7 +3769,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "Suggest completions at a given cursor position (local symbols, keywords, snippets)",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -3102,7 +3800,11 @@
             "description": "Character that triggered completion (e.g. '.', ':', '<')"
           }
         },
-        "required": ["filePath", "line", "column"]
+        "required": [
+          "filePath",
+          "line",
+          "column"
+        ]
       }
     },
     {
@@ -3112,7 +3814,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "description": "List available editor themes, get the active theme, or set the active theme",
       "piiHandling": "none",
       "tracePolicy": "summary_only",
@@ -3129,7 +3833,9 @@
             "description": "Theme ID to activate (required for 'set' action)"
           }
         },
-        "required": ["action"]
+        "required": [
+          "action"
+        ]
       }
     },
     {
@@ -3139,7 +3845,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3191,7 +3899,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3222,7 +3932,12 @@
             "description": "Whether to include the declaration in results (default: true)"
           }
         },
-        "required": ["filePath", "line", "column", "content"]
+        "required": [
+          "filePath",
+          "line",
+          "column",
+          "content"
+        ]
       }
     },
     {
@@ -3232,12 +3947,18 @@
       "mode": "pilot",
       "risk": "write_low",
       "writeLane": "pilot",
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": true,
       "reasonCodeRequired": true,
-      "reasonCodes": ["refactor", "naming_convention", "clarity"],
+      "reasonCodes": [
+        "refactor",
+        "naming_convention",
+        "clarity"
+      ],
       "officeScope": "assessor",
       "description": "Rename all occurrences of a symbol at a given position within a Canon IDE file",
       "paramsSchema": {
@@ -3264,7 +3985,13 @@
             "description": "Full content of the file for rename scanning"
           }
         },
-        "required": ["filePath", "line", "column", "newName", "content"]
+        "required": [
+          "filePath",
+          "line",
+          "column",
+          "newName",
+          "content"
+        ]
       }
     },
     {
@@ -3275,7 +4002,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3296,9 +4025,17 @@
             "type": "integer",
             "description": "1-based column number of cursor"
           },
-          "content": { "type": "string", "description": "Full file content" }
+          "content": {
+            "type": "string",
+            "description": "Full file content"
+          }
         },
-        "required": ["filePath", "line", "column", "content"]
+        "required": [
+          "filePath",
+          "line",
+          "column",
+          "content"
+        ]
       }
     },
     {
@@ -3309,7 +4046,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3330,9 +4069,17 @@
             "type": "integer",
             "description": "1-based column number of cursor"
           },
-          "content": { "type": "string", "description": "Full file content" }
+          "content": {
+            "type": "string",
+            "description": "Full file content"
+          }
         },
-        "required": ["filePath", "line", "column", "content"]
+        "required": [
+          "filePath",
+          "line",
+          "column",
+          "content"
+        ]
       }
     },
     {
@@ -3343,7 +4090,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3365,7 +4114,10 @@
             "description": "Original (baseline) file content for diff comparison"
           }
         },
-        "required": ["filePath", "content"]
+        "required": [
+          "filePath",
+          "content"
+        ]
       }
     },
     {
@@ -3376,7 +4128,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3394,7 +4148,10 @@
             "description": "Full file content to scan for links"
           }
         },
-        "required": ["filePath", "content"]
+        "required": [
+          "filePath",
+          "content"
+        ]
       }
     },
     {
@@ -3405,7 +4162,9 @@
       "mode": "pilot",
       "risk": "read_only",
       "writeLane": null,
-      "touches": ["canon"],
+      "touches": [
+        "canon"
+      ],
       "piiHandling": "none",
       "tracePolicy": "summary_only",
       "requiresConfirmation": false,
@@ -3423,8 +4182,566 @@
             "description": "Full file content to analyze for inlay hints"
           }
         },
-        "required": ["filePath", "content"]
+        "required": [
+          "filePath",
+          "content"
+        ]
       }
+    },
+    {
+      "toolId": "cu_calculate_rollback",
+      "displayName": "Calculate Rollback Tax",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [
+        "parcel",
+        "current_use"
+      ],
+      "description": "Calculate rollback taxes, interest, and penalties for a parcel being removed from current use classification per RCW 84.33/84.34",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": [
+              "DFL",
+              "CUFA",
+              "CUOS",
+              "CUTL"
+            ],
+            "description": "Current use classification code"
+          },
+          "enrollmentYear": {
+            "type": "integer",
+            "description": "Year parcel was enrolled in current use"
+          },
+          "removalYear": {
+            "type": "integer",
+            "description": "Year of removal from current use"
+          },
+          "marketValues": {
+            "type": "object",
+            "description": "Year-keyed market values for lookback period"
+          },
+          "currentUseValues": {
+            "type": "object",
+            "description": "Year-keyed current use values for lookback period"
+          },
+          "penaltyExceptionCode": {
+            "type": "string",
+            "description": "Optional penalty exception code (DEATH, GOVT_ACQUISITION, etc.)"
+          }
+        },
+        "required": [
+          "parcelId",
+          "classificationCode",
+          "enrollmentYear",
+          "removalYear",
+          "marketValues",
+          "currentUseValues"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_calculate_interest",
+      "displayName": "Calculate Current Use Interest",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [
+        "current_use"
+      ],
+      "description": "Compute compound interest on rollback tax principal using WA DOR published rates per WAC 458-30-262",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "principal": {
+            "type": "number",
+            "description": "Rollback tax principal amount"
+          },
+          "startYear": {
+            "type": "integer",
+            "description": "First year of interest accrual"
+          },
+          "endYear": {
+            "type": "integer",
+            "description": "Last year of interest accrual"
+          }
+        },
+        "required": [
+          "principal",
+          "startYear",
+          "endYear"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_evaluate_penalty_exceptions",
+      "displayName": "Evaluate Penalty Exceptions",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [
+        "parcel",
+        "current_use"
+      ],
+      "description": "Evaluate which 20% penalty exceptions apply for a parcel per RCW 84.33.140 / 84.34.108",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier to evaluate"
+          }
+        },
+        "required": [
+          "parcelId"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_initiate_removal",
+      "displayName": "Initiate Current Use Removal",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": [
+        "parcel",
+        "current_use",
+        "workflow"
+      ],
+      "description": "Initiate removal of a parcel from current use classification, triggering rollback tax calculation workflow",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "voluntary_withdrawal",
+        "change_of_use",
+        "sale_nonqualifying",
+        "subdivision",
+        "failure_requirements",
+        "govt_acquisition",
+        "owner_death"
+      ],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": [
+              "DFL",
+              "CUFA",
+              "CUOS",
+              "CUTL"
+            ],
+            "description": "Current use classification code"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for removal"
+          }
+        },
+        "required": [
+          "parcelId",
+          "classificationCode",
+          "reason"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_enroll_parcel",
+      "displayName": "Enroll Parcel in Current Use",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": [
+        "parcel",
+        "current_use"
+      ],
+      "description": "Create a new current use classification enrollment for a parcel under RCW 84.33 (DFL) or RCW 84.34 (CUFA/CUOS/CUTL)",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "new_application",
+        "reclassification",
+        "correction"
+      ],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": [
+              "DFL",
+              "CUFA",
+              "CUOS",
+              "CUTL"
+            ],
+            "description": "Current use classification code"
+          },
+          "enrollmentDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of enrollment"
+          },
+          "acreage": {
+            "type": "number",
+            "description": "Enrolled acreage"
+          },
+          "currentMarketValue": {
+            "type": "number",
+            "description": "Market value at enrollment"
+          },
+          "currentUseValue": {
+            "type": "number",
+            "description": "Current use value at enrollment"
+          }
+        },
+        "required": [
+          "parcelId",
+          "classificationCode",
+          "enrollmentDate"
+        ]
+      }
+    },
+    {
+      "toolId": "cu_get_interest_rates",
+      "displayName": "Get Current Use Interest Rates",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [
+        "current_use"
+      ],
+      "description": "Retrieve all WA DOR published interest rates for current use rollback calculations",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "toolId": "cu_list_classifications",
+      "displayName": "List Current Use Classifications",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": [
+        "parcel",
+        "current_use"
+      ],
+      "description": "Query current use classifications with filtering by status, code, and pagination",
+      "requiresConfirmation": false,
+      "reasonCodeRequired": false,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Removed",
+              "Pending"
+            ],
+            "description": "Filter by enrollment status"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": [
+              "DFL",
+              "CUFA",
+              "CUOS",
+              "CUTL"
+            ],
+            "description": "Filter by classification code"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page number (1-based)"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Results per page (max 100)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "toolId": "report_generate_rollback_notice",
+      "displayName": "Generate Rollback Notice Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": [
+        "parcel",
+        "current_use",
+        "reports"
+      ],
+      "description": "Generate a Current Use Rollback Notice (RCW 84.34.108) as HTML/PDF with year-by-year tax breakdown, interest calculation, and penalty assessment",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "ownerName": {
+            "type": "string",
+            "description": "Property owner name"
+          },
+          "classificationCode": {
+            "type": "string",
+            "enum": [
+              "DFL",
+              "CUFA",
+              "CUOS",
+              "CUTL"
+            ],
+            "description": "Current use classification code"
+          },
+          "startYear": {
+            "type": "integer",
+            "description": "First year of rollback period"
+          },
+          "endYear": {
+            "type": "integer",
+            "description": "Last year of rollback period"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "html",
+              "pdf"
+            ],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": [
+          "parcelId"
+        ]
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ],
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "report_generate_levy_certification",
+      "displayName": "Generate Levy Certification Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": [
+        "levy",
+        "district",
+        "reports"
+      ],
+      "description": "Generate a Levy Certification Report (RCW 84.52.070) with all district rates, assessed values, and statutory compliance verification",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for certification"
+          },
+          "taxAreaNumber": {
+            "type": "string",
+            "description": "Tax area number (optional \u2014 all areas if omitted)"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "html",
+              "pdf"
+            ],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": [
+          "taxYear"
+        ]
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ]
+    },
+    {
+      "toolId": "report_generate_cost_valuation",
+      "displayName": "Generate Cost Valuation Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": [
+        "parcel",
+        "cost",
+        "reports"
+      ],
+      "description": "Generate a Cost Approach Valuation Report (IAAO Standard) with RCN, depreciation, RCNLD, and total assessed value for a property",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "payload_ref",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "buildingType": {
+            "type": "string",
+            "description": "Building type (e.g., SFR, Commercial)"
+          },
+          "squareFootage": {
+            "type": "number",
+            "description": "Building square footage"
+          },
+          "yearBuilt": {
+            "type": "integer",
+            "description": "Year the building was constructed"
+          },
+          "quality": {
+            "type": "string",
+            "description": "Quality grade"
+          },
+          "region": {
+            "type": "string",
+            "description": "Geographic region for cost factors"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "html",
+              "pdf"
+            ],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": [
+          "parcelId"
+        ]
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ],
+      "payloadStore": "dossier"
+    },
+    {
+      "toolId": "report_generate_ratio_study",
+      "displayName": "Generate Ratio Study Report",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": [
+        "sales",
+        "ratio_study",
+        "reports"
+      ],
+      "description": "Generate an IAAO Ratio Study Report with COD, PRD, PRB metrics, stratified analysis, and compliance determination",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "officeScope": "assessor",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for the study"
+          },
+          "area": {
+            "type": "string",
+            "description": "Geographic area or neighborhood code"
+          },
+          "propertyType": {
+            "type": "string",
+            "description": "Property type filter (e.g., R, C, I)"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "html",
+              "pdf"
+            ],
+            "description": "Output format (default: pdf)"
+          }
+        },
+        "required": [
+          "taxYear"
+        ]
+      },
+      "reasonCodes": [
+        "report_generation",
+        "annual_certification"
+      ]
     }
   ]
 }

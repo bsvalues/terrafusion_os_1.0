@@ -58,10 +58,15 @@ public class RevenueDataService : IRevenueDataService
 
 public class SwarmIntelligenceService : ISwarmIntelligenceService
 {
+    // No governed swarm runtime exists; this compatibility stub must report
+    // the real state (zero agents, unavailable) — never a fabricated count.
+    private const string UnavailableReason =
+        "Swarm intelligence runtime is unavailable; compatibility stub only.";
+
     public async System.Threading.Tasks.Task<object> GetSwarmDataAsync()
     {
         await Task.Delay(10);
-        return new { Agents = 1008, Efficiency = 0.92 };
+        return new { Agents = 0, Available = false, Reason = UnavailableReason };
     }
 
     public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.SwarmOptimizedForecastResult> OptimizeAsync(TerraFusion.AI.DTOs.SwarmOptimizationRequest request)
@@ -85,18 +90,19 @@ public class SwarmIntelligenceService : ISwarmIntelligenceService
         {
             ForecastPoints = predictions,
             Predictions = predictions.Select(p => (decimal)p.Value).ToList(),
-            OptimizationScore = 0.89,
-            SwarmConsensus = 0.91,
+            // No swarm ran: every swarm-activity claim must be zero.
+            OptimizationScore = 0.0,
+            SwarmConsensus = 0.0,
             EmergentPatterns = new List<string>(),
             RevenueOpportunities = new List<string>(),
             SwarmMetrics = new TerraFusion.AI.DTOs.SwarmPerformanceMetrics
             {
-                ActiveAgents = 1008,
-                CollectiveIntelligence = 0.89,
-                EmergentBehaviorScore = 0.91,
-                ConsensusLevel = 0.87,
+                ActiveAgents = 0,
+                CollectiveIntelligence = 0.0,
+                EmergentBehaviorScore = 0.0,
+                ConsensusLevel = 0.0,
                 ProcessingTime = TimeSpan.FromMilliseconds(15),
-                PatternsDiscovered = 3
+                PatternsDiscovered = 0
             }
         };
     }

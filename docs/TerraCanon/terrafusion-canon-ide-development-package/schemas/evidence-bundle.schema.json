@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/evidence-bundle.schema.json",
+  "title": "EvidenceBundle",
+  "type": "object",
+  "required": [
+    "taskId",
+    "intent",
+    "surface",
+    "canonRulesLoaded",
+    "filesRead",
+    "filesChanged",
+    "commandsRun",
+    "gateResults",
+    "diffHash",
+    "riskScore",
+    "sealed"
+  ],
+  "properties": {
+    "taskId": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "string"
+    },
+    "surface": {
+      "type": "string"
+    },
+    "agentLanes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "canonRulesLoaded": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "filesRead": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "filesChanged": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commandsRun": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "diffHash": {
+      "type": "string"
+    },
+    "gateResults": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "riskScore": {
+      "type": "number"
+    },
+    "commitHash": {
+      "type": "string"
+    },
+    "prUrl": {
+      "type": "string"
+    },
+    "traceHash": {
+      "type": "string"
+    },
+    "sealed": {
+      "type": "boolean"
+    },
+    "sealedAt": {
+      "type": "string"
+    }
+  }
+}

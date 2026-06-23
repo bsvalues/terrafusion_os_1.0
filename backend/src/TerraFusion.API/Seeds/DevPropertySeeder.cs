@@ -373,7 +373,8 @@ public sealed class DevPropertySeeder
     {
         var envValue = Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS")?.Trim();
         if (string.Equals(envValue, "true", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase))
+            string.Equals(envValue, "1", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(envValue, "yes", StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }

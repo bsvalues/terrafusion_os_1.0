@@ -1,0 +1,131 @@
+{
+  "id": "terrafusion-operations-control-panel",
+  "version": 1,
+  "status": "seed",
+  "workOrder": "ops/packets/WO-OPS-CP-001.md",
+  "authority": {
+    "mode": "read_only_operator_surface",
+    "identityBoundary": "cockpit_prompt_launcher_findings_viewer_not_brain_or_runtime_agent",
+    "canonicalWorkspace": "${TERRAFUSION_WORKSPACE}",
+    "referenceWorkspace": "${TERRAFUSION_PLATFORM_ROOT}",
+    "allowedOutputs": [
+      "governance findings report",
+      "prioritized blocker list",
+      "proposed Work Order",
+      "human decision list",
+      "copy-paste agent prompt",
+      "evidence packet outline"
+    ],
+    "forbiddenActions": [
+      "edit files",
+      "stage files",
+      "commit",
+      "open pull requests",
+      "change canon",
+      "change queue truth",
+      "promote artifacts into canon",
+      "modify automation wiring",
+      "mutate runtime behavior",
+      "run destructive commands"
+    ]
+  },
+  "statusModel": {
+    "green": "No blocker; lane is ready for review or next governed action.",
+    "yellow": "Attention needed; work can proceed after operator review.",
+    "red": "Blocked; human decision or prerequisite required before action.",
+    "paused": "Automation exists but is not active.",
+    "unknown": "No report has been reviewed yet."
+  },
+  "lanes": [
+    {
+      "id": "daily-pulse",
+      "title": "Daily Pulse",
+      "automationId": "terrafusion-daily-pulse",
+      "defaultStatus": "paused",
+      "primaryQuestion": "What changed, what is blocked, and what needs attention today?",
+      "expectedCadence": "weekdays at 9:00 AM",
+      "recommendedFirstAction": "mark-reviewed"
+    },
+    {
+      "id": "open-work-orders",
+      "title": "Open Work Orders",
+      "automationId": "work-order-and-todo-tracker",
+      "defaultStatus": "paused",
+      "primaryQuestion": "Which WOs, TODOs, blockers, and decisions need prioritization?",
+      "expectedCadence": "daily at 9:00 AM",
+      "recommendedFirstAction": "draft-work-order"
+    },
+    {
+      "id": "blockers",
+      "title": "Blockers",
+      "automationId": "work-order-and-todo-tracker",
+      "defaultStatus": "unknown",
+      "primaryQuestion": "What prevents safe progress?",
+      "expectedCadence": "derived from daily tracker",
+      "recommendedFirstAction": "escalate-human-decision"
+    },
+    {
+      "id": "gap-risk-register",
+      "title": "Gap / Risk Register",
+      "automationId": "project-gap-and-risk-register-monitor",
+      "defaultStatus": "paused",
+      "primaryQuestion": "Which risks are P0 containment, P1 execution, P2 planned, deferred, or decision-bound?",
+      "expectedCadence": "Fridays at 9:00 AM",
+      "recommendedFirstAction": "create-evidence-packet"
+    },
+    {
+      "id": "governance-drift",
+      "title": "Governance Drift",
+      "automationId": "governance-drift-monitor",
+      "defaultStatus": "paused",
+      "primaryQuestion": "Are there canon, path identity, authority stack, or duplicate truth conflicts?",
+      "expectedCadence": "Mondays at 9:00 AM",
+      "recommendedFirstAction": "run-read-only-recon"
+    },
+    {
+      "id": "ai-sidecar",
+      "title": "AI Sidecar",
+      "automationId": "ai-sidecar-governance-monitor",
+      "defaultStatus": "paused",
+      "primaryQuestion": "Is the AI Improvement Sidecar ready for ratification?",
+      "expectedCadence": "Mondays at 9:00 AM until ratified",
+      "recommendedFirstAction": "prepare-ai-sidecar-ratification"
+    },
+    {
+      "id": "ci-azure-health",
+      "title": "CI / Azure Health",
+      "automationId": "ci-azure-pipeline-health-monitor",
+      "defaultStatus": "paused",
+      "primaryQuestion": "Are pipeline files, first-run evidence, and split-brain risks understood?",
+      "expectedCadence": "daily during activation; weekly after stable",
+      "recommendedFirstAction": "prepare-pr-plan"
+    },
+    {
+      "id": "human-decisions",
+      "title": "Human Decisions Needed",
+      "automationId": null,
+      "defaultStatus": "unknown",
+      "primaryQuestion": "Which choices require operator approval before work continues?",
+      "expectedCadence": "derived from all reports",
+      "recommendedFirstAction": "escalate-human-decision"
+    },
+    {
+      "id": "prepare-next-work-order",
+      "title": "Prepare Next Work Order",
+      "automationId": null,
+      "defaultStatus": "unknown",
+      "primaryQuestion": "What is the next governed action with bounded authority?",
+      "expectedCadence": "operator-driven",
+      "recommendedFirstAction": "draft-work-order"
+    }
+  ],
+  "reportIngestion": {
+    "currentVersion": "manual",
+    "acceptedInputs": [
+      "automation report pasted by operator",
+      "saved report reviewed by operator",
+      "human-entered status summary"
+    ],
+    "futureVersion": "Read saved automation artifacts after a separately approved wiring Work Order."
+  }
+}

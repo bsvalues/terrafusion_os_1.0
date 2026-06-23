@@ -102,9 +102,10 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'gpt-builder',
     'gpt-analytics',
     'gpt-rag',
-    // Queued certification / notice modules (QueuedModuleSurface — no MODULE_ENTRY yet)
+    // Queued certification module (QueuedModuleSurface — no MODULE_ENTRY yet)
+    // NOTE: terra-notice graduated to a real MODULE_ENTRY (TerraNoticeConsole),
+    // so it is intentionally NOT listed here.
     'terra-cert',
-    'terra-notice',
     // AppFrame native-app modules — rendered via <AppFrame> iframe (no MODULE_ENTRY)
     'costforge',
     // Phase 36+: inline Suspense+lazy in switch (no MODULE_ENTRY)
@@ -121,6 +122,8 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     // County Studio + Atlas Live View — inline Suspense+lazy (no MODULE_ENTRY)
     'county-studio',
     'atlas-live-view',
+    // CUForge — Current Use Program (inline Suspense+lazy)
+    'cuforge',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -236,9 +239,11 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'os-pilot': 'TerraFusion Pilot',
       'os-trace': 'TerraFusion Trace',
       'os-canon': 'TerraCanon',
+      'os-localops': 'TerraFusion LocalOps',
       // Levy (legacy canonical kept for backward compat)
       'terra-levy': 'Levy Calculator',
       // Forge standalone modules (Phase 35 + Phase 36)
+      'income-forge': 'IncomeForge',
       'batch-cost-run': 'Batch Cost Runs',
       'coefficient-preview': 'Coefficient Preview',
       'cost-manual': 'Cost Manual',
@@ -262,6 +267,8 @@ describe('moduleActivation displayNames/icons coverage', () => {
       // County Studio + Atlas Live View
       'county-studio': 'County Studio',
       'atlas-live-view': 'Atlas Live View',
+      // CUForge — Current Use Program
+      'cuforge': 'CUForge',
     };
 
     const missing: string[] = [];

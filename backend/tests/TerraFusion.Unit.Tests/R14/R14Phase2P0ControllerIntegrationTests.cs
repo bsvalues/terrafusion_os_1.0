@@ -21,6 +21,7 @@ using Moq;
 using TerraFusion.AI.Services;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Security;
+using TerraFusion.API.Security.Services;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Models;
@@ -777,11 +778,19 @@ internal sealed class R14Phase2ControllerFactory : WebApplicationFactory<ApiProg
     {
         services.RemoveAll<CoreAuthenticationService>();
         services.RemoveAll<CoreSecurityService>();
+        services.RemoveAll<IProvisionedUserContextProvider>();
 
         var authService = new Mock<CoreAuthenticationService>();
         authService
             .Setup(service => service.GenerateJwtTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync("r14-generated-token");
+        authService
+            .Setup(service => service.GenerateTokenPairAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<IDictionary<string, object>>()))
+            .ReturnsAsync(("r14-generated-token", "r14-refresh-token"));
         authService
             .Setup(service => service.ValidateTokenAsync(It.IsAny<string>()))
             .ReturnsAsync((ClaimsPrincipal?)null);
@@ -815,6 +824,32 @@ internal sealed class R14Phase2ControllerFactory : WebApplicationFactory<ApiProg
 
         services.AddScoped(_ => authService.Object);
         services.AddScoped(_ => securityService.Object);
+
+        var provisionedUsers = new Mock<IProvisionedUserContextProvider>();
+        provisionedUsers
+            .Setup(provider => provider.GetProvisionedUserContextAsync(It.IsAny<string>()))
+            .ReturnsAsync((string email) => new ProvisionedUserAuthContext(
+                Guid.Parse("14140014-9999-9999-9999-999999999999"),
+                email,
+                ["GovernmentUser"],
+                ["read:properties", "read:dossier"],
+                BentonCountyId,
+                "Benton",
+                "WA",
+                "53005"));
+        provisionedUsers
+            .Setup(provider => provider.RecordUserSessionAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string?>(),
+                It.IsAny<string?>()))
+            .Returns(() => Task.CompletedTask);
+        provisionedUsers
+            .Setup(provider => provider.IsUserSessionValidAsync(It.IsAny<Guid>(), It.IsAny<string?>()))
+            .ReturnsAsync(true);
+        services.AddScoped(_ => provisionedUsers.Object);
     }
 
     private static void RegisterAuditLogger(IServiceCollection services)

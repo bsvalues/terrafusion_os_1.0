@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/gate-result.schema.json",
+  "title": "GateResult",
+  "type": "object",
+  "required": [
+    "gateId",
+    "status",
+    "startedAt",
+    "finishedAt"
+  ],
+  "properties": {
+    "gateId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail",
+        "warning",
+        "skipped"
+      ]
+    },
+    "command": {
+      "type": "string"
+    },
+    "stdoutPath": {
+      "type": "string"
+    },
+    "stderrPath": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "finishedAt": {
+      "type": "string"
+    }
+  }
+}

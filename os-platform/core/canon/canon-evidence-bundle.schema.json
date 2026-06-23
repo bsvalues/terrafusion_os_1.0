@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/canon-evidence-bundle.schema.json",
+  "title": "CanonEvidenceBundle",
+  "description": "Proof artifact for a completed Canon task. Adapted from the Canon/IDE package into the repo-native os-platform/core/canon runtime. Distinct from the frozen Phase 7 trace spine (os-platform/core/trace).",
+  "type": "object",
+  "required": [
+    "taskId",
+    "intent",
+    "surface",
+    "canonRulesLoaded",
+    "filesRead",
+    "filesChanged",
+    "commandsRun",
+    "gateResults",
+    "diffHash",
+    "riskScore",
+    "sealed"
+  ],
+  "properties": {
+    "taskId": { "type": "string" },
+    "intent": { "type": "string" },
+    "surface": { "type": "string" },
+    "agentLanes": { "type": "array", "items": { "type": "string" } },
+    "canonRulesLoaded": { "type": "array", "items": { "type": "string" } },
+    "filesRead": { "type": "array", "items": { "type": "string" } },
+    "filesChanged": { "type": "array", "items": { "type": "string" } },
+    "commandsRun": { "type": "array", "items": { "type": "object" } },
+    "approvals": { "type": "array", "items": { "type": "object" } },
+    "diffHash": { "type": "string" },
+    "gateResults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gateId", "status"],
+        "properties": {
+          "gateId": { "type": "string" },
+          "status": { "enum": ["pass", "fail", "warning", "skipped"] },
+          "command": { "type": "string" },
+          "summary": { "type": "string" },
+          "startedAt": { "type": "string" },
+          "finishedAt": { "type": "string" }
+        }
+      }
+    },
+    "riskScore": { "type": "number" },
+    "commitHash": { "type": "string" },
+    "prUrl": { "type": "string" },
+    "traceHash": { "type": "string" },
+    "sealed": { "type": "boolean" },
+    "sealedAt": { "type": "string" }
+  }
+}

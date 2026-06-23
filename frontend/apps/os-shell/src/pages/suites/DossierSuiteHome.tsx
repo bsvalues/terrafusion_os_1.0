@@ -25,8 +25,10 @@ import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceD
 import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
 import { useAdjustmentApplyHandoffStore } from './adjustmentApplyHandoffStore';
-import { adjustmentSetApi, exceptionApi } from '../forge/county-studio/countyStudyApi';
+import { adjustmentSetApi, exceptionApi } from '../../services/countyStudyHandoffApi';
 import { useCountyStats } from '../../hooks/useCountyStats';
+import { TeachMeWhyProvider } from '../../components/academy/TeachMeWhyPanel';
+import { TeachWhyButton } from '../../components/academy/TeachWhyButton';
 import {
   FolderOpen,
   Shield,
@@ -113,6 +115,31 @@ export interface DossierSuiteHomeProps {
   metadata?: Record<string, unknown>;
 }
 
+function getObjectMetadata(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function formatApplyScope(scope?: Record<string, unknown> | null): string[] {
+  if (!scope) return [];
+  const orderedKeys = [
+    'cohortId',
+    'revalArea',
+    'revaluationCycle',
+    'marketArea',
+    'neighborhoodCode',
+    'modelGroup',
+    'propertyClass',
+    'valueTier',
+  ];
+
+  return orderedKeys
+    .map((key) => scope[key])
+    .filter((value): value is string | number => typeof value === 'string' || typeof value === 'number')
+    .map((value) => String(value))
+    .slice(0, 6);
+}
+
 function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | null }) {
   const handoff = useAdjustmentApplyHandoffStore((s) =>
     adjustmentSetId ? s.handoffs[adjustmentSetId] : undefined,
@@ -125,6 +152,7 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
 
   const appliedEvidenceRef = `dossier-apply-return:${adjustmentSetId}`;
   const rollbackNote = 'Rollback reported by Dossier apply packet review.';
+  const scopeLabels = formatApplyScope(handoff.effectiveScope);
 
   const handleRecordApplied = () => {
     markAppliedExternally(
@@ -178,6 +206,11 @@ function ApplyHandoffBanner({ adjustmentSetId }: { adjustmentSetId: string | nul
         <p data-testid="dossier-apply-handoff-status" className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>
           Handoff receipt: {handoff.status} · updated {new Date(handoff.updatedAt).toLocaleString()}
         </p>
+        {scopeLabels.length > 0 && (
+          <p data-testid="dossier-apply-handoff-scope" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+            Valuation scope: {scopeLabels.join(' · ')}
+          </p>
+        )}
         {handoff.evidenceRef && (
           <p data-testid="dossier-apply-handoff-evidence" className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
             Evidence: {handoff.evidenceRef}
@@ -226,6 +259,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   const prepareApplyHandoff = useAdjustmentApplyHandoffStore((s) => s.prepareHandoff);
   const markApplyHandoffOpened = useAdjustmentApplyHandoffStore((s) => s.markOpened);
   const ingestApplyReceipt = useAdjustmentApplyHandoffStore((s) => s.ingestReceipt);
+  const activeStoredApplyHandoffId = useAdjustmentApplyHandoffStore((s) => s.activeHandoffId);
   const [activeApplyHandoffId, setActiveApplyHandoffId] = useState<string | null>(null);
 
   // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
@@ -286,7 +320,12 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     const scenarioId = typeof metadata.scenarioId === 'string' ? metadata.scenarioId : null;
     const studyId = typeof metadata.studyId === 'string' ? metadata.studyId : null;
     if (applyTemplate === 'AdjustmentApplyPacket' && adjustmentSetId && scenarioId && studyId) {
-      prepareApplyHandoff({ adjustmentSetId, scenarioId, studyId });
+      prepareApplyHandoff({
+        adjustmentSetId,
+        scenarioId,
+        studyId,
+        effectiveScope: getObjectMetadata(metadata.effectiveScope),
+      });
       markApplyHandoffOpened(adjustmentSetId);
       void adjustmentSetApi.recordApplyHandoffReceipt(adjustmentSetId, {
         status: 'Opened',
@@ -298,6 +337,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const displayedApplyHandoffId = activeApplyHandoffId ?? activeStoredApplyHandoffId;
   const [appealId, setAppealId] = useState('BOE-2026-001');
   const [draftVersion, setDraftVersion] = useState('benton-2026-working');
   const [packetState, setPacketState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: OpenAppealPacketSummary; correlationId?: string; error?: string }>({ status: 'idle' });
@@ -398,11 +438,12 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
 
   return (
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
+      <TeachMeWhyProvider>
       <ParcelContextBanner suiteTabId="dossier" />
 
       {/* Task D3 — County Studio handoff: segment evidence draft */}
       <DossierEvidenceDraftPanel />
-      <ApplyHandoffBanner adjustmentSetId={activeApplyHandoffId} />
+      <ApplyHandoffBanner adjustmentSetId={displayedApplyHandoffId} />
 
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (
@@ -474,7 +515,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                   Governed county evidence actions for appeals, equalization, and audit bundles. Use this surface to verify readiness before routing into parcel-scoped dossier work.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
                   className="rounded-full px-3 py-1 text-xs font-semibold"
                   style={{ background: 'hsl(var(--tf-suite-dossier) / 0.12)', color: 'hsl(var(--tf-suite-dossier))' }}
@@ -487,6 +528,8 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                 >
                   {fmtNum(stats?.pendingAssessments)} pending assessments
                 </span>
+                {/* Academy reuse: evidence doctrine for the defense plane */}
+                <TeachWhyButton topic="boe-packet" label="BOE packet doctrine" />
               </div>
             </div>
 
@@ -556,7 +599,11 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                 className="rounded-lg border p-4"
                 style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
               >
-                <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>County Exports</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>County Exports</div>
+                  {/* Academy reuse: comparable-sales evidence underpins equalization */}
+                  <TeachWhyButton topic="comparable-sales" />
+                </div>
                 <div className="mt-1 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Draft governed equalization and audit artifacts for certification, DOR, and oversight reviews.</div>
                 <div className="mt-4 grid gap-3">
                   <input
@@ -647,6 +694,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />
       </main>
+      </TeachMeWhyProvider>
     </div>
   );
 }

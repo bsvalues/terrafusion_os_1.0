@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CountyApplyHandoffReceiptDto, CountyApplyHandoffReceiptStatus } from '../forge/county-studio/countyStudyApi';
+import type { CountyApplyHandoffReceiptDto, CountyApplyHandoffReceiptStatus } from '../../services/countyStudyHandoffApi';
 
 export type AdjustmentApplyHandoffStatus = CountyApplyHandoffReceiptStatus;
 
@@ -11,16 +11,19 @@ export interface AdjustmentApplyHandoff {
   status: AdjustmentApplyHandoffStatus;
   preparedAt: string;
   updatedAt: string;
+  effectiveScope?: Record<string, unknown> | null;
   evidenceRef?: string | null;
   notes?: string | null;
 }
 
 interface AdjustmentApplyHandoffState {
   handoffs: Record<string, AdjustmentApplyHandoff>;
+  activeHandoffId: string | null;
   prepareHandoff: (handoff: {
     adjustmentSetId: string;
     scenarioId: string;
     studyId: string;
+    effectiveScope?: Record<string, unknown> | null;
   }) => void;
   ingestReceipt: (receipt: CountyApplyHandoffReceiptDto) => void;
   ingestReceipts: (receipts: CountyApplyHandoffReceiptDto[]) => void;
@@ -35,12 +38,14 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
   persist(
     (set) => ({
       handoffs: {},
+      activeHandoffId: null,
 
-      prepareHandoff: ({ adjustmentSetId, scenarioId, studyId }) =>
+      prepareHandoff: ({ adjustmentSetId, scenarioId, studyId, effectiveScope }) =>
         set((state) => {
           const existing = state.handoffs[adjustmentSetId];
           const now = new Date().toISOString();
           return {
+            activeHandoffId: adjustmentSetId,
             handoffs: {
               ...state.handoffs,
               [adjustmentSetId]: {
@@ -50,6 +55,9 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
                 status: existing?.status ?? 'Prepared',
                 preparedAt: existing?.preparedAt ?? now,
                 updatedAt: now,
+                effectiveScope: effectiveScope ?? existing?.effectiveScope ?? null,
+                evidenceRef: existing?.evidenceRef,
+                notes: existing?.notes,
               },
             },
           };
@@ -68,6 +76,7 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
                 status: receipt.status,
                 preparedAt: existing?.preparedAt ?? receipt.preparedAt,
                 updatedAt: receipt.updatedAt,
+                effectiveScope: existing?.effectiveScope ?? null,
                 evidenceRef: receipt.evidenceRef,
                 notes: receipt.notes,
               },
@@ -87,6 +96,7 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
               status: receipt.status,
               preparedAt: existing?.preparedAt ?? receipt.preparedAt,
               updatedAt: receipt.updatedAt,
+              effectiveScope: existing?.effectiveScope ?? null,
               evidenceRef: receipt.evidenceRef,
               notes: receipt.notes,
             };
@@ -114,6 +124,7 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
               status: receipt.status,
               preparedAt: existing?.preparedAt ?? receipt.preparedAt,
               updatedAt: receipt.updatedAt,
+              effectiveScope: existing?.effectiveScope ?? null,
               evidenceRef: receipt.evidenceRef,
               notes: receipt.notes,
             };
@@ -177,7 +188,10 @@ export const useAdjustmentApplyHandoffStore = create<AdjustmentApplyHandoffState
       clearHandoff: (adjustmentSetId) =>
         set((state) => {
           const { [adjustmentSetId]: _removed, ...rest } = state.handoffs;
-          return { handoffs: rest };
+          return {
+            handoffs: rest,
+            activeHandoffId: state.activeHandoffId === adjustmentSetId ? null : state.activeHandoffId,
+          };
         }),
     }),
     {

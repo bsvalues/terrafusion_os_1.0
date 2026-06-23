@@ -19,7 +19,6 @@
 // endpoint does not black out the entire panel.
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import { useInspectorData } from '../hooks/useInspectorData';
@@ -35,6 +34,7 @@ import type {
   SegmentActionContextDto,
   SegmentYearPoint,
 } from '../types/countyStudio.types';
+import { sanitizeCountyStudioHandoffQuery } from '../utils/cityPrimarySanitizer';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 // ── Presentation atoms ────────────────────────────────────────────────────
@@ -580,13 +580,13 @@ const ActionPanel = ({
       <button
         type="button"
         data-testid="inspector-handoff-atlas"
-        aria-label="Pop Out Map"
+        aria-label="Open in TerraAtlas"
         onClick={onAtlas}
         style={handoffBtnBaseStyle}
       >
-        <div style={{ fontSize: 12, fontWeight: 700 }}>Pop Out Map</div>
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Open in TerraAtlas</div>
         <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-          Show segment geometry in the co-present map session
+          Open deep spatial analysis with the same study and risk context
         </div>
       </button>
       <button
@@ -639,6 +639,11 @@ const ActionPanel = ({
   const fireModule = (moduleId: string, metadata: Record<string, unknown>) => {
     void activateModule(moduleId, { source: 'system', metadata });
   };
+  const salesForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.salesForge.deeplinkQuery);
+  const costForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.costForge.deeplinkQuery);
+  const compsForgeDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.compsForge.deeplinkQuery);
+  const daisDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.dais.deeplinkQuery);
+  const dossierDeeplinkQuery = sanitizeCountyStudioHandoffQuery(context.dossier.deeplinkQuery);
   const findReceipt = (destination: 'Dais' | 'Dossier') =>
     directReceipts.find((receipt) =>
       receipt.sourceType === 'SegmentInspector'
@@ -713,10 +718,10 @@ const ActionPanel = ({
         label="Reconcile sales in SalesForge"
         subtitle={`Open the ${context.salesForge.qualifiedSaleCount} qualified sales for stratum ${context.salesForge.stratumKey} in ${context.salesForge.taxYear}`}
         disabledTooltip="SalesForge integration not yet active."
-        deeplinkQuery={context.salesForge.deeplinkQuery}
+        deeplinkQuery={salesForgeDeeplinkQuery}
         onClick={() => fireModule('sales-forge', {
           countyId:      context.countyId,
-          deeplinkQuery: context.salesForge.deeplinkQuery,
+          deeplinkQuery: salesForgeDeeplinkQuery,
           stratumKey:    context.salesForge.stratumKey,
           taxYear:       context.salesForge.taxYear,
           segmentId:     context.segmentId,
@@ -727,10 +732,10 @@ const ActionPanel = ({
         label="Calibrate cost in CostForge"
         subtitle={`Open stratum ${context.costForge.stratumKey}, ${context.costForge.taxYear} cost review`}
         disabledTooltip="CostForge integration not yet active."
-        deeplinkQuery={context.costForge.deeplinkQuery}
+        deeplinkQuery={costForgeDeeplinkQuery}
         onClick={() => fireModule('costforge', {
           countyId:      context.countyId,
-          deeplinkQuery: context.costForge.deeplinkQuery,
+          deeplinkQuery: costForgeDeeplinkQuery,
           stratumKey:    context.costForge.stratumKey,
           taxYear:       context.costForge.taxYear,
           segmentId:     context.segmentId,
@@ -741,10 +746,10 @@ const ActionPanel = ({
         label="Review comps in CompsForge"
         subtitle={`Open ${context.compsForge.sampleParcelIds.length} sample parcels for comparison`}
         disabledTooltip="CompsForge integration not yet active."
-        deeplinkQuery={context.compsForge.deeplinkQuery}
+        deeplinkQuery={compsForgeDeeplinkQuery}
         onClick={() => fireModule('comps-forge', {
           countyId:        context.countyId,
-          deeplinkQuery:   context.compsForge.deeplinkQuery,
+          deeplinkQuery:   compsForgeDeeplinkQuery,
           sampleParcelIds: context.compsForge.sampleParcelIds,
           segmentId:       context.segmentId,
         })}
@@ -754,11 +759,11 @@ const ActionPanel = ({
         label="Create Dais review packet"
         subtitle={`Dispatch ${context.dais.workflowTemplate} workflow with ${context.totalParcels.toLocaleString()} parcels`}
         disabledTooltip="Dais integration not yet active."
-        deeplinkQuery={context.dais.deeplinkQuery}
+        deeplinkQuery={daisDeeplinkQuery}
         receiptLabel={receiptLabel(findReceipt('Dais'))}
         onClick={() => void fireSegmentReceiptModule('suite-dais', 'Dais', 'SegmentReview', {
           countyId:         context.countyId,
-          deeplinkQuery:     context.dais.deeplinkQuery,
+          deeplinkQuery:     daisDeeplinkQuery,
           workflowTemplate:  context.dais.workflowTemplate,
           segmentId:         context.segmentId,
           studyId:           context.studyId,
@@ -769,11 +774,11 @@ const ActionPanel = ({
         label="Generate Dossier evidence packet"
         subtitle={`Prepare ${context.dossier.packetTemplate} packet for this segment`}
         disabledTooltip="Dossier integration not yet active."
-        deeplinkQuery={context.dossier.deeplinkQuery}
+        deeplinkQuery={dossierDeeplinkQuery}
         receiptLabel={receiptLabel(findReceipt('Dossier'))}
         onClick={() => void fireSegmentReceiptModule('suite-dossier', 'Dossier', 'SegmentEvidence', {
           countyId:       context.countyId,
-          deeplinkQuery:   context.dossier.deeplinkQuery,
+          deeplinkQuery:   dossierDeeplinkQuery,
           packetTemplate:  context.dossier.packetTemplate,
           segmentId:       context.segmentId,
           studyId:         context.studyId,
@@ -795,7 +800,6 @@ const ActionPanel = ({
 
 export function ObjectInspector() {
   const { segments, selectedSegmentId, activeStudy } = useCountyStudioStore();
-  const navigate = useNavigate();
   const seg = segments.find((s) => s.segmentId === selectedSegmentId);
   const receipts = useDownstreamClosureReceiptStore((s) => s.receipts);
   const ingestReceipt = useDownstreamClosureReceiptStore((s) => s.ingestReceipt);
@@ -821,10 +825,12 @@ export function ObjectInspector() {
     );
   }
 
-  const segmentNeighborhoodCode = detail?.neighborhoodCode ?? seg.geographyRef;
-  const segmentRevalArea = detail?.revalArea ?? seg.revalArea;
-  const segmentBuildingType = detail?.buildingType ?? seg.buildingType;
-  const segmentQualityGrade = detail?.qualityGrade ?? seg.qualityGrade;
+  const currentDetail = detail?.segmentId === seg.segmentId ? detail : null;
+  const currentContext = context?.segmentId === seg.segmentId ? context : null;
+  const segmentNeighborhoodCode = currentDetail?.neighborhoodCode ?? seg.geographyRef;
+  const segmentRevalArea = currentDetail?.revalArea ?? seg.revalArea;
+  const segmentBuildingType = currentDetail?.buildingType ?? seg.buildingType;
+  const segmentQualityGrade = currentDetail?.qualityGrade ?? seg.qualityGrade;
   const segmentScopeLabel = [
     segmentNeighborhoodCode ? `Neighborhood ${segmentNeighborhoodCode}` : null,
     segmentRevalArea !== null && segmentRevalArea !== undefined ? `Reval ${segmentRevalArea}` : null,
@@ -845,18 +851,25 @@ export function ObjectInspector() {
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
-    if (seg.geographyRef) {
-      params.set('neighborhoodCode', seg.geographyRef);
+    if (segmentNeighborhoodCode) {
+      params.set('neighborhoodCode', segmentNeighborhoodCode);
     }
     if (segmentRevalArea !== null && segmentRevalArea !== undefined) {
       params.set('revalArea', String(segmentRevalArea));
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
   const handleFindParcels = () => {
     void activateModule('property-workbench', {
       source: 'system',
-      metadata: { segmentId: seg.segmentId, countyId: activeStudy?.countyId },
+      metadata: {
+        segmentId: seg.segmentId,
+        countyId: activeStudy?.countyId,
+        studyId: activeStudy?.studyId,
+        taxYear: activeStudy?.taxYear,
+        neighborhoodCode: segmentNeighborhoodCode,
+        revalArea: segmentRevalArea,
+      },
     });
   };
 
@@ -885,7 +898,7 @@ export function ObjectInspector() {
 
         <TabsContent value="metrics" data-testid="inspector-panel-metrics">
           <MetricsPanel
-            detail={detail}
+            detail={currentDetail}
             loading={detailLoading}
             error={detailError}
             onRetry={retryDetail}
@@ -894,7 +907,7 @@ export function ObjectInspector() {
 
         <TabsContent value="trend" data-testid="inspector-panel-trend">
           <TrendPanel
-            detail={detail}
+            detail={currentDetail}
             loading={detailLoading}
             error={detailError}
             onRetry={retryDetail}
@@ -903,7 +916,7 @@ export function ObjectInspector() {
 
         <TabsContent value="action" data-testid="inspector-panel-action">
           <ActionPanel
-            context={context}
+            context={currentContext}
             loading={contextLoading}
             error={contextError}
             onRetry={retryContext}

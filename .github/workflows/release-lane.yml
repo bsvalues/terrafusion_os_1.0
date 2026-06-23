@@ -168,13 +168,55 @@ jobs:
             set +e
             ssh -o ConnectTimeout=30 -o ServerAliveInterval=15 \
                 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-                "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+                "APP_ROOT='$APP_ROOT' TARGET_ENV='$TARGET_ENV' bash -s" <<'SSH'
           set -euo pipefail
           command -v docker >/dev/null
           docker compose version >/dev/null
           test -d "$APP_ROOT"
           test -w "$APP_ROOT"
           test -f "$APP_ROOT/app.env"
+          if ! grep -q '^ConnectionStrings__DefaultConnection=' "$APP_ROOT/app.env"; then
+            echo "APP_ENV_MISSING_CONNECTION_STRING"
+            exit 1
+          fi
+          if ! grep -q '^DatabaseProvider=' "$APP_ROOT/app.env"; then
+            echo "APP_ENV_MISSING_DATABASE_PROVIDER"
+            exit 1
+          fi
+
+          provider="$(grep '^DatabaseProvider=' "$APP_ROOT/app.env" | tail -n1 | cut -d= -f2- | tr -d '\r' | xargs)"
+          provider_key="$(printf '%s' "$provider" | tr '[:upper:]' '[:lower:]')"
+          connection="$(grep '^ConnectionStrings__DefaultConnection=' "$APP_ROOT/app.env" | tail -n1 | cut -d= -f2- | tr -d '\r')"
+          connection_key="$(printf '%s' "$connection" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "$TARGET_ENV" = "production" ]; then
+            case "$provider_key" in
+              postgres|postgresql|npgsql) ;;
+              sqlite)
+                echo "APP_ENV_PRODUCTION_DB_PROVIDER_SQLITE"
+                exit 1
+                ;;
+              *)
+                echo "APP_ENV_PRODUCTION_DB_PROVIDER_UNSUPPORTED_FOR_RELEASE_LANE"
+                exit 1
+                ;;
+            esac
+
+            case "$connection_key" in
+              *"data source="*".db"*|*"data source="*"/app/data/"*|*"data source="*"\\app\\data\\"*)
+                echo "APP_ENV_PRODUCTION_DB_CONNECTION_SQLITE"
+                exit 1
+                ;;
+            esac
+
+            case "$connection_key" in
+              *"host="*|*"server="*) ;;
+              *)
+                echo "APP_ENV_PRODUCTION_DB_CONNECTION_NOT_SERVER_BACKED"
+                exit 1
+                ;;
+            esac
+          fi
           SSH
             rc=$?
             set -e
@@ -223,7 +265,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target production -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
+          docker build --pull --target production --build-arg VITE_BUILD_SHA="$RELEASE_SHA" -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
           docker push "$FRONTEND_IMAGE"
 
       - name: Prepare runtime bundle
@@ -311,6 +353,75 @@ jobs:
             "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
           set -euo pipefail
+
+          print_release_disk() {
+            echo "Docker disk usage:"
+            docker system df || true
+
+            local docker_root
+            docker_root="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+
+            echo "Filesystem free space:"
+            for path in "$docker_root" /var/lib/containerd /; do
+              if [ -e "$path" ]; then
+                df -h "$path" || true
+              fi
+            done
+          }
+
+          available_kb_for_path() {
+            local path="$1"
+            local available
+
+            if [ -z "$path" ] || [ ! -e "$path" ]; then
+              echo 0
+              return
+            fi
+
+            available="$(df -Pk "$path" 2>/dev/null | awk 'NR==2 && $4 ~ /^[0-9]+$/ {print $4}' || true)"
+            if [ -z "$available" ]; then
+              echo 0
+              return
+            fi
+
+            echo "$available"
+          }
+
+          require_release_disk() {
+            local min_kb="${MIN_RELEASE_DISK_KB:-6291456}"
+            local docker_root
+            local docker_kb
+            local containerd_kb
+
+            docker_root="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+            docker_kb="$(available_kb_for_path "$docker_root")"
+            containerd_kb="$(available_kb_for_path /var/lib/containerd)"
+
+            if [ "$docker_kb" -lt "$min_kb" ] && [ "$containerd_kb" -lt "$min_kb" ]; then
+              echo "ERROR: VPS does not have enough Docker/containerd disk for release image pull."
+              echo "Required free space on Docker root or /var/lib/containerd: ${min_kb} KiB."
+              echo "Observed Docker root (${docker_root:-unknown}) free: ${docker_kb} KiB."
+              echo "Observed /var/lib/containerd free: ${containerd_kb} KiB."
+              print_release_disk
+              exit 1
+            fi
+          }
+
+          echo "Release disk state before safe cleanup:"
+          print_release_disk
+
+          # Safe release cleanup only. This removes stopped containers, build
+          # cache, dangling layers, and unused images older than 24h. It does
+          # not prune Docker volumes or application data.
+          docker container prune -f || true
+          docker builder prune -af || true
+          docker image prune -f || true
+          docker image prune -af --filter "until=24h" || true
+
+          echo "Release disk state after safe cleanup:"
+          print_release_disk
+          require_release_disk
+
           echo "Pulling backend image..."
           docker pull "$BACKEND_IMAGE"
           echo "Pulling frontend image..."
@@ -334,6 +445,42 @@ jobs:
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
           SSH
+
+      - name: Provision DB-backed operator account
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROVISION_OUTPUT="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          docker compose -f runtime-compose.yml --env-file release.env run --rm --no-deps \
+            --entrypoint sh \
+            backend \
+            -c 'set -eu
+              : "${DatabaseProvider:?DatabaseProvider missing from runtime environment}"
+              : "${ConnectionStrings__DefaultConnection:?ConnectionStrings__DefaultConnection missing from runtime environment}"
+              dotnet /app/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.dll \
+                --email "$TERRAFUSION_BOOTSTRAP_EMAIL" \
+                --password-env TERRAFUSION_BOOTSTRAP_PASSWORD \
+                --roles "${TERRAFUSION_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}" \
+                --permissions "runtime:read,county:read,workbench:access" \
+                --county-name Benton \
+                --county-state WA \
+                --county-fips 53005 \
+                --create-county'
+          SSH
+          )"
+          PROVISION_JSON="$(printf '%s\n' "$PROVISION_OUTPUT" | awk '/^\{/{line=$0} END{print line}')"
+          PROVISION_JSON="$PROVISION_JSON" node <<'NODE'
+          const receipt = JSON.parse(process.env.PROVISION_JSON || "{}");
+          if (!receipt.passwordHashStored) {
+            throw new Error("AuthProvisioner did not store a password hash");
+          }
+          if (!receipt.countyId) {
+            throw new Error("AuthProvisioner did not bind the operator to a county");
+          }
+          console.log(`DB-backed operator account ${receipt.result}; password hash stored; county bound.`);
+          NODE
 
       - name: Verify public health and release header
         shell: bash
@@ -420,10 +567,54 @@ jobs:
           NODE
           )"
 
-          LOGIN_RESPONSE="$(curl -fsS --max-time 10 \
-            -H 'Content-Type: application/json' \
-            -d "$LOGIN_PAYLOAD" \
-            "${PUBLIC_URL}/api/auth/login")"
+          LOGIN_RESPONSE=""
+          LOGIN_STATUS=1
+          LOGIN_BODY="$(mktemp)"
+          LOGIN_ERROR="$(mktemp)"
+          trap 'rm -f "$LOGIN_BODY" "$LOGIN_ERROR"' EXIT
+
+          for attempt in $(seq 1 12); do
+            : > "$LOGIN_BODY"
+            : > "$LOGIN_ERROR"
+
+            CURL_EXIT=0
+            HTTP_CODE="$(curl -sS --max-time 30 \
+              -H 'Content-Type: application/json' \
+              -d "$LOGIN_PAYLOAD" \
+              -o "$LOGIN_BODY" \
+              -w '%{http_code}' \
+              "${PUBLIC_URL}/api/auth/login" 2>"$LOGIN_ERROR")" || CURL_EXIT=$?
+
+            if [ "$CURL_EXIT" -eq 0 ] && [[ "$HTTP_CODE" =~ ^2 ]]; then
+              LOGIN_RESPONSE="$(cat "$LOGIN_BODY")"
+              LOGIN_STATUS=0
+              echo "Provisioned auth login responded on attempt $attempt/12"
+              break
+            fi
+
+            if [[ "$HTTP_CODE" =~ ^(400|401|403|404|405)$ ]]; then
+              echo "::error::Provisioned auth login failed with non-retryable HTTP $HTTP_CODE."
+              head -5 "$LOGIN_BODY"
+              exit 1
+            fi
+
+            echo "Provisioned auth login not ready on attempt $attempt/12 (curl=$CURL_EXIT http=${HTTP_CODE:-000})"
+            if [ "$attempt" -eq 12 ]; then
+              echo "::error::Provisioned auth login did not succeed after retry window."
+              head -5 "$LOGIN_ERROR"
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          rm -f "$LOGIN_BODY" "$LOGIN_ERROR"
+          trap - EXIT
+
+          if [ "$LOGIN_STATUS" -ne 0 ] || [ -z "$LOGIN_RESPONSE" ]; then
+            echo "::error::Provisioned auth smoke did not receive a login response."
+            exit 1
+          fi
 
           LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
           const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");

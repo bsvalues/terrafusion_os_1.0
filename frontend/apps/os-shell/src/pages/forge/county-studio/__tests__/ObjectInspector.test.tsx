@@ -8,8 +8,8 @@
 //     empty copy for 0 / 1 points — no filler.
 //   - Action tab: Spatial (Atlas + Workbench) always active; Corrective
 //     handoff buttons follow the backend's DeeplinkQuery nullability.
-//   - Retained contract: Open-in-Atlas still navigates, Find-Parcels still
-//     activates the workbench module.
+//   - Retained contract: Open-in-Atlas opens a browser window, Find-Parcels
+//     still activates the workbench module.
 
 import React from 'react';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
@@ -52,6 +52,8 @@ const {
     contextError:   null as string | null,
   },
 }));
+
+const openMock = vi.fn();
 
 vi.mock('react-router-dom', async (importActual) => {
   const actual = await importActual<typeof import('react-router-dom')>();
@@ -163,6 +165,7 @@ async function switchToTab(tabTestId: string) {
 }
 
 beforeEach(() => {
+  vi.stubGlobal('open', openMock);
   state.detail =baseDetail();
   state.detailLoading =false;
   state.detailError =null;
@@ -173,6 +176,7 @@ beforeEach(() => {
   retryContextMock.mockClear();
   mockNavigate.mockClear();
   activateModuleMock.mockClear();
+  openMock.mockClear();
   listDownstreamReceiptsMock.mockResolvedValue([]);
   recordSegmentInspectorReceiptMock.mockResolvedValue({
     receiptId: 'receipt-direct-dais',
@@ -367,29 +371,90 @@ describe('ObjectInspector — Action tab', () => {
     expect(screen.getByTestId('inspector-action-error')).toBeInTheDocument();
   });
 
-  it('Pop Out Map opens the atlas-live pop-out route for the same study session', async () => {
+  it('Open in TerraAtlas opens a browser window for the same study session', async () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
-    expect(mockNavigate).toHaveBeenCalledWith(
-      expect.stringContaining('/forge/atlas-live?'),
-    );
-    const atlasHref = mockNavigate.mock.calls.at(-1)?.[0] as string;
+    expect(mockNavigate).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
     const params = new URLSearchParams(atlasHref.split('?')[1]);
     expect(params.get('studyId')).toBe('study-1');
     expect(params.get('segmentId')).toBe('s1');
     expect(params.get('countyId')).toBe('benton');
     expect(params.get('taxYear')).toBe('2026');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(params.get('revalArea')).toBeNull();
+    expect(params.get('city')).toBeNull();
   });
 
-  it('Find Parcels in Workbench still activates the workbench module (regression)', async () => {
+  it('Open in TerraAtlas preserves risk-surface reval context without a city query param', async () => {
+    state.detail = baseDetail({ neighborhoodCode: 'NBHD-RISK', revalArea: 7, city: 'Kennewick' });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+    fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
+
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('neighborhoodCode')).toBe('NBHD-RISK');
+    expect(params.get('revalArea')).toBe('7');
+    expect(params.get('segmentId')).toBe('s1');
+    expect(params.get('city')).toBeNull();
+  });
+
+  it('Find Parcels in Workbench carries valuation context without city metadata', async () => {
+    state.detail = baseDetail({ neighborhoodCode: 'NBHD-RISK', revalArea: 7, city: 'Kennewick' });
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-workbench'));
     expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
       source: 'system',
-      metadata: expect.objectContaining({ segmentId: 's1', countyId: 'benton' }),
+      metadata: expect.objectContaining({
+        segmentId: 's1',
+        countyId: 'benton',
+        studyId: 'study-1',
+        taxYear: 2026,
+        neighborhoodCode: 'NBHD-RISK',
+        revalArea: 7,
+      }),
     }));
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata).not.toHaveProperty('city');
+  });
+
+  it('spatial handoffs ignore stale detail from the previously selected segment', async () => {
+    const nextSegment = {
+      ...MOCK_SEG,
+      segmentId: 's2',
+      name: 'Current Risk Segment',
+      geographyRef: 'NBHD-CURRENT',
+      revalArea: 9,
+    };
+    state.detail = baseDetail({
+      segmentId: 's1',
+      neighborhoodCode: 'NBHD-STALE',
+      revalArea: 1,
+    });
+    setup([MOCK_SEG, nextSegment], 's2');
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
+    const atlasHref = openMock.mock.calls.at(-1)?.[0] as string;
+    const params = new URLSearchParams(atlasHref.split('?')[1]);
+    expect(params.get('segmentId')).toBe('s2');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-CURRENT');
+    expect(params.get('revalArea')).toBe('9');
+    expect(params.get('neighborhoodCode')).not.toBe('NBHD-STALE');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-workbench'));
+    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
+      metadata: expect.objectContaining({
+        segmentId: 's2',
+        neighborhoodCode: 'NBHD-CURRENT',
+        revalArea: 9,
+      }),
+    }));
+    expect(activateModuleMock.mock.calls.at(-1)?.[1].metadata.neighborhoodCode).not.toBe('NBHD-STALE');
   });
 
   it('persists direct Dais handoff receipt before activating the downstream suite', async () => {
@@ -420,6 +485,85 @@ describe('ObjectInspector — Action tab', () => {
         }),
       }),
     ));
+  });
+
+  it('strips city-primary query keys from Dais and Dossier segment handoffs', async () => {
+    recordSegmentInspectorReceiptMock
+      .mockResolvedValueOnce({
+        receiptId: 'receipt-direct-dais',
+        exceptionSetId: null,
+        studyId: 'study-1',
+        countyId: 'benton',
+        sourceType: 'SegmentInspector',
+        destination: 'Dais',
+        template: 'SegmentReview',
+        segmentId: 's1',
+        segmentLabel: 'NBHD-WR',
+        status: 'Drafted',
+        downstreamEntityId: null,
+        evidenceRef: null,
+        notes: null,
+        draftedAt: '2026-05-01T00:00:00.000Z',
+        updatedAt: '2026-05-01T00:00:00.000Z',
+        updatedBy: 'router',
+      })
+      .mockResolvedValueOnce({
+        receiptId: 'receipt-direct-dossier',
+        exceptionSetId: null,
+        studyId: 'study-1',
+        countyId: 'benton',
+        sourceType: 'SegmentInspector',
+        destination: 'Dossier',
+        template: 'SegmentEvidence',
+        segmentId: 's1',
+        segmentLabel: 'NBHD-WR',
+        status: 'Drafted',
+        downstreamEntityId: null,
+        evidenceRef: null,
+        notes: null,
+        draftedAt: '2026-05-01T00:00:00.000Z',
+        updatedAt: '2026-05-01T00:00:00.000Z',
+        updatedBy: 'router',
+      });
+    state.context =baseContext({
+      dais: {
+        workflowTemplate: 'SegmentReview',
+        deeplinkQuery: '?template=SegmentReview&segmentId=s1&city=Kennewick&selectedCity=Kennewick&rollupScope=city&neighborhoodCode=NBHD-WR&revalArea=7',
+      },
+      dossier: {
+        packetTemplate: 'SegmentEvidence',
+        deeplinkQuery: '?template=SegmentEvidence&segmentId=s1&cityName=Kennewick&rollupScope=city&neighborhoodCode=NBHD-WR&revalArea=7',
+      },
+    });
+    render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
+    await switchToTab('inspector-tab-action');
+
+    fireEvent.click(screen.getByTestId('inspector-handoff-dais'));
+    fireEvent.click(screen.getByTestId('inspector-handoff-dossier'));
+
+    await waitFor(() => expect(activateModuleMock).toHaveBeenCalledTimes(2));
+    const activatedByModuleId = new Map(
+      activateModuleMock.mock.calls.map(([moduleId, payload]) => [moduleId, payload]),
+    );
+    const daisQuery = activatedByModuleId.get('suite-dais')?.metadata.deeplinkQuery as string;
+    const dossierQuery = activatedByModuleId.get('suite-dossier')?.metadata.deeplinkQuery as string;
+    const daisParams = new URLSearchParams(daisQuery.slice(1));
+    const dossierParams = new URLSearchParams(dossierQuery.slice(1));
+
+    expect(daisParams.get('template')).toBe('SegmentReview');
+    expect(daisParams.get('segmentId')).toBe('s1');
+    expect(daisParams.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(daisParams.get('revalArea')).toBe('7');
+    expect(daisParams.get('city')).toBeNull();
+    expect(daisParams.get('selectedCity')).toBeNull();
+    expect(daisParams.get('rollupScope')).toBeNull();
+
+    expect(dossierParams.get('template')).toBe('SegmentEvidence');
+    expect(dossierParams.get('segmentId')).toBe('s1');
+    expect(dossierParams.get('neighborhoodCode')).toBe('NBHD-WR');
+    expect(dossierParams.get('revalArea')).toBe('7');
+    expect(dossierParams.get('cityName')).toBeNull();
+    expect(dossierParams.get('rollupScope')).toBeNull();
   });
 
   it('shows a visible handoff error when direct receipt persistence fails', async () => {

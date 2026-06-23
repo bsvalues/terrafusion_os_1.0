@@ -12,6 +12,7 @@ import { adjustmentSetApi } from '../countyStudyApi';
 import type { CountyAdjustmentSetDto, AdjustmentSetApprovalState } from '../types/countyStudio.types';
 import activateModule from '@/orchestration/moduleActivation';
 import { useAdjustmentApplyHandoffStore, type AdjustmentApplyHandoff } from '@/pages/suites/adjustmentApplyHandoffStore';
+import { stripCityPrimaryKeys } from '../utils/cityPrimarySanitizer';
 
 // ── State badge ───────────────────────────────────────────────────────────────
 
@@ -87,6 +88,19 @@ function applyPostureFor(adj: CountyAdjustmentSetDto, handoff?: AdjustmentApplyH
   if (handoff?.status === 'AppliedExternally') return 'applied';
   if (handoff?.status === 'RolledBack') return 'rolledBack';
   return handoff ? 'handedOff' : 'ready';
+}
+
+function parseSanitizedEffectiveScope(raw: string): Record<string, unknown> | null {
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return null;
+    }
+    const sanitized = stripCityPrimaryKeys(parsed) as Record<string, unknown>;
+    return Object.keys(sanitized).length > 0 ? sanitized : null;
+  } catch {
+    return null;
+  }
 }
 
 // ── Legal next-state map ──────────────────────────────────────────────────────
@@ -318,19 +332,25 @@ export function AdjustmentSetPanel() {
     })
       .then((receipt) => {
         ingestApplyReceipt(receipt);
+        const effectiveScope = parseSanitizedEffectiveScope(adj.effectiveScope);
+        const metadata: Record<string, unknown> = {
+          applyTemplate: 'AdjustmentApplyPacket',
+          adjustmentSetId: adj.adjustmentSetId,
+          scenarioId: adj.scenarioId,
+          studyId: adj.studyId,
+        };
+        if (effectiveScope) {
+          metadata.effectiveScope = effectiveScope;
+        }
         prepareApplyHandoff({
           adjustmentSetId: adj.adjustmentSetId,
           scenarioId: adj.scenarioId,
           studyId: adj.studyId,
+          effectiveScope,
         });
         void activateModule('suite-dossier', {
           source: 'system',
-          metadata: {
-            applyTemplate: 'AdjustmentApplyPacket',
-            adjustmentSetId: adj.adjustmentSetId,
-            scenarioId: adj.scenarioId,
-            studyId: adj.studyId,
-          },
+          metadata,
         });
       })
       .catch((receiptError) => {

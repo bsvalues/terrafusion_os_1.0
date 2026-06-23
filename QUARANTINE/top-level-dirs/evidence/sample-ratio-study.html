@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ratio Study Report — undefined 2026</title>
+<style>
+  @page { size: letter; margin: 0.75in; }
+  body { font-family: 'Arial', sans-serif; font-size: 10pt; line-height: 1.4; color: #1a1a1a; }
+  .header { text-align: center; border-bottom: 2px solid #1a365d; padding-bottom: 10pt; margin-bottom: 14pt; }
+  .header h1 { font-size: 14pt; margin: 0; color: #1a365d; }
+  .header .subtitle { font-size: 10pt; color: #444; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10pt; margin: 14pt 0; }
+  .metric { text-align: center; padding: 10pt; border-radius: 4pt; border: 1px solid #ddd; }
+  .metric .value { font-size: 18pt; font-weight: bold; }
+  .metric .label { font-size: 8pt; text-transform: uppercase; color: #666; }
+  .metric .status { font-size: 8pt; font-weight: bold; margin-top: 4pt; }
+  .section h3 { color: #1a365d; border-bottom: 1px solid #1a365d; padding-bottom: 4pt; }
+  table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 9pt; }
+  th { background: #1a365d; color: white; padding: 5pt 6pt; text-align: left; }
+  td { padding: 4pt 6pt; border-bottom: 1px solid #ddd; }
+  tr:nth-child(even) td { background: #f9f9f9; }
+  .pct { text-align: center; }
+  .iaao-box { background: #f0f4f8; border: 1px solid #1a365d; padding: 10pt; border-radius: 4pt; margin: 14pt 0; }
+  .iaao-box h4 { margin: 0 0 6pt; color: #1a365d; }
+  .footer { margin-top: 24pt; border-top: 1px solid #ccc; padding-top: 10pt; font-size: 8pt; color: #666; }
+  .audit-hash { font-family: monospace; font-size: 7.5pt; color: #999; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>ASSESSMENT RATIO STUDY REPORT</h1>
+  <div class="subtitle">Benton County | undefined | Tax Year 2026 | IAAO Standard on Ratio Studies</div>
+</div>
+
+<div class="metrics">
+  <div class="metric">
+    <div class="value">0.9650</div>
+    <div class="label">Median Ratio</div>
+    <div class="status" style="color: #2d5016">
+      Target: 1.0000
+    </div>
+  </div>
+  <div class="metric">
+    <div class="value">8.40%</div>
+    <div class="label">COD</div>
+    <div class="status" style="color: #2d5016">COMPLIANT (≤15%)</div>
+  </div>
+  <div class="metric">
+    <div class="value">1.0120</div>
+    <div class="label">PRD</div>
+    <div class="status" style="color: #2d5016">COMPLIANT (0.98–1.03)</div>
+  </div>
+  <div class="metric">
+    <div class="value">127</div>
+    <div class="label">Sample Size</div>
+    <div class="status" style="color: #2d5016">n=127</div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Stratified Analysis</h3>
+  <table>
+    <thead>
+      <tr><th>Stratum</th><th>Sample</th><th>Median</th><th>COD</th><th>PRD</th><th>IAAO</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="iaao-box">
+  <h4>IAAO Compliance Summary</h4>
+  <p><strong>COD (Coefficient of Dispersion):</strong> Measures assessment uniformity.
+  Target ≤ 15% for residential. Current: 8.40% — <strong style="color:#2d5016">COMPLIANT</strong></p>
+  <p><strong>PRD (Price-Related Differential):</strong> Measures vertical equity (regressivity).
+  Target 0.98–1.03. Current: 1.0120 — <strong style="color:#2d5016">COMPLIANT</strong></p>
+  <p><strong>PRB (Price-Related Bias):</strong> -0.0030 (target: -0.05 to +0.05)</p>
+</div>
+
+<div class="footer">
+  <p>Generated: 2026-05-23 | Benton County Assessor's Office — TerraForge SalesForge Module</p>
+  <div class="audit-hash">Audit: SHA-256:1d82ca0c72cb17a7</div>
+</div>
+</body>
+</html>

@@ -13,6 +13,8 @@
  *   taxYear:       number — swaps the tax year selector.
  *   segmentId:     string — drives the "Scoped From" chip.
  *   segmentLabel:  string — human label for the chip.
+ *   resetValuationScope: true — clears stale neighborhood drill state without
+ *                  promoting reference geography to a rollup scope.
  */
 import React, { Suspense, useEffect, useLayoutEffect, useRef } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
@@ -201,7 +203,7 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
     if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
       setSelectedHood(handoff.neighborhoodCode);
       setActiveTab('hood-audit');
-    } else if (handoff.rollupScope === 'city') {
+    } else if (handoff.rollupScope === 'city' || handoff.resetValuationScope) {
       setSelectedHood(null);
       if (!stratum && !segmentId) {
         setActiveTab('triage');
@@ -209,6 +211,7 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
     }
   }, [
     handoff.neighborhoodCode,
+    handoff.resetValuationScope,
     handoff.rollupScope,
     handoff.segmentId,
     handoff.segmentLabel,

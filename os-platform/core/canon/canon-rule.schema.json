@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/canon-rule.schema.json",
+  "title": "CanonRule",
+  "description": "A single computable Canon rule. Adapted from the Canon/IDE development package (docs/TerraCanon) into the repo-native os-platform/core/canon runtime.",
+  "type": "object",
+  "required": [
+    "ruleId",
+    "version",
+    "status",
+    "authority",
+    "title",
+    "description",
+    "appliesTo",
+    "enforcement"
+  ],
+  "properties": {
+    "ruleId": { "type": "string" },
+    "version": { "type": "string" },
+    "status": { "enum": ["active", "draft", "deprecated"] },
+    "authority": {
+      "enum": [
+        "constitutional",
+        "os-platform",
+        "engineering-policy",
+        "advisory"
+      ]
+    },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "source": { "type": "string" },
+    "appliesTo": {
+      "type": "object",
+      "properties": {
+        "paths": { "type": "array", "items": { "type": "string" } },
+        "taskIntents": { "type": "array", "items": { "type": "string" } },
+        "surfaces": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "enforcement": {
+      "type": "object",
+      "required": ["level"],
+      "properties": {
+        "level": { "enum": ["block", "warn", "require-approval", "inform"] },
+        "requiredGates": { "type": "array", "items": { "type": "string" } },
+        "requiresManualReview": { "type": "boolean" }
+      }
+    }
+  }
+}

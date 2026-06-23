@@ -65,9 +65,14 @@ export interface CountySegmentDto {
   name: string;
   segmentType: string;
   geographyRef: string | null;
+  marketArea?: string | null;
   revalArea: number | null;
   buildingType: string | null;
   qualityGrade: string | null;
+  modelGroup?: string | null;
+  propertyClass?: string | null;
+  valueTier?: string | null;
+  taxingDistrict?: string | null;
   parcelCount: number;
   /** Nullable on server for sparse-sample segments — UI must null-guard. */
   medianRatio: number | null;
@@ -176,10 +181,8 @@ export interface NeighborhoodRollupRowDto {
 
 /**
  * Drill level for the County Studio center panel.
- *   'county'       — County health + city overview visible. Cities are overview
- *                    geography only; the operative assessment units remain
- *                    neighborhood and reval-area segments.
- *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
+ *   'county'       — County health + primary Benton risk surfaces visible.
+ *   'city'         — legacy/reference-only NeighborhoodRollupTable filtered to selectedCity.
  *   'neighborhood' — SegmentTable filtered to selectedNeighborhood's GeographyRef.
  * Segment-level detail lives in the RightRail's ObjectInspector, selected via
  * selectedSegmentId; it is not a separate drillLevel because the segment table
@@ -242,7 +245,7 @@ export interface CountyHealthSummaryDto {
   derivedAt: string | null;
 }
 
-// ── Statistics Compat (statistics_ratio_study_compat_v1) ─────────────────
+// ── Study Evidence compatibility (statistics_ratio_study_compat_v1) ───────
 
 export interface StatisticsCompatSaleWindowDto {
   taxYear: number;
@@ -448,7 +451,7 @@ export interface SegmentRecommendedAction {
   /** 1 = highest priority. */
   priority: number;
   rationale: string;
-  /** Passed verbatim as metadata to activateModule() when the user fires the action. */
+  /** Backend-prepared action context; UI removes city fields before downstream activation. */
   prebuiltContext: Record<string, unknown> | null;
 }
 

@@ -5,9 +5,9 @@
  * PRIMARY_MODULES array to the wrong apps.
  *
  * Verified correct layout (current HEAD):
- *   PRIMARY   : CostForge, CompsForge, IncomeForge (queued), SalesForge
- *   SECONDARY : Batch Cost Runs, Regression Studio (queued),
- *               TerraGAMA (queued), Coefficient Preview (queued)
+ *   PRIMARY   : CostForge, CompsForge, IncomeForge, SalesForge, CUForge
+ *   SECONDARY : Batch Cost Runs, Regression Studio, TerraGAMA,
+ *               Coefficient Preview
  *   COUNTY    : County Studio (default analytics workbench + VEI exploration)
  *
  * GeoForge and Atlas Live View are not launcher products. Atlas is County
@@ -15,10 +15,12 @@
  * infrastructure until retired.
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import ForgeSuiteHome from '../ForgeSuiteHome';
+
+const activateModuleMock = vi.hoisted(() => vi.fn());
 
 // ── Minimal mocks ──────────────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ vi.mock('../../../stores/propertyStore', () => ({
 }));
 
 vi.mock('../../../orchestration/moduleActivation', () => ({
-  activateModule: vi.fn(),
+  activateModule: activateModuleMock,
 }));
 
 vi.mock('../../../components/workbench/ParcelContextBanner', () => ({
@@ -70,12 +72,17 @@ function renderForge() {
 // ── Contract tests ─────────────────────────────────────────────────────────
 
 describe('ForgeSuiteHome — frozen module list', () => {
-  it('renders the four primary approach cards', () => {
+  beforeEach(() => {
+    activateModuleMock.mockClear();
+  });
+
+  it('renders the five primary approach cards', () => {
     renderForge();
     expect(screen.getByText('CostForge')).toBeInTheDocument();
     expect(screen.getByText('CompsForge')).toBeInTheDocument();
     expect(screen.getByText('IncomeForge')).toBeInTheDocument();
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
+    expect(screen.getByText('CUForge')).toBeInTheDocument();
   });
 
   it('does not expose GeoForge or standalone Atlas as launcher products', () => {
@@ -92,17 +99,14 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(secondarySection).not.toHaveTextContent(/legacy specialist/i);
   });
 
-  it('renders queued specialist apps in the secondary section', () => {
-    // Regression Studio, TerraGAMA, Coefficient Preview are present as queued
-    // secondary modules in the frozen component. They are disabled (truthState: 'queued').
+  it('Regression Studio, TerraGAMA, and Coefficient Preview are enabled as live specialist modules', () => {
     renderForge();
     expect(screen.getByText('Regression Studio')).toBeInTheDocument();
     expect(screen.getByText('TerraGAMA')).toBeInTheDocument();
     expect(screen.getByText('Coefficient Preview')).toBeInTheDocument();
-    // All three must be disabled (queued state)
-    expect(screen.getByText('Regression Studio').closest('button')).toBeDisabled();
-    expect(screen.getByText('TerraGAMA').closest('button')).toBeDisabled();
-    expect(screen.getByText('Coefficient Preview').closest('button')).toBeDisabled();
+    expect(screen.getByText('Regression Studio').closest('button')).not.toBeDisabled();
+    expect(screen.getByText('TerraGAMA').closest('button')).not.toBeDisabled();
+    expect(screen.getByText('Coefficient Preview').closest('button')).not.toBeDisabled();
   });
 
   it('does NOT render fabricated apps that were never in v1 scope', () => {
@@ -118,10 +122,10 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.queryByText('Appeals')).not.toBeInTheDocument();
   });
 
-  it('IncomeForge button is disabled (queued)', () => {
+  it('IncomeForge button is enabled as a live standalone module', () => {
     renderForge();
     const incomeBtn = screen.getByText('IncomeForge').closest('button');
-    expect(incomeBtn).toBeDisabled();
+    expect(incomeBtn).not.toBeDisabled();
   });
 
   it('CostForge and CompsForge buttons are enabled', () => {
@@ -130,6 +134,25 @@ describe('ForgeSuiteHome — frozen module list', () => {
     const compsBtn = screen.getByText('CompsForge').closest('button');
     expect(costBtn).not.toBeDisabled();
     expect(compsBtn).not.toBeDisabled();
+  });
+
+  it('CompsForge launches the parcel-scoped Workbench Forge Sales desk, not the standalone countywide module', () => {
+    renderForge();
+
+    fireEvent.click(screen.getByText('CompsForge').closest('button')!);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', {
+      source: 'system',
+      metadata: expect.objectContaining({
+        tab: 'forge',
+        tabId: 'forge',
+        subTab: 'sales',
+      }),
+    });
+    expect(activateModuleMock).not.toHaveBeenCalledWith(
+      'comps-forge',
+      expect.anything(),
+    );
   });
 
   it('all KPI values show — (never fake numbers)', () => {
@@ -141,11 +164,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     });
   });
 
-  it('primary section has exactly 4 cards', () => {
+  it('primary section has exactly 5 cards', () => {
     renderForge();
     const primarySection = screen.getByTestId('forge-primary-applications');
     const cards = primarySection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(4);
+    expect(cards).toHaveLength(5);
   });
 
   it('renders County Studio in the county-operations section', () => {

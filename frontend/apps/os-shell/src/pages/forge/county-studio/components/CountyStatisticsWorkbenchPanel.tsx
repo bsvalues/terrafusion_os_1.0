@@ -181,12 +181,12 @@ function compareMetric(
 
 function buildParityRows(compat: CountyStatisticsCompatDto | undefined, ratioData: ReturnType<typeof useRatioData>) {
   return [
-    compareMetric('countWithRatio', compat?.countWithRatio, ratioData?.sampleSize, 0),
-    compareMetric('medianRatio', compat?.medianRatio, getTerraForgeMetric(ratioData, 'medianRatio') as number | null, 0.0001),
+    compareMetric('Qualified sales', compat?.countWithRatio, ratioData?.sampleSize, 0),
+    compareMetric('Median ratio', compat?.medianRatio, getTerraForgeMetric(ratioData, 'medianRatio') as number | null, 0.0001),
     compareMetric('COD', compat?.cod, getTerraForgeMetric(ratioData, 'cod') as number | null, 0.01),
     compareMetric('PRD', compat?.prd, getTerraForgeMetric(ratioData, 'prd') as number | null, 0.0001),
     compareMetric('PRB', compat?.prb, getTerraForgeMetric(ratioData, 'prb') as number | null, 0.0001),
-    compareMetric('weightedMeanRatio', compat?.weightedMeanRatio, getTerraForgeMetric(ratioData, 'weightedMeanRatio') as number | null, 0.0001),
+    compareMetric('Weighted mean ratio', compat?.weightedMeanRatio, getTerraForgeMetric(ratioData, 'weightedMeanRatio') as number | null, 0.0001),
   ];
 }
 
@@ -589,6 +589,52 @@ function ContractField({ label, value }: { label: string; value: React.ReactNode
   );
 }
 
+function EvidenceField({ label, value, tone = 'neutral' }: { label: string; value: React.ReactNode; tone?: 'neutral' | 'warning' | 'danger' }) {
+  const color =
+    tone === 'danger' ? 'hsl(var(--tf-danger, 0 84% 60%))' :
+    tone === 'warning' ? 'hsl(var(--tf-warning, 38 92% 50%))' :
+    'hsl(var(--tf-fg))';
+
+  return (
+    <div
+      style={{
+        border: '1px solid hsl(var(--tf-border))',
+        borderRadius: 6,
+        padding: '9px 10px',
+        background: 'hsl(var(--tf-bg))',
+        minWidth: 0,
+      }}
+    >
+      <div style={{ fontSize: 10, fontWeight: 800, color: 'hsl(var(--tf-muted))' }}>
+        {label}
+      </div>
+      <div style={{ marginTop: 4, fontSize: 13, fontWeight: 800, color, overflowWrap: 'anywhere' }}>
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function formatCompatDate(value: string | undefined): string {
+  if (!value) return 'unavailable';
+  return value.slice(0, 10);
+}
+
+function buildEvidencePosture(
+  compat: CountyStatisticsCompatDto | undefined,
+  loading: boolean,
+  mismatches: Array<{ status: string }>,
+  unavailable: Array<{ status: string }>,
+) {
+  if (loading) return { status: 'Loading', tone: 'neutral' as const };
+  if (!compat) return { status: 'Unavailable', tone: 'danger' as const };
+  if (compat.countWithRatio < 50 || unavailable.length > 0 || compat.trustPosture.length > 0) {
+    return { status: 'Partial', tone: 'warning' as const };
+  }
+  if (mismatches.length > 0) return { status: 'Blocked', tone: 'danger' as const };
+  return { status: 'Ready', tone: 'neutral' as const };
+}
+
 function StatisticsCompatContractPanel({
   compat,
   ratioData,
@@ -598,23 +644,31 @@ function StatisticsCompatContractPanel({
   ratioData: ReturnType<typeof useRatioData>;
   loading: boolean;
 }) {
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const parityRows = buildParityRows(compat, ratioData);
   const mismatches = parityRows.filter((row) => row.status === 'mismatch');
   const unavailable = parityRows.filter((row) => row.status === 'unavailable');
-  const parityStatus =
-    loading ? 'loading' :
-    !compat ? 'unavailable' :
-    mismatches.length > 0 ? 'blocked' :
-    unavailable.length > 0 ? 'partial' :
-    'same-population parity';
+  const evidencePosture = buildEvidencePosture(compat, loading, mismatches, unavailable);
+  const thinSample = Boolean(compat && compat.countWithRatio < 50);
+  const defensibilityRisk =
+    !compat ? 'study evidence is unavailable' :
+    thinSample ? 'sample size is thin' :
+    mismatches.length > 0 ? 'parity mismatch requires review before defense' :
+    unavailable.length > 0 ? 'some parity checks are unavailable' :
+    'ratio evidence is ready for review';
+  const nextReviewAction =
+    !compat ? 'open or refresh the ratio study evidence source' :
+    thinSample || compat.parcelIdentityReconciliation.unmatchedSaleRows > 0
+      ? 'review sale qualification and parcel reconciliation'
+      : 'confirm parity evidence and attach the study packet';
 
   return (
     <Card data-material="bento" data-testid="statistics-compat-contract-panel">
       <CardHeader>
         <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          statistics_ratio_study_compat_v1
-          <Badge variant={mismatches.length === 0 && compat ? 'default' : 'secondary'}>
-            {parityStatus}
+          Can this ratio study be trusted?
+          <Badge variant={evidencePosture.status === 'Ready' ? 'default' : 'secondary'}>
+            Status: {evidencePosture.status}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -627,12 +681,10 @@ function StatisticsCompatContractPanel({
             marginBottom: 12,
           }}
         >
-          <ContractField label="contractId" value={compat?.contractId ?? 'unavailable'} />
-          <ContractField label="population" value={compat?.population ?? 'qualified sale ratio rows'} />
-          <ContractField label="countWithRatio" value={compat?.countWithRatio?.toLocaleString() ?? 'unavailable'} />
-          <ContractField label="outliersExcluded" value={compat?.outliersExcluded?.toLocaleString() ?? 'unavailable'} />
-          <ContractField label="trimmedCount" value={compat?.trimmedCount?.toLocaleString() ?? 'unavailable'} />
-          <ContractField label="trustPosture" value={compat?.trustPosture?.join(' / ') ?? 'unavailable'} />
+          <EvidenceField label="Population" value={`${compat?.countWithRatio?.toLocaleString() ?? 'unavailable'} qualified sale ratio rows`} tone={thinSample ? 'warning' : 'neutral'} />
+          <EvidenceField label="Included after trimming" value={`${compat?.trimmedCount?.toLocaleString() ?? 'unavailable'} after trimming`} />
+          <EvidenceField label="Excluded as outliers" value={`${compat?.outliersExcluded?.toLocaleString() ?? 'unavailable'} outlier${compat?.outliersExcluded === 1 ? '' : 's'} excluded`} />
+          <EvidenceField label="Parcel matching" value={`${compat?.parcelIdentityReconciliation.unmatchedSaleRows?.toLocaleString() ?? 'unavailable'} unmatched parcels`} tone={compat && compat.parcelIdentityReconciliation.unmatchedSaleRows > 0 ? 'warning' : 'neutral'} />
         </div>
 
         <div
@@ -643,28 +695,75 @@ function StatisticsCompatContractPanel({
             marginBottom: 12,
           }}
         >
-          <ContractField label="saleWindow" value={compat?.saleWindow.rule ?? 'unavailable'} />
-          <ContractField label="qualificationPolicy" value={compat?.qualificationPolicy ?? 'unavailable'} />
-          <ContractField label="suppressionPolicy" value={compat?.suppressionPolicy ?? 'unavailable'} />
-          <ContractField label="outlierPolicy" value={compat?.outlierPolicy ?? 'unavailable'} />
-          <ContractField label="parcelIdentityReconciliation" value={
-            compat
-              ? `${compat.parcelIdentityReconciliation.joinMode}; matched ${compat.parcelIdentityReconciliation.matchedPropertyRows.toLocaleString()} of ${compat.parcelIdentityReconciliation.saleRows.toLocaleString()} sale rows; unmatched ${compat.parcelIdentityReconciliation.unmatchedSaleRows.toLocaleString()}`
-              : 'unavailable'
-          } />
-          <ContractField label="conversionSensitiveCounts" value={
-            compat
-              ? `decision ${compat.conversionSensitiveCounts.decisionQualifiedRows.toLocaleString()}, recommendation ${compat.conversionSensitiveCounts.recommendationQualifiedRows.toLocaleString()}, null-default ${compat.conversionSensitiveCounts.recommendationNullDefaultQualifiedRows.toLocaleString()}, suppressed ${compat.conversionSensitiveCounts.suppressedExcludedRows.toLocaleString()}, no-calc ${compat.conversionSensitiveCounts.includeNoCalcExcludedRows.toLocaleString()}`
-              : 'unavailable'
-          } />
+          <EvidenceField
+            label="Method"
+            value={`Sale window: ${formatCompatDate(compat?.saleWindow.lookbackStart)} to ${formatCompatDate(compat?.saleWindow.lookbackEndExclusive)}. Qualification: qualified sales only.`}
+          />
+          <EvidenceField
+            label="Exclusions"
+            value={`Suppressed/no-calc rows excluded. Outlier handling: Tukey/IQR trimmed.`}
+          />
+          <EvidenceField
+            label="Defensibility"
+            value={`Evidence posture: ${evidencePosture.status.toLowerCase()}. Risk: ${defensibilityRisk}.`}
+            tone={evidencePosture.tone}
+          />
+          <EvidenceField
+            label="Next review action"
+            value={`Next action: ${nextReviewAction}.`}
+            tone={evidencePosture.status === 'Ready' ? 'neutral' : 'warning'}
+          />
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setShowTechnicalDetails((open) => !open)}
+          style={{ marginBottom: showTechnicalDetails ? 12 : 0 }}
+        >
+          Technical details
+        </Button>
+
+        {showTechnicalDetails && (
+          <div
+            data-testid="statistics-compat-technical-details"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: 8,
+              marginBottom: 12,
+            }}
+          >
+            <ContractField label="contractId" value={compat?.contractId ?? 'unavailable'} />
+            <ContractField label="population" value={compat?.population ?? 'qualified sale ratio rows'} />
+            <ContractField label="countWithRatio" value={compat?.countWithRatio?.toLocaleString() ?? 'unavailable'} />
+            <ContractField label="outliersExcluded" value={compat?.outliersExcluded?.toLocaleString() ?? 'unavailable'} />
+            <ContractField label="trimmedCount" value={compat?.trimmedCount?.toLocaleString() ?? 'unavailable'} />
+            <ContractField label="trustPosture" value={compat?.trustPosture?.join(' / ') ?? 'unavailable'} />
+            <ContractField label="saleWindow" value={compat?.saleWindow.rule ?? 'unavailable'} />
+            <ContractField label="qualificationPolicy" value={compat?.qualificationPolicy ?? 'unavailable'} />
+            <ContractField label="suppressionPolicy" value={compat?.suppressionPolicy ?? 'unavailable'} />
+            <ContractField label="outlierPolicy" value={compat?.outlierPolicy ?? 'unavailable'} />
+            <ContractField label="parcelIdentityReconciliation" value={
+              compat
+                ? `${compat.parcelIdentityReconciliation.joinMode}; matched ${compat.parcelIdentityReconciliation.matchedPropertyRows.toLocaleString()} of ${compat.parcelIdentityReconciliation.saleRows.toLocaleString()} sale rows; unmatched ${compat.parcelIdentityReconciliation.unmatchedSaleRows.toLocaleString()}`
+                : 'unavailable'
+            } />
+            <ContractField label="conversionSensitiveCounts" value={
+              compat
+                ? `decision ${compat.conversionSensitiveCounts.decisionQualifiedRows.toLocaleString()}, recommendation ${compat.conversionSensitiveCounts.recommendationQualifiedRows.toLocaleString()}, null-default ${compat.conversionSensitiveCounts.recommendationNullDefaultQualifiedRows.toLocaleString()}, suppressed ${compat.conversionSensitiveCounts.suppressedExcludedRows.toLocaleString()}, no-calc ${compat.conversionSensitiveCounts.includeNoCalcExcludedRows.toLocaleString()}`
+                : 'unavailable'
+            } />
+          </div>
+        )}
 
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ color: 'hsl(var(--tf-muted))', textAlign: 'left' }}>
                 <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>Metric</th>
-                <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>County Studio Compat</th>
+                <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>County Studio Evidence</th>
                 <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>TerraForge Ratio Study</th>
                 <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>Tolerance</th>
                 <th style={{ padding: '6px 8px', borderBottom: '1px solid hsl(var(--tf-border))' }}>Status</th>
@@ -883,7 +982,7 @@ export function CountyStatisticsWorkbenchPanel() {
             />
             <Card data-material="bento">
               <CardHeader>
-                <CardTitle>County Ratio Study Compat View</CardTitle>
+                <CardTitle>County Ratio Study Evidence View</CardTitle>
               </CardHeader>
               <CardContent>
                 <RatioStudyPanel
@@ -979,7 +1078,7 @@ export function CountyStatisticsWorkbenchPanel() {
                 </CardHeader>
                 <CardContent>
                   The Benton-certified market reference lane is withheld for this county. Statistics
-                  Compat will not substitute Benton market data for a non-certified county scope.
+                  evidence will not substitute Benton market data for a non-certified county scope.
                 </CardContent>
               </Card>
             ) : null}
@@ -990,7 +1089,7 @@ export function CountyStatisticsWorkbenchPanel() {
                 </CardHeader>
                 <CardContent>
                   {certifiedMarketReferenceLane.label} is displayed as context only and is excluded
-                  from Statistics Compat parity and County Studio superset proof.
+                  from Study Evidence parity and County Studio superset proof.
                 </CardContent>
               </Card>
             ) : null}
@@ -1079,13 +1178,13 @@ export function CountyStatisticsWorkbenchPanel() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Statistics Compat</h2>
-            <Badge variant="secondary">statistics_ratio_study_compat_v1</Badge>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Study Evidence</h2>
+            <Badge variant="secondary">Ratio Study Evidence</Badge>
           </div>
           <p style={{ margin: 0, fontSize: 12, color: 'hsl(var(--tf-muted))', lineHeight: 1.5 }}>
-            Same-population ratio-study lens for {activeStudy.countyName ?? activeStudy.countyId}.
-            Operational Health remains a separate segment-set rollup, and Statistics Studio stays
-            visible until this compat contract is proven against live data.
+            Defensible ratio-study evidence for {activeStudy.countyName ?? activeStudy.countyId}.
+            Operational Health remains the command surface; this view explains what data was included,
+            what was excluded, and whether the study can be defended.
           </p>
         </div>
         <StatSummaryCard

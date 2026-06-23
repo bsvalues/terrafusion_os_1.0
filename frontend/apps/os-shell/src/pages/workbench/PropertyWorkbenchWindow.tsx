@@ -105,6 +105,9 @@ const TABS: readonly TabDef[] = [
   { id: 'forge', label: 'Forge' },
   { id: 'atlas', label: 'Atlas' },
   { id: 'dais', label: 'Dais' },
+  { id: 'clerk', label: 'Clerk' },
+  { id: 'treasury', label: 'Treasury' },
+  { id: 'audit', label: 'Audit' },
   { id: 'dossier', label: 'Dossier' },
   { id: 'pilot', label: 'Pilot' },
 ] as const;
@@ -794,8 +797,8 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
-    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff }),
-    [parcelId, propertyData, segmentHandoff, workMode]
+    () => ({ parcelId: parcelId || 'Unknown', propertyData, workMode, segmentHandoff, launchMetadata: metadata }),
+    [metadata, parcelId, propertyData, segmentHandoff, workMode]
   );
 
   // Badge state — collected from all providers
@@ -884,8 +887,11 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     [activeTab],
   );
 
-  // Resolve active tab component
-  const ActiveTabComponent = TAB_COMPONENTS[activeTab];
+  useEffect(() => {
+    if (hostViolation) {
+      console.warn('[Codex] Workbench host violation', hostViolation);
+    }
+  }, [hostViolation]);
 
   // No parcel selected — show parcel intake scene
   if (!parcelId) {
@@ -931,7 +937,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
             <main className="flex-1 overflow-auto">
               {filteredTabs.map((tab) => {
                 const isActive = activeTab === tab.id;
-                const TabComponent = TAB_COMPONENTS[tab.id];
+                const ActiveTabComponent = TAB_COMPONENTS[tab.id];
                 return (
                   <section
                     key={tab.id}
@@ -948,7 +954,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
                       ) : (
                         <ErrorBoundary>
                           <Suspense fallback={<TabLoader />}>
-                            <TabComponent />
+                            <ActiveTabComponent />
                           </Suspense>
                         </ErrorBoundary>
                       )

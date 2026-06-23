@@ -49,6 +49,7 @@
     "r1:finalize-manifest": "node tools/r1/generate-final-manifest.mjs",
     "prepare": "husky install",
     "tf": "node tools/bin/tf.mjs",
+    "brain": "node scripts/brain/brain.mjs",
     "tf:ship": "node tools/dev/tf-ship.mjs",
     "tf:slice": "node tools/dev/tf-slice.mjs",
     "tf:scope": "pnpm -C tools/scope-classifier scope -- --repoRoot=../..",
@@ -101,6 +102,8 @@
     "truth:runtime-sale-qualification": "node scripts/truth/runtime-sale-qualification-lineage-proof.mjs",
     "truth:runtime-data-boundary-audit": "node scripts/truth/runtime-data-boundary-audit.mjs",
     "truth:washington-39-county-data-crosswalk": "node scripts/truth/washington-39-county-data-crosswalk.mjs",
+    "truth:j10-benton-owner-runtime-proof": "node os-platform/core/pilot/j10-benton-owner-runtime-proof.mjs",
+    "truth:j10-benton-owner-sweep-monitor-checkpoint": "node os-platform/core/pilot/j10-benton-owner-sweep-monitor-checkpoint.mjs",
     "truth:county-runtime-contract": "node scripts/truth/county-runtime-contract.mjs",
     "truth:june10-claim-guard": "node os-platform/core/pilot/june10-claim-guard.mjs",
     "truth:june10-control-plane-freshness": "node os-platform/core/pilot/june10-control-plane-freshness.mjs",
@@ -133,6 +136,7 @@
     "proof:june10:coverage": "node os-platform/core/pilot/washington-39-county-coverage-proof.mjs",
     "dev:preview": "node os-platform/core/pilot/dev-preview.mjs",
     "preview:smoke": "node os-platform/core/pilot/preview-smoke.mjs",
+    "smoke:workbench": "playwright test --config=tests/playwright.workbench-smoke.config.ts",
     "proof:r1:local": "node os-platform/core/pilot/r1-local-proof.mjs",
     "proof:benton:sync": "node os-platform/core/pilot/benton-sync-proof.mjs",
     "proof:benton:comps": "node os-platform/core/pilot/benton-comps-proof.mjs",
@@ -157,6 +161,10 @@
     "proof:phase23": "node os-platform/core/pilot/phase23-ai-swarm-production-readiness-packet.mjs",
     "proof:phase24": "node os-platform/core/pilot/phase24-suite-integration-completeness-packet.mjs",
     "proof:phase25": "node os-platform/core/pilot/phase25-county-replication-readiness-packet.mjs",
+    "proof:county-studio:r1": "pnpm run proof:county-studio:r1-surface-runtime",
+    "proof:county-studio:r1-surface-runtime": "node os-platform/core/pilot/county-studio-r1-production-proof.mjs",
+    "proof:county-studio:r1-data-truth": "node os-platform/core/pilot/county-studio-r1-data-truth-gate.mjs",
+    "proof:county-studio:r1-operational-proof": "pnpm run proof:county-studio:r1-surface-runtime && pnpm run proof:county-studio:r1-data-truth",
     "backend:watch:cleanup": "pwsh -NoProfile -Command \"$repo = (Resolve-Path '.').Path; $targets = Get-CimInstance Win32_Process | Where-Object { ((($_.Name -eq 'dotnet.exe' -or $_.Name -eq 'TerraFusion.API.exe') -and $_.CommandLine -like ('*' + $repo + '*')) -or ($_.Name -eq 'node.exe' -and $_.CommandLine -like ('*' + $repo + '*') -and $_.CommandLine -like '*dev-pilot-runtime.mjs*')) }; foreach ($target in $targets) { Stop-Process -Id $target.ProcessId -Force -ErrorAction SilentlyContinue }\"",
     "backend:launch": "node -e \"const { spawnSync } = require('node:child_process'); const args = process.argv.slice(1); const forwardedArgs = args[0] === '--' ? args.slice(1) : args; if (forwardedArgs.length === 0) { console.error('backend:launch requires a command'); process.exit(1); } const env = { ...process.env }; env.TF_API_PORT = env.TF_API_PORT || '5046'; const apiUrls = env.ASPNETCORE_URLS || ('http://localhost:' + env.TF_API_PORT); env.ASPNETCORE_URLS = apiUrls; const hasUrlsArg = forwardedArgs.some((arg) => arg === '--urls' || arg.startsWith('--urls=')); const command = forwardedArgs[0]; let commandArgs = forwardedArgs.slice(1); if (!hasUrlsArg && command === 'dotnet') { const appArgIndex = commandArgs.indexOf('--'); if (appArgIndex >= 0) { commandArgs = [...commandArgs.slice(0, appArgIndex + 1), '--urls', apiUrls, ...commandArgs.slice(appArgIndex + 1)]; } else if (commandArgs[0] && commandArgs[0].endsWith('.dll')) { commandArgs = [commandArgs[0], '--urls', apiUrls, ...commandArgs.slice(1)]; } else if (commandArgs.includes('run')) { commandArgs = [...commandArgs, '--', '--urls', apiUrls]; } } const result = spawnSync(command, commandArgs, { stdio: 'inherit', env }); process.exit(result.status ?? 1);\"",
     "pilot:launch": "node -e \"const { spawnSync } = require('node:child_process'); const env = { ...process.env }; env.TF_API_PORT = env.TF_API_PORT || '5046'; const result = spawnSync(process.execPath, ['os-platform/core/pilot/dev-pilot-runtime.mjs'], { stdio: 'inherit', env }); process.exit(result.status ?? 1);\"",
@@ -188,6 +196,7 @@
     "test:canon-ping": "node --test os-platform/core/tests/canon-ping.test.mjs",
     "test:canon-doctor": "node --test os-platform/core/tests/canon-doctor.test.mjs",
     "trace:query": "node scripts/trace-query.mjs",
+    "auth:provision-user": "dotnet run --project backend/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj --",
     "tf:local-agent": "node os-platform/core/pilot/local-agent/cli.js",
     "tf:la": "node os-platform/core/pilot/local-agent/cli.js",
     "proof:local-agent:release": "node os-platform/core/pilot/local-agent-release-proof.mjs",
@@ -556,5 +565,10 @@
       "Port": 5000
     },
     "Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM"
+  },
+  "pnpm": {
+    "overrides": {
+      "shell-quote": ">=1.8.4"
+    }
   }
 }

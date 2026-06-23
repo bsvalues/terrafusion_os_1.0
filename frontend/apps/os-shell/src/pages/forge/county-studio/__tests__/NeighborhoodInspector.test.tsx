@@ -14,6 +14,7 @@ import type { NeighborhoodRollupRowDto } from '../types/countyStudio.types';
 
 const navigateMock = vi.fn();
 const activateModuleMock = vi.fn();
+const openMock = vi.fn();
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
@@ -51,6 +52,7 @@ function setNbhd(code: string | null, rows: NeighborhoodRollupRowDto[] = [MOCK_N
 }
 
 beforeEach(() => {
+  vi.stubGlobal('open', openMock);
   act(() => {
     useCountyStudioStore.getState().setNeighborhoodRollup([]);
     useCountyStudioStore.setState({
@@ -68,6 +70,7 @@ beforeEach(() => {
   });
   navigateMock.mockReset();
   activateModuleMock.mockReset();
+  openMock.mockReset();
 });
 
 describe('NeighborhoodInspector', () => {
@@ -154,16 +157,17 @@ describe('NeighborhoodInspector', () => {
     expect(dashes.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('routes neighborhood scope to Atlas Live', () => {
+  it('opens neighborhood scope in a TerraAtlas browser window', () => {
     setNbhd('NBHD-WR01');
     render(<NeighborhoodInspector />);
     fireEvent.click(screen.getByTestId('neighborhood-inspector-handoff-atlas'));
-    expect(navigateMock).toHaveBeenCalledWith(
-      expect.stringContaining('/forge/atlas-live?')
-    );
-    expect(navigateMock.mock.calls[0]?.[0]).toContain('countyId=benton');
-    expect(navigateMock.mock.calls[0]?.[0]).toContain('neighborhoodCode=NBHD-WR01');
-    expect(navigateMock.mock.calls[0]?.[0]).toContain('revalArea=4');
+    expect(navigateMock).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    expect(openMock.mock.calls[0]?.[0]).toContain('countyId=benton');
+    expect(openMock.mock.calls[0]?.[0]).toContain('neighborhoodCode=NBHD-WR01');
+    expect(openMock.mock.calls[0]?.[0]).toContain('revalArea=4');
+    const params = new URLSearchParams((openMock.mock.calls[0]?.[0] as string).split('?')[1]);
+    expect(params.get('city')).toBeNull();
   });
 
   it('routes neighborhood scope into downstream forge modules', () => {
@@ -183,6 +187,7 @@ describe('NeighborhoodInspector', () => {
         rollupScope: 'neighborhood',
       }),
     }));
+    expect(activateModuleMock.mock.calls[0]?.[1].metadata).not.toHaveProperty('city');
     expect(activateModuleMock).toHaveBeenNthCalledWith(2, 'costforge', expect.objectContaining({
       metadata: expect.objectContaining({
         countyId: 'benton',
@@ -191,6 +196,7 @@ describe('NeighborhoodInspector', () => {
         rollupScope: 'neighborhood',
       }),
     }));
+    expect(activateModuleMock.mock.calls[1]?.[1].metadata).not.toHaveProperty('city');
     expect(activateModuleMock).toHaveBeenNthCalledWith(3, 'comps-forge', expect.objectContaining({
       metadata: expect.objectContaining({
         countyId: 'benton',
@@ -199,6 +205,7 @@ describe('NeighborhoodInspector', () => {
         rollupScope: 'neighborhood',
       }),
     }));
+    expect(activateModuleMock.mock.calls[2]?.[1].metadata).not.toHaveProperty('city');
   });
 
   it('keeps parcel workbench disabled at neighborhood rollup scope', () => {

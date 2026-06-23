@@ -25,7 +25,7 @@ import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import { useDownstreamClosureReceiptStore } from './downstreamClosureReceiptStore';
-import { exceptionApi } from '../forge/county-studio/countyStudyApi';
+import { exceptionApi } from '../../services/countyStudyHandoffApi';
 import {
   Scale,
   Receipt,
@@ -92,7 +92,7 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff metrics with visible source labeling', launchMode: 'standalone', moduleId: 'management-dashboard' },
   { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue', truthState: 'queued' },
   { id: 'terra-cert', label: 'TerraCert', icon: FileCheck, description: 'Roll sign-off, statutory export, and certification operations', launchMode: 'standalone', moduleId: 'terra-cert', truthState: 'queued' },
-  { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice', truthState: 'queued' },
+  { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Governed civic communications console — policy, templates, batches, freeze, dispatch, audit', launchMode: 'standalone', moduleId: 'terra-notice', truthState: 'live' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');

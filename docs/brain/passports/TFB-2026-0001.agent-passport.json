@@ -1,0 +1,26 @@
+{
+  "task_id": "TFB-2026-0001",
+  "agent": "qa",
+  "mode": "pilot",
+  "work_order": "docs/brain/workorders/TFB-2026-0001.json",
+  "risk": "R0",
+  "affected_layer": "Layer 3 / Suite Workspace",
+  "affected_suite": "dais",
+  "write_lane": "workflow state (read-only verification)",
+  "allowed_files": [
+    "backend/src/TerraFusion.Core/Entities/Appeal.cs",
+    "backend/src/TerraFusion.API/Controllers/DaisController.cs"
+  ],
+  "forbidden_domains": [
+    "TerraForge valuation",
+    "TerraAtlas geometry",
+    "TerraDossier documents"
+  ],
+  "required_checks": [
+    "dotnet test --filter DaisPersistence",
+    "dotnet test --filter DaisCountyIsolation"
+  ],
+  "graphify_report_hash": "sha256:92b95da27ed26f3a394d8cc6e2d4933e64c22481338a52739a231e195302dda9",
+  "entrypoint_hash": "sha256:bfa854828a199b12f112eb8e0097a7ed8e1f8bdba11ca50b465eb00b9cc082b7",
+  "status": "ready_for_review"
+}

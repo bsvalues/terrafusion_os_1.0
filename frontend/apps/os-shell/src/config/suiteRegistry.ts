@@ -24,7 +24,8 @@ export type SuiteId =
 export type OsFeatureId =
   | 'pilot' // TerraPilot - Agentic Task Orchestration
   | 'trace' // TerraTrace - Observability & Audit Trail
-  | 'canon'; // TerraCanon - Integrated Development Environment
+  | 'canon' // TerraCanon - Integrated Development Environment
+  | 'localops'; // TerraPilot LocalOps - In-shell, county-boundary-safe local operator (side panel only)
 
 export type OsSurfaceId = 'workbench'; // Property Workbench - Primary parcel-context UX
 
@@ -359,6 +360,24 @@ export const OS_FEATURES: readonly OsFeatureDefinition[] = [
       ],
       showWorkbenchCta: false,
     },
+    objectType: 'os-feature-window',
+    layer: 'layer-5-application',
+  },
+  {
+    id: 'localops',
+    displayName: 'TerraFusion LocalOps',
+    shortName: 'LocalOps',
+    description: 'In-shell, county-boundary-safe local AI operator (read-only, source-grounded)',
+    iconName: 'LifeBuoy',
+    // Intentionally NO `route` and NO `homeMeta`: LocalOps is shell chrome (a fixed
+    // side panel mounted in Desktop), never a routable full-page surface. Omitting
+    // `route` keeps it out of the launcher, desktop icons, standalone-home derivation,
+    // and the React Router — honoring the WO-LOCALOPS-006.1 guardrail
+    // (in-shell only, no Router / full-page escape). It is still registered as a
+    // governed OS feature so the anti-drift contract sees it.
+    status: 'live',
+    label: 'LocalOps',
+    icon: 'life-buoy',
     objectType: 'os-feature-window',
     layer: 'layer-5-application',
   },

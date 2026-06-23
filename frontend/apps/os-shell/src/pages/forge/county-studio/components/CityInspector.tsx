@@ -6,7 +6,6 @@
 // surfaces (city / neighborhood / segment) feel consistent.
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import type { RollupComplianceStatus } from '../types/countyStudio.types';
@@ -57,7 +56,6 @@ function complianceLamp(status: RollupComplianceStatus): { color: string; label:
 
 export function CityInspector() {
   const { cityRollup, selectedCity, activeStudy } = useCountyStudioStore();
-  const navigate = useNavigate();
   const row = selectedCity ? cityRollup.find((r) => r.city === selectedCity) : null;
 
   if (!row) {
@@ -99,8 +97,8 @@ export function CityInspector() {
         countyId: activeStudy.countyId,
         countyName: activeStudy.countyName,
         taxYear: activeStudy.taxYear,
-        city: row.city,
-        rollupScope: 'city',
+        referenceCity: row.city,
+        resetValuationScope: true,
       },
     });
   };
@@ -111,12 +109,13 @@ export function CityInspector() {
       studyId: activeStudy.studyId,
       countyId: activeStudy.countyId,
       taxYear: String(activeStudy.taxYear),
-      city: row.city,
+      referenceCity: row.city,
+      resetValuationScope: 'true',
     });
     if (activeStudy.countyName) {
       params.set('countyName', activeStudy.countyName);
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -168,7 +167,7 @@ export function CityInspector() {
         >
           <div style={{ fontSize: 12, fontWeight: 700 }}>See city on map</div>
           <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-            Open Atlas Live scoped to {row.city}.
+            Open Atlas Live with {row.city} as reference metadata.
           </div>
         </button>
         <button
@@ -179,7 +178,7 @@ export function CityInspector() {
         >
           <div style={{ fontSize: 12, fontWeight: 700 }}>Review sales in SalesForge</div>
           <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-            Open county-scoped city overview, then narrow into neighborhood and reval-area review.
+            Open county context with city as reference, then narrow into neighborhood and reval-area review.
           </div>
         </button>
         <button
@@ -201,7 +200,7 @@ export function CityInspector() {
         >
           <div style={{ fontSize: 12, fontWeight: 700 }}>Open comps in CompsForge</div>
           <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
-            Stay in overview mode until you narrow below the city rollup.
+            Keep city as reference until you narrow into operative valuation evidence.
           </div>
         </button>
         <button

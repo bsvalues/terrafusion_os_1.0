@@ -1,4 +1,17 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
+
+vi.mock('../../stores/companionStore', () => ({
+  useCompanionStore: () => ({
+    activeParcelId: null,
+    activeSuite: null,
+    activeTab: null,
+    activeBranch: null,
+    activeFile: null,
+    buildStatus: 'unknown',
+    editorMarkers: [],
+  }),
+}));
+
 import { buildParcelSummary } from '../../pages/MuseChat';
 import type { Property } from '../../types/domain';
 
@@ -85,6 +98,7 @@ describe('buildParcelSummary', () => {
 
 describe('callExplain parcelSummary wire', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ explanation: 'ok', sources: [], confidence: 0.9, traceId: 'x' }),
@@ -118,5 +132,21 @@ describe('callExplain parcelSummary wire', () => {
     const fetchCall = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = JSON.parse(fetchCall[1].body as string);
     expect(body.parcelSummary).toBeUndefined();
+  });
+
+  it('sends the provisioned operator bearer token to the protected explain endpoint', async () => {
+    localStorage.setItem('authToken', 'owner-token');
+    const { callExplain } = await import('../../pages/MuseChat');
+    const ctx = {
+      activeParcelId: null, activeSuite: null, activeTab: null,
+      activeBranch: null, activeFile: null, buildStatus: 'unknown', editorMarkers: [],
+    };
+
+    await callExplain('test query', 'benton', 'actor', ctx, undefined);
+
+    const fetchCall = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(fetchCall[1].headers).toMatchObject({
+      Authorization: 'Bearer owner-token',
+    });
   });
 });

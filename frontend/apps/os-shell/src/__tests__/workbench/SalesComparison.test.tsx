@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SalesComparison } from '../../pages/workbench/tabs/forge/SalesComparison';
 import * as pilotApi from '../../api/pilotApi';
 
+const propertyStoreState: { activeParcel: { parcelId: string } | null } = {
+  activeParcel: { parcelId: 'P-200' },
+};
+
 vi.mock('../../context/workbenchTabContext', () => ({
   useWorkbenchTab: () => ({ parcelId: 'P-200' }),
 }));
@@ -31,9 +35,30 @@ vi.mock('../../components/workbench/ComparableSalesPanel', () => ({
   ),
 }));
 
+vi.mock('../../stores/propertyStore', () => ({
+  usePropertyStore: (selector: unknown) => {
+    const state = {
+      activeParcel: propertyStoreState.activeParcel,
+    };
+
+    return typeof selector === 'function' ? selector(state) : state;
+  },
+}));
+
 vi.mock('../../ui/materials/BentoCard', () => ({
-  BentoCard: ({ children, title }: { children: React.ReactNode; title: string }) => (
-    <section aria-label={title}>{children}</section>
+  BentoCard: ({
+    actions,
+    children,
+    title,
+  }: {
+    actions?: React.ReactNode;
+    children: React.ReactNode;
+    title: string;
+  }) => (
+    <section aria-label={title}>
+      {actions}
+      {children}
+    </section>
   ),
 }));
 
@@ -47,6 +72,31 @@ vi.mock('../../components/errors/ErrorDisplay', () => ({
 
 vi.mock('../../api/pilotApi', () => ({
   invokeTool: vi.fn(),
+}));
+
+vi.mock('../../hooks/forge/useForgeValuation', () => ({
+  useSalesComparison: () => ({
+    data: undefined,
+    loading: false,
+    error: null,
+    source: 'unavailable',
+    refetch: vi.fn(),
+  }),
+  usePatchSaleQualification: () => ({
+    mutate: vi.fn(),
+    reset: vi.fn(),
+    isPending: false,
+    isError: false,
+    error: null,
+  }),
+  useRecomputeRecommendations: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    isSuccess: false,
+    error: null,
+    data: null,
+  }),
 }));
 
 const mockInvokeTool = vi.mocked(pilotApi.invokeTool);
@@ -63,6 +113,7 @@ const renderSales = (props: { taxYear: number; onHistoryRecord: ReturnType<typeo
 describe('SalesComparison wrapper', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    propertyStoreState.activeParcel = { parcelId: 'P-200' };
   });
 
   it('records history when the rationale tool succeeds', async () => {
@@ -125,5 +176,28 @@ describe('SalesComparison wrapper', () => {
     fireEvent.click(screen.getByRole('button', { name: /emit reconciled value/i }));
 
     expect(onValueIndicated).toHaveBeenCalledWith('sales', 312000);
+  });
+
+  it('blocks governed comp rationale when the route parcel has no active evidence record', () => {
+    propertyStoreState.activeParcel = null;
+    const onHistoryRecord = vi.fn();
+    const onValueIndicated = vi.fn();
+
+    renderSales({ taxYear: 2026, onHistoryRecord, onValueIndicated });
+
+    fireEvent.change(screen.getByLabelText(/comp parcel ids/i), {
+      target: { value: 'C-1, C-2, C-3' },
+    });
+
+    expect(screen.getByRole('button', { name: /analyze comps/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /recompute/i })).toBeDisabled();
+    expect(
+      screen.getByText(/Rationale blocked until the active parcel evidence record loads/i),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /analyze comps/i }));
+
+    expect(mockInvokeTool).not.toHaveBeenCalled();
+    expect(onHistoryRecord).not.toHaveBeenCalled();
   });
 });

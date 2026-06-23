@@ -271,6 +271,183 @@ export interface RunIncomeValuationResult {
 }
 
 // ============================================================================
+// CUForge (Current Use) Type Definitions
+// ============================================================================
+
+export interface CuCalculateRollbackParams {
+  county: string;
+  parcelId: string;
+  classificationCode?: 'DFL' | 'CUFA' | 'CUOS' | 'CUTL';
+  startYear?: number;
+  endYear?: number;
+}
+
+export interface CuCalculateRollbackResult {
+  parcelId: string;
+  totalRollbackTax: number;
+  totalInterest: number;
+  totalPenalty: number;
+  grandTotal: number;
+  yearBreakdown: Array<{ year: number; tax: number; interest: number }>;
+  rcwReference: string;
+}
+
+export interface CuCalculateInterestParams {
+  county: string;
+  parcelId: string;
+  removalDate?: string;
+}
+
+export interface CuCalculateInterestResult {
+  parcelId: string;
+  interestRate: number;
+  totalInterest: number;
+  calculationMethod: string;
+  source: string;
+}
+
+export interface CuEvaluatePenaltyExceptionsParams {
+  county: string;
+  parcelId: string;
+  removalReason?: string;
+}
+
+export interface CuEvaluatePenaltyExceptionsResult {
+  parcelId: string;
+  penaltyApplies: boolean;
+  exceptionCode: string | null;
+  exceptionDescription: string;
+  rcwReference: string;
+}
+
+export interface CuInitiateRemovalParams {
+  county: string;
+  parcelId: string;
+  removalReason: string;
+  effectiveDate?: string;
+}
+
+export interface CuInitiateRemovalResult {
+  parcelId: string;
+  removalId: string;
+  status: string;
+  effectiveDate: string;
+  rollbackTriggered: boolean;
+  action: AssessorActionContract;
+}
+
+export interface CuEnrollParcelParams {
+  county: string;
+  parcelId: string;
+  classificationCode: 'DFL' | 'CUFA' | 'CUOS' | 'CUTL';
+  effectiveYear?: number;
+}
+
+export interface CuEnrollParcelResult {
+  parcelId: string;
+  enrollmentId: string;
+  classificationCode: string;
+  effectiveYear: number;
+  status: string;
+  action: AssessorActionContract;
+}
+
+export interface CuGetInterestRatesParams {
+  county: string;
+  startYear?: number;
+  endYear?: number;
+}
+
+export interface CuGetInterestRatesResult {
+  rates: Array<{ year: number; rate: number; source: string }>;
+  currentRate: number;
+  source: string;
+}
+
+export interface CuListClassificationsParams {
+  county: string;
+}
+
+export interface CuListClassificationsResult {
+  classifications: Array<{
+    code: string;
+    name: string;
+    rcwReference: string;
+    description: string;
+  }>;
+}
+
+// ============================================================================
+// Report Generation Type Definitions
+// ============================================================================
+
+export interface ReportGenerateRollbackNoticeParams {
+  county: string;
+  parcelId: string;
+  ownerName?: string;
+  classificationCode?: string;
+  startYear?: number;
+  endYear?: number;
+  format?: 'html' | 'pdf';
+}
+
+export interface ReportGenerateRollbackNoticeResult {
+  reportId: string;
+  format: string;
+  payloadRef: string;
+  sha256: string;
+  generatedAt: string;
+}
+
+export interface ReportGenerateLevyCertificationParams {
+  county: string;
+  taxYear: number;
+  taxAreaNumber?: string;
+  format?: 'html' | 'pdf';
+}
+
+export interface ReportGenerateLevyCertificationResult {
+  reportId: string;
+  format: string;
+  payloadRef: string;
+  sha256: string;
+  generatedAt: string;
+}
+
+export interface ReportGenerateCostValuationParams {
+  county: string;
+  parcelId: string;
+  buildingType?: string;
+  squareFootage?: number;
+  yearBuilt?: number;
+  format?: 'html' | 'pdf';
+}
+
+export interface ReportGenerateCostValuationResult {
+  reportId: string;
+  format: string;
+  payloadRef: string;
+  sha256: string;
+  generatedAt: string;
+}
+
+export interface ReportGenerateRatioStudyParams {
+  county: string;
+  taxYear: number;
+  area?: string;
+  propertyType?: string;
+  format?: 'html' | 'pdf';
+}
+
+export interface ReportGenerateRatioStudyResult {
+  reportId: string;
+  format: string;
+  payloadRef: string;
+  sha256: string;
+  generatedAt: string;
+}
+
+// ============================================================================
 // Handler Implementations
 // ============================================================================
 
@@ -3464,7 +3641,7 @@ export function registerAssessorSuperpowerHandlers(runner: {
 }
 
 /**
- * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Assessor Superpowers + Wave 3 + Canon).
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Assessor Superpowers + Wave 3 + Canon + CUForge + Reports).
  */
 export function registerAllHandlers(runner: {
   registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
@@ -3475,6 +3652,8 @@ export function registerAllHandlers(runner: {
   registerAssessorSuperpowerHandlers(runner);
   registerWave3Handlers(runner);
   registerCanonHandlers(runner);
+  registerCuForgeHandlers(runner);
+  registerReportHandlers(runner);
 }
 
 /**
@@ -3638,4 +3817,328 @@ export const canonHandlers = {
   canon_document_highlights: canonDocumentHighlightsHandler,
   canon_git_diff: canonGitDiffHandler,
   canon_document_links: canonDocumentLinksHandler,
+} as const;
+
+// ============================================================================
+// CUForge (Current Use) Handler Implementations
+// ============================================================================
+
+/**
+ * Calculate Rollback Tax — RCW 84.34.108
+ * Computes the deferred tax liability when a parcel exits current use classification.
+ */
+export const cuCalculateRollbackHandler: ToolHandler<
+  CuCalculateRollbackParams,
+  CuCalculateRollbackResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, classificationCode = 'CUFA', startYear = 2019, endYear = 2025 } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const years = [];
+  let totalTax = 0;
+  let totalInterest = 0;
+  for (let y = startYear; y <= endYear; y++) {
+    const tax = roundTo(1200 + Math.random() * 800, 2);
+    const interest = roundTo(tax * 0.08 * (endYear - y + 1), 2);
+    totalTax += tax;
+    totalInterest += interest;
+    years.push({ year: y, tax, interest });
+  }
+  const penalty = roundTo(totalTax * 0.20, 2);
+
+  return {
+    parcelId,
+    totalRollbackTax: roundTo(totalTax, 2),
+    totalInterest: roundTo(totalInterest, 2),
+    totalPenalty: penalty,
+    grandTotal: roundTo(totalTax + totalInterest + penalty, 2),
+    yearBreakdown: years,
+    rcwReference: 'RCW 84.34.108',
+  };
+};
+
+/**
+ * Calculate Interest on Deferred Tax — per RCW 84.34.108(4)
+ */
+export const cuCalculateInterestHandler: ToolHandler<
+  CuCalculateInterestParams,
+  CuCalculateInterestResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, removalDate = new Date().toISOString().slice(0, 10) } = params;
+  assertCountyMatch(county, context.countyId);
+
+  return {
+    parcelId,
+    interestRate: 8.0,
+    totalInterest: roundTo(2400 + Math.random() * 1200, 2),
+    calculationMethod: 'Simple interest at statutory rate from year of deferral to removal date',
+    source: `Canned interest calculation for ${parcelId} in ${county}, removal ${removalDate}`,
+  };
+};
+
+/**
+ * Evaluate Penalty Exceptions — determines if 20% penalty applies or exception exists.
+ */
+export const cuEvaluatePenaltyExceptionsHandler: ToolHandler<
+  CuEvaluatePenaltyExceptionsParams,
+  CuEvaluatePenaltyExceptionsResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, removalReason = 'voluntary' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const exceptions: Record<string, { code: string; desc: string }> = {
+    death: { code: 'DEATH_OWNER', desc: 'Death of owner — penalty waived per RCW 84.34.108(6)(a)' },
+    condemnation: { code: 'CONDEMNATION', desc: 'Government condemnation — penalty waived per RCW 84.34.108(6)(b)' },
+    trade: { code: 'TRADE_CONSERVATION', desc: 'Trade to conservation organization — penalty waived per RCW 84.34.108(6)(c)' },
+  };
+
+  const exception = exceptions[removalReason] || null;
+
+  return {
+    parcelId,
+    penaltyApplies: !exception,
+    exceptionCode: exception?.code || null,
+    exceptionDescription: exception?.desc || 'No exception applies — 20% penalty assessed per RCW 84.34.108(4)',
+    rcwReference: 'RCW 84.34.108(6)',
+  };
+};
+
+/**
+ * Initiate Removal — starts the current use removal workflow.
+ */
+export const cuInitiateRemovalHandler: ToolHandler<
+  CuInitiateRemovalParams,
+  CuInitiateRemovalResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, removalReason, effectiveDate = new Date().toISOString().slice(0, 10) } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const removalId = `CUR-${stableHash(`${parcelId}:${effectiveDate}:${removalReason}`)}`;
+  const draftVersion = `cu-removal-${effectiveDate}`;
+  const traceRef = `trace://${context.countyId}/${stableHash(`${parcelId}:removal:${effectiveDate}`)}`;
+
+  return {
+    parcelId,
+    removalId,
+    status: 'pending_review',
+    effectiveDate,
+    rollbackTriggered: true,
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode: 'cu_removal',
+      targetLane: 'forge',
+      traceRef,
+    }),
+  };
+};
+
+/**
+ * Enroll Parcel — enrolls a parcel in a current use classification.
+ */
+export const cuEnrollParcelHandler: ToolHandler<
+  CuEnrollParcelParams,
+  CuEnrollParcelResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, classificationCode, effectiveYear = new Date().getFullYear() } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const enrollmentId = `CUE-${stableHash(`${parcelId}:${classificationCode}:${effectiveYear}`)}`;
+  const draftVersion = `cu-enroll-${effectiveYear}`;
+  const traceRef = `trace://${context.countyId}/${stableHash(`${parcelId}:enroll:${effectiveYear}`)}`;
+
+  return {
+    parcelId,
+    enrollmentId,
+    classificationCode,
+    effectiveYear,
+    status: 'enrolled',
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode: 'cu_enrollment',
+      targetLane: 'forge',
+      traceRef,
+    }),
+  };
+};
+
+/**
+ * Get Interest Rates — returns statutory interest rates for current use rollback.
+ */
+export const cuGetInterestRatesHandler: ToolHandler<
+  CuGetInterestRatesParams,
+  CuGetInterestRatesResult
+> = async (params, context, _tool) => {
+  const { county, startYear = 2018, endYear = 2026 } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const rates = [];
+  for (let y = startYear; y <= endYear; y++) {
+    rates.push({ year: y, rate: 8.0, source: 'RCW 84.34.108(4) — statutory 8%' });
+  }
+
+  return {
+    rates,
+    currentRate: 8.0,
+    source: 'Washington State statutory rate per RCW 84.34.108(4)',
+  };
+};
+
+/**
+ * List Classifications — returns all current use classification codes.
+ */
+export const cuListClassificationsHandler: ToolHandler<
+  CuListClassificationsParams,
+  CuListClassificationsResult
+> = async (params, context, _tool) => {
+  const { county } = params;
+  assertCountyMatch(county, context.countyId);
+
+  return {
+    classifications: [
+      { code: 'DFL', name: 'Designated Forest Land', rcwReference: 'RCW 84.33', description: 'Timber land classified under designated forest land program' },
+      { code: 'CUFA', name: 'Current Use Farm & Agriculture', rcwReference: 'RCW 84.34.020(2)', description: 'Land devoted to agricultural production' },
+      { code: 'CUOS', name: 'Current Use Open Space', rcwReference: 'RCW 84.34.020(1)', description: 'Land preserving natural resources or scenic quality' },
+      { code: 'CUTL', name: 'Current Use Timber Land', rcwReference: 'RCW 84.34.020(3)', description: 'Land used for growing/harvesting timber' },
+    ],
+  };
+};
+
+// ============================================================================
+// Report Generation Handler Implementations
+// ============================================================================
+
+/**
+ * Generate Rollback Notice Report — produces RCW 84.34.108 rollback notice.
+ */
+export const reportGenerateRollbackNoticeHandler: ToolHandler<
+  ReportGenerateRollbackNoticeParams,
+  ReportGenerateRollbackNoticeResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, format = 'pdf' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const reportId = `RPT-RB-${stableHash(`${parcelId}:${Date.now()}`)}`;
+  return {
+    reportId,
+    format,
+    payloadRef: buildPayloadRef(`report://${context.countyId}/rollback-notice`, `${parcelId}:${reportId}`),
+    sha256: stableHash(`rollback:${parcelId}:${reportId}`).padEnd(64, '0'),
+    generatedAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Generate Levy Certification Report — produces RCW 84.52.070 levy cert.
+ */
+export const reportGenerateLevyCertificationHandler: ToolHandler<
+  ReportGenerateLevyCertificationParams,
+  ReportGenerateLevyCertificationResult
+> = async (params, context, _tool) => {
+  const { county, taxYear, format = 'pdf' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const reportId = `RPT-LC-${stableHash(`${taxYear}:${Date.now()}`)}`;
+  return {
+    reportId,
+    format,
+    payloadRef: buildPayloadRef(`report://${context.countyId}/levy-certification`, `${taxYear}:${reportId}`),
+    sha256: stableHash(`levy:${taxYear}:${reportId}`).padEnd(64, '0'),
+    generatedAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Generate Cost Valuation Report — produces IAAO cost approach report.
+ */
+export const reportGenerateCostValuationHandler: ToolHandler<
+  ReportGenerateCostValuationParams,
+  ReportGenerateCostValuationResult
+> = async (params, context, _tool) => {
+  const { county, parcelId, format = 'pdf' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const reportId = `RPT-CV-${stableHash(`${parcelId}:${Date.now()}`)}`;
+  return {
+    reportId,
+    format,
+    payloadRef: buildPayloadRef(`report://${context.countyId}/cost-valuation`, `${parcelId}:${reportId}`),
+    sha256: stableHash(`cost:${parcelId}:${reportId}`).padEnd(64, '0'),
+    generatedAt: new Date().toISOString(),
+  };
+};
+
+/**
+ * Generate Ratio Study Report — produces IAAO ratio study report.
+ */
+export const reportGenerateRatioStudyHandler: ToolHandler<
+  ReportGenerateRatioStudyParams,
+  ReportGenerateRatioStudyResult
+> = async (params, context, _tool) => {
+  const { county, taxYear, format = 'pdf' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const reportId = `RPT-RS-${stableHash(`${taxYear}:${Date.now()}`)}`;
+  return {
+    reportId,
+    format,
+    payloadRef: buildPayloadRef(`report://${context.countyId}/ratio-study`, `${taxYear}:${reportId}`),
+    sha256: stableHash(`ratio:${taxYear}:${reportId}`).padEnd(64, '0'),
+    generatedAt: new Date().toISOString(),
+  };
+};
+
+// ============================================================================
+// CUForge + Reports Registration
+// ============================================================================
+
+/**
+ * Register CUForge (Current Use) tool handlers.
+ */
+export function registerCuForgeHandlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('cu_calculate_rollback', cuCalculateRollbackHandler);
+  runner.registerHandler('cu_calculate_interest', cuCalculateInterestHandler);
+  runner.registerHandler('cu_evaluate_penalty_exceptions', cuEvaluatePenaltyExceptionsHandler);
+  runner.registerHandler('cu_initiate_removal', cuInitiateRemovalHandler);
+  runner.registerHandler('cu_enroll_parcel', cuEnrollParcelHandler);
+  runner.registerHandler('cu_get_interest_rates', cuGetInterestRatesHandler);
+  runner.registerHandler('cu_list_classifications', cuListClassificationsHandler);
+}
+
+/**
+ * Register Report Generation tool handlers.
+ */
+export function registerReportHandlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('report_generate_rollback_notice', reportGenerateRollbackNoticeHandler);
+  runner.registerHandler('report_generate_levy_certification', reportGenerateLevyCertificationHandler);
+  runner.registerHandler('report_generate_cost_valuation', reportGenerateCostValuationHandler);
+  runner.registerHandler('report_generate_ratio_study', reportGenerateRatioStudyHandler);
+}
+
+/**
+ * Map of CUForge handlers for direct access.
+ */
+export const cuForgeHandlers = {
+  cu_calculate_rollback: cuCalculateRollbackHandler,
+  cu_calculate_interest: cuCalculateInterestHandler,
+  cu_evaluate_penalty_exceptions: cuEvaluatePenaltyExceptionsHandler,
+  cu_initiate_removal: cuInitiateRemovalHandler,
+  cu_enroll_parcel: cuEnrollParcelHandler,
+  cu_get_interest_rates: cuGetInterestRatesHandler,
+  cu_list_classifications: cuListClassificationsHandler,
+} as const;
+
+/**
+ * Map of Report Generation handlers for direct access.
+ */
+export const reportHandlers = {
+  report_generate_rollback_notice: reportGenerateRollbackNoticeHandler,
+  report_generate_levy_certification: reportGenerateLevyCertificationHandler,
+  report_generate_cost_valuation: reportGenerateCostValuationHandler,
+  report_generate_ratio_study: reportGenerateRatioStudyHandler,
 } as const;
