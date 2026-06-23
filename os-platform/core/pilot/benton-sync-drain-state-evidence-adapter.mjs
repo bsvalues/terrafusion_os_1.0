@@ -221,8 +221,8 @@ export async function buildBentonSyncDrainStateEvidence({
       process.env.TF_BENTON_DEV_API_BASE,
       process.env.TF_RUNTIME_BASE_URL,
       process.env.VITE_API_URL,
-      "http://localhost:5000",
-      "http://localhost:5046"
+      process.env.TF_API_BASE_URL,
+      `http://localhost:${process.env.TF_API_PORT || "5046"}`
     ]),
   processAlive: aliveProbe = processAlive,
   query = makePsqlQueryRunner()
