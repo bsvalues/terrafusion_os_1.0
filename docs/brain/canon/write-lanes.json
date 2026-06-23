@@ -1,0 +1,63 @@
+{
+  "_source": ".github/AGENT_ENTRYPOINT.md Write-Lane Matrix + docs/architecture/specs/terrafusion/04_SUITE_BOUNDARIES_WRITE_LANES_v3.1.md",
+  "_enforced_by": "scripts/spec-gates/write-lanes.mjs (validates tools/registry/terrapilot.tools.json)",
+  "_rule": "A capability writes ONLY inside its own lane. Direct cross-lane mutation is prohibited. Cross-lane intent must travel through a governed operation boundary AND emit a TerraTrace event (action_started -> action_completed|action_failed).",
+  "lanes": {
+    "forge": {
+      "owns": ["valuation artifacts", "valuation runs", "pricing outputs"],
+      "must_not_write": ["dais", "dossier", "trace", "atlas"],
+      "bridge": "governed request + TerraTrace event"
+    },
+    "atlas": {
+      "owns": ["geospatial layers", "map derivations", "spatial overlays"],
+      "must_not_write": ["forge", "dais", "dossier"],
+      "bridge": "governed request + TerraTrace event"
+    },
+    "dais": {
+      "owns": ["workflow state", "routing state", "task progression"],
+      "must_not_write": ["forge", "dossier", "trace"],
+      "bridge": "governed request + TerraTrace event"
+    },
+    "dossier": {
+      "owns": ["evidence packs", "supporting documents", "review bundles"],
+      "must_not_write": ["dais", "forge", "trace"],
+      "bridge": "governed request + TerraTrace event"
+    },
+    "gpt": {
+      "owns": [],
+      "must_not_write": ["forge", "atlas", "dais", "dossier", "trace"],
+      "bridge": "must act through sanctioned TerraPilot tools only",
+      "note": "No independent sovereign write lane."
+    },
+    "pilot": {
+      "owns": [
+        "operational orchestration state",
+        "gated tool execution metadata"
+      ],
+      "must_not_write": [
+        "parcel/domain records outside approved tool boundaries"
+      ],
+      "bridge": "writes only through approved tools and policy gates"
+    },
+    "trace": {
+      "owns": ["append-only operational trace ledger"],
+      "must_not_write": ["forge", "atlas", "dais", "dossier"],
+      "bridge": "append-only only; never mutates domain truth"
+    }
+  },
+  "valid_suites_for_tools": [
+    "forge",
+    "atlas",
+    "dais",
+    "dossier",
+    "os",
+    "pilot",
+    "gpt"
+  ],
+  "valid_risks_for_tools": [
+    "read_only",
+    "write_low",
+    "write_high",
+    "irreversible"
+  ]
+}

@@ -557,10 +557,13 @@ public class ElitePerformanceMonitoringController : ControllerBase
         await Task.CompletedTask;
         return new Dictionary<string, object>
         {
-            ["active_agents"] = 1008,
-            ["healthy_agents"] = 1008,
-            ["average_response_time"] = 8.5,
-            ["requests_per_second"] = 15000
+            // Honesty (WO-AI-CONSOLIDATION-004c-a): no governed AI agent swarm runs.
+            // Report the real state (zero agents, unavailable) — never a fabricated count.
+            ["active_agents"] = 0,
+            ["healthy_agents"] = 0,
+            ["average_response_time"] = 0,
+            ["requests_per_second"] = 0,
+            ["status"] = "unavailable"
         };
     }
 

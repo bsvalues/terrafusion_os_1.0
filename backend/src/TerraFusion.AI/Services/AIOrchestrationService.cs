@@ -567,7 +567,7 @@ namespace TerraFusion.AI.Services
 
         private void ApplyPerformanceOptimization(TerraFusion.Core.DTOs.SwarmOptimizationReport report)
         {
-            report.OptimizationsApplied.Add("performance-tuning: Optimized task routing and agent selection algorithms for 1008 agents");
+            report.OptimizationsApplied.Add("performance-tuning: Optimized task routing and agent selection algorithms");
 
             report.MetricsImprovement["avg-response-time-before"] = 245.6m;
             report.MetricsImprovement["avg-response-time-after"] = 187.3m;
@@ -589,7 +589,7 @@ namespace TerraFusion.AI.Services
             ApplyPerformanceOptimization(report);
             ApplyEfficiencyOptimization(report);
 
-            report.OptimizationsApplied.Add("auto-optimization: Applied comprehensive optimization across all strategies affecting 1008 agents with critical impact");
+            report.OptimizationsApplied.Add("auto-optimization: Applied comprehensive optimization across all strategies with critical impact");
         }
 
         private decimal CalculateImprovementScore(TerraFusion.Core.DTOs.SwarmOptimizationReport report)

@@ -1,18 +1,25 @@
-# TerraFusion OS 1.0/2.0 - Comprehensive .ai Suite Architecture
+# TerraFusion OS 1.0/2.0 - .ai Suite Architecture (Design / Alpha)
+
+> **⚠️ Accuracy & status (WO-AI-DOCS-002).** This is a **design / aspirational alpha** architecture, not
+> a running production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root
+> `README.md`): the **agent swarm (1,008 designed; larger figures are aspirational) is target
+> architecture, NOT a running runtime** (the runtime-proven AI path is **LocalOps / local-agent**);
+> **FISMA-HIGH is a posture target, not an accreditation**; **Tyler / Tyler Vision is NOT in Benton
+> County's stack**; and **3.9x ROI / 95% / 99.9%** figures are **aspirational and unvalidated**.
+> Capability labels: **[implemented] · [partial] · [planned] · [target architecture]**.
 
 ## Overview
 
-The TerraFusion .ai Suite is a comprehensive artificial intelligence platform
-designed specifically for government operations, providing advanced AI
-capabilities for revenue discovery, property assessment, compliance monitoring,
-and operational optimization.
+The TerraFusion .ai Suite is an artificial-intelligence platform **design** for government operations —
+covering revenue discovery, property assessment, compliance monitoring, and operational optimization. It
+is aspirational architecture, **not** a description of a running production system.
 
 ## Core Architecture
 
 ### 1. AI Agent Management System
 
-- **Swarm Orchestration Engine**: Manages 50,000+ AI agents across 32 government
-  modules
+- **Swarm Orchestration Engine**: designed to manage the 1,008-agent hierarchy across 32 government
+  modules *([target architecture]; no swarm runs today — larger counts here were aspirational)*
 - **Agent Lifecycle Management**: Deployment, monitoring, scaling, and
   retirement
 - **Task Distribution**: Intelligent workload balancing across agent pools
@@ -45,11 +52,11 @@ and operational optimization.
 - **Revenue Discovery Analytics**: Track discovered opportunities and collection
   rates
 - **Predictive Insights**: Forecasting and trend analysis
-- **ROI Tracking**: Realistic 3.9x performance improvements (not 379x quantum
-  claims)
+- **ROI Tracking**: a 3.9x performance-improvement **target** *(unvalidated; not a measured result)*
 - **Module Performance**: Individual module AI performance tracking across all
   32 modules
-- **Legacy System Integration**: Harris PACS, Tyler, Aumentum, Vision system AI
+- **Legacy System Integration**: Harris PACS (the legacy source DB; [partial]) and Aumentum where
+  applicable. **Tyler / Tyler Vision is NOT in Benton's stack** — not a live integration.
   analytics
 
 ### 5. AI Training Platform
@@ -254,18 +261,20 @@ metadata:
 
 ## Success Metrics
 
-### Business Impact
+### Business Impact (targets — unvalidated)
 
-- **Revenue Discovery**: $50M+ additional revenue identified annually
-- **Cost Savings**: 60% reduction in manual processing costs
-- **Efficiency Gains**: 10x improvement in processing speed
-- **Accuracy Improvement**: 95%+ accuracy in AI-powered assessments
+> The figures below are **design goals**, not measured results.
 
-### Technical Performance
+- **Revenue Discovery**: $50M+ additional revenue identified annually *(target, unvalidated)*
+- **Cost Savings**: 60% reduction in manual processing costs *(target, unvalidated)*
+- **Efficiency Gains**: 10x improvement in processing speed *(target, unvalidated)*
+- **Accuracy Improvement**: 95%+ accuracy in AI-powered assessments *(target, unvalidated)*
 
-- **Uptime**: 99.9% system availability
-- **Response Time**: <100ms for critical operations
-- **Throughput**: 1M+ transactions per hour
+### Technical Performance (targets — unvalidated)
+
+- **Uptime**: 99.9% system availability *(target, unvalidated)*
+- **Response Time**: <100ms for critical operations *(target)*
+- **Throughput**: 1M+ transactions per hour *(target)*
 - **Scalability**: Linear scaling to 10x current capacity
 
 ### User Satisfaction

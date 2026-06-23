@@ -38,14 +38,14 @@ public sealed class ArcGisFeatureServiceOptionsTests
     [Fact]
     public void Bind_Single_County_FromInMemoryConfiguration()
     {
-        var bentonId = "19190019-1919-1919-1919-191919191919";
+        var bentonFips = "53005";
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [$"ArcGisFeatureServices:Counties:{bentonId}:ParcelFeatureServiceUrl"]
+                [$"ArcGisFeatureServices:Counties:{bentonFips}:ParcelFeatureServiceUrl"]
                     = "https://services.arcgis.com/abc123/arcgis/rest/services/BentonParcels/FeatureServer/0",
-                [$"ArcGisFeatureServices:Counties:{bentonId}:ApnAttributeName"] = "ParcelNum",
-                [$"ArcGisFeatureServices:Counties:{bentonId}:RequestTimeoutSeconds"] = "60",
+                [$"ArcGisFeatureServices:Counties:{bentonFips}:ApnAttributeName"] = "ParcelNum",
+                [$"ArcGisFeatureServices:Counties:{bentonFips}:RequestTimeoutSeconds"] = "60",
             })
             .Build();
 
@@ -56,7 +56,7 @@ public sealed class ArcGisFeatureServiceOptionsTests
         var bound = provider.GetRequiredService<IOptions<ArcGisFeatureServiceOptions>>().Value;
 
         bound.Counties.Should().HaveCount(1);
-        var county = bound.GetForCounty(Guid.Parse(bentonId));
+        var county = bound.GetForCounty(bentonFips);
         county.Should().NotBeNull();
         county!.ParcelFeatureServiceUrl.Should().Contain("BentonParcels/FeatureServer/0");
         county.ApnAttributeName.Should().Be("ParcelNum");
@@ -71,8 +71,8 @@ public sealed class ArcGisFeatureServiceOptionsTests
     [Fact]
     public void Bind_Multiple_Counties_AllPresent()
     {
-        var countyA = "19190019-1919-1919-1919-191919191919";
-        var countyB = "20200020-2020-2020-2020-202020202020";
+        var countyA = "53005";
+        var countyB = "53007";
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -91,8 +91,8 @@ public sealed class ArcGisFeatureServiceOptionsTests
         var bound = provider.GetRequiredService<IOptions<ArcGisFeatureServiceOptions>>().Value;
 
         bound.Counties.Should().HaveCount(2);
-        bound.GetForCounty(Guid.Parse(countyA))!.BearerToken.Should().BeNull();
-        bound.GetForCounty(Guid.Parse(countyB))!.BearerToken.Should().Be("secret-b");
+        bound.GetForCounty(countyA)!.BearerToken.Should().BeNull();
+        bound.GetForCounty(countyB)!.BearerToken.Should().Be("secret-b");
     }
 
     [Fact]
@@ -112,20 +112,18 @@ public sealed class ArcGisFeatureServiceOptionsTests
         var provider = services.BuildServiceProvider();
         var bound = provider.GetRequiredService<IOptions<ArcGisFeatureServiceOptions>>().Value;
 
-        bound.GetForCounty(Guid.NewGuid()).Should().BeNull();
+        bound.GetForCounty("99999").Should().BeNull();
     }
 
     [Fact]
-    public void GetForCounty_IsCaseInsensitive_OnGuidString()
+    public void GetForCounty_IsCaseInsensitive_OnFipsKey()
     {
-        // Configuration keys may arrive in upper or lower case;
-        // GetForCounty must be tolerant.
-        var bentonId = Guid.Parse("19190019-1919-1919-1919-191919191919");
-        var upperKey = bentonId.ToString().ToUpperInvariant();
+        // Config key stored in upper-case; lookup may arrive in lower-case.
+        // GetForCounty uses OrdinalIgnoreCase so both must match.
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [$"ArcGisFeatureServices:Counties:{upperKey}:ParcelFeatureServiceUrl"]
+                ["ArcGisFeatureServices:Counties:WA53005:ParcelFeatureServiceUrl"]
                     = "https://example/FeatureServer/0",
             })
             .Build();
@@ -136,7 +134,8 @@ public sealed class ArcGisFeatureServiceOptionsTests
         var provider = services.BuildServiceProvider();
         var bound = provider.GetRequiredService<IOptions<ArcGisFeatureServiceOptions>>().Value;
 
-        bound.GetForCounty(bentonId).Should().NotBeNull();
+        bound.GetForCounty("wa53005").Should().NotBeNull("lookup is case-insensitive");
+        bound.GetForCounty("WA53005").Should().NotBeNull("original case also matches");
     }
 
     [Fact]

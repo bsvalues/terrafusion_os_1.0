@@ -236,7 +236,7 @@ public class EnterpriseAIAgentCoordinator : BackgroundService, IEnterpriseAIAgen
                 TeamId = "terragaia-supreme",
                 TeamName = "TerraGaia Supreme Consciousness",
                 TeamType = AgentTeamType.SupremeOrchestrator,
-                AgentCount = 1008, // Fibonacci sequence for quantum coherence
+                AgentCount = 0, // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs
                 AssignedCounty = "King", // Primary headquarters
                 Capabilities = new[] { "OmniscientOrchestration", "CrossSystemSynergy", "PredictiveGovernance" },
                 Priority = AgentPriority.Critical,

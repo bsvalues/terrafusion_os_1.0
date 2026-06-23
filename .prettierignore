@@ -63,3 +63,4 @@ packages/terra-sync/
 packages/terra-miner/
 packages/legislative-pulse/
 packages/terra-insight/
+pnpm-lock.yaml

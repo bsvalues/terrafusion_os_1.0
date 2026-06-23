@@ -81,7 +81,8 @@ public class EnhancementController : ControllerBase
             {
                 operation = request.Operation,
                 parameters = request.Parameters ?? new Dictionary<string, object>(),
-                agentCount = request.AgentCount ?? 1008,
+                // Honesty (WO-AI-CONSOLIDATION-004c-a): no fabricated default agent count.
+                agentCount = request.AgentCount ?? 0,
                 priority = request.Priority ?? "normal",
                 timestamp = DateTime.UtcNow
             };
@@ -89,7 +90,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(swarmPayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3001/api/enhancement/swarm/execute", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:AICommandBrain"] ?? "http://localhost:3001"}/api/enhancement/swarm/execute", content);
             
             if (response.IsSuccessStatusCode)
             {
@@ -245,7 +246,7 @@ public class EnhancementController : ControllerBase
             var jsonContent = JsonSerializer.Serialize(performancePayload);
             var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:3004/api/enhancement/performance/optimize", content);
+            var response = await _httpClient.PostAsync($"{_configuration["ServiceEndpoints:Consciousness"] ?? "http://localhost:3004"}/api/enhancement/performance/optimize", content);
             
             if (response.IsSuccessStatusCode)
             {

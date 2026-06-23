@@ -266,6 +266,43 @@ public sealed class PacsSaleLandingServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Cancellation_MarksLoadBatchCancelled_AndRethrows()
+    {
+        // Verifies the OCE catch block added in WO-DATA-FINALIZE-SALES-001A.
+        // Before this fix, OperationCanceledException bypassed the catch clause
+        // (which guards with `when (ex is not OperationCanceledException)`) and
+        // left the LoadBatch permanently IN_PROGRESS — a zombie batch.
+        var cts = new CancellationTokenSource();
+        var src = new CancellingPacsSaleSource(cts, cancelAfterRows: 2);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => BuildService().LandSalesAsync(src, "s1-cancel-test", cts.Token));
+
+        var batch = await _db.SyncBridgeLoadBatches.SingleAsync();
+        batch.Status.Should().Be("CANCELLED",
+            because: "OperationCanceledException must mark the batch CANCELLED, not leave it IN_PROGRESS");
+        batch.CompletedAt.Should().NotBeNull(
+            because: "CANCELLED batches must have a terminal timestamp");
+        batch.ErrorSummary.Should().NotBeNullOrEmpty(
+            because: "cancellation reason must be recorded for audit");
+    }
+
+    [Fact]
+    public async Task NonCancellation_Exception_StillMarksLoadBatchFailed()
+    {
+        // Confirms the existing FAILED path still works after adding the OCE catch.
+        var src = new ThrowingPacsSaleSource(
+            new InvalidOperationException("non-cancellation failure"));
+
+        var result = await BuildService().LandSalesAsync(src, "s1-test");
+
+        result.Status.Should().Be("FAILED");
+        var batch = await _db.SyncBridgeLoadBatches.SingleAsync();
+        batch.Status.Should().Be("FAILED",
+            because: "non-OCE exceptions must still go through the FAILED path");
+    }
+
+    [Fact]
     public async Task DoctrineRejection_NoCanonicalPromotion_OccursInS1()
     {
         // S1 is explicit: nothing lands in canonical_tf.tf_sale (which
@@ -305,6 +342,39 @@ public sealed class PacsSaleLandingServiceTests : IDisposable
                 yield return s;
                 await Task.Yield();
             }
+        }
+    }
+
+    private sealed class CancellingPacsSaleSource : IPacsSaleSource
+    {
+        private readonly CancellationTokenSource _cts;
+        private readonly int _cancelAfterRows;
+
+        public CancellingPacsSaleSource(CancellationTokenSource cts, int cancelAfterRows)
+        {
+            _cts = cts;
+            _cancelAfterRows = cancelAfterRows;
+        }
+
+        public string SourceSystem => "JCHARRISPACS";
+        public string SourceFileOrDatabase => "pacs_oltp";
+        public string SourceQueryText => "SELECT 1";
+
+        public async IAsyncEnumerable<PacsSourceSale> StreamSalesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            for (var i = 0; i < _cancelAfterRows; i++)
+            {
+                yield return new PacsSourceSale(
+                    ChgOfOwnerId: i + 1, PropId: 1000 + i, PropValYr: 2026, SupNum: 0,
+                    SlCountyRatioCd: "100", WacCd: null, SlRatioTypeCd: null,
+                    SlDt: new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    SlPrice: 300_000m, AdjSlPrice: 300_000m);
+                await Task.Yield();
+            }
+            // Simulate mid-stream cancellation (e.g. HTTP request timeout).
+            _cts.Cancel();
+            cancellationToken.ThrowIfCancellationRequested();
         }
     }
 

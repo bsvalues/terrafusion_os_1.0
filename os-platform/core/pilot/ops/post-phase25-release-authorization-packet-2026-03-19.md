@@ -1,7 +1,7 @@
 # Post-Phase-25 Release Authorization Packet
 
 Date: 2026-03-19
-Updated: 2026-03-23
+Updated: 2026-06-16
 Status: READY
 Owner lane: Agent C
 Purpose: Reconcile sealed code/static proof with the remaining live pre-traffic conditions after Phase 25
@@ -16,6 +16,26 @@ Current decision:
 This is not a contradiction.
 
 The code, governance, and post-Phase-25 operating packet are sufficiently sealed to support release authorization work, but production traffic must remain closed until the live SRE/security pre-traffic conditions are executed and evidenced.
+
+## June 16, 2026 Runtime Proof Supersession
+
+The historical March hold context above remains part of the record, but it is no longer the current runtime-truth source for TerraFusion OS.
+
+Authenticated public production proof passed on 2026-06-16 and is preserved in:
+
+- `os-platform/core/pilot/ops/terrafusion-os-runtime-proven-production-pass-2026-06-16.md`
+
+Current runtime-proof truth from that bundle:
+
+- acceptance run: `https://github.com/bsvalues/terrafusion_os_1.0/actions/runs/27640575591`
+- proved release SHA: `6f7755090a21efc90fee423fe35b8d72805ef1e5`
+- acceptance harness SHA: `2fa11f669bcc96f7758eb0518622b72b323fd01d`
+- authenticated TerraFusion OS acceptance: `PASS`
+- TerraForge production matrix: `PASS`
+- Workbench counted as suite proof: `false`
+- parcel-scoped workbench route used as proof: `false`
+- PACS-facing runtime text found: `false`
+- endpoint-only proof accepted: `false`
 
 ## Current Truth Sources
 
@@ -136,6 +156,7 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/DEV-ADAPTER-README.md`
 - `os-platform/core/pilot/ops/dev-adapter-runbook-2026-03-23.md`
 - `os-platform/core/pilot/ops/local-agent-release-proof-2026-04-27.md`
+- `os-platform/core/pilot/ops/terrafusion-os-runtime-proven-production-pass-2026-06-16.md`
 
 Traceability index:
 

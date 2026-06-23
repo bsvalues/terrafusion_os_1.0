@@ -122,6 +122,7 @@ function getModuleDisplayName(moduleId: string): string {
     'os-pilot': 'TerraPilot',
     'os-trace': 'TerraTrace',
     'os-canon': 'TerraCanon',
+    'os-localops': 'TerraFusion LocalOps',
     // Application Constellation (Gen2 catalog)
     'income-valuation': 'Income Valuation',
     'income-forge': 'IncomeForge',
@@ -202,6 +203,7 @@ function getModuleIcon(moduleId: string): string {
     'os-pilot': '🧭',
     'os-trace': '📡',
     'os-canon': '⚙️',
+    'os-localops': '🛟',
     // Application Constellation (Gen2 catalog)
     'income-valuation': '💰',
     'income-forge': '💰',

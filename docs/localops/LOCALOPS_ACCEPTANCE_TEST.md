@@ -49,6 +49,13 @@ no hardcoded z-index. **Asserts I8** (Tier-1 UI Harness + shell-contract).
 | Purpose | Command |
 |---------|---------|
 | Type safety | `pnpm run type-check` |
+| AI profile contract (WO-001) | `node --test os-platform/core/tests/local-agent-ai-profile.test.mjs` |
+| Provider abstraction (WO-002) | `node --test os-platform/core/tests/local-agent-localops-provider.test.mjs` |
+| Trace event adapter (WO-003) | `node --test os-platform/core/tests/local-agent-localops-trace.test.mjs` |
+| Local KB/RAG interface (WO-004) | `node --test os-platform/core/tests/local-agent-localops-kb.test.mjs` |
+| Read-only diagnostics (WO-005) | `node --test os-platform/core/tests/local-agent-localops-diagnostics.test.mjs` |
+| **Runtime proof harness (WO-008)** | `node --test os-platform/core/tests/local-agent-localops-proof.test.mjs` |
+| In-shell LocalOps UI (WO-006) | `pnpm --filter terrafusion-frontend vitest run apps/os-shell/src/__tests__/localops/LocalOpsPanel.test.tsx` |
 | Core tool tests | `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 | Governance gate | `pnpm canon:gatefast` |
 | Canon health | `pnpm canon:ping` |
@@ -58,6 +65,20 @@ no hardcoded z-index. **Asserts I8** (Tier-1 UI Harness + shell-contract).
 
 > There is **no** `pnpm brain` / `pnpm localops` command. If a future WO wants one, it must add it
 > explicitly and have it separately approved — see `brain/packs/README.md` Verification Notes.
+
+## Runtime proof status (WO-008)
+
+`os-platform/core/tests/local-agent-localops-proof.test.mjs` runs **offline** against the shipped
+WO-001…006.1 modules and asserts each scenario, failing loudly on any violation:
+
+| Scenario | Invariants | How WO-008 proves it |
+|----------|-----------|----------------------|
+| S1 | I1, I3 | In-process: external/unavailable providers return a structured problem (never a success), a `fetch` spy confirms **zero egress**, and the action emits one append-only trace event with a `correlationId`. |
+| S2 | I2, I6 | In-process: every diagnostic result is `readonly`; a mutating request is refused; `AI_REQUIRE_SOURCES` blocks an ungrounded answer (`canAnswer:false`). |
+| S3 | I4 | In-process: SSN **+ phone + email** are absent from emitted trace payloads. Phone coverage depends on **WO-SEC-LOCALOPS-001** (landed); before it, I4 was only partially satisfiable and was not claimed. |
+| S4 | I5 | In-process: write/exec/restart requests are refused (`UNSAFE_DIAGNOSTIC`) and emit `policy.refused`, never a `diagnostic.started/completed` pair — nothing above read-only executes. |
+| S5 | I7 | In-process: KB roots outside the `docs/` allowlist are excluded; a county-shaped query can only surface `docs/` material. |
+| S6 | I8 | **Static** here (no `route`/`homeMeta` on the `localops` OS feature, z-index authority, panel is fixed `complementary` chrome mounted in `Desktop.tsx`). The live **render** proof is the CI vitest shell-contract suite (`shellAntiDrift`/`shellChrome`/`shellRoutedContent`) + the Tier-1 UI Harness — this Node harness cannot run vitest and does not claim to. |
 
 ## Honesty clause
 

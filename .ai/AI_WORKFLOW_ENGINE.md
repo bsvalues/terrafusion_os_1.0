@@ -1,11 +1,18 @@
-# TerraFusion AI Workflow Engine
+# TerraFusion AI Workflow Engine (Design / Alpha)
+
+> **⚠️ Accuracy & status (WO-AI-DOCS-002).** This is a **design / aspirational alpha**, not a running
+> production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root
+> `README.md`): the AI agent swarm is **target architecture, NOT a running runtime** (the runtime-proven
+> AI path is **LocalOps / local-agent**); **FISMA-HIGH is a posture target, not an accreditation**;
+> **Tyler is NOT in Benton County's stack**; and reliability/accuracy figures (**99.9% / 95%**) are
+> **aspirational and unvalidated**. Capability labels:
+> **[implemented] · [partial] · [planned] · [target architecture]**.
 
 ## Overview
 
-The AI Workflow Engine automates complex government processes through
-intelligent orchestration of AI agents, human approvals, and system
-integrations. It provides visual workflow design, automated execution, and
-comprehensive monitoring for government operations.
+The AI Workflow Engine is a **design** for automating government processes through orchestration of AI
+agents, human approvals, and system integrations — visual workflow design, automated execution, and
+monitoring. It is aspirational architecture, **not** a description of a running production system.
 
 ## Core Components
 
@@ -237,10 +244,10 @@ workflow:
 
 ### Performance Specifications
 
-- **Throughput**: Process 10,000+ workflows per hour
-- **Latency**: Sub-second workflow step execution
-- **Scalability**: Linear scaling to 100x current capacity
-- **Reliability**: 99.9% uptime with automatic failover
+- **Throughput**: Process 10,000+ workflows per hour *(target)*
+- **Latency**: Sub-second workflow step execution *(target)*
+- **Scalability**: Linear scaling to 100x current capacity *(target)*
+- **Reliability**: 99.9% uptime with automatic failover *(target, unvalidated)*
 
 ### Disaster Recovery
 
@@ -249,14 +256,16 @@ workflow:
 - **Failover Mechanisms**: Automatic switching to backup systems
 - **Business Continuity**: Maintain operations during system failures
 
-## Success Metrics
+## Success Metrics (targets — unvalidated)
 
-### Operational Efficiency
+> The figures in this section are **design goals**, not measured results.
 
-- **Process Automation**: 80% reduction in manual processing time
-- **Error Reduction**: 95% decrease in human errors
-- **Throughput Increase**: 10x improvement in process capacity
-- **Cost Savings**: 60% reduction in operational costs
+### Operational Efficiency *(targets)*
+
+- **Process Automation**: 80% reduction in manual processing time *(target, unvalidated)*
+- **Error Reduction**: 95% decrease in human errors *(target, unvalidated)*
+- **Throughput Increase**: 10x improvement in process capacity *(target, unvalidated)*
+- **Cost Savings**: 60% reduction in operational costs *(target, unvalidated)*
 
 ### Government Impact
 
@@ -265,9 +274,9 @@ workflow:
 - **Compliance Improvement**: Enhanced regulatory compliance rates
 - **Transparency**: Improved visibility into government processes
 
-### Technical Performance
+### Technical Performance *(targets — unvalidated)*
 
-- **System Reliability**: 99.9% uptime and availability
-- **Response Time**: <100ms for critical workflow operations
-- **Scalability**: Support for 1000+ concurrent workflows
-- **Integration Success**: 95% successful integration with external systems
+- **System Reliability**: 99.9% uptime and availability *(target, unvalidated)*
+- **Response Time**: <100ms for critical workflow operations *(target)*
+- **Scalability**: Support for 1000+ concurrent workflows *(target)*
+- **Integration Success**: 95% successful integration with external systems *(target, unvalidated)*

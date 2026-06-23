@@ -1,9 +1,23 @@
-# TerraFusion .ai Suite - Advanced AI Infrastructure
+# TerraFusion .ai Suite — AI Infrastructure (Design / Alpha)
 
-**Status**: Production Operational ✅  
-**Integration**: Claude-Flow v2.0.0 Alpha  
-**AI Agents**: 1,008 Agent Swarm Operational  
-**Government Compliance**: FISMA-Ready Architecture
+> **⚠️ Accuracy & status (WO-AI-DOCS-001).** This document is **design / aspirational alpha**, not a
+> description of a running production system. Per repo canon (`AGENTS.md`, `AGENT_OPERATING_MODEL.md`,
+> `CLAUDE.md`, root `README.md`):
+> - The **1,008-agent swarm (and any larger agent counts cited below) is target architecture, NOT a
+>   running runtime** — there is no operational production swarm. The runtime-proven AI path today is
+>   **LocalOps / local-agent**.
+> - **FISMA-HIGH is a posture target, not a current accreditation.**
+> - **Tyler Technologies is NOT in Benton County's stack** (never was); any Tyler reference below is
+>   illustrative lore, not a live integration.
+> - Performance figures (3.9x ROI, 95% accuracy, 99.9% uptime) are **aspirational and unvalidated**.
+> - Code samples and `npm`/script commands below are **illustrative design**; several are not implemented.
+>
+> Capability labels used below: **[implemented] · [partial] · [planned] · [target architecture]**.
+
+**Status**: Alpha — design/aspirational, not production-accredited  
+**Integration**: Claude-Flow v2.0.0 Alpha — integration scaffolding *([partial])*  
+**AI Agents**: 1,008-agent swarm is **designed/target capacity**, not a running runtime *([target architecture])*  
+**Government Compliance**: FISMA-HIGH **posture target**, not current accreditation
 
 ## Overview
 
@@ -43,7 +57,7 @@ cd .ai/core
 # Start AI agent coordination
 npm run start:agents
 
-# Deploy 1,008 agent swarm
+# Deploy the designed 1,008-agent swarm (target architecture — command illustrative, not implemented)
 npm run deploy:swarm
 
 # Monitor agent performance
@@ -73,11 +87,12 @@ curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/ai/agents/health
 
 ### AI Agent Ecosystem
 
-- **Total Agents**: 50,000+ specialized government AI agents
-- **Distribution**: Property assessors (300), revenue hunters (200), data
-  processors (200)
-- **Coordination**: Real-time task routing and performance optimization
-- **Integration**: Harris PACS, Tyler Technologies, legacy government systems
+- **Designed agent capacity** *([target architecture]; no swarm runs today)*: a 1,008-agent
+  hierarchy is the design target. Larger figures that appeared here previously were aspirational.
+- **Designed distribution**: Property assessors (300), revenue hunters (200), data processors (200)
+- **Coordination**: real-time task routing and performance optimization *([planned])*
+- **Integration**: Harris PACS (the legacy source DB; [partial]); **Tyler is NOT in Benton's stack** —
+  do not treat it as a live integration
 
 ## Government AI Applications
 
@@ -109,7 +124,7 @@ const opportunities = await aiWorkflows.execute('revenue_optimization', {
   historicalTrends: fiveYearTrends,
 });
 
-// Results: 3.9x improvement in revenue identification
+// Target (unvalidated): 3.9x improvement in revenue identification
 // - Underassessed property identification
 // - Tax optimization recommendations
 // - Projected revenue impact analysis
@@ -261,23 +276,26 @@ POST /ai/government/compliance-monitoring  # Regulatory compliance check
 GET  /ai/government/audit-trail/{id}      # Government audit documentation
 ```
 
-## Performance Benchmarks
+## Performance Targets (aspirational — unvalidated)
 
-### AI System Performance
+> The figures below are **design targets**, not measured results, and are **not validated** against a
+> running system. Treat them as goals.
 
-- **Response Time**: <100ms average AI inference
-- **Throughput**: 1,000+ concurrent AI operations
-- **Agent Coordination**: 1,008 agents with <2ms routing
-- **Availability**: 99.9% uptime with automatic recovery
-- **Accuracy**: 95%+ AI decision accuracy rate
+### AI System Performance *(targets)*
 
-### Government Workload Metrics
+- **Response Time**: <100ms average AI inference *(target)*
+- **Throughput**: 1,000+ concurrent AI operations *(target)*
+- **Agent Coordination**: designed 1,008-agent hierarchy with <2ms routing *([target architecture])*
+- **Availability**: 99.9% uptime *(target, unvalidated)*
+- **Accuracy**: 95%+ AI decision accuracy *(target, unvalidated)*
 
-- **Property Assessment**: 500 parcels/hour automated processing
-- **Revenue Discovery**: 3.9x improvement in opportunity identification
-- **Compliance Monitoring**: Real-time regulatory validation
-- **Cost Efficiency**: 60% reduction in manual processing costs
-- **Audit Generation**: 100% automated government audit trails
+### Government Workload Targets *(unvalidated)*
+
+- **Property Assessment**: 500 parcels/hour automated processing *(target)*
+- **Revenue Discovery**: 3.9x improvement in opportunity identification *(target, unvalidated)*
+- **Compliance Monitoring**: real-time regulatory validation *([planned])*
+- **Cost Efficiency**: 60% reduction in manual processing costs *(target, unvalidated)*
+- **Audit Generation**: automated government audit trails *([planned])*
 
 ## Security & Compliance
 
@@ -314,7 +332,7 @@ npm install
 npm run dev:all
 
 # Validate AI agent health
-curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/ai/agents | jq '.totalAgents'  # Should return 50000
+curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/ai/agents | jq '.totalAgents'  # illustrative; no swarm runs (returns 0)
 ```
 
 ### Container Development
@@ -454,24 +472,26 @@ curl http://localhost:\${{TF_ADMIN_PORT:-8080}}/ai/compliance/validate
 
 ---
 
-## Production Status Summary
+## Status Summary (design / alpha)
 
-### Operational Capabilities ✅
+### Capability status
 
-- **Claude-Flow v2.0.0**: AI workflow orchestration operational
-- **1,008 AI Agents**: Swarm coordination and task routing
-- **Government Integration**: Harris PACS v12.4.7, Tyler Technologies
-- **Security Framework**: FISMA-compliant with government audit trails
-- **Performance Validated**: 3.9x improvement in government operations
+- **Claude-Flow v2.0.0**: AI workflow orchestration scaffolding *([partial])*
+- **1,008-agent swarm**: designed/target capacity, **not a running runtime** *([target architecture])*
+- **Government integration**: Harris PACS is the legacy source DB *([partial])*; **Tyler is NOT in
+  Benton's stack**
+- **Security framework**: government audit-trail design *([planned])*; FISMA-HIGH is a **posture target**,
+  not an accreditation
+- **Performance**: targets only — **unvalidated** (no measured production results)
 
-### Government Applications ✅
+### Government applications (designed)
 
-- **Property Assessment**: Automated valuation with AI analysis
-- **Revenue Optimization**: 3.9x improvement in opportunity discovery
-- **Compliance Monitoring**: Real-time regulatory validation
-- **Workflow Automation**: 80% reduction in manual processes
-- **Audit Trail Generation**: 100% government compliance documentation
+- **Property Assessment**: automated valuation with AI analysis *([planned])*
+- **Revenue Optimization**: opportunity discovery *([planned])*; the 3.9x figure is a **target, unvalidated**
+- **Compliance Monitoring**: real-time regulatory validation *([planned])*
+- **Workflow Automation**: manual-process reduction *([planned])*
+- **Audit Trail Generation**: government compliance documentation *([planned])*
 
-**Deployment Status**: Production Ready - Government AI Operations  
-**Last Updated**: August 27, 2025  
+**Deployment Status**: Alpha — design/aspirational, not production-accredited  
+**Canon**: see `AGENTS.md`, `AGENT_OPERATING_MODEL.md`, `CLAUDE.md`, root `README.md` for current truth  
 **Authority**: TerraFusion AI Platform Division
