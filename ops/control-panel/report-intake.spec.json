@@ -68,19 +68,19 @@
     ],
     "allowedLanes": [
       "daily-pulse",
-      "work-orders",
+      "open-work-orders",
       "governance-drift",
       "ai-sidecar",
-      "ci-azure",
-      "gap-risk"
+      "ci-azure-health",
+      "gap-risk-register"
     ],
     "mapping": {
       "terrafusion-daily-pulse": "daily-pulse",
-      "work-order-and-todo-tracker": "work-orders",
+      "work-order-and-todo-tracker": "open-work-orders",
       "governance-drift-monitor": "governance-drift",
       "ai-sidecar-governance-monitor": "ai-sidecar",
-      "ci-azure-pipeline-health-monitor": "ci-azure",
-      "project-gap-and-risk-register-monitor": "gap-risk"
+      "ci-azure-pipeline-health-monitor": "ci-azure-health",
+      "project-gap-and-risk-register-monitor": "gap-risk-register"
     }
   },
   "severityModel": {
@@ -89,7 +89,7 @@
       "P1",
       "P2",
       "Deferred",
-      "Decision",
+      "Needs Decision",
       "Info"
     ],
     "meanings": {
@@ -97,7 +97,7 @@
       "P1": "Next execution.",
       "P2": "Planned.",
       "Deferred": "Explicitly not now.",
-      "Decision": "Needs Bill / human decision.",
+      "Needs Decision": "Needs Bill / human decision.",
       "Info": "Informational only."
     }
   },

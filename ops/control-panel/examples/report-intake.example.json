@@ -15,7 +15,7 @@
     {
       "findingId": "find-gov-0001",
       "title": "Static authority wording needs review",
-      "severity": "Decision",
+      "severity": "Needs Decision",
       "lane": "governance-drift",
       "description": "Synthetic finding: a document title may sound authoritative and should be reviewed before planning depends on it.",
       "evidenceRefs": [

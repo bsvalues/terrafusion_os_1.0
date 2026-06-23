@@ -82,11 +82,11 @@ Approved monitor IDs:
 Approved lanes:
 
 - `daily-pulse`
-- `work-orders`
+- `open-work-orders`
 - `governance-drift`
 - `ai-sidecar`
-- `ci-azure`
-- `gap-risk`
+- `ci-azure-health`
+- `gap-risk-register`
 
 ## REJECTION_RULES
 

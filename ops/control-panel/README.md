@@ -61,7 +61,7 @@ The intake contract defines:
 
 - Report identity metadata: `reportId`, `monitorId`, `monitorName`, `generatedAt`, source details, workspace, branch, and optional commit SHA.
 - Monitor lane mapping for the six approved monitor IDs.
-- Severity values: `P0`, `P1`, `P2`, `Deferred`, `Decision`, and `Info`.
+- Severity values: `P0`, `P1`, `P2`, `Deferred`, `Needs Decision`, and `Info`.
 - Status values: `new`, `reviewed`, `converted-to-wo`, `deferred`, `blocked`, `resolved`, and `rejected`.
 - Required report sections: `summary`, `findings`, `evidence`, `recommendedActions`, `humanDecisionsRequired`, `blockers`, and `nextSafeAction`.
 - Evidence metadata for commands, paths, excerpts, timestamps, confidence, and notes.
@@ -71,11 +71,11 @@ Approved monitor IDs map to lanes as follows:
 | Monitor ID | Lane |
 |------------|------|
 | `terrafusion-daily-pulse` | `daily-pulse` |
-| `work-order-and-todo-tracker` | `work-orders` |
+| `work-order-and-todo-tracker` | `open-work-orders` |
 | `governance-drift-monitor` | `governance-drift` |
 | `ai-sidecar-governance-monitor` | `ai-sidecar` |
-| `ci-azure-pipeline-health-monitor` | `ci-azure` |
-| `project-gap-and-risk-register-monitor` | `gap-risk` |
+| `ci-azure-pipeline-health-monitor` | `ci-azure-health` |
+| `project-gap-and-risk-register-monitor` | `gap-risk-register` |
 
 Severity meanings:
 
@@ -85,7 +85,7 @@ Severity meanings:
 | `P1` | Next execution |
 | `P2` | Planned |
 | `Deferred` | Explicitly not now |
-| `Decision` | Needs Bill / human decision |
+| `Needs Decision` | Needs Bill / human decision |
 | `Info` | Informational only |
 
 Reports or findings are rejected if they ask the Control Panel to execute commands, activate automations, read local files live, fetch files or APIs from HTML, mutate repo state, change queue truth, promote canon, claim runtime authority, create a second Brain/Cortex or autonomous queue, lack required identity metadata, lack evidence for `P0` or `P1` claims, or include secret, credential, county data, PACS, owner-sensitive, appeals, exemptions, valuation evidence, or protected data content.
