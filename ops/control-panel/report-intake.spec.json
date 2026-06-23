@@ -1,0 +1,250 @@
+{
+  "id": "terrafusion-control-panel-report-intake",
+  "version": 1,
+  "status": "seed-contract",
+  "authorityBoundary": {
+    "mode": "static_report_contract_only",
+    "controlPanelRole": "cockpit_prepare_console_findings_viewer",
+    "notBrainOrCortex": true,
+    "notAutonomousQueue": true,
+    "notRuntimeAgent": true,
+    "scopeStatement": [
+      "This spec does not create live ingestion.",
+      "This spec does not read files.",
+      "This spec does not activate automations.",
+      "This spec does not add runtime wiring.",
+      "This spec does not create a new control plane.",
+      "This spec only defines the accepted report contract."
+    ],
+    "forbiddenCapabilities": [
+      "execute commands from the Control Panel",
+      "activate automations",
+      "read local files live from HTML",
+      "fetch files or APIs from HTML",
+      "mutate repo state",
+      "change queue truth",
+      "promote canon",
+      "claim runtime authority",
+      "create a second Brain or Cortex",
+      "create an autonomous queue"
+    ]
+  },
+  "reportIdentity": {
+    "required": [
+      "reportId",
+      "monitorId",
+      "monitorName",
+      "generatedAt",
+      "sourceType",
+      "workspace",
+      "branch"
+    ],
+    "optional": [
+      "sourceRunId",
+      "sourceRunUrl",
+      "commitSha"
+    ],
+    "fieldDescriptions": {
+      "reportId": "Stable unique report identifier within the monitor output stream.",
+      "monitorId": "One of the allowed monitor identifiers.",
+      "monitorName": "Human-readable monitor name.",
+      "generatedAt": "UTC ISO-8601 timestamp for report generation.",
+      "sourceType": "Manual paste, saved automation report, human-entered summary, or other approved static source.",
+      "sourceRunId": "Optional automation run identifier when available.",
+      "sourceRunUrl": "Optional URL to source run evidence when available.",
+      "workspace": "Workspace inspected by the monitor.",
+      "branch": "Branch inspected by the monitor.",
+      "commitSha": "Commit SHA inspected by the monitor when available."
+    }
+  },
+  "monitorLaneMapping": {
+    "allowedMonitorIds": [
+      "terrafusion-daily-pulse",
+      "work-order-and-todo-tracker",
+      "governance-drift-monitor",
+      "ai-sidecar-governance-monitor",
+      "ci-azure-pipeline-health-monitor",
+      "project-gap-and-risk-register-monitor"
+    ],
+    "allowedLanes": [
+      "daily-pulse",
+      "open-work-orders",
+      "governance-drift",
+      "ai-sidecar",
+      "ci-azure-health",
+      "gap-risk-register"
+    ],
+    "mapping": {
+      "terrafusion-daily-pulse": "daily-pulse",
+      "work-order-and-todo-tracker": "open-work-orders",
+      "governance-drift-monitor": "governance-drift",
+      "ai-sidecar-governance-monitor": "ai-sidecar",
+      "ci-azure-pipeline-health-monitor": "ci-azure-health",
+      "project-gap-and-risk-register-monitor": "gap-risk-register"
+    }
+  },
+  "severityModel": {
+    "allowedSeverities": [
+      "P0",
+      "P1",
+      "P2",
+      "Deferred",
+      "Needs Decision",
+      "Info"
+    ],
+    "meanings": {
+      "P0": "Stop work / containment.",
+      "P1": "Next execution.",
+      "P2": "Planned.",
+      "Deferred": "Explicitly not now.",
+      "Needs Decision": "Needs Bill / human decision.",
+      "Info": "Informational only."
+    }
+  },
+  "statusModel": {
+    "allowedStatuses": [
+      "new",
+      "reviewed",
+      "converted-to-wo",
+      "deferred",
+      "blocked",
+      "resolved",
+      "rejected"
+    ],
+    "humanOnlyStatuses": [
+      "reviewed",
+      "converted-to-wo",
+      "deferred",
+      "resolved"
+    ]
+  },
+  "requiredReportStructure": {
+    "required": [
+      "summary",
+      "findings",
+      "evidence",
+      "recommendedActions",
+      "humanDecisionsRequired",
+      "blockers",
+      "nextSafeAction"
+    ],
+    "fields": {
+      "summary": "Short operator-readable result summary.",
+      "findings": "Array of finding objects.",
+      "evidence": "Array of evidence metadata objects.",
+      "recommendedActions": "Array of prepare-only recommended actions.",
+      "humanDecisionsRequired": "Array of decisions that require human review.",
+      "blockers": "Array of blocker descriptions.",
+      "nextSafeAction": "Single next action that preserves the Control Panel authority boundary."
+    }
+  },
+  "findingStructure": {
+    "required": [
+      "findingId",
+      "title",
+      "severity",
+      "lane",
+      "description",
+      "evidenceRefs",
+      "affectedPaths",
+      "proposedAction"
+    ],
+    "optional": [
+      "proposedWorkOrderId",
+      "rejectionReason"
+    ],
+    "fields": {
+      "findingId": "Stable finding identifier within the report.",
+      "title": "Short finding title.",
+      "severity": "One of the allowed severity values.",
+      "lane": "One of the allowed lanes.",
+      "description": "Finding details without protected data content.",
+      "evidenceRefs": "Array of evidenceId references.",
+      "affectedPaths": "Array of repo or workspace paths, if relevant and safe to disclose.",
+      "proposedAction": "Prepare-only next action.",
+      "proposedWorkOrderId": "Optional Work Order identifier proposed by the monitor.",
+      "rejectionReason": "Required when the finding status is rejected."
+    }
+  },
+  "evidenceMetadata": {
+    "required": [
+      "evidenceId",
+      "type",
+      "source",
+      "timestamp",
+      "confidence"
+    ],
+    "optional": [
+      "path",
+      "command",
+      "excerpt",
+      "notes"
+    ],
+    "fields": {
+      "evidenceId": "Stable evidence identifier referenced by findings.",
+      "type": "file-path, command-output, run-url, human-note, schema-check, or other static evidence type.",
+      "source": "Source report, static path, run URL, or human note.",
+      "path": "Optional path to non-sensitive evidence.",
+      "command": "Optional command that produced evidence; descriptive only, not executable by the Control Panel.",
+      "excerpt": "Short non-sensitive excerpt.",
+      "timestamp": "UTC ISO-8601 timestamp for the evidence.",
+      "confidence": "low, medium, high, or verified.",
+      "notes": "Additional non-sensitive operator notes."
+    }
+  },
+  "rejectionRules": {
+    "reportOrFindingMustBeRejectedIf": [
+      "asks the Control Panel to execute commands",
+      "asks the Control Panel to activate automations",
+      "asks the Control Panel to read local files live",
+      "asks the HTML page to fetch files or APIs",
+      "mutates repo state",
+      "changes queue truth",
+      "promotes canon",
+      "claims runtime authority",
+      "creates a second Brain/Cortex or autonomous queue",
+      "lacks required identity metadata",
+      "lacks evidence for P0/P1 claims",
+      "contains secret content",
+      "contains credential content",
+      "contains county data",
+      "contains PACS data",
+      "contains owner-sensitive records",
+      "contains appeals data",
+      "contains exemptions data",
+      "contains valuation evidence",
+      "contains protected data content"
+    ],
+    "p0P1EvidenceRule": "P0 and P1 findings require at least one evidenceRef that resolves to an evidence entry.",
+    "protectedDataRule": "Use metadata, redacted path references, or synthetic examples only. Do not include protected operational data in report intake examples."
+  },
+  "conversionRule": {
+    "steps": [
+      "report remains evidence/input",
+      "human reviews finding",
+      "Control Panel prepares a Work Order prompt",
+      "separate Work Order authorizes any mutation",
+      "report status may be marked converted-to-wo only by human review, not automatically"
+    ],
+    "automaticConversionAllowed": false,
+    "mutationRequiresSeparateWorkOrder": true
+  },
+  "namingConvention": {
+    "recommendedFilename": "YYYYMMDDTHHMMSSZ__<monitorId>__<reportId>.json",
+    "timestampFormat": "UTC basic ISO-8601 without separators, for example 20260623T143000Z",
+    "examples": [
+      "20260623T143000Z__governance-drift-monitor__rpt-gov-0001.json",
+      "20260623T150000Z__terrafusion-daily-pulse__rpt-pulse-0001.json"
+    ]
+  },
+  "acceptedSourceTypes": [
+    "manual-paste",
+    "saved-static-report",
+    "human-entered-summary",
+    "automation-run-summary"
+  ],
+  "exampleFiles": {
+    "accepted": "ops/control-panel/examples/report-intake.example.json",
+    "rejected": "ops/control-panel/examples/report-intake.rejected.example.json"
+  }
+}

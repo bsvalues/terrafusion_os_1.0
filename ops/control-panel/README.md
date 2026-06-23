@@ -38,6 +38,7 @@ Automations run
 |------|------|
 | `control-panel.spec.json` | Control panel lanes, status model, and authority boundaries |
 | `report-schema.json` | Expected report sections for the six monitoring automations |
+| `report-intake.spec.json` | Accepted static report intake contract, lane mapping, evidence metadata, and rejection rules |
 | `launch-actions.json` | Prompt-launch actions and scoped Work Order templates |
 | `index.html` | Static read-only mockup for operator review |
 
@@ -51,6 +52,61 @@ This seed version is prompt-launch only:
 - It does not call local agent commands.
 - It does not call the Codex scheduler.
 - It does not write report state back to the repo.
+
+## Report Intake Contract
+
+Reports are static monitor outputs reviewed by a human operator before they influence Work Orders. The accepted shape is defined in `report-intake.spec.json`.
+
+The intake contract defines:
+
+- Report identity metadata: `reportId`, `monitorId`, `monitorName`, `generatedAt`, source details, workspace, branch, and optional commit SHA.
+- Monitor lane mapping for the six approved monitor IDs.
+- Severity values: `P0`, `P1`, `P2`, `Deferred`, `Needs Decision`, and `Info`.
+- Status values: `new`, `reviewed`, `converted-to-wo`, `deferred`, `blocked`, `resolved`, and `rejected`.
+- Required report sections: `summary`, `findings`, `evidence`, `recommendedActions`, `humanDecisionsRequired`, `blockers`, and `nextSafeAction`.
+- Evidence metadata for commands, paths, excerpts, timestamps, confidence, and notes.
+
+Approved monitor IDs map to lanes as follows:
+
+| Monitor ID | Lane |
+|------------|------|
+| `terrafusion-daily-pulse` | `daily-pulse` |
+| `work-order-and-todo-tracker` | `open-work-orders` |
+| `governance-drift-monitor` | `governance-drift` |
+| `ai-sidecar-governance-monitor` | `ai-sidecar` |
+| `ci-azure-pipeline-health-monitor` | `ci-azure-health` |
+| `project-gap-and-risk-register-monitor` | `gap-risk-register` |
+
+Severity meanings:
+
+| Severity | Meaning |
+|----------|---------|
+| `P0` | Stop work / containment |
+| `P1` | Next execution |
+| `P2` | Planned |
+| `Deferred` | Explicitly not now |
+| `Needs Decision` | Needs Bill / human decision |
+| `Info` | Informational only |
+
+Reports or findings are rejected if they ask the Control Panel to execute commands, activate automations, read local files live, fetch files or APIs from HTML, mutate repo state, change queue truth, promote canon, claim runtime authority, create a second Brain/Cortex or autonomous queue, lack required identity metadata, lack evidence for `P0` or `P1` claims, or include secret, credential, county data, PACS, owner-sensitive, appeals, exemptions, valuation evidence, or protected data content.
+
+A report becomes a proposed Work Order only through human review:
+
+```text
+report remains evidence/input
+-> human reviews finding
+-> Control Panel prepares a Work Order prompt
+-> separate Work Order authorizes any mutation
+-> report status may be marked converted-to-wo only by human review
+```
+
+Recommended report filename:
+
+```text
+YYYYMMDDTHHMMSSZ__<monitorId>__<reportId>.json
+```
+
+Report intake is manual/static until a later approved Work Order. This contract does not create live ingestion, read files, activate automations, add runtime wiring, add HTML fetch calls, or create a new control plane.
 
 ## Workspace Placeholders
 
