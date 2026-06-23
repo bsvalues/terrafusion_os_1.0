@@ -92,15 +92,30 @@ function checkServiceHealth(port) {
   }
 }
 
+function configuredPort(envName, fallback) {
+  const rawValue = process.env[envName];
+  if (!rawValue) {
+    return fallback;
+  }
+
+  const parsedValue = Number.parseInt(rawValue, 10);
+  return Number.isInteger(parsedValue) && parsedValue > 0 && parsedValue <= 65535
+    ? parsedValue
+    : fallback;
+}
+
 /**
  * Get service health status
  */
 function getHealthStatus() {
+  const apiPort = configuredPort('TF_API_PORT', 5000);
+  const portalPort = configuredPort('TF_FRONTEND_PORT', 5174);
+
   const services = {
-    api: { port: 5000, status: checkServiceHealth(5000) },
+    api: { port: apiPort, status: checkServiceHealth(apiPort) },
     gateway: { port: 3002, status: checkServiceHealth(3002) },
     consciousness: { port: 3004, status: checkServiceHealth(3004) },
-    portal: { port: 5174, status: checkServiceHealth(5174) },
+    portal: { port: portalPort, status: checkServiceHealth(portalPort) },
     transparency: { port: 8788, status: checkServiceHealth(8788) }
   };
 
