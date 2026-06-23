@@ -54,6 +54,22 @@ test("blocks runtime proof when owner truth duplicates or required counts are mi
   assert.equal(packet.blockers.includes("Parcel-owner link rows are missing."), true);
 });
 
+test("reports owner truth duplication as unavailable when truth probe is blocked", () => {
+  const packet = buildOwnerRuntimeProofPacket({
+    generatedAt: "2026-06-07T17:00:00.000Z",
+    observations: {
+      truthOwner: { ok: false, error: "statement timeout" },
+      canonicalOwner: { ok: true, value: { rows: 312532, distinctIds: 312532, nullAcctId: 0, blankDisplayName: 0 } },
+      ownerLink: { ok: true, value: { rows: 2111805 } },
+      statusCounts: { ok: true, value: { COMPLETED: 148 } }
+    }
+  });
+
+  assert.equal(packet.metrics.truthOwnerDuplication, null);
+  assert.equal(packet.blockers.includes("Owner truth duplication is unavailable."), true);
+  assert.equal(packet.blockers.includes("Owner truth duplication is not 1.0000x."), false);
+});
+
 test("writePacket emits JSON and Markdown owner runtime proof evidence", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tf-owner-proof-"));
   const outJson = path.join(dir, "proof.json");

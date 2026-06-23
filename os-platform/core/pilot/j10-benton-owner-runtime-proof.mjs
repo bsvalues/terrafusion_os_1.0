@@ -16,6 +16,24 @@ const LOCAL_DOCKER_CONTAINER = "terrafusion-postgres-dev";
 const TRUTH_OWNER_SCHEMA = ["truth", ["pa", "cs"].join("")].join("_");
 const OWNER_CURRENT = `${TRUTH_OWNER_SCHEMA}.owner_current`;
 const OWNER_VALUE = `${TRUTH_OWNER_SCHEMA}.wash_prop_owner_val`;
+const OWNER_WSDOR_BATCH_PREDICATE = `(
+    lower(coalesce("SourceSystem", '')) LIKE '%owner%'
+    OR lower(coalesce("SourceSystem", '')) LIKE '%wpov%'
+    OR lower(coalesce("SourceSystem", '')) LIKE '%wsdor%'
+    OR "EntityType" IN (
+      'Owner-S1',
+      'Account-S1',
+      'Supp-S1',
+      'Parcel-S1',
+      'Parcel-Spine',
+      'Parcel-Canonical',
+      'Owner-Truth',
+      'Owner-Canonical',
+      'WPOV-S1',
+      'WPOV-Truth',
+      'WSDOR-Canonical'
+    )
+  )`;
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll("\\", "/");
@@ -137,9 +155,7 @@ FROM canonical_tf.tf_assessment_wsdor;`, { timeoutMs: 90000 }),
 FROM (
   SELECT "Status" AS status_value, COUNT(*)::bigint AS status_count
   FROM sync_bridge.load_batch
-  WHERE lower(coalesce("SourceSystem", '')) LIKE '%owner%'
-     OR lower(coalesce("SourceSystem", '')) LIKE '%wpov%'
-     OR lower(coalesce("SourceSystem", '')) LIKE '%wsdor%'
+  WHERE ${OWNER_WSDOR_BATCH_PREDICATE}
   GROUP BY "Status"
 ) statuses;`, { timeoutMs: 30000 })
   };
@@ -173,7 +189,11 @@ export function buildOwnerRuntimeProofPacket({
   const blockers = [];
   if (blockedProbes.length > 0) blockers.push(`Read-only probes blocked: ${blockedProbes.join(", ")}.`);
   if ((normalizeCount(truthOwner?.rows) ?? 0) <= 0) blockers.push("Owner truth rows are missing.");
-  if (truthDuplication !== "1.0000x") blockers.push("Owner truth duplication is not 1.0000x.");
+  if (truthDuplication === null) {
+    blockers.push("Owner truth duplication is unavailable.");
+  } else if (truthDuplication !== "1.0000x") {
+    blockers.push("Owner truth duplication is not 1.0000x.");
+  }
   if ((normalizeCount(canonicalOwner?.rows) ?? 0) <= 0) blockers.push("Canonical owner rows are missing.");
   if (normalizeCount(canonicalOwner?.rows) !== normalizeCount(canonicalOwner?.distinctIds)) {
     blockers.push("Canonical owner identity is not distinct.");

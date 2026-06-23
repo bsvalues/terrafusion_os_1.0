@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   buildOwnerSweepMonitorCheckpoint,
+  loadSealedLaneEvidence,
   writePacket
 } from "./j10-benton-owner-sweep-monitor-checkpoint.mjs";
 
@@ -63,6 +64,42 @@ test("records partial monitoring instead of pretending blocked probes succeeded"
   assert.deepEqual(packet.blockedProbes, ["truthOwner"]);
   assert.equal(packet.metrics.truthOwnerRows, null);
   assert.equal(packet.nextAction, "continue_monitoring");
+});
+
+test("records owner sweep stop condition when lane-stage failures are observed", () => {
+  const packet = buildOwnerSweepMonitorCheckpoint({
+    generatedAt: "2026-06-07T12:00:00.000Z",
+    observations: {
+      cursor: { ok: true, value: { lane: "owner-wsdor", cursor: 322770 } },
+      truthOwner: { ok: true, value: { rows: 809396, distinctRows: 809396 } },
+      statusCounts: { ok: true, value: { COMPLETED: 56, FAILED: 1 } }
+    }
+  });
+
+  assert.equal(packet.monitorStatus, "OWNER_SWEEP_STOP_CONDITION_OBSERVED");
+  assert.equal(packet.failures.failedBatches, 1);
+  assert.deepEqual(packet.stopConditionsTriggered, ["owner-related load batch failure observed"]);
+  assert.equal(packet.nextAction, "classify_stop_condition_before_any_action");
+});
+
+test("distinguishes missing sealed-lane evidence from failed proof", () => {
+  const packet = buildOwnerSweepMonitorCheckpoint({
+    generatedAt: "2026-06-07T12:00:00.000Z",
+    observations: {
+      cursor: { ok: true, value: { lane: "owner-wsdor", cursor: 322770 } },
+      statusCounts: { ok: true, value: { COMPLETED: 56 } }
+    }
+  });
+
+  assert.equal(packet.sealedLaneIntegrity.status, "LATEST_EVIDENCE_MISSING_OR_UNREADABLE");
+});
+
+test("loads malformed sealed-lane evidence as unavailable instead of throwing", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tf-sealed-lane-"));
+  const malformedJson = path.join(dir, "sealed.json");
+  fs.writeFileSync(malformedJson, "{not-json");
+
+  assert.equal(loadSealedLaneEvidence(malformedJson), null);
 });
 
 test("writePacket emits JSON and Markdown checkpoint evidence", () => {

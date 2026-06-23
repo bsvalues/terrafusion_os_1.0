@@ -17,6 +17,24 @@ const LOCAL_DOCKER_CONTAINER = "terrafusion-postgres-dev";
 const TRUTH_OWNER_SCHEMA = ["truth", ["pa", "cs"].join("")].join("_");
 const OWNER_CURRENT = `${TRUTH_OWNER_SCHEMA}.owner_current`;
 const OWNER_VALUE = `${TRUTH_OWNER_SCHEMA}.wash_prop_owner_val`;
+const OWNER_WSDOR_BATCH_PREDICATE = `(
+    lower(coalesce("SourceSystem", '')) LIKE '%owner%'
+    OR lower(coalesce("SourceSystem", '')) LIKE '%wpov%'
+    OR lower(coalesce("SourceSystem", '')) LIKE '%wsdor%'
+    OR "EntityType" IN (
+      'Owner-S1',
+      'Account-S1',
+      'Supp-S1',
+      'Parcel-S1',
+      'Parcel-Spine',
+      'Parcel-Canonical',
+      'Owner-Truth',
+      'Owner-Canonical',
+      'WPOV-S1',
+      'WPOV-Truth',
+      'WSDOR-Canonical'
+    )
+  )`;
 
 function rel(filePath) {
   return path.relative(repoRoot, filePath).replaceAll("\\", "/");
@@ -112,14 +130,18 @@ function runPsqlJson(sql, { timeoutMs = 20000 } = {}) {
   }
 }
 
-function loadSealedLaneEvidence(filePath = DEFAULT_SEALED_LANE_JSON) {
+export function loadSealedLaneEvidence(filePath = DEFAULT_SEALED_LANE_JSON) {
   if (!fs.existsSync(filePath)) return null;
-  const packet = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  return {
-    generatedAt: packet.generatedAt ?? null,
-    verdict: packet.verdict ?? null,
-    packetHash: packet.packetHash ?? null
-  };
+  try {
+    const packet = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return {
+      generatedAt: packet.generatedAt ?? null,
+      verdict: packet.verdict ?? null,
+      packetHash: packet.packetHash ?? null
+    };
+  } catch {
+    return null;
+  }
 }
 
 function collectLiveObservations() {
@@ -161,7 +183,7 @@ FROM canonical_tf.tf_assessment_wsdor;`, { timeoutMs: 30000 }),
     'rowsPromoted', "RowsPromoted"
   )
   FROM sync_bridge.load_batch
-  WHERE lower(coalesce("SourceSystem", '')) LIKE '%owner%'
+  WHERE ${OWNER_WSDOR_BATCH_PREDICATE}
     AND "Status" = 'COMPLETED'
   ORDER BY "CompletedAt" DESC NULLS LAST
   LIMIT 1
@@ -173,7 +195,7 @@ FROM canonical_tf.tf_assessment_wsdor;`, { timeoutMs: 30000 }),
     'ageSeconds', EXTRACT(EPOCH FROM (now() - "StartedAt"))
   )
   FROM sync_bridge.load_batch
-  WHERE lower(coalesce("SourceSystem", '')) LIKE '%owner%'
+  WHERE ${OWNER_WSDOR_BATCH_PREDICATE}
     AND "Status" = 'IN_PROGRESS'
   ORDER BY "StartedAt" DESC NULLS LAST
   LIMIT 1
@@ -182,9 +204,7 @@ FROM canonical_tf.tf_assessment_wsdor;`, { timeoutMs: 30000 }),
 FROM (
   SELECT "Status" AS status_value, COUNT(*)::bigint AS status_count
   FROM sync_bridge.load_batch
-  WHERE lower(coalesce("SourceSystem", '')) LIKE '%owner%'
-     OR lower(coalesce("SourceSystem", '')) LIKE '%wpov%'
-     OR lower(coalesce("SourceSystem", '')) LIKE '%wsdor%'
+  WHERE ${OWNER_WSDOR_BATCH_PREDICATE}
   GROUP BY "Status"
 ) statuses;`, { timeoutMs: 10000 }),
     quarantine: runPsqlJson(`SELECT json_build_object(
@@ -271,7 +291,11 @@ export function buildOwnerSweepMonitorCheckpoint({
       quarantineRows: observationValue(observations, "quarantine")?.rows ?? null
     },
     sealedLaneIntegrity: {
-      status: sealedLaneProven ? "UNCHANGED_FROM_LATEST_PROOF" : "NOT_PROVEN_BY_LATEST_EVIDENCE",
+      status: sealedLaneProven
+        ? "UNCHANGED_FROM_LATEST_PROOF"
+        : sealedLaneEvidence
+          ? "NOT_PROVEN_BY_LATEST_EVIDENCE"
+          : "LATEST_EVIDENCE_MISSING_OR_UNREADABLE",
       latestEvidenceGeneratedAt: sealedLaneEvidence?.generatedAt ?? null,
       latestEvidenceVerdict: sealedLaneEvidence?.verdict ?? null,
       latestEvidenceHash: sealedLaneEvidence?.packetHash ?? null
