@@ -71,26 +71,7 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
         // observe non-zero S2-B truth_pacs promotion + S3 canonical_tf
         // projection. Production drains all rows (topN=null), date filter
         // honored only when caller asks for a bounded sample.
-        var topClause = _topN.HasValue ? $"TOP {_topN.Value} " : "";
-        var dateFilter = _topN.HasValue
-            ? "WHERE s.sl_dt >= '2018-01-01'"
-            : "";
-        var sql = $@"
-            SELECT {topClause}s.chg_of_owner_id,
-                   copa.prop_id,
-                   CAST(COALESCE(YEAR(s.sl_dt), YEAR(GETDATE())) AS smallint) AS prop_val_yr,
-                   CAST(0 AS smallint) AS sup_num,
-                   s.sl_county_ratio_cd,
-                   s.wac_cd,
-                   s.sl_ratio_type_cd,
-                   s.sl_dt,
-                   s.sl_price,
-                   s.adjusted_sl_price AS adj_sl_price
-            FROM dbo.sale s
-            INNER JOIN dbo.chg_of_owner_prop_assoc copa
-                ON copa.chg_of_owner_id = s.chg_of_owner_id
-            {dateFilter}
-            ORDER BY s.chg_of_owner_id DESC, copa.prop_id";
+        var sql = BuildQuery(_topN);
 
         await using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -136,6 +117,40 @@ public sealed class SqlServerPacsSaleSource : IPacsSaleSource
                 SlPrice:         rdr.IsDBNull(oSlPrice)       ? null : rdr.GetDecimal(oSlPrice),
                 AdjSlPrice:      rdr.IsDBNull(oAdjSlPrice)    ? null : rdr.GetDecimal(oAdjSlPrice));
         }
+    }
+
+    /// <summary>
+    /// Builds the PACS sale query for the given <paramref name="topN"/> bound.
+    /// Exposed as <c>internal static</c> so unit tests can assert the ORDER BY
+    /// clause is absent on full-corpus runs without requiring a live SQL Server.
+    ///
+    /// <para>ORDER BY is only emitted for bounded TopN proof runs (surfaces
+    /// canonical-eligible records first so SYNC-POP-2 can observe truth
+    /// promotion). Full-corpus drains omit it: SQL Server must otherwise sort
+    /// all 440k rows through tempdb before streaming begins, causing
+    /// mid-reader stalls (WO-DATA-FINALIZE-SALES-001 incident).</para>
+    /// </summary>
+    internal static string BuildQuery(int? topN)
+    {
+        var topClause   = topN.HasValue ? $"TOP {topN.Value} " : "";
+        var dateFilter  = topN.HasValue ? "WHERE s.sl_dt >= '2018-01-01'" : "";
+        var orderClause = topN.HasValue ? "ORDER BY s.chg_of_owner_id DESC, copa.prop_id" : "";
+        return $@"
+            SELECT {topClause}s.chg_of_owner_id,
+                   copa.prop_id,
+                   CAST(COALESCE(YEAR(s.sl_dt), YEAR(GETDATE())) AS smallint) AS prop_val_yr,
+                   CAST(0 AS smallint) AS sup_num,
+                   s.sl_county_ratio_cd,
+                   s.wac_cd,
+                   s.sl_ratio_type_cd,
+                   s.sl_dt,
+                   s.sl_price,
+                   s.adjusted_sl_price AS adj_sl_price
+            FROM dbo.sale s
+            INNER JOIN dbo.chg_of_owner_prop_assoc copa
+                ON copa.chg_of_owner_id = s.chg_of_owner_id
+            {dateFilter}
+            {orderClause}";
     }
 
     /// <summary>
