@@ -39,7 +39,7 @@ cat .terrafusion/context/latest.md
 5. **Frontend Health** - Check if frontend directory exists and has valid structure
 6. **Database Config** - Verify database configuration files exist
 7. **AI Swarm Status** - Check os-platform/ai-systems/ for agent definitions
-8. **Port Conflicts** - Check if ports 3000, 3002, 3004, 5000 are available
+8. **Port Conflicts** - Check configured service ports are available
 
 ## Output Format
 
@@ -57,8 +57,16 @@ ls backend/src/TerraFusion.API/
 ls frontend/apps/os-shell/
 ls backend/src/TerraFusion.Data/
 ls os-platform/ai-systems/
-# Windows: ss/netstat differ — use PowerShell or netstat -ano
-netstat -ano 2>/dev/null | grep -E 'LISTENING' | grep -E ':(3000|3002|3004|5000)\b' || echo "ports free"
+TF_FRONTEND_PORT="${TF_FRONTEND_PORT:-5174}"
+TF_API_PORT="${TF_API_PORT:-5000}"
+ss -tlnp 2>/dev/null | grep -E ":(${TF_FRONTEND_PORT}|${TF_API_PORT})\b" || echo "ports free"
+```
+
+PowerShell port check:
+```powershell
+$frontendPort = if ($env:TF_FRONTEND_PORT) { [int]$env:TF_FRONTEND_PORT } else { 5174 }
+$apiPort = if ($env:TF_API_PORT) { [int]$env:TF_API_PORT } else { 5000 }
+Get-NetTCPConnection -State Listen -LocalPort $frontendPort,$apiPort -ErrorAction SilentlyContinue
 ```
 
 ## Output Contract

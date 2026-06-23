@@ -11,7 +11,7 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -59,15 +59,34 @@ function getGitInfo(repoRoot) {
 /**
  * Check service health by port
  */
+function lineHasPort(line, port) {
+  const target = String(port);
+  return line
+    .trim()
+    .split(/\s+/)
+    .some(token => token.endsWith(`:${target}`) || token.includes(`]:${target}`));
+}
+
+function outputHasListeningPort(output, port) {
+  return output
+    .split(/\r?\n/)
+    .some(line => /listen|listening/i.test(line) && lineHasPort(line, port));
+}
+
 function checkServiceHealth(port) {
   try {
-    // ss on Linux/macOS; fall back to netstat on Windows where ss is unavailable
-    // (prevents a missing `ss` from reporting every service 'down' → false CRITICAL).
-    let result = exec(`ss -tlnp 2>/dev/null | grep ":${port}" || true`);
-    if (!result && !exec(`command -v ss 2>/dev/null || true`)) {
-      result = exec(`netstat -ano 2>/dev/null | grep LISTENING | grep ":${port} " || true`);
+    const commands = process.platform === 'win32'
+      ? ['netstat -ano']
+      : ['ss -tlnp', 'netstat -an'];
+
+    for (const command of commands) {
+      const result = exec(command, { timeout: 3000 });
+      if (outputHasListeningPort(result, port)) {
+        return 'up';
+      }
     }
-    return result.includes(`:${port}`) ? 'up' : 'down';
+
+    return 'down';
   } catch {
     return 'unknown';
   }
@@ -97,6 +116,61 @@ function getHealthStatus() {
   return { services, overallHealth };
 }
 
+function readTodoMatches(root, matchesLine, limit, options = {}) {
+  const matches = [];
+  const excludedDirs = new Set(options.excludeDirs ?? []);
+  const maxFiles = options.maxFiles ?? 500;
+  let visitedFiles = 0;
+
+  function visit(dir) {
+    if (matches.length >= limit || visitedFiles >= maxFiles || !existsSync(dir)) {
+      return;
+    }
+
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (matches.length >= limit || visitedFiles >= maxFiles) {
+        return;
+      }
+
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (!excludedDirs.has(entry.name)) {
+          visit(path);
+        }
+        continue;
+      }
+
+      if (!entry.isFile() || !entry.name.endsWith('.cs')) {
+        continue;
+      }
+
+      visitedFiles += 1;
+      let content;
+      try {
+        content = readFileSync(path, 'utf8');
+      } catch {
+        continue;
+      }
+
+      content.split(/\r?\n/).forEach((line, index) => {
+        if (matches.length < limit && line.includes('TODO') && matchesLine(line)) {
+          matches.push({ file: path, line: index + 1, text: line.trim() });
+        }
+      });
+    }
+  }
+
+  visit(root);
+  return matches;
+}
+
 /**
  * Scan for TODOs in critical files
  */
@@ -108,34 +182,25 @@ function scanTodos(repoRoot) {
     // Bounded: TODO counts are informational. On a slow filesystem (Windows
     // Defender real-time scan can add ~40ms/file open), this degrades to empty
     // rather than blocking the whole context-pack emit. latest.json must always land.
-    const securityTodos = exec(
-      `grep -rn --include=*.cs "TODO" "${repoRoot}/backend/src/TerraFusion.Security" 2>/dev/null || true`,
-      { timeout: 6000 }
+    todos.critical.push(
+      ...readTodoMatches(
+        join(repoRoot, 'backend/src/TerraFusion.Security'),
+        () => true,
+        5
+      )
     );
-    if (securityTodos) {
-      securityTodos.split('\n').filter(l => l.trim()).slice(0, 5).forEach(line => {
-        const match = line.match(/^([^:]+):(\d+):(.+)$/);
-        if (match) {
-          todos.critical.push({ file: match[1], line: parseInt(match[2]), text: match[3].trim() });
-        }
-      });
-    }
 
     // Scan for DI TODOs (high)
-    const diTodos = exec(
-      `grep -rn --include=*.cs --exclude-dir=bin --exclude-dir=obj "TODO.*register\\|TODO.*service" "${repoRoot}/backend/src" 2>/dev/null | head -5 || true`,
-      { timeout: 6000 }
+    todos.high.push(
+      ...readTodoMatches(
+        join(repoRoot, 'backend/src'),
+        line => /TODO.*(register|service)/i.test(line),
+        5,
+        { excludeDirs: ['bin', 'obj'] }
+      )
     );
-    if (diTodos) {
-      diTodos.split('\n').filter(l => l.trim()).forEach(line => {
-        const match = line.match(/^([^:]+):(\d+):(.+)$/);
-        if (match) {
-          todos.high.push({ file: match[1], line: parseInt(match[2]), text: match[3].trim() });
-        }
-      });
-    }
   } catch {
-    // Ignore grep errors
+    // Ignore scan errors
   }
 
   return todos;
