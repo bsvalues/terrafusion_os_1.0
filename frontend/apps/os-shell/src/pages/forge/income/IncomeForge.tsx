@@ -269,7 +269,7 @@ const updateSelectedCase = (selectedCaseId: string) => {
     <div data-testid="income-readiness-desk" className="max-w-full overflow-x-hidden">
       <div
         data-testid="income-workbench-shell"
-        className="rounded-lg border border-slate-700/80 bg-slate-950 text-slate-100 shadow-2xl"
+        className="rounded-lg border border-border bg-card text-card-foreground shadow-2xl"
       >
         <div className="border-b border-slate-800 bg-slate-900/80 px-5 py-4">
           <div className="flex flex-wrap items-start justify-between gap-4">
