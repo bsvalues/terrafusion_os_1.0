@@ -1,0 +1,73 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  nodeVersion: '20.x'
+  pnpmVersion: '9.0.0'
+
+jobs:
+  - job: core_validation
+    displayName: PR Validation - Governance Core
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: NodeTool@0
+        displayName: Use Node.js $(nodeVersion)
+        inputs:
+          versionSpec: $(nodeVersion)
+
+      - script: |
+          corepack enable
+          corepack prepare pnpm@$(pnpmVersion) --activate
+          pnpm --version
+        displayName: Use pnpm $(pnpmVersion)
+
+      - script: pnpm install --frozen-lockfile
+        displayName: Install dependencies
+
+      - script: pnpm run type-check
+        displayName: Core type check
+
+      - script: node --test os-platform/core/tests/phase83-tools.test.mjs
+        displayName: Phase 8.3 tool tests
+
+      - script: node --test os-platform/core/tests/phase85-tools.test.mjs
+        displayName: Phase 8.5 tool tests
+
+      - script: node --test os-platform/core/tests/phase86-toolrunner.test.mjs
+        displayName: Phase 8.6 toolrunner tests
+
+  - job: frontend_tier1
+    displayName: PR Validation - Frontend Tier 1
+    dependsOn: core_validation
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: NodeTool@0
+        displayName: Use Node.js $(nodeVersion)
+        inputs:
+          versionSpec: $(nodeVersion)
+
+      - script: |
+          corepack enable
+          corepack prepare pnpm@$(pnpmVersion) --activate
+          pnpm --version
+        displayName: Use pnpm $(pnpmVersion)
+
+      - script: pnpm install --frozen-lockfile
+        displayName: Install dependencies
+
+      - script: pnpm -C frontend run type-check
+        displayName: Frontend type check
+
+      - script: pnpm -C frontend run test:tier1
+        displayName: Frontend Tier-1 tests

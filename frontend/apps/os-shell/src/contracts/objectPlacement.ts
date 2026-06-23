@@ -303,6 +303,8 @@ export const MODULE_OBJECT_TYPES: Record<string, ObjectClassification> = {
   'os-pilot':             { objectType: 'os-feature-window', entryPath: 'desktop-icon:pilot', hasActionableUI: true },
   'os-trace':             { objectType: 'os-feature-window', entryPath: 'desktop-icon:trace', hasActionableUI: true },
   'os-canon':             { objectType: 'os-feature-window', entryPath: 'desktop-icon:canon', hasActionableUI: true },
+  // LocalOps reaches the operator through the shell side panel, not a desktop icon.
+  'os-localops':          { objectType: 'os-feature-window', entryPath: 'shell-chrome:localops', hasActionableUI: true },
 
   // ── Cross-parcel operational apps (layer 5) ───────────────────────────
   'federation-dashboard': { objectType: 'cross-parcel-operational-app', entryPath: 'desktop-icon:federation-dashboard', hasActionableUI: true },

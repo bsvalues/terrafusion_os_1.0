@@ -140,15 +140,16 @@ describe('directEntryCanonicalUrl', () => {
 
   // ── Parcel tools never launch standalone from direct entry ────────────────
 
-  it('never opens a standalone parcel module window from a direct-entry parcel link', () => {
-    // Structural: SuiteModuleGrid.handleLaunch is the only launch path for Atlas.
-    // launchMode='workbench' always navigates to /property/:parcelId/:tab.
-    // Atlas parcel-scoped GIS tools use workbench mode via SuiteModuleGrid.
-    //
+  it('keeps TerraAtlas Suite modules on the standalone /atlas suite surface', () => {
+    // Structural: this WO separates the TerraAtlas Suite (/atlas) from the
+    // parcel-scoped Workbench Atlas tab. AtlasSuiteHome is no longer proof for
+    // /property/:parcelId/atlas and must not route its in-suite apps there.
+
     // NOTE: ForgeSuiteHome is frozen at commit 8da26658a and uses standalone-only
     // launchMode for all modules. Forge's parcel-scoped tab (/property/:id/forge)
     // is accessed through PropertyWorkbench routing, not via ForgeSuiteHome's grid.
-    expect(atlasSuiteSource).toContain("launchMode: 'workbench'");
+    expect(atlasSuiteSource).toContain("launchMode: 'standalone'");
+    expect(atlasSuiteSource).not.toContain("workbenchTab: 'atlas'");
 
     // SuiteModuleGrid navigates to /property/ for workbench mode (not activateModule)
     expect(suiteModuleGridSource).toContain("navigate(`/property/${parcelId}/${mod.workbenchTab}`)");
@@ -167,37 +168,40 @@ describe('directEntryCanonicalUrl', () => {
     expect(canonicalizeEntryUrl('/property/123/FORGEE')).toBe('/property/123');
   });
 
-  // ── Source: ForgeSuiteHome modules use standalone launchMode ─────────────
+  // ── Source: ForgeSuiteHome routes CompsForge to Property Workbench ───────
   //
-  // ForgeSuiteHome (frozen at 8da26658a) is an application launcher, not a
-  // parcel-tool grid. All modules launch standalone (CostForge app, CompsForge,
-  // etc.). Parcel-scoped Forge analysis is accessed via /property/:id/forge
-  // through PropertyWorkbench routing — not through ForgeSuiteHome's module grid.
+  // ForgeSuiteHome is mostly an application launcher, but CompsForge is the
+  // explicit parcel-scoped exception: desktop/window intent must resolve to
+  // Property Workbench -> Forge -> Sales instead of the old standalone surface.
 
-  it('ForgeSuiteHome modules use standalone launchMode (application-level launchers)', () => {
-    // Extract PRIMARY_MODULES or module definitions from source
-    // ForgeSuiteHome defines its modules inline (not via SuiteModuleGrid)
+  it('ForgeSuiteHome routes only CompsForge through Property Workbench Forge Sales', () => {
     const standaloneEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'standalone'/g)];
-
-    // Forge is exclusively standalone — application-level tools, not parcel widgets
-    expect(standaloneEntries.length).toBeGreaterThan(0);
-    // Forge must NOT have workbench-mode entries in its module list
     const workbenchEntries = [...forgeSuiteSource.matchAll(/launchMode:\s*'workbench'/g)];
-    expect(workbenchEntries.length).toBe(0);
+
+    expect(standaloneEntries.length).toBeGreaterThan(0);
+    expect(workbenchEntries).toHaveLength(1);
+    expect(forgeSuiteSource).toContain("id: 'comps-forge'");
+    expect(forgeSuiteSource).toContain("workbenchTab: 'forge'");
+    expect(forgeSuiteSource).toContain("workbenchSubTab: 'sales'");
+    expect(forgeSuiteSource).toContain("moduleId: 'costforge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'income-forge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'sales-forge'");
+    expect(forgeSuiteSource).toContain("moduleId: 'cuforge'");
   });
 
-  // ── Source: AtlasSuiteHome parcel modules all use workbench launchMode ────
+  // ── Source: AtlasSuiteHome Suite apps use standalone launchMode ───────────
 
-  it('all AtlasSuiteHome parcel-scoped modules use launchMode workbench', () => {
+  it('all AtlasSuiteHome in-suite modules avoid workbench tab targeting', () => {
     const atlasModulesBlock = atlasSuiteSource.match(
       /const ATLAS_MODULES[^=]*=\s*\[([^\]]+)\]/s,
     )?.[1] ?? '';
 
-    const workbenchEntries = [...atlasModulesBlock.matchAll(/launchMode:\s*'workbench'/g)];
-    expect(workbenchEntries.length).toBeGreaterThan(0);
+    const standaloneEntries = [...atlasModulesBlock.matchAll(/launchMode:\s*'standalone'/g)];
+    expect(standaloneEntries.length).toBeGreaterThan(0);
 
-    // All Atlas workbench modules must use the 'atlas' tab
-    const nonAtlasTabs = [...atlasModulesBlock.matchAll(/workbenchTab:\s*'(?!atlas)\w+'/g)];
-    expect(nonAtlasTabs).toHaveLength(0);
+    const workbenchEntries = [...atlasModulesBlock.matchAll(/launchMode:\s*'workbench'/g)];
+    const atlasTabs = [...atlasModulesBlock.matchAll(/workbenchTab:\s*'atlas'/g)];
+    expect(workbenchEntries).toHaveLength(0);
+    expect(atlasTabs).toHaveLength(0);
   });
 });

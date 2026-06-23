@@ -67,6 +67,16 @@ const PATTERNS = [
         re: /\b\d{3}-\d{2}-\d{4}\b/g,
         transform: () => '[REDACTED:ssn]',
     },
+    // US / NANP phone numbers. Mirrors the canonical AUDIT_PHONE_PATTERN used by
+    // the trace audit redactor (core/trace/TraceService.ts) so the local-agent
+    // telemetry redactor and the trace store agree on what a phone number is.
+    // Runs after SSN so a 3-2-4 SSN is consumed first (it is disjoint from the
+    // 3-3-4 phone shape regardless).
+    {
+        kind: 'phone',
+        re: /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g,
+        transform: () => '[REDACTED:phone]',
+    },
     // Windows user paths — preserve directory shape, redact only the user name.
     {
         kind: 'win-userpath',

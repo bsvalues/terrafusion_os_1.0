@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.LegacyPacsRaw;
@@ -187,6 +188,17 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
             var priorAttrQuarantine = canonicalAttrQuarantineCandidates
                 .Where(q => attrTruthKeys.Contains((q.PropValYr, q.SupNum, q.PropId, q.ImprvId)))
                 .ToList();
+
+            // 2026-05-18 atomicity fix: wrap DELETE-then-INSERT in a single
+            // EF transaction so an INSERT-side failure (e.g. PACS varchar(32)
+            // overflow on imprv_attr.IAttrValCd) rolls back the DELETE too.
+            // Without this wrap, a single failing chunk wipes ALL prior chunks'
+            // canonical work for the same truth-batch parcel set. See
+            // os-platform/core/pilot/evidence/2026-05-18-improvement-projector-regression.md.
+            var supportsTransactions = _db.Database.IsRelational();
+            await using IDbContextTransaction? canonicalTxn = supportsTransactions
+                ? await _db.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false)
+                : null;
 
             if (priorFeatures.Count > 0)
                 _db.TfImprovementFeatures.RemoveRange(priorFeatures);
@@ -446,6 +458,12 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
             batch.RowsPromoted = improvementsProjected;
             await _db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+            // 2026-05-18 atomicity fix: commit the DELETE+INSERT transaction
+            // only on success path. On exception, the `using var canonicalTxn`
+            // dispose rolls back, preserving prior chunks' canonical work.
+            if (canonicalTxn is not null)
+                await canonicalTxn.CommitAsync(cancellationToken).ConfigureAwait(false);
+
             _logger.LogInformation(
                 "canonical_tf.tf_improvement projection COMPLETED. batch={BatchId} considered={Considered} improvements={Improvements} features={Features} quarantined={Quarantined} attrConsidered={AttrConsidered} attrResolved={AttrResolved} attrQuarantined={AttrQuarantined}",
                 batch.LoadBatchId, considered, improvementsProjected, featuresProjected, quarantined,
@@ -471,10 +489,25 @@ public sealed class PacsImprvCanonicalProjector : IPacsImprvCanonicalProjector
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             var summary = $"{ex.GetType().Name}: {ex.Message}";
-            batch.Status = "FAILED";
-            batch.CompletedAt = DateTime.UtcNow;
-            batch.ErrorSummary = summary;
-            await _db.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+            // 2026-05-18 atomicity fix: when `using var canonicalTxn` disposes
+            // on exception unwind, the DELETE+INSERT is rolled back. Clear the
+            // EF change tracker so the FAILED status write below does not try
+            // to re-apply the same projection changes that just failed; then
+            // re-fetch the batch row (committed outside the rolled-back txn at
+            // line 80) on a fresh implicit transaction.
+            _db.ChangeTracker.Clear();
+
+            var failedBatch = await _db.SyncBridgeLoadBatches
+                .FirstOrDefaultAsync(b => b.LoadBatchId == batch.LoadBatchId, CancellationToken.None)
+                .ConfigureAwait(false);
+            if (failedBatch != null)
+            {
+                failedBatch.Status = "FAILED";
+                failedBatch.CompletedAt = DateTime.UtcNow;
+                failedBatch.ErrorSummary = summary;
+                await _db.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+            }
 
             _logger.LogError(ex,
                 "canonical_tf.tf_improvement projection FAILED. batch={BatchId} summary={Summary}",

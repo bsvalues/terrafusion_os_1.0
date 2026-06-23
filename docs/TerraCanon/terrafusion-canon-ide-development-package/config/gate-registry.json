@@ -1,0 +1,96 @@
+{
+  "version": "0.1.0",
+  "gates": [
+    {
+      "gateId": "frontend:typecheck",
+      "label": "Frontend Type Check",
+      "command": "pnpm run type-check",
+      "riskCoverage": [
+        "frontend",
+        "shell",
+        "ui"
+      ],
+      "requiredFor": [
+        "frontend/apps/os-shell/src/**"
+      ]
+    },
+    {
+      "gateId": "backend:build",
+      "label": "Backend Build",
+      "command": "dotnet build backend/TerraFusion.sln",
+      "riskCoverage": [
+        "backend",
+        "services",
+        "persistence"
+      ],
+      "requiredFor": [
+        "backend/**"
+      ]
+    },
+    {
+      "gateId": "shell:launch-surface-contract",
+      "label": "Launch Surface Contract",
+      "command": "node --test os-platform/core/tests/launch-surface-contract.test.mjs",
+      "riskCoverage": [
+        "shell",
+        "routing",
+        "surface-contract"
+      ],
+      "requiredFor": [
+        "frontend/apps/os-shell/src/**"
+      ]
+    },
+    {
+      "gateId": "canon:write-lane",
+      "label": "Write-Lane Policy Check",
+      "command": "node scripts/canon-write-lane-check.mjs",
+      "riskCoverage": [
+        "write-lane",
+        "path-ownership"
+      ],
+      "requiredFor": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**"
+      ]
+    },
+    {
+      "gateId": "security:hardcoded-port",
+      "label": "Hardcoded Port Check",
+      "command": "node scripts/check-hardcoded-ports.mjs",
+      "riskCoverage": [
+        "security",
+        "runtime-config"
+      ],
+      "requiredFor": [
+        "**/*"
+      ]
+    },
+    {
+      "gateId": "security:protected-path",
+      "label": "Protected Path Check",
+      "command": "node scripts/check-protected-paths.mjs",
+      "riskCoverage": [
+        "security",
+        "governance"
+      ],
+      "requiredFor": [
+        "ARCHIVE/**",
+        "specialized/**"
+      ]
+    },
+    {
+      "gateId": "trace:evidence-bundle",
+      "label": "Evidence Bundle Check",
+      "command": "tf canon trace verify",
+      "riskCoverage": [
+        "trace",
+        "evidence",
+        "auditability"
+      ],
+      "requiredFor": [
+        "**/*"
+      ]
+    }
+  ]
+}

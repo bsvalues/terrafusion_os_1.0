@@ -122,9 +122,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   pilot: 'os-pilot',
   trace: 'os-trace',
   canon: 'os-canon',
+  localops: 'os-localops',
   terrapilot: 'os-pilot',
   terratrace: 'os-trace',
   terracanon: 'os-canon',
+  terralocalops: 'os-localops',
 
   // Constitutional Suite Home aliases (desktop icons use these)
   forge: 'suite-forge',
@@ -218,6 +220,9 @@ export const MODULE_REGISTRY = new Set<string>([
   'os-pilot',
   'os-trace',
   'os-canon',
+  // LocalOps — registered OS feature whose ONLY operator surface is the shell
+  // side panel (LocalOpsSurface). The window home is a truthful redirect to it.
+  'os-localops',
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard',
   'mass-appraisal-gis',
@@ -428,6 +433,13 @@ const AtlasLivePage = lazy(() =>
 // CUForge — Current Use Program (RCW 84.33/84.34)
 const CUForge = lazy(() => import('../pages/forge/current-use/CUForge'));
 
+// TerraNotice — Governed Civic Communications Console (TerraDais suite).
+// OS-native operator console: 12 governed areas (command center, policy packs,
+// template governance, batch ops, freeze snapshots, vendor dispatch, exceptions,
+// citizen portal preview, telemetry, audit vault, release console). Runs on
+// clearly-labeled County Sandbox fixtures until a backend is wired.
+const TerraNoticeConsole = lazy(() => import('../pages/notice/TerraNoticeConsole'));
+
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
@@ -443,6 +455,7 @@ const PropertyWorkbenchWindow = lazy(
 const PilotHome = lazy(() => import('../pages/PilotHome'));
 const TraceHome = lazy(() => import('../pages/TraceHome'));
 const CanonHome = lazy(() => import('../pages/CanonHome'));
+const LocalOpsHome = lazy(() => import('../pages/LocalOpsHome'));
 
 // ============================================================================
 // Constitutional Suite Home Pages (render inside Desktop windows)
@@ -494,10 +507,13 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'terra-gama': { Component: TerraGamaPage },
   // Dais standalone modules
   'terra-queue': { Component: TerraQueue },
+  'terra-notice': { Component: TerraNoticeConsole },
   // OS Features (in-shell windows)
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
   'os-canon': { Component: CanonHome },
+  // LocalOps window home is a thin in-window redirect to the shell side panel.
+  'os-localops': { Component: LocalOpsHome },
   // Atlas & Forge standalone modules (Phase 36)
   'geo-equity-dashboard': { Component: GeoEquityDashboard },
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
@@ -977,13 +993,12 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         />
       );
 
+    // TerraNotice — Governed Civic Communications Console (OS-native operator surface).
     case 'terra-notice':
       return (
-        <QueuedModuleSurface
-          name="TerraNotice"
-          description="Notice templates, batch generation, and mail queue — assessment notice production and delivery tracking."
-          moduleId="terra-notice"
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraNoticeConsole />
+        </Suspense>
       );
 
     // Analytics - Real-time Reporting
@@ -1157,6 +1172,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <CanonHome />
+        </Suspense>
+      );
+
+    case 'os-localops':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <LocalOpsHome />
         </Suspense>
       );
 

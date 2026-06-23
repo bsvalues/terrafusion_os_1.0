@@ -1,0 +1,156 @@
+{
+  "version": "0.1.0",
+  "effectiveDate": "2026-06-05",
+  "rules": [
+    {
+      "ruleId": "surface.os-canon.in-shell",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "constitutional",
+      "title": "os-canon must open inside the OS shell",
+      "description": "Canon is an OS Feature. It must open as an in-shell, near-full-stage OS feature window. Dock and Top Bar must remain visible.",
+      "source": "Launch / Surface Contract",
+      "appliesTo": {
+        "paths": [
+          "frontend/apps/os-shell/src/**"
+        ],
+        "taskIntents": [
+          "shell-launch",
+          "os-canon",
+          "surface-contract"
+        ],
+        "surfaces": [
+          "os-canon"
+        ]
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": [
+          "shell:launch-surface-contract",
+          "frontend:typecheck"
+        ],
+        "requiresManualReview": true
+      }
+    },
+    {
+      "ruleId": "surface.property-workbench.os-owned",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "constitutional",
+      "title": "Property Workbench is OS-owned Tier-0 surface",
+      "description": "Parcel-scoped work routes into the Property Workbench. Suites contribute tabs but do not own the container.",
+      "source": "TerraFusion Suite Constitution",
+      "appliesTo": {
+        "paths": [
+          "frontend/apps/os-shell/src/modules/property-workbench/**"
+        ],
+        "taskIntents": [
+          "parcel-workbench",
+          "workbench-tab",
+          "parcel-action"
+        ],
+        "surfaces": [
+          "property-workbench"
+        ]
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": [
+          "shell:launch-surface-contract",
+          "canon:write-lane"
+        ],
+        "requiresManualReview": true
+      }
+    },
+    {
+      "ruleId": "write-lane.municipal.single-owner",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "constitutional",
+      "title": "Each municipal data domain has exactly one write owner",
+      "description": "Cross-suite writes are prohibited unless routed through sanctioned tools and TerraTrace.",
+      "source": "TerraFusion Suite Constitution",
+      "appliesTo": {
+        "paths": [
+          "backend/**",
+          "frontend/**"
+        ],
+        "taskIntents": [
+          "persistence",
+          "service",
+          "workflow",
+          "valuation",
+          "gis",
+          "evidence"
+        ],
+        "surfaces": []
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": [
+          "canon:write-lane",
+          "trace:evidence-bundle"
+        ],
+        "requiresManualReview": false
+      }
+    },
+    {
+      "ruleId": "agent.no-direct-runtime-mutation-from-standalone",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "engineering-policy",
+      "title": "Standalone Canon cannot mutate production county runtime state",
+      "description": "Standalone may edit source code and prepare PRs; production data writes remain OS/TerraPilot/TerraTrace governed.",
+      "source": "Canon/IDE Development Package",
+      "appliesTo": {
+        "paths": [
+          "apps/canon-desktop/**",
+          "src/os-platform/agents/**"
+        ],
+        "taskIntents": [
+          "standalone",
+          "connector",
+          "runtime-action"
+        ],
+        "surfaces": [
+          "canon-desktop"
+        ]
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": [
+          "security:standalone-boundary",
+          "trace:evidence-bundle"
+        ],
+        "requiresManualReview": true
+      }
+    },
+    {
+      "ruleId": "governance.no-hardcoded-ports",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "constitutional",
+      "title": "Hardcoded ports are forbidden",
+      "description": "All network ports must be consumed from environment/configuration.",
+      "source": "TerraFusion Suite Constitution Article VI",
+      "appliesTo": {
+        "paths": [
+          "**/*"
+        ],
+        "taskIntents": [
+          "runtime-config",
+          "service-registry",
+          "api"
+        ],
+        "surfaces": []
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": [
+          "security:hardcoded-port"
+        ],
+        "requiresManualReview": false
+      }
+    }
+  ]
+}

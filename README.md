@@ -16,7 +16,7 @@ TerraFusion OS is a **county property-assessment platform** targeting Washington
 
 - **.NET 8 API** for property management, authentication, and core services
 - **React 18 + Vite** frontend (OS Shell desktop UI)
-- **AI swarm coordination** (1,008 agents for property analysis)
+- **AI swarm coordination** (target architecture; currently stubbed — see [`docs/ai-consolidation/AI_ESTATE_INVENTORY.md`](docs/ai-consolidation/AI_ESTATE_INVENTORY.md))
 - **Constitutional CI** — a Seal Gate that enforces governance on every PR
 - **372+ automated tests** covering leak guards, governance invariants, and tooling
 
@@ -27,7 +27,7 @@ TerraFusion OS is a **county property-assessment platform** targeting Washington
 | Backend API (.NET 8) | `backend/` (31 .csproj projects) | Builds, 20+ controllers |
 | Frontend (React 18) | `frontend/apps/os-shell/` | Vite dev server, OS Shell UI |
 | Governance Core | `os-platform/core/` | 372 tests, Pilot tools, TerraTrace |
-| AI Systems | `os-platform/ai-systems/` | Swarm config, 1,008 agent manifest |
+| AI Systems | `os-platform/ai-systems/` | Swarm scaffolding — island/scaffold, not a running swarm (see AI_ESTATE_INVENTORY.md) |
 | CI Pipeline | `.github/workflows/` (81 workflows) | Seal Gate required on all PRs |
 | Dev Tooling | `tools/` (25+ packages) | TDC, token compliance, security |
 
@@ -103,7 +103,7 @@ terrafusion_os_1.0/
 │   │   ├── tests/              #   372 leak-guard + governance tests
 │   │   ├── types/              #   Shared TypeScript types
 │   │   └── governance/         #   Wave ledger, policy docs
-│   └── ai-systems/             # AI swarm (1,008 agents — DO NOT MODIFY)
+│   └── ai-systems/             # AI swarm scaffolding — not a running production swarm (see docs/ai-consolidation/AI_ESTATE_INVENTORY.md)
 │
 ├── tools/                      # Dev tooling (25+ packages)
 │   ├── tdc/                    #   TerraFusion Dev CLI
@@ -171,7 +171,7 @@ See [AGENTS.md](./AGENTS.md) for full governance rules.
 |-------|-------------|
 | **Backend** | .NET 8, EF Core 8, PostgreSQL/SQLite, SignalR 8, Ocelot 22 |
 | **Frontend** | React 18.3, TypeScript 5.3, Vite 5, Tailwind CSS, Radix UI, shadcn/ui |
-| **AI/ML** | 1,008-agent swarm, ML.NET 3.0, autonomous coordination |
+| **AI/ML** | LocalOps governed local agent (proven); AI swarm is target architecture, stubbed (see AI_ESTATE_INVENTORY.md); ML.NET 3.0 |
 | **CI/CD** | GitHub Actions (81 workflows), Seal Gate, Snyk, pnpm |
 | **Infrastructure** | Docker, Consul, Redis, Prometheus, Grafana |
 

@@ -14,6 +14,7 @@ import type { CityRollupRowDto } from '../types/countyStudio.types';
 
 const navigateMock = vi.fn();
 const activateModuleMock = vi.fn();
+const openMock = vi.fn();
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
@@ -49,6 +50,7 @@ function setup(selectedCity: string | null, rows: CityRollupRowDto[] = [MOCK_CIT
 }
 
 beforeEach(() => {
+  vi.stubGlobal('open', openMock);
   act(() => {
     useCountyStudioStore.getState().setCityRollup([]);
     useCountyStudioStore.setState({
@@ -65,6 +67,7 @@ beforeEach(() => {
   });
   navigateMock.mockReset();
   activateModuleMock.mockReset();
+  openMock.mockReset();
 });
 
 describe('CityInspector', () => {
@@ -170,18 +173,16 @@ describe('CityInspector', () => {
     expect(dashes.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('routes Atlas handoff with city as reference metadata only', () => {
+  it('opens Atlas handoff in a browser window with city as reference metadata only', () => {
     act(() => {
       useCountyStudioStore.getState().setCityRollup([MOCK_CITY_ROW]);
       useCountyStudioStore.setState({ selectedCity: 'West Richland' });
     });
     render(<CityInspector />);
     fireEvent.click(screen.getByTestId('city-inspector-handoff-atlas'));
-    expect(navigateMock).toHaveBeenCalledTimes(1);
-    expect(navigateMock).toHaveBeenCalledWith(
-      expect.stringContaining('/forge/atlas-live?')
-    );
-    const url = String(navigateMock.mock.calls[0]?.[0] ?? '');
+    expect(navigateMock).not.toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'));
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const url = String(openMock.mock.calls[0]?.[0] ?? '');
     const params = new URLSearchParams(url.split('?')[1] ?? '');
     expect(params.get('countyId')).toBe('benton');
     expect(params.get('referenceCity')).toBe('West Richland');

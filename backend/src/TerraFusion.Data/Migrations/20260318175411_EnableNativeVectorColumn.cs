@@ -10,6 +10,9 @@ namespace TerraFusion.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"
+                CREATE EXTENSION IF NOT EXISTS vector;");
+
             // Safety guard: abort if any embedding has wrong dimension.
             // The USING cast below requires every non-null row to be exactly 1536 floats.
             migrationBuilder.Sql(@"

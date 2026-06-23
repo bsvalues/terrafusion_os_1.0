@@ -15,7 +15,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
 // ---------------------------------------------------------------------------
@@ -155,5 +155,107 @@ describe('P17 – Canon IDE Shell Compliance', () => {
     render(<CanonHome />);
     expect(screen.getByTestId('terracanon-workspace')).toBeInTheDocument();
     expect(screen.getByTestId('terracanon-editor')).toBeInTheDocument();
+  });
+});
+
+describe('Bottom panel tabs – WAI-ARIA tabs pattern', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('exposes a labelled tablist wrapping all seven role=tab buttons', () => {
+    render(<CanonHome />);
+    const tablist = screen.getByRole('tablist', { name: /bottom panel/i });
+    const tabs = within(tablist).getAllByRole('tab');
+    // Gates / Terminal / Problems / Runtime (#924) / Console (#928) / Evidence (#930) / Gate Runner
+    expect(tabs).toHaveLength(7);
+    expect(within(tablist).getByRole('tab', { name: 'Gates' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Terminal' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Problems' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Runtime' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Console' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Evidence' })).toBeInTheDocument();
+    expect(within(tablist).getByRole('tab', { name: 'Gate Runner' })).toBeInTheDocument();
+  });
+
+  it('applies the ARIA tab attributes to the Gate Runner tab too', () => {
+    render(<CanonHome />);
+    const gateRunnerTab = screen.getByRole('tab', { name: 'Gate Runner' });
+    expect(gateRunnerTab).toHaveAttribute('aria-selected', 'false');
+    expect(gateRunnerTab).toHaveAttribute('aria-controls');
+    expect(gateRunnerTab).toHaveAttribute('tabindex', '-1');
+    expect(gateRunnerTab.id).toBeTruthy();
+  });
+
+  it('applies the ARIA tab attributes to the Evidence tab too', () => {
+    render(<CanonHome />);
+    const evidenceTab = screen.getByRole('tab', { name: 'Evidence' });
+    expect(evidenceTab).toHaveAttribute('aria-selected', 'false');
+    expect(evidenceTab).toHaveAttribute('aria-controls');
+    expect(evidenceTab).toHaveAttribute('tabindex', '-1');
+    expect(evidenceTab.id).toBeTruthy();
+  });
+
+  it('applies the ARIA tab attributes to the Console tab too', () => {
+    render(<CanonHome />);
+    const consoleTab = screen.getByRole('tab', { name: 'Console' });
+    expect(consoleTab).toHaveAttribute('aria-selected', 'false');
+    expect(consoleTab).toHaveAttribute('aria-controls');
+    expect(consoleTab).toHaveAttribute('tabindex', '-1');
+    expect(consoleTab.id).toBeTruthy();
+  });
+
+  it('applies the ARIA tab attributes to the Runtime tab too', () => {
+    render(<CanonHome />);
+    const runtimeTab = screen.getByRole('tab', { name: 'Runtime' });
+    // Not the default tab, so unselected + out of the tab order, but fully wired.
+    expect(runtimeTab).toHaveAttribute('aria-selected', 'false');
+    expect(runtimeTab).toHaveAttribute('tabindex', '-1');
+    expect(runtimeTab.id).toBeTruthy();
+    expect(runtimeTab.getAttribute('aria-controls')).toBeTruthy();
+  });
+
+  it('reflects the active tab via aria-selected and a matching tabpanel', () => {
+    render(<CanonHome />);
+    const gatesTab = screen.getByRole('tab', { name: 'Gates' });
+    const terminalTab = screen.getByRole('tab', { name: 'Terminal' });
+
+    // Gates is the default active tab.
+    expect(gatesTab).toHaveAttribute('aria-selected', 'true');
+    expect(terminalTab).toHaveAttribute('aria-selected', 'false');
+
+    // The active tab controls the rendered tabpanel, which points back at it.
+    const panel = screen.getByRole('tabpanel');
+    const controls = gatesTab.getAttribute('aria-controls');
+    expect(controls).toBeTruthy();
+    expect(panel).toHaveAttribute('id', controls);
+    expect(panel).toHaveAttribute('aria-labelledby', gatesTab.id);
+    expect(gatesTab.id).toBeTruthy();
+  });
+
+  it('moves selection with Left/Right arrow keys (WAI-ARIA tabs pattern)', () => {
+    render(<CanonHome />);
+    const gatesTab = screen.getByRole('tab', { name: 'Gates' });
+
+    gatesTab.focus();
+    fireEvent.keyDown(gatesTab, { key: 'ArrowRight' });
+
+    const terminalTab = screen.getByRole('tab', { name: 'Terminal' });
+    expect(terminalTab).toHaveAttribute('aria-selected', 'true');
+    expect(gatesTab).toHaveAttribute('aria-selected', 'false');
+    expect(terminalTab).toHaveFocus();
+
+    // ArrowLeft returns to Gates.
+    fireEvent.keyDown(terminalTab, { key: 'ArrowLeft' });
+    expect(screen.getByRole('tab', { name: 'Gates' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Gates' })).toHaveFocus();
+  });
+
+  it('uses roving tabindex so only the active tab is in the tab order', () => {
+    render(<CanonHome />);
+    const gatesTab = screen.getByRole('tab', { name: 'Gates' });
+    const terminalTab = screen.getByRole('tab', { name: 'Terminal' });
+    expect(gatesTab).toHaveAttribute('tabindex', '0');
+    expect(terminalTab).toHaveAttribute('tabindex', '-1');
   });
 });

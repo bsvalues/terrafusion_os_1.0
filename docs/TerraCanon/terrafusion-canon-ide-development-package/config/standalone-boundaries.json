@@ -1,0 +1,59 @@
+{
+  "version": "0.1.0",
+  "allowed": [
+    "source-code-read",
+    "source-code-edit-in-worktree",
+    "approved-command-run",
+    "git-diff",
+    "git-commit-with-approval",
+    "pr-draft",
+    "engineering-evidence-bundle"
+  ],
+  "prohibited": [
+    "production-county-record-write",
+    "valuation-change",
+    "exemption-decision",
+    "appeal-decision",
+    "evidence-chain-mutation",
+    "runtime-terrapilot-bypass",
+    "fake-runtime-terratrace-event",
+    "production-secret-access"
+  ],
+  "connectorTrustTiers": [
+    {
+      "tier": 0,
+      "name": "local repo read",
+      "standalone": "allowed"
+    },
+    {
+      "tier": 1,
+      "name": "local repo write",
+      "standalone": "worktree-only"
+    },
+    {
+      "tier": 2,
+      "name": "git operations",
+      "standalone": "approval-for-write"
+    },
+    {
+      "tier": 3,
+      "name": "ci/github",
+      "standalone": "approval-required"
+    },
+    {
+      "tier": 4,
+      "name": "non-production os services",
+      "standalone": "read-with-approval"
+    },
+    {
+      "tier": 5,
+      "name": "production runtime read",
+      "standalone": "restricted"
+    },
+    {
+      "tier": 6,
+      "name": "production runtime write",
+      "standalone": "prohibited"
+    }
+  ]
+}

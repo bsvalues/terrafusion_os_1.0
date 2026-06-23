@@ -54,7 +54,7 @@ describe('CountyCommandStrip', () => {
     });
   });
 
-  it('renders compact countywide metrics when health summary exists', () => {
+  it('renders one compact roll posture bar instead of a metric-card farm', () => {
     act(() => {
       const store = useCountyStudioStore.getState();
       store.setStudy(MOCK_STUDY);
@@ -95,16 +95,20 @@ describe('CountyCommandStrip', () => {
     render(<CountyCommandStrip />);
 
     expect(screen.getByTestId('county-command-strip')).toBeInTheDocument();
-    expect(screen.getByTestId('command-metric-ratio')).toHaveTextContent('0.963');
-    expect(screen.getByTestId('command-metric-cod')).toHaveTextContent('12.4');
-    expect(screen.getByTestId('command-metric-prd')).toHaveTextContent('1.012');
-    expect(screen.getByTestId('command-metric-critical')).toHaveTextContent('3');
-    expect(screen.getByTestId('command-metric-warning')).toHaveTextContent('9');
-    expect(screen.getByTestId('command-metric-needs-data')).toHaveTextContent('1');
-    expect(screen.getByTestId('command-metric-exceptions')).toHaveTextContent('18');
-    expect(screen.getByTestId('operational-contract-id')).toHaveTextContent('terraforge_operational_health_v1');
-    expect(screen.getByTestId('correction-contract-id')).toHaveTextContent('terraforge_correction_priority_v1');
-    expect(screen.getByTestId('county-trust-posture')).toHaveTextContent(/Benton production provisional/i);
+    const posture = screen.getByTestId('county-roll-posture-strip');
+    expect(posture).toHaveTextContent('Roll Posture');
+    expect(posture).toHaveTextContent('At Risk');
+    expect(posture).toHaveTextContent('Median 0.963');
+    expect(posture).toHaveTextContent('COD 12.4');
+    expect(posture).toHaveTextContent('PRD 1.012');
+    expect(posture).toHaveTextContent('3 Critical');
+    expect(posture).toHaveTextContent('Defensibility');
+    expect(posture).toHaveTextContent(/Trust: provisional/i);
+    expect(screen.queryByTestId('command-metric-ratio')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('command-metric-cod')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('command-metric-prd')).not.toBeInTheDocument();
+    expect(screen.queryByText('terraforge_operational_health_v1')).not.toBeInTheDocument();
+    expect(screen.queryByText('terraforge_correction_priority_v1')).not.toBeInTheDocument();
   });
 
   it('renders derive-first guidance when county health is unavailable because no segment set is derived', () => {

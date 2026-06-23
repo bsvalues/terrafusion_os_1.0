@@ -86,6 +86,10 @@ import CanonQuickOpen from '../canon/CanonQuickOpen';
 import CanonGoToSymbol from '../canon/CanonGoToSymbol';
 import { CanonSearchPanel } from '../canon/CanonSearchPanel';
 import { CanonStatusBar } from '../canon/CanonStatusBar';
+import { CanonRuntimeStatusPanel } from '../canon/CanonRuntimeStatusPanel';
+import { CanonTaskConsole } from '../canon/CanonTaskConsole';
+import { CanonEvidenceViewer } from '../canon/CanonEvidenceViewer';
+import { CanonGateRunnerPanel } from '../canon/CanonGateRunnerPanel';
 import CanonTerminal from '../canon/CanonTerminal';
 import { GoToLineDialog } from '../canon/GoToLineDialog';
 import { useCanonConnection } from '../canon/useCanonConnection';
@@ -634,6 +638,29 @@ function loadLastClosed(): Workspace | null {
 
 let workspaceCounter = 0;
 
+// ─── Bottom panel tabs (WAI-ARIA tabs pattern) ───────────────────────────────
+type BottomTabKey =
+  | 'gates'
+  | 'terminal'
+  | 'problems'
+  | 'runtime'
+  | 'console'
+  | 'evidence'
+  | 'gaterunner';
+
+const BOTTOM_TABS: ReadonlyArray<{ key: BottomTabKey; label: string }> = [
+  { key: 'gates', label: 'Gates' },
+  { key: 'terminal', label: 'Terminal' },
+  { key: 'problems', label: 'Problems' },
+  { key: 'runtime', label: 'Runtime' },
+  { key: 'console', label: 'Console' },
+  { key: 'evidence', label: 'Evidence' },
+  { key: 'gaterunner', label: 'Gate Runner' },
+];
+
+const bottomTabId = (key: BottomTabKey): string => `canon-bottom-tab-${key}`;
+const bottomPanelId = (key: BottomTabKey): string => `canon-bottom-panel-${key}`;
+
 function CanonContent(): React.ReactElement {
   const [layout] = useCanonLayout();
   const connection = useCanonConnection();
@@ -688,7 +715,7 @@ function CanonContent(): React.ReactElement {
   });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'search' | 'outline' | 'bookmarks' | 'snippets' | 'settings'>('explorer');
-  const [bottomTab, setBottomTab] = useState<'gates' | 'terminal' | 'problems'>('gates');
+  const [bottomTab, setBottomTab] = useState<BottomTabKey>('gates');
   const [cursorPos, setCursorPos] = useState<CursorPosition | null>(null);
   const [goToLineOpen, setGoToLineOpen] = useState(false);
   const [newFileOpen, setNewFileOpen] = useState(false);
@@ -1322,6 +1349,28 @@ function CanonContent(): React.ReactElement {
     if (!next) return;
     setWorkspaces((prev) => prev.map((ws, i) => (i === activeIndex ? { ...ws, name: next } : ws)));
   };
+
+  // ── Bottom panel tab keyboard navigation (WAI-ARIA tabs pattern) ──
+  // Left/Right move between tabs (with wrap-around); Home/End jump to the
+  // first/last tab. Selection follows focus (automatic activation), and the
+  // newly selected tab receives focus to keep the roving tabindex consistent.
+  const handleBottomTabKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      const keys = BOTTOM_TABS.map((t) => t.key);
+      const current = keys.indexOf(bottomTab);
+      let nextIndex: number | null = null;
+      if (e.key === 'ArrowRight') nextIndex = (current + 1) % keys.length;
+      else if (e.key === 'ArrowLeft') nextIndex = (current - 1 + keys.length) % keys.length;
+      else if (e.key === 'Home') nextIndex = 0;
+      else if (e.key === 'End') nextIndex = keys.length - 1;
+      if (nextIndex === null) return;
+      e.preventDefault();
+      const nextKey = keys[nextIndex];
+      setBottomTab(nextKey);
+      document.getElementById(bottomTabId(nextKey))?.focus();
+    },
+    [bottomTab],
+  );
 
   const runGovernedCommand = useCallback(() => {
     gateRunnerRef.current?.runGoverned();
@@ -2105,29 +2154,87 @@ function CanonContent(): React.ReactElement {
 
           {/* ── Tasks & Logs ─ Bottom panel ──────────────────────────── */}
           <div className='canon-ide__tasks' style={{ background: 'hsl(var(--tf-surface))' }}>
-            <div className='canon-ide__bottom-tabs'>
-              <button
-                className={`canon-ide__bottom-tab ${bottomTab === 'gates' ? 'canon-ide__bottom-tab--active' : ''}`}
-                onClick={() => setBottomTab('gates')}
-              >
-                Gates
-              </button>
-              <button
-                className={`canon-ide__bottom-tab ${bottomTab === 'terminal' ? 'canon-ide__bottom-tab--active' : ''}`}
-                onClick={() => setBottomTab('terminal')}
-              >
-                Terminal
-              </button>
-              <button
-                className={`canon-ide__bottom-tab ${bottomTab === 'problems' ? 'canon-ide__bottom-tab--active' : ''}`}
-                onClick={() => setBottomTab('problems')}
-              >
-                Problems
-              </button>
+            <div className='canon-ide__bottom-tabs' role='tablist' aria-label='Bottom panel'>
+              {BOTTOM_TABS.map((tab) => {
+                const selected = bottomTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type='button'
+                    role='tab'
+                    id={bottomTabId(tab.key)}
+                    aria-selected={selected}
+                    aria-controls={bottomPanelId(tab.key)}
+                    tabIndex={selected ? 0 : -1}
+                    className={`canon-ide__bottom-tab ${selected ? 'canon-ide__bottom-tab--active' : ''}`}
+                    onClick={() => setBottomTab(tab.key)}
+                    onKeyDown={handleBottomTabKeyDown}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-            {bottomTab === 'gates' && <GateRunnerPanel ref={gateRunnerRef} />}
-            {bottomTab === 'terminal' && <CanonTerminal />}
+            {bottomTab === 'gates' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('gates')}
+                aria-labelledby={bottomTabId('gates')}
+              >
+                <GateRunnerPanel ref={gateRunnerRef} />
+              </div>
+            )}
+            {bottomTab === 'runtime' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('runtime')}
+                aria-labelledby={bottomTabId('runtime')}
+              >
+                <CanonRuntimeStatusPanel />
+              </div>
+            )}
+            {bottomTab === 'terminal' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('terminal')}
+                aria-labelledby={bottomTabId('terminal')}
+              >
+                <CanonTerminal />
+              </div>
+            )}
+            {bottomTab === 'console' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('console')}
+                aria-labelledby={bottomTabId('console')}
+              >
+                <CanonTaskConsole />
+              </div>
+            )}
+            {bottomTab === 'evidence' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('evidence')}
+                aria-labelledby={bottomTabId('evidence')}
+              >
+                <CanonEvidenceViewer />
+              </div>
+            )}
+            {bottomTab === 'gaterunner' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('gaterunner')}
+                aria-labelledby={bottomTabId('gaterunner')}
+              >
+                <CanonGateRunnerPanel />
+              </div>
+            )}
             {bottomTab === 'problems' && (
+              <div
+                role='tabpanel'
+                id={bottomPanelId('problems')}
+                aria-labelledby={bottomTabId('problems')}
+              >
               <CanonProblemsPanel
                 onGoToFile={(filePath, line) => {
                   // Open the file and navigate to line
@@ -2160,6 +2267,7 @@ function CanonContent(): React.ReactElement {
                   }, 200);
                 }}
               />
+              </div>
             )}
           </div>
 

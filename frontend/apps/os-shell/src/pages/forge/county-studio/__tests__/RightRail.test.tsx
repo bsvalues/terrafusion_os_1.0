@@ -11,6 +11,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RightRail } from '../components/RightRail';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 
+const openMock = vi.fn();
+
 // Mock all child panel components so tab-switching tests remain isolated.
 vi.mock('../components/ObjectInspector', () => ({
   ObjectInspector: () => <div data-testid="mock-object-inspector" />,
@@ -44,6 +46,8 @@ function setDrillState({
 }
 
 beforeEach(() => {
+  vi.stubGlobal('open', openMock);
+  openMock.mockClear();
   act(() => {
     useCountyStudioStore.getState().setStudy({
       studyId: 'study-1',
@@ -75,16 +79,45 @@ beforeEach(() => {
         riskScore: 35,
         exceptionCount: 8,
         geographyRef: 'NBHD-K1',
+        revalArea: 2,
+        modelGroup: 'MG-12',
+        valueTier: 'Upper',
       },
     ]);
   });
   setDrillState();
 });
 
-describe('RightRail — tab switching', () => {
-  it('shows Inspector content by default', () => {
+describe('RightRail — Prometheus command actions', () => {
+  it('opens the diagnosis rail TerraAtlas action in a browser window with valuation context', () => {
+    setDrillState({ drillLevel: 'county', selectedSegmentId: null });
     render(<RightRail />);
-    expect(screen.getByTestId('mock-object-inspector')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open in TerraAtlas' }));
+
+    expect(openMock).toHaveBeenCalledWith(expect.stringContaining('/forge/atlas-live?'), '_blank', 'noopener,noreferrer');
+    const [url] = openMock.mock.calls[0];
+    const params = new URL(String(url), 'http://localhost').searchParams;
+    expect(params.get('countyId')).toBe('benton');
+    expect(params.get('taxYear')).toBe('2026');
+    expect(params.get('studyId')).toBe('study-1');
+    expect(params.get('source')).toBe('county-studio');
+    expect(params.get('selectedRiskObject')).toBe('seg-42');
+    expect(params.get('segmentId')).toBe('seg-42');
+    expect(params.get('neighborhoodCode')).toBe('NBHD-K1');
+    expect(params.get('revalArea')).toBe('2');
+    expect(params.get('modelGroup')).toBe('MG-12');
+    expect(params.get('valueTier')).toBe('Upper');
+    expect(params.has('city')).toBe(false);
+    expect(params.has('selectedCity')).toBe(false);
+  });
+});
+
+describe('RightRail — tab switching', () => {
+  it('shows the Prometheus diagnosis card by default', () => {
+    render(<RightRail />);
+    expect(screen.getByTestId('prometheus-decision-inspector')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-object-inspector')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-scenario-worksheet')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-scenario-compare-grid')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-adjustment-set-panel')).not.toBeInTheDocument();
@@ -113,7 +146,7 @@ describe('RightRail — tab switching', () => {
     render(<RightRail />);
     fireEvent.click(screen.getByText('Scenario'));
     fireEvent.click(screen.getByText('Inspector'));
-    expect(screen.getByTestId('mock-object-inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('prometheus-decision-inspector')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-scenario-worksheet')).not.toBeInTheDocument();
   });
 
@@ -135,25 +168,28 @@ describe('RightRail — tab switching', () => {
 });
 
 describe('RightRail — InspectorForScope routing', () => {
-  it('renders ObjectInspector at county drill with no segment selected', () => {
+  it('renders the Prometheus diagnosis card at county drill with no segment selected', () => {
     setDrillState({ drillLevel: 'county', selectedSegmentId: null });
     render(<RightRail />);
-    expect(screen.getByTestId('mock-object-inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('prometheus-decision-inspector')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-object-inspector')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-city-inspector')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-neighborhood-inspector')).not.toBeInTheDocument();
   });
 
-  it('renders CityInspector when drillLevel=city and no segment selected', () => {
+  it('keeps the Prometheus diagnosis card active when drillLevel=city and no segment selected', () => {
     setDrillState({ drillLevel: 'city', selectedSegmentId: null });
     render(<RightRail />);
-    expect(screen.getByTestId('mock-city-inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('prometheus-decision-inspector')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-city-inspector')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-object-inspector')).not.toBeInTheDocument();
   });
 
-  it('renders NeighborhoodInspector when drillLevel=neighborhood and no segment selected', () => {
+  it('keeps the Prometheus diagnosis card active when drillLevel=neighborhood and no segment selected', () => {
     setDrillState({ drillLevel: 'neighborhood', selectedSegmentId: null });
     render(<RightRail />);
-    expect(screen.getByTestId('mock-neighborhood-inspector')).toBeInTheDocument();
+    expect(screen.getByTestId('prometheus-decision-inspector')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-neighborhood-inspector')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-object-inspector')).not.toBeInTheDocument();
   });
 
@@ -162,7 +198,7 @@ describe('RightRail — InspectorForScope routing', () => {
     render(<RightRail />);
     expect(screen.getByTestId('mock-object-inspector')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-neighborhood-inspector')).not.toBeInTheDocument();
-    expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Neighborhood NBHD-K1 · R1 · STANDARD');
+    expect(screen.getByTestId('right-rail-scope-label')).toHaveTextContent('Neighborhood NBHD-K1 · Reval 2');
   });
 
   it('renders ObjectInspector when segment selected at city drillLevel', () => {

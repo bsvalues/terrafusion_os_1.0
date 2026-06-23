@@ -1,0 +1,110 @@
+{
+  "version": "0.1.0",
+  "effectiveDate": "2026-06-05",
+  "note": "Read-only Canon rule index (MVP). Rules are conformant to canon-rule.schema.json. Adapted from docs/TerraCanon reference package and aligned to the CURRENT repo (os-canon shell launch drift already resolved). Gate ids match gate-registry.json.",
+  "rules": [
+    {
+      "ruleId": "surface.os-canon.in-shell",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "constitutional",
+      "title": "os-canon must open inside the OS shell",
+      "description": "Canon is an OS Feature. It must open as an in-shell, near-full-stage OS feature window via activateModule; Dock and Top Bar stay visible. Full-page route navigation is product-architecture drift. (Already satisfied on origin/main; this rule guards against regression.)",
+      "source": "Launch / Surface Contract",
+      "appliesTo": {
+        "paths": ["frontend/apps/os-shell/src/**"],
+        "taskIntents": [
+          "shell-launch",
+          "os-canon",
+          "surface-contract",
+          "launch-drift"
+        ],
+        "surfaces": ["os-canon"]
+      },
+      "enforcement": {
+        "level": "block",
+        "requiredGates": ["typecheck", "launch-surface-contract"],
+        "requiresManualReview": true
+      }
+    },
+    {
+      "ruleId": "gate.launch-surface-contract.binding",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "os-platform",
+      "title": "Launch-surface contract test is the shell contract gate",
+      "description": "The repo-native launch-surface contract test is the authoritative implementation of the shell launch-surface gate for os-canon/os-pilot/os-trace. It is stronger than the package stub and must not be overwritten.",
+      "source": "os-platform/core/tests/launch-surface-contract.test.mjs",
+      "appliesTo": {
+        "paths": ["os-platform/core/tests/launch-surface-contract.test.mjs"],
+        "taskIntents": ["surface-contract", "shell-launch"],
+        "surfaces": ["os-canon", "os-pilot", "os-trace"]
+      },
+      "enforcement": {
+        "level": "inform",
+        "requiredGates": ["launch-surface-contract"],
+        "requiresManualReview": false
+      }
+    },
+    {
+      "ruleId": "surface.os-canon.module-ownership",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "os-platform",
+      "title": "os-canon UI lives under os-shell canon/module areas",
+      "description": "The existing frontend/apps/os-shell/src/canon area and the reserved modules/os-canon area are owned by os-canon. Package UI skeletons must reconcile with these, not overwrite them.",
+      "source": "Canon/IDE Repo Adaptation Plan",
+      "appliesTo": {
+        "paths": [
+          "frontend/apps/os-shell/src/canon/**",
+          "frontend/apps/os-shell/src/modules/os-canon/**"
+        ],
+        "taskIntents": ["os-canon", "canon-ui"],
+        "surfaces": ["os-canon"]
+      },
+      "enforcement": {
+        "level": "warn",
+        "requiredGates": ["typecheck", "canon-query"],
+        "requiresManualReview": false
+      }
+    },
+    {
+      "ruleId": "runtime.canon.read-only-mvp",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "os-platform",
+      "title": "Canon Runtime is OS-platform-owned",
+      "description": "The Canon Runtime query layer is read-only, deterministic, and OS-platform-owned. No agent execution, no command execution, no file editing from this layer.",
+      "source": "ADR-001 (Canon authority is OS/platform-owned)",
+      "appliesTo": {
+        "paths": ["os-platform/core/canon/**"],
+        "taskIntents": ["canon-runtime", "canon-query"],
+        "surfaces": []
+      },
+      "enforcement": {
+        "level": "require-approval",
+        "requiredGates": ["canon-query", "typecheck"],
+        "requiresManualReview": true
+      }
+    },
+    {
+      "ruleId": "reference.canon-docs.inert",
+      "version": "1.0.0",
+      "status": "active",
+      "authority": "advisory",
+      "title": "TerraCanon docs are inert reference",
+      "description": "docs/TerraCanon holds reference doctrine and the imported development package. It is documentation, not runtime; low risk, no gates.",
+      "source": "Canon/IDE Repo Adaptation Plan",
+      "appliesTo": {
+        "paths": ["docs/TerraCanon/**"],
+        "taskIntents": ["docs", "reference"],
+        "surfaces": []
+      },
+      "enforcement": {
+        "level": "inform",
+        "requiredGates": [],
+        "requiresManualReview": false
+      }
+    }
+  ]
+}

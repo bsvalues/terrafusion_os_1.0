@@ -9,21 +9,22 @@
 // rollup table components, not here).
 
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { LeftRail } from './components/LeftRail';
 import { SegmentTable } from './components/SegmentTable';
 import { NeighborhoodRollupTable } from './components/NeighborhoodRollupTable';
 import { DrillBreadcrumb } from './components/DrillBreadcrumb';
 import { RightRail } from './components/RightRail';
-import { BottomDeck } from './components/BottomDeck';
 import { CohortCreationDialog } from './components/CohortCreationDialog';
 import { OpenStudyDialog } from './components/OpenStudyDialog';
 import { LoadErrorBanner } from './components/LoadErrorBanner';
-import { CountyHealthPanel } from './components/CountyHealthPanel';
 import { CountyCommandStrip } from './components/CountyCommandStrip';
 import { CountyStatisticsWorkbenchPanel } from './components/CountyStatisticsWorkbenchPanel';
 import { RiskSurfaceCommandCenter } from './components/RiskSurfaceCommandCenter';
+import {
+  COUNTY_STUDIO_ATLAS_ACTIVE_LAYERS,
+  type CountyStudioAtlasViewport,
+} from './components/EmbeddedAtlasGisWorkspace';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto, SegmentSeverityFilter } from './types/countyStudio.types';
@@ -81,7 +82,7 @@ export function CountyStudyPage() {
   } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('operational-health');
-  const navigate = useNavigate();
+  const [atlasViewport, setAtlasViewport] = useState<CountyStudioAtlasViewport | null>(null);
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
   const { retryAll } = useStudyData();
@@ -107,7 +108,14 @@ export function CountyStudyPage() {
     if (selectedSegmentId) {
       params.set('segmentId', selectedSegmentId);
     }
-    navigate(`/forge/atlas-live?${params.toString()}`);
+    params.set('source', 'county-studio');
+    params.set('activeLayers', COUNTY_STUDIO_ATLAS_ACTIVE_LAYERS.join(','));
+    params.set('selectedRiskObject', selectedSegmentId ?? selectedNeighborhood ?? 'county');
+    if (atlasViewport) {
+      params.set('mapBounds', atlasViewport.bbox.join(','));
+      params.set('mapZoom', String(atlasViewport.zoom));
+    }
+    window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   // Compose segment filter: severity pill AND selectedNeighborhood (when at the
@@ -126,7 +134,14 @@ export function CountyStudyPage() {
   }, [segmentSeverityFilter, drillLevel, selectedNeighborhood, selectedNeighborhoodRevalArea]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - var(--tf-county-studio-dock-safe-area, 170px))',
+        minHeight: 0,
+      }}
+    >
       {/* Top Bar */}
       <div style={{
         height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -186,12 +201,13 @@ export function CountyStudyPage() {
                 fontWeight: 600,
               }}
             >
-              Statistics Compat
+              Study Evidence
             </button>
           </div>
           {activeStudy && (
             <button
-              aria-label="Pop Out Map"
+              aria-label="Open in TerraAtlas"
+              data-testid="county-studio-open-terraatlas"
               onClick={handleOpenAtlas}
               style={{
                 padding: '4px 10px', borderRadius: 4, border: '1px solid hsl(var(--tf-border))',
@@ -199,7 +215,7 @@ export function CountyStudyPage() {
                 cursor: 'pointer', fontWeight: 600,
               }}
             >
-              ↗ Pop Out Map
+              Open in TerraAtlas
             </button>
           )}
           <button
@@ -234,7 +250,16 @@ export function CountyStudyPage() {
         </div>
       ) : (
         /* Body Grid — 3 columns */
-        <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '210px 1fr 360px',
+            flex: 1,
+            minHeight: 0,
+            paddingBottom: 0,
+            boxSizing: 'border-box',
+          }}
+        >
           <div data-testid="cs-left-rail" style={{ borderRight: '1px solid hsl(var(--tf-border, 220 13% 20%))', overflowY: 'auto' }}>
             <LeftRail />
           </div>
@@ -251,22 +276,7 @@ export function CountyStudyPage() {
             >
               {drillLevel === 'county' && (
                 <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                  <CountyHealthPanel />
-                  <div
-                    data-testid="county-operational-scope-note"
-                    style={{
-                      padding: '8px 12px',
-                      borderBottom: '1px solid hsl(var(--tf-border))',
-                      background: 'hsl(var(--tf-bg))',
-                      fontSize: 11,
-                      color: 'hsl(var(--tf-muted))',
-                    }}
-                  >
-                    County Studio opens by how valuation decisions are made and defended: reval cycles, neighborhoods, model groups, districts, value tiers, and parcel evidence.
-                  </div>
-                  <div style={{ flex: 1, minHeight: 0 }}>
-                    <RiskSurfaceCommandCenter />
-                  </div>
+                  <RiskSurfaceCommandCenter onAtlasViewportChange={setAtlasViewport} />
                 </div>
               )}
               {drillLevel === 'city'   && <NeighborhoodRollupTable />}
@@ -305,9 +315,6 @@ export function CountyStudyPage() {
                   </div>
                 </>
               )}
-            </div>
-            <div style={{ height: 200, borderTop: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0 }}>
-              <BottomDeck />
             </div>
           </div>
 

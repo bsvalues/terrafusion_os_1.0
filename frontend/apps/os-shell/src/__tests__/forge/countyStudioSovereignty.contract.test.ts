@@ -65,7 +65,7 @@ describe('County Studio sovereignty contract', () => {
     expect(page).toContain('new URLSearchParams');
     expect(page).toContain('studyId: activeStudy.studyId');
     expect(page).toContain('countyId: activeStudy.countyId');
-    expect(page).toContain('navigate(`/forge/atlas-live?${params.toString()}`)');
+    expect(page).toContain("window.open(`/forge/atlas-live?${params.toString()}`, '_blank', 'noopener,noreferrer')");
     expect(inspector).toContain("activateModule('property-workbench'");
     expect(inspector).toContain('metadata: {');
     expect(inspector).toContain('segmentId: seg.segmentId');

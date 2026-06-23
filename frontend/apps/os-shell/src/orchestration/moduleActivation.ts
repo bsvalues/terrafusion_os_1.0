@@ -122,6 +122,7 @@ function getModuleDisplayName(moduleId: string): string {
     'os-pilot': 'TerraPilot',
     'os-trace': 'TerraTrace',
     'os-canon': 'TerraCanon',
+    'os-localops': 'TerraFusion LocalOps',
     // Application Constellation (Gen2 catalog)
     'income-valuation': 'Income Valuation',
     'income-forge': 'IncomeForge',
@@ -202,6 +203,7 @@ function getModuleIcon(moduleId: string): string {
     'os-pilot': '🧭',
     'os-trace': '📡',
     'os-canon': '⚙️',
+    'os-localops': '🛟',
     // Application Constellation (Gen2 catalog)
     'income-valuation': '💰',
     'income-forge': '💰',
@@ -244,6 +246,27 @@ function getModuleIcon(moduleId: string): string {
   return icons[moduleId] ?? '📦';
 }
 
+function normalizeWorkbenchMetadata(
+  moduleId: string,
+  metadata: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined {
+  if (moduleId !== 'property-workbench' || !metadata) return metadata;
+
+  const explicitTabId = metadata.tabId;
+  const legacyTab = metadata.tab;
+  const routedTab = metadata._routedTab;
+  const tabId =
+    typeof explicitTabId === 'string' && explicitTabId.trim().length > 0
+      ? explicitTabId
+      : typeof legacyTab === 'string' && legacyTab.trim().length > 0
+        ? legacyTab
+        : typeof routedTab === 'string' && routedTab.trim().length > 0
+          ? routedTab
+          : undefined;
+
+  return tabId ? { ...metadata, tabId } : metadata;
+}
+
 // ============================================================================
 // Main Orchestrator
 // ============================================================================
@@ -278,12 +301,13 @@ export async function activateModule(
   moduleId: string,
   options: ActivateModuleOptions
 ): Promise<void> {
-  const { source, focusIfOpen = true, warmLoad = true, showNotification = true, metadata } = options;
+  const { source, focusIfOpen = true, warmLoad = true, showNotification = true } = options;
 
   // -------------------------------------------------------------------------
   // Step 1: Normalize alias → canonical ID
   // -------------------------------------------------------------------------
   const canonicalId = normalizeModuleId(moduleId);
+  const metadata = normalizeWorkbenchMetadata(canonicalId, options.metadata);
 
   // -------------------------------------------------------------------------
   // Step 2: Check if module is registered

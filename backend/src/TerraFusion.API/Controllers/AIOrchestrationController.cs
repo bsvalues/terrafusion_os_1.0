@@ -429,10 +429,10 @@ public class AIOrchestrationController : ControllerBase
     /// <param name="protocol">Emergency protocol to execute</param>
     /// <returns>Emergency protocol execution results</returns>
     [HttpPost("emergency/{protocol}")]
-    [ProducesResponseType(typeof(EmergencyProtocolDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmergencyProtocolExecutionResultDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<EmergencyProtocolDto>> ExecuteEmergencyProtocol(
+    public async Task<ActionResult<EmergencyProtocolExecutionResultDto>> ExecuteEmergencyProtocol(
         [FromRoute][Required] string protocol)
     {
         _logger.LogWarning("🚨 API: Executing emergency protocol: {Protocol}", protocol);
@@ -464,7 +464,9 @@ public class AIOrchestrationController : ControllerBase
                     await Task.Delay(500); // Simulate failsafe execution
                     success = true;
                     message = "System failsafe executed successfully";
-                    affectedAgents = 1008;
+                    // Honesty (WO-AI-CONSOLIDATION-004c-a): no real agent fleet to affect;
+                    // do not emit a fabricated 1008 count.
+                    affectedAgents = 0;
                     break;
 
                 case "restart-all":
@@ -494,7 +496,7 @@ public class AIOrchestrationController : ControllerBase
 
             var executionTime = DateTime.UtcNow - executionStart;
 
-            return Ok(new
+            return Ok(new EmergencyProtocolExecutionResultDto
             {
                 Protocol = protocol.ToUpperInvariant(),
                 Success = success,

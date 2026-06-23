@@ -13,6 +13,15 @@ import type {
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
+function getStatisticsApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    return '/api/MassAppraisal';
+  }
+
+  const normalizedBase = API_BASE_URL.replace(/\/$/, '');
+  return `${normalizedBase}/api/MassAppraisal`;
+}
+
 export const statisticsApiContractMetadata = {
   contractId: 'terraforge_statistics_compat_v1',
   implementationContractId: 'statistics_ratio_study_compat_v1',
@@ -52,7 +61,7 @@ class StatisticsAPIService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: `${API_BASE_URL}/api/MassAppraisal`,
+      baseURL: getStatisticsApiBaseUrl(),
       headers: { 'Content-Type': 'application/json' },
     });
 

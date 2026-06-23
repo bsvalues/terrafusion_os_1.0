@@ -8,7 +8,7 @@
  * Extracted from PropertyForge.tsx monolith.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { getSession } from '../../../../auth/session';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
@@ -16,13 +16,14 @@ import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { ComparableSalesPanel } from '../../../../components/workbench/ComparableSalesPanel';
+import { usePropertyStore } from '../../../../stores/propertyStore';
 import {
   useSalesComparison as useSalesComparisonAPI,
   usePatchSaleQualification,
   useRecomputeRecommendations,
   type QualificationDecisionValue,
 } from '../../../../hooks/forge/useForgeValuation';
-import { getPilotCountyScopeToken } from '../../../../services/comparableSalesService';
+import { getPilotCountyScopeToken, type ComparableSale } from '../../../../services/comparableSalesService';
 import {
   type ForgeSubTabProps,
   type SalesCompsResult,
@@ -37,12 +38,41 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   onValueIndicated,
 }) => {
   const { parcelId } = useWorkbenchTab();
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
   const countyScope = getPilotCountyScopeToken(getSession()?.countyId ?? null);
+  const hasActiveParcelEvidence = activeParcel?.parcelId === parcelId;
 
   /* ── Live API data ──────────────────────────────────────── */
   const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
   const patchQualification = usePatchSaleQualification(parcelId, taxYear);
   const recompute = useRecomputeRecommendations(parcelId, taxYear);
+  const reviewDeskSales = useMemo<ComparableSale[]>(
+    () =>
+      (salesAPI.data?.comparables ?? []).map((sale) => ({
+        parcelId: sale.parcelId,
+        saleDate: sale.saleDate ?? '',
+        salePrice: sale.salePrice,
+        propertyType: activeParcel?.propertyType ?? 'unknown',
+        address: `Comparable sale ${sale.parcelId}`,
+        countyCode: activeParcel?.countyCode ?? null,
+        countyName: null,
+        city: null,
+        neighborhoodCode: null,
+        currentNeighborhoodCode: null,
+        grossLivingArea: null,
+        lotSizeSqft: null,
+        yearBuilt: null,
+        bedrooms: null,
+        bathrooms: null,
+        condition: null,
+        qualityGrade: null,
+        saleQualification:
+          sale.effectiveQualification === 'qualified'
+            ? 'qualified'
+            : sale.effectiveQualification,
+      })),
+    [activeParcel?.countyCode, activeParcel?.propertyType, salesAPI.data?.comparables],
+  );
 
   // Track which comp row has its override panel open
   const [openOverride, setOpenOverride] = useState<string | null>(null);
@@ -75,6 +105,20 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   const handleSalesComps = useCallback(async () => {
     const ids = compIds.split(',').map((s) => s.trim()).filter(Boolean);
     if (ids.length === 0) return;
+    if (!hasActiveParcelEvidence) {
+      const correlationId = `evidence-${crypto.randomUUID().slice(0, 8)}`;
+      setCompsState({
+        status: 'error',
+        correlationId,
+        error: {
+          code: 'PARCEL_EVIDENCE_REQUIRED',
+          message: 'Rationale blocked until the active parcel evidence record loads.',
+          severity: 'error',
+          correlationId,
+        },
+      });
+      return;
+    }
     if (!countyScope) {
       const correlationId = `scope-${crypto.randomUUID().slice(0, 8)}`;
       setCompsState({
@@ -134,7 +178,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         },
       });
     }
-  }, [countyScope, parcelId, compIds, onHistoryRecord]);
+  }, [countyScope, parcelId, compIds, onHistoryRecord, hasActiveParcelEvidence]);
 
   /* ── Render ───────────────────────────────────────────── */
 
@@ -148,7 +192,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled={recompute.isPending}
+              disabled={recompute.isPending || !hasActiveParcelEvidence}
               onClick={() => recompute.mutate()}
               className="text-xs px-2 py-1 rounded transition-all disabled:opacity-50"
               style={{
@@ -446,8 +490,12 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         )}
       </BentoCard>
 
-      {/* Full ComparableSalesPanel — existing 612-line component, no changes */}
+      {/* CompsForge Review Desk — hosted inside Property Workbench Forge Sales */}
       <ComparableSalesPanel
+        providedSales={reviewDeskSales}
+        providedSalesLoading={salesAPI.loading}
+        providedSalesError={salesAPI.error?.message ?? null}
+        providedSalesSource={salesAPI.data?.source ?? 'Live Forge sales endpoint'}
         onReconciledValue={(result) => {
           if (onValueIndicated && typeof result.weightedAverage === 'number') {
             onValueIndicated('sales', result.weightedAverage);
@@ -473,6 +521,18 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           </div>
         )}
 
+        {!hasActiveParcelEvidence && (
+          <div
+            className="mb-4 px-3 py-2 rounded text-xs"
+            style={{
+              background: 'hsl(var(--tf-warning) / 0.10)',
+              color: 'hsl(var(--tf-warning))',
+            }}
+          >
+            Rationale blocked until the active parcel evidence record loads.
+          </div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="comp-ids" className="block tf-text-secondary text-sm mb-2">
             Comp Parcel IDs (comma-separated)
@@ -489,7 +549,12 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
 
         <button
           onClick={handleSalesComps}
-          disabled={compsState.status === 'loading' || !compIds.trim() || !countyScope}
+          disabled={
+            compsState.status === 'loading' ||
+            !compIds.trim() ||
+            !countyScope ||
+            !hasActiveParcelEvidence
+          }
           className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4"
         >
           {compsState.status === 'loading' ? 'Analyzing...' : 'Analyze Comps'}

@@ -48,7 +48,10 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
 {
     private readonly ICodex369FrameworkService _codexService;
     private readonly ILogger<Codex369AgentIntegrationService> _logger;
-    private const int TOTAL_AGENTS = 1008;
+    // Honesty (WO-AI-CONSOLIDATION-004c-b1): no governed AI agent swarm runs.
+    // static readonly (not const) so the zero divisor below is a runtime guard,
+    // not a CS0020 "division by constant zero" compile error.
+    private static readonly int TOTAL_AGENTS = 0;
     private const int TOTAL_COUNTIES = 39;
 
     public Codex369AgentIntegrationService(
@@ -91,8 +94,11 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
             });
         }
 
-        // Calculate swarm statistics
-        var avgHealth = agentMetrics.Average(a => a.HealthScore);
+        // Calculate swarm statistics.
+        // Empty-guard: with no swarm running (TOTAL_AGENTS = 0) the list is empty;
+        // Average() throws on an empty sequence, so the truthful "no swarm" state
+        // must report 0 health, not crash the health check.
+        var avgHealth = agentMetrics.Count > 0 ? agentMetrics.Average(a => a.HealthScore) : 0;
         var agentsInDivineBalance = agentMetrics.Count(a => a.InDivineBalance);
         var agentsNeedingAttention = agentMetrics.Count(a => a.HealthScore < 10.0);
 
@@ -147,7 +153,8 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
             ThroughputOpsPerSec = throughput,
             TasksCompleted = tasksCompleted,
             SuccessRate = successRate,
-            ContributionToUltimatePower = healthScore / TOTAL_AGENTS, // Individual contribution
+            // Zero-guard: TOTAL_AGENTS is 0 (no swarm) — avoid divide-by-zero / Infinity.
+            ContributionToUltimatePower = TOTAL_AGENTS > 0 ? healthScore / TOTAL_AGENTS : 0,
             IsOptimal = healthScore >= 11.5,
             RecommendedActions = GenerateAgentRecommendations(healthScore, responseTime, throughput),
             Timestamp = DateTime.UtcNow
@@ -252,7 +259,7 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
 
         var random = new Random();
 
-        // Calculate ideal distribution (1008 agents / 39 counties ≈ 26 agents per county)
+        // Calculate ideal distribution (TOTAL_AGENTS / TOTAL_COUNTIES); TOTAL_AGENTS is 0 (no swarm).
         var idealAgentsPerCounty = TOTAL_AGENTS / TOTAL_COUNTIES;
 
         var countyDistributions = new List<CountyAgentDistribution>();
@@ -260,7 +267,10 @@ public class Codex369AgentIntegrationService : ICodex369AgentIntegrationService
         for (int i = 1; i <= TOTAL_COUNTIES; i++)
         {
             var countyId = $"county-{i:D2}";
-            var currentAgents = random.Next(20, 35); // Simulate current distribution
+            // Honesty: with no swarm running (TOTAL_AGENTS = 0) there are no agents to
+            // distribute — report 0 current agents so the deficit is 0 and we never
+            // emit a fabricated "remove N agents" recommendation for a swarm that isn't there.
+            var currentAgents = TOTAL_AGENTS > 0 ? random.Next(20, 35) : 0;
             var deficit = idealAgentsPerCounty - currentAgents;
 
             var countyStatus = await _codexService.GetRealtimeFrameworkStatusAsync(countyId);
