@@ -244,9 +244,18 @@ function ReviewDeskTab() {
     []
   );
 
-  const updateSelectedCase = (selectedCaseId: string) => {
-    setWorkflowState((current) => ({ ...current, selectedCaseId }));
-  };
+const updateSelectedCase = (selectedCaseId: string) => {
+  setWorkflowState((current) =>
+    current.selectedCaseId === selectedCaseId
+      ? current
+      : {
+          ...current,
+          selectedCaseId,
+          decision: DEFAULT_WORKFLOW_STATE.decision,
+          reasonCode: DEFAULT_WORKFLOW_STATE.reasonCode,
+        }
+  );
+};
 
   const updateDecision = (decision: ReviewerDecision) => {
     setWorkflowState((current) => ({ ...current, decision }));
