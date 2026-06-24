@@ -359,3 +359,18 @@
 | **verdict** | **No clean Sync-domain first-release candidate exists among these heads.** Sync ingress already landed in main via recut + 150-commit evolution. Content-presence beat branch status again (same pattern as v2 batch-landed check). |
 | **lock status** | FULL ACTIVE — read-only entry-check only; no code, no merge, no cherry-pick, no release (HR-9). |
 | **decision (for owner)** | (1) Close the Sync legacy-port lane as *superseded-by-main*; (2) reclassify the codex bridge → Forge/Pilot in `TIER1-PORT-PLAN.md`; (3) advance the real critical path to **Dais/Levy** — run the same entry-check on the `r2/*` Levy heads (characterize the suspected ~42 floor first), where the ratified Option-C SoR value genuinely is not-yet-landed. |
+
+## Loop 20 — Sync recs ratified + Dais/Levy entry-check → also SUPERSEDED (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L20 |
+| **trigger** | Owner: ratify all 3 Sync recommendations; then run the read-only Dais/Levy entry-check (Option-C-aware) |
+| **ratified (Sync)** | (1) **Sync legacy-port lane CLOSED** as superseded-by-main; (2) `codex/sync-db-evidence-runtime-path` **reclassified Sync→Forge/Pilot**; (3) critical path advanced to Dais/Levy. Recorded in `TIER1-PORT-PLAN.md` §1 banner + headers. |
+| **evidence** | `DAIS-LEVY-ENTRY-CHECK.md` + `git diff/show` on 5 Levy/Dais heads vs `origin/main` @ `2ae013561` |
+| **smoking gun** | main's `LevyDbContext.cs` header: *"previously named LevyDbContextStub.cs … **de-stubbed 2026-04-18** … real, migrated, DI-registered."* The `r2/*` heads still carry the **old `LevyDbContextStub.cs`** → branches are the older ancestors. |
+| **finding** | **All 5 Levy/Dais heads SUPERSEDED.** Main ahead: Levy module **+4,371 lines** (real migrations), dais/permits **+106,173 lines** (437 files). Branch-only Levy residual (226 lines) = old stub + stale migration-snapshot fragments. Floor (104 ADDED) = 90 test + old stub + CostForge "Ultimate" theater (CUT) + 3 `.tar.gz` binary residue → **0 genuine new source**. |
+| **Option-C check** | **Clean** — Core-levy branch-only = **0** (no re-arming of Core authority); but **no SoR value** to gain either. `LevyDbContextStub.cs` added to a **port-fence** (porting would re-stub the SoR). |
+| **cross-domain pattern** | **TWICE confirmed** (Sync + Dais/Levy, plus N1 + v2 batch): main already holds the evolved Tier-1 work; branch sprawl is recut *ancestry*, not pending value. Tier-1 recovery is collapsing toward "**main is the spine → topology-split / Migrate**", not "port from branches." |
+| **lock status** | FULL ACTIVE — read-only; no code, no merge, no cherry-pick, no release (HR-9). |
+| **decision (for owner)** | (1) Close the Dais/Levy legacy-port lane as superseded; (2) fence `LevyDbContextStub.cs`; (3) run the **Forge entry-check** (last Tier-1 domain) — if the pattern holds a third time, Tier-1 recovery collapses into Migrate (topology split on main), with branch salvage reserved for narrow proven fragments only. |

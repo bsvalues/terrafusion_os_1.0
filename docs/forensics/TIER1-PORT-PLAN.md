@@ -5,6 +5,17 @@ suite). Decision-only: no code, no merge, no cherry-pick, no repo creation, no `
 Every port = a future narrow, individually-ratified lock release (HR-9), with its own entry
 checks. Recovery lock ACTIVE.*
 
+> ## ⚠️ ENTRY-CHECK UPDATE (2026-06-24) — Sync & Dais/Levy lanes resolved to SUPERSEDED
+> Read-only entry-checks have now run on the first two domains and **both came back
+> superseded-by-main** under content-presence:
+> - **Sync** (`SYNC-ENTRY-CHECK.md`, RATIFIED): legacy heads superseded; **lane CLOSED**.
+>   `codex/sync-db-evidence-runtime-path` **reclassified Sync → Forge/Pilot** (zero backend sync).
+> - **Dais/Levy** (`DAIS-LEVY-ENTRY-CHECK.md`): `r2/*` heads superseded; main holds the real
+>   de-stubbed Levy SoR (+4,371) + dais/permits (+106,173). Branch residual = old
+>   `LevyDbContextStub.cs` (FENCE — never port) + CostForge theater (CUT) + binary residue.
+> The §1/§2 plans below are **retained for the record but marked SUPERSEDED**. Only **§3 Forge**
+> remains to entry-check. Lock remains ACTIVE.
+
 ## Cross-cutting entry check (applies to all three) — MUST run before any port
 - **Characterize the `r2`-family shared floor.** Levy/Forge r2/* heads uniformly show
   `true-residual ≈ 42` — almost certainly a shared deletion-residue floor (like the 9-file
@@ -15,7 +26,7 @@ checks. Recovery lock ACTIVE.*
 
 ---
 
-## 1. Sync → `TerraFusion-Sync`
+## 1. Sync → `TerraFusion-Sync`  — **SUPERSEDED / LANE CLOSED** (`SYNC-ENTRY-CHECK.md`, ratified 2026-06-24)
 | Field | Value |
 |---|---|
 | **Target repo** | TerraFusion-Sync (platform ingress, upstream of all) |
@@ -31,7 +42,7 @@ checks. Recovery lock ACTIVE.*
 
 ---
 
-## 2. Dais / Levy → `TerraFusion-Dais` (built on ratified Option C)
+## 2. Dais / Levy → `TerraFusion-Dais` (built on ratified Option C)  — **SUPERSEDED** (`DAIS-LEVY-ENTRY-CHECK.md`, 2026-06-24)
 | Field | Value |
 |---|---|
 | **Target repo** | TerraFusion-Dais |
