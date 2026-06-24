@@ -114,4 +114,19 @@
 | **confidence change** | CI-distortion concern now precisely bounded; persistence truth complete. No new disorder category (3rd consecutive loop with none). |
 | **decision** | Residuals closed. Recovery lock stays ACTIVE pending owner's release decision. Forensic phase is effectively saturated. |
 
-## Loop 6 — (only if owner releases recovery lock → R-lanes)
+## Loop 6 — F17 AI Reality Audit + R11 decision lane (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L6 |
+| **trigger** | Playbook added F17 (AI Reality Audit) + explicit R11 (decision lane) |
+| **/goal** | Reality-classify every AI surface; stand up the R11 branch-disposition decision register |
+| **method** | F17 Explore agent (claim-vs-runtime, REAL/LATENT/MOCKED/FICTION) + census-driven R11 inputs (owner-sensitive 87, AI-touched 132, overlap families, mergeability) |
+| **evidence** | `F17-AI-REALITY-AUDIT.md`, `R11-BRANCH-DISPOSITION.md` |
+| **F17 result** | AI estate **mostly MOCKED/FICTION** (~20 of ~28); thin **REAL** (AICommand/AIEngine/AzureOpenAI) + **LATENT** (Muse/Pilot/GPT) spine. "1,008"/"50,000" agent constants now only in QUARANTINE artifacts, not live code. Several FICTION UI surfaces **honestly disclose** non-function (good faith). |
+| **R11 result** | Decision register at class/family level: CONTAINED 8→ignore, MERGE-CANDIDATE 80→needle pool, PORT-ONLY 653→archaeology. Fences encoded; fence #3 (AI) resolved by F17. Outputs: disposition register, owner-sensitive list (87), AI-dependency list (132 resolved), overlap groups (5), archaeology-only list (653). **Needle list DEFERRED** (Gate C full + lock release). |
+| **lock status** | R11 is decide-not-execute → produced under lock (documentation only). R12–R14 execution remains gated. |
+| **confidence change** | AI ambiguity → classified; branch-disposition framework now populated and fenced. No new disorder category (4th consecutive loop). |
+| **decision** | Hold recovery lock. Final needles + R12 salvage await Gate C FULL + explicit owner lock-release. |
+
+## Loop 7 — (only if owner releases recovery lock → R12 salvage execution)

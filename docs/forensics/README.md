@@ -82,6 +82,8 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 |---|---|
 | **Loop 4 Verification** | `LOOP4-VERIFICATION.md` |
 | **Loop 5 Verification** | `LOOP5-VERIFICATION.md` |
+| **F17 — AI Reality Audit** | `F17-AI-REALITY-AUDIT.md` |
+| **R11 — Branch Disposition (decision lane)** | `R11-BRANCH-DISPOSITION.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
