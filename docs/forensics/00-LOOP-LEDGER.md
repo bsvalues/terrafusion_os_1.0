@@ -64,4 +64,25 @@
 4. Full closed-unmerged PR landing checks (Lane 3).
 5. Owner rulings: native-shell intent; recovery-spine stewardship (F16); secret rotation (F15).
 
-## Loop 3 — (not yet run)
+## Loop 3 — Cross-lane contradiction synthesis (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L3 |
+| **trigger** | Owner direction: not broad auditing, not recovery — a cross-lane synthesis + consolidation |
+| **/goal** | Join lanes to expose coupled contradictions; consolidate into a Red Flag Register; promote findings to hard rules |
+| **method** | Synthesis over Loop 1+2 evidence + targeted runtime grounding (`AddDbContext` grep in `TerraFusion.API/Program.cs`) |
+| **evidence captured** | `RED-FLAG-REGISTER.md` (6 buckets, severity-ranked), `CROSS-LANE-SYNTHESIS.md` (XJ-1…XJ-6), `DOCTRINE-HARD-RULES.md` (HR-1…HR-5), F15 two-truths split |
+| **grounded new sub-findings** | Live API co-registers `TerraFusionDbContext` + `LevyDbContext` + a separately-named `TerraFusionContext` → dual `LevyCertification` is **co-loaded at runtime** (not archival); `AddDbContext<TerraFusionDbContext>` registered ~20+ times (registration sprawl); `TerraFusionContext` vs `TerraFusionDbContext` name ambiguity flagged |
+| **primary hidden-system generators (elevated)** | (1) schema/persistence fracture, (2) false authority/false completion, (3) config topology fracture — with CI signal distortion amplifying branch/PR mis-judgement; ghost workspace authority sustained by ownership vacuum |
+| **cleared** | Dependency truth (F12) — confirmed not a generator |
+| **confidence change** | diagnosis precision ↑ sharply (coupled failures, not 6 independent); F14↔runtime now grounded high |
+| **decision** | Stay in discovery/synthesis posture. Recovery lanes remain gated. Loop 4 = verification + quantification (below). |
+
+### Carried-forward questions (Loop 4)
+1. Is `TerraFusionContext` an alias of `TerraFusionDbContext` or a real second core context? (escalate if real)
+2. Does the dual `LevyCertification` DbSet fault at runtime / map to the same physical table?
+3. Quantify XJ-5: how many branches/PRs were CI-misjudged (replay `cancelled` vs `failure`)?
+4. Lane 2 commit heatmap; Lane 3 PR-landing + CI-signal reclassification (Hard Rule 5).
+
+## Loop 4 — (not yet run)

@@ -11,6 +11,13 @@ Goal: map runtime-control truth; find fracture and dangerous assumptions.
 > exposure is **MITIGATED**. Residual items are *config hygiene* (below), not an active
 > secret leak — downgraded from CRITICAL to MEDIUM.
 
+### F15 has two truths (do not let one erase the other)
+- **Historical exposure truth:** a committed JWT signing key + plaintext DB password
+  **did exist** in the repo (and remain in git history). This forensic fact stands.
+- **Current operational truth:** those credentials are **rotated** → no live exposure.
+- **Still open (topology, not credentials):** rotation changes posture, not config topology.
+  F15 is **not closed** until config is singular and runtime contracts validated (Hard Rule 3).
+
 ## 🟡 Findings (was 🔴; secrets rotated — residual = hygiene)
 
 | # | Finding | Location | Type | Status |

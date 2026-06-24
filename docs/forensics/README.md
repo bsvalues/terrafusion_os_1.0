@@ -63,6 +63,19 @@ recut-PR culture, and the 38-of-40 closed-unmerged PR pattern. See
 DB lineages, committed secrets, ownership vacuum) appeared, so Gate A's provisional pass is
 withdrawn. See `00-LOOP-LEDGER.md` (Loop 2) and `GATES-STATUS.md`.
 
+### Loop 3 — synthesis & consolidation (read these next)
+
+| Deliverable | File | What it is |
+|---|---|---|
+| **Red Flag Register** | `RED-FLAG-REGISTER.md` | the 6 hidden-system generators, severity-ranked — **start here** |
+| **Cross-Lane Synthesis** | `CROSS-LANE-SYNTHESIS.md` | XJ-1…XJ-6 contradiction joins across lanes |
+| **Hard Rules** | `DOCTRINE-HARD-RULES.md` | HR-1…HR-5 binding rules (+ two-truths principle) |
+
+**Loop 3 outcome:** the six lanes collapse into a smaller set of **coupled** failures —
+ghost authority (unowned), schema/config fracture (live in the spine), and false-completion
+narrative — with CI signal distortion making branch/PR truth unreliable. Dependency truth is
+cleared. Recovery still gated; Loop 4 = verification + quantification.
+
 Raw evidence (git output) is under `evidence/`.
 
 ## How to read this
