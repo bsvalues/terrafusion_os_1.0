@@ -472,4 +472,59 @@ The old monorepo blurred boundaries; a cleaner topology must not pull the blur f
 
 ---
 
-*Produced under WO-FECF-001 in discovery mode (FECF v1.2: Classification Before Evaluation + Recovery-to-Repo Topology). No files were deleted, moved, renamed, merged, consolidated, archived, migrated, or rewritten. No surface was promoted, demoted, salvaged, or migrated. Target homes are candidate classifications, not decisions. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
+## Appendix C — FECF v1.3: Topology Confidence Ladder & Hypothesis Register
+
+Appendix B assigns candidate future homes. Left there, a "future home" column can quietly harden into a migration plan — the reader stops seeing *guess* and starts seeing *destination*. Appendix C prevents that by (1) giving target-home assignments their **own** confidence ladder, distinct from the body's "is-it-real" labels, and (2) recasting the placements as a **Topology Hypothesis Register** (evidence-for / evidence-against / blocking-unknowns), not a move list.
+
+**Why a separate ladder:** the body's confidence labels answer *"is this asset real / live / authoritative?"*. A future-home label answers a different question — *"how sure are we this belongs in repo X?"* — and must not borrow the body's certainty. An asset can be **Proven-real** yet **Suspected-placement**.
+
+### C0 — The three recovery phases (explicit)
+
+Most efforts jump A→C and silently convert discovery into implementation. FECF separates them:
+
+| Phase | Question | In scope here? |
+|---|---|---|
+| **A — Forensic Recovery** | What survives? What is worth preserving? What *kind* of thing is it? | ✅ (FECF body + App. A) |
+| **B — Architectural Recovery** | *If* preserved, where should it live? | ✅ **classification only** (App. B + C) — no moves |
+| **C — Physical Recovery** | What actually gets moved, when, how? | ❌ separate WO |
+
+The full maturity order: **classify → liveness → authority → quality → target home → disposition.** Target home is meaningful only *after* the first four — quality alone is not enough (a high-quality, non-live, non-authoritative surface can still be a fossil; a messy, high-authority, runtime-critical one can be core).
+
+### C1 — Topology Confidence Ladder
+
+Confidence semantics for **future-home assignment specifically** (not asset reality):
+
+| Label | Meaning (for placement) |
+|---|---|
+| **Proven** | The asset *already* lives in something that maps directly to that home (or is demonstrably external). |
+| **Corroborated** | Multiple independent signals agree (domain project + package + phase4 wave + brain pack). |
+| **Inferred** | Strong architectural evidence, but no direct ownership link yet. |
+| **Suspected** | Naming/topology hints only. |
+| **Unknown** | Insufficient evidence; record as undecided. |
+
+### C2 — Topology Hypothesis Register
+
+*This is architecture archaeology, not a move list.* Each row is a hypothesis to be tested by a later (post-un-shallow) WO, never executed here.
+
+| Asset | Future-home hypothesis | Evidence FOR | Evidence AGAINST | Blocking unknowns | Placement conf. |
+|---|---|---|---|---|---|
+| Shell / workbench host (`frontend/apps/os-shell/`) | **TerraFusionOS core** | It *is* the live OS shell (Runtime-Critical) | — | none material | **Proven** |
+| canon / governance (`spec-lock/`, `brain/canon`, `os-platform/core`) | **TerraFusionOS core** | Governance machinery already in core control plane | spread across 3 roots | which root is canonical post-split | **Corroborated** |
+| Sync engines (`backend/src/TerraFusion.Sync`, `packages/terra-sync`) | **TerraFusion-Sync** | domain project + package + `phase4d.canon-sync` + `terra-fusion-sync` (CLAUDE.md) | sync logic also bleeds into canon/* | exact ETL/PACS boundary | **Corroborated** |
+| Atlas / GIS (`brain/packs/atlas`, `phase4d.atlas-gis`, `packages/gis-pro`) | **TerraFusion-Atlas** | pack + wave + package all agree | `gis-pro` is workspace-excluded (broken deps) | does excluded pkg resolve? | **Corroborated** |
+| Forge / CostForge (`backend/src/TerraFusion.CostForge`, `phase4d.forge-*`) | **TerraFusion-Forge** | backend project + 5 forge waves + `forge-ui` + pack | — | UI vs engine repo boundary | **Corroborated** |
+| Dossier (`phase4d.dossier-documents`, `brain/packs/dossier`) | **TerraFusion-Dossier** | wave + pack | no dedicated backend project yet | is there real code or only a domain label? | **Inferred** |
+| **Levy** (`backend/src/TerraFusion.Levy`, `packages/terra-levy`, `docs/levy`) | **TerraFusion-Dais** | `phase4d.dais-workflow` exists; Levy is a workflow domain | **no `dais` backend peer; Levy is its own backend project + package + docs** | does Dais subsume Levy, or are they siblings? | **Inferred** *(roadmap, not fact)* |
+| Pilot AI internals (`packages/terra-pilt`, `backend/src/TerraFusion.AI`, `brain/packs/{localops,gpt}`) | **TerraFusion-Pilot** (later) | naming + pack hints; LocalOps runtime-proven | shell-facing parts belong in core, not Pilot | core/Pilot split line undefined | **Suspected** |
+| web-audit-tracker (`os-platform/specialized/`) | **Undecided** | real v1.2.0 product | umbrella gives no home signal | core? suite? standalone product? | **Unknown** |
+| backend orphans (`api-unified`, `TerraFusionSimple.csproj`) | **Undecided** | — | in no `.sln` | newer rewrite or abandoned? (needs history) | **Unknown** |
+| ArcGIS binaries (`QUARANTINE/.../ARCGIS/...`) | **External dependency** (not TF-owned) | demonstrably an ESRI install (`.bsp`, `.ptc`, `.stylx`) | — | none | **Proven** (external) |
+| Fantasy modules (`morphic-resonance`, `dimensional-folding`, …) | **legacy-only** | implementation is physically impossible | — | none | **Proven** (not migrated) |
+
+**Note the `Contradicted` column is empty by design** — no current evidence *contradicts* these homes (e.g., "Dais already owns the Levy backend" is **false**: there is no `TerraFusion.Dais` backend project). If such evidence appeared, it would override the hypothesis. None has.
+
+**Net:** Appendix C keeps B honest. A future-home assignment now carries its own confidence, its counter-evidence, and the specific unknown that blocks it — so the register reads as a set of **testable topology hypotheses**, not a stealth migration plan. The framework can now discuss future structure without performing recovery, which is the whole point.
+
+---
+
+*Produced under WO-FECF-001 in discovery mode (FECF v1.3: Classification Before Evaluation · Recovery-to-Repo Topology · Topology Confidence Ladder). Recovery is separated into Forensic (A) / Architectural (B, classification only) / Physical (C, out of scope). No files were deleted, moved, renamed, merged, consolidated, archived, migrated, salvaged, or rewritten. Target homes are confidence-laddered hypotheses, not decisions. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
