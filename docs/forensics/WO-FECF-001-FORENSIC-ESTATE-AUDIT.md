@@ -329,6 +329,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 3. **Byte-level duplication pass** — content-hash `packages/terra-*` against `QUARANTINE/top-level-dirs/*` and `os-platform/*` suites to quantify true duplication vs divergence before any consolidation WO.
 4. **Runtime reachability proof** — actually boot the canonical surfaces (`backend/src/TerraFusion.API`, `frontend/apps/os-shell`) and the launcher to confirm the no-op launcher finding and the conditional-DLL backend launch; locate (or refute) the orchestrator behind the 23 `packages/*` app URLs.
 5. **Documentation honesty sweep (separate WO, cleanup-class)** — reconcile the celebration corpus against `baseline.md`/`AI_ESTATE_INVENTORY.md`; do **not** delete under discovery.
+6. **Topology-aware recovery classification (Phase A)** — extend Appendix B's matrix into a per-branch census carrying the **future-home** column (TerraFusionOS / Sync / Dais / Atlas / Forge / Dossier / Pilot / legacy-only / undecided). Best done **after** step 1 (un-shallow), since lineage drives target-home assignment. Keep salvage and migration separate; decide homes before extracting anything.
 
 ---
 
@@ -407,4 +408,68 @@ Promotion/demotion is **disposition (step 5) — out of scope for this WO.** Thi
 
 ---
 
-*Produced under WO-FECF-001 in discovery mode (FECF v1.1: Classification Before Evaluation). No files were deleted, moved, renamed, merged, consolidated, archived, or rewritten. No surface was promoted or demoted. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
+## Appendix B — FECF v1.2: Recovery-to-Repo Topology Matrix
+
+This appendix responds to a topology decision: the estate is not destined to remain one forever-repo. It is splitting into **TerraFusionOS core**, **TerraFusion-Sync** (platform), and **suite repos** (Dais, Atlas, Forge, Dossier; AI/Pilot later). That changes what recovery *is*: not "fix the old repo into one clean repo," but **recover the right assets into the right future homes.** "Valuable" is no longer sufficient — an asset must also be **correctly placed.**
+
+**Discovery-stage scope (unchanged):** this appendix performs **Phase A only — classify-for-topology.** It assigns *candidate* future homes and records the evidence a later WO would need. It does **not** salvage, extract, port, split, or migrate anything. Disposition remains a separate work order.
+
+**Doctrine extension (FECF v1.2).** The classification order gains a target field:
+
+> classify → liveness → authority → quality → **target home** → disposition
+
+**Two operations, never conflated:**
+- **Salvage** = find and preserve *real value* from the old repo/branches (the FECF body + Appendix A already do this).
+- **Migration** = place that value into the *correct new repo*. Migration is gated on the target-home decision below and is out of scope here.
+
+### B1 — Future topology (input) and its estate grounding
+
+The target homes are **user-declared architecture**, but they are **corroborated by the estate's own decomposition** — so this is not an invented taxonomy:
+
+| Future home | Estate evidence it already exists as a domain | Confidence (that the domain exists) |
+|---|---|---|
+| **TerraFusionOS** (core: shell, workbench host, Pilot/Trace/Canon shell surfaces, contracts, registry) | `frontend/apps/os-shell/`, `os-platform/core/`, `phase4d.wave1b.os-admin/os-shared`, `brain/packs/{shell,trace}` | Corroborated |
+| **TerraFusion-Sync** (platform: county ingestion, PACS ETL, normalization) | `backend/src/TerraFusion.Sync`, `packages/terra-sync`, `phase4d.wave1b.canon-sync`, `terra-fusion-sync` (CLAUDE.md) | Corroborated |
+| **TerraFusion-Dais** (workflow suite; Levy candidate) | `phase4d.wave1d.dais-workflow`, `brain/packs/dais` | Corroborated (domain); Levy↔Dais binding **Suspected** |
+| **TerraFusion-Atlas** (GIS) | `phase4d.wave1c.atlas-gis`, `brain/packs/atlas`, `packages/gis-pro` (excluded) | Corroborated |
+| **TerraFusion-Forge** (valuation/CostForge) | `backend/src/TerraFusion.CostForge`, `phase4d.wave1a.forge-{valuation,regression,statistics,calibration}`, `phase4d.wave1d.forge-ui`, `brain/packs/forge` | Corroborated |
+| **TerraFusion-Dossier** (documents) | `phase4d.wave1d.dossier-documents`, `brain/packs/dossier` | Corroborated |
+| **TerraFusion-Pilot** (AI, later) | `packages/terra-pilt`, `brain/packs/{localops,gpt}`, `backend/src/TerraFusion.AI` | Inferred |
+| **legacy-only / undecided** | `QUARANTINE/`, residue, generated ledgers, fantasy modules | Proven (legacy) |
+
+### B2 — Recovery-to-Repo Topology Matrix (Phase A classification)
+
+Columns: *what · real? · lineage · recoverability · future home · confidence.* Target homes are predominantly **Inferred/Suspected** — they depend on architecture decisions and (for lineage) an un-shallowed history. "Undecided" is used deliberately to avoid premature split.
+
+| Asset (needle) | What / real? | Lineage | Recoverability | **Future home** | Conf. |
+|---|---|---|---|---|---|
+| **N1 — LocalOps / Muse / Pilot** (`brain/packs/localops`, `docs/localops`, `packages/terra-pilt`, `backend/src/TerraFusion.AI`) | LocalOps is runtime-proven (per CLAUDE.md); shell-facing AI surfaces real | mixed | shell integration: high; deep AI internals: medium | **shell-facing → TerraFusionOS core; deep AI internals → TerraFusion-Pilot (later)** | Suspected |
+| **N2 — canon / governance tooling** (`spec-lock/`, `brain/canon`, `os-platform/core` gates) | Real governance machinery (Governance-Critical, A1) | core | high | **TerraFusionOS core** | Corroborated |
+| **N3 — Atlas / ArcGIS** (`brain/packs/atlas`, `phase4d.atlas-gis`, `packages/gis-pro`) | GIS domain real; the QUARANTINE ArcGIS *binary install* is external tooling, **not** recoverable source | suite | source: medium; binaries: not recovered | **TerraFusion-Atlas** (binaries → external, not migrated) | Corroborated |
+| **Sync deep engines** (`backend/src/TerraFusion.Sync`, `packages/terra-sync`, `terra-fusion-sync`) | Real ETL/ingestion; upstream of everything | platform | high | **TerraFusion-Sync** (PACS remains the *source*, not a destination) | Corroborated |
+| **Levy** (`backend/src/TerraFusion.Levy`, `packages/terra-levy`, `docs/levy`) | Real, but **fragmented across 3 locations** (classification-drift instance) | suite | medium (must consolidate first) | **TerraFusion-Dais** *(architecture decision, not current fact)* | Suspected |
+| **Forge / CostForge** (`backend/src/TerraFusion.CostForge`, `phase4d.forge-*`) | Real valuation domain | suite | high | **TerraFusion-Forge** | Corroborated |
+| **Dossier** (`phase4d.dossier-documents`, `brain/packs/dossier`) | Document domain | suite | medium | **TerraFusion-Dossier** | Inferred |
+| **Shell / workbench host** (`frontend/apps/os-shell/`) | Live shell (Runtime-Critical, A1) | core | high | **TerraFusionOS core** (recovery spine) | Proven |
+| **web-audit-tracker** (`os-platform/specialized/`) | Real product v1.2.0, but home unclear (core? suite? standalone?) | frozen∩real | high (builds independently) | **Undecided** — needs owner + product decision | Suspected |
+| **Backend orphans** (`backend/api-unified`, `TerraFusionSimple.csproj`) | Unknown (in no .sln) | unknown | unknown | **Undecided** — un-shallow history first | Unknown |
+| **QUARANTINE/**, `.pnpm-store/`, `phase4*.json`, fantasy modules | Archive / residue / generated / impossible | n/a | not recovered | **legacy-only** | Proven |
+
+### B3 — Recovery sequencing (topology-ordered)
+
+Recover in the order of the *future* system, not the old one. Topology-aware, **phased** — decide homes now, extract later, never split prematurely (the "higher risk" the topology decision introduces).
+
+- **Phase A — Classify for future topology** *(this appendix; the only phase in scope for this WO)*: for every meaningful asset record what / real? / lineage / recoverability / future home.
+- **Phase B — Recover the core spine** → TerraFusionOS: shell, workbench host, Pilot/Trace/Canon shell surfaces, contracts, runtime composition, registry.
+- **Phase C — Recover platform ingress** → TerraFusion-Sync: county ingestion, PACS ETL, hub feed, shared normalization (upstream of all suites).
+- **Phase D — Recover suite domains** → Dais (incl. Levy), Atlas, Forge, Dossier — starting with the most stable / least fractured.
+
+### B4 — Anti-patterns: stop recovering wrapper noise
+
+The old monorepo blurred boundaries; a cleaner topology must not pull the blur forward. **Do not migrate:** ghost workspace layers (e.g. the vestigial npm `workspaces` field, the non-existent `agents/*` glob), fake/empty platform wrappers, misleading shell fluff, floating Levy/platform confusion (the 3-location Levy split), or suite logic disguised as core. These are artifacts of the old structure, not assets — recovering them re-creates the exact classification drift (R18) the split is meant to end.
+
+**Net:** recovery is now constrained by *"what do we save, **and where should it live**?"* — which makes it more precise and far less likely to rebuild the old mess in new repos. The next concrete artifact a recovery WO needs is a per-branch extension of B2 (a branch census carrying the **future-home** column) — best produced *after* the history is un-shallowed (§16 step 1).
+
+---
+
+*Produced under WO-FECF-001 in discovery mode (FECF v1.2: Classification Before Evaluation + Recovery-to-Repo Topology). No files were deleted, moved, renamed, merged, consolidated, archived, migrated, or rewritten. No surface was promoted, demoted, salvaged, or migrated. Target homes are candidate classifications, not decisions. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
