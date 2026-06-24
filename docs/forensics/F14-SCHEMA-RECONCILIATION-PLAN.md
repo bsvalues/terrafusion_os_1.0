@@ -31,6 +31,13 @@ Migration lineage depth: `TerraFusion.Data` **103** · `Levy` **4** · `CurrentU
 | **LevyRate** | Core/Entities | Levy/Models | **No** (different DBs) | data-truth split (confirm field divergence at reconcile) |
 | **LevyScenario** | Core/Entities | Levy/Models | **No** (different DBs) | data-truth split (confirm field divergence) |
 
+> **Field-level detail CONFIRMED** in `F14-ENTITY-COLLISION-DETAIL.md`: all 3 share one
+> signature — Core = `int`-PK lightweight (in legacy `Entities/Levy/LevyEntities.cs`), Levy =
+> `Guid`-PK rich system-of-record with attestation/AI fields + separate DB. Core also holds a
+> whole legacy levy sub-domain (TaxDistrict/TaxCode/ComplianceCheck/LevyAuditRecord…). Evidence
+> points the SSOT choice toward **D (deprecate Core levy)** or **C (Core = read projection)**,
+> with Levy-module as system-of-record → TerraFusion-Dais.
+
 Also: `ITerraFusionDbContext` (Core interface) declares `DbSet<LevyCertification>` (the Core
 variant) → interface/ownership contradiction with Levy's authoritative variant.
 

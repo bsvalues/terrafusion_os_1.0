@@ -282,4 +282,16 @@
 | **lock status** | FULL ACTIVE — no path chosen, no code, no release. |
 | **decision** | F14 is now ratifiable. Next: Ratify the SSOT path (owner picks), OR resolve parked #1073 as the near-term win. |
 
+## Loop 14.1 — F14 collision register hardened to field level (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **trigger** | F14 directive re-issued (rigor) → hardened the one soft spot: per-entity field-level collision detail |
+| **evidence** | `F14-ENTITY-COLLISION-DETAIL.md` |
+| **confirmed** | 3 genuine Core↔Levy collisions (LevyCertification/LevyRate/LevyScenario) re-derived via `comm`. Loop-14 count holds (LevyRate/Scenario live in Core's combined `Entities/Levy/LevyEntities.cs`). |
+| **field facts** | All 3 share one signature: Core = `int`-PK lightweight summary; Levy = `Guid`-PK rich system-of-record (attestation envelope/hash, references, AI/QuantumOptimized fields) + separate DB. Core also holds a whole legacy levy sub-domain (TaxDistrict/TaxCode/ComplianceCheck/LevyAuditRecord…). |
+| **decision impact** | Incompatible PKs + attestation gap make SSOT options **D (deprecate Core levy)** or **C (Core = read projection)** the evidence-supported front-runners; "keep-split by design" (A) disfavored. Levy module = system-of-record → TerraFusion-Dais. Still owner's call. |
+| **lock status** | FULL ACTIVE — no code, no release. |
+| **decision** | F14 now fully ratification-ready on concrete schema facts. Next: ratify SSOT path, or resolve parked #1073. |
+
 ## Loop 15 — (next: Ratify the F14 SSOT path, or narrow PR-#1073 release)
