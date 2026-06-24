@@ -225,4 +225,19 @@
 | **lock status** | ACTIVE — unchanged by ratification. |
 | **decision** | Topology/founding **accepted**. Next step (on explicit owner go): narrow R12-N1 release only. |
 
-## Loop 12 — (only on explicit owner go → narrow R12-N1 lock-release: LocalOps/Muse/Pilot → core)
+## Loop 12 — R12-N1 narrow release → entry checks → ALREADY-LANDED (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L12 |
+| **trigger** | Owner: release recovery lock narrowly for R12-N1 only (LocalOps/Muse/Pilot → core), run entry checks first |
+| **method** | Read-only entry checks on `wo-localops-008` stack: divergence, 2-dot content diff vs main, spillover, fence, branch-only files |
+| **evidence** | `R12-N1-ENTRY-CHECK.md` |
+| **result** | **N1 is ALREADY LANDED in main, and main is MORE evolved** (main local-agent 113 files vs branch 107; main has localOpsEngine/localOpsTraceBridge the branch lacks; branch-only = 62 stale e2e tests main already removed). Merging would REGRESS main. |
+| **disposition change** | N1: salvage-now → **IGNORE (already-landed)**. No code moved. |
+| **process win** | Entry-check discipline prevented a regression on execution move #1 — vindicates recut-aware rule + Ratification (HR-9) + "merged-flag-unreliable". |
+| **implication** | MERGE-CANDIDATE needles (N2/N3/N5/N6) are likely also already-landed via recut → run content-presence check on each before any release. Real salvage likely concentrates in PORT-ONLY legacy engines (behind schema gate). |
+| **lock status** | Narrow N1 release **consumed**; recovery lock **returns to FULL ACTIVE**. No general unlock. |
+| **decision** | Reassess before N2 (per ratified order). Recommend batch content-presence entry check on the MERGE-CANDIDATE pool next. |
+
+## Loop 13 — (next: on owner go → batch already-landed check on MERGE-CANDIDATE needles, or N2 release)
