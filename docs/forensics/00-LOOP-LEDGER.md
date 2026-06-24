@@ -185,4 +185,15 @@
 | **lock status** | Held. Migration is a NEW operation gated on target repos existing + Phase B done. |
 | **decision** | Classification (Phase A) complete. R12 salvage + migration await owner lock-release; first move stays N1 into TerraFusionOS core. |
 
-## Loop 10 — (only if owner releases recovery lock → Phase B core-spine salvage/migration)
+## Loop 9.1 — Topology matrix v2 (executable) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **trigger** | Owner approved the topology map + gave refinements: add shared-contracts bucket; hard rules for Workbench/Atlas/Pilot; anti-duplication ownership; executable column set |
+| **evidence** | `RECOVERY-TOPOLOGY-MATRIX.md` (v2) |
+| **changes** | Added **core:shared-contracts** home. Rewrote matrix to 9 executable columns (surface · source location · lineage · method · future home · contract owner · schema owner · phase · cut/defer/port/merge). Added anti-duplication ownership table (runtime/contracts/persistence/ingestion/UI-host/tests per split surface). Extraction order set: P1 core → P2 Sync → P3 suites (Atlas→Dais→Forge→Dossier) → P4 AI internals. |
+| **doctrine** | Added **HR-8** (split ≠ duplicate; shared-contracts is a real home; R-WB / R-ATLAS / R-PILOT / R-SPLIT). New R11 fields: future_home_confidence, cross_repo_contract_needed, extract_now_or_later. |
+| **key tightenings** | Workbench is never a domain repo; Atlas UI vs ingestion seam; Pilot stays in core until earned; every split surface needs all 6 ownership cells filled or it does not split. |
+| **status** | Matrix now executable, not conceptual. No extraction/repo creation. Migration gated on lock-release + repos existing. |
+
+## Loop 10 — (only if owner releases recovery lock → Phase 1 core-spine salvage/migration)

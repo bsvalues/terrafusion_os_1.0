@@ -71,3 +71,17 @@ old monorepo into one forever-repo." Two distinct operations, never conflated:
 - **Topology-aware, phased** (A classify → B core → C platform/Sync → D suites). Beware the new
   failure mode: **premature split** before enough is known. Decide homes now; extract last.
 *(Source: owner topology decision, 2026-06-24; `RECOVERY-TOPOLOGY-MATRIX.md`.)*
+
+## HR-8 — Split boundaries are owned, not assumed (split ≠ duplicate)
+When a surface splits across the new topology, the boundary must be explicit or the split does
+not happen. Binding sub-rules (see `RECOVERY-TOPOLOGY-MATRIX.md`):
+- **shared-contracts is a real home:** shared interfaces / event contracts / DTOs / cross-repo
+  API / workbench tab contracts / sync→suite payloads are **core-OWNED but explicitly shared**,
+  never buried in shell code.
+- **R-WB:** Workbench is never a domain repo — only host · tab contract · orchestration · route-collapse target.
+- **R-ATLAS:** Atlas UI/interaction → Atlas; spatial ingestion/feeds → Sync.
+- **R-PILOT:** Pilot stays in core until its AI internals are runtime-real + evidence-backed +
+  independently owned + large enough — never split because it "sounds modular."
+- **R-SPLIT:** every split surface assigns exactly one owner each for **runtime · contracts ·
+  persistence · ingestion · UI host · tests.** Any unfilled cell ⇒ not cleared to split (else
+  today's mess is recreated across N repos).

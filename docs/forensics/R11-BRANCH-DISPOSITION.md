@@ -19,10 +19,15 @@ red_flag_categories · ai_reality_dependency_flag · unresolved_product_intent_f
 uniqueness_score · feasibility_score · operational_value_score ·
 **future_repo_target** · disposition · evidence_notes`
 
-> **`future_repo_target`** (added 2026-06-24, HR-7): TerraFusionOS · TerraFusion-Sync ·
+> **`future_repo_target`** (HR-7): TerraFusionOS · core:shared-contracts · TerraFusion-Sync ·
 > TerraFusion-Dais · TerraFusion-Atlas · TerraFusion-Forge · TerraFusion-Dossier ·
-> legacy-only · undecided. Per-surface assignments live in `RECOVERY-TOPOLOGY-MATRIX.md`.
-> A needle is not actionable until it has both a disposition AND a future home.
+> legacy-only · undecided. Per-surface assignments + contract/schema owners + phase live in
+> `RECOVERY-TOPOLOGY-MATRIX.md` (v2). A needle is not actionable until it has both a
+> disposition AND a future home with assigned owners.
+>
+> **Added v2 (HR-8):** `future_home_confidence` (H/M/L) · `cross_repo_contract_needed`
+> (true/false) · `extract_now_or_later` (now / phase-2 / phase-3 / phase-4 / defer). And the
+> split-ownership cells (runtime/contracts/persistence/ingestion/UI-host/tests) per R-SPLIT.
 
 ### Field value sets
 - **lineage_class:** MAIN-CURRENT (f2511bb) · LEGACY (7c26657) · THIRD-ROOT (5d16d8f).
