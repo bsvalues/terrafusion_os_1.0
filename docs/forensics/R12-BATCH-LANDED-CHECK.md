@@ -1,5 +1,13 @@
 # R12 Batch Already-Landed Check — N2 / N3 / N5 / N6
 
+> ⚠️ **SUPERSEDED by `R12-BATCH-LANDED-CHECK-v2.md`.** This v1 pass checked only 1–3
+> *representative* branches per initiative and concluded "pool mostly already-landed." A
+> full-membership re-check showed that was **premature collapse** — genuine unlanded value
+> exists (county-studio forge/pilot harnesses, AtlasLiveGeometryController, deep atlas/gis,
+> workbench host-contract work). v1 is retained as the record of the representative pass; **use
+> v2 for dispositions.** (HR-6 / "no premature collapse" — the correction is the point.)
+
+
 *Read-only decision-layer check. No lock release, no code movement. Method: direct
 content-presence (ahead/behind + 2-dot tree delta + branch-only files), not branch status.*
 

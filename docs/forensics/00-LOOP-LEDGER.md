@@ -254,4 +254,17 @@
 | **lock status** | FULL ACTIVE — no release, no code. |
 | **decision** | Either resolve PR #1073 (own narrow release) OR pivot to a decision-layer **F14 schema-reconciliation plan** (the true critical path blocking Sync/Levy/Forge). |
 
-## Loop 14 — (next: F14 schema-reconciliation plan [decision-only], or narrow PR-#1073 release)
+## Loop 13.1 — Full-membership re-check (CORRECTS Loop 13 collapse) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **trigger** | Owner re-issued the batch directive (rigor) → re-ran across FULL initiative membership, not representatives |
+| **evidence** | `R12-BATCH-LANDED-CHECK-v2.md` (supersedes v1 collapse) |
+| **correction** | Loop 13's "pool mostly already-landed" was **premature collapse** (under-sampled). Characterized the noise floor: `residual ≤ 9` = shared deletion-residue (8 PerformanceTest*.cs + CostForgeAIController.test.cs) = already-landed; `residual >> 9` = genuine unlanded value. |
+| **genuine residual found** | county-studio forge/pilot harnesses (`os-platform/core/pilot/county-studio-*.mjs`) + `AtlasLiveGeometryController.cs` (cherry-pickable, behind 150); deep atlas/gis (`r2/w*-atlas-gis`, port-only); workbench host-contract branches (331–335 residual, verify depth); auth-gate hazard (569). |
+| **corrected dispositions** | N2 canon = already-landed ✓; N3a #1073 = live merge; N3/N6 county-studio geometry + forge/pilot harnesses = **cherry-pick residual**; deep atlas/gis = port→Atlas; workbench host-contract = verify→core; auth-gate = port-only/hazard. |
+| **doctrine note** | HR-6 / "no premature collapse" caught in the act — the re-run prevented discarding real work. v1 retained (two-truths), v2 authoritative. |
+| **lock status** | FULL ACTIVE — no release, no code. |
+| **decision** | Real near-term value is larger than v1 implied: a genuine cherry-pick pool (county-studio harnesses + atlas geometry) on current lineage, plus PORT-ONLY Tier-1 behind F14 gate. |
+
+## Loop 14 — (next: F14 schema-reconciliation plan, OR scope the county-studio cherry-pick pool, OR PR #1073)
