@@ -4,7 +4,8 @@
 **Mode:** Discovery only. No cleanup, deletion, move, rename, consolidation, branch collapse, archive purge, or canon rewrite was performed.
 **Method:** Filesystem topology scan + git history scan + five parallel evidence lenses (documentation authority, runtime/build, system duplication/structural risk, artifact/residue/agent-drift, git/temporal/negative-evidence), cross-checked against the repo's own honest counter-documents (`docs/security/baseline.md`, `docs/ai-consolidation/AI_ESTATE_INVENTORY.md`).
 **Audit date:** 2026-06-24
-**Final state:** `COVERAGE_GATE_PASSED` — with bounded, named residual unknowns (deep git history is unavailable; see §15).
+**Authorization:** Operator-directed work order ("docs folder needs attention — WO-FECF-001"). Writes under `docs/forensics/**` are explicitly authorized per `AGENTS.md` §CORE GOVERNANCE SURFACE ("anything outside this scope requires explicit authorization") — the authorization condition is satisfied, not bypassed; CI governance gates (governed-spine, Manifest Contract Guard, Classify Changes, Docs-only fast path) pass on this docs-only change.
+**Final state:** `COVERAGE_GATE_PASSED` — with bounded, named residual unknowns. *(Pass 1 listed deep git history as unavailable; **Pass 2 un-shallowed it — App. F** — so only the named **non-history** unknowns remain; see §15 + App. F2.)*
 
 > Every finding carries a confidence label: **Proven** · **Corroborated** · **Inferred** · **Suspected** · **Unknown** · **Contradicted**. Inferred is not reported as proven; suspected is not reported as confirmed; unknowns are not hidden.
 
@@ -404,7 +405,7 @@ Promotion/demotion is **disposition (step 5) — out of scope for this WO.** Thi
 | `operations-dashboard` | Frozen ∩ Real | Experimental | Build proof, integration target, owner |
 | `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine` | Frozen ∩ Experimental | Experimental (only after audit) | **Implementation audit to separate real logic from theater** before any promotion is even considered |
 | `morphic-resonance`, `dimensional-folding`, et al. | Frozen ∩ Fantasy | **Not eligible** | Implementation is physically impossible; disposition = archive/quarantine candidate (separate WO) |
-| `backend/api-unified/` | Unknown orphan | Runtime *or* Archive | **Un-shallow git history** to determine newer-rewrite vs abandoned-copy; .sln membership decision |
+| `backend/api-unified/` | **Pass-2: Inferred abandoned/superseded** (first 2025-09-02, last touched 2026-03-19 vs canonical API to 2026-06-23 — App. F) | Archive (likely) *or* Runtime | Lineage **resolved** (un-shallow done); remaining: `.sln`-membership / disposition decision |
 | `config/*quantum/consciousness/transcended*.json` | Residue ∩ false-capability | Demote/relabel | Confirm nothing in the live path reads them as real capability (catastrophic-class check) |
 | `SEALED.md` | Governance (fossil) | Relabel as historical | Reconcile seal-chain commits against real history (BFG-rewrite annotation) |
 

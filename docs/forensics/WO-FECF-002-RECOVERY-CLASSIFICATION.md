@@ -52,7 +52,7 @@ For **every recoverable surface** (file group, module, package, branch family, o
 | `TerraFusion.Levy` (3 locations) | real (Proven) | live / Unknown | — | High | TerraFusion-Dais (**Inferred — roadmap**) | **consolidate 3 copies first**; confirm Dais subsumes vs sibling |
 | `web-audit-tracker` | real v1.2.0 (Proven) | unwired / Unknown | — | High | **Undecided** (Unknown) | owner + product decision; build proof |
 | `os-platform/specialized/morphic-resonance` et al. | fantasy by implementation (Proven) | unwired / Unknown | — | **None** | legacy-only (Proven) | not a recovery candidate |
-| `backend/api-unified` | unknown | unwired / Unknown | — | Unknown | Undecided (Unknown) | **un-shallow to resolve** rewrite vs abandoned |
+| `backend/api-unified` | unknown | unwired / Unknown | — | Low (likely abandoned) | Undecided | **Pass-2 resolved lineage:** abandoned/superseded (first 2025-09-02, last 2026-03-19; FECF-001 App. F); remaining: `.sln`/disposition decision |
 
 ## 5. Method (per surface)
 
