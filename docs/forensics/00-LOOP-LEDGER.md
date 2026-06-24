@@ -42,5 +42,26 @@
 | **gate effect** | Gate C's new lineage+mergeability prerequisite is now satisfied; value/feasibility scoring still pending for full Gate C. |
 | **decision** | Unchanged: stay in discovery; recovery lanes remain gated. |
 
-## Loop 2 — (not yet run)
-Planned objectives in `GATES-STATUS.md` → "Loop 2 entry objectives".
+## Loop 2 — Expanded forensic lanes F11–F16 (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L2 |
+| **trigger** | Playbook expanded with 6 new forensic lanes: Workspace/Code-Space, Dependency, Build/CI/Release, Data/Schema/Migration, Config/Env/Secrets, Ownership/False-Completion |
+| **/goal** | Cover the six new inspection angles with cross-checked, file-path evidence |
+| **method** | 6 parallel Explore subagents (one per lane), read-only |
+| **evidence captured** | deliverables `F11-…` through `F16-…` |
+| **confirmed** | F12 — dependency/package management is CLEAN (pnpm+NuGet, single lockfiles). F13 — Seal Gate "cancelled-as-failed" foot-gun, which independently explains the PR #1080 CI failures. |
+| **NEW categories of disorder surfaced** | (1) F14 — **multiple conflicting DB migration lineages**; LevyCertification defined twice incompatibly, both registered as DbSet. (2) F15 — **committed JWT secret + plaintext DB password**; broken dev-compose port contract; config duplication. (3) F16 — recovery-spine surfaces (workbench/dais/registry) **UNOWNED**; ~412 completion docs vs ~2 evidence-backed; 50,000-agent fiction. (4) F11 — `.workspace-map.json` is a misleading ghost map (Windows root, non-existent dirs). |
+| **confidence change** | high on all six lanes individually; BUT discovery breadth **regressed** — new disorder categories appeared, so overall convergence dropped. |
+| **gate effect** | **Gate A provisional pass WITHDRAWN** (new categories still appearing). Gate B holds. Gate C unchanged. New criticals (F14/F15) raise Gate D/E bars. |
+| **decision** | **Stay in discovery.** Run Loop 3: deepen Lanes 2 & 3, verify F14/F15 criticals at runtime, escalate F15 secrets to owner. Recovery lanes remain gated. |
+
+### Carried-forward questions (Loop 3)
+1. Does the LevyCertification dual-DbSet actually throw at runtime, or is one context never co-loaded?
+2. Are the F15 secrets present in **current HEAD** (not just history)? Confirm + scope rotation.
+3. Commit-content heatmap (Lane 2) for shell/workbench/Dais/registry across the legacy lineage.
+4. Full closed-unmerged PR landing checks (Lane 3).
+5. Owner rulings: native-shell intent; recovery-spine stewardship (F16); secret rotation (F15).
+
+## Loop 3 — (not yet run)

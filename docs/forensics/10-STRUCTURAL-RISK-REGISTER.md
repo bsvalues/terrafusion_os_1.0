@@ -15,6 +15,14 @@ What could mislead recovery even after basic auditing.
 | R8 | **`snyk-fix-*` on dead lineage** | 58 snyk branches, mostly root `7c26657` | Look like security work but are unmergeable/stale. | LOW |
 | R9 | **Date anomalies** | `ops/agents/sessions/` 2025-12 logs; SEALED.md date | Timestamps can mislead chronology of "what happened when". | LOW |
 | R10 | **Stray root residue** | `_validator_proof.log.err` | Looks like a proof artifact; is an error log. | LOW |
+| R11 | **Committed secrets** (Loop 2 / F15) | `appsettings.json:16` (JWT key), `config/database.dev.json:3` (DB password) | Real secrets in git history; reads as "dev-only" but exposed. Must be rotated. | **CRITICAL** |
+| R12 | **Dual LevyCertification schema** (F14) | `Core/Entities/LevyCertification.cs` vs `Levy/Models/LevyCertification.cs`, both `DbSet` | DI-order decides which persists; silent data-layer ambiguity. | HIGH |
+| R13 | **Seal Gate cancelled-as-failed** (F13) | `seal-gate-fast.yml` `case` default | Phantom CI failures on superseded commits (observed on PR #1080); could block valid spine work. | HIGH |
+| R14 | **Recovery-spine ownership vacuum** (F16) | `.github/CODEOWNERS` (no workbench/dais/registry owner) | Rebuild would be blind; Gate E precondition unmet. | HIGH |
+| R15 | **`.workspace-map.json` ghost map** (F11) | root, Windows path + non-existent dirs | Any tool parsing it gets a false repo model. | MEDIUM |
+| R16 | **Port contract theater** (F15) | platform.json 5046/3102 vs dev-compose 5000/3000 | Env-var port config silently ignored in dev. | MEDIUM |
+| R17 | **`config/` vs `configs/` + appsettings/api-unified duplication** (F15) | root | Edit-the-wrong-config hazard. | MEDIUM |
+| R18 | **Governance soft-fail expiry** (F13) | `seal-gate-fast.yml` (until 2026-06-30) | ~91 gov tests auto-flip to hard-fail in days; merges that pass now may break shortly. | MEDIUM |
 
 ## Hazardous-merge list (do NOT direct-merge)
 - Any branch on roots `7c26657` / `5d16d8f` (653 branches) — **port-only**.

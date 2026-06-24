@@ -17,13 +17,23 @@ Confidence: `low` · `medium-low` · `medium` · `medium-high` · `high`
 | **8 Artifact & residue** | Non-source pollution | Explore agent: root manifests, QUARANTINE, logs | `08-…` | **complete** | high | only `_validator_proof.log.err` is live-tree residue; 2.3G quarantined | future-dated session logs anomaly | verify timestamps |
 | **9 Agent drift** | Agent-created work, false finishes | Explore agent: agent dirs + completion-claim scan | `09-…` | **complete** | high | false-finish register; 1,008 claim; future-dated SEALED.md | session-log dates | reconcile dates |
 | **10 Structural risk** | What could mislead recovery | Synthesis across lanes 1/3/5 | `10-…` | **complete** | medium-high | disjoint-root merge hazard; confusion aliases; giant branches | — | — |
+| **F11 Workspace/code-space** | workspace/IDE/launcher truth | Explore agent | `F11-…` | **complete** | high | `.workspace-map.json` MISLEADING (Windows root, ghost dirs); dev-os.mjs scans missing `applications/`; 92+ dead QUARANTINE workspaces | native-shell intent | owner ruling |
+| **F12 Dependency** | package-manager truth | Explore agent | `F12-…` | **complete** | high | CLEAN: pnpm+NuGet authoritative, single lockfiles, no vendored deps | — | — |
+| **F13 Build/CI/release** | build/CI/release truth | Explore agent | `F13-…` | **complete** | high | ~91 workflows; 1 real merge gate; **Seal Gate cancelled-as-failed foot-gun**; gov soft-fail expires 2026-06-30 | which ~44 dormant are safe to retire | Lane 13 (gated) |
+| **F14 Data/schema/migration** | schema lineage truth | Explore agent | `F14-…` | **complete** | high | **MULTIPLE lineages**: 3 DbContexts; **LevyCertification defined twice incompatibly**; CurrentUse breaks on SQLite | persistence runtime test | R-lane lead |
+| **F15 Config/env/secrets** | runtime-control truth | Explore agent | `F15-…` | **complete** | high | 🔴 **committed JWT secret + plaintext DB password**; port contract broken in dev-compose; `config/`↔`configs/` + appsettings duplication | rotate secrets (owner) | escalate |
+| **F16 Ownership/false-completion** | accountability truth | Explore agent | `F16-…` | **complete** | high | recovery-spine surfaces **UNOWNED**; ~412 COMPLETE docs, ~2 evidence-backed; 50,000-agent fiction | assign stewards | Gate E precondition |
 
-## Loop control read-out
+## Loop control read-out (updated after Loop 2)
 
-- **Are new categories of disorder still appearing?** No. Loop 1 surfaced one dominant
-  structural category (disjoint histories) plus confirmation of previously-documented
-  honesty debt. Findings are now mostly confirming, not expanding.
-- **Lanes still shallow:** Lane 2 (commit content heatmap) and Lane 3 (full PR history).
-  These are the priority for **Loop 2** before Gate B is claimed with full confidence.
-- **Recommendation:** Hold recovery lock. Advance to Loop 2 to deepen Lanes 2 & 3, then
-  re-evaluate Gates A–C.
+- **Are new categories of disorder still appearing?** **YES — Loop 2 re-opened discovery.**
+  The six new lanes (F11–F16) surfaced *new* categories not seen in Loop 1: conflicting DB
+  migration lineages (F14), committed secrets + fractured config (F15), and an ownership
+  vacuum over the recovery spine (F16). Per the /loop rule, frequent new categories ⇒
+  **remain in discovery**; Gate A's provisional pass is **withdrawn** (see GATES-STATUS).
+- **Lanes still shallow:** Lane 2 (commit-content heatmap) and Lane 3 (full PR history)
+  remain partial and are now joined by *verification* follow-ups for F14/F15 (runtime proof
+  of the LevyCertification conflict; confirm secret exposure in current HEAD vs history).
+- **Recommendation:** Hold recovery lock. Run **Loop 3** to (a) deepen Lanes 2 & 3, (b)
+  verify the F14/F15 criticals, (c) escalate the F15 secret exposure to the owner. Recovery
+  lanes stay gated.

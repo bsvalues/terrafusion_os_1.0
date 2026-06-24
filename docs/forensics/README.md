@@ -45,6 +45,24 @@ recut-PR culture, and the 38-of-40 closed-unmerged PR pattern. See
 | — | Gate Model status | `GATES-STATUS.md` | living |
 | 11–14 | Recovery Lanes (needles/salvage/containment/spine) | `11-RECOVERY-LANES-STATUS.md` | **gated — not started** |
 
+### Loop 2 — expanded forensic lanes (F11–F16)
+
+> The playbook later added six forensic lanes that reuse numbers 11–16. To avoid collision
+> with the recovery lanes (R11–R14), these are filed with an **`F`** prefix.
+
+| Lane | Deliverable | File | Status |
+|---|---|---|---|
+| F11 | Workspace / Code-Space Truth | `F11-WORKSPACE-CODESPACE-TRUTH.md` | complete |
+| F12 | Dependency / Package-Manager Truth | `F12-DEPENDENCY-TRUTH.md` | complete (cleanest lane) |
+| F13 | Build / CI / Release-Path Truth | `F13-BUILD-CI-RELEASE-TRUTH.md` | complete |
+| F14 | Data / Schema / Migration Lineage | `F14-DATA-SCHEMA-MIGRATION-LINEAGE.md` | complete (conflicts found) |
+| F15 | Config / Env / Secrets Surface | `F15-CONFIG-ENV-SECRETS-SURFACE.md` | complete (🔴 secrets exposed) |
+| F16 | Ownership / False-Completion | `F16-OWNERSHIP-FALSE-COMPLETION.md` | complete |
+
+**Loop 2 outcome:** F11–F16 **re-opened discovery** — new disorder categories (conflicting
+DB lineages, committed secrets, ownership vacuum) appeared, so Gate A's provisional pass is
+withdrawn. See `00-LOOP-LEDGER.md` (Loop 2) and `GATES-STATUS.md`.
+
 Raw evidence (git output) is under `evidence/`.
 
 ## How to read this
