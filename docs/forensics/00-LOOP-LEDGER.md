@@ -85,4 +85,19 @@
 3. Quantify XJ-5: how many branches/PRs were CI-misjudged (replay `cancelled` vs `failure`)?
 4. Lane 2 commit heatmap; Lane 3 PR-landing + CI-signal reclassification (Hard Rule 5).
 
-## Loop 4 — (not yet run)
+## Loop 4 — Verification & quantification (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L4 |
+| **trigger** | Owner approval: convert Loop-3 "suspected" → "classified" (5-item scope), still pre-recovery |
+| **/goal** | Hard-classify the context ambiguity + dual LevyCertification; quantify CI distortion; critical-surface heatmap; runtime registration truth table |
+| **method** | 1 deep persistence Explore agent + direct file reads (Program.cs:2477–2505) + git heatmap + observed PR #1080 CI sample |
+| **evidence** | `LOOP4-VERIFICATION.md` (Items 1–5 + exit-gate eval) |
+| **classified** | (1) `TerraFusionContext` = separate Identity context on same DB (naming hazard, not alias/wrapper/dual-core). (2) dual `LevyCertification` = **no physical collision; divergent-DB data-truth split** (LevyDbContext uses separate DB/`levy-dev.db`). (3) CI foot-gun: PR #1080 sample 4/4 Seal-Gate failures were foot-gun, 0 real. (4) critical-surface churn is on the legacy lineage, not main. (5) registration "sprawl" = benign conditional CLI branches. |
+| **corrections** | Persistence agent's "physical table collision" was wrong (missed separate connection string); corrected by direct Program.cs read. |
+| **confidence change** | suspected→classified on all five; no new disorder category appeared (findings refined/downgraded, not expanded) |
+| **exit gate** | **All 5 Loop-4 exit conditions met; no new category** → bar to *consider* salvage planning is cleared. Recovery lock stays ACTIVE (owner decision). |
+| **decision** | Hold recovery lock. Loop 5 residuals are small (CurrentUse reachability; cert/levy product question; optional population CI replay). Await owner go for R-lanes. |
+
+## Loop 5 — (not yet run)

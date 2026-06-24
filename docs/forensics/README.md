@@ -76,6 +76,19 @@ ghost authority (unowned), schema/config fracture (live in the spine), and false
 narrative — with CI signal distortion making branch/PR truth unreliable. Dependency truth is
 cleared. Recovery still gated; Loop 4 = verification + quantification.
 
+### Loop 4 — verification & quantification
+
+| Deliverable | File |
+|---|---|
+| **Loop 4 Verification** | `LOOP4-VERIFICATION.md` |
+
+**Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
+Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
+collision; divergent-DB data-truth split**. CI foot-gun confirmed (PR #1080: 4/4 Seal-Gate
+failures misleading). Critical-surface history lives on the legacy lineage, not main.
+**All Loop-4 exit conditions met; no new disorder category** → the bar to *consider* salvage
+planning is cleared, pending the owner's decision to release the recovery lock.
+
 Raw evidence (git output) is under `evidence/`.
 
 ## How to read this

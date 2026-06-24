@@ -20,12 +20,19 @@ Recovery lock: **ACTIVE**.
 ---
 
 ## RF-1 — Schema / persistence fracture 🔴
-**Source:** F14, + runtime grounding (`TerraFusion.API/Program.cs`).
+**Source:** F14, + runtime grounding (`TerraFusion.API/Program.cs`), **refined by Loop 4** (`LOOP4-VERIFICATION.md`).
 - **3 EF DbContexts with separate migration lineages:** `TerraFusionDbContext` (197 files),
   `LevyDbContext` (9), `CurrentUseDbContext` (2, hardcoded PG schema) + orphaned raw-SQL Experiments.
-- **`LevyCertification` defined twice, incompatibly** (Core int-PK vs Levy Guid-PK/40+fields),
-  **both registered as `DbSet` in the SAME live API process** (`Program.cs:2271` TerraFusionDbContext + `:2477` LevyDbContext) → ambiguity is *loaded at runtime*, not hypothetical.
-- **Registration sprawl:** `AddDbContext<TerraFusionDbContext>` appears ~20+ times in `Program.cs`; a *separately named* `TerraFusionContext` also registered (`Program.cs:2293`, Consciousness `Program.cs:91`) — possible second core-context.
+- **`LevyCertification` defined twice, incompatibly** (Core int-PK vs Levy Guid-PK/40+fields).
+  **Loop 4 classified the runtime behavior:** NOT a physical table collision — `LevyDbContext`
+  uses a *separate database* (`LevyDatabase`/`levy-dev.db`, never `DefaultConnection`), so the
+  two `LevyCertifications` tables live in **two different DBs** → a **latent data-truth split**
+  (cert/Dais surface writes the main DB; Levy module writes the Levy DB). Silent, no crash, HIGH for data integrity.
+- **`TerraFusionContext` vs `TerraFusionDbContext`:** Loop 4 classified as **two separate
+  contexts on the SAME DB** (Identity vs domain) — *not* an alias/wrapper and *not* dual-core
+  fracture, but a **naming hazard** with 7 conceptually-overlapping DbSets to watch.
+- **Registration "sprawl" downgraded:** the ~26 extra `AddDbContext<TerraFusionDbContext>`
+  sites are mutually-exclusive CLI/seed host branches (benign), not duplicate web-host registrations.
 - **Provider drift:** CurrentUse breaks on SQLite; `fix/currentuse-sqlite-provider-fix` unmerged.
 - **Rule triggered:** Hard Rule 2 — schema must be lineage-classified before any persistence recovery.
 
