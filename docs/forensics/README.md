@@ -93,6 +93,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **R12-N1 Entry-Check** (first execution attempt → already-landed, no merge) | `R12-N1-ENTRY-CHECK.md` |
 | **R12 Batch Already-Landed Check** (v1, representative — SUPERSEDED) | `R12-BATCH-LANDED-CHECK.md` |
 | **R12 Batch Check v2** (full-membership, CORRECTED; genuine residual found) | `R12-BATCH-LANDED-CHECK-v2.md` |
+| **F14 Schema-Reconciliation Plan** (decision-only; the Tier-1 critical-path gate) | `F14-SCHEMA-RECONCILIATION-PLAN.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

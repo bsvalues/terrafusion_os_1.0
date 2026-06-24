@@ -267,4 +267,19 @@
 | **lock status** | FULL ACTIVE — no release, no code. |
 | **decision** | Real near-term value is larger than v1 implied: a genuine cherry-pick pool (county-studio harnesses + atlas geometry) on current lineage, plus PORT-ONLY Tier-1 behind F14 gate. |
 
-## Loop 14 — (next: F14 schema-reconciliation plan, OR scope the county-studio cherry-pick pool, OR PR #1073)
+## Loop 14 — F14 schema-reconciliation plan (decision-only) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L14 |
+| **trigger** | Owner: do (2) first — decision-only F14 schema-reconciliation plan (the real critical path); park #1073 |
+| **/goal** | Turn the F14 fracture into a ratifiable decision object that can later unblock Sync/Dais·Levy/Forge ports |
+| **method** | Ground the 4 contexts + cross-context entity collisions; frame SSOT options + blast radius + gate criteria. No code. |
+| **evidence** | `F14-SCHEMA-RECONCILIATION-PLAN.md` |
+| **new finding** | **THREE** cross-context collisions (not 1): `LevyCertification`, `LevyRate`, `LevyScenario` — all defined in both Core/Entities and Levy/Models. Migration depth: Data 103 / Levy 4 / CurrentUse 1. |
+| **produced** | (1) context truth table (4 contexts, DB targets, homes); (2) entity collision register (3 entities, data-truth-split, no physical collision); (3) 4 SSOT options per domain (keep-split / consolidate→Dais / projection / deprecate) — not chosen; (4) blast-radius matrix; (5) 5 gate criteria that must hold before any Tier-1 port. |
+| **gate** | Tier-1 ports BLOCKED until: schema authority chosen, context ownership clarified, entity collisions reconciled, migration plan declared, cross-repo contracts defined (HR-2). |
+| **lock status** | FULL ACTIVE — no path chosen, no code, no release. |
+| **decision** | F14 is now ratifiable. Next: Ratify the SSOT path (owner picks), OR resolve parked #1073 as the near-term win. |
+
+## Loop 15 — (next: Ratify the F14 SSOT path, or narrow PR-#1073 release)
