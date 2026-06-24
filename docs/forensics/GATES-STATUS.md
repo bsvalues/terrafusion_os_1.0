@@ -10,10 +10,16 @@
 | **D — Containment Readiness** | Salvage-critical evidence protected; no major hidden system unexplained | **NOT MET** | Needles not yet identified; cannot guarantee containment won't destroy salvage value. |
 | **E — Recovery Spine Readiness** | Shell/workbench/Dais/registry/governance spine actionable without reckless omission | **NOT MET** | Spine is mapped (Lane 7) but salvage from 653 port-only branches is unassessed; acting now risks omission. |
 
-## Decision (post Loop 2)
+## Decision (current — post Loop 5)
 
-**Stay in discovery → advance to Loop 3.** Recovery lanes R11–R14 remain gated. Gate A is
-withdrawn because Loop 2 re-opened discovery.
+**Forensic phase is saturated.** Loops 3, 4, and 5 produced **no new disorder category** —
+they refined/bounded/closed existing findings. The bar to *consider* salvage planning (R-lanes)
+is cleared. **Recovery lock remains ACTIVE pending the owner's explicit release decision.**
+Residuals from Loop 4 are closed (`LOOP5-VERIFICATION.md`); the one open item (cert/levy single
+source of truth) is an owner product decision, not a forensic blocker.
+
+*(Historical) Decision (post Loop 2): stay in discovery → advance to Loop 3; Gate A withdrawn
+because Loop 2 re-opened discovery. Superseded by the above after Loops 3–5 re-converged.*
 
 ### Loop 3 entry objectives
 1. **Verify F14/F15 criticals** (highest priority): does the dual `LevyCertification` DbSet

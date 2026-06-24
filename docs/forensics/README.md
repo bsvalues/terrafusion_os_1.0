@@ -81,6 +81,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | Deliverable | File |
 |---|---|
 | **Loop 4 Verification** | `LOOP4-VERIFICATION.md` |
+| **Loop 5 Verification** | `LOOP5-VERIFICATION.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

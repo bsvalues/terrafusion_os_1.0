@@ -100,4 +100,18 @@
 | **exit gate** | **All 5 Loop-4 exit conditions met; no new category** → bar to *consider* salvage planning is cleared. Recovery lock stays ACTIVE (owner decision). |
 | **decision** | Hold recovery lock. Loop 5 residuals are small (CurrentUse reachability; cert/levy product question; optional population CI replay). Await owner go for R-lanes. |
 
-## Loop 5 — (not yet run)
+## Loop 5 — Residual verification (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L5 |
+| **trigger** | Owner chose (B): run Loop-4 residuals before any salvage |
+| **/goal** | Close the 3 small residuals (CurrentUse reachability; enlarge CI sample; cert/levy escalation) |
+| **method** | grep (CurrentUse wiring) + `pull_request_read get_check_runs` on 5 closed PRs |
+| **evidence** | `LOOP5-VERIFICATION.md` |
+| **resolved** | (1) CurrentUse IS live in API (`Program.cs:2519`) → live spine hosts **4 contexts / 3–4 DBs**. (2) CI: 5/5 sampled closed PRs are **green in final state** → closed-unmerged = recut workflow, not CI failure; foot-gun corrupts only **transient/per-commit** signals, not final PR state; each PR fires 55–69 checks. (3) cert/levy data-home = **owner product question**, escalated, not resolved. |
+| **correction** | Refines Loop-4 Item-3: the foot-gun's damage is to *transient* signals; *final resolved* PR CI state is reliable. Branch-disposition risk is specifically for mid-flight/abandoned PRs. |
+| **confidence change** | CI-distortion concern now precisely bounded; persistence truth complete. No new disorder category (3rd consecutive loop with none). |
+| **decision** | Residuals closed. Recovery lock stays ACTIVE pending owner's release decision. Forensic phase is effectively saturated. |
+
+## Loop 6 — (only if owner releases recovery lock → R-lanes)
