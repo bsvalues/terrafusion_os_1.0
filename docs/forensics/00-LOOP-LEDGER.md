@@ -240,4 +240,18 @@
 | **lock status** | Narrow N1 release **consumed**; recovery lock **returns to FULL ACTIVE**. No general unlock. |
 | **decision** | Reassess before N2 (per ratified order). Recommend batch content-presence entry check on the MERGE-CANDIDATE pool next. |
 
-## Loop 13 — (next: on owner go → batch already-landed check on MERGE-CANDIDATE needles, or N2 release)
+## Loop 13 — Batch already-landed check N2/N3/N5/N6 (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L13 |
+| **trigger** | Owner: run read-only batch already-landed check across N2/N3/N5/N6; no lock release; no code |
+| **method** | content-presence per representative branch (ahead/behind + 2-dot tree delta + branch-only files) |
+| **evidence** | `R12-BATCH-LANDED-CHECK.md` |
+| **result** | Mergeable pool collapses: **N2 (all), N5a/b, N6 = already-landed (ignore)** via recut (PR #932/#1074/#1075). **N3a atlas-maplibre = open PR #1073 = the ONE genuine actionable mergeable item.** N3b atlas-suite = partially-landed (cherry-pick subset). **N5c auth-gate = HAZARD (+1.86M insertions, 622 branch-only) → never merge, port-only/archaeology, owner-sensitive.** |
+| **pattern** | recent-base (behind 3–9, PR marker) = landed; old-base (behind 147–189) = main's later deletions dominate + same 62 stale e2e files = noise. |
+| **strategic** | merge-candidate pool ≠ real salvage pool. Near-term mergeable work ≈ just PR #1073. Genuine value concentrates in PORT-ONLY legacy Tier-1 engines behind the F14 schema gate (file/hunk port only). |
+| **lock status** | FULL ACTIVE — no release, no code. |
+| **decision** | Either resolve PR #1073 (own narrow release) OR pivot to a decision-layer **F14 schema-reconciliation plan** (the true critical path blocking Sync/Levy/Forge). |
+
+## Loop 14 — (next: F14 schema-reconciliation plan [decision-only], or narrow PR-#1073 release)

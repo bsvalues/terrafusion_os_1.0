@@ -91,6 +91,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Phase-1 Founding Plan** (TerraFusionOS core definition; 6 docs) | `founding/TERRAFUSIONOS-FOUNDING-PLAN.md` |
 | **Ratification Record** (no-code gate; topology+founding accepted) | `RATIFICATION-RECORD.md` |
 | **R12-N1 Entry-Check** (first execution attempt → already-landed, no merge) | `R12-N1-ENTRY-CHECK.md` |
+| **R12 Batch Already-Landed Check** (N2/N3/N5/N6 → mostly landed; PR #1073 the one live item) | `R12-BATCH-LANDED-CHECK.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
