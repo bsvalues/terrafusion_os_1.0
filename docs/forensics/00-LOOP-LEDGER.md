@@ -345,3 +345,17 @@
 | **gate status** | F14 gate OPEN (5/5). Tier-1 ports unblocked **to plan** only — plan now exists. |
 | **lock status** | FULL ACTIVE — no code, no merge, no cherry-pick, no repo creation, no release (HR-9). |
 | **decision** | Tier-1 plan is decision-ready, convertible into per-domain narrow-release work orders. Reassess: (a) prepare first narrow release = **Sync entry-checks** (read-only hunk inventory, still no merge), or (b) take parked **PR #1073** as a contained near-term win. Hold for owner direction. |
+
+## Loop 19 — Sync entry-check (read-only) → legacy Sync heads SUPERSEDED (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L19 |
+| **trigger** | Owner: proceed with (a) — prepare the read-only Sync entry-checks now (no lock release, no port) |
+| **evidence** | `SYNC-ENTRY-CHECK.md` + `git diff/rev-list` on all 7 named heads vs `origin/main` @ `2ae013561` |
+| **floor characterized** | the **62-file ADDED branch-only floor is 100% e2e/test** (61 os-platform e2e + 1 costforge-ai), uniform across all heads → **true-residual of new source = 0** (plan's claim holds). |
+| **headline finding** | **All 6 legacy Sync heads are SUPERSEDED.** `main`'s sync engine is a near-strict **superset**: main ahead by **393–5,360 lines**; branch-only ≤ **41 lines**, and those are *older* variants (e.g. hardcoded `ValidSaleCode="100"` vs main's `CountyRatioCodebook`/`IRatioQualificationPolicy`). Wholesale port = **regression**. Only ~2 defensive-guard fragments + 1 doc-comment are even improvement *candidates* (low value, verify-vs-main). |
+| **bridge reclassified** | `codex/sync-db-evidence-runtime-path` (ahead 17 / behind 150; +6,991/−265; 20 new files) touches **zero backend sync engine** — it is **Pilot-evidence + Forge County-Studio**. Misleading name. ⇒ **reclassify Sync→Forge/Pilot**, not a Sync release. |
+| **verdict** | **No clean Sync-domain first-release candidate exists among these heads.** Sync ingress already landed in main via recut + 150-commit evolution. Content-presence beat branch status again (same pattern as v2 batch-landed check). |
+| **lock status** | FULL ACTIVE — read-only entry-check only; no code, no merge, no cherry-pick, no release (HR-9). |
+| **decision (for owner)** | (1) Close the Sync legacy-port lane as *superseded-by-main*; (2) reclassify the codex bridge → Forge/Pilot in `TIER1-PORT-PLAN.md`; (3) advance the real critical path to **Dais/Levy** — run the same entry-check on the `r2/*` Levy heads (characterize the suspected ~42 floor first), where the ratified Option-C SoR value genuinely is not-yet-landed. |

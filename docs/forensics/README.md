@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 18 — first Tier-1 port execution plan (decision-only) |
+| **Current loop** | Loop 19 — Sync entry-check (read-only); legacy Sync heads SUPERSEDED |
 | **Recovery lock** | **ACTIVE** — no salvage/cleanup/merge/code/migration actions taken (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Gates D/E not met (see `GATES-STATUS.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ⛔ gated** → Migrate ⛔ gated |
@@ -101,6 +101,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **F14 Cross-Repo Contracts** (criterion 5; core-owned) | `F14-CROSSREPO-CONTRACTS.md` |
 | **F14 Gate Ratification** (Option C ratified → gate OPEN 5/5) | `F14-GATE-RATIFICATION.md` |
 | **First Tier-1 Port Execution Plan** (decision-only; Sync→Dais/Levy→Forge) | `TIER1-PORT-PLAN.md` |
+| **Sync Entry-Check** (read-only; legacy Sync heads = SUPERSEDED by main) | `SYNC-ENTRY-CHECK.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
