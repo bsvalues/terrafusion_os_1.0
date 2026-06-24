@@ -156,4 +156,18 @@
 | **recommended sequence** | (1) LocalOps/Muse/Pilot stack [merge, lowest risk], (2) Atlas/ArcGIS mergeable heads incl. open PR #1073, (3) AI-honesty merges, (4) ⛔ schema reconciliation gate, (5) Sync port, (6) Levy port, (7) forge-stats port, (8) cut CostForge "Ultimate". |
 | **status** | Map = decision artifact (under lock). R12 execution gated on owner lock-release. |
 
-## Loop 8 — (only if owner releases recovery lock → R12 salvage execution)
+## Loop 8 — Per-branch scoring → Gate C FULL (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L8 |
+| **trigger** | Owner: finish the decision layer — complete per-branch scoring, take Gate C to FULL, do NOT release the lock yet |
+| **/goal** | Score the needle pool (U/F/O), assign final dispositions, nominate ordered needle set |
+| **method** | Extract 80 MERGE-CANDIDATE branches → group into ~12 initiatives; score on evidence-anchored rubric (lineage+mergeability+F18 tier+PR-landing+fences) |
+| **evidence** | `R11-GATE-C-SCORING.md` |
+| **result** | Needle set scored, fenced, ordered. Nominated order: N1 LocalOps/Muse/Pilot → N2 canon/governance → N3 Atlas/ArcGIS → N4 AI-honesty → N5/N6 workbench+county → ⛔schema gate → sync/levy/forge ports → cut CostForge. Several "MERGE-CANDIDATE" initiatives (ops-cp, sync-atomicity, county-studio) likely **already landed via recut** → verify-landed, not re-salvage. `currentuse-sqlite-provider-fix` is CONTAINED (F14 fix may already be in main). 58 snyk-* → ignore. |
+| **Gate C** | **FULL (decision layer).** Explicit residual by design: per-needle commit/landing verification = R12-entry step. |
+| **lock status** | Held. R12 execution gated on explicit owner release. Decision layer is now complete. |
+| **decision** | Stop at the decision layer per owner. When released, R12 begins with N1 (LocalOps/Muse/Pilot), reassess before N3, deep-engine ports last (post schema gate). |
+
+## Loop 9 — (only if owner releases recovery lock → R12 salvage execution, starting N1)
