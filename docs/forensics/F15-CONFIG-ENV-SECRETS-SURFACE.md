@@ -4,14 +4,19 @@
 Goal: map runtime-control truth; find fracture and dangerous assumptions.
 
 > **Redaction note (chain-of-custody):** secret *values* are NOT reproduced here — only
-> `file:line` + type. Raw values remain in the repo's git history and must be rotated.
+> `file:line` + type.
+>
+> **RESOLUTION UPDATE (2026-06-24, per owner):** the exposed JWT key and DB password have
+> been **rotated**. The committed values are now **stale/invalid**, so live operational
+> exposure is **MITIGATED**. Residual items are *config hygiene* (below), not an active
+> secret leak — downgraded from CRITICAL to MEDIUM.
 
-## 🔴 Critical findings
+## 🟡 Findings (was 🔴; secrets rotated — residual = hygiene)
 
-| # | Finding | Location | Type | Cross-ref |
+| # | Finding | Location | Type | Status |
 |---|---|---|---|---|
-| 1 | Hardcoded JWT secret in committed base config | `backend/src/TerraFusion.API/appsettings.json:16` | JWT signing key (dev value) | baseline SC-12 "hardcoded JWT prefix" |
-| 2 | Plaintext DB password in committed config | `config/database.dev.json:3` | DB password (literal) | baseline SC-12 "secrets in config" |
+| 1 | Hardcoded JWT secret in committed base config | `backend/src/TerraFusion.API/appsettings.json:16` | JWT signing key (dev value) | **rotated → stale value still committed**; externalize to `${JWT_SECRET}` to prevent recurrence/audit confusion |
+| 2 | Plaintext DB password in committed config | `config/database.dev.json:3` | DB password (literal) | **rotated → stale value still committed**; externalize to `${TF_DEV_DB_PASSWORD}` |
 | 3 | Port contract broken in dev compose | `docker-compose.dev.enhanced.yml` (API `5000`, FE `3000` hardcoded) vs `platform.json` (`TF_API_PORT=5046`, `TF_FRONTEND_PORT=3102`) | port mismatch | — |
 | 4 | Duplicate appsettings trees | `backend/src/TerraFusion.API/appsettings.*` **and** `backend/api-unified/appsettings.*` | config SSOT loss | — |
 
@@ -52,8 +57,11 @@ Backend has Dev / Dev-Enhanced / Production / Staging / BentonCounty / HarrisPAC
 with **no documented override hierarchy**; JWT source and DB host differ per file. Docker
 `compose.yml` honors env vars; `dev.enhanced` ignores them.
 
-## Verdict & required follow-up (NOT actioned under recovery lock)
-Runtime config truth is **fractured** with **real exposed secrets**. These are recorded as
-**high-priority security leads**: rotate the exposed JWT key + DB password (git history),
-externalize them to `${TF_*}`, fix dev-compose port substitution, and resolve the
-`config/`↔`configs/` and `appsettings`↔`api-unified` duplications. Flag for owner decision.
+## Verdict & follow-up
+Runtime config truth is **fractured**. The **secret exposure is now mitigated** (keys
+rotated 2026-06-24). Remaining items are config hygiene, recorded for a later loop (NOT
+actioned under recovery lock):
+- Externalize the now-stale hardcoded JWT key + DB password to `${TF_*}` so the pattern
+  doesn't recur and stale-but-real-looking values don't mislead future audits.
+- Fix dev-compose port substitution (env vars ignored → real ports diverge from `platform.json`).
+- Resolve `config/`↔`configs/` and `appsettings`↔`api-unified` duplication.

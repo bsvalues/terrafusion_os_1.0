@@ -25,6 +25,6 @@ withdrawn because Loop 2 re-opened discovery.
 5. Lane R11 **scoring rubric only** (uniqueness/feasibility/value) — no dispositions until Gate C is full.
 
 ### New gate dependencies introduced by Loop 2
-- **Gate D** now also requires: F15 secret exposure resolved/owned; F14 schema-conflict understood.
+- **Gate D** now also requires: ~~F15 secret exposure resolved/owned~~ **(DONE — keys rotated 2026-06-24)**; F14 schema-conflict understood.
 - **Gate E** now also requires: recovery-spine stewardship assigned (F16) and the Seal Gate
   cancelled-as-failed foot-gun (F13) acknowledged so spine work isn't blocked by phantom CI failures.

@@ -21,7 +21,7 @@ Confidence: `low` · `medium-low` · `medium` · `medium-high` · `high`
 | **F12 Dependency** | package-manager truth | Explore agent | `F12-…` | **complete** | high | CLEAN: pnpm+NuGet authoritative, single lockfiles, no vendored deps | — | — |
 | **F13 Build/CI/release** | build/CI/release truth | Explore agent | `F13-…` | **complete** | high | ~91 workflows; 1 real merge gate; **Seal Gate cancelled-as-failed foot-gun**; gov soft-fail expires 2026-06-30 | which ~44 dormant are safe to retire | Lane 13 (gated) |
 | **F14 Data/schema/migration** | schema lineage truth | Explore agent | `F14-…` | **complete** | high | **MULTIPLE lineages**: 3 DbContexts; **LevyCertification defined twice incompatibly**; CurrentUse breaks on SQLite | persistence runtime test | R-lane lead |
-| **F15 Config/env/secrets** | runtime-control truth | Explore agent | `F15-…` | **complete** | high | 🔴 **committed JWT secret + plaintext DB password**; port contract broken in dev-compose; `config/`↔`configs/` + appsettings duplication | rotate secrets (owner) | escalate |
+| **F15 Config/env/secrets** | runtime-control truth | Explore agent | `F15-…` | **complete** | high | committed JWT secret + DB password (**rotated 2026-06-24 → mitigated**); port contract broken in dev-compose; `config/`↔`configs/` + appsettings duplication | externalize stale values; fix dev-compose ports | Loop 3 hygiene |
 | **F16 Ownership/false-completion** | accountability truth | Explore agent | `F16-…` | **complete** | high | recovery-spine surfaces **UNOWNED**; ~412 COMPLETE docs, ~2 evidence-backed; 50,000-agent fiction | assign stewards | Gate E precondition |
 
 ## Loop control read-out (updated after Loop 2)

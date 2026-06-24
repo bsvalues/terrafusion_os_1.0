@@ -56,7 +56,7 @@ recut-PR culture, and the 38-of-40 closed-unmerged PR pattern. See
 | F12 | Dependency / Package-Manager Truth | `F12-DEPENDENCY-TRUTH.md` | complete (cleanest lane) |
 | F13 | Build / CI / Release-Path Truth | `F13-BUILD-CI-RELEASE-TRUTH.md` | complete |
 | F14 | Data / Schema / Migration Lineage | `F14-DATA-SCHEMA-MIGRATION-LINEAGE.md` | complete (conflicts found) |
-| F15 | Config / Env / Secrets Surface | `F15-CONFIG-ENV-SECRETS-SURFACE.md` | complete (🔴 secrets exposed) |
+| F15 | Config / Env / Secrets Surface | `F15-CONFIG-ENV-SECRETS-SURFACE.md` | complete (secrets rotated → mitigated; config hygiene residual) |
 | F16 | Ownership / False-Completion | `F16-OWNERSHIP-FALSE-COMPLETION.md` | complete |
 
 **Loop 2 outcome:** F11–F16 **re-opened discovery** — new disorder categories (conflicting

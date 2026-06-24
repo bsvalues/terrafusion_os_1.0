@@ -15,7 +15,7 @@ What could mislead recovery even after basic auditing.
 | R8 | **`snyk-fix-*` on dead lineage** | 58 snyk branches, mostly root `7c26657` | Look like security work but are unmergeable/stale. | LOW |
 | R9 | **Date anomalies** | `ops/agents/sessions/` 2025-12 logs; SEALED.md date | Timestamps can mislead chronology of "what happened when". | LOW |
 | R10 | **Stray root residue** | `_validator_proof.log.err` | Looks like a proof artifact; is an error log. | LOW |
-| R11 | **Committed secrets** (Loop 2 / F15) | `appsettings.json:16` (JWT key), `config/database.dev.json:3` (DB password) | Real secrets in git history; reads as "dev-only" but exposed. Must be rotated. | **CRITICAL** |
+| R11 | **Committed secrets** (Loop 2 / F15) — **MITIGATED 2026-06-24** | `appsettings.json:16` (JWT key), `config/database.dev.json:3` (DB password) | Keys **rotated** per owner; committed values now stale/invalid. Residual: externalize to `${TF_*}` so the pattern doesn't recur or mislead audits. | ~~CRITICAL~~ → MEDIUM |
 | R12 | **Dual LevyCertification schema** (F14) | `Core/Entities/LevyCertification.cs` vs `Levy/Models/LevyCertification.cs`, both `DbSet` | DI-order decides which persists; silent data-layer ambiguity. | HIGH |
 | R13 | **Seal Gate cancelled-as-failed** (F13) | `seal-gate-fast.yml` `case` default | Phantom CI failures on superseded commits (observed on PR #1080); could block valid spine work. | HIGH |
 | R14 | **Recovery-spine ownership vacuum** (F16) | `.github/CODEOWNERS` (no workbench/dais/registry owner) | Rebuild would be blind; Gate E precondition unmet. | HIGH |
