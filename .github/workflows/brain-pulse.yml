@@ -1,0 +1,74 @@
+# TerraFusion Brain Pulse — Read-Only Status Snapshot
+#
+# WO-0118 — Control Plane Activation: Read-Only Pulse
+#
+# WHAT THIS DOES:
+#   Runs read-only brain CLI checks on a schedule and saves the report
+#   as a workflow artifact + GitHub Step Summary.
+#
+# WHAT THIS DOES NOT DO (hard boundary):
+#   - Edit files, stage changes, commit, push
+#   - Open PRs or post issue comments
+#   - Create work orders or modify queue truth
+#   - Change canon, promote artifacts, or mutate runtime behavior
+#   - Trigger downstream workflows (no repository_dispatch, no workflow_run)
+#   - Use any secrets or write tokens
+#
+# WRITE TOKEN AUDIT — nothing below requires write access:
+#   actions/checkout@v4          → reads repo via contents: read
+#   actions/setup-node@v4        → installs Node; no repo write
+#   node brain-pulse.mjs         → reads files + runs subprocesses; no git commit/push
+#   tee pulse-report.md          → writes to runner workspace only (ephemeral)
+#   echo >> $GITHUB_STEP_SUMMARY → GHA internal; not a repo write
+#   actions/upload-artifact@v4   → stores artifact in GHA storage; not a repo write
+#
+# PERMISSIONS: contents: read — this is the ONLY permission granted.
+# No issues: write, pull-requests: write, actions: write, or any other write scope.
+#
+# SCHEDULE: Weekdays at 9:00 AM PT (16:00 UTC).
+# MANUAL:   Actions → "Brain Pulse" → Run workflow.
+
+name: Brain Pulse
+
+on:
+  schedule:
+    - cron: '0 16 * * 1-5' # 09:00 PT Mon–Fri
+  workflow_dispatch: # manual trigger — no inputs, no write side-effects
+
+permissions:
+  contents: read # checkout only; all other permissions denied by omission
+
+jobs:
+  pulse:
+    name: Read-Only Status Snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # No job-level permissions override — inherits top-level contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          # No token: override — uses the default read-only GITHUB_TOKEN
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Brain Pulse
+        id: pulse
+        # brain-pulse.mjs detects GITHUB_STEP_SUMMARY (set by GHA automatically)
+        # and appends the report there. It also writes pulse-report.md via tee.
+        # All writes are to the ephemeral runner workspace — nothing is committed.
+        run: |
+          node scripts/brain/brain-pulse.mjs | tee pulse-report.md
+
+      - name: Upload pulse report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-pulse-${{ github.run_number }}
+          path: pulse-report.md
+          retention-days: 30
