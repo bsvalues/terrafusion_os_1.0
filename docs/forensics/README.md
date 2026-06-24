@@ -89,6 +89,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Gate C Scoring** (per-branch U/F/O + ordered needle set) | `R11-GATE-C-SCORING.md` |
 | **Recovery-to-Repo Topology Matrix** (Phase A; future-home per surface) | `RECOVERY-TOPOLOGY-MATRIX.md` |
 | **Phase-1 Founding Plan** (TerraFusionOS core definition; 6 docs) | `founding/TERRAFUSIONOS-FOUNDING-PLAN.md` |
+| **Ratification Record** (no-code gate; topology+founding accepted) | `RATIFICATION-RECORD.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

@@ -85,3 +85,15 @@ not happen. Binding sub-rules (see `RECOVERY-TOPOLOGY-MATRIX.md`):
 - **R-SPLIT:** every split surface assigns exactly one owner each for **runtime · contracts ·
   persistence · ingestion · UI host · tests.** Any unfilled cell ⇒ not cleared to split (else
   today's mess is recreated across N repos).
+
+## HR-9 — Ratification is a mandatory no-code gate (FECF lifecycle)
+The lifecycle is **Discover → Classify → Ratify → Recover → Migrate.** Classification and
+target homes are **hypotheses until ratified.** No recovery (R12) or migration may begin until
+the relevant topology/founding decisions are **explicitly ratified** (`RATIFICATION-RECORD.md`).
+- Ratification moves **no code** — it accepts structure, attaches recover-time conditions, and
+  authorizes only a single, narrow next step.
+- Recovery and migration are **separate, later, individually-ratified** actions — never bundled
+  with classification.
+- A lock-release is **scoped to one ratified needle** (e.g. R12-N1), with entry checks, not a
+  general unlock.
+*(Source: owner FECF direction, 2026-06-24.)*

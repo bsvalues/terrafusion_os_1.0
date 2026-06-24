@@ -209,4 +209,20 @@
 | **status** | Founding **definition** only. No extraction, no repo creation, no home/owner reassignment (matrix v2 stands). |
 | **decision** | Phase-1 defined. Extraction/migration begins only on owner lock-release + target repos created + per-repo prerequisites met (`EXTRACTION-PREREQUISITES.md`). |
 
-## Loop 11 — (only if owner releases recovery lock + creates target repos → Phase 1 extraction)
+## Loop 11 — Ratification pass (no-code gate) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L11 |
+| **trigger** | Owner: start Ratification now, not recovery; do not release the lock; do not start R12 |
+| **/goal** | Formally ratify the topology + founding plan (the FECF no-code gate before any recovery/migration) |
+| **method** | Re-check each of 4 items for contradiction vs forensic record, then stamp with conditions |
+| **evidence** | `RATIFICATION-RECORD.md` |
+| **result** | All 4 RATIFIED-WITH-CONDITIONS: (1) core contents [cond: registry convergence, explicit shared-contracts, Pilot shell-only]; (2) hard boundaries [R-WB/R-ATLAS enforced, CostForge cut]; (3) ownership cells [Levy/Dais persistence provisional until F14 resolved; Pilot deep cell deferred=undecided]; (4) needle order [N1→N2→reassess→N3; deep ports behind schema gate]. |
+| **doctrine** | Added **HR-9** (Ratification = mandatory no-code gate; lifecycle Discover→Classify→Ratify→Recover→Migrate; lock-release scoped to one ratified needle). |
+| **authorizes** | ONLY a future narrow lock-release for **R12-N1** (LocalOps/Muse/Pilot → core) with entry checks (not-landed / content-vs-main / no schema-config spillover / owner-sensitive fenced). |
+| **does NOT authorize** | general unlock · R12 beyond N1 · extraction now · repo creation · deep ports · Pilot deep internals. |
+| **lock status** | ACTIVE — unchanged by ratification. |
+| **decision** | Topology/founding **accepted**. Next step (on explicit owner go): narrow R12-N1 release only. |
+
+## Loop 12 — (only on explicit owner go → narrow R12-N1 lock-release: LocalOps/Muse/Pilot → core)

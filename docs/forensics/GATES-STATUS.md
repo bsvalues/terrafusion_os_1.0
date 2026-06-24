@@ -10,6 +10,12 @@
 | **D — Containment Readiness** | Salvage-critical evidence protected; no major hidden system unexplained | **NOT MET** | Needles not yet identified; cannot guarantee containment won't destroy salvage value. |
 | **E — Recovery Spine Readiness** | Shell/workbench/Dais/registry/governance spine actionable without reckless omission | **NOT MET** | Spine is mapped (Lane 7) but salvage from 653 port-only branches is unassessed; acting now risks omission. |
 
+## FECF lifecycle position (post Ratification)
+**Discover ✅ → Classify ✅ → Ratify ✅ (conditional, `RATIFICATION-RECORD.md`) → Recover ⛔ gated → Migrate ⛔ gated.**
+Ratification (HR-9) accepted: core contents · hard boundaries · ownership cells · needle order
+— all RATIFIED-WITH-CONDITIONS. It authorizes **only** a future narrow lock-release for
+**R12-N1** (LocalOps/Muse/Pilot → core) subject to entry checks. No general unlock; no extraction.
+
 ## Decision (current — post Loop 5)
 
 **Forensic phase is saturated.** Loops 3, 4, and 5 produced **no new disorder category** —
