@@ -11,9 +11,10 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 1 — Discovery breadth (forensic lanes 1–10) |
-| **Recovery lock** | **ACTIVE** — no salvage/cleanup/merge actions taken |
-| **Gate reached** | Gate A candidate (see `GATES-STATUS.md`) |
+| **Current loop** | Loop 18 — first Tier-1 port execution plan (decision-only) |
+| **Recovery lock** | **ACTIVE** — no salvage/cleanup/merge/code/migration actions taken (HR-9) |
+| **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Gates D/E not met (see `GATES-STATUS.md`) |
+| **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ⛔ gated** → Migrate ⛔ gated |
 | **Date** | 2026-06-24 |
 | **Working branch** | `claude/terrafusion-forensic-playbook-u3kvx6` (on current `main` lineage) |
 
@@ -99,6 +100,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **F14 Migration Plan** (criterion 4; leans C/projection) | `F14-MIGRATION-PLAN.md` |
 | **F14 Cross-Repo Contracts** (criterion 5; core-owned) | `F14-CROSSREPO-CONTRACTS.md` |
 | **F14 Gate Ratification** (Option C ratified → gate OPEN 5/5) | `F14-GATE-RATIFICATION.md` |
+| **First Tier-1 Port Execution Plan** (decision-only; Sync→Dais/Levy→Forge) | `TIER1-PORT-PLAN.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

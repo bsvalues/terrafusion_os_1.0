@@ -332,4 +332,16 @@
 | **authorizes** | drafting the first **Tier-1 port execution plan** (decision-layer) — NOT execution. Tier-1 port execution = future narrow, individually-ratified release (like R12-N1). |
 | **decision** | Schema decision layer COMPLETE. Reassess: (a) draft Tier-1 port execution plan, or (b) parked PR #1073. |
 
-## Loop 18 — (next: draft first Tier-1 port execution plan [decision-only], or narrow PR-#1073 release)
+## Loop 18 — first Tier-1 port execution plan drafted (decision-only) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L18 |
+| **trigger** | Owner: draft the first Tier-1 port execution plan now, decision-only, in **Sync → Dais/Levy → Forge** order; not #1073, not a lock release, not code movement |
+| **evidence** | `TIER1-PORT-PLAN.md` + read-only grounding check on named source heads |
+| **grounding finding** | Sync legacy heads (`sync-complete-2-v3`, `sync-doctrine-4-v9`, `sync-pop-4c/4d`, `attr-pop-1/2`) have **true-residual = 0** → port method is **hunk-level** (diffs to files already in main's sync engine), NOT file-add. `codex/sync-db-evidence-runtime-path` (ahead 17, **8 genuine new files**) = **cherry-pickable bridge**. Levy/Forge `r2/*` heads uniformly show **true-residual ≈ 42** → almost certainly a **shared deletion-residue floor** (like the 9-file/62-e2e floors) → MUST be characterized & subtracted before trusting residual (HR-6, v1→v2 lesson). |
+| **plan shape** | Per-domain: target repo · source heads · port method · entry checks · owner-sensitive fences · schema/config deps · cross-repo contracts touched · cut line (now/later) · rollback/abort · proof-of-success-of-the-plan. Cross-cutting entry check = characterize r2-42 floor + one-head-per-recut + content-presence. **CostForge "Ultimate" CUT** (F18 Tier-5 theater) — do not port. |
+| **sequencing** | Sync first (platform ingress; contract must land before suites can be fed) → Dais/Levy second (ratified Option-C SoR; needs Sync feed + F14 migration) → Forge third (consumes both). |
+| **gate status** | F14 gate OPEN (5/5). Tier-1 ports unblocked **to plan** only — plan now exists. |
+| **lock status** | FULL ACTIVE — no code, no merge, no cherry-pick, no repo creation, no release (HR-9). |
+| **decision** | Tier-1 plan is decision-ready, convertible into per-domain narrow-release work orders. Reassess: (a) prepare first narrow release = **Sync entry-checks** (read-only hunk inventory, still no merge), or (b) take parked **PR #1073** as a contained near-term win. Hold for owner direction. |
