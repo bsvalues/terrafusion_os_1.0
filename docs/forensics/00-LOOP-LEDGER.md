@@ -196,4 +196,17 @@
 | **key tightenings** | Workbench is never a domain repo; Atlas UI vs ingestion seam; Pilot stays in core until earned; every split surface needs all 6 ownership cells filled or it does not split. |
 | **status** | Matrix now executable, not conceptual. No extraction/repo creation. Migration gated on lock-release + repos existing. |
 
-## Loop 10 — (only if owner releases recovery lock → Phase 1 core-spine salvage/migration)
+## Loop 10 — Phase-1 core-spine founding plan (definition) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L10 |
+| **trigger** | Owner: draft the Phase-1 core-spine founding plan now; do not hold; do not start extraction |
+| **/goal** | Define TerraFusionOS core + shared-contracts as a thin governed center (what it is/owns/never-owns + contracts future repos obey) |
+| **evidence** | `founding/` — TERRAFUSIONOS-FOUNDING-PLAN, CORE-CONTENTS-MATRIX, SHARED-CONTRACTS-MATRIX, OWNERSHIP-CELLS, NON-OWNERSHIP-RULES, EXTRACTION-PREREQUISITES |
+| **result** | Core includes: shell/windowing, top-bar/dock, workbench **host**, Pilot/Trace/Canon shell surfaces, registry/runtime composition, governance/canon tooling, **shared-contracts**, core config standards. Core excludes all suite/platform domain + ingestion + deep AI. 7 shared contracts defined (workbench-tab, suite→core, sync→suite payload, cross-repo DTO/event, auth/session, registry, county-isolation). Ownership cells filled (incl. split surfaces). 8 non-ownership rules. Per-repo extraction prerequisites set. |
+| **owner clarifications applied** | shared-contracts explicit under core; Pilot split stays undecided; County Hub = Sync consumer (not core, unless shell-only routing); Levy stays Dais-bound. |
+| **status** | Founding **definition** only. No extraction, no repo creation, no home/owner reassignment (matrix v2 stands). |
+| **decision** | Phase-1 defined. Extraction/migration begins only on owner lock-release + target repos created + per-repo prerequisites met (`EXTRACTION-PREREQUISITES.md`). |
+
+## Loop 11 — (only if owner releases recovery lock + creates target repos → Phase 1 extraction)
