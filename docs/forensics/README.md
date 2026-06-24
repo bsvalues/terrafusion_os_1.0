@@ -85,6 +85,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **F17 — AI Reality Audit** (runtime axis) | `F17-AI-REALITY-AUDIT.md` |
 | **F18 — Latent Value Audit** (value axis; value ≠ runtime) | `F18-LATENT-VALUE-AUDIT.md` |
 | **R11 — Branch Disposition (decision lane)** | `R11-BRANCH-DISPOSITION.md` |
+| **Value-Tier Salvage Map** (Tier 1–2 → best-version branches) | `R11-VALUE-TIER-SALVAGE-MAP.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

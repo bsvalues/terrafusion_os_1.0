@@ -144,4 +144,16 @@
 | **confidence change** | value axis now assessed; salvage targeting materially sharper. No new disorder category. |
 | **decision** | Hold recovery lock. The Tier-1/2 surfaces (Sync, Levy, compliance, mesh) are the real salvage spine; CostForge "Ultimate" is the real cut. R12 execution still awaits owner lock-release. |
 
+## Loop 7.1 — Value-tier salvage map (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **trigger** | Owner: build the value-tier salvage map (Tier 1–2 surfaces → which branches carry their best versions) |
+| **method** | census-driven surface→branch mapping (`evidence/value-tier-surface-map.txt`) + F18 tiers + lineage/mergeability fences |
+| **evidence** | `R11-VALUE-TIER-SALVAGE-MAP.md`, `evidence/value-tier-surface-map.txt` |
+| **key pattern** | Deepest value (Tier-1 Sync/Levy/forge-stats) is **PORT-ONLY on the dead legacy lineage**; the honest LATENT AI spine (LocalOps/Muse/Pilot, `wo-localops-000…008`) is **MAIN-CURRENT / mergeable**. Recovery method splits accordingly. |
+| **critical dependency** | A **schema-reconciliation gate** (F14/HR-2) blocks all Tier-1 domain ports (Sync/Levy/forge) — they sit on the fractured multi-context/multi-DB layer; porting first would re-bury the value. |
+| **recommended sequence** | (1) LocalOps/Muse/Pilot stack [merge, lowest risk], (2) Atlas/ArcGIS mergeable heads incl. open PR #1073, (3) AI-honesty merges, (4) ⛔ schema reconciliation gate, (5) Sync port, (6) Levy port, (7) forge-stats port, (8) cut CostForge "Ultimate". |
+| **status** | Map = decision artifact (under lock). R12 execution gated on owner lock-release. |
+
 ## Loop 8 — (only if owner releases recovery lock → R12 salvage execution)
