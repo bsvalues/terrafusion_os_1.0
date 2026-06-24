@@ -10,6 +10,12 @@
 | **D — Containment Readiness** | Salvage-critical evidence protected; no major hidden system unexplained | **NOT MET** | Needles not yet identified; cannot guarantee containment won't destroy salvage value. |
 | **E — Recovery Spine Readiness** | Shell/workbench/Dais/registry/governance spine actionable without reckless omission | **NOT MET** | Spine is mapped (Lane 7) but salvage from 653 port-only branches is unassessed; acting now risks omission. |
 
+## F14 schema gate: **OPEN** (Option C ratified, `F14-GATE-RATIFICATION.md`, 2026-06-24)
+Levy module = system-of-record → TerraFusion-Dais; Core levy = read-only projection (no
+dual-write/shadow schema). 5/5 criteria ratified. HR-2 schema-decision blocker cleared → Tier-1
+ports (Sync/Dais·Levy/Forge) unblocked **to plan**; execution still requires a narrow,
+individually-ratified lock release (HR-9). Recovery lock remains ACTIVE.
+
 ## FECF lifecycle position (post Ratification)
 **Discover ✅ → Classify ✅ → Ratify ✅ (conditional, `RATIFICATION-RECORD.md`) → Recover ⛔ gated → Migrate ⛔ gated.**
 Ratification (HR-9) accepted: core contents · hard boundaries · ownership cells · needle order

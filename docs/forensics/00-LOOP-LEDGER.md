@@ -319,4 +319,17 @@
 | **lock status** | FULL ACTIVE — no code, no migration, no release. |
 | **decision** | Gate fully drafted. Reassess: ratify C/D to OPEN the gate (then Tier-1 ports unblock), or take parked #1073. |
 
-## Loop 17 — (next: ratify C-vs-D + migration/contracts → OPEN F14 gate, or PR #1073)
+## Loop 17 — F14 gate ratified OPEN (Option C) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L17 |
+| **trigger** | Owner: ratify C + migration map + contract set now; no #1073 yet |
+| **evidence** | `F14-GATE-RATIFICATION.md` |
+| **ratified** | **Option C** (Core = read-only projection; `TerraFusion.Levy` = SoR → Dais; no dual-write, no shadow schema, projection/event refresh only). D rejected for now (large retained-read surface). Criterion-4 map + criterion-5 contracts ratified. |
+| **gate** | **F14 GATE OPEN — 5/5.** HR-2 schema-decision blocker cleared. Tier-1 ports (Sync/Dais·Levy/Forge) unblocked **to PLAN** (execution still lock-gated). |
+| **lock status** | FULL ACTIVE — no code, no migration, no projection build, no release. |
+| **authorizes** | drafting the first **Tier-1 port execution plan** (decision-layer) — NOT execution. Tier-1 port execution = future narrow, individually-ratified release (like R12-N1). |
+| **decision** | Schema decision layer COMPLETE. Reassess: (a) draft Tier-1 port execution plan, or (b) parked PR #1073. |
+
+## Loop 18 — (next: draft first Tier-1 port execution plan [decision-only], or narrow PR-#1073 release)

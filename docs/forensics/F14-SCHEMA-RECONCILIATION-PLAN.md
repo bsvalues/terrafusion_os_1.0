@@ -81,10 +81,10 @@ via Core, Levy DB via Levy module). No crash; a silent split of where levy/cert 
 
 ## 5. Gate criteria — what MUST be true before any Tier-1 port starts
 
-> **Status after `F14-SSOT-RATIFICATION.md` (2026-06-24): gate at 3/5.** Criteria 1–3 MET
-> (Levy module = system-of-record → Dais; Core levy demoted to legacy [final C/D at execution];
-> contexts owned; Identity-context rename ratified). Criteria **4 (migration plan)** and
-> **5 (cross-repo contracts)** remain OPEN — Tier-1 ports stay BLOCKED until both are done.
+> **Status: GATE OPEN — 5/5 ratified (`F14-GATE-RATIFICATION.md`, 2026-06-24).** Final form =
+> **Option C** (Core = read projection; Levy module = SoR → Dais; no dual-write/shadow schema).
+> All 5 criteria MET. The HR-2 schema-decision blocker is cleared → Tier-1 ports are unblocked
+> **to plan**; *execution* still requires a narrow, individually-ratified lock release (HR-9).
 
 The F14 gate **opens** only when ALL hold (ratified):
 1. **Schema authority chosen** per fractured domain (Levy A/B/C/D selected; CurrentUse confirmed; Identity-rename decided).
