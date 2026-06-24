@@ -33,19 +33,47 @@ ancestor. There are **3 distinct root commits**:
 
 ---
 
-## 2. Divergence buckets (vs `origin/main`)
+## 2. Branch Census Schema Addendum — per-branch first-order fields
 
-From `evidence/branch-divergence-vs-main.txt` (ahead/behind counts):
+Per the updated playbook, **lineage and mergeability are required first-order fields**
+and no branch may be dispositioned without them. The full per-branch dataset conforming
+to the Schema Addendum is committed at **`evidence/branch-census.csv`** (741 branches,
+excl. `main`), with columns:
 
-| Bucket | Count | Notes |
+`branch_name, lineage_class, mergeability_class, root_commit_family,
+shares_ancestor_with_main_flag, merge_base_with_main, unrelated_history_flag,
+ahead_of_main, behind_main`
+
+### The binding rule (playbook)
+> **If a branch does not share ancestry with current `main`, it is not a normal merge
+> candidate and defaults to `PORT-ONLY` until proven otherwise.**
+
+Operationalized here: `unrelated_history_flag = true` ⇒ `mergeability_class = PORT-ONLY`.
+
+### Aggregate classification (authoritative)
+
+| lineage_class | branches | mergeability outcome |
 |---|---|---|
-| Fully contained in `main` (ahead = 0) | **15** | Prune-safe — already in `main`. |
-| 1–10 commits ahead | 104 | Mostly same-lineage recent work. |
-| 11–50 commits ahead | 40 | Review individually. |
-| 51+ commits ahead | **582** | **Inflated by the disjoint-root effect** — these show thousands "ahead" because they share no base with `main`, not because they are 582 genuine megabranches. Treat as archaeology. |
+| `MAIN-CURRENT (f2511bb)` | **88** | shares ancestry with main → MERGE-CANDIDATE / CONTAINED |
+| `LEGACY (7c26657)` | **580** | unrelated history → **PORT-ONLY** |
+| `THIRD-ROOT (5d16d8f)` | **73** | unrelated history → **PORT-ONLY** |
 
-The top-15 most-diverged branches all report identical "194 behind / ~3,800 ahead" —
-the signature of measuring across unrelated histories, confirming the re-root.
+| mergeability_class | branches | meaning |
+|---|---|---|
+| `CONTAINED` | **8** | `ahead_of_main = 0` — already fully in `main`, prune-safe |
+| `MERGE-CANDIDATE` | **80** | shares ancestry, has unique commits — normal merge/cherry-pick possible |
+| `PORT-ONLY` | **653** | `unrelated_history_flag = true` — **never `git merge`**; file/hunk port only |
+
+> Correction to prior note: the stricter schema yields **8 CONTAINED** branches. The
+> earlier "15 ahead = 0" figure was a `--left-right` count artifact that wrongly included
+> disjoint-history branches. `evidence/branch-census.csv` supersedes it.
+
+## 2b. Divergence (vs `origin/main`) — disjoint-history caveat
+
+`ahead_of_main`/`behind_main` are recorded per branch in the CSV, **but for the 653
+`PORT-ONLY` branches these counts are meaningless** (they measure across unrelated
+histories — e.g. uniform "194 behind / ~3,800 ahead"). Divergence is only interpretable
+for the 88 `MAIN-CURRENT` branches.
 
 ---
 
@@ -79,7 +107,10 @@ Centered on `claude/wo-data-*`, `fix/wo-ai-consolidation-004c-*`, `docs/wo-data-
 
 ## 4. Census completeness
 
-Lane 1 completion criterion ("every remote branch inventoried, basic historical position
-known") is **met**: all 742 branches are partitioned by root and bucketed by divergence,
-with raw evidence committed under `evidence/`. Per-branch *uniqueness/feasibility/value*
-scoring is deferred to Lane 11 (gated).
+Lane 1 completion criterion — now updated to require **root-history classification and
+physical mergeability** — is **met**: all 741 branches carry `lineage_class`,
+`mergeability_class`, `root_commit_family`, `shares_ancestor_with_main_flag`,
+`merge_base_with_main`, and `unrelated_history_flag` in `evidence/branch-census.csv`.
+Per-branch *uniqueness/feasibility/operational-value* scoring remains deferred to Lane 11
+(gated) — those join the now-mandatory lineage + mergeability fields before any
+disposition is accepted (Gate C).

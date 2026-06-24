@@ -16,6 +16,12 @@ They unlock only when the relevant gates pass (`GATES-STATUS.md`):
 
 ## Pre-committed recovery doctrine (binding when lanes open)
 
+0. **No disposition without lineage + mergeability (playbook-mandated).** Every branch
+   row must carry `lineage_class` and `mergeability_class` (from
+   `evidence/branch-census.csv`) before any disposition value is assigned. **If a branch
+   does not share ancestry with current `main` (`unrelated_history_flag = true`), it is
+   not a normal merge candidate and defaults to `PORT-ONLY` until proven otherwise.**
+   This excludes the 653 PORT-ONLY branches from `merge cleanly` by default.
 1. **Disposition values**: `salvage-now` · `compare-later` · `archaeology` · `ignore`.
    No branch becomes a needle while hidden-system risk is materially high.
 2. **Recovery methods**: `merge cleanly` (only for root-`f2511bb` branches) ·

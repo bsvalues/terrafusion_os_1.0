@@ -29,5 +29,18 @@
 
 ---
 
+## Loop 1.1 — Playbook schema-addendum compliance (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L1.1 |
+| **trigger** | Playbook updated: lineage_class + mergeability_class made required first-order branch fields; Lane 1 & Lane 11 & Gate C tightened; Branch Census Schema Addendum added |
+| **/goal** | Make the census conform to the new mandatory schema before any disposition |
+| **action** | Generated per-branch dataset `evidence/branch-census.csv` (741 branches) with all six required fields; encoded the PORT-ONLY default rule for unrelated histories |
+| **result** | lineage_class: MAIN-CURRENT 88 / LEGACY 580 / THIRD-ROOT 73. mergeability_class: PORT-ONLY 653 / MERGE-CANDIDATE 80 / CONTAINED 8 |
+| **correction** | CONTAINED is **8**, not the earlier "15" (which was a `--left-right` artifact including disjoint branches). CSV supersedes. |
+| **gate effect** | Gate C's new lineage+mergeability prerequisite is now satisfied; value/feasibility scoring still pending for full Gate C. |
+| **decision** | Unchanged: stay in discovery; recovery lanes remain gated. |
+
 ## Loop 2 — (not yet run)
 Planned objectives in `GATES-STATUS.md` → "Loop 2 entry objectives".
