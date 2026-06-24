@@ -285,6 +285,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | R15 | `.gitignore` and git index disagree | `ui-token-compliance.contract.json`, `ui-token-ratchet.contract.json`, `_validator_proof.log.err`, `.playwright-mcp/*` are **named in `.gitignore` yet tracked** (`git check-ignore` exit 1 — overridden by force-add or pre-ignore commit). Ignore policy is not enforced by the tree. | Contradicted (Proven) |
 | R16 | Claim-doc commit hashes unverifiable; likely history rewrite | Every commit cited in `SEALED.md`, `SPRINT.md`, `shell-defect-ledger.json` (`b1204e4ef`, `2638e5f82`, `f2d36c610`…) is **absent** from this history. `bfg.jar` (history-purger) committed at root → BFG rewrite suspected; claim docs not updated to match. | Suspected / Contradicted |
 | R17 | Author path / placeholder-secret leakage | `_validator_proof.log.err` exposes `C:\Users\bsval\…`; `dev-audit/payloads.json` tracks a `"secret"` key (placeholder `xxx`). | Proven |
+| R18 | **Classification drift (headline risk)** | Production, experimental, frozen, historical, governance, agent-generated, and research systems share the same physical roots (`os-platform/`, `packages/`, `docs/`). Treating them as one category is how real software gets archived by accident and fantasy code gets promoted by accident. See Appendix A (FECF v1.1). | Corroborated |
 
 ---
 
@@ -331,4 +332,79 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 
 ---
 
-*Produced under WO-FECF-001 in discovery mode. No files were deleted, moved, renamed, merged, consolidated, archived, or rewritten. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
+## Appendix A — FECF v1.1: Classification Before Evaluation
+
+This appendix is added in response to the `specialized/` correction. The original error was not a bad quality judgment; it was a **missing classification layer** — the audit ran `name → opinion → disposition` instead of the disciplined order. FECF v1.1 makes the order mandatory and adds three required outputs (A1–A3).
+
+**Doctrine — Classification Before Evaluation.** Before judging quality, classify the object. Evaluate only after classification, in this order:
+
+> **1. Classify** (what *kind* of thing is it?) → **2. Liveness** (is it wired now?) → **3. Authority** (does it govern anything?) → **4. Quality** (is the implementation real?) → **5. Disposition** (what should happen — *out of scope for this WO*).
+
+**Why it matters:** `Frozen + Fantasy` (harmless historical residue) and `Runtime-Critical + Fantasy` (catastrophic — false capability in the live path) look identical if you skip step 1. The bucket changes the risk by orders of magnitude.
+
+**Estate headline risk, revised:** TerraFusion's dominant risk is **not branch chaos — it is classification drift.** Production, experimental, frozen, historical, governance, agent-generated, and research systems occupy the *same physical space*. The danger is not that they coexist; it is treating them as one category — which is how real software gets archived by accident and how fantasy code gets promoted by accident. (Confidence: Corroborated — this very audit demonstrated the failure mode live.)
+
+### A1 — Surface Classification Register
+
+Buckets: Runtime-Critical · Build-Critical · Governance-Critical · Experimental · Frozen · Archive · Generated · Residue · Unknown. (Classification step only — liveness/authority/quality are recorded in the body registers.)
+
+| Surface | Classification | Confidence |
+|---|---|---|
+| `frontend/apps/os-shell/` | Runtime-Critical | Proven |
+| `backend/src/TerraFusion.API/` | Runtime-Critical (build present; runtime reachability conditional) | Corroborated |
+| `backend/src/TerraFusion.{Core,Data,Consciousness,Operations,Sync,Levy,…}` | Build-Critical (in `backend/TerraFusion.sln`) | Proven |
+| `backend/api-unified/`, `backend/TerraFusionSimple.csproj` | Unknown (orphan entry point, in no .sln) | Suspected |
+| `backend/TerraFusion.sln` | Build-Critical (the one `backend:build` uses) | Proven |
+| root `./TerraFusion.sln`, `packages/government-edition/TerraFusion.sln` | Build (superseded/secondary) | Proven |
+| `pnpm-workspace.yaml` + globbed `packages/*`, `tools/*`, `apps/*` | Build-Critical | Proven |
+| `packages/*-MARKED-FOR-REVIEW`, `legislative-pulse`, `gis-pro`, `terra-permit`, `property-tax-ai` | Frozen (workspace-excluded, broken deps) | Proven |
+| `spec-lock/` | Governance-Critical | Corroborated |
+| `brain/` | Governance-Critical (docs/data only, non-runtime) | Proven |
+| `os-platform/core/` (gates, ToolRegistry, canon, tests) | Governance-Critical | Corroborated |
+| `os-platform/development/testing-suite/` | Experimental (active tests, non-production) | Corroborated |
+| `os-platform/specialized/**` | Frozen (repo-declared `PROTECTED_PATTERNS`) | Proven |
+| `os-platform/ai-systems/ai-systems/ai-swarm/` | Experimental→Scaffolding (unwired) | Corroborated |
+| `QUARANTINE/` | Archive | Proven |
+| `phase4*.json` (root) | Generated (consolidation ledgers) | Corroborated |
+| `.pnpm-store/` | Residue (committed package cache) | Proven |
+| `_validator_proof.log.err`, `.ci_artifacts_local/`, `.playwright-mcp/` | Residue | Proven |
+| `SEALED.md` | Governance (fossil — contradicted by history) | Contradicted |
+| `docs/security/baseline.md`, `docs/ai-consolidation/AI_ESTATE_INVENTORY.md` | Governance-Critical (honest authority) | Proven |
+| `docs/{reports,phases,milestones,superpowers,recognition}/` | Residue (agent-generated completion corpus) | Corroborated |
+| `docs/legacy/`, `docs/ci/archived/` | Archive | Proven |
+
+### A2 — Strata Map (worked example: `os-platform/`)
+
+A single physical root spans five strata; each must be scored independently, not as one category.
+
+| Path | Layer | Role | Confidence |
+|---|---|---|---|
+| `os-platform/core/` | Governance-Critical | Gates (`check-protected-paths.mjs`), ToolRegistry, canon, leak-guard tests — active control plane | Corroborated |
+| `os-platform/development/testing-suite/` | Experimental | The "716-test" corpus; active, non-production | Corroborated |
+| `os-platform/specialized/` → `web-audit-tracker`, `operations-dashboard` | Frozen ∩ **Real product** | Versioned apps (`@terrafusion/web-audit-tracker` v1.2.0, ~20K LOC) sitting inside a frozen zone | Proven |
+| `os-platform/specialized/` → `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine` | Frozen ∩ Experimental | Quantum-washed naming over possibly-real logic; quality unadjudicated | Suspected |
+| `os-platform/specialized/` → `morphic-resonance`, `dimensional-folding`, `precrime-prevention`, `singularity-…`, `paradigm-…`, `quantum-collapse`, `biofield-…` | Frozen ∩ **Fantasy** | Implementation describes physically-impossible operations (FTL, spacetime folding) | Proven |
+| `os-platform/ai-systems/ai-systems/ai-swarm/` | Scaffolding | Doubly-nested, unwired swarm stubs | Corroborated |
+| `os-platform/*.ps1` ("championship/quantum"), `EliteDashboard.tsx` | Residue | Aspirational/marketing scripts at root | Suspected |
+
+The point: a **real product** sits inside an **experimental band** inside a **frozen zone** inside a **non-workspace root**. A flat audit (the first pass) collapses all of that to "junk." Strata mapping is what prevents the collapse.
+
+### A3 — Promotion Risk Matrix
+
+Promotion/demotion is **disposition (step 5) — out of scope for this WO.** This matrix only records *what evidence a future, separate WO would need* before moving a surface between layers. Direction matters: promoting fantasy into runtime, or demoting a real product into archive, are the two failure modes the classifier exists to prevent.
+
+| Surface | Current layer | Eligible for | Evidence required before any move |
+|---|---|---|---|
+| `web-audit-tracker` | Frozen ∩ Real | Experimental → Runtime | Clean build, resolvable deps, named owner, workspace-inclusion decision, security review |
+| `operations-dashboard` | Frozen ∩ Real | Experimental | Build proof, integration target, owner |
+| `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine` | Frozen ∩ Experimental | Experimental (only after audit) | **Implementation audit to separate real logic from theater** before any promotion is even considered |
+| `morphic-resonance`, `dimensional-folding`, et al. | Frozen ∩ Fantasy | **Not eligible** | Implementation is physically impossible; disposition = archive/quarantine candidate (separate WO) |
+| `backend/api-unified/` | Unknown orphan | Runtime *or* Archive | **Un-shallow git history** to determine newer-rewrite vs abandoned-copy; .sln membership decision |
+| `config/*quantum/consciousness/transcended*.json` | Residue ∩ false-capability | Demote/relabel | Confirm nothing in the live path reads them as real capability (catastrophic-class check) |
+| `SEALED.md` | Governance (fossil) | Relabel as historical | Reconcile seal-chain commits against real history (BFG-rewrite annotation) |
+
+**Net effect:** had A1–A3 been applied first, the `specialized/` directory would have been split into Real / Experimental / Fantasy *before* any quality verdict, and "specialized = trash" could not have been written.
+
+---
+
+*Produced under WO-FECF-001 in discovery mode (FECF v1.1: Classification Before Evaluation). No files were deleted, moved, renamed, merged, consolidated, archived, or rewritten. No surface was promoted or demoted. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
