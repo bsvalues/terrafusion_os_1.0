@@ -51,17 +51,23 @@ Families: `*-prometheus-criticals-v1` (auth/cicd/infra/observability), `fix/auth
 `feat/*levy*` / `fix/*levy*`, `*cert*`, `feat/docs-fisma-honest-baseline`, `rescue/fisma-*`.
 → all require owner review before `salvage-now`.
 
-## AI-dependency list (fence #3) — 132 branches → **RESOLVED via F17**
-F17 (`F17-AI-REALITY-AUDIT.md`) classified the underlying surfaces, so fence #3 now resolves
-each AI-touched branch by the surface it depends on:
+## AI-dependency list (fence #3) — REWRITTEN to key on VALUE TIER (F18), not runtime status
+F17 gave runtime status; **F18 (`F18-LATENT-VALUE-AUDIT.md`) gives the value tier, and per
+HR-6 salvage-eligibility keys on the value tier, NOT on whether the surface is currently
+wired.** A surface can be MOCKED at runtime yet tier-1/2 in value (e.g. the gated mesh, the
+IAAO "stub"). Resolve each AI-/domain-touched branch by the tier of the surface it depends on:
 
-| Underlying AI surface (F17 class) | Branch families | R11 effect |
+| Underlying surface value tier (F18) | Examples | R11 effect |
 |---|---|---|
-| **REAL / LATENT** (salvage-eligible) | `claude/wo-localops-*` (Muse/Pilot/LocalOps — LATENT), `claude/cc5-pilot-api-verify`, `feat/muse-router-status-v3`, GPT/AzureOpenAI/AICommand/AIEngine-touching branches | **UNBLOCKED** → may be needle candidates, subject to fences #1/#2/#4 + scoring |
-| **Honesty-correction** (removes fiction) | `claude/wo-ai-consolidation-004a` (corrected 1,008 canon), `fix/wo-ai-consolidation-004c-*` (service honesty), `docs/wo-ai-*` sweeps | **UNBLOCKED** as truth work (they delete the fiction) |
-| **MOCKED / FICTION** (do not build on) | branches building on consciousness/quantum/million-agent/50k-agent/CostForge-metrics/elite-dashboard (`fix/consciousness-engine-stub-733`, `fix/wo-cf-b2*` fabricated-metrics, swarm/quantum feature branches) | **archaeology** (default) — do not salvage as functional AI |
+| **Tier 1 — Real & useful** | Sync/PACS ETL, Levy calc | **salvage-eligible / high priority** (but Tier-1 here is also owner-sensitive — PACS/levy → fence #2 owner review) |
+| **Tier 2 — Experimental but real** | Consciousness **mesh** (gated), IAAO **Compliance** "stub", ArcGIS scheduler, Muse/Pilot/LocalOps | **salvage-eligible** (un-gate / promote / wire); NOT archaeology |
+| **Tier 3 — Simulated/benchmarked/process** | phase4d provenance manifests, honesty-correction branches (`wo-ai-consolidation-004a`, `wo-ai-consolidation-004c-*`, `docs/wo-ai-*`) | **keep & relabel honestly** (truth work is salvage-eligible) |
+| **Tier 4 — Presentation-heavy** | property valuation demo, ratio-studies-declared-absent | **keep honest placeholder; implement-or-strip-claim** (not auto-discard) |
+| **Tier 5 — Fictionalized** | CostForge "Ultimate", million-agent/quantum theater, `fix/wo-cf-b2*` fabricated-metrics | **archaeology / deprecate** — the only true do-not-build tier |
 
-Heuristic applied: build-on-fiction → archaeology; wire-real/remove-fiction → salvage-eligible.
+**Correction to prior R11 draft:** the earlier "MOCKED/FICTION → archaeology" rule was too
+blunt (runtime-only lens). Only **Tier 5** defaults to archaeology; Tier 1–2 MOCKED-but-real
+surfaces are salvage-eligible. This is the HR-6 guardrail against discarding good work for bad packaging.
 
 ## Overlap-resolution groups (pick ONE authoritative head per family)
 | Family | Members | Resolution rule |

@@ -24,6 +24,7 @@ Confidence: `low` · `medium-low` · `medium` · `medium-high` · `high`
 | **F15 Config/env/secrets** | runtime-control truth | Explore agent | `F15-…` | **complete** | high | committed JWT secret + DB password (**rotated 2026-06-24 → mitigated**); port contract broken in dev-compose; `config/`↔`configs/` + appsettings duplication | externalize stale values; fix dev-compose ports | Loop 3 hygiene |
 | **F16 Ownership/false-completion** | accountability truth | Explore agent | `F16-…` | **complete** | high | recovery-spine surfaces **UNOWNED**; ~412 COMPLETE docs, ~2 evidence-backed; 50,000-agent fiction | assign stewards | Gate E precondition |
 | **F17 AI reality** | AI claim vs runtime | Explore agent | `F17-…` | **complete** | high | AI estate mostly MOCKED/FICTION; thin REAL/LATENT spine (DB stats + wireable Muse/Azure LLM); UI honestly discloses non-function | confirm REAL surfaces under load | feeds R11 fence #3 |
+| **F18 latent value** | salvageable substance (value ≠ runtime) | Explore agent | `F18-…` | **complete** | high | ~30–40% genuinely good (Sync/PACS ETL, Levy RCW math, IAAO compliance, gated mesh); ~40–50% hype theater (CostForge "Ultimate" = 820 LOC of Task.Delay); phase4d "results" = provenance manifests, not test proof | wire/un-gate Tier-1/2 surfaces (post-lock) | drives R11 fence #3 (value tier) + HR-6 |
 
 ## Loop control read-out (updated after Loop 2)
 

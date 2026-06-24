@@ -40,3 +40,20 @@ A finding can have a **historical truth** (what happened / what is in the record
 **current operational truth** (present posture). Resolving the latter (e.g. rotating secrets)
 **changes risk posture but does not erase the forensic fact**. Both truths are recorded;
 neither overwrites the other. *(Source: F15 secret rotation, 2026-06-24.)*
+
+## HR-6 — Reclassify by evidence, not vibe (value ≠ runtime ≠ naming)
+Three axes are independent and must not be collapsed: **(a) marketing/naming**,
+**(b) runtime status** (REAL/LATENT/MOCKED/FICTION — F17), **(c) latent engineering value**
+(the 5 tiers — F18). Bad marketing ≠ bad substance; MOCKED/FICTION *at runtime* ≠ no *value*.
+- The repo already suffered **failure mode #1: believing claims too easily.** Do not now commit
+  **failure mode #2: discarding real work because the packaging is embarrassing.** Both lose value.
+- Decide salvage on the **value tier + claim-stripped residue** (strip the mythology — what
+  still does something useful?), never on naming or current wired-status.
+- **Simulations, benchmarks, and provenance manifests are relabeled honestly, not discarded.**
+  A "stub" that contains real math (e.g. IAAO COD/PRD) is promoted, not deleted.
+
+### Value tiers (F18 / owner taxonomy)
+1. Real & useful · 2. Experimental but real · 3. Simulated/benchmarked (honest relabel) ·
+4. Presentation-heavy / weakly grounded · 5. Fictionalized (trash).
+Tier 1–2 = salvage-eligible; 3 = keep as labeled artifact; 4 = honest placeholder /
+implement-or-strip-claim; 5 = archaeology/deprecate.

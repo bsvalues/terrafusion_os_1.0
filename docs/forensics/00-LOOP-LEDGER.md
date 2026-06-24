@@ -129,4 +129,19 @@
 | **confidence change** | AI ambiguity → classified; branch-disposition framework now populated and fenced. No new disorder category (4th consecutive loop). |
 | **decision** | Hold recovery lock. Final needles + R12 salvage await Gate C FULL + explicit owner lock-release. |
 
-## Loop 7 — (only if owner releases recovery lock → R12 salvage execution)
+## Loop 7 — F18 Latent Value audit + value-axis reframe (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L7 |
+| **trigger** | Owner challenge: bad marketing / MOCKED-runtime ≠ no value; demand a claim-stripped substance audit on a 5-tier taxonomy |
+| **/goal** | Assess the axis F17 missed — latent engineering value, independent of runtime status & naming |
+| **method** | F18 Explore agent: read implementation depth (LOC, algorithms, data models), real test/run evidence, gated-vs-empty; classify on owner's 5 tiers + claim-stripped residue |
+| **evidence** | `F18-LATENT-VALUE-AUDIT.md` |
+| **result** | **~30–40% genuinely good** (Sync/PACS ETL ~1,712 LOC, Levy RCW math ~97 LOC, IAAO compliance "stub", gated mesh orchestrator, ArcGIS scheduler) — Tier 1–2. **~40–50% hype theater** (CostForge `UltimateCostForgeAI.cs` 820 LOC of `Task.Delay`, million-agent/quantum) — Tier 5. **~10–20% real process** (phase4d provenance manifests — NOT test/benchmark proof) — Tier 3. |
+| **corrections** | (a) Corrects F17 value-blindness: ComplianceServiceStub + Consciousness mesh are tier-2 real value, not worthless. (b) Refines owner's "test results" hypothesis: manifests are real *process record*, not empirical proof. (c) Rewrites R11 fence #3 to key on **value tier, not runtime status** — only Tier 5 defaults to archaeology. |
+| **doctrine** | Added **HR-6** (reclassify by evidence not vibe; value ≠ runtime ≠ naming; avoid both failure modes — believing claims AND discarding good work for bad packaging). |
+| **confidence change** | value axis now assessed; salvage targeting materially sharper. No new disorder category. |
+| **decision** | Hold recovery lock. The Tier-1/2 surfaces (Sync, Levy, compliance, mesh) are the real salvage spine; CostForge "Ultimate" is the real cut. R12 execution still awaits owner lock-release. |
+
+## Loop 8 — (only if owner releases recovery lock → R12 salvage execution)
