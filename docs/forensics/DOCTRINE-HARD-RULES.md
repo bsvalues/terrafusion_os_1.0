@@ -57,3 +57,17 @@ Three axes are independent and must not be collapsed: **(a) marketing/naming**,
 4. Presentation-heavy / weakly grounded · 5. Fictionalized (trash).
 Tier 1–2 = salvage-eligible; 3 = keep as labeled artifact; 4 = honest placeholder /
 implement-or-strip-claim; 5 = archaeology/deprecate.
+
+## HR-7 — Recover into the future topology, not the old repo; salvage ≠ migration
+Recovery's goal is **"recover the right assets into the right future homes,"** not "fix the
+old monorepo into one forever-repo." Two distinct operations, never conflated:
+- **Salvage** = find/preserve real value (R12).
+- **Migration** = place it in the correct **new** repo (TerraFusionOS / Sync / Dais / Atlas /
+  Forge / Dossier / legacy-only). Migration waits until target repos exist AND the core spine is proven.
+- **Every needle carries `future_repo_target`.** "Valuable" is insufficient — it must be correctly placed.
+- **Do not pull wrapper noise forward** (ghost workspace layers, fake platform wrappers, suite
+  logic disguised as core, Levy-as-platform confusion, MOCKED/FICTION theater) — a cleaner
+  topology must not re-import the old blur.
+- **Topology-aware, phased** (A classify → B core → C platform/Sync → D suites). Beware the new
+  failure mode: **premature split** before enough is known. Decide homes now; extract last.
+*(Source: owner topology decision, 2026-06-24; `RECOVERY-TOPOLOGY-MATRIX.md`.)*

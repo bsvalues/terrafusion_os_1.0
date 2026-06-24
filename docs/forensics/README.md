@@ -87,6 +87,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **R11 — Branch Disposition (decision lane)** | `R11-BRANCH-DISPOSITION.md` |
 | **Value-Tier Salvage Map** (Tier 1–2 → best-version branches) | `R11-VALUE-TIER-SALVAGE-MAP.md` |
 | **Gate C Scoring** (per-branch U/F/O + ordered needle set) | `R11-GATE-C-SCORING.md` |
+| **Recovery-to-Repo Topology Matrix** (Phase A; future-home per surface) | `RECOVERY-TOPOLOGY-MATRIX.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

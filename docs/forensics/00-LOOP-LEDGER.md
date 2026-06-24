@@ -170,4 +170,19 @@
 | **lock status** | Held. R12 execution gated on explicit owner release. Decision layer is now complete. |
 | **decision** | Stop at the decision layer per owner. When released, R12 begins with N1 (LocalOps/Muse/Pilot), reassess before N3, deep-engine ports last (post schema gate). |
 
-## Loop 9 — (only if owner releases recovery lock → R12 salvage execution, starting N1)
+## Loop 9 — Repo-topology reframe + Recovery-to-Repo Topology Matrix (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L9 |
+| **trigger** | Owner decision: split into a new repo topology (TerraFusionOS core / TerraFusion-Sync platform / Dais·Atlas·Forge·Dossier suites). Recovery = recover right assets into right future homes. |
+| **/goal** | Phase A — classify every surface/needle for its future repo home; separate salvage from migration |
+| **method** | Map F18 value-tier surfaces + the scored needle set → target repos; define phased recovery |
+| **evidence** | `RECOVERY-TOPOLOGY-MATRIX.md` |
+| **result** | `future_repo_target` added as a first-order recovery field (R11 schema). Homes assigned: N1 Pilot→core(+undecided deep AI); N2 canon→core; Sync ETL→TerraFusion-Sync; Levy→**TerraFusion-Dais** (not platform); forge-stats→TerraFusion-Forge; Atlas split (UI→Atlas, feed→Sync); workbench split (host→core, domain→suite); CostForge "Ultimate"→legacy-only(cut). Phases B(core)→C(Sync)→D(suites). |
+| **doctrine** | Added **HR-7** (recover into future topology not old repo; salvage ≠ migration; don't pull wrapper noise forward; topology-aware phased recovery; beware premature split). |
+| **risk shift** | ↓ structural-confusion risk (won't recreate the blur in N repos); ↑ premature-split risk → mitigation: decide homes now, extract in phases, migrate only after core spine proven + repos exist. |
+| **lock status** | Held. Migration is a NEW operation gated on target repos existing + Phase B done. |
+| **decision** | Classification (Phase A) complete. R12 salvage + migration await owner lock-release; first move stays N1 into TerraFusionOS core. |
+
+## Loop 10 — (only if owner releases recovery lock → Phase B core-spine salvage/migration)
