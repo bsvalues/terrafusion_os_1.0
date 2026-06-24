@@ -80,6 +80,12 @@ via Core, Levy DB via Levy module). No crash; a silent split of where levy/cert 
 ---
 
 ## 5. Gate criteria — what MUST be true before any Tier-1 port starts
+
+> **Status after `F14-SSOT-RATIFICATION.md` (2026-06-24): gate at 3/5.** Criteria 1–3 MET
+> (Levy module = system-of-record → Dais; Core levy demoted to legacy [final C/D at execution];
+> contexts owned; Identity-context rename ratified). Criteria **4 (migration plan)** and
+> **5 (cross-repo contracts)** remain OPEN — Tier-1 ports stay BLOCKED until both are done.
+
 The F14 gate **opens** only when ALL hold (ratified):
 1. **Schema authority chosen** per fractured domain (Levy A/B/C/D selected; CurrentUse confirmed; Identity-rename decided).
 2. **Context ownership clarified** — which future repo owns each context + its DB (per topology: domain→core, Levy→Dais, CurrentUse→Forge, Identity→core).

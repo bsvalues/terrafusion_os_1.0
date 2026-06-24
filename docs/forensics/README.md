@@ -94,6 +94,8 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **R12 Batch Already-Landed Check** (v1, representative — SUPERSEDED) | `R12-BATCH-LANDED-CHECK.md` |
 | **R12 Batch Check v2** (full-membership, CORRECTED; genuine residual found) | `R12-BATCH-LANDED-CHECK-v2.md` |
 | **F14 Schema-Reconciliation Plan** (decision-only; the Tier-1 critical-path gate) | `F14-SCHEMA-RECONCILIATION-PLAN.md` |
+| **F14 Entity Collision Detail** (field-level, ratification-ready) | `F14-ENTITY-COLLISION-DETAIL.md` |
+| **F14 SSOT Ratification** (Levy module = SoR → Dais; Core levy legacy; gate 3/5) | `F14-SSOT-RATIFICATION.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

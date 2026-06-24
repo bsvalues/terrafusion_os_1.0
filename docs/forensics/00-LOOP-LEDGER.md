@@ -294,4 +294,16 @@
 | **lock status** | FULL ACTIVE — no code, no release. |
 | **decision** | F14 now fully ratification-ready on concrete schema facts. Next: ratify SSOT path, or resolve parked #1073. |
 
-## Loop 15 — (next: Ratify the F14 SSOT path, or narrow PR-#1073 release)
+## Loop 15 — F14 SSOT ratification (no-code gate) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L15 |
+| **trigger** | Owner: ratify the F14 SSOT path first (lean D/C); Levy module = SoR; home = Dais |
+| **evidence** | `F14-SSOT-RATIFICATION.md` |
+| **ratified** | **Levy module = authoritative system-of-record** (Guid-PK, attested, separate DB) → **TerraFusion-Dais**. Core `Entities/Levy/*` (3 collisions + legacy subdomain) **demoted to legacy**. Final form = **C (Core read-projection) or D (deprecate Core levy)**, bound to one execution test: does any retained core/main-DB consumer need to READ levy data? Rejected: A (keep-split) + dual-write. Also ratified: rename `TerraFusionContext`→Identity context; CurrentUse stays Forge + apply provider fix. |
+| **gate effect** | F14 gate **3/5**: criteria 1–3 (schema authority / context ownership / entity reconciliation-direction) MET; **4 (migration plan)** + **5 (cross-repo contracts)** OPEN. Tier-1 ports STILL BLOCKED. |
+| **lock status** | FULL ACTIVE — no code, no migration, no release (HR-9). |
+| **decision** | Direction set decisively. Next decision-layer artifacts: F14 migration plan (criterion 4) + levy/sync cross-repo contracts (criterion 5). #1073 still the parked near-term merge. |
+
+## Loop 16 — (next: F14 migration plan [criterion 4] + cross-repo contracts [criterion 5], or PR #1073)
