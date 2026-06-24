@@ -77,7 +77,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 
 **docs/ topology (the flagged focus).** ~93 subdirectories, 1,464 markdown files, 2,288 total files. Confidence: Proven. Largest doc subtrees: `TerraCanon/ 73M`, `bsDesign/ 67M`, `legacy/ 62M`, `superpowers/ 13M`. The directory list shows pervasive **near-name siblings** (see §8): `audit/` + `audits/`; `ai/` + `ai-systems/` + `ai-consolidation/`; `plans/` + `planning/` + `enhancement-plans/`; `decisions/` + `adr/`; `agents/` + `agent-prompts/` + `agent-slash-commands/`; three spec-package versions (`v3`, `v3_1`, `v3_1_flat`).
 
-**Initial path classification:**
+**Initial path classification** *(first-pass; confidence per Appendix A1 — entries here are Corroborated unless A1/A2 refine them, and none is a disposition):*
 - **Live app roots:** `frontend/apps/os-shell/`, `backend/src/TerraFusion.*`, `native-shell/`.
 - **Workspace roots:** `packages/*`, `tools/*`, `apps/*` (one pnpm workspace).
 - **Non-workspace populations:** `os-platform/`, `tests/`, `docs/` (large package.json populations *not* globbed by pnpm-workspace).
@@ -394,6 +394,8 @@ The point: a **real product** sits inside an **experimental band** inside a **fr
 
 Promotion/demotion is **disposition (step 5) — out of scope for this WO.** This matrix only records *what evidence a future, separate WO would need* before moving a surface between layers. Direction matters: promoting fantasy into runtime, or demoting a real product into archive, are the two failure modes the classifier exists to prevent.
 
+> **Eligibility ≠ approval ≠ destination.** "Eligible for" is the *lowest* bar — it names a layer a surface *could* be considered for, never a decision to move it. Every row is a hypothesis carrying the placement confidence recorded in Appendix C2, and **no row is actionable until it passes the Ratification gate (Appendix E).** Nothing in this matrix authorizes a move.
+
 | Surface | Current layer | Eligible for | Evidence required before any move |
 |---|---|---|---|
 | `web-audit-tracker` | Frozen ∩ Real | Experimental → Runtime | Clean build, resolvable deps, named owner, workspace-inclusion decision, security review |
@@ -458,6 +460,8 @@ Columns: *what · real? · lineage · recoverability · future home · confidenc
 ### B3 — Recovery sequencing (topology-ordered)
 
 Recover in the order of the *future* system, not the old one. Topology-aware, **phased** — decide homes now, extract later, never split prematurely (the "higher risk" the topology decision introduces).
+
+> **This is a proposed order, not an authorization.** The imperative verbs below ("Recover X → Y") describe *sequence if recovery is ratified*, not an instruction to act. Only **Phase A (classify)** is in scope for any FECF-001/002 discovery WO; Phases B–D are gated behind the Ratification checkpoint (Appendix E) and their own Recovery/Migration WOs. Reading this list as a go-ahead is the exact "good audit quietly becomes an implementation plan" failure the Ratification gate exists to stop.
 
 - **Phase A — Classify for future topology** *(this appendix; the only phase in scope for this WO)*: for every meaningful asset record what / real? / lineage / recoverability / future home.
 - **Phase B — Recover the core spine** → TerraFusionOS: shell, workbench host, Pilot/Trace/Canon shell surfaces, contracts, runtime composition, registry.
@@ -528,3 +532,97 @@ Confidence semantics for **future-home assignment specifically** (not asset real
 ---
 
 *Produced under WO-FECF-001 in discovery mode (FECF v1.3: Classification Before Evaluation · Recovery-to-Repo Topology · Topology Confidence Ladder). Recovery is separated into Forensic (A) / Architectural (B, classification only) / Physical (C, out of scope). No files were deleted, moved, renamed, merged, consolidated, archived, migrated, salvaged, or rewritten. Target homes are confidence-laddered hypotheses, not decisions. Confidence labels are not promoted to truth. Unknowns are reported, not hidden.*
+
+---
+
+## Appendix D — FECF v1.4: Framework Self Red-Team & Lexicon
+
+A red-team pass **against the framework itself** (not the repository). Objective: remove every remaining path that allows *premature certainty* or *accidental implementation*. Five checks were run; each leak found is paired with the hardening now in force.
+
+| # | Check | Leak found | Hardening (in force) |
+|---|---|---|---|
+| D1 | Inference reported as conclusion | §3's "Initial path classification" bullets stated kinds (e.g. `native-shell/` = "live app root") with **no confidence labels**. | §3 now labels the block first-pass/Corroborated-unless-refined and defers to A1. Rule: **every classification carries a label or inherits one by explicit cross-reference.** |
+| D2 | "Target home" mistakable for "approved destination" | Appendix B/C call homes "candidate/hypothesis," but A3 used bare "Eligible for X" and B3 used imperative "Recover X → Y" — both readable as decisions. | A3 now carries an **"Eligibility ≠ approval ≠ destination"** lock; B3 now carries a **"proposed order, not an authorization"** lock. Rule: **a home is a hypothesis until ratified (App. E); eligibility is the lowest bar, never a go-ahead.** |
+| D3 | Recommendation readable as permission to move/delete/merge/rewrite during discovery | §16 actions are read-only (`git fetch --unshallow` mutates *nothing in the estate*) and the cleanup item is already WO-gated, but this was implicit. | Stated explicitly: **every §16 step is read-only or a separate ratified WO.** Un-shallow fetches history; it does not alter tracked content. No discovery step may move/delete/merge/rewrite. |
+| D4 | Missing / inconsistent confidence labels | §3 bullets (D1) and A3's matrix lacked labels. | §3 fixed; A3 placements now inherit C2 confidence by explicit statement. Rule: **no register row asserts a kind, home, or eligibility without a confidence label or a cited inheritance.** |
+| D5 | Ambiguity between classify / recover / migrate / implement | "Recovery" was overloaded — used for *classification* ("Recovery-to-Repo Matrix") and for *physical action* ("Recovery sequencing"). | The **Lexicon below** pins each term; the **Ratification gate (App. E)** inserts a formal boundary between analysis and action. |
+
+### D-Lexicon (binding definitions)
+
+| Term | Means | Does NOT mean |
+|---|---|---|
+| **Discovery** | Observe and record what exists. Read-only. | Any change to the estate. |
+| **Classification** | Assign kind / liveness / authority / quality / target-home, each with confidence. | A decision to keep, move, or delete. |
+| **Recovery candidate** | A surface classified as *possibly worth preserving*. | A surface approved for recovery. |
+| **Target home** | A confidence-laddered *hypothesis* about where a surface would belong post-split. | An approved destination. |
+| **Eligibility** | The layer a surface *could be considered for*, pending evidence. | Approval or scheduling. |
+| **Ratification** | A no-code review that *accepts or rejects* a classification/topology (App. E). | Execution. |
+| **Recovery** (action) | Physically preserving/extracting a ratified asset — its own WO. | Anything performed during discovery or classification. |
+| **Migration** | Placing a recovered asset into its ratified home — its own WO. | A consequence of classification; it is gated on Ratification + Recovery. |
+| **Implementation** | Any change to files, structure, history, or runtime. | Permitted under any FECF *discovery* or *classification* WO. |
+
+**Standing rule (all FECF WOs):** confidence is never promoted to truth; eligibility is never promoted to approval; a target home is never promoted to a destination; classification is never promoted to implementation — **except by passing the Ratification gate.**
+
+---
+
+## Appendix E — FECF v1.5: The Ratification Gate & Governing Doctrine
+
+FECF is hereby proposed as the **governing doctrine** for every future estate audit, recovery, and migration work order. Its central safeguard is a fourth phase that **never touches code**: Ratification — a formal checkpoint between analysis and action.
+
+### E1 — The five-phase lifecycle
+
+```
+Discover  →  Classify  →  Ratify  →  Recover  →  Migrate
+(FECF-001)  (FECF-002)   (gate)    (Recovery   (Migration
+ read-only   read-only   no-code     WOs)        WOs)
+```
+
+| Phase | Question | Touches code? | Authority to act |
+|---|---|---|---|
+| **Discover** | What exists? | No (read-only) | — |
+| **Classify** | What survives, and where might it belong? | No (read-only) | — |
+| **Ratify** | Are the classifications & topology *accepted*? | **No** | **Gate — grants authority** |
+| **Recover** | Preserve/extract the ratified assets | Yes | Recovery WO (post-ratification) |
+| **Migrate** | Place them in ratified homes | Yes | Migration WO (post-recovery) |
+
+Maps onto the earlier naming: Discover = Phase A; Classify = Phase B (App. B/C); Ratify = **new**; Recover + Migrate = Phase C, now split. **No Recovery or Migration WO may open until Ratification passes.**
+
+### E2 — The Ratification gate (checklist)
+
+A classification set is *ratified* only when **all** hold; otherwise it returns to Classify (or Discover):
+
+- [ ] **Acceptance** — the recovery classification is reviewed and accepted (not just produced).
+- [ ] **Topology acceptance** — the future-home assignments are accepted as hypotheses *at their stated confidence*.
+- [ ] **Confidence review** — every label has been reviewed; no Inferred/Suspected item is treated as Proven.
+- [ ] **Adversarial challenge** — a second reviewer has tried to refute the assumptions (the `specialized/` correction is the canonical example of why this is mandatory).
+- [ ] **Evidence stability** — findings remained stable across at least one additional audit pass (e.g. post-un-shallow); volatile findings are not ratified.
+- [ ] **No blocking unknowns** — for any asset advancing to Recover, its Appendix-C2 blocking unknowns are resolved or explicitly waived with reason.
+
+Ratification is recorded, dated, and attributable. It grants authority **only** for the specific assets and homes reviewed — not blanket permission.
+
+### E3 — Work-order chain (governed by FECF)
+
+```
+FECF-001  Forensic Discovery        → this document
+   ↓
+FECF-002  Recovery Classification   → classify every recoverable surface (no moves)
+   ↓
+Topology Ratification               → the E2 gate; accept/reject; no code
+   ↓
+Recovery Work Orders                → preserve/extract ratified assets
+   ↓
+Migration Work Orders               → place assets into ratified homes
+```
+
+### E4 — Governing-doctrine clauses
+
+1. Every future audit/recovery/topology WO **inherits** the FECF confidence labels (§9-style) and the D-Lexicon.
+2. **Classification Before Evaluation** (App. A) is mandatory: classify → liveness → authority → quality → target-home → disposition.
+3. **Recovery and migration remain separate concepts** and separate WOs.
+4. **No WO may cross from analysis to action without passing Ratification (E2).**
+5. A finding may only rise in certainty (Suspected→…→Proven) or in lifecycle phase (Classify→Recover) **by evidence or by the gate — never by repetition, naming, or convenience.**
+6. This doctrine is itself amendable only by the same discipline: a proposed change, reviewed and ratified, never assumed.
+
+---
+
+*Produced under WO-FECF-001 in discovery mode (FECF v1.5: Classification Before Evaluation · Recovery-to-Repo Topology · Topology Confidence Ladder · Framework Self Red-Team & Lexicon · Ratification Gate). Lifecycle: Discover → Classify → Ratify → Recover → Migrate — only the first two are read-only discovery; Ratify is a no-code gate; Recover/Migrate are separate post-ratification WOs. No files were deleted, moved, renamed, merged, consolidated, archived, migrated, salvaged, or rewritten under this WO. Confidence is not promoted to truth; eligibility is not promoted to approval; a target home is not promoted to a destination; classification is not promoted to implementation — except by passing the gate. Unknowns are reported, not hidden.*
