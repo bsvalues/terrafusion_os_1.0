@@ -96,6 +96,8 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **F14 Schema-Reconciliation Plan** (decision-only; the Tier-1 critical-path gate) | `F14-SCHEMA-RECONCILIATION-PLAN.md` |
 | **F14 Entity Collision Detail** (field-level, ratification-ready) | `F14-ENTITY-COLLISION-DETAIL.md` |
 | **F14 SSOT Ratification** (Levy module = SoR → Dais; Core levy legacy; gate 3/5) | `F14-SSOT-RATIFICATION.md` |
+| **F14 Migration Plan** (criterion 4; leans C/projection) | `F14-MIGRATION-PLAN.md` |
+| **F14 Cross-Repo Contracts** (criterion 5; core-owned) | `F14-CROSSREPO-CONTRACTS.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

@@ -306,4 +306,17 @@
 | **lock status** | FULL ACTIVE — no code, no migration, no release (HR-9). |
 | **decision** | Direction set decisively. Next decision-layer artifacts: F14 migration plan (criterion 4) + levy/sync cross-repo contracts (criterion 5). #1073 still the parked near-term merge. |
 
-## Loop 16 — (next: F14 migration plan [criterion 4] + cross-repo contracts [criterion 5], or PR #1073)
+## Loop 16 — F14 criteria 4 + 5 drafted (gate fully drafted) (2026-06-24)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L16 |
+| **trigger** | Owner: do both, criterion 4 (migration plan) first, then criterion 5 (contracts); no #1073 yet |
+| **evidence** | `F14-MIGRATION-PLAN.md`, `F14-CROSSREPO-CONTRACTS.md` |
+| **criterion-4 finding** | Core (main-DB) `LevyCertifications` has a LARGE retained-read surface (~12 controllers + NoticeService/CertificationService + PACS seeders); live cert writes currently hit the LEGACY store. ⇒ retained-read set NON-EMPTY ⇒ **leans Option C (read projection), not D**. Map covers: data migration (int→Guid, Guid→string CountyId, lossy-reverse), frozen 103/4 lineages, projection refresh (event-driven), no-dual-write/no-shadow-schema, cutover checkpoints, rollback (C-then-maybe-D, never D-first), open risks. |
+| **criterion-5 finding** | 5 core-owned contracts: Sync→Dais levy-input payload, Levy projection contract (if C), levy domain events, cert read DTO, county-context. Rules: core owns, no dual-write, no shadow schema, versioned, string CountyId canonical. |
+| **gate status** | F14 **5/5 DRAFTED** but NOT OPEN — owner must ratify (a) C vs D and (b) the migration map + contract set. |
+| **lock status** | FULL ACTIVE — no code, no migration, no release. |
+| **decision** | Gate fully drafted. Reassess: ratify C/D to OPEN the gate (then Tier-1 ports unblock), or take parked #1073. |
+
+## Loop 17 — (next: ratify C-vs-D + migration/contracts → OPEN F14 gate, or PR #1073)
