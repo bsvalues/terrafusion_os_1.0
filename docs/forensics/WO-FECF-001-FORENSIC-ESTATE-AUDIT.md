@@ -457,7 +457,7 @@ Columns: *what · real? · lineage · recoverability · future home · confidenc
 | **Dossier** (`phase4d.dossier-documents`, `brain/packs/dossier`) | Document domain | suite | medium | **TerraFusion-Dossier** | Inferred |
 | **Shell / workbench host** (`frontend/apps/os-shell/`) | Live shell (Runtime-Critical, A1) | core | high | **TerraFusionOS core** (recovery spine) | Proven |
 | **web-audit-tracker** (`os-platform/specialized/`) | Real product v1.2.0, but home unclear (core? suite? standalone?) | frozen∩real | high (builds independently) | **Undecided** — needs owner + product decision | Suspected |
-| **Backend orphans** (`backend/api-unified`, `TerraFusionSimple.csproj`) | Unknown (in no .sln) | unknown | unknown | **Undecided** — un-shallow history first | Unknown |
+| **Backend orphans** (`backend/api-unified`, `TerraFusionSimple.csproj`) | `api-unified`: **Pass-2 abandoned/superseded** (App. F); `TerraFusionSimple.csproj` still Unknown | unwired | low (api-unified) | `api-unified` → Archive (likely); `TerraFusionSimple` **Undecided** *(un-shallow done — App. F)* | Inferred (api-unified) / Unknown (other) |
 | **QUARANTINE/**, `.pnpm-store/`, `phase4*.json`, fantasy modules | Archive / residue / generated / impossible | n/a | not recovered | **legacy-only** | Proven |
 
 ### B3 — Recovery sequencing (topology-ordered)

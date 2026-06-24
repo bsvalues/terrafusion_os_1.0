@@ -44,15 +44,17 @@ For **every recoverable surface** (file group, module, package, branch family, o
 
 ### Worked seed rows (from FECF-001, to be expanded)
 
-| Surface | Reality | Liveness (now/prior) | Authority | Recovery value | Topology eligibility | Migration prereqs |
-|---|---|---|---|---|---|---|
-| `frontend/apps/os-shell/` | real (Proven) | live / live (Proven) | — | High | TerraFusionOS core (Proven) | none material |
-| `spec-lock/` + `os-platform/core` gates | real (Corroborated) | governance-live (Corroborated) | Governance-Critical (Corroborated) | High | core (Corroborated) | pick canonical root post-split |
-| `backend/src/TerraFusion.Sync` | real (Corroborated) | live / Unknown | — | High | TerraFusion-Sync (Corroborated) | ETL/PACS boundary; PACS stays source |
-| `TerraFusion.Levy` (3 locations) | real (Proven) | live / Unknown | — | High | TerraFusion-Dais (**Inferred — roadmap**) | **consolidate 3 copies first**; confirm Dais subsumes vs sibling |
-| `web-audit-tracker` | real v1.2.0 (Proven) | unwired / Unknown | — | High | **Undecided** (Unknown) | owner + product decision; build proof |
-| `os-platform/specialized/morphic-resonance` et al. | fantasy by implementation (Proven) | unwired / Unknown | — | **None** | legacy-only (Proven) | not a recovery candidate |
-| `backend/api-unified` | unknown | unwired / Unknown | — | Low (likely abandoned) | Undecided | **Pass-2 resolved lineage:** abandoned/superseded (first 2025-09-02, last 2026-03-19; FECF-001 App. F); remaining: `.sln`/disposition decision |
+*(All nine declared axes shown, matching the row-shape spec above.)*
+
+| Surface | Reality | Liveness (now/prior) | Authority | Recovery value | Topology eligibility | Overall conf | Migration prereqs | Blocking unknowns |
+|---|---|---|---|---|---|---|---|---|
+| `frontend/apps/os-shell/` | real (Proven) | live / live (Proven) | — | High | TerraFusionOS core (Proven) | Proven | none material | none |
+| `spec-lock/` + `os-platform/core` gates | real (Corroborated) | governance-live (Corroborated) | Governance-Critical (Corroborated) | High | core (Corroborated) | Corroborated | pick canonical root post-split | which root is canonical post-split |
+| `backend/src/TerraFusion.Sync` | real (Corroborated) | live / Unknown | — | High | TerraFusion-Sync (Corroborated) | Corroborated | ETL/PACS boundary; PACS stays source | exact ETL/PACS boundary |
+| `TerraFusion.Levy` (3 locations) | real (Proven) | live / Unknown | — | High | TerraFusion-Dais (**Inferred — roadmap**) | Suspected (placement) | **consolidate 3 copies first**; confirm Dais subsumes vs sibling | does Dais subsume Levy or sit beside it |
+| `web-audit-tracker` | real v1.2.0 (Proven) | unwired / Unknown | — | High | **Undecided** (Unknown) | Unknown (placement) | owner + product decision; build proof | core / suite / standalone home |
+| `os-platform/specialized/morphic-resonance` et al. | fantasy by implementation (Proven) | unwired / Unknown | — | **None** | legacy-only (Proven) | Proven (legacy) | not a recovery candidate | none |
+| `backend/api-unified` | Pass-2: abandoned/superseded (Inferred) | unwired / Unknown | — | Low (likely abandoned) | Undecided | Inferred | `.sln` / disposition decision (un-shallow done — App. F) | `.sln` membership / disposition |
 
 ## 5. Method (per surface)
 
