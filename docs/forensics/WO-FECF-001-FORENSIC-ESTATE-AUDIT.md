@@ -31,9 +31,9 @@ The live system is the **minority** of the tree. The repository's own honest doc
 | `.gitignore` vs git index | **Disagree** — ≥4 ignored paths are tracked anyway (contract JSON, crash log, `.playwright-mcp/`) | Contradicted (Proven) |
 | Claim-doc commit hashes (SEALED/SPRINT/ledger) | **All resolve** on full history. *Pass-1 "none resolve → rewrite suspected" was a shallow artifact — RETRACTED, App. F* | Corroborated (Pass 2) |
 
-**Bottom line:** Coverage thresholds for all eight gated areas are met. Enough evidence exists to *design* a recovery sequence. Cleanup remains **forbidden under this WO** and requires a separate work order. One evidentiary ceiling is hard-blocked: the repo is a **shallow clone**, so all pre-2026-05-24 history — true file ages, fossil dating, delete/resurrect cycles — is **Unknown** and cannot be recovered from this checkout.
+**Bottom line:** Coverage thresholds for all eight gated areas are met. Enough evidence exists to *design* a recovery sequence. Cleanup remains **forbidden under this WO** and requires a separate work order. *Pass 1 reported one hard-blocked ceiling — a **shallow clone** that hid all pre-2026-05-24 history. **Pass 2 un-shallowed it (App. F):** full history (2,986 commits, 2025-08-31 → 2026-06-24) is now available; the remaining unknowns (App. F2) are non-history and will not yield to more fetching.*
 
-> **Methodological caveat — "unreferenced" ≠ "dead" in this estate.** Several findings below classify surfaces as *present-but-unreferenced*, *not in the workspace*, *launcher starts nothing*, or *unwired*. Read these as **current-state disconnection signals, not death certificates.** This estate has documented, heavy move/quarantine/re-glob churn (162 dirs swept to QUARANTINE; workspace globs a non-existent `agents/`; `applications/` missing), and the shallow clone hides whether a now-disconnected surface was wired *before* the moves. Disconnection in such an estate is more consistent with **orphaned-by-reorganization** than with never-real. Where a surface is disconnected, the honest dual finding is: *currently unwired* (Proven) + *prior liveness* (**Unknown**) — a **recovery candidate**, not proven dead weight. The one exception is content whose *implementation itself* is the disqualifier (e.g., code that performs "faster-than-light" propagation), which can be judged on the code regardless of wiring.
+> **Methodological caveat — "unreferenced" ≠ "dead" in this estate.** Several findings below classify surfaces as *present-but-unreferenced*, *not in the workspace*, *launcher starts nothing*, or *unwired*. Read these as **current-state disconnection signals, not death certificates.** This estate has documented, heavy move/quarantine/re-glob churn (162 dirs swept to QUARANTINE; workspace globs a non-existent `agents/`; `applications/` missing). *(Pass 1 said the shallow clone hid whether a disconnected surface was wired before the moves; Pass 2 (App. F) restores history and resolves first-appearance dates, but per-surface **runtime-wiring** history is still untraced — see §11.)* Disconnection in such an estate is more consistent with **orphaned-by-reorganization** than with never-real. Where a surface is disconnected, the honest dual finding is: *currently unwired* (Proven) + *prior liveness* (**Unknown**) — a **recovery candidate**, not proven dead weight. The one exception is content whose *implementation itself* is the disqualifier (e.g., code that performs "faster-than-light" propagation), which can be judged on the code regardless of wiring.
 
 ---
 
@@ -49,9 +49,9 @@ The live system is the **minority** of the tree. The repository's own honest doc
 | Canon candidate analysis | 80% | ~82% | ✅ | TerraCanon/, spec-lock/, brain/, STANDARD.md assessed for/against. |
 | Artifact/residue classification | 75% | ~80% | ✅ | QUARANTINE, .pnpm-store, phase4*, generated reports classified. |
 | Negative evidence coverage | 75% | ~85% | ✅ | 6 headline claims searched + falsified with scope. |
-| *Temporal drift (history)* | *n/a* | *capped* | ⚠️ | **Blocked by shallow clone** — pre-boundary history Unknown. Not a gated area, but the dominant residual unknown. |
+| *Temporal drift (history)* | *n/a* | *Pass 1: capped → Pass 2: lifted* | ✅ (Pass 2) | Pass 1 was **blocked by shallow clone**; **Pass 2 un-shallowed (App. F)** — full history now available. |
 
-**Coverage Gate: PASSED** for all eight gated areas. The shallow-clone limitation does not block recovery *design* (which is structural), but it does block any claim about deep history or true file age.
+**Coverage Gate: PASSED** for all eight gated areas. *Pass 1's shallow-clone limitation capped only deep-history claims (not recovery design); **Pass 2 lifted it** (App. F).*
 
 ---
 
@@ -157,7 +157,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | **`docs/TerraCanon/`** | Self-declares "Single Source of Truth"; ships `.terrafusion/skills/` (truth-gate, using-canon, sealing-evidence), `canon-index.json`, `gate-registry.json`. | Marketing prose, not spec; only **6 backend references**, the inspected one a comment. | Corroborated (aspirational canon, weakly code-linked) |
 | **`brain/`** | `canon/`, `workorders/`, `rules/`, `memory/decisions/`; cited as governance spine. | README: **"Data/documentation only — no runtime behavior."** | Inferred |
 | **`STANDARD.md`** (repo root) | Named tier-3 source of truth in CLAUDE.md. | Lives *outside* docs/; no docs/ mirror. | Proven (canonical-by-declaration) |
-| **`SEALED.md`** | Declares "FINAL SEAL", cryptographic governance, county quorum. | **Pass 2:** seal-chain commits **exist & match** the seal table (2025-12-13). Residual: the seal was followed by ~2,900 commits through 2026-06-24, so "FINAL" was not terminal in practice. *Pass-1 "commits absent" RETRACTED — App. F.* | Corroborated (seal real); "final" overtaken: Inferred |
+| **`SEALED.md`** | Declares "FINAL SEAL", cryptographic governance, county quorum. | **Pass 2:** seal-chain commits **exist & match** the seal table (2025-12-13). Residual: the seal was followed by 2,578 commits through 2026-06-24, so "FINAL" was not terminal in practice. *Pass-1 "commits absent" RETRACTED — App. F.* | Corroborated (seal real); "final" overtaken: Inferred |
 
 **No canon was selected** (per WO non-goals). The candidates conflict: `spec-lock/` is the mechanical authority, `TerraCanon/` the rhetorical one, `STANDARD.md`+`baseline.md` the honest editorial one, and `SEALED.md` is a fossil that reality has overtaken.
 
@@ -192,12 +192,12 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | scripts, docs, .github | 2026-06-23 | current | Proven |
 | backend, os-platform | 2026-06-23 | current | Proven |
 | tests (root) | 2026-06-12 | recent | Proven |
-| native-shell, QUARANTINE | 2026-06-11 (≈ graft) | stale / **age Unknown** | Inferred |
+| native-shell, QUARANTINE | *Pass 1: 2026-06-11 (≈graft).* **Pass 2: QUARANTINE created 2026-02-12** ("batch-01 move 40 dirs") | dated, not Unknown | Proven (Pass 2) |
 
 - **Branch correction (Proven):** the audit branch is **~29 commits AHEAD of local `main`** (`main` = ancestor `eb6a237f`, 30 commits back). The "0 ahead/0 behind" only holds vs the branch's own remote-tracking ref.
 - **The phase4 lineage [Pass-2 corrected]:** Pass 1 read all 13 manifests as committed in one boundary commit (a shallow artifact). **Full history:** `phase4b.manifest.json` first committed **2026-03-14** ("Phase 4B feeder repo inventory — 921 assets / 6 repos"), matching the internal 2026-03-15 dates — a real dated program, not a wholesale import. (App. F) They document an **estate-consolidation / predecessor-retirement program** (4N dispositions: `TerraFusion_OS`→delete, `TerraFusion_Master_Workspace`/`BCBSDesktop`→archive "superseded by terrafusion_os_1.0").
 - **Fossil docs that outlived their code (Proven):** `docs/ci/archived/*.yml` (retired workflows), `docs/phase4.9/week1/day1–7` review docs, `.github/ai-prompts/breaker-phase40..45`.
-- **Resurrected code:** **Unknown** — shallow window too narrow to prove delete→re-add cycles.
+- **Resurrected code:** **Unknown (not blocked, just not re-run)** — *Pass 1 was capped by the shallow window; Pass 2 restores full history, but a delete→re-add scan was out of this pass's authorized scope (App. F).*
 
 ---
 
@@ -209,7 +209,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | **1,008-agent swarm running** | grep `1008`/`1,008`, consciousness services | Appears only as config/magic-number/fake-metric (`SwarmSize:1008`, `agentCount:1008+Math.random()*192`); services return *"lane unavailable"*; `AI_ESTATE_INVENTORY.md`: *"not a runtime count… no file boots and counts 1,008 live agents."* | **Contradicted** (Proven) |
 | **AuditableEntityInterceptor implemented** | grep class / `SaveChangesInterceptor` | **Zero** class definitions; only a code comment + `CreatedBy` defaulting to `"system"`. | **Contradicted** (Proven) |
 | **Docker production deploy works** | tracked Dockerfiles/compose, deploy workflows | Every functional Dockerfile/compose is **under QUARANTINE**; active `deployment.yml` deploy jobs are `echo` stubs; prod env renamed `production-deprecated`. | **Contradicted** (Proven) |
-| **716 tests, 91.9% pass** | grep `716`/`91.9`, test-file counts | Single static markdown (`COMPREHENSIVE_TEST_REPORT.md`) committed at the graft; actual test files far exceed 716 (507 `*Tests.cs`, 486 `test_*.py`, 1850 `*.{test,spec}.tsx`). | **Suspected-stale / Unknown** |
+| **716 tests, 91.9% pass** | grep `716`/`91.9`, test-file counts | Single static markdown (`COMPREHENSIVE_TEST_REPORT.md`) — a one-off report, not a live CI result; actual test files far exceed 716 (507 `*Tests.cs`, 486 `test_*.py`, 1850 `*.{test,spec}.tsx`). | **Suspected-stale / Unknown** |
 | **89,247 Benton parcels in repo** | grep `89,247`, data files | Provenance comment only (`TerraFusionDbContext.cs:554 // Source: tf-mssql pacs_oltp`); only tracked sample is a 148-line demo JSON. | **Contradicted** (count is external PACS DB, not repo data) |
 
 ---
@@ -241,9 +241,9 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 **Unwired ≠ dead — orphaned-by-reorganization is the more likely reading.** "Wired to nothing live" describes only the *current* dependency graph, and in this estate disconnection is a documented, recurring event (162 dirs swept to QUARANTINE; pnpm globs a non-existent `agents/`; `applications/` missing; `ai-systems/ai-systems` doubly-nested). Evidence that these modules were *meant* to be wired and were orphaned, not invented-and-abandoned:
 - **A guarded mount point exists.** `os-platform/infrastructure/plugins-beyond-plugins/PluginBeyondPluginsIntegrator.js:104,121` does `if (typeof MorphicResonancePlugin !== 'undefined') { this.morphicResonance = new MorphicResonancePlugin(aiSwarm, quantumLayer) }` (and the same for `DimensionalFoldingPlugin`) — an integration designed to attach the plugin when present and no-op when not. The wiring is *latent/guarded*, not absent-by-design. **Proven.**
 - **Move/duplication churn is Proven.** `autonomous-research-engine` exists in **5 locations** (QUARANTINE ×4, `tests/marketplace/`, `specialized/`) — the "moved, copied, misplaced" signature.
-- **History is blocked.** `specialized/` first appears at the **shallow-boundary commit** (`5d16d8fee`); whether it was wired before the consolidation is **Unknown**, not falsifiable from this checkout.
+- **History [Pass-2 corrected].** Pass 1 saw `specialized/` only at the shallow-boundary commit. **Full history:** it entered **2025-10-15** ("[THREE PILLARS] Phase 4 Complete: Infrastructure & Specialized") — ~8 months old (App. F). Its *age* is now known; whether it was ever **runtime-wired** remains **Suspected-unwired** (call-graph not traced — not a history question).
 
-**Correction of record:** earlier framings ("20 sci-fi scaffold modules"; "wired to nothing live" used as an indictment) committed the same error twice — first judging by *name*, then treating *current disconnection* as proof of worthlessness. The defensible findings are narrow: (a) the *zone* is frozen by the repo's own governance; (b) it is **currently** unwired to the live system (a disconnection signal, **not** a death certificate); (c) stratum 1 describes physically-impossible operations *in its implementation*; (d) strata 2–3 contain substantive code (a versioned v1.2.0 product among them); and (e) whether any of it was previously live is **Unknown** (shallow clone). These are **orphaned-by-reorganization recovery candidates**, not confirmed fantasy.
+**Correction of record:** earlier framings ("20 sci-fi scaffold modules"; "wired to nothing live" used as an indictment) committed the same error twice — first judging by *name*, then treating *current disconnection* as proof of worthlessness. The defensible findings are narrow: (a) the *zone* is frozen by the repo's own governance; (b) it is **currently** unwired to the live system (a disconnection signal, **not** a death certificate); (c) stratum 1 describes physically-impossible operations *in its implementation*; (d) strata 2–3 contain substantive code (a versioned v1.2.0 product among them); and (e) *Pass 2: its age is now known (entered 2025-10-15), so "previously live" is no longer history-blocked — but whether it was ever **runtime-wired** remains **Suspected-unwired** (call-graph not traced).* These are **orphaned-by-reorganization recovery candidates**, not confirmed fantasy.
 
 ---
 
@@ -283,7 +283,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | R11 | `*-MARKED-FOR-REVIEW` live in packages/ | kept installable-only by a pnpm exclude. | Proven |
 | R12 | Entropy cap is fiction | REPO_MAP "max 20 dirs / 40 files (current 17/30)" vs actual 25 dirs / 61 files; caps don't count QUARANTINE. | Contradicted (Proven) |
 | R13 | ~~Claimed tags / seal chain don't exist~~ **RETRACTED (Pass 2)** | Tags & seal commits **DO exist** on full history (App. F); the Pass-1 finding was a shallow-clone artifact. | Corrected |
-| R14 | SEALED.md "FINAL SEAL" not terminal (seal itself is real) | Seal commits exist (2025-12-13), but **~2,900 commits** followed through 2026-06-24; `SPRINT.md` patched shell defects through 2026-03-27. | Corroborated (Pass 2) |
+| R14 | SEALED.md "FINAL SEAL" not terminal (seal itself is real) | Seal commits exist (2025-12-13), but **2,578 commits** followed through 2026-06-24; `SPRINT.md` patched shell defects through 2026-03-27. | Corroborated (Pass 2) |
 | R15 | `.gitignore` and git index disagree | `ui-token-compliance.contract.json`, `ui-token-ratchet.contract.json`, `_validator_proof.log.err`, `.playwright-mcp/*` are **named in `.gitignore` yet tracked** (`git check-ignore` exit 1 — overridden by force-add or pre-ignore commit). Ignore policy is not enforced by the tree. | Contradicted (Proven) |
 | R16 | ~~Claim-doc commit hashes unverifiable; rewrite suspected~~ **RETRACTED (Pass 2)** | All cited commits (`b1204e4ef`, `2638e5f82`, `f2d36c610`…) **resolve** on full history (App. F). The "absent → rewrite" inference was a shallow-clone artifact. (`bfg.jar` remains committed as residue but no longer implies orphaned commits.) | Corrected |
 | R17 | Author path / placeholder-secret leakage | `_validator_proof.log.err` exposes `C:\Users\bsval\…`; `dev-audit/payloads.json` tracks a `"secret"` key (placeholder `xxx`). | Proven |
@@ -303,7 +303,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | Whether the 23 `packages/*` app URLs (`localhost:5177`…) are launched by some other orchestrator | Mechanism not located | Suspected |
 | Presence of REPO_MAP's `tools/dev/start.ps1`/`verify.ps1` | Not verified | Unknown |
 | Whether `spec-lock/` AUTHORITIES locks are enforced by a running gate | Runtime not observed | Suspected (aspirational) |
-| `716/91.9%` test figure vs current HEAD | Single static boundary-commit report | Unknown |
+| `716/91.9%` test figure vs current HEAD | Single static report (not a live run) | Unknown |
 | Whether ~14 `AuditableEntityInterceptor` / Tyler-Vision doc refs are present-tense vs exclusionary | Tense not individually verified | Unknown |
 | ~~Whether SEALED/SPRINT/ledger commit hashes exist~~ | ~~Not in shallow checkout~~ | **RESOLVED (Pass 2)** — all resolve on full history; no rewrite (App. F) |
 | Whether any `os-platform/specialized` sci-fi module is wired into a running service | Sampled files show no import refs; full call-graph not traced | Suspected (unwired) |
@@ -318,7 +318,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 
 **What is contradicted:** REPO_MAP entropy caps & tags, SEALED.md seal chain & "final seal", CLAUDE.md backend path & ports, and the FISMA / swarm / interceptor / deploy / parcel claims.
 
-**What remains materially unknown:** deep git history (hard-blocked by shallow clone) and the bounded items in §14. None of these block *designing* a recovery sequence; they do block claims about history and require a non-shallow fetch to resolve.
+**What remains materially unknown:** *Pass 1 listed deep git history as hard-blocked; **Pass 2 resolved it** (App. F).* The remaining unknowns are the **non-history** items in §14/App. F2 — none blocks *designing* a recovery sequence, and none will yield to more fetching.
 
 **This WO does not authorize cleanup.** Coverage is sufficient to *plan* recovery; execution belongs to a separate WO.
 
@@ -326,7 +326,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 
 ## 16. Recommended Next Audit Pass
 
-1. **Un-shallow the history** — `git fetch --unshallow` (or a full clone) and re-run the Temporal Drift + Negative Evidence lenses against true file ages, delete/resurrect cycles, and the real provenance of QUARANTINE and phase4 imports. This is the single highest-value next step; it converts the largest Unknown into evidence.
+1. **Un-shallow the history** — ✅ **DONE in Pass 2** (App. F): `git fetch --unshallow` lifted the history block and corrected the lineage-dependent findings. *Remaining*: a full re-run of the Temporal Drift + Negative Evidence lenses against true file ages and **delete/resurrect cycles** (the resurrection scan was out of Pass-2 scope) — now unblocked, not yet performed.
 2. **Canon adjudication pass** — with history available, score `spec-lock/` vs `TerraCanon/` vs `STANDARD.md`+`baseline.md` for *enforced* vs *declared* canon; resolve the 8-way production-readiness doc conflict by date + content; mark one precedence index.
 3. **Byte-level duplication pass** — content-hash `packages/terra-*` against `QUARANTINE/top-level-dirs/*` and `os-platform/*` suites to quantify true duplication vs divergence before any consolidation WO.
 4. **Runtime reachability proof** — actually boot the canonical surfaces (`backend/src/TerraFusion.API`, `frontend/apps/os-shell`) and the launcher to confirm the no-op launcher finding and the conditional-DLL backend launch; locate (or refute) the orchestrator behind the 23 `packages/*` app URLs.
@@ -642,9 +642,9 @@ Migration Work Orders               → place assets into ratified homes
 | Pass-1 finding | Pass-2 evidence | New status |
 |---|---|---|
 | "Deep history Unknown (shallow)" | Full history available: 2,986 commits, 2025-08-31 → 2026-06-24 | **Resolved** |
-| "Tags claimed by REPO_MAP **don't exist**" (Contradicted) | `pre-cleanup-20260211`=583ebfe89 (2026-02-10), `soul-fixed-20260211`=a3382becd exist; 64 tags incl. `root-cleanup-*`. REPO_MAP's Tags/Quarantine sections **corroborated** | **RETRACTED → Corroborated** |
+| "Tags claimed by REPO_MAP **don't exist**" (Contradicted) | `pre-cleanup-20260211`=583ebfe89 (2026-02-10, ancestor of HEAD), `soul-fixed-20260211`=a3382becd (exists, off-HEAD); 64 tags incl. `root-cleanup-*`. **QUARANTINE itself first committed 2026-02-12** ("batch-01 move 40 top-level dirs") — directly corroborating REPO_MAP's quarantine narrative (REPO_MAP said "2026-02-11"; ~1 day). | **RETRACTED → Corroborated** |
 | "SEALED.md seal-chain commits **absent**" (Contradicted) | `f2d36c610`/`f4b47110d`/`5206d128f`/`be5f92907` all exist, 2025-12-13, purposes **match the SEALED.md table line-for-line** (public proof → marketplace admission → state mesh → no-mercy enforcement) | **RETRACTED → Corroborated** |
-| "SPRINT/ledger commit hashes absent → BFG rewrite suspected" (R16) | `b1204e4ef`,`2638e5f82`,`084ffdded` all resolve. No orphaning; absence was purely the shallow window | **RETRACTED** |
+| "SPRINT/ledger commit hashes absent → BFG rewrite suspected" (R16) | All three resolve as real objects. **Adversarial nuance (Pass-2 review):** `b1204e4ef` is an ancestor of HEAD; `2638e5f82` & `084ffdded` exist but are **off-HEAD** (feature-branch commits, normal under squash-merge) — Pass-1 absence was the shallow window **plus** off-mainline, *not* a rewrite. Rewrite inference **RETRACTED**. | **RETRACTED (refined)** |
 | "phase4 imported wholesale 2026-06-11" | `phase4b.manifest.json` first committed **2026-03-14** ("Phase 4B feeder repo inventory — 921 assets / 6 repos"), matching its internal 2026-03-15 date | **Corrected** (2026-06-11 was the shallow graft, not an import) |
 | "specialized/ first appears at boundary; prior liveness Unknown" | Entered **2025-10-15** ("[THREE PILLARS] Phase 4 Complete: Infrastructure & Specialized") — ~8 months old | **Partially resolved** (age known; runtime-wiring history still untraced) |
 | "api-unified: rewrite or abandoned? Unknown" | First 2025-09-02, last touched **2026-03-19**; canonical `backend/src/TerraFusion.API` lives to 2026-06-23 | **Inferred: abandoned/superseded older copy** (not a newer rewrite) |
@@ -670,7 +670,7 @@ Migration Work Orders               → place assets into ratified homes
 | §9 "imported wholesale 2026-06-11" | Proven | **Corrected** — 2026-03-14/15 program |
 | §13 R13 "tags/seal don't exist" | Contradicted (Proven) | **Retracted** |
 | §13 R16 "rewrite suspected" | Suspected/Contradicted | **Retracted** |
-| §13 R14 "FINAL SEAL overtaken" | Contradicted (Proven) | **Survives, strengthened** — seal real but followed by ~2,900 commits → Corroborated |
+| §13 R14 "FINAL SEAL overtaken" | Contradicted (Proven) | **Survives, strengthened** — seal real but followed by 2,578 commits → Corroborated |
 
 **What did NOT change:** the structural findings (QUARANTINE ~70% committed; `.gitignore`↔index disagreement; conflicting `.sln`/workspace/ports; 5-of-6 capability claims contradicted by `baseline.md`; classification-drift as headline risk; the Appendix A–E doctrine). None of these depended on deep history; all stand.
 
