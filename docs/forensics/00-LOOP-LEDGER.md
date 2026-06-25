@@ -556,3 +556,17 @@
 | **Build & Package note** | the run-level `cancelled` on every increment = the **tail-job foot-gun** (Seal Gate fast + Build & Package canceled; gating jobs green). The pasted Build & Package log showed `dotnet publish` succeeding (all `TerraFusion.*.dll` incl. Abstractions present) then an external cancel during `tar`. The `native-shell/ui/dist` zip warning is **pre-existing** (frontend not built into that path) and unrelated to the contract moves — flagged for owner as a separate release-config item, out of scope for this lock. |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
 | **decision (for owner)** | **PAUSE — B-tier review checkpoint.** B-tier is DTO-first (entities/Core-coupled signatures). Recommended order: promote gating DTOs first (`SyncReadinessDto`, `ModuleDto`, `ValuationDTOs`, `NegativeCacheStatistics`), each verified, then their interfaces; `ITerraFusionSyncService` cluster last (`LegacySystemHealth` + ~10 POCOs); `IStatisticalAnalysisService` never. Awaiting owner go to open a B-tier release, or to pause Phase-1 here. |
+
+## Loop 34 — B-tier read-only verification pass (promotion plan) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L34 |
+| **trigger** | Owner: do (a) but limit to the read-only B-tier verification pass first; then stop & reassess before any B-tier code move |
+| **evidence** | `B-TIER-PROMOTION-PLAN.md` + source reads of every B signature-dep type |
+| **findings** | **B1 `IWorkbenchSyncReadinessService`** ← `SyncReadinessDto` (self-contained; System usings only) → **clean, promote-now**. **B2 `ICacheStatisticsService`** ← `NegativeCacheStatistics` (plain POCO of counters, but buried in `NegativeCachingService.cs`) → **extract POCO first, then iface**. **B3 `ITerraFusionSyncService`** ← `LegacySystemHealth` + ~10 co-located POCOs (all plain) → **heavy mechanical cluster, dedicated, last**. |
+| **DEFERs (2)** | **`IModuleCatalog`** returns the `Module` **EF entity** (int Id, audit fields) → needs a NEW `ModuleDto` + impl mapping (behavior, not a move) → defer. **`IValuationService`** return types have **entity/DTO name collisions** (`CostApproachResult`/`IncomeApproachResult` exist as both Forge entities AND DTOs; `ReconciliationResult` in 3 files) → F14/Forge schema-truth call first → defer. `IStatisticalAnalysisService` never (C). |
+| **smallest safe unit** | **B1: `SyncReadinessDto` → `IWorkbenchSyncReadinessService`** (completes the Workbench tab-contract cluster the 2 A runners already populate). |
+| **edge-of-scope finding** | beyond B1–B3, remaining B work (IModuleCatalog/IValuationService) is **entity/schema-entangled** → belongs with the Forge/F14 execution lane, not pure contract formalization. |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED; **no B-tier release opened by this pass.** |
+| **decision (for owner)** | Reassess: open **B1 only** (Workbench, DTO-first) as the next narrow release, or **pause Phase-1 here** (clean edge — B2/B3 mechanical, IModuleCatalog/IValuationService defer to Forge/F14). Awaiting go. |

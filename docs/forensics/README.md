@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 33 — R2 A-tier SEALED (all 4 A interfaces CI-green); paused for B-tier review |
+| **Current loop** | Loop 34 — B-tier read-only verification pass (promotion plan); paused before B-tier code |
 | **Recovery lock** | **PARTIALLY RELEASED** — Phase-1 shared-contracts formalization (in-repo) ONLY; all other migration ACTIVE-LOCKED (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |
@@ -109,6 +109,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Migrate R1 Ratification** (split plan ratified; first narrow lock release = contracts) | `MIGRATE-R1-RATIFICATION.md` |
 | **Shared Contracts Charter** (in-repo, authoritative; canonical contract home + rules) | `../../backend/src/TerraFusion.Abstractions/CONTRACTS.md` |
 | **Interface Classification Review** (read-only; A promote-now / B DTO-first / C stay) | `INTERFACE-CLASSIFICATION-REVIEW.md` |
+| **B-Tier Promotion Plan** (read-only; DTO-first order; B1 Workbench clean, 2 DEFERs) | `B-TIER-PROMOTION-PLAN.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
