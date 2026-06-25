@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TerraFusion.Core.DTOs.CanonicalTf;
+namespace TerraFusion.Abstractions.DTOs.CanonicalTf;
 
 /// <summary>
 /// Slice B5': response payload for

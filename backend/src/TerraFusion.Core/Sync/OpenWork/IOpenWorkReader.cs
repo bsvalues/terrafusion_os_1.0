@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TerraFusion.Core.DTOs.CanonicalTf;
+using TerraFusion.Abstractions.DTOs.CanonicalTf;
 
 namespace TerraFusion.Core.Sync.OpenWork;
 

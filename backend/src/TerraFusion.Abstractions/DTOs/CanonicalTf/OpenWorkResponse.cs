@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TerraFusion.Core.DTOs.CanonicalTf;
+namespace TerraFusion.Abstractions.DTOs.CanonicalTf;
 
 /// <summary>
 /// Slice F1: read-model envelope for the open-work / pending-appraisal

@@ -23,7 +23,7 @@ namespace TerraFusion.API.Controllers;
 ///   <item>403 when the caller has no <c>countyId</c> claim.</item>
 ///   <item>404 when no parcel matches OR the parcel exists but has no WSDOR rows for the year.</item>
 ///   <item>404 (NOT 403) on cross-county access — existence must not leak.</item>
-///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.ParcelWsdorRollResponse"/> when found.</item>
+///   <item>200 with <see cref="TerraFusion.Abstractions.DTOs.CanonicalTf.ParcelWsdorRollResponse"/> when found.</item>
 /// </list>
 /// </para>
 ///

@@ -21,7 +21,7 @@ namespace TerraFusion.API.Controllers;
 ///   <item>400 on missing <c>countyId</c>, pagination violations, or
 ///   invalid <c>era</c> token.</item>
 ///   <item>403 when the caller's <c>countyId</c> claim doesn't match.</item>
-///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.PagedTfSaleResponse"/>
+///   <item>200 with <see cref="TerraFusion.Abstractions.DTOs.CanonicalTf.PagedTfSaleResponse"/>
 ///   on success — empty envelope when no rows qualify.</item>
 /// </list>
 /// </para>

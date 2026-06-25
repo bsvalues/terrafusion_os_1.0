@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TerraFusion.Core.DTOs.CanonicalTf;
+using TerraFusion.Abstractions.DTOs.CanonicalTf;
 using TerraFusion.Core.Sync.OpenWork;
 
 namespace TerraFusion.Data.Services.CanonicalTf;

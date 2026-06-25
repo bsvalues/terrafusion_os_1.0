@@ -22,7 +22,7 @@ namespace TerraFusion.API.Controllers;
 ///   <item>403 when the caller has no <c>countyId</c> claim (cannot enforce isolation).</item>
 ///   <item>404 when no parcel matches OR the parcel exists but has no link rows for the year.</item>
 ///   <item>404 (NOT 403) on cross-county access — existence must not leak.</item>
-///   <item>200 with <see cref="TerraFusion.Core.DTOs.CanonicalTf.ParcelOwnerCurrentResponse"/> when found.</item>
+///   <item>200 with <see cref="TerraFusion.Abstractions.DTOs.CanonicalTf.ParcelOwnerCurrentResponse"/> when found.</item>
 /// </list>
 /// </para>
 ///

@@ -460,3 +460,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI is validator for this increment; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
 | **decision** | Kernel promoted. Per sequence: **let CI validate Kernel on the new HEAD before promoting CanonicalTf (21 files, the largest cluster).** Hold for Kernel CI green. |
+
+## Loop 27 — Kernel CI-green; CanonicalTf cluster promoted (last DTO cluster) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L27 |
+| **trigger** | Kernel backend CI green on `16c5e27a0` → owner rule: re-run 5-point gate on CanonicalTf at moment-of-action, promote CanonicalTf only |
+| **Kernel verdict** | **GREEN** on run 28139558254 (verified head_sha=`16c5e27a0`): Backend .NET Tests / Canonical .NET Test Run ✓ (8m17s), Warning Gate `/warnaserror` build ✓, Vitest ✓, Frontend Build ✓, Quality Gate ✓, Security ✓. |
+| **CanonicalTf gate (moment-of-action)** | 5/5 PASS — all 4 DTO files only `using System*` (no EF/Core types); nested types in-cluster (OpenWorkItem/ParcelOwnerEntry/ParcelWsdorEntry/PagedTfSaleResponse); consumers = 14 `using` + 3 doc-comment crefs, all clean swaps; `Core/Sync` interface consumers move cleanly (Core→Abstractions, no inversion); single logical cluster. |
+| **CanonicalTf promotion** | Moved 4 files Core/DTOs/CanonicalTf → Abstractions/DTOs/CanonicalTf; global ns rewrite `TerraFusion.Core.DTOs.CanonicalTf`→`TerraFusion.Abstractions.DTOs.CanonicalTf` across 21 files (4 moved + 17 consumers). Repo-wide sweep: **0 stale references.** |
+| **milestone** | **All 3 verified DTO clusters promoted** (GisTf ✓green, Kernel ✓green, CanonicalTf validating). The sync→suite payload + Atlas geo + Forge cost-approach contracts now live in the canonical Abstractions home. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
+| **decision** | Let CI validate CanonicalTf. After green: the easy/self-contained DTO promotions are DONE; remaining charter items (interfaces: `IModuleCatalog`, `IGisDataService`, `ITerraFusionSyncService`, `IValuationService`, Workbench/*, `IForgeStatisticsService`; + `ICacheStatisticsService` DTO-first) need per-contract verification (some need DTO promotion first) — pause point for owner review of next sub-phase. |

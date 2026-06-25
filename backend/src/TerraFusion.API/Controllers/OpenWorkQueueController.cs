@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using TerraFusion.Core.DTOs.CanonicalTf;
+using TerraFusion.Abstractions.DTOs.CanonicalTf;
 using TerraFusion.Core.Sync.OpenWork;
 
 namespace TerraFusion.API.Controllers;

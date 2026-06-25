@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TerraFusion.Core.DTOs.CanonicalTf;
+namespace TerraFusion.Abstractions.DTOs.CanonicalTf;
 
 /// <summary>
 /// Slice S4: response payload for one canonical sale row.

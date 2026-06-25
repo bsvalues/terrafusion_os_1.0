@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
-using TerraFusion.Core.DTOs.CanonicalTf;
+using TerraFusion.Abstractions.DTOs.CanonicalTf;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.SalesRatioStudy;

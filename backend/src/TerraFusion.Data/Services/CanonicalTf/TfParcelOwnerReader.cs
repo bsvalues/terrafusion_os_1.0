@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TerraFusion.Core.DTOs.CanonicalTf;
+using TerraFusion.Abstractions.DTOs.CanonicalTf;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.TruthPacs;
 using TerraFusion.Core.Sync.PacsOwnerCanonical;
