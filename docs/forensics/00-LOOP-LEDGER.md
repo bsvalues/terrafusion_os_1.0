@@ -627,3 +627,18 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 + R4/B2); B3 + DEFERs + all else ACTIVE-LOCKED. |
 | **decision (for owner)** | B2 done. Per agreed reassess: **B3** (`ITerraFusionSyncService` cluster — heavy/mechanical: `LegacySystemHealth` + ~10 POCOs) or **pause** Phase-1 (DEFERs `IModuleCatalog`/`IValuationService` → Forge/F14; `IStatisticalAnalysisService` never). Awaiting go. |
+
+## Loop 39 — Phase-1 shared-contracts SEALED; B3 deferred (PACS fence); closure record (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L39 |
+| **trigger** | B3 gate surfaced an owner fence → owner chose (b): defer B3, seal Phase-1 at the clean green milestone |
+| **B2 seal** | `ICacheStatisticsService` CI-**green** on `cacbd9af2` (Backend .NET Tests ✓ 8m42s, Warning Gate ✓, all gating green). |
+| **B3 gate finding** | `ITerraFusionSyncService`'s DTO-first dep `LegacySystemHealth` is consumed by the **Harris PACS / legacy-DB adapters** (`HarrisPacsLegacyService`, `TylerTechLegacyService`, `CamaPlusLegacyService`, `GenericLegacyService`) — **owner-sensitive fence** (CLAUDE.md: no Harris PACS modification without county approval). Even a using-only edit touches fenced files. Caught at moment-of-action; **no code moved.** |
+| **evidence** | `MIGRATE-PHASE1-CONTRACTS-CLOSURE.md` (governance) + charter status flips |
+| **sealed (all CI-green)** | R1 DTO clusters (GisTf/Kernel/CanonicalTf), R2 A-interfaces (4), R3/B1 (SyncReadinessDto + IWorkbenchSyncReadinessService → Workbench cluster), R4/B2 (NegativeCacheStatistics + ICacheStatisticsService). |
+| **deferred → lanes** | **B3 `ITerraFusionSyncService` → TerraFusion-Sync repo split** (PACS fence + heaviest; B-tier recipe ready). `IModuleCatalog` → core feature (needs ModuleDto). `IValuationService` → F14/Forge (entity/DTO collisions). `IStatisticalAnalysisService` → never (C). |
+| **lock status** | Phase-1 shared-contracts narrow release **CLOSED/spent**; B3 + DEFERs + repo-creation/extraction/schema all **ACTIVE-LOCKED**. No further contract moves without a new explicit release. |
+| **FECF** | **Migrate ▶ — shared-contracts formalization COMPLETE (in-repo seam established).** Next Migrate = the actual topology split (core+contracts → Sync → Atlas → Dais → Forge → Dossier), each a future individually-ratified release. |
+| **decision** | Phase-1 shared-contracts sealed at a clean, fully-green milestone with the Harris PACS fence respected. Holding for owner direction on the next phase (topology split, or other priorities). |

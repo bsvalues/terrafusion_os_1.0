@@ -69,18 +69,18 @@ Release R2 (A-tier) opened 2026-06-25; one interface per build-verified incremen
 | `IPacsReachabilityProbeService` | Core/Interfaces/Workbench | core (workbench tab) | **A** | **PROMOTED — Loop 30 (CI-validating)** |
 | `IWorkbenchSyncReadinessRefreshRunner` | Core/Interfaces/Workbench | core (workbench tab) | **A** | **PROMOTED — Loop 31 (CI-validating)** |
 | `IForgeStatisticsService` (+ co-located DTOs) | API/Interfaces | Forge | **A** | **PROMOTED ✓ (Loop 32, CI-green on 1653b6f7d). R2 A-tier COMPLETE — all 4 A green.** |
-| `IModuleCatalog` | Core/Interfaces | core registry | **B** | DTO-first (`Module` is an entity) |
-| `IValuationService` | Core/Interfaces | Forge | **B** | DTO-first (ValuationDTOs; CostApproach entity ambiguity) |
 | `IWorkbenchSyncReadinessService` | Core/Interfaces/Workbench | core (workbench tab) | **B1** | **PROMOTED ✓ (Loop 36, CI-green on 84ff32d60). B1 + Workbench tab-contract cluster COMPLETE** |
-| `ITerraFusionSyncService` | Core/Interfaces | Sync platform (SoT) | **B** | DTO-first cluster (`LegacySystemHealth` + ~10 POCOs) |
-| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | **B2** | **PROMOTED ✓ (Loop 38, CI-validating). B2 COMPLETE (DTO `NegativeCacheStatistics` + iface both in Abstractions)** |
-| `IStatisticalAnalysisService` | API/Interfaces | — | **C** | **STAY** (quantum/infinite-dim theater; consciousness-coupled) |
+| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | **B2** | **PROMOTED ✓ (Loop 38, CI-green on cacbd9af2). B2 COMPLETE** |
+| `ITerraFusionSyncService` | Core/Interfaces | Sync platform (SoT) | **B3** | **DEFERRED → TerraFusion-Sync repo split** (`LegacySystemHealth` dep touches Harris PACS adapters — owner fence; `MIGRATE-PHASE1-CONTRACTS-CLOSURE.md`) |
+| `IModuleCatalog` | Core/Interfaces | core registry | **DEFER** | → core feature lane (needs `ModuleDto`; `Module` is an EF entity) |
+| `IValuationService` | Core/Interfaces | Forge | **DEFER** | → F14/Forge lane (entity/DTO name collisions) |
+| `IStatisticalAnalysisService` | API/Interfaces | — | **C** | **STAY** (theater; never promote) |
 | `ForgeValuationDtos`, `CostForgeAIDtos` | Core/DTOs | Forge | — | review for entity coupling (DTO-tier) |
 
 ### 5b. STAY domain-local (NOT cross-repo)
 | Contract | Reason |
 |---|---|
-| `ICacheStatisticsService` | **FAILED gate 2026-06-25** — `using TerraFusion.Core.Services;`; returns `NegativeCacheStatistics` (Core type) in signature → promoting inverts the dependency. **STAY until its result type is promoted DTO-first.** (Corrects earlier "self-contained" tag.) |
+| `ICacheStatisticsService` | **RESOLVED (Loop 38)** — the DTO-first path was taken: `NegativeCacheStatistics` extracted to Abstractions/DTOs first, then the interface promoted (B2). No longer STAY. |
 | `ITerraFusionDbContext` | persistence over EF entities → Core/Data (per §2; F14: Core levy = projection) |
 | `IMuseService`, `IMuseRouter`, `IMuseLlmClient`, `IMuseRouterStatusService`, `MuseTaskType` | Pilot deep AI internals → Phase 4 (R-PILOT) |
 | `IQuantumConsciousnessServices`, `IQuantumAIRoutingService`* | consciousness — defer/cut |
