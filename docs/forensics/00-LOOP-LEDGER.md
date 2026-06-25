@@ -696,3 +696,17 @@
 | **evidence** | `FULL-AGENT-HANDOFF.md` (+ README index link + Master-Playbook cross-link) |
 | **lock status** | Unchanged. Two-lock rule intact (explicit execution release + `TerraFusionOS` provisioned); both unsatisfied. Recovery/Migrate-execution ACTIVE-LOCKED. |
 | **decision (for owner)** | Awaiting exactly one explicit signal: (1) release execution + provision `TerraFusionOS` → run WO-CORE-1; (2) keep holding; (3) redirect to a named decision-layer target. No authorization inferred from silence. |
+
+## Loop 44 — WO-LOOP-44 TerraFusionOS receiving vessel: scaffold STAGED, repo creation BLOCKED (403) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L44 |
+| **trigger** | Owner issued `WO-LOOP-44` — provision `TerraFusionOS` as a governed empty receiving vessel (Lock B removal only; Lock A stays closed; no runtime import; WO-CORE-1 stays unreleased). Explicit direction → "repo provisioning work" now authorized. |
+| **preflight** | Branch `claude/terrafusion-forensic-playbook-u3kvx6`, clean tree, HEAD `04e8a350b`. Loop 43 source CONFIRMED (handoff present 11731B, ledger entry present, WO-CORE-1 still not-released). Runtime code involved: **no**. |
+| **repo creation attempt** | `mcp__github__create_repository name=TerraFusionOS private=true` → **HTTP 403 "Resource not accessible by integration"**. Integration token is scoped to `bsvalues/terrafusion_os_1.0` and **cannot create repos**; `list_repos`/`add_repo` scope-expansion tools not available this session. Repo creation is **owner-only**. |
+| **action (in-scope partial)** | Built the **full governance scaffold transplant-ready** under `docs/forensics/terrafusionos-vessel/` (contents map 1:1 to future repo root): `README.md`, `AGENTS.md`, `canon/INTAKE_RULES.md`, provenance ledger (Loop-44 initial entry), `WO-CORE-1-PLACEHOLDER.md`, `WO-LOOP-45-READINESS-GATE.md`, receiving-vessel runbook, DECISION-LOOP-44, BRANCH_PROTECTION_TODO, FULL-AGENT-HANDOFF pointer, `validate-receiving-vessel.sh` (PASS), reserved-lane READMEs. `_STAGING-README.md` carries owner manual-provisioning steps. **Docs-only; no runtime; no repo created; no lock released.** |
+| **validation** | `validate-receiving-vessel.sh` against staged tree → **PASS** (all required present; backend/frontend/os-platform/package.json/pnpm-workspace absent). `git diff --check` clean. |
+| **lock status** | **Lock B NOT satisfied** (repo does not exist; staging ≠ provisioning). **Lock A CLOSED.** WO-CORE-1 **unreleased**. Migrate-execution ACTIVE-LOCKED. |
+| **WO-LOOP-44 result** | **BLOCKED on repo creation (owner-only).** Scaffold staged & validated; ready for one-shot transplant the instant the owner creates the empty `TerraFusionOS` repo. |
+| **decision (for owner)** | Create empty private `TerraFusionOS` (web/`gh`), then transplant the staged scaffold (steps in `_STAGING-README.md`) → Lock B flips. Until then Lock B stays open. Next recommended: **WO-LOOP-45 — WO-CORE-1 Readiness Gate** (only after the repo exists). |
