@@ -374,3 +374,18 @@
 | **cross-domain pattern** | **TWICE confirmed** (Sync + Dais/Levy, plus N1 + v2 batch): main already holds the evolved Tier-1 work; branch sprawl is recut *ancestry*, not pending value. Tier-1 recovery is collapsing toward "**main is the spine → topology-split / Migrate**", not "port from branches." |
 | **lock status** | FULL ACTIVE — read-only; no code, no merge, no cherry-pick, no release (HR-9). |
 | **decision (for owner)** | (1) Close the Dais/Levy legacy-port lane as superseded; (2) fence `LevyDbContextStub.cs`; (3) run the **Forge entry-check** (last Tier-1 domain) — if the pattern holds a third time, Tier-1 recovery collapses into Migrate (topology split on main), with branch salvage reserved for narrow proven fragments only. |
+
+## Loop 21 — Forge entry-check → SUPERSEDED; Tier-1 port-recovery CLOSED (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L21 |
+| **trigger** | Owner: run the Forge entry-check (last Tier-1 domain); separate real stats/IAAO/income substance from CostForge theater |
+| **evidence** | `FORGE-ENTRY-CHECK.md` + `git diff/ls-tree` on 5 Forge heads vs `origin/main` @ `2ae013561` |
+| **substance check** | **Real stats engines ALL in main**: `OlsSolver`, `MultipleRegressionEngine`, `GwrModel`, `QuantileRegressionModel`, `SpatialRegressionModel`, `SpatialAutocorrelation`, `BayesianAnalysis`, `MonteCarloSimulation`, `IncomeApproach`, `IAAOValidationRules`, `ForgeStatisticsService`. **Smoking gun:** main already contains `R2Wave26OlsRegressionTests`/`R2Wave27BayesianMonteCarloTests`/`R2Wave28SpatialAutocorrelationTests` → wave work recut into main *with tests*. Wave head adds **0** stats files main lacks. |
+| **theater/hazard** | branch-only forge residual (~112 lines) = CostForge "Ultimate": `EstimatedValue=425000m //Placeholder`, "Quantum-enhanced", "Government. Transcended.", **reintroduced Tyler lore** (`// TODO: Add Tyler Technologies`), `SquareFootage=0/YearBuilt=1900`. Porting = regression vs valuation honesty + C48-HYGIENE. **CUT + FENCE.** |
+| **shared floor closed** | the suspected r2 floor is the **uniform 104-file ADDED floor** (90 test + 14 noise: old `LevyDbContextStub.cs`, CostForge theater ×7, `*.tar.gz` ×3, config, ShellHome) shared across ALL r2 heads → 0 genuine new source. |
+| **finding** | **Forge SUPERSEDED-BY-MAIN — third confirmation.** forge/stats subset: main ahead **+127K–129K lines**; branch-only is theater only. |
+| **STRATEGIC** | **All 3 Tier-1 lanes (Sync, Dais/Levy, Forge) superseded.** Tier-1 **port-recovery is CLOSED**. The legacy/r2 estate is **recut ancestry, not pending value**. Program pivots **Recover → Migrate**: split the evolved `main` spine into the topology (`RECOVERY-TOPOLOGY-MATRIX.md`); `IForgeStatisticsService` = core shared-contract at split. Branch salvage reduced to a few proven micro-fragments (e.g. ≤2 Sync defensive guards), catalogued not laned. |
+| **lock status** | FULL ACTIVE — read-only; no code, no merge, no cherry-pick, no release (HR-9). |
+| **decision (for owner)** | (1) Close the Forge port lane; (2) CUT+FENCE CostForge "Ultimate"/$425k/Tyler lore; (3) **declare Tier-1 port-recovery CLOSED** and pivot to **Migrate** (topology split planning on the main spine); (4) reserve branch salvage for proven micro-fragments only. |

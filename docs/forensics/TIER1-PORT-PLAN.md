@@ -13,8 +13,14 @@ checks. Recovery lock ACTIVE.*
 > - **Dais/Levy** (`DAIS-LEVY-ENTRY-CHECK.md`): `r2/*` heads superseded; main holds the real
 >   de-stubbed Levy SoR (+4,371) + dais/permits (+106,173). Branch residual = old
 >   `LevyDbContextStub.cs` (FENCE — never port) + CostForge theater (CUT) + binary residue.
-> The §1/§2 plans below are **retained for the record but marked SUPERSEDED**. Only **§3 Forge**
-> remains to entry-check. Lock remains ACTIVE.
+> - **Forge** (`FORGE-ENTRY-CHECK.md`): `r2/wave-*` heads superseded; main holds the real stats
+>   engines (OLS/GWR/spatial/Bayesian/MonteCarlo/income/IAAO) **and the R2Wave26/27/28 tests**.
+>   Branch residual = CostForge "Ultimate" theater + `$425k` placeholder + reintroduced Tyler lore
+>   (CUT + FENCE).
+>
+> **ALL THREE Tier-1 lanes resolve to SUPERSEDED-BY-MAIN.** §1/§2/§3 are retained for the record
+> but the **port-recovery program is effectively CLOSED** → pivot **Recover → Migrate** (split the
+> evolved `main` spine into the topology). See `FORGE-ENTRY-CHECK.md` §E. Lock remains ACTIVE.
 
 ## Cross-cutting entry check (applies to all three) — MUST run before any port
 - **Characterize the `r2`-family shared floor.** Levy/Forge r2/* heads uniformly show
@@ -59,7 +65,7 @@ checks. Recovery lock ACTIVE.*
 
 ---
 
-## 3. Forge → `TerraFusion-Forge` (third — depends on Sync + Dais)
+## 3. Forge → `TerraFusion-Forge` (third — depends on Sync + Dais)  — **SUPERSEDED** (`FORGE-ENTRY-CHECK.md`, 2026-06-25)
 | Field | Value |
 |---|---|
 | **Target repo** | TerraFusion-Forge |
