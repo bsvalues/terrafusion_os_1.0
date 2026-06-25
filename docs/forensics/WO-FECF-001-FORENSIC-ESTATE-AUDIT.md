@@ -95,10 +95,10 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | **Launcher** | `tools/dev/dev-os.mjs` | Scans `applications/` (does **not exist** at root) + `apps/` (one member, **no manifest**). **Pass 5 ran it: prints "Igniting 0 autostart module(s)" then idles** → `dev:os` starts nothing. | **Proven (executed — G6)** |
 | **23 app manifests** | `packages/*/terrafusion.app.json` | Real, but in a tree the launcher never scans; **none** have `autostart` or a `start` block → non-launchable by the Constitution. | Proven |
 | **Backend kernel (canonical)** | `backend/src/TerraFusion.API/Program.cs` | Present; per `platform.json`. *Note: CLAUDE.md's `backend/TerraFusion.API` path is stale — real tree is `backend/src/`.* | Proven / Contradicted (docs) |
-| **Backend dev launch** | `dev:backend:api` runs a **pre-built DLL** | **Pass 5: the referenced `bin/Debug/net8.0/TerraFusion.API.dll` does NOT exist in a fresh checkout** → the dev command errors without a prior `dotnet build` (no build-on-run). | **Proven (conditional — G6)** |
+| **Backend dev launch** | `dev:backend:api` runs a **pre-built DLL** | **Pass 5: referenced `bin/Debug/net8.0/TerraFusion.API.dll` absent in fresh checkout AND `dotnet` not installed in this env** → cannot boot here; build-referenced only. | **Build-referenced; live Unknown (env-blocked) — G6** |
 | **Frontend (canonical)** | `frontend/apps/os-shell/` (vite `appRoot`) → builds to `native-shell/ui/dist` | Present and reachable. | Proven |
 | **Orphan entry points** | `backend/api-unified/Program.cs`, `backend/TerraFusionSimple.csproj` | Runnable-but-non-canonical (in **no** .sln). | Proven |
-| **CLI** | `tools/bin/tf.mjs` (`tf`), `brain`, `tdc`, `console` | Present. | Proven |
+| **CLI** | `tools/bin/tf.mjs` (`tf`), `brain`, `tdc`, `console` | **Pass 5: `tf --help/version/status` all run (exit 0), no install needed — `version`→`terrafusion-os 1.0.0`, `status`→ live workspace report.** | **Actually-live (executed — G6)** |
 | **PowerShell entry (REPO_MAP)** | `tools/dev/start.ps1`, `verify.ps1` | Documented; presence not verified. | Unknown |
 
 **Port truth — three conflicting regimes (Contradicted, Proven):**
@@ -737,15 +737,36 @@ Pass 4 adjudicated the three remaining "quantum-washed" modules by reading their
 
 ### G6 — Runtime reachability proof (Pass 5, executed)
 
-The only *live-execution* evidence remaining. Node + the launcher were run directly; backend/frontend reachability was proven by artifact presence in a fresh checkout (full boot of the 17-project .NET solution / big pnpm workspace was out of bounded scope, and unnecessary — the launch *path* is what the claims concern). Executing/building creates only gitignored artifacts; the tracked estate is untouched.
+The only *live-execution* evidence class — it can change a surface's status along the ladder **present → build-referenced → runtime-reachable → actually-live**. Scope: canonical boot surfaces / launcher / workspace / package entrypoints only. Installs are permitted (prerequisite, not upgrade/fix); no migration, cleanup, dependency upgrades, speculative fixes, or code changes. Execution/install creates only gitignored artifacts; the tracked estate is untouched.
 
-| Surface | Claim (Pass 1) | Pass-5 execution evidence | New status |
-|---|---|---|---|
-| **Launcher** `tools/dev/dev-os.mjs` | "ignites 0 apps (no-op)" — Inferred | **Ran it:** prints `🔍 Scanning…` → `🚀 Igniting 0 autostart module(s)…` then idles on `setInterval`. `pnpm run dev:os` starts **nothing**. | **Proven (executed)** |
-| **Backend** `dev:backend:api` | "conditional — needs prior build" — Corroborated | The script runs `…/bin/Debug/net8.0/TerraFusion.API.dll`; that DLL **does not exist** in a fresh checkout (0 built `TerraFusion.API.dll` anywhere). The documented dev command **errors without a prior `dotnet build`** — it does not build-on-run. | **Proven (conditional / broken-on-fresh-checkout)** |
-| **Frontend** `frontend/apps/os-shell` | "present & reachable" — Proven | Entry `os-shell/index.html` ✅ and build target `native-shell/ui` ✅ both present; `frontend/node_modules` **absent** → reachable only after `pnpm install`. | **Proven (present; reachable-after-install)** |
+**1. Commands attempted**
+- `node --version` → v22.22.2 · `pnpm --version` → 9.0.0 · `dotnet --version` → **command not found**
+- `node tools/dev/dev-os.mjs` (launcher) · `node tools/bin/tf.mjs {--help,version,status}` (CLI)
+- `pnpm install --frozen-lockfile --ignore-scripts` (workspace)
 
-**Doctrine consequence:** the Runtime Truth Map's three load-bearing claims are now **execution-verified**, not static inferences. Notably the canonical "dev" entry points are **not turnkey on a fresh clone** — the launcher is a no-op and the backend dev command points at an unbuilt artifact — which is itself concrete evidence for the "documented-but-not-reachable-as-written" structural pattern. *Residual (bounded): a full boot (build+install+serve) of backend and frontend was not performed; the launch-path facts above do not require it.*
+**2. Surfaces tested + 3. pass/fail + 4. failure class**
+
+| Surface | Command | Result | Failure class | Ladder position |
+|---|---|---|---|---|
+| **Launcher** `dev-os.mjs` | `node tools/dev/dev-os.mjs` | **runs** → `🚀 Igniting 0 autostart module(s)` then idles | n/a (runs; starts nothing) | **runtime-reachable, ignites nothing** |
+| **`tf` CLI** (package entrypoint) | `tf --help / version / status` | **PASS** — exit 0; `version`→`terrafusion-os 1.0.0`; `status`→ live node/branch/dir/port report | n/a | **actually-live** ✅ |
+| **Backend (.NET kernel)** | `dotnet …` | **FAIL** — `dotnet` not installed; canonical DLL also absent (G-prior) | **environment** (+ build needed) | **build-referenced; runtime-reachability not testable here** |
+| **Workspace / frontend** | `pnpm install --frozen-lockfile` | **FAIL** — resolved 2,877 pkgs, then `ERR_PNPM_FETCH_403` on `cdn.sheetjs.com/xlsx-0.20.3.tgz` | **environment + config** (dep pinned to a non-npm CDN the proxy blocks) | **build-referenced; install blocked → boot not reached here** |
+
+**5. Classification changes**
+- **`tf` CLI: present → actually-live (Proven, executed)** — a genuinely runnable canonical surface (new positive finding; not previously in the Runtime Truth Map).
+- **Launcher: runtime-reachable, confirmed (executed)** — runs but ignites 0 (R3 Proven).
+- **Backend: not elevatable to "actually-live" here — environment-blocked** (`dotnet` absent) + DLL absent. Stays **build-referenced + conditional**; "live" remains **Unknown (environment)**, not asserted.
+- **Frontend: not elevatable here — install blocked** at `cdn.sheetjs.com` (403). Stays **build-referenced**; "live" **Unknown (environment+config)**.
+
+**6. Remaining Unknowns**
+- Backend "actually-live" — requires a .NET SDK environment (absent here). *Unknown (environment).*
+- Frontend "actually-live" — requires resolving the `xlsx`/`cdn.sheetjs.com` install dependency, then build+serve. *Unknown (environment+config).* Note: CI gates pass, so CI evidently has registry access this sandbox lacks — but that is not first-hand-verified here.
+- Full multi-service boot (Gateway/Consciousness) — not attempted.
+
+**Doctrine consequence:** the live-execution pass changed two classifications by *measurement* — it **promoted** `tf` (to actually-live) and **held** backend/frontend at build-referenced (refusing to assert "live" where the environment blocked the test). No surface that was claimed live turned out dead, and none claimed dead turned out live — i.e. **no classification-changing surprise in the reachable set.** The canonical "dev" entry points are confirmed **not turnkey on a fresh clone** (launcher no-op; backend dev points at an unbuilt artifact; frontend install fails on a custom-CDN dep) — concrete evidence for the "documented-but-not-reachable-as-written" pattern. The honesty boundary held: where execution was impossible (no `dotnet`, blocked CDN), the status is recorded **Unknown (environment)**, never silently upgraded.
+
+### G-summary — label changes (Pass 3)
 
 ### G-summary — label changes (Pass 3)
 
@@ -756,8 +777,9 @@ The only *live-execution* evidence remaining. Node + the launcher were run direc
 | Stratum-2 real-vs-theater | Suspected | **Corroborated-real** (≥1 module) | code reads real libs/logic (G3) |
 | Stratum-2 *whole band* (4 modules) | unadjudicated | **Adjudicated → sub-spectrum** | per-module read (G5): real→mixed |
 | Launcher no-op (R3) | Proven (static) / Inferred | **Proven (executed)** | ran dev-os.mjs → 0 modules (G6) |
-| Backend dev reachability (R5) | Corroborated | **Proven (conditional)** | DLL absent in fresh checkout (G6) |
-| Frontend reachability (R6) | Proven | **Proven (reachable-after-install)** | entry+target present, node_modules absent (G6) |
+| `tf` CLI entrypoint | not mapped | **Actually-live (executed)** | `tf --help/version/status` exit 0 (G6) |
+| Backend dev reachability (R5) | Corroborated | **Build-referenced; live Unknown (env-blocked)** | DLL absent + `dotnet` not installed (G6) |
+| Frontend reachability (R6) | Proven (present) | **Build-referenced; install blocked** | `pnpm install` 403 on cdn.sheetjs.com (G6) |
 | Resurrection cycles | Unknown (shallow) | **Unknown (method-limited)** | move-noise dominates (G4) |
 
 **Net:** three load-bearing doctrine claims hardened to Proven/Corroborated by measurement; one completeness item honestly remains Unknown for a stated methodological reason (not for lack of history). The doctrine's empirical foundation is materially stronger; the remaining gap is named and bounded.
