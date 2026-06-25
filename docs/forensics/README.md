@@ -113,6 +113,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **TerraFusionOS Core Split Plan** (decision-only; first repo boundary, cut line, first move) | `MIGRATE-CORE-SPLIT-PLAN.md` |
 | **Migrate Core WO-1** (ratified boundary + first execution work order; blocked on target repo) | `MIGRATE-CORE-WO-1.md` |
 | **B-Tier Promotion Plan** (read-only; DTO-first order; B1 Workbench clean, 2 DEFERs) | `B-TIER-PROMOTION-PLAN.md` |
+| **Master Playbook & Agent Handoff** (canonical operating package — doctrine, topology, phases, agent/queue model; NOT an execution release) | `MASTER-PLAYBOOK-HANDOFF.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

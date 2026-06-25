@@ -671,3 +671,16 @@
 | **abort safety** | WO-CORE-1 is additive in a NEW repo; `main` untouched by the first move → abort = discard new repo, `main` unaffected. |
 | **lock status** | Phase-1 shared-contracts release spent; Migrate-**execution** (repo creation/extraction) ACTIVE-LOCKED. WO ratified+specified ≠ released. |
 | **decision (for owner)** | WO-CORE-1 is ready. Execution blocked on the **target repo** (out of session scope) + an explicit execution release. Parked: #1073, B3, F14/Forge, other suites. |
+
+## Loop 42 — Master Playbook & Agent Handoff adopted as canonical operating memory (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L42 |
+| **trigger** | Owner delivered the "TerraFusion Master Playbook WO & Agent Handoff" package (Parts I–X), explicitly framed as **an operating package, NOT an execution release** — "No movement is authorized by this document." |
+| **action** | Adopted the package as canonical operational memory: wrote `MASTER-PLAYBOOK-HANDOFF.md` (Parts I–XII — strategic shift, doctrine + lifecycle, ratified topology, phases 0–8, parallel agent/queue model, non-negotiables, next-decision gate). **Docs-only; no code moved, no repo created, no lock released.** |
+| **frozen-state validation (at adoption)** | HEAD `f539e4ebc`, clean tree, no scope drift. Seam present in `Abstractions`: GisTf(2)/Kernel(2)/CanonicalTf(4)/Workbench(1) DTOs + NegativeCacheStatistics; 6 promoted interfaces. Fences intact: `ITerraFusionSyncService`/`IModuleCatalog`/`IValuationService` still in Core. CI on `f539e4ebc` (WO-CORE-1 commit) GREEN. |
+| **evidence** | `MASTER-PLAYBOOK-HANDOFF.md` (+ README index link) |
+| **pending (deferred, no churn)** | On the next real touch of `MIGRATE-CORE-WO-1.md`, add **Gate M1 — Execution Authorization** (all required: explicit owner release · target repo provisioned · history method chosen · skeleton scope fixed · success gate unchanged = build green + zero core→suite internal refs). |
+| **lock status** | Unchanged. Recovery/Migrate-execution ACTIVE-LOCKED. Operating-memory preservation only. |
+| **decision (for owner)** | Next explicit decision (handoff Part XII): (1) release execution + provision `TerraFusionOS`; (2) keep holding; (3) redirect (#1073, B3/Sync, F14/Forge, external-estate classification). Holding for direction. |
