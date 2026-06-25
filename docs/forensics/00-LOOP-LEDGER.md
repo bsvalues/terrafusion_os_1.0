@@ -723,3 +723,14 @@
 | **corrected lock model** | **Lock A: CLOSED** (WO-CORE-1 not released). **Lock B: SATISFIED** (`terrafusion-os` exists) — content parity **PENDING VERIFICATION** (out-of-scope read). **Execution: BLOCKED on Lock A** (Lock B is no longer the blocker). |
 | **disposition of Loop 44 scaffold** | Demoted from "transplant payload" to **reconciliation candidate**. Outcome (superseded/no-op vs narrow gap-patch) decided by WO-LOOP-44R once `terrafusion-os` is readable. |
 | **decision (for owner)** | Run **WO-LOOP-44R** against `terrafusion-os` (add it to session scope to let me do it, or run owner-side). Then **WO-LOOP-45 — WO-CORE-1 Readiness Gate**. Only after that: discuss opening **Lock A**. |
+
+## Loop 46 — Full Agent Handoff refreshed to current truth (Loop 45 state) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L46 |
+| **trigger** | Owner: "create a full agent handoff." The Loop 43 edition of `FULL-AGENT-HANDOFF.md` was stale on repo identity + lock model after Loops 44–45. |
+| **action** | Rewrote `FULL-AGENT-HANDOFF.md` to current truth at HEAD `fc00d5e24` (§1 exec summary, §2 corrected lock model, §3 FECF, §4 forensic conclusions, **§5A authoritative repo-identity map**, §5B/C source & path rules, §6 session access constraint, §7 WO/gate state, §8 sequence, §9 allowed / §10 prohibited, §11 next signals, §12 first packet, §13 evidence hierarchy, §14 agent rules, §15 must-not-misread, §16 operator checklist, §17 final-state summary, §18 final instruction). Explicitly supersedes the Loop 43 edition on identity (§5A) + lock model (§2); git preserves the prior snapshot. **Docs-only; no repo created; no runtime; no lock released.** |
+| **key corrections folded in** | Receiving vessel = existing `bsvalues/terrafusion-os` (never create a new repo); `terrafusion_os_1.0` = source/archive (not deprecated); Lock B SATISFIED (repo exists) pending content verification; execution BLOCKED on Lock A; next sequence WO-LOOP-44R → WO-LOOP-45 → (maybe) open Lock A. |
+| **lock status** | Unchanged. Lock A CLOSED, Lock B SATISFIED (parity pending), execution BLOCKED. Recovery/Migrate-execution ACTIVE-LOCKED. |
+| **decision (for owner)** | Same fork as Loop 45: add `terrafusion-os` to scope (so I run WO-LOOP-44R) or run it owner-side; then WO-LOOP-45; then discuss Lock A. Or signal 1/2/3. |
