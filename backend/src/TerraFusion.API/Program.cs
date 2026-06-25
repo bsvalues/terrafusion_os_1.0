@@ -1287,7 +1287,7 @@ builder.Services.AddScoped<
     TerraFusion.Abstractions.Interfaces.Workbench.IPacsReachabilityProbeService,
     TerraFusion.Sync.Workbench.Readiness.PacsReachabilityProbeService>();
 builder.Services.AddScoped<
-    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessRefreshRunner>(sp =>
+    TerraFusion.Abstractions.Interfaces.Workbench.IWorkbenchSyncReadinessRefreshRunner>(sp =>
 {
     var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
     var dotnet = config["Workbench:SyncReadiness:DotnetExecutable"] ?? "dotnet";

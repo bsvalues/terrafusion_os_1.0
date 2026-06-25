@@ -67,8 +67,8 @@ Release R2 (A-tier) opened 2026-06-25; one interface per build-verified incremen
 |---|---|---|---|---|
 | `IGisDataService` (+ co-located records) | Core/Interfaces | Atlas/Sync seam | **A** | **PROMOTED — Loop 29 (CI-validating)** |
 | `IPacsReachabilityProbeService` | Core/Interfaces/Workbench | core (workbench tab) | **A** | **PROMOTED — Loop 30 (CI-validating)** |
-| `IWorkbenchSyncReadinessRefreshRunner` | Core/Interfaces/Workbench | core (workbench tab) | **A** | next (after probe green) |
-| `IForgeStatisticsService` (+ co-located DTOs) | API/Interfaces | Forge | **A** | queued (real IAAO contract) |
+| `IWorkbenchSyncReadinessRefreshRunner` | Core/Interfaces/Workbench | core (workbench tab) | **A** | **PROMOTED — Loop 31 (CI-validating)** |
+| `IForgeStatisticsService` (+ co-located DTOs) | API/Interfaces | Forge | **A** | next (after refresh-runner green) — last A |
 | `IModuleCatalog` | Core/Interfaces | core registry | **B** | DTO-first (`Module` is an entity) |
 | `IValuationService` | Core/Interfaces | Forge | **B** | DTO-first (ValuationDTOs; CostApproach entity ambiguity) |
 | `IWorkbenchSyncReadinessService` | Core/Interfaces/Workbench | core (workbench tab) | **B** | DTO-first (`SyncReadinessDto`) |

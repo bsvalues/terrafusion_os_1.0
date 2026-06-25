@@ -515,3 +515,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates (esp. transitive-ref resolution from Sync); claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
 | **decision** | Let CI validate the probe (watch warnaserror build for the Sync transitive-ref + CS1574 fix). Green → next A: `IWorkbenchSyncReadinessRefreshRunner`. Red → fix first. |
+
+## Loop 31 — probe CI-green; IWorkbenchSyncReadinessRefreshRunner promoted (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L31 |
+| **trigger** | `IPacsReachabilityProbeService` green on `122ebdf2c` → next A: `IWorkbenchSyncReadinessRefreshRunner` |
+| **probe verdict** | **GREEN** (run 28143305694, head_sha `122ebdf2c` verified): Backend .NET Tests ✓ (8m56s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. Sync transitive-ref resolution + CS1574 cref fix both held. |
+| **gate (moment-of-action)** | 5/5 PASS — System usings only, result records co-located, no EF/Core/DTO coupling; Sync transitive-ref proven. |
+| **promotion + rebind** | Moved Core/Interfaces/Workbench → Abstractions/Interfaces/Workbench (ns updated). Impl `ProcessWorkbenchSyncReadinessRefreshRunner` (Sync): **swap** (its only Core.Workbench uses — RefreshRunner + probe — are now both in Abstractions). `WorkbenchSyncReadinessController` (API): **no change** (already has both usings; keeps Core for the staying `IWorkbenchSyncReadinessService`). `Program.cs`: RefreshRunner FQN reg updated. Sweep: 0 stale FQN; interface now only in Abstractions. |
+| **remaining in Core/Interfaces/Workbench** | only `IWorkbenchSyncReadinessService` (B — DTO-first on `SyncReadinessDto`). |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
+| **decision** | Let CI validate. Green → **last A: `IForgeStatisticsService`** (API/Interfaces; real IAAO contract). Red → fix first. After the 4th A green, R2 A-tier is complete → pause for owner review before B-tier (DTO-first). |

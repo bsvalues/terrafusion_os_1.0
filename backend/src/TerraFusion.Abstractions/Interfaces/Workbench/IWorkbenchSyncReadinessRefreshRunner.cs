@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TerraFusion.Core.Interfaces.Workbench;
+namespace TerraFusion.Abstractions.Interfaces.Workbench;
 
 /// <summary>
 /// Slice OPS-1-A-2: refresh-side contract for the Sync Readiness

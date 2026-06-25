@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TerraFusion.Core.Interfaces.Workbench;
+using TerraFusion.Abstractions.Interfaces.Workbench;
 
 namespace TerraFusion.Sync.Workbench.Readiness;
 
