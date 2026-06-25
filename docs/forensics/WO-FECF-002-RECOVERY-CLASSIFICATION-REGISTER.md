@@ -6,6 +6,7 @@
 **Position in lifecycle:** `Discover (FECF-001) → ▶ Classify (this register) ◀ → Ratify (gate E2) → Recover → Migrate`.
 **Prerequisite status:** un-shallow ✅ done (full history, 2,996 commits) — lineage axes are evidence-backed, not history-blocked.
 **Date:** 2026-06-25 · **Final state:** `READY_FOR_RATIFICATION` (hands off to the Ratification gate; does **not** authorize recovery).
+**Authorization:** Operator-directed WO ("WO-FECF-002"). Writes under `docs/forensics/**` are explicitly authorized per `AGENTS.md` §CORE GOVERNANCE SURFACE ("anything outside this scope requires explicit authorization") — the condition is satisfied; the `docs/forensics/` lane was established by the ratified, merged WO-FECF-001 (#1081). CI governance gates pass on this docs-only change.
 
 > Each surface is classified on the seven axes from the spec: **reality · liveness (now/prior) · authority · recovery value · topology eligibility · overall confidence · migration prerequisites** (+ blocking unknowns). Every axis carries a label: Proven · Corroborated · Inferred · Suspected · Unknown · Contradicted. **Eligibility ≠ approval; target home is a hypothesis, not a destination** (App. I).
 
@@ -15,7 +16,9 @@
 
 Built from FECF-001 evidence (A1 surface register, A2 strata, B2 topology, C2 hypothesis register, Passes 3–5) plus targeted Pass-on probes (package LOC + workspace membership, suite→backend mapping, QUARANTINE dedup signal). Recoverable-surface coverage is scoped to **meaningful systems/modules/packages** — not the 98,997 individual files; pure residue/archive is enumerated once as **legacy-only (not a recovery candidate)**.
 
-**Recovery-value scale:** High / Medium / Low / **None** (None = *not a recovery candidate*, ≠ "delete" — disposition is a later, separate WO).
+**Recovery-value scale:** High / Medium / Low / **None** (None = *not a recovery candidate*, ≠ "delete" — disposition is a later, separate WO). Value is **in-band only**; uncertainty is never encoded as an off-scale word.
+
+**Per-axis labeling convention (E2 confidence review):** the **Overall conf** column is the **binding confidence label for every axis in that row** unless a cell carries its own inline label (e.g. liveness "Unknown (env)", home "Suspected"). So recovery value `High` on a row whose Overall conf is `Suspected` = a *High hypothesis at Suspected confidence*. **Recovery value never exceeds the row's reality/Overall confidence** — an unverified-reality row cannot assert a *proven* High.
 
 ---
 
@@ -26,7 +29,7 @@ Built from FECF-001 evidence (A1 surface register, A2 strata, B2 topology, C2 hy
 | `frontend/apps/os-shell/` | real (Proven) | **build-referenced; reachability Unknown (env: install blocked at cdn.sheetjs.com, G6)** / prior live (Inferred) — *not booted; "actually-live" RETRACTED, adversarial pass* | — | **High** | TerraFusionOS core | **Corroborated** | resolve `xlsx`/cdn.sheetjs.com install; build→`native-shell/ui/dist` |
 | `tools/bin/tf.mjs` + `tools/*` (tf/tdc/dx/registry) | real (Proven) | **actually-live** (executed, G6) / live | — | **High** | TerraFusionOS core | **Proven** | none material; thin deps — *only execution-proven live surface* |
 | `os-platform/core/` (gates, ToolRegistry, canon, tests) | real (Corroborated) | **referenced (gates not executed here)** / live (Inferred) | **Governance-Critical** | **High** | TerraFusionOS core | **Corroborated** | pick canonical root post-split; os-platform not in pnpm-workspace |
-| `spec-lock/` (AUTHORITIES, signed locks) | real machinery (Corroborated) | enforcement unobserved / Unknown | **Governance-Critical** | **High** | TerraFusionOS core | **Corroborated** | confirm a running gate enforces the locks (Suspected aspirational) |
+| `docs/spec-lock/` (AUTHORITIES, signed locks) | real machinery (Corroborated) | enforcement unobserved / Unknown | **Governance-Critical** | **High** | TerraFusionOS core | **Corroborated** | confirm a running gate enforces the locks (Suspected aspirational) |
 | `brain/` (canon, workorders, packs, router) | real (Proven, docs/data only) | non-runtime by design | **Governance-Critical** | **High** | TerraFusionOS core | **Proven** | none (data/doc spine) |
 | `packages/os-core` (644 ln), `ui` (133), `tf-sdk` (77) | real but thin (Corroborated) | in-workspace / Unknown | os-core = gate layer | **Medium** | TerraFusionOS core | **Corroborated** | thin libs; confirm consumers post-split |
 | `native-shell/` (WPF `Terrafusion.Shell.csproj` + ui/) | real (Corroborated) | env-blocked (no dotnet, G6) / Unknown | — | **Medium** | TerraFusionOS core (desktop shell) | **Corroborated** | .NET SDK env; it is the os-shell build target host |
@@ -48,17 +51,31 @@ Built from FECF-001 evidence (A1 surface register, A2 strata, B2 topology, C2 hy
 | **Dais** — `phase4d.dais-workflow`, `brain/packs/dais` | domain real; **no dedicated backend project** | — / Unknown | — | **Medium** | TerraFusion-Dais | **Inferred** | is Dais a real code surface or only a domain label? |
 | **Dais ∋ Levy** — `backend/src/TerraFusion.Levy`, `packages/terra-levy` (1.8K) | real (Proven) | build-referenced / live | — | **High** | **TerraFusion-Dais** *(architecture decision, not fact)* | **Suspected (placement)** | **fragmented across 3 locations + 6 QUARANTINE copies** — consolidate first; confirm Dais subsumes vs sibling |
 | **Dossier** — `phase4d.dossier-documents`, `brain/packs/dossier` | domain real; no backend project | — / Unknown | — | **Medium** | TerraFusion-Dossier | **Inferred** | real code vs domain label |
-| **Pilot** — `packages/terra-pilt` (6.9K), `backend/src/TerraFusion.AI`, `brain/packs/{localops,gpt}` | real (Proven); LocalOps runtime-proven | partial / Unknown | — | **High** | shell-facing → core; deep AI → **TerraFusion-Pilot** (later) | **Suspected (split line)** | define the core/Pilot boundary |
+| **GPT** (TerraGPT — AI assistant / NL interface) — `brain/packs/gpt`, `backend/src/TerraFusion.AI` (shared) | domain real (Corroborated); quality unadjudicated | — / Unknown | — | Medium | TerraFusion-GPT (suite) | **Inferred** | separate GPT assets from the Pilot OS-feature (shared `TerraFusion.AI`); real code vs domain label |
+
+*The five rows above are the **constitutional suites** (`SuiteId = forge·atlas·dais·dossier·gpt`, per `frontend/apps/os-shell/src/config/suiteRegistry.ts:17-22`). Pilot was mis-listed as a suite in the draft and is corrected below — it is an OS feature, not a suite (Copilot review; reserved-boundary fix).*
+
+### 3a. OS features (`OsFeatureId` — NOT suites)
+
+Per the Constitutional Suite Registry, `pilot · trace · canon · localops` are **OS features** (`suiteRegistry.ts:24-28`), not suites. Listing them as suite peers blurs the reserved suite/OS-feature boundary.
+
+| Surface | Reality | Liveness | Authority | Recovery value | Topology home | Overall conf | Migration prereqs / blocking unknowns |
+|---|---|---|---|---|---|---|---|
+| **Pilot / LocalOps** (TerraPilot) — `packages/terra-pilt` (6.9K), `brain/packs/localops`, `backend/src/TerraFusion.AI` (shared) | present (Corroborated); LocalOps runtime-proven; quality unadjudicated | partial / Unknown | OS feature | High | **TerraFusionOS core (OS feature)** — ⚠ *conflicts with FECF-001 App-B hypothesis "TerraFusion-Pilot (later)"; **ratifier to reconcile** constitutional boundary vs split-repo idea* | **Suspected (home conflict)** | separate from GPT; dedup `TerraFusion.AI` shared use; quality re-audit |
+| **Trace** (TerraTrace — observability) | **not located** in this pass | — | OS feature | Unknown | core (OS feature) | **Unknown** | locate Trace assets (coverage gap) |
+| **Canon** (TerraCanon) | already classified — `docs/TerraCanon/` (aspirational), `docs/spec-lock/`/`os-platform/core` (governance) | see §1 | OS feature / Governance | see §1 | core | Corroborated | covered in §1 + FECF-001 canon register |
+
+> **Coverage note (boundary):** `suiteRegistry.ts` also defines `WorkbenchTabId` surfaces — `clerk` (TerraClerk), `treasury` (TerraTreasury), `audit` (TerraAudit) (R3.2–3.4) — which are **workbench tabs, not suites**, and are **not yet classified** in this register. Flagged as a **coverage gap / Unknown** for a follow-up pass, not silently omitted.
 
 ## 4. Other real packages (home undecided / suite-adjacent)
 
 | Surface | Reality | Liveness | Recovery value | Topology home | Overall conf | Migration prereqs / blocking unknowns |
 |---|---|---|---|---|---|---|
-| `packages/terrabuild` (113K ln) | **present, substantial-by-SIZE (Corroborated); quality unadjudicated** (size≠quality) | in-workspace; nested lockfile | **Provisional** (value ≤ reality conf) | **Undecided** (own subsystem?) | Suspected | nested `pnpm-lock.yaml` → sub-workspace; **reality re-audit before value** |
-| `packages/terra-gama` (11K ln) | **present (Corroborated); quality unadjudicated** | in-workspace; nested lockfile | **Provisional** | **Undecided** | Suspected | nested lockfile; reality re-audit; map to a suite |
-| `packages/terra-flow` (4.9K) | present (Corroborated); quality unadjudicated | in-workspace | **Provisional/Medium** | **Undecided** | Suspected | dedup vs 4 QUARANTINE copies; reality re-audit |
+| `packages/terrabuild` (113K ln) | **present, substantial-by-SIZE (Corroborated); quality unadjudicated** (size≠quality) | in-workspace; nested lockfile | High | **Undecided** (own subsystem?) | Suspected | nested `pnpm-lock.yaml` → sub-workspace; **reality re-audit before value** |
+| `packages/terra-gama` (11K ln) | **present (Corroborated); quality unadjudicated** | in-workspace; nested lockfile | Medium | **Undecided** | Suspected | nested lockfile; reality re-audit; map to a suite |
+| `packages/terra-flow` (4.9K) | present (Corroborated); quality unadjudicated | in-workspace | Medium | **Undecided** | Suspected | dedup vs 4 QUARANTINE copies; reality re-audit |
 | `packages/terra-insight` (880), `terra-miner` (854) | thin (Corroborated) | in-workspace | **Low–Medium** | **Undecided** | Suspected | confirm domain ownership |
-| `packages/government-edition` (32K ln, **in-workspace**) | **present, substantial-by-SIZE (Corroborated); quality unadjudicated**; has own `.sln` + API | active but heavy/legacy | **Provisional** | **Undecided** (core? product edition?) | Suspected | contains a duplicate `TerraFusion.API` csproj; resolve before move; reality re-audit |
+| `packages/government-edition` (32K ln, **in-workspace**) | **present, substantial-by-SIZE (Corroborated); quality unadjudicated**; has own `.sln` + API | active but heavy/legacy | High | **Undecided** (core? product edition?) | Suspected | contains a duplicate `TerraFusion.API` csproj; resolve before move; reality re-audit |
 | `os-platform/development/testing-suite` (the "716 tests") | real (Corroborated) | Experimental (active, non-prod) | **Medium** | TerraFusionOS core (test infra) | Corroborated | reconcile 716/91.9% claim vs current HEAD |
 | `os-platform/specialized/web-audit-tracker` (v1.2.0, ~20K ln) | **real product structure (Corroborated** — versioned, drizzle/client/mcp); internal quality unadjudicated | frozen∩real; builds independently | **Medium–High (provisional)** | **Undecided** (core? suite? standalone?) | Suspected | owner + product decision; security review |
 
@@ -68,10 +85,10 @@ Built from FECF-001 evidence (A1 surface register, A2 strata, B2 topology, C2 hy
 
 | Surface | Reality | Liveness | Recovery value | Topology home | Overall conf | Migration prereqs / blocking unknowns |
 |---|---|---|---|---|---|---|
-| `packages/property-tax-ai` (135K ln) | **present, large-by-SIZE (Corroborated); quality UNVERIFIED** (size≠quality) | **excluded** (`js-tiktoken` not installable) | **Provisional** (cannot exceed unverified reality) | TerraFusion-Pilot / suite | Suspected | **resolve `js-tiktoken` → reality re-audit → only then assign value** |
-| `packages/terra-permit` (74K ln) | present, large-by-SIZE (Corroborated); quality UNVERIFIED | **excluded** (`ibm-cloud-sdk-core`) | **Provisional** | suite (permitting) | Suspected | resolve `ibm-cloud-sdk-core`; reality re-audit; home decision |
-| `packages/government-edition-enhanced-MARKED-FOR-REVIEW` (29K ln) | present-by-SIZE (Corroborated); quality UNVERIFIED | **excluded** + name says review | **Provisional/Low** | Undecided | Suspected | likely duplicate of `government-edition` — **dedup first** |
-| `packages/legislative-pulse` (1.8K) | present (Corroborated); quality unverified | **excluded** (`@radix-ui/react-badge` bogus) | **Provisional/Low** | suite | Suspected | fix bogus dep; reality re-audit |
+| `packages/property-tax-ai` (135K ln) | **present, large-by-SIZE (Corroborated); quality UNVERIFIED** (size≠quality) | **excluded** (`js-tiktoken` not installable) | High | TerraFusion-Pilot / suite | Suspected | **resolve `js-tiktoken` → reality re-audit → only then assign value** |
+| `packages/terra-permit` (74K ln) | present, large-by-SIZE (Corroborated); quality UNVERIFIED | **excluded** (`ibm-cloud-sdk-core`) | High | suite (permitting) | Suspected | resolve `ibm-cloud-sdk-core`; reality re-audit; home decision |
+| `packages/government-edition-enhanced-MARKED-FOR-REVIEW` (29K ln) | present-by-SIZE (Corroborated); quality UNVERIFIED | **excluded** + name says review | Low | Undecided | Suspected | likely duplicate of `government-edition` — **dedup first** |
+| `packages/legislative-pulse` (1.8K) | present (Corroborated); quality unverified | **excluded** (`@radix-ui/react-badge` bogus) | Low | suite | Suspected | fix bogus dep; reality re-audit |
 
 ## 6. Frozen `os-platform/specialized/` band (per Pass-4 G5 adjudication)
 
@@ -110,10 +127,12 @@ Built from FECF-001 evidence (A1 surface register, A2 strata, B2 topology, C2 hy
 |---|---|---|
 | Whether Dais/Dossier are real code surfaces or domain labels only | only waves + packs found, no backend project | Unknown |
 | Post-install reality/quality of the 5 excluded packages | deps uninstallable in audit env | Suspected (size ≠ quality) |
-| Runtime enforcement of `spec-lock/` AUTHORITIES | gate not observed running | Suspected |
-| Core vs TerraFusion-Pilot split line | architecture decision pending | Unknown (decision) |
+| Runtime enforcement of `docs/spec-lock/` AUTHORITIES | gate not observed running | Suspected |
+| **Pilot home**: constitutional OS-feature (→ core) vs FECF-001 "TerraFusion-Pilot" split-repo hypothesis | reserved-boundary review (Copilot); `suiteRegistry.ts` says `pilot` is an `OsFeatureId` | **Unknown (decision)** — ratifier to reconcile |
 | Backend/.NET "actually-live" status | env-blocked (no dotnet) | Unknown (environment) |
 | True dedup extent (terra-* vs QUARANTINE copies) | not byte-compared | Suspected |
+| **Workbench-tab surfaces** `clerk`/`treasury`/`audit` (TerraClerk/Treasury/Audit, R3.2–3.4) | defined in `suiteRegistry.ts` but not yet classified | **Unknown (coverage gap)** |
+| **GPT vs Pilot asset separation** (`TerraFusion.AI` shared) | constitutional GPT-suite vs Pilot-OS-feature both touch `backend/src/TerraFusion.AI` | Suspected |
 
 ## 9a. Adversarial review (self-red-team of this register)
 
@@ -123,7 +142,7 @@ Run against the six FECF failure modes the register exists to prevent. Correctio
 |---|---|---|---|
 | 1 | "actually-live" overstated? | **Yes — 1 case.** `os-shell` was marked "actually-live" but Pass 5 **never booted it** (install blocked at cdn.sheetjs.com). | **Retracted** → build-referenced; reachability **Unknown (environment)**. Only `tf` CLI is execution-proven live. `os-platform/core` "governance-live" softened to "referenced (gates not executed)". |
 | 2 | target home stated as fact? | No — all placements carry `Suspected/Inferred/Corroborated` + the "hypothesis, not destination" header. | none |
-| 3 | recovery value overstated? | **Yes** — large packages marked **High** value while their reality was unverified. | New rule: **recovery value ≤ reality confidence.** Unverified surfaces → **Provisional**, not High. |
+| 3 | recovery value overstated? | **Yes** — large packages marked **High** value while their reality was unverified. | New rule: **recovery value ≤ reality confidence.** Value stays in-band (High/Medium/Low/None) but is a *hypothesis at the row's Overall-conf*; on an Unknown/Suspected-reality row, "High" reads as a High **hypothesis**, not a proven High. Qualifier lives in the prereqs ("reality re-audit before value"). |
 | 4 | "size ≠ quality" applied consistently? | **No** — applied to excluded packages but **not** to large in-workspace ones (`terrabuild`, `terra-gama`, `government-edition`). | Reality of LOC-based "Proven" cells → **"by-size (Corroborated); quality unadjudicated"** uniformly. |
 | 5 | eligibility implies approval to move? | No — topology = hypotheses, migration-prereqs gate every move, "does not authorize recovery" stated. | reinforced (principle below) |
 | 6 | Unknowns hidden/softened? | **Indirectly** — High-value-on-unverified and "actually-live"-on-unbooted softened real unknowns. | fixed via #1/#3/#4; §9 Unknowns unchanged. |
