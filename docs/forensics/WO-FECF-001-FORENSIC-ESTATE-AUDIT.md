@@ -92,10 +92,10 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 
 | Surface | Path | Classification | Confidence |
 |---|---|---|---|
-| **Launcher** | `tools/dev/dev-os.mjs` | Scans `applications/` (does **not exist** at root) + `apps/` (one member, **no manifest**). Ignites **0 apps** today. | Proven (no-op: Inferred) |
+| **Launcher** | `tools/dev/dev-os.mjs` | Scans `applications/` (does **not exist** at root) + `apps/` (one member, **no manifest**). **Pass 5 ran it: prints "Igniting 0 autostart module(s)" then idles** → `dev:os` starts nothing. | **Proven (executed — G6)** |
 | **23 app manifests** | `packages/*/terrafusion.app.json` | Real, but in a tree the launcher never scans; **none** have `autostart` or a `start` block → non-launchable by the Constitution. | Proven |
 | **Backend kernel (canonical)** | `backend/src/TerraFusion.API/Program.cs` | Present; per `platform.json`. *Note: CLAUDE.md's `backend/TerraFusion.API` path is stale — real tree is `backend/src/`.* | Proven / Contradicted (docs) |
-| **Backend dev launch** | `dev:backend:api` runs a **pre-built DLL** | Conditionally reachable — depends on a prior `dotnet build`. | Corroborated |
+| **Backend dev launch** | `dev:backend:api` runs a **pre-built DLL** | **Pass 5: the referenced `bin/Debug/net8.0/TerraFusion.API.dll` does NOT exist in a fresh checkout** → the dev command errors without a prior `dotnet build` (no build-on-run). | **Proven (conditional — G6)** |
 | **Frontend (canonical)** | `frontend/apps/os-shell/` (vite `appRoot`) → builds to `native-shell/ui/dist` | Present and reachable. | Proven |
 | **Orphan entry points** | `backend/api-unified/Program.cs`, `backend/TerraFusionSimple.csproj` | Runnable-but-non-canonical (in **no** .sln). | Proven |
 | **CLI** | `tools/bin/tf.mjs` (`tf`), `brain`, `tdc`, `console` | Present. | Proven |
@@ -735,6 +735,18 @@ Pass 4 adjudicated the three remaining "quantum-washed" modules by reading their
 
 **Doctrine consequence:** the three-strata model (fantasy / quantum-washed / real-product) holds, and Pass 4 *refines* it — **"quantum-washed" is itself a sub-spectrum** from real-simulator down to skeleton-with-fabrication. The classifier discriminates within the band: `self-modifying-architecture` sits on the fantasy boundary (fabricated metrics) while `quantum-computing-integration` is genuinely substantive. This is exactly the per-module evidence the Promotion Risk Matrix (A3) demanded "before any promotion is even considered" — now supplied for the stratum.
 
+### G6 — Runtime reachability proof (Pass 5, executed)
+
+The only *live-execution* evidence remaining. Node + the launcher were run directly; backend/frontend reachability was proven by artifact presence in a fresh checkout (full boot of the 17-project .NET solution / big pnpm workspace was out of bounded scope, and unnecessary — the launch *path* is what the claims concern). Executing/building creates only gitignored artifacts; the tracked estate is untouched.
+
+| Surface | Claim (Pass 1) | Pass-5 execution evidence | New status |
+|---|---|---|---|
+| **Launcher** `tools/dev/dev-os.mjs` | "ignites 0 apps (no-op)" — Inferred | **Ran it:** prints `🔍 Scanning…` → `🚀 Igniting 0 autostart module(s)…` then idles on `setInterval`. `pnpm run dev:os` starts **nothing**. | **Proven (executed)** |
+| **Backend** `dev:backend:api` | "conditional — needs prior build" — Corroborated | The script runs `…/bin/Debug/net8.0/TerraFusion.API.dll`; that DLL **does not exist** in a fresh checkout (0 built `TerraFusion.API.dll` anywhere). The documented dev command **errors without a prior `dotnet build`** — it does not build-on-run. | **Proven (conditional / broken-on-fresh-checkout)** |
+| **Frontend** `frontend/apps/os-shell` | "present & reachable" — Proven | Entry `os-shell/index.html` ✅ and build target `native-shell/ui` ✅ both present; `frontend/node_modules` **absent** → reachable only after `pnpm install`. | **Proven (present; reachable-after-install)** |
+
+**Doctrine consequence:** the Runtime Truth Map's three load-bearing claims are now **execution-verified**, not static inferences. Notably the canonical "dev" entry points are **not turnkey on a fresh clone** — the launcher is a no-op and the backend dev command points at an unbuilt artifact — which is itself concrete evidence for the "documented-but-not-reachable-as-written" structural pattern. *Residual (bounded): a full boot (build+install+serve) of backend and frontend was not performed; the launch-path facts above do not require it.*
+
 ### G-summary — label changes (Pass 3)
 
 | Claim | Was | Now | Basis |
@@ -743,6 +755,9 @@ Pass 4 adjudicated the three remaining "quantum-washed" modules by reading their
 | Fantasy stratum "unwired" | Inferred | **Proven** | reachability trace, 0 importers (G2) |
 | Stratum-2 real-vs-theater | Suspected | **Corroborated-real** (≥1 module) | code reads real libs/logic (G3) |
 | Stratum-2 *whole band* (4 modules) | unadjudicated | **Adjudicated → sub-spectrum** | per-module read (G5): real→mixed |
+| Launcher no-op (R3) | Proven (static) / Inferred | **Proven (executed)** | ran dev-os.mjs → 0 modules (G6) |
+| Backend dev reachability (R5) | Corroborated | **Proven (conditional)** | DLL absent in fresh checkout (G6) |
+| Frontend reachability (R6) | Proven | **Proven (reachable-after-install)** | entry+target present, node_modules absent (G6) |
 | Resurrection cycles | Unknown (shallow) | **Unknown (method-limited)** | move-noise dominates (G4) |
 
 **Net:** three load-bearing doctrine claims hardened to Proven/Corroborated by measurement; one completeness item honestly remains Unknown for a stated methodological reason (not for lack of history). The doctrine's empirical foundation is materially stronger; the remaining gap is named and bounded.
