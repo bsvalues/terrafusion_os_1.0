@@ -389,3 +389,18 @@
 | **STRATEGIC** | **All 3 Tier-1 lanes (Sync, Dais/Levy, Forge) superseded.** Tier-1 **port-recovery is CLOSED**. The legacy/r2 estate is **recut ancestry, not pending value**. Program pivots **Recover → Migrate**: split the evolved `main` spine into the topology (`RECOVERY-TOPOLOGY-MATRIX.md`); `IForgeStatisticsService` = core shared-contract at split. Branch salvage reduced to a few proven micro-fragments (e.g. ≤2 Sync defensive guards), catalogued not laned. |
 | **lock status** | FULL ACTIVE — read-only; no code, no merge, no cherry-pick, no release (HR-9). |
 | **decision (for owner)** | (1) Close the Forge port lane; (2) CUT+FENCE CostForge "Ultimate"/$425k/Tyler lore; (3) **declare Tier-1 port-recovery CLOSED** and pivot to **Migrate** (topology split planning on the main spine); (4) reserve branch salvage for proven micro-fragments only. |
+
+## Loop 22 — Tier-1 Closure Record ratified (Recover → Migrate pivot) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L22 |
+| **trigger** | Owner: produce the Tier-1 Closure Record first (governance ratification), then the Migrate-phase split plan |
+| **evidence** | `TIER1-CLOSURE-RECORD.md` — cites the full chain: branch census/3-lineage, Gate C scoring, value-tier salvage map, topology matrix, F14 ratification, Sync/Dais-Levy/Forge entry-checks, v2 batch + N1 |
+| **finding ratified** | The Tier-1 **port-recovery thesis was tested across all 3 domains and DISPROVEN.** Sync + Dais/Levy + Forge all superseded-by-main. Legacy/`r2` estate = recut ancestry, not pending value. |
+| **closure decisions** | (1) Sync CLOSED; bridge → Forge/Pilot. (2) Dais/Levy CLOSED under Option C (no Core re-arming). (3) Forge CLOSED (stats + wave tests in main). (4) CostForge "Ultimate" **CUT + FENCED** (theater/hazard; $425k placeholder, Tyler lore). (5) **Tier-1 branch-port recovery CLOSED.** (6) **Pivot Recover → Migrate**; `main` spine = migration source; salvage = proven micro-fragments only. |
+| **fenced** | CostForge "Ultimate" surfaces; `LevyDbContextStub.cs`; fabricated value placeholders; Tyler/Tyler-Vision lore; `docs/*.tar.gz`. |
+| **salvageable (micro only)** | Sync malformed-county-key guard (verify) + WSDOR three-state doc-comment (doc-only). No engine/schema/SoR salvage remains. |
+| **FECF** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed: thesis disproven)** → **Migrate ▶ (opening)**. |
+| **lock status** | FULL ACTIVE — governance record only; authorizes *planning* of Migrate, not code/repo/extraction (HR-9). |
+| **decision** | Tier-1 sealed. Next artifact = **Migrate-phase split plan** (TerraFusionOS core · Sync · Dais · Forge · Atlas · Dossier), decision-only, sourcing from the evolved `main` spine; `IForgeStatisticsService` + F14 Levy projection/sync contracts = core shared-contracts at split. |
