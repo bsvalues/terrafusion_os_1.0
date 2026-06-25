@@ -1284,7 +1284,7 @@ builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Atlas.ISecretResolver,
     TerraFusion.Sync.Workbench.Atlas.EnvironmentSecretResolver>();
 builder.Services.AddScoped<
-    TerraFusion.Core.Interfaces.Workbench.IPacsReachabilityProbeService,
+    TerraFusion.Abstractions.Interfaces.Workbench.IPacsReachabilityProbeService,
     TerraFusion.Sync.Workbench.Readiness.PacsReachabilityProbeService>();
 builder.Services.AddScoped<
     TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessRefreshRunner>(sp =>

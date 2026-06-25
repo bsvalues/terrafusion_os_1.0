@@ -501,3 +501,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (shared-contracts; R1 DTOs + R2 A-interfaces); B/C interfaces + all other migration ACTIVE-LOCKED. |
 | **decision** | Let CI validate `IGisDataService`. Green → next A: `IPacsReachabilityProbeService`. Red → fix first. |
+
+## Loop 30 — IGisDataService CI-green; IPacsReachabilityProbeService promoted (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L30 |
+| **trigger** | `IGisDataService` green on `d7a31aaf6` → next A per rule: `IPacsReachabilityProbeService` only |
+| **GisData verdict** | **GREEN** (run 28142196862, head_sha `d7a31aaf6`): Backend .NET Tests / Canonical .NET Test Run ✓ (9m31s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. First interface move validated (swap-vs-add + FQN registration worked). |
+| **probe gate (moment-of-action)** | 5/5 PASS + dependency check: impl lives in **`TerraFusion.Sync`** which has **no direct Abstractions ref** → resolves **transitively** via `Sync→Core→Abstractions` (build-safe). File self-contained (System usings; `PacsReachabilityProbeResult` co-located). `ISecretResolver` is in `Sync.Workbench.Atlas` (not the moved ns). |
+| **promotion + per-consumer rebind** | Moved to `Abstractions/Interfaces/Workbench` (ns `…Core.Interfaces.Workbench`→`…Abstractions.Interfaces.Workbench`). Impl `PacsReachabilityProbeService` (Sync): **swap** (sole Core.Workbench use). `WorkbenchSyncReadinessController` (API): **add** (keeps Core for Service+RefreshRunner). `ProcessWorkbenchSyncReadinessRefreshRunner` (Sync): probe ref was **doc-comment-only** → converted cref to **FQN** (averts **CS1574 under /warnaserror**; keeps Core for RefreshRunner). `Program.cs`: probe FQN reg updated (Service+RefreshRunner regs unchanged). Sweep: 0 stale FQN; interface now only in Abstractions. |
+| **trap caught** | the `<see cref>` doc-comment to the probe in a *non-consumer* file would have broken (CS1574) under `/warnaserror` — fixed via FQN, not a using add. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates (esp. transitive-ref resolution from Sync); claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
+| **decision** | Let CI validate the probe (watch warnaserror build for the Sync transitive-ref + CS1574 fix). Green → next A: `IWorkbenchSyncReadinessRefreshRunner`. Red → fix first. |

@@ -16,7 +16,7 @@ namespace TerraFusion.Sync.Workbench.Readiness;
 /// for each of the three diagnostic modes that produce evidence
 /// artifacts (catalog health, dictionary loader preflight, sales
 /// qualification coverage). The connection probe — question 1 — is
-/// owned by <see cref="IPacsReachabilityProbeService"/> and is NOT
+/// owned by <see cref="TerraFusion.Abstractions.Interfaces.Workbench.IPacsReachabilityProbeService"/> and is NOT
 /// invoked here.
 ///
 /// <para>Configuration:</para>

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TerraFusion.Core.Interfaces.Workbench;
+namespace TerraFusion.Abstractions.Interfaces.Workbench;
 
 /// <summary>
 /// Slice OPS-1-A-2: PACS connection probe contract for the Sync

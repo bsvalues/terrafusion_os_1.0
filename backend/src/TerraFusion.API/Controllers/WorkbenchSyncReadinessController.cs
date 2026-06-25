@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.DTOs.Workbench;
 using TerraFusion.Core.Interfaces.Workbench;
+using TerraFusion.Abstractions.Interfaces.Workbench;
 
 namespace TerraFusion.API.Controllers;
 

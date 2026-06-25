@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using TerraFusion.Core.Interfaces.Workbench;
+using TerraFusion.Abstractions.Interfaces.Workbench;
 using TerraFusion.Data;
 using TerraFusion.Sync.Workbench.Atlas;
 
