@@ -657,3 +657,17 @@
 | **lock status** | FULL on Migrate-execution — decision-only plan; no repo creation, no extraction, no code movement, no release. |
 | **deferred/parked** | B3 → Sync split; F14/Forge → later; PR #1073 → parked. |
 | **decision (for owner)** | Ratify the core boundary + cut line → then the first execution candidate (skeleton around Abstractions + kernel host shell) becomes the first narrow Migrate-execution release. |
+
+## Loop 41 — core boundary RATIFIED; WO-CORE-1 specified (first execution work order) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L41 |
+| **trigger** | Owner: ratify core boundary + cut line as-is; then prepare the first narrow Migrate-execution WO around Abstractions + kernel host shell; do not release until HEAD green |
+| **ratified** | `TerraFusionOS` **core boundary + cut line + leave-behind map + first execution candidate** — accepted as-is (`MIGRATE-CORE-WO-1.md` §1). |
+| **evidence** | `MIGRATE-CORE-WO-1.md` |
+| **WO-CORE-1 spec** | bootable skeleton from `main`: backend = Abstractions (verbatim) + Core/Data **core slices** (suite domain excluded) + Security/Operations + API **host** w/ core-only controllers; frontend = shell host + workbench host frame + canon + pilt-shell + electron, **suite pages excluded** → contract-stubbed module slots. **Proof gate: builds green + ZERO core→suite internal refs** (dependency-direction check is load-bearing). |
+| **precondition status** | (1) **CI green on `9a6c4f765`** ✅ (run 28177851987: Backend .NET Tests ✓, Warning Gate ✓, all gating ✓). (2) **target `TerraFusionOS` repo** — repo creation is **outside this session's scope** (scoped to `terrafusion_os_1.0`); owner must create/add it. (3) explicit new execution release. (4) history-preservation method chosen at release. |
+| **abort safety** | WO-CORE-1 is additive in a NEW repo; `main` untouched by the first move → abort = discard new repo, `main` unaffected. |
+| **lock status** | Phase-1 shared-contracts release spent; Migrate-**execution** (repo creation/extraction) ACTIVE-LOCKED. WO ratified+specified ≠ released. |
+| **decision (for owner)** | WO-CORE-1 is ready. Execution blocked on the **target repo** (out of session scope) + an explicit execution release. Parked: #1073, B3, F14/Forge, other suites. |

@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 40 — first topology-split plan: TerraFusionOS core (decision-only) |
+| **Current loop** | Loop 41 — core boundary RATIFIED; WO-CORE-1 specified (blocked on target repo) |
 | **Recovery lock** | **PARTIALLY RELEASED** — Phase-1 shared-contracts formalization (in-repo) ONLY; all other migration ACTIVE-LOCKED (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |
@@ -111,6 +111,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Interface Classification Review** (read-only; A promote-now / B DTO-first / C stay) | `INTERFACE-CLASSIFICATION-REVIEW.md` |
 | **Migrate Phase-1 Contracts Closure** (governance; shared-contracts sealed; B3 deferred to Sync) | `MIGRATE-PHASE1-CONTRACTS-CLOSURE.md` |
 | **TerraFusionOS Core Split Plan** (decision-only; first repo boundary, cut line, first move) | `MIGRATE-CORE-SPLIT-PLAN.md` |
+| **Migrate Core WO-1** (ratified boundary + first execution work order; blocked on target repo) | `MIGRATE-CORE-WO-1.md` |
 | **B-Tier Promotion Plan** (read-only; DTO-first order; B1 Workbench clean, 2 DEFERs) | `B-TIER-PROMOTION-PLAN.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
