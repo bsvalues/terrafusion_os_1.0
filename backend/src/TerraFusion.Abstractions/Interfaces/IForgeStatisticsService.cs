@@ -1,4 +1,4 @@
-namespace TerraFusion.API.Interfaces;
+namespace TerraFusion.Abstractions.Interfaces;
 
 /// <summary>
 /// Forge statistics service for IAAO ratio study analysis — strata, outliers,

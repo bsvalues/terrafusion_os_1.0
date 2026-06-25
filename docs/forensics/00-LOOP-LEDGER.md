@@ -529,3 +529,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
 | **decision** | Let CI validate. Green → **last A: `IForgeStatisticsService`** (API/Interfaces; real IAAO contract). Red → fix first. After the 4th A green, R2 A-tier is complete → pause for owner review before B-tier (DTO-first). |
+
+## Loop 32 — RefreshRunner CI-green; IForgeStatisticsService promoted (R2 A-tier COMPLETE) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L32 |
+| **trigger** | `IWorkbenchSyncReadinessRefreshRunner` green on `535d1cc94` → last A: `IForgeStatisticsService` |
+| **refresh-runner verdict** | **GREEN** (run 28144340944, head_sha `535d1cc94` verified): Backend .NET Tests ✓ (8m32s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. |
+| **gate (moment-of-action)** | 5/5 PASS — all 7 DTOs co-located in the file (StrataResultDto/OutlierRecordDto/CompareModelsRequest/ModelComparisonDto/ModelSummaryDto/ComparisonDeltasDto/DiscoveredSegmentDto); Guid/string/double/decimal only; no EF/Core coupling. The real IAAO/ratio-study contract (COD/PRD) — distinct from C-tier `IStatisticalAnalysisService` (theater, stays). |
+| **promotion + rebind** | Moved API/Interfaces → Abstractions/Interfaces (ns `TerraFusion.API.Interfaces`→`TerraFusion.Abstractions.Interfaces`). Impl `ForgeStatisticsService` + `SegmentDiscoveryTests`: **swap** (sole API.Interfaces use). `MassAppraisalController`: **add** (keeps API.Interfaces for `IMassAppraisalService`). `Program.cs`: **no change** — registration is unqualified and Program.cs already imports `Abstractions.Interfaces` (resolves post-move). Sweep: 0 stale FQN; interface now only in Abstractions; `IStatisticalAnalysisService` (C) stays in API.Interfaces. |
+| **MILESTONE** | **R2 A-tier COMPLETE** — all 4 A interfaces promoted (`IGisDataService`, `IPacsReachabilityProbeService`, `IWorkbenchSyncReadinessRefreshRunner`, `IForgeStatisticsService`); first three CI-green, this one validating. Phase-1 shared-contracts: 3 DTO clusters + 4 A interfaces all in the canonical Abstractions home. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
+| **decision (for owner)** | After `IForgeStatisticsService` green → **R2 complete; PAUSE for owner review** before the B-tier (DTO-first) sub-phase: `SyncReadinessDto`/`ModuleDto`/`ValuationDTOs`/`NegativeCacheStatistics` must be promoted *before* their interfaces (`IWorkbenchSyncReadinessService`, `IModuleCatalog`, `IValuationService`, `ICacheStatisticsService`), then the `ITerraFusionSyncService` cluster; `IStatisticalAnalysisService` never. |

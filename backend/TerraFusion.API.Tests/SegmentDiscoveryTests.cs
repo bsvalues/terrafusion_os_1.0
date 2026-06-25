@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
-using TerraFusion.API.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
