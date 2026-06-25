@@ -240,7 +240,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 3. **Genuinely real applications mislabeled by the umbrella — Proven.** `web-audit-tracker` is `@terrafusion/web-audit-tracker` **v1.2.0** — a full Vite + React + Tauri product (54 files, ~20K LOC, `drizzle.config.ts`, `client/`, an MCP server). `operations-dashboard` (v1.0.0, 2.8K LOC) is a real dashboard module. Calling these "sci-fi trash" would be the exact name-over-evidence error this WO forbids.
 
 **Unwired ≠ dead — orphaned-by-reorganization is the more likely reading.** "Wired to nothing live" describes only the *current* dependency graph, and in this estate disconnection is a documented, recurring event (162 dirs swept to QUARANTINE; pnpm globs a non-existent `agents/`; `applications/` missing; `ai-systems/ai-systems` doubly-nested). Evidence that these modules were *meant* to be wired and were orphaned, not invented-and-abandoned:
-- **A guarded mount point exists.** `os-platform/infrastructure/plugins-beyond-plugins/PluginBeyondPluginsIntegrator.js:104,121` does `if (typeof MorphicResonancePlugin !== 'undefined') { this.morphicResonance = new MorphicResonancePlugin(aiSwarm, quantumLayer) }` (and the same for `DimensionalFoldingPlugin`) — an integration designed to attach the plugin when present and no-op when not. The wiring is *latent/guarded*, not absent-by-design. **Proven.** *(Pass 3/App. G2: a reachability trace confirms **zero importers** of these plugins anywhere except this single guarded integrator — frontend 0 edges, backend 0 import edges — so "currently unwired" is now Proven, not inferred. Pass 3/App. G3 also adjudicated stratum-2: `security-analytics-quantum` is real code (TensorFlow/crypto/bcrypt/jwt) in quantum-marketing clothing — Corroborated-real, distinct from the fantasy stratum.)*
+- **A guarded mount point exists.** `os-platform/infrastructure/plugins-beyond-plugins/PluginBeyondPluginsIntegrator.js:104,121` does `if (typeof MorphicResonancePlugin !== 'undefined') { this.morphicResonance = new MorphicResonancePlugin(aiSwarm, quantumLayer) }` (and the same for `DimensionalFoldingPlugin`) — an integration designed to attach the plugin when present and no-op when not. The wiring is *latent/guarded*, not absent-by-design. **Proven.** *(Pass 3/App. G2: a reachability trace confirms **zero importers** of these plugins anywhere except this single guarded integrator — frontend 0 edges, backend 0 import edges — so "currently unwired" is now Proven, not inferred. Pass 3/App. G3 also adjudicated stratum-2: `security-analytics-quantum` is real code (TensorFlow/crypto/bcrypt/jwt) in quantum-marketing clothing — Corroborated (real), distinct from the fantasy stratum.)*
 - **Move/duplication churn is Proven.** `autonomous-research-engine` exists in **5 locations** (QUARANTINE ×4, `tests/marketplace/`, `specialized/`) — the "moved, copied, misplaced" signature.
 - **History [Pass-2 corrected].** Pass 1 saw `specialized/` only at the shallow-boundary commit. **Full history:** it entered **2025-10-15** ("[THREE PILLARS] Phase 4 Complete: Infrastructure & Specialized") — ~8 months old (App. F). Its *age* is now known; whether it was ever **runtime-wired** remains **Suspected-unwired** (call-graph not traced — not a history question).
 
@@ -367,7 +367,7 @@ Buckets: Runtime-Critical · Build-Critical · Governance-Critical · Experiment
 | `os-platform/core/` (gates, ToolRegistry, canon, tests) | Governance-Critical | Corroborated |
 | `os-platform/development/testing-suite/` | Experimental (active tests, non-production) | Corroborated |
 | `os-platform/specialized/**` | Frozen (repo-declared `PROTECTED_PATTERNS`) | Proven |
-| `os-platform/ai-systems/ai-systems/ai-swarm/` | Experimental→Scaffolding (unwired) | Corroborated |
+| `os-platform/ai-systems/ai-systems/ai-swarm/` | Scaffolding (Experimental sub-stratum; unwired) | Corroborated |
 | `QUARANTINE/` | Archive | Proven |
 | `phase4*.json` (root) | Generated (consolidation ledgers) | Corroborated |
 | `.pnpm-store/` | Residue (committed package cache) | Proven |
@@ -386,9 +386,9 @@ A single physical root spans five strata; each must be scored independently, not
 | `os-platform/core/` | Governance-Critical | Gates (`check-protected-paths.mjs`), ToolRegistry, canon, leak-guard tests — active control plane | Corroborated |
 | `os-platform/development/testing-suite/` | Experimental | The "716-test" corpus; active, non-production | Corroborated |
 | `os-platform/specialized/` → `web-audit-tracker`, `operations-dashboard` | Frozen ∩ **Real product** | Versioned apps (`@terrafusion/web-audit-tracker` v1.2.0, ~20K LOC) sitting inside a frozen zone | Proven |
-| `os-platform/specialized/` → `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine`, `self-modifying-architecture` | Frozen ∩ Experimental | **Pass-4 adjudicated (G5): a sub-spectrum** — real analytics/simulator (Corroborated-real) → real-architecture-unproven → `self-modifying-architecture` mixed (fabricated-metric methods) | Corroborated-real → Suspected (per module) |
+| `os-platform/specialized/` → `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine`, `self-modifying-architecture` | Frozen ∩ Experimental | **Pass-4 adjudicated (G5): a sub-spectrum** — real analytics/simulator (Corroborated, real) → real-architecture-unproven → `self-modifying-architecture` mixed (fabricated-metric methods) | Corroborated → Suspected (per module) |
 | `os-platform/specialized/` → `morphic-resonance`, `dimensional-folding`, `precrime-prevention`, `singularity-…`, `paradigm-…`, `quantum-collapse`, `biofield-…` | Frozen ∩ **Fantasy** | Implementation describes physically-impossible operations (FTL, spacetime folding) | Proven |
-| `os-platform/ai-systems/ai-systems/ai-swarm/` | Scaffolding | Doubly-nested, unwired swarm stubs | Corroborated |
+| `os-platform/ai-systems/ai-systems/ai-swarm/` | Scaffolding *(Experimental sub-stratum, App. I)* | Doubly-nested, unwired swarm stubs | Corroborated |
 | `os-platform/*.ps1` ("championship/quantum"), `EliteDashboard.tsx` | Residue | Aspirational/marketing scripts at root | Suspected |
 
 The point: a **real product** sits inside an **experimental band** inside a **frozen zone** inside a **non-workspace root**. A flat audit (the first pass) collapses all of that to "junk." Strata mapping is what prevents the collapse.
@@ -714,7 +714,7 @@ Pass 1–2 inferred "unwired" from workspace exclusion. Pass 3 traces actual imp
 
 "Currently unwired" for the fantasy stratum is now a **Proven reachability fact**, not an inference. (Pairs with prior-liveness, still Unknown — App. F.)
 
-### G3 — Stratum-2 adjudicated → the three-strata model holds → **Corroborated-real**
+### G3 — Stratum-2 adjudicated → the three-strata model holds → **Corroborated (real)**
 
 The doctrine claims a *middle* stratum (quantum-washed but possibly-real) distinct from fantasy. Read `security-analytics-quantum/src/index.ts`: it imports **real** `@tensorflow/tfjs-node`, `crypto`, `bcrypt`, `jsonwebtoken`, `winston`, `uuid` and defines substantive `SecurityConfig`/`ThreatModel`/`SecurityEvent` interfaces. This is **real security-analytics code wearing a "quantum" marketing name** — categorically unlike `morphic-resonance` (FTL theater). The three-strata distinction (fantasy / quantum-washed-real / real-product) is **validated on a second module**, not just `web-audit-tracker`. *"Quantum-resistant" cryptographic claims remain unverified (Suspected).*
 
@@ -774,7 +774,7 @@ The only *live-execution* evidence class — it can change a surface's status al
 |---|---|---|---|
 | R18 classification drift | Corroborated | **Proven** | 4 roots × ≥3 strata, measured (G1) |
 | Fantasy stratum "unwired" | Inferred | **Proven** | reachability trace, 0 importers (G2) |
-| Stratum-2 real-vs-theater | Suspected | **Corroborated-real** (≥1 module) | code reads real libs/logic (G3) |
+| Stratum-2 real-vs-theater | Suspected | **Corroborated (real)** (≥1 module) | code reads real libs/logic (G3) |
 | Stratum-2 *whole band* (4 modules) | unadjudicated | **Adjudicated → sub-spectrum** | per-module read (G5): real→mixed |
 | Launcher no-op (R3) | Proven (static) / Inferred | **Proven (executed)** | ran dev-os.mjs → 0 modules (G6) |
 | `tf` CLI entrypoint | not mapped | **Actually-live (executed)** | `tf --help/version/status` exit 0 (G6) |
@@ -824,6 +824,7 @@ FECF is now **governing doctrine**, not a one-time document. A governing doctrin
 | 2026-06-24 | App. F | Pass 2 corrections (un-shallow) | full history | 3 Contradicted retracted |
 | 2026-06-25 | App. G | Passes 3–5 (evidence hardening) | measurement/execution | R18→Proven, runtime execution-verified |
 | 2026-06-25 | App. H, I | Amendment Process + frozen Lexicon (ratification) | — | governance established |
+| 2026-06-25 | App. I rev | **Lexicon: add `Scaffolding`** (sub-stratum of Experimental); normalize the compound `Corroborated-real` label → `Corroborated` + "(real)" prose (confidence set stays closed) | CodeRabbit review flagged out-of-vocabulary labels | clarification — no confidence-set change | first amendment exercised |
 
 ---
 
@@ -843,6 +844,7 @@ Terminology drifts faster than architecture on large projects; these definitions
 | **Recovery Candidate** | A surface classified as *possibly worth preserving*; not approval for recovery. |
 | **Target Home** | A confidence-laddered *hypothesis* about where a surface would belong post-split. Not an approved destination. |
 | **Strata** | Distinct kinds (runtime/governance/experimental/frozen/archive/residue/fantasy…) co-located in one physical root; scored independently. |
+| **Scaffolding** | A sub-stratum of *Experimental*: code structure that is **unwired and non-functional** (stubs/skeletons) — present but not reachable. Distinct from *Residue* (operational leftovers) and *Archive* (historical). Added by amendment (App. H4) after review flagged it as out-of-vocabulary. |
 | **Authority Chain** | The ordered set of documents/mechanisms that actually govern (e.g. `baseline.md` > CLAUDE.md aspirational text; `spec-lock/` gates > marketing canon). The chain is evidenced, not declared. |
 | **Negative Evidence** | A recorded search that did **not** find a claimed thing — scope searched + what was absent + conclusion. |
 | **Coverage Gate** | The thresholds (per gated area) that must be met before recommendations; below threshold ⇒ stop and report. |
