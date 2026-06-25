@@ -386,7 +386,7 @@ A single physical root spans five strata; each must be scored independently, not
 | `os-platform/core/` | Governance-Critical | Gates (`check-protected-paths.mjs`), ToolRegistry, canon, leak-guard tests — active control plane | Corroborated |
 | `os-platform/development/testing-suite/` | Experimental | The "716-test" corpus; active, non-production | Corroborated |
 | `os-platform/specialized/` → `web-audit-tracker`, `operations-dashboard` | Frozen ∩ **Real product** | Versioned apps (`@terrafusion/web-audit-tracker` v1.2.0, ~20K LOC) sitting inside a frozen zone | Proven |
-| `os-platform/specialized/` → `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine` | Frozen ∩ Experimental | Quantum-washed naming over possibly-real logic; quality unadjudicated | Suspected |
+| `os-platform/specialized/` → `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine`, `self-modifying-architecture` | Frozen ∩ Experimental | **Pass-4 adjudicated (G5): a sub-spectrum** — real analytics/simulator (Corroborated-real) → real-architecture-unproven → `self-modifying-architecture` mixed (fabricated-metric methods) | Corroborated-real → Suspected (per module) |
 | `os-platform/specialized/` → `morphic-resonance`, `dimensional-folding`, `precrime-prevention`, `singularity-…`, `paradigm-…`, `quantum-collapse`, `biofield-…` | Frozen ∩ **Fantasy** | Implementation describes physically-impossible operations (FTL, spacetime folding) | Proven |
 | `os-platform/ai-systems/ai-systems/ai-swarm/` | Scaffolding | Doubly-nested, unwired swarm stubs | Corroborated |
 | `os-platform/*.ps1` ("championship/quantum"), `EliteDashboard.tsx` | Residue | Aspirational/marketing scripts at root | Suspected |
@@ -403,7 +403,7 @@ Promotion/demotion is **disposition (step 5) — out of scope for this WO.** Thi
 |---|---|---|---|
 | `web-audit-tracker` | Frozen ∩ Real | Experimental → Runtime | Clean build, resolvable deps, named owner, workspace-inclusion decision, security review |
 | `operations-dashboard` | Frozen ∩ Real | Experimental | Build proof, integration target, owner |
-| `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine` | Frozen ∩ Experimental | Experimental (only after audit) | **Implementation audit to separate real logic from theater** before any promotion is even considered |
+| `security-analytics-quantum`, `quantum-computing-integration`, `autonomous-research-engine`, `self-modifying-architecture` | Frozen ∩ Experimental | Experimental (per-module) | **Implementation audit DONE — Pass 4/G5:** real analytics/simulator + real architecture (capability unverified) + `self-modifying-architecture` mixed/fabricated-metrics. Promotion still needs capability proof + owner |
 | `morphic-resonance`, `dimensional-folding`, et al. | Frozen ∩ Fantasy | **Not eligible** | Implementation is physically impossible; disposition = archive/quarantine candidate (separate WO) |
 | `backend/api-unified/` | **Pass-2: Inferred abandoned/superseded** (first 2025-09-02, last touched 2026-03-19 vs canonical API to 2026-06-23 — App. F) | Archive (likely) *or* Runtime | Lineage **resolved** (un-shallow done); remaining: `.sln`-membership / disposition decision |
 | `config/*quantum/consciousness/transcended*.json` | Residue ∩ false-capability | Demote/relabel | Confirm nothing in the live path reads them as real capability (catastrophic-class check) |
@@ -722,6 +722,19 @@ The doctrine claims a *middle* stratum (quantum-washed but possibly-real) distin
 
 Ran `git log --diff-filter=D` ∩ `--diff-filter=A` on full history. Naive intersection = **20,786** paths; filtered to live source extensions = **1,570**. **Neither is a valid resurrection count:** both are dominated by the documented consolidation **mass-moves** (the 2026-02-12 QUARANTINE sweep deletes-and-re-adds tens of thousands of paths; rename detection was skipped at this scale). A genuine delete→rebuild signal cannot be isolated without **move-aware analysis** that excludes the known batch-move commits. **Status: bounded completeness item, partially run — Unknown (method-limited), not a fabricated figure.** Honest non-result is reported rather than presenting 20,786 as "resurrections."
 
+### G5 — Quality lens completed: stratum-2 is a *spectrum*, not uniform
+
+Pass 4 adjudicated the three remaining "quantum-washed" modules by reading their entry source (read-only). Result: the middle stratum is **not homogeneous** — it spans real-simulator → real-architecture-unproven → real-skeleton-with-fabrication:
+
+| Module | Evidence | Verdict |
+|---|---|---|
+| `security-analytics-quantum` (G3) | real `@tensorflow/tfjs-node`, `crypto`, `bcrypt`, `jwt` + substantive interfaces | **Real** (quantum-marketing name; "quantum-resistant" unverified) |
+| `quantum-computing-integration` (874 ln) | real `complex.js` / `ml-matrix` / `mathjs` / `rxjs`; `Math.random` is **legitimate measurement-sampling** in a quantum *simulator* | **Real classical simulator** — name "True Quantum Computing" overstates (no QPU) |
+| `autonomous-research-engine` (850 ln) | real 8-component architecture (Orchestrator/Analysis/Hypothesis/Knowledge/Synthesis…); `Math.random` only for ID-gen | **Real structure; "transcendent autonomous discovery" capability unverified** (Suspected) |
+| `self-modifying-architecture` (750 ln) | real component skeleton, **but `index.ts:699,704` `return Math.random()*1000+500` — fabricated-metric methods** (the morphic-resonance tell) | **Mixed** — real scaffolding + fabricated outputs; closest to fantasy of the four |
+
+**Doctrine consequence:** the three-strata model (fantasy / quantum-washed / real-product) holds, and Pass 4 *refines* it — **"quantum-washed" is itself a sub-spectrum** from real-simulator down to skeleton-with-fabrication. The classifier discriminates within the band: `self-modifying-architecture` sits on the fantasy boundary (fabricated metrics) while `quantum-computing-integration` is genuinely substantive. This is exactly the per-module evidence the Promotion Risk Matrix (A3) demanded "before any promotion is even considered" — now supplied for the stratum.
+
 ### G-summary — label changes (Pass 3)
 
 | Claim | Was | Now | Basis |
@@ -729,6 +742,7 @@ Ran `git log --diff-filter=D` ∩ `--diff-filter=A` on full history. Naive inter
 | R18 classification drift | Corroborated | **Proven** | 4 roots × ≥3 strata, measured (G1) |
 | Fantasy stratum "unwired" | Inferred | **Proven** | reachability trace, 0 importers (G2) |
 | Stratum-2 real-vs-theater | Suspected | **Corroborated-real** (≥1 module) | code reads real libs/logic (G3) |
+| Stratum-2 *whole band* (4 modules) | unadjudicated | **Adjudicated → sub-spectrum** | per-module read (G5): real→mixed |
 | Resurrection cycles | Unknown (shallow) | **Unknown (method-limited)** | move-noise dominates (G4) |
 
 **Net:** three load-bearing doctrine claims hardened to Proven/Corroborated by measurement; one completeness item honestly remains Unknown for a stated methodological reason (not for lack of history). The doctrine's empirical foundation is materially stronger; the remaining gap is named and bounded.
