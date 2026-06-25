@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 34 — B-tier read-only verification pass (promotion plan); paused before B-tier code |
+| **Current loop** | Loop 35 — B1 opened; SyncReadinessDto promoted (DTO-first); iface next |
 | **Recovery lock** | **PARTIALLY RELEASED** — Phase-1 shared-contracts formalization (in-repo) ONLY; all other migration ACTIVE-LOCKED (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TerraFusion.Core.DTOs.Workbench;
+namespace TerraFusion.Abstractions.DTOs.Workbench;
 
 /// <summary>
 /// Slice OPS-1-A: top-level Sync Readiness Console response DTO. Pure

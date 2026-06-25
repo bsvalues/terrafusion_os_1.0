@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TerraFusion.Core.DTOs.Workbench;
+using TerraFusion.Abstractions.DTOs.Workbench;
 using TerraFusion.Core.Interfaces.Workbench;
 
 namespace TerraFusion.Sync.Workbench.Readiness;

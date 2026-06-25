@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using TerraFusion.Core.DTOs.Workbench;
+using TerraFusion.Abstractions.DTOs.Workbench;
 using TerraFusion.Core.Interfaces.Workbench;
 using TerraFusion.Abstractions.Interfaces.Workbench;
 

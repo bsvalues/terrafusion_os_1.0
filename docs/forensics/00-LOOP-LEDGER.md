@@ -570,3 +570,17 @@
 | **edge-of-scope finding** | beyond B1–B3, remaining B work (IModuleCatalog/IValuationService) is **entity/schema-entangled** → belongs with the Forge/F14 execution lane, not pure contract formalization. |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED; **no B-tier release opened by this pass.** |
 | **decision (for owner)** | Reassess: open **B1 only** (Workbench, DTO-first) as the next narrow release, or **pause Phase-1 here** (clean edge — B2/B3 mechanical, IModuleCatalog/IValuationService defer to Forge/F14). Awaiting go. |
+
+## Loop 35 — Migrate R3 (B1) opened; SyncReadinessDto promoted (DTO-first step 1) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L35 |
+| **trigger** | Owner: open B1 only — promote `SyncReadinessDto` first, then `IWorkbenchSyncReadinessService`; nothing else; same one-cluster CI-validated discipline |
+| **release** | **Migrate R3 (B1)** — narrow, scope = `SyncReadinessDto` → `IWorkbenchSyncReadinessService` ONLY. B2/B3 + DEFERs + all else remain locked. |
+| **gate (moment-of-action)** | 5/5 PASS — `SyncReadinessDto.cs` self-contained (System usings; 3 co-located types SyncReadinessDto/PanelDto/LastProofDto; no Core/EF). Consumer `SyncReadinessRefreshDto` is controller-LOCAL (declared in the controller, ns API.Controllers) — not a blocker. **Sole-declarer check:** `SyncReadinessDto.cs` is the only file in ns `Core.DTOs.Workbench` → namespace **vanishes** on move → all 4 consumers MUST **swap** (a leftover using would be CS0246). |
+| **promotion (step 1)** | Moved `SyncReadinessDto.cs` (+ 2 siblings) Core/DTOs/Workbench → Abstractions/DTOs/Workbench (ns updated). Swapped 4 consumers: `WorkbenchSyncReadinessService` (Sync), `WorkbenchSyncReadinessController` (API), `IWorkbenchSyncReadinessService` (Core iface — its using now points at Abstractions; iface itself moves in step 2), tests. Sweep: **0 stale `Core.DTOs.Workbench` refs** (namespace fully gone). |
+| **new trap** | **vanishing-namespace → CS0246**: when the moved file is the sole declarer of its namespace, every consumer using must SWAP (not add) or the build breaks. (Distinct from the shared-namespace add case.) |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 DTO); everything else ACTIVE-LOCKED. |
+| **decision** | Let CI validate `SyncReadinessDto`. Green → **B1 step 2: `IWorkbenchSyncReadinessService`** (completes Workbench cluster). Red → fix step 1 first. |

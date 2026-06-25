@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TerraFusion.Core.DTOs.Workbench;
+using TerraFusion.Abstractions.DTOs.Workbench;
 
 namespace TerraFusion.Core.Interfaces.Workbench;
 

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using FluentAssertions;
-using TerraFusion.Core.DTOs.Workbench;
+using TerraFusion.Abstractions.DTOs.Workbench;
 using TerraFusion.Sync.Workbench.Readiness;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
