@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs;
 
 namespace TerraFusion.Core.Services;

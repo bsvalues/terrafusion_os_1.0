@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Services.Monitoring.HealthChecks;
 using TerraFusion.Core.Services.Monitoring.BackgroundServices;

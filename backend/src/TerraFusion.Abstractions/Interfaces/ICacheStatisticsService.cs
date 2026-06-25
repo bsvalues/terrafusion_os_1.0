@@ -1,6 +1,6 @@
 using TerraFusion.Abstractions.DTOs;
 
-namespace TerraFusion.Core.Interfaces;
+namespace TerraFusion.Abstractions.Interfaces;
 
 public interface ICacheStatisticsService
 {

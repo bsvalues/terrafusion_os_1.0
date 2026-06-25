@@ -613,3 +613,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 + R4/B2 DTO); B3 + DEFERs + all else ACTIVE-LOCKED. |
 | **decision** | Let CI validate `NegativeCacheStatistics` extraction. Green → **B2 step 2: `ICacheStatisticsService`**. Red → fix step 1 first. |
+
+## Loop 38 — NegativeCacheStatistics green; ICacheStatisticsService promoted (B2 COMPLETE) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L38 |
+| **trigger** | `NegativeCacheStatistics` extraction green on `b8324f82a` → B2 step 2: `ICacheStatisticsService` only |
+| **DTO verdict** | **GREEN** (run 28153871290, head_sha `b8324f82a` verified): Backend .NET Tests ✓ (8m56s), Warning Gate `/warnaserror` ✓, Quality/Vitest/Security/Frontend ✓. The comment-only-ref / no-unused-using call held. |
+| **gate (moment-of-action)** | 5/5 PASS — iface self-contained (returns `NegativeCacheStatistics` from Abstractions + primitives; no Core types). `Core.Interfaces` persists (30+ ifaces) → swap-vs-add, not vanishing-namespace. |
+| **promotion (step 2)** | Moved Core/Interfaces → Abstractions/Interfaces (ns updated). **swap**: `InMemoryCacheStatisticsService`, `NegativeCachingService` (each used only ICacheStatisticsService from Core.Interfaces). **add**: `MonitoringServiceExtensions` (DI registrar; keeps Core for IHealthCheck/IMetrics/IObservability/ITelemetry), `RuntimeSafetyTests` (keeps Core for IAssistantService). DI reg is unqualified in MonitoringServiceExtensions → resolves via the added using. Sweep: 0 stale FQN; iface only in Abstractions. |
+| **B2 COMPLETE** | `NegativeCacheStatistics` (DTO) + `ICacheStatisticsService` (iface) both in Abstractions. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 + R4/B2); B3 + DEFERs + all else ACTIVE-LOCKED. |
+| **decision (for owner)** | B2 done. Per agreed reassess: **B3** (`ITerraFusionSyncService` cluster — heavy/mechanical: `LegacySystemHealth` + ~10 POCOs) or **pause** Phase-1 (DEFERs `IModuleCatalog`/`IValuationService` → Forge/F14; `IStatisticalAnalysisService` never). Awaiting go. |

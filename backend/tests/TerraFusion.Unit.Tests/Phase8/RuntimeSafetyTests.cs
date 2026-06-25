@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Core.Services;
 using Xunit;
 

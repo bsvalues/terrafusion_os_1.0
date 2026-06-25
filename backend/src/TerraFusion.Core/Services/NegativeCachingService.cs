@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
-using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 
 namespace TerraFusion.Core.Services;
 

@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 37 — B1 sealed green; B2 opened (NegativeCacheStatistics extracted, DTO-first) |
+| **Current loop** | Loop 38 — B2 complete (ICacheStatisticsService promoted); reassess B3/pause |
 | **Recovery lock** | **PARTIALLY RELEASED** — Phase-1 shared-contracts formalization (in-repo) ONLY; all other migration ACTIVE-LOCKED (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |
