@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Data;
 
 namespace TerraFusion.API.Services;

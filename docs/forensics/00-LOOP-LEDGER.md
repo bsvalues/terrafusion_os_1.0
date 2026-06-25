@@ -487,3 +487,17 @@
 | **notable** | (1) Real-vs-theater at contract layer: `IForgeStatisticsService` (IAAO COD/PRD) = A; `IStatisticalAnalysisService` (theater) = C. (2) Workbench tab-contract cluster **splits A/B** (runners A, readiness-service B — DTO leads). (3) `IModuleCatalog`/`IValuationService` would export entities → inversion forbidden → DTO-first. (4) `ITerraFusionSyncService` highest-value/heaviest → dedicated last cluster. |
 | **lock status** | PARTIALLY RELEASED (shared-contracts only); **no new release opened by this review**; all other migration ACTIVE-LOCKED. |
 | **decision (for owner)** | Classification ready. Recommended order when authorized: `IGisDataService` → probe+refresh-runner → `IForgeStatisticsService` (the 4 A's), then B-tier DTOs-first, then `ITerraFusionSyncService` cluster; never `IStatisticalAnalysisService`. Awaiting owner go to open the first A-interface narrow release. |
+
+## Loop 29 — Migrate R2 release opened (A-tier interfaces); IGisDataService promoted (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L29 |
+| **trigger** | Owner: open a new narrow partial release for A-tier interfaces, starting with `IGisDataService`; do not adjust classification; A-tier order GisData→probe→refresh-runner→ForgeStats; one at a time, CI-green before next |
+| **release** | **Migrate R2 (A-tier interfaces)** — narrow partial release, scope = the 4 A interfaces only, one build-verified increment each. B/C remain locked. |
+| **GisData gate (moment-of-action)** | 5/5 PASS — file is namespace-only, no Core/EF coupling; response records co-located; consumers = `AtlasGisController`, `GisDataService` (impl), `Program.cs` (FQN reg). Shared-namespace handled: impl **swap** (sole Core.Interfaces use), controller **add** (keeps Core.Interfaces for IGisConnector/IGisParseService/IGisSyncService/IGeospatialEnricher), Program.cs FQN updated. `ParcelGeometryReader`/`ParcelNeighborResponse` = GisTf false-positives. |
+| **promotion** | Moved `IGisDataService.cs` (+ ParcelBoundary/Layers records) Core/Interfaces → Abstractions/Interfaces (ns `TerraFusion.Core.Interfaces`→`TerraFusion.Abstractions.Interfaces`). Repo-wide sweep: **0 stale FQN**; interface now defined only in Abstractions. |
+| **first-interface lesson** | interfaces sit in the **shared** `Core.Interfaces` namespace (unlike dedicated DTO sub-namespaces) → per-consumer **swap-vs-add** decision required (avoid unused-using under `/warnaserror`) + FQN DI registrations must be updated. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (shared-contracts; R1 DTOs + R2 A-interfaces); B/C interfaces + all other migration ACTIVE-LOCKED. |
+| **decision** | Let CI validate `IGisDataService`. Green → next A: `IPacsReachabilityProbeService`. Red → fix first. |

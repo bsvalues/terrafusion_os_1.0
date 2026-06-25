@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.GIS;
 using TerraFusion.Core.GIS.Connectors;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Abstractions.Interfaces;
 
 namespace TerraFusion.API.Controllers;
 

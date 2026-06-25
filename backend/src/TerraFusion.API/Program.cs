@@ -1660,7 +1660,7 @@ builder.Services.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion
 builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.Core.Services.QueueService>();
 
 // Phase 11: GIS data service — PACS-sourced parcel boundary & layer data
-builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
+builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
 // When PacsConnection is configured: SQL Server via Dapper (PacsSqlAdapter)

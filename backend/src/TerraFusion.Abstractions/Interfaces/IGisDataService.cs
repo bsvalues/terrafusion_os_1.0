@@ -1,4 +1,4 @@
-namespace TerraFusion.Core.Interfaces;
+namespace TerraFusion.Abstractions.Interfaces;
 
 /// <summary>
 /// Provides PACS-sourced GIS data for parcels: boundary geometry approximations

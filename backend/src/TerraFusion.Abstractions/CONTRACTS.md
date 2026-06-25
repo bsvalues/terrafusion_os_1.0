@@ -61,16 +61,21 @@ order by consumer surface: **GisTf (7) → Kernel (9) → CanonicalTf (21).**
 > §3 canonical convention is `string CountyId` at boundaries. Changing the type during a *move* is a
 > breaking change — **promote as-is (Guid), then align to string as a separate versioned decision.**
 
-**PROMOTE — pending per-contract verification** (not yet gated; verify before moving):
-| Contract | From | Future home | Note |
-|---|---|---|---|
-| `IModuleCatalog` | Core/Interfaces | core registry (shared) | check signature self-contained |
-| `ITerraFusionSyncService` | Core/Interfaces | Sync platform contract | likely needs DTO promotion first |
-| `IGisDataService` | Core/Interfaces | Atlas/Sync seam | check geo types |
-| `IValuationService` | Core/Interfaces | Forge | needs valuation DTOs shared |
-| `IWorkbenchSyncReadinessService`, `IWorkbenchSyncReadinessRefreshRunner`, `IPacsReachabilityProbeService` | Core/Interfaces/Workbench | core (workbench tab contracts) | check DTOs |
-| `IForgeStatisticsService`, `IStatisticalAnalysisService` | API/Interfaces | Forge | DTOs in Abstractions already (CostForgeStatsDto) |
-| `ForgeValuationDtos`, `CostForgeAIDtos` | Core/DTOs | Forge | review for entity coupling |
+**INTERFACE TRANCHE** — classified in `docs/forensics/INTERFACE-CLASSIFICATION-REVIEW.md` (A/B/C).
+Release R2 (A-tier) opened 2026-06-25; one interface per build-verified increment.
+| Contract | From | Future home | Class | Status |
+|---|---|---|---|---|
+| `IGisDataService` (+ co-located records) | Core/Interfaces | Atlas/Sync seam | **A** | **PROMOTED — Loop 29 (CI-validating)** |
+| `IPacsReachabilityProbeService` | Core/Interfaces/Workbench | core (workbench tab) | **A** | next (after GisData green) |
+| `IWorkbenchSyncReadinessRefreshRunner` | Core/Interfaces/Workbench | core (workbench tab) | **A** | queued |
+| `IForgeStatisticsService` (+ co-located DTOs) | API/Interfaces | Forge | **A** | queued (real IAAO contract) |
+| `IModuleCatalog` | Core/Interfaces | core registry | **B** | DTO-first (`Module` is an entity) |
+| `IValuationService` | Core/Interfaces | Forge | **B** | DTO-first (ValuationDTOs; CostApproach entity ambiguity) |
+| `IWorkbenchSyncReadinessService` | Core/Interfaces/Workbench | core (workbench tab) | **B** | DTO-first (`SyncReadinessDto`) |
+| `ITerraFusionSyncService` | Core/Interfaces | Sync platform (SoT) | **B** | DTO-first cluster (`LegacySystemHealth` + ~10 POCOs) |
+| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | **B** | DTO-first (`NegativeCacheStatistics`) |
+| `IStatisticalAnalysisService` | API/Interfaces | — | **C** | **STAY** (quantum/infinite-dim theater; consciousness-coupled) |
+| `ForgeValuationDtos`, `CostForgeAIDtos` | Core/DTOs | Forge | — | review for entity coupling (DTO-tier) |
 
 ### 5b. STAY domain-local (NOT cross-repo)
 | Contract | Reason |
