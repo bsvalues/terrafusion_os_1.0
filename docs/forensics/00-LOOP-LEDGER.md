@@ -474,3 +474,16 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
 | **decision** | Let CI validate CanonicalTf. After green: the easy/self-contained DTO promotions are DONE; remaining charter items (interfaces: `IModuleCatalog`, `IGisDataService`, `ITerraFusionSyncService`, `IValuationService`, Workbench/*, `IForgeStatisticsService`; + `ICacheStatisticsService` DTO-first) need per-contract verification (some need DTO promotion first) — pause point for owner review of next sub-phase. |
+
+## Loop 28 — CanonicalTf CI-green; interface classification review (read-only) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L28 |
+| **trigger** | CanonicalTf green → owner chose (1): pause and review the interface classification first (no new release) |
+| **CanonicalTf verdict** | **GREEN** (run 28140668148, head_sha `ec15986ba`): Backend .NET Tests / Canonical .NET Test Run ✓ (8m27s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. **All 3 DTO clusters now CI-validated** (GisTf, Kernel, CanonicalTf). |
+| **evidence** | `INTERFACE-CLASSIFICATION-REVIEW.md` — read every candidate interface's source + signature types + consumer projects + dependency-type locations |
+| **classification** | **A promote-now (4):** `IGisDataService`, `IWorkbenchSyncReadinessRefreshRunner`, `IPacsReachabilityProbeService`, `IForgeStatisticsService` (DTOs co-located/primitives, no EF/Core coupling, consumers ref Abstractions). **B DTO-first (5):** `IModuleCatalog` (returns `Module` entity), `IValuationService` (ValuationDTOs + `CostApproach` entity ambiguity), `IWorkbenchSyncReadinessService` (`SyncReadinessDto`), `ITerraFusionSyncService` (`LegacySystemHealth` + ~10 POCOs, Sync SoT cluster), `ICacheStatisticsService` (`NegativeCacheStatistics`). **C stay (1):** `IStatisticalAnalysisService` (quantum/infinite-dimensional theater; consciousness-coupled — not cross-repo). |
+| **notable** | (1) Real-vs-theater at contract layer: `IForgeStatisticsService` (IAAO COD/PRD) = A; `IStatisticalAnalysisService` (theater) = C. (2) Workbench tab-contract cluster **splits A/B** (runners A, readiness-service B — DTO leads). (3) `IModuleCatalog`/`IValuationService` would export entities → inversion forbidden → DTO-first. (4) `ITerraFusionSyncService` highest-value/heaviest → dedicated last cluster. |
+| **lock status** | PARTIALLY RELEASED (shared-contracts only); **no new release opened by this review**; all other migration ACTIVE-LOCKED. |
+| **decision (for owner)** | Classification ready. Recommended order when authorized: `IGisDataService` → probe+refresh-runner → `IForgeStatisticsService` (the 4 A's), then B-tier DTOs-first, then `ITerraFusionSyncService` cluster; never `IStatisticalAnalysisService`. Awaiting owner go to open the first A-interface narrow release. |
