@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TerraFusion.Core.DTOs.GisTf;
+namespace TerraFusion.Abstractions.DTOs.GisTf;
 
 /// <summary>
 /// Slice D4-Neighbors: response payload for

@@ -18,7 +18,7 @@ namespace TerraFusion.API.Controllers;
 ///   <item>401 if the request is unauthenticated (handled by <c>[Authorize]</c>).</item>
 ///   <item>403 if the caller's <c>countyId</c> claim doesn't match the parcel's CountyId.</item>
 ///   <item>404 if no parcel matches OR the parcel exists but has no active geometry.</item>
-///   <item>200 with <see cref="TerraFusion.Core.DTOs.GisTf.ParcelGeometryResponse"/> when found.</item>
+///   <item>200 with <see cref="TerraFusion.Abstractions.DTOs.GisTf.ParcelGeometryResponse"/> when found.</item>
 /// </list>
 /// </para>
 ///

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TerraFusion.Core.DTOs.GisTf;
+using TerraFusion.Abstractions.DTOs.GisTf;
 using TerraFusion.Core.GIS.ArcGisRest;
 
 namespace TerraFusion.Data.Services.GisTf;

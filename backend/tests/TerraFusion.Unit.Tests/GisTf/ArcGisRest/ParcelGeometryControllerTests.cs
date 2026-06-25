@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
-using TerraFusion.Core.DTOs.GisTf;
+using TerraFusion.Abstractions.DTOs.GisTf;
 using TerraFusion.Core.Entities.CanonicalTf;
 using TerraFusion.Core.Entities.GisTf;
 using TerraFusion.Data;

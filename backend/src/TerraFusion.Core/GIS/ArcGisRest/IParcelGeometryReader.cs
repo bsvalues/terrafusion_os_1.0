@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TerraFusion.Core.DTOs.GisTf;
+using TerraFusion.Abstractions.DTOs.GisTf;
 
 namespace TerraFusion.Core.GIS.ArcGisRest;
 

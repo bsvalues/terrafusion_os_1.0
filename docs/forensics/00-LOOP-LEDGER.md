@@ -435,3 +435,15 @@
 | **build-safety (HR-4)** | `dotnet` unavailable in this env → **charter-first** (zero build risk) lands now; physical relocations are **separate, individually build-verified increments** (no big-bang, no unproven "done" claims, no hidden rebuilds). |
 | **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
 | **decision** | Seam formalized. Next: begin per-contract promotion increments (start with the self-contained ones: `ICacheStatisticsService`, `CanonicalTf/*`, `GisTf/*`, `Kernel/*`), each build-verified — pending owner go on starting physical moves, or owner may first review the classification. |
+
+## Loop 25 — classification reviewed/corrected + first contract promotion (GisTf) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L25 |
+| **trigger** | Owner chose (1): review/adjust the promote-vs-stay classification first, then move code in tiny build-verifiable increments (GisTf→Kernel→CanonicalTf order; only candidates passing the 5-point gate). |
+| **review (gate results)** | Read each first-cluster candidate's source vs the 5-point gate. **`ICacheStatisticsService` FAILED** — `using TerraFusion.Core.Services;` + returns `NegativeCacheStatistics` (Core type) → would invert dependency → **moved to STAY** (corrects the earlier "self-contained" tag). **`GisTf/*` (2), `Kernel/*` (3 records), `CanonicalTf/*` (4+nested) PASS** — pure DTOs, no EF/Core types, consumers rebind via `using` swap only. CountyId-Guid flagged: do NOT change type on move (versioned follow-up). |
+| **first promotion (GisTf)** | Moved `ParcelGeometryResponse.cs` + `ParcelNeighborResponse.cs` Core/DTOs → Abstractions/DTOs/GisTf (namespace `TerraFusion.Core.DTOs.GisTf`→`TerraFusion.Abstractions.DTOs.GisTf`); updated 4 consumer `using`s (Data reader, Core `IParcelGeometryReader`, 2 tests) + 1 controller doc-comment cref. Repo-wide sweep: **0 stale references**. No inversion (Core refs Abstractions). |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → **build NOT verified in this env**; CI is the validator for this increment. No "done" claim beyond "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
+| **decision** | First cluster promoted. Per the agreed sequence: **let CI validate GisTf before promoting the next cluster (Kernel, then CanonicalTf).** Hold for CI green / owner go. |

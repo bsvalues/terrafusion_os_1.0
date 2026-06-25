@@ -46,23 +46,36 @@ buried inside shell, suite, or persistence code (topology rule R-SPLIT).
 > per contract at promotion time.
 
 ### 5a. PROMOTE → Abstractions (cross-repo)
-| Contract | From | Future home / consumers | Promote gate |
+
+**VERIFIED-PROMOTABLE** (passed all 5 gate points 2026-06-25 — no EF/entity types, no Core-only
+types in signatures, no inversion, consumers rebind cleanly, single small cluster). Increment
+order by consumer surface: **GisTf (7) → Kernel (9) → CanonicalTf (21).**
+
+| Contract cluster | From | Future home / consumers | Consumer files | Status |
+|---|---|---|---|---|
+| `GisTf/{ParcelGeometryResponse,ParcelNeighborResponse(+ParcelNeighbor)}` | Core/DTOs | Atlas (sync→suite geo) | 7 (API, Core, Data, tests) | **VERIFIED — promote 1st** |
+| `Kernel/{KernelCostApproachRequest,KernelCostApproachResponse(+KernelProvenance)}` | Core/DTOs | Forge cost approach | 9 (API, API.Tests, Core) | **VERIFIED — promote 2nd** |
+| `CanonicalTf/{OpenWorkResponse(+Item),ParcelOwnerCurrentResponse(+Entry),ParcelWsdorRollResponse(+Entry),TfSaleResponse(+Paged)}` | Core/DTOs | sync→suite payloads | 21 (API, Core/Sync ifaces, Data, tests) | **VERIFIED — promote 3rd** |
+
+> **CountyId convention flag (do NOT change on move):** these DTOs use `Guid CountyId`; the charter
+> §3 canonical convention is `string CountyId` at boundaries. Changing the type during a *move* is a
+> breaking change — **promote as-is (Guid), then align to string as a separate versioned decision.**
+
+**PROMOTE — pending per-contract verification** (not yet gated; verify before moving):
+| Contract | From | Future home | Note |
 |---|---|---|---|
 | `IModuleCatalog` | Core/Interfaces | core registry (shared) | check signature self-contained |
 | `ITerraFusionSyncService` | Core/Interfaces | Sync platform contract | likely needs DTO promotion first |
 | `IGisDataService` | Core/Interfaces | Atlas/Sync seam | check geo types |
 | `IValuationService` | Core/Interfaces | Forge | needs valuation DTOs shared |
-| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | self-contained → easy |
 | `IWorkbenchSyncReadinessService`, `IWorkbenchSyncReadinessRefreshRunner`, `IPacsReachabilityProbeService` | Core/Interfaces/Workbench | core (workbench tab contracts) | check DTOs |
 | `IForgeStatisticsService`, `IStatisticalAnalysisService` | API/Interfaces | Forge | DTOs in Abstractions already (CostForgeStatsDto) |
-| `CanonicalTf/{OpenWorkResponse,ParcelOwnerCurrentResponse,ParcelWsdorRollResponse,TfSaleResponse}` | Core/DTOs | sync→suite payloads | response DTOs, likely self-contained |
-| `GisTf/{ParcelGeometryResponse,ParcelNeighborResponse}` | Core/DTOs | Atlas | self-contained |
-| `Kernel/{KernelCostApproachRequest,KernelCostApproachResponse}` | Core/DTOs | Forge cost approach | self-contained |
 | `ForgeValuationDtos`, `CostForgeAIDtos` | Core/DTOs | Forge | review for entity coupling |
 
 ### 5b. STAY domain-local (NOT cross-repo)
 | Contract | Reason |
 |---|---|
+| `ICacheStatisticsService` | **FAILED gate 2026-06-25** — `using TerraFusion.Core.Services;`; returns `NegativeCacheStatistics` (Core type) in signature → promoting inverts the dependency. **STAY until its result type is promoted DTO-first.** (Corrects earlier "self-contained" tag.) |
 | `ITerraFusionDbContext` | persistence over EF entities → Core/Data (per §2; F14: Core levy = projection) |
 | `IMuseService`, `IMuseRouter`, `IMuseLlmClient`, `IMuseRouterStatusService`, `MuseTaskType` | Pilot deep AI internals → Phase 4 (R-PILOT) |
 | `IQuantumConsciousnessServices`, `IQuantumAIRoutingService`* | consciousness — defer/cut |

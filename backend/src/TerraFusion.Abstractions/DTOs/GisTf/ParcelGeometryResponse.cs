@@ -1,6 +1,6 @@
 using System;
 
-namespace TerraFusion.Core.DTOs.GisTf;
+namespace TerraFusion.Abstractions.DTOs.GisTf;
 
 /// <summary>
 /// Slice G1-E-2: response payload for
