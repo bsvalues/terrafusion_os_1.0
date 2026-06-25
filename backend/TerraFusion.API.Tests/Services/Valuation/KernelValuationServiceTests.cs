@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Services.Valuation;
 using TerraFusion.API.Services.Valuation.KernelContracts;
-using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Abstractions.DTOs.Kernel;
 using Xunit;
 
 namespace TerraFusion.API.Tests.Services.Valuation;

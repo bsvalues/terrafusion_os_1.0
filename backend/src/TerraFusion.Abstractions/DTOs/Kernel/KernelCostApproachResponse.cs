@@ -1,4 +1,4 @@
-namespace TerraFusion.Core.DTOs.Kernel;
+namespace TerraFusion.Abstractions.DTOs.Kernel;
 
 public record KernelCostApproachResponse(
     string ParcelId,

@@ -10,7 +10,7 @@ using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Entities;
 using TerraFusion.API.Services.Valuation;
-using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Abstractions.DTOs.Kernel;
 using TerraFusion.Core.Services.Batch;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using System.ComponentModel.DataAnnotations;

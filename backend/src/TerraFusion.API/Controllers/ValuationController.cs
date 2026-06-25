@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services.Valuation;
-using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Abstractions.DTOs.Kernel;
 
 namespace TerraFusion.API.Controllers;
 

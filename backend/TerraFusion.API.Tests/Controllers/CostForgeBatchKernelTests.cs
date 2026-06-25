@@ -6,7 +6,7 @@ using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services.Valuation;
 using TerraFusion.API.Tests.TestHelpers;
-using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Abstractions.DTOs.Kernel;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using Xunit;

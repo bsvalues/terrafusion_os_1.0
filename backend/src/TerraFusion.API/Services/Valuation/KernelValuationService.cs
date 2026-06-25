@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using TerraFusion.API.Services.Valuation.KernelContracts;
-using TerraFusion.Core.DTOs.Kernel;
+using TerraFusion.Abstractions.DTOs.Kernel;
 
 namespace TerraFusion.API.Services.Valuation;
 

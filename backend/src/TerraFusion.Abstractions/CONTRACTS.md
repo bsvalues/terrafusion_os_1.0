@@ -53,9 +53,9 @@ order by consumer surface: **GisTf (7) → Kernel (9) → CanonicalTf (21).**
 
 | Contract cluster | From | Future home / consumers | Consumer files | Status |
 |---|---|---|---|---|
-| `GisTf/{ParcelGeometryResponse,ParcelNeighborResponse(+ParcelNeighbor)}` | Core/DTOs | Atlas (sync→suite geo) | 7 (API, Core, Data, tests) | **VERIFIED — promote 1st** |
-| `Kernel/{KernelCostApproachRequest,KernelCostApproachResponse(+KernelProvenance)}` | Core/DTOs | Forge cost approach | 9 (API, API.Tests, Core) | **VERIFIED — promote 2nd** |
-| `CanonicalTf/{OpenWorkResponse(+Item),ParcelOwnerCurrentResponse(+Entry),ParcelWsdorRollResponse(+Entry),TfSaleResponse(+Paged)}` | Core/DTOs | sync→suite payloads | 21 (API, Core/Sync ifaces, Data, tests) | **VERIFIED — promote 3rd** |
+| `GisTf/{ParcelGeometryResponse,ParcelNeighborResponse(+ParcelNeighbor)}` | Core/DTOs | Atlas (sync→suite geo) | 7 (API, Core, Data, tests) | **PROMOTED ✓ (Loop 25, CI-green on 5f8ef90de)** |
+| `Kernel/{KernelCostApproachRequest,KernelCostApproachResponse(+KernelProvenance)}` | Core/DTOs | Forge cost approach | 9 (API, API.Tests, Core) | **PROMOTED — Loop 26 (CI-validating)** |
+| `CanonicalTf/{OpenWorkResponse(+Item),ParcelOwnerCurrentResponse(+Entry),ParcelWsdorRollResponse(+Entry),TfSaleResponse(+Paged)}` | Core/DTOs | sync→suite payloads | 21 (API, Core/Sync ifaces, Data, tests) | **VERIFIED — promote 3rd (after Kernel green)** |
 
 > **CountyId convention flag (do NOT change on move):** these DTOs use `Guid CountyId`; the charter
 > §3 canonical convention is `string CountyId` at boundaries. Changing the type during a *move* is a

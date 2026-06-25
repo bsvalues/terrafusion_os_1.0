@@ -447,3 +447,16 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → **build NOT verified in this env**; CI is the validator for this increment. No "done" claim beyond "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
 | **decision** | First cluster promoted. Per the agreed sequence: **let CI validate GisTf before promoting the next cluster (Kernel, then CanonicalTf).** Hold for CI green / owner go. |
+
+## Loop 26 — GisTf CI-green; Kernel cluster promoted (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L26 |
+| **trigger** | GisTf backend CI green on `5f8ef90de` → owner rule: re-run 5-point gate on Kernel at moment-of-action, promote Kernel only |
+| **GisTf verdict** | **GREEN** on run 28138366386 (`5f8ef90de`): `Build backend /warnaserror` ✓, Backend .NET Tests / Canonical .NET Test Run ✓ (11m55s), Vitest ✓, Frontend Build ✓, Quality Gate ✓, Security/CodeQL ✓. GisTf promotion confirmed structurally + test-clean. |
+| **Kernel gate (moment-of-action)** | 5/5 PASS — records use only string/double/IReadOnlyDictionary/int (no EF/Core types); `KernelProvenance` in-cluster; no FQN refs (no inversion); 7 consumers (API ×4, API.Tests ×3) all rebind via clean `using` swap; 2-file cluster. |
+| **Kernel promotion** | Moved `KernelCostApproachRequest.cs` + `KernelCostApproachResponse.cs` Core/DTOs → Abstractions/DTOs/Kernel (ns `TerraFusion.Core.DTOs.Kernel`→`TerraFusion.Abstractions.DTOs.Kernel`); updated 7 consumer usings. Repo-wide sweep: **0 stale references.** No inversion. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI is validator for this increment; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
+| **decision** | Kernel promoted. Per sequence: **let CI validate Kernel on the new HEAD before promoting CanonicalTf (21 files, the largest cluster).** Hold for Kernel CI green. |

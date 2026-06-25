@@ -1,4 +1,4 @@
-namespace TerraFusion.Core.DTOs.Kernel;
+namespace TerraFusion.Abstractions.DTOs.Kernel;
 
 /// <summary>
 /// Request to compute cost + valuation via Rust kernels for a parcel not yet
