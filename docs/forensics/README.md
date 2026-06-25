@@ -115,7 +115,8 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **B-Tier Promotion Plan** (read-only; DTO-first order; B1 Workbench clean, 2 DEFERs) | `B-TIER-PROMOTION-PLAN.md` |
 | **Master Playbook & Agent Handoff** (canonical operating package — doctrine, topology, phases, agent/queue model; NOT an execution release) | `MASTER-PLAYBOOK-HANDOFF.md` |
 | **Full Agent Handoff** (standalone continuity doc — usable without history; two-lock state, doctrine, next-signal gates; NOT an execution release) | `FULL-AGENT-HANDOFF.md` |
-| **TerraFusionOS Receiving-Vessel Scaffold** (WO-LOOP-44; transplant-ready governance scaffold; repo creation owner-only/BLOCKED 403; staging ≠ provisioning) | `terrafusionos-vessel/_STAGING-README.md` |
+| **TerraFusionOS Receiving-Vessel Scaffold** (WO-LOOP-44; governance scaffold — now a *reconciliation candidate*, see correction) | `terrafusionos-vessel/_STAGING-README.md` |
+| **WO-LOOP-44R — Reconcile w/ existing `terrafusion-os`** (CORRECTION: receiving repo already exists; reconcile not create; identity map, lock model, comparison checklist) | `WO-LOOP-44R-RECONCILE.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

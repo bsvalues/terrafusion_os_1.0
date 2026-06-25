@@ -710,3 +710,16 @@
 | **lock status** | **Lock B NOT satisfied** (repo does not exist; staging ≠ provisioning). **Lock A CLOSED.** WO-CORE-1 **unreleased**. Migrate-execution ACTIVE-LOCKED. |
 | **WO-LOOP-44 result** | **BLOCKED on repo creation (owner-only).** Scaffold staged & validated; ready for one-shot transplant the instant the owner creates the empty `TerraFusionOS` repo. |
 | **decision (for owner)** | Create empty private `TerraFusionOS` (web/`gh`), then transplant the staged scaffold (steps in `_STAGING-README.md`) → Lock B flips. Until then Lock B stays open. Next recommended: **WO-LOOP-45 — WO-CORE-1 Readiness Gate** (only after the repo exists). |
+| **⚠️ CORRECTED at Loop 45** | The "create `TerraFusionOS`" framing was a **naming error**. The sovereign receiving repo **already exists** as `bsvalues/terrafusion-os`. Do NOT create a new repo. Loop 44 reframed create→reconcile (`WO-LOOP-44R`). Lock B is **SATISFIED (repo exists)**, pending content verification. See Loop 45. |
+
+## Loop 45 — repo-identity correction: receiving vessel = existing `bsvalues/terrafusion-os` (NOT a new repo) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L45 |
+| **trigger** | Owner correction: **do not create `bsvalues/TerraFusionOS`**. The sovereign receiving repo already exists as **`github.com/bsvalues/terrafusion-os`** (runtime-empty by design, Work-Order-populated). `terrafusion_os_1.0` = old runtime archive/mine; `TerraFusion-Platform` = reference mine. WO-LOOP-44's "create" framing was a label↔repo naming error. |
+| **access probe** | `get_file_contents bsvalues/terrafusion-os /` → **"Access denied: repository is not configured for this session. Allowed: bsvalues/terrafusion_os_1.0."** `list_repos`/`add_repo` not available → actual reconciliation must run owner-side or in a `terrafusion-os`-scoped session. |
+| **action (docs-only correction)** | (1) Wrote **`WO-LOOP-44R-RECONCILE.md`** — corrected identity map, corrected lock model, reconciliation procedure + 12-row file-by-file comparison checklist (DUP/SUP/GAP/CONFLICT), decision rule, exit→WO-LOOP-45. (2) Prepended a **CORRECTION banner** to `terrafusionos-vessel/_STAGING-README.md` (void the create steps; reframe as reconcile-candidate; fix lock state). (3) README index + ledger updated. **No repo created; no runtime; no lock released.** |
+| **corrected lock model** | **Lock A: CLOSED** (WO-CORE-1 not released). **Lock B: SATISFIED** (`terrafusion-os` exists) — content parity **PENDING VERIFICATION** (out-of-scope read). **Execution: BLOCKED on Lock A** (Lock B is no longer the blocker). |
+| **disposition of Loop 44 scaffold** | Demoted from "transplant payload" to **reconciliation candidate**. Outcome (superseded/no-op vs narrow gap-patch) decided by WO-LOOP-44R once `terrafusion-os` is readable. |
+| **decision (for owner)** | Run **WO-LOOP-44R** against `terrafusion-os` (add it to session scope to let me do it, or run owner-side). Then **WO-LOOP-45 — WO-CORE-1 Readiness Gate**. Only after that: discuss opening **Lock A**. |
