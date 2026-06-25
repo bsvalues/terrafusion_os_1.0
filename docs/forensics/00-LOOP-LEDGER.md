@@ -584,3 +584,17 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 DTO); everything else ACTIVE-LOCKED. |
 | **decision** | Let CI validate `SyncReadinessDto`. Green → **B1 step 2: `IWorkbenchSyncReadinessService`** (completes Workbench cluster). Red → fix step 1 first. |
+
+## Loop 36 — SyncReadinessDto green; IWorkbenchSyncReadinessService promoted (B1 + Workbench cluster COMPLETE) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L36 |
+| **trigger** | `SyncReadinessDto` green on `0fcff25fb` → B1 step 2: `IWorkbenchSyncReadinessService` only |
+| **SyncReadinessDto verdict** | **GREEN** (run 28149246267, head_sha `0fcff25fb`): Backend .NET Tests ✓ (9m16s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. The 4-consumer vanishing-namespace swap held. |
+| **gate (moment-of-action)** | 5/5 PASS — interface uses Guid + `SyncReadinessDto` (already in Abstractions, no inversion); **sole remaining file** in `Core/Interfaces/Workbench` → namespace vanishes → consumers must swap/drop. |
+| **promotion (step 2)** | Moved iface Core/Interfaces/Workbench → Abstractions/Interfaces/Workbench (ns updated). Sync impl `WorkbenchSyncReadinessService`: **swap**. Controller: **deleted** the now-dead `Core.Interfaces.Workbench` using (line 9 Abstractions already covers all 3 Workbench ifaces). `Program.cs`: FQN reg updated. Sweep: **0 stale refs; `Core/Interfaces/Workbench` dir gone**. |
+| **MILESTONE** | **B1 complete + Workbench tab-contract cluster fully migrated**: `IPacsReachabilityProbeService` + `IWorkbenchSyncReadinessRefreshRunner` (A) + `IWorkbenchSyncReadinessService` (B1) + `SyncReadinessDto` all in Abstractions. |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 complete); B2/B3 + DEFERs + all else ACTIVE-LOCKED. |
+| **decision (for owner)** | B1 done. Reassess: **B2** (`ICacheStatisticsService` via extracting `NegativeCacheStatistics` POCO), **B3** (`ITerraFusionSyncService` cluster), or **pause** (DEFERs `IModuleCatalog`/`IValuationService` → Forge/F14 lane; `IStatisticalAnalysisService` never). Awaiting go. |

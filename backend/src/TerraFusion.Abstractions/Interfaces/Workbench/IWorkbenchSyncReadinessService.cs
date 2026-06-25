@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TerraFusion.Abstractions.DTOs.Workbench;
 
-namespace TerraFusion.Core.Interfaces.Workbench;
+namespace TerraFusion.Abstractions.Interfaces.Workbench;
 
 /// <summary>
 /// Slice OPS-1-A: read-only assembly contract for the Sync Readiness

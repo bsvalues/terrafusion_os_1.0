@@ -1270,7 +1270,7 @@ builder.Services.AddScoped<
 // backend/artifacts/sync-atlas/ relative to the working directory
 // and can be overridden via configuration "Workbench:SyncReadiness:ArtifactRoot".
 builder.Services.AddScoped<
-    TerraFusion.Core.Interfaces.Workbench.IWorkbenchSyncReadinessService>(sp =>
+    TerraFusion.Abstractions.Interfaces.Workbench.IWorkbenchSyncReadinessService>(sp =>
 {
     var config = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
     var artifactRoot = config["Workbench:SyncReadiness:ArtifactRoot"]
