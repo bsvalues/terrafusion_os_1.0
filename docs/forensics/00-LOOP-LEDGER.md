@@ -404,3 +404,19 @@
 | **FECF** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed: thesis disproven)** → **Migrate ▶ (opening)**. |
 | **lock status** | FULL ACTIVE — governance record only; authorizes *planning* of Migrate, not code/repo/extraction (HR-9). |
 | **decision** | Tier-1 sealed. Next artifact = **Migrate-phase split plan** (TerraFusionOS core · Sync · Dais · Forge · Atlas · Dossier), decision-only, sourcing from the evolved `main` spine; `IForgeStatisticsService` + F14 Levy projection/sync contracts = core shared-contracts at split. |
+
+## Loop 23 — Migrate-phase split plan drafted (decision-only) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L23 |
+| **trigger** | Owner: after the Closure Record, move into the Migrate-phase split plan (6 repos) |
+| **evidence** | `MIGRATE-SPLIT-PLAN.md` + grounding scan of `main` spine (backend projects, frontend page surfaces, contract locations) |
+| **grounding** | `main` already has clean module boundaries: backend `TerraFusion.{Sync,Levy,CostForge,CurrentUse,AI,Core,Abstractions}`; frontend `forge`(307)/`workbench`(77)/`atlas`(20)/`dais`(8)+`levy`(1)/`dossier`(1). Shared contracts live in `Abstractions/{DTOs,Interfaces}` + scattered `Core`. |
+| **plan shape** | Source = **main spine, not branches** (split, not port). **Contracts-FIRST**: formalize core shared-contracts (`Abstractions` + F14 levy projection/sync + `IForgeStatisticsService` + tab/payload contracts) before any suite splits. Sequencing: **1 core+contracts → 2 Sync → 3a Atlas (after #1073) → 3b Dais/Levy (after F14 migration) → 3c Forge → 3d Dossier**; Phase 4 Pilot/mesh deferred. |
+| **maturity findings** | Forge = large/mature (307 fe + CostForge/CurrentUse/stats). Dais = backend-weighted (real Levy SoR) / frontend-thin. **Dossier = embedded (no backend project, 1 fe file) → R-SPLIT cells NOT fillable → DO NOT split yet** (consolidate-then-split or defer). |
+| **fences carried** | CostForge "Ultimate", `LevyDbContextStub.cs`, `$425k`/Tyler lore, `*.tar.gz` — never migrate. |
+| **mechanics** | history-preserving (`filter-repo`/subtree) vs fresh-tree framed but NOT chosen; lean H for backend (audit provenance), F acceptable for thin fe suites — chosen per-repo at release. |
+| **topology matrix** | updated with a post-closure banner: Sync/Levy/Forge "manual-port" rows superseded; source = main spine; executable mapping now in `MIGRATE-SPLIT-PLAN.md`. |
+| **lock status** | FULL ACTIVE — decision-only; no repo creation, no filter-repo/subtree, no file movement, no contract code, no release (HR-9). |
+| **decision (for owner)** | Reassess: (a) ratify the split plan + sequencing; (b) authorize the **first narrow Migrate release = Phase-1 shared-contracts formalization** (in-repo, no new repos — de-risks every later split); or (c) take parked **PR #1073** first so Atlas (3a) splits cleanly. |

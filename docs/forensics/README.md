@@ -11,7 +11,7 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 22 — Tier-1 Closure Record ratified; Recover→Migrate pivot |
+| **Current loop** | Loop 23 — Migrate-phase split plan drafted (decision-only; 6-repo split from `main`) |
 | **Recovery lock** | **ACTIVE** — no salvage/cleanup/merge/code/migration actions taken (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |
@@ -105,6 +105,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Dais/Levy Entry-Check** (read-only; `r2/*` heads = SUPERSEDED; Option-C clean) | `DAIS-LEVY-ENTRY-CHECK.md` |
 | **Forge Entry-Check** (read-only; `r2/wave-*` = SUPERSEDED; stats in main; theater CUT) | `FORGE-ENTRY-CHECK.md` |
 | **Tier-1 Closure Record** (governance; port thesis disproven → Recover→Migrate pivot) | `TIER1-CLOSURE-RECORD.md` |
+| **Migrate-Phase Split Plan** (decision-only; 6-repo split from the `main` spine, contracts-first) | `MIGRATE-SPLIT-PLAN.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

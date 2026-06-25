@@ -3,6 +3,11 @@
 *Phase A classification, made executable. Recovery = recover the right assets into the right
 future homes. Salvage ≠ migration (HR-7). Decision-only; recovery lock ACTIVE.*
 
+> **UPDATE (2026-06-25, post `TIER1-CLOSURE-RECORD.md`):** the Tier-1 port thesis is closed —
+> Sync/Levy/Forge "manual-port (post schema gate)" rows below are **superseded**. The migration
+> **source is the evolved `main` spine, not branches** (split, not port). The executable mapping
+> now lives in `MIGRATE-SPLIT-PLAN.md`; the future-home/owner columns here remain authoritative.
+
 ## Target homes (+ shared-contracts bucket)
 | Repo | Owns |
 |---|---|
