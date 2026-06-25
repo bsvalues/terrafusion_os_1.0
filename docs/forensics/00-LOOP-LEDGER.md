@@ -420,3 +420,18 @@
 | **topology matrix** | updated with a post-closure banner: Sync/Levy/Forge "manual-port" rows superseded; source = main spine; executable mapping now in `MIGRATE-SPLIT-PLAN.md`. |
 | **lock status** | FULL ACTIVE — decision-only; no repo creation, no filter-repo/subtree, no file movement, no contract code, no release (HR-9). |
 | **decision (for owner)** | Reassess: (a) ratify the split plan + sequencing; (b) authorize the **first narrow Migrate release = Phase-1 shared-contracts formalization** (in-repo, no new repos — de-risks every later split); or (c) take parked **PR #1073** first so Atlas (3a) splits cleanly. |
+
+## Loop 24 — Migrate split plan RATIFIED + Phase-1 contracts charter (first narrow release) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L24 |
+| **trigger** | Owner: do (a) ratify split plan + sequencing, then (b) release lock narrowly for Phase-1 shared-contracts formalization in `main`; do NOT take #1073 first |
+| **evidence** | `MIGRATE-R1-RATIFICATION.md` (governance) + `backend/src/TerraFusion.Abstractions/CONTRACTS.md` (in-repo charter) + contract-surface inventory |
+| **ratified** | `MIGRATE-SPLIT-PLAN.md` accepted as-is (6 repos, contracts-first, R-SPLIT, sequence 1→2→3a→3b→3c→3d, Phase 4 deferred, `main` = source). |
+| **lock change** | **FIRST NARROW RELEASE** — lock PARTIALLY released for **Phase-1 shared-contracts formalization in-repo on `main` ONLY**. Out-of-scope (repo creation, filter-repo/subtree, suite extraction, Atlas/Dais/Forge moves, Dossier split, Pilot internals, schema/persistence, fenced material) **remains ACTIVE-LOCKED**. |
+| **inventory** | Abstractions = canonical home (14 DTOs + 6 interfaces). Scattered: `Core/Interfaces` ×36, `Core/DTOs` ×57 — mix of cross-repo + domain-local. **Key dep fact:** Abstractions is the upstream leaf (referenced by Core+7); a Core contract is promotable only if signature types are self-contained (no EF/entity coupling) — else promote its DTO first. `ITerraFusionDbContext` stays in Core/Data (persistence). |
+| **charter** | `CONTRACTS.md` establishes: canonical home; the dependency/no-inversion rule; ownership (core-owned, one definition) + versioning (additive, no-break-without-version, string CountyId canonical); the 4 named contract sets (workbench tab / sync→suite payloads / F14 levy projection / forge stats); a promote-vs-stay classification table; a per-contract build-verified promotion procedure. |
+| **build-safety (HR-4)** | `dotnet` unavailable in this env → **charter-first** (zero build risk) lands now; physical relocations are **separate, individually build-verified increments** (no big-bang, no unproven "done" claims, no hidden rebuilds). |
+| **lock status** | PARTIALLY RELEASED (Phase-1 shared-contracts only); all other migration ACTIVE-LOCKED. |
+| **decision** | Seam formalized. Next: begin per-contract promotion increments (start with the self-contained ones: `ICacheStatisticsService`, `CanonicalTf/*`, `GisTf/*`, `Kernel/*`), each build-verified — pending owner go on starting physical moves, or owner may first review the classification. |

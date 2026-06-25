@@ -11,8 +11,8 @@ narrative audit — every conclusion here is traceable to a named evidence sourc
 
 | | |
 |---|---|
-| **Current loop** | Loop 23 — Migrate-phase split plan drafted (decision-only; 6-repo split from `main`) |
-| **Recovery lock** | **ACTIVE** — no salvage/cleanup/merge/code/migration actions taken (HR-9) |
+| **Current loop** | Loop 24 — split plan RATIFIED; first narrow release = Phase-1 shared-contracts charter |
+| **Recovery lock** | **PARTIALLY RELEASED** — Phase-1 shared-contracts formalization (in-repo) ONLY; all other migration ACTIVE-LOCKED (HR-9) |
 | **Gate reached** | F14 schema gate **OPEN** (5/5, Option C); Tier-1 port-recovery **CLOSED** (thesis disproven, `TIER1-CLOSURE-RECORD.md`) |
 | **FECF position** | Discover ✅ → Classify ✅ → Ratify ✅ → **Recover ✅ (closed)** → **Migrate ▶ (opening, decision-only)** |
 | **Date** | 2026-06-24 |
@@ -106,6 +106,8 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Forge Entry-Check** (read-only; `r2/wave-*` = SUPERSEDED; stats in main; theater CUT) | `FORGE-ENTRY-CHECK.md` |
 | **Tier-1 Closure Record** (governance; port thesis disproven → Recover→Migrate pivot) | `TIER1-CLOSURE-RECORD.md` |
 | **Migrate-Phase Split Plan** (decision-only; 6-repo split from the `main` spine, contracts-first) | `MIGRATE-SPLIT-PLAN.md` |
+| **Migrate R1 Ratification** (split plan ratified; first narrow lock release = contracts) | `MIGRATE-R1-RATIFICATION.md` |
+| **Shared Contracts Charter** (in-repo, authoritative; canonical contract home + rules) | `../../backend/src/TerraFusion.Abstractions/CONTRACTS.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
