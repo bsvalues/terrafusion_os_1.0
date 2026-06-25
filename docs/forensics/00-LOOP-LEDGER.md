@@ -598,3 +598,18 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 complete); B2/B3 + DEFERs + all else ACTIVE-LOCKED. |
 | **decision (for owner)** | B1 done. Reassess: **B2** (`ICacheStatisticsService` via extracting `NegativeCacheStatistics` POCO), **B3** (`ITerraFusionSyncService` cluster), or **pause** (DEFERs `IModuleCatalog`/`IValuationService` → Forge/F14 lane; `IStatisticalAnalysisService` never). Awaiting go. |
+
+## Loop 37 — B1 sealed green; B2 opened — NegativeCacheStatistics extracted (DTO-first step 1) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L37 |
+| **trigger** | Owner: B2 only — extract `NegativeCacheStatistics` POCO first, verify abstraction-safe, then promote `ICacheStatisticsService`; nothing else |
+| **B1 seal** | `IWorkbenchSyncReadinessService` CI-**green** on `84ff32d60` (Backend .NET Tests ✓ 9m15s, Warning Gate ✓, Quality/Vitest/Security/Frontend ✓). B1 + Workbench tab-contract cluster sealed. |
+| **release** | **Migrate R4 (B2)** — narrow, scope = `NegativeCacheStatistics` → `ICacheStatisticsService` ONLY. B3 + DEFERs + all else locked. |
+| **gate (moment-of-action)** | 5/5 PASS — `NegativeCacheStatistics` (lines 423-438 of `NegativeCachingService.cs`) is a self-contained BCL POCO (long/double/TimeSpan/DateTime/Dictionary; no Core/EF). 3 consumers. |
+| **extraction (step 1)** | **Extracted the class** (not a whole-file move — it shared `NegativeCachingService.cs` with the service/options/iface) into new `Abstractions/DTOs/NegativeCacheStatistics.cs` (ns `TerraFusion.Abstractions.DTOs`); left a breadcrumb comment in the source. Rebind: `InMemoryCacheStatisticsService` (impl) **add** Abstractions.DTOs; `ICacheStatisticsService` (iface) **swap** Core.Services→Abstractions.DTOs (sole use). `NegativeCachingService` references the type **only in comments** → **no using added** (avoided an unused-using under /warnaserror). |
+| **trap noted** | extract-from-multi-type-file: verify each consumer references the type as a **real symbol** before adding a using (comment-only refs ⇒ no using). |
+| **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces + R3/B1 + R4/B2 DTO); B3 + DEFERs + all else ACTIVE-LOCKED. |
+| **decision** | Let CI validate `NegativeCacheStatistics` extraction. Green → **B2 step 2: `ICacheStatisticsService`**. Red → fix step 1 first. |

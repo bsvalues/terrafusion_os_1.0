@@ -71,9 +71,9 @@ Release R2 (A-tier) opened 2026-06-25; one interface per build-verified incremen
 | `IForgeStatisticsService` (+ co-located DTOs) | API/Interfaces | Forge | **A** | **PROMOTED ✓ (Loop 32, CI-green on 1653b6f7d). R2 A-tier COMPLETE — all 4 A green.** |
 | `IModuleCatalog` | Core/Interfaces | core registry | **B** | DTO-first (`Module` is an entity) |
 | `IValuationService` | Core/Interfaces | Forge | **B** | DTO-first (ValuationDTOs; CostApproach entity ambiguity) |
-| `IWorkbenchSyncReadinessService` | Core/Interfaces/Workbench | core (workbench tab) | **B1** | **PROMOTED ✓ (Loop 36, CI-validating). B1 + Workbench tab-contract cluster COMPLETE** |
+| `IWorkbenchSyncReadinessService` | Core/Interfaces/Workbench | core (workbench tab) | **B1** | **PROMOTED ✓ (Loop 36, CI-green on 84ff32d60). B1 + Workbench tab-contract cluster COMPLETE** |
 | `ITerraFusionSyncService` | Core/Interfaces | Sync platform (SoT) | **B** | DTO-first cluster (`LegacySystemHealth` + ~10 POCOs) |
-| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | **B** | DTO-first (`NegativeCacheStatistics`) |
+| `ICacheStatisticsService` | Core/Interfaces | cross-cutting | **B2** | **DTO `NegativeCacheStatistics` EXTRACTED → Abstractions/DTOs (Loop 37, CI-validating); iface = step 2 after green** |
 | `IStatisticalAnalysisService` | API/Interfaces | — | **C** | **STAY** (quantum/infinite-dim theater; consciousness-coupled) |
 | `ForgeValuationDtos`, `CostForgeAIDtos` | Core/DTOs | Forge | — | review for entity coupling (DTO-tier) |
 

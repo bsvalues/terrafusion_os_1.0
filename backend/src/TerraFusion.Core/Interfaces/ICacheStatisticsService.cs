@@ -1,4 +1,4 @@
-using TerraFusion.Core.Services;
+using TerraFusion.Abstractions.DTOs;
 
 namespace TerraFusion.Core.Interfaces;
 
