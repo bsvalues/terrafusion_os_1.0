@@ -642,3 +642,18 @@
 | **lock status** | Phase-1 shared-contracts narrow release **CLOSED/spent**; B3 + DEFERs + repo-creation/extraction/schema all **ACTIVE-LOCKED**. No further contract moves without a new explicit release. |
 | **FECF** | **Migrate ▶ — shared-contracts formalization COMPLETE (in-repo seam established).** Next Migrate = the actual topology split (core+contracts → Sync → Atlas → Dais → Forge → Dossier), each a future individually-ratified release. |
 | **decision** | Phase-1 shared-contracts sealed at a clean, fully-green milestone with the Harris PACS fence respected. Holding for owner direction on the next phase (topology split, or other priorities). |
+
+## Loop 40 — first topology-split plan: TerraFusionOS core (decision-only) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L40 |
+| **trigger** | Owner: do the first topology-split plan now; first repo = TerraFusionOS core; decision-only, no repo creation/extraction |
+| **evidence** | `MIGRATE-CORE-SPLIT-PLAN.md` + grounding scan of the `main` spine (os-shell monolith, backend projects, registry, Muse/Pilot, pilot dirs) |
+| **governing reality** | `frontend/apps/os-shell` is a **monolith** (core shell host + ALL suite pages atlas/dais/forge/dossier/levy/…); backend `Core`/`Data` host suite domain alongside core → the core split is a **cut inside these projects**, not a clean lift. The Phase-1 `Abstractions` seam is what makes the line drawable. |
+| **plan shape** | (1) source-of-truth extraction map (core surfaces: path/keep/why/owner/contract-deps/blockers); (2) leave-behind map (suite/platform → future repos); (3) bootstrap (sln/vite skeleton, CI min = the proven gating jobs, config min, Abstractions = shared-contracts pkg, test min); (4) blunt cut line (must-exist / may-stay-temporarily / never-copy); (5) first execution candidate. |
+| **core boundary** | IN: desktop/windowing shell, app composition/routing as contract-driven module slots, electron host, **workbench HOST only**, canon/governance, registry, **shell-facing** Muse/Pilot/LocalOps, kernel API host + core-only controllers, core slices of Core/Data, **all of Abstractions**. OUT: Sync/PACS, Atlas, Dais/Levy, Forge, Dossier, deep Pilot internals, theater/legacy. |
+| **first execution candidate** | repo skeleton around **`Abstractions` + kernel host shell** (smallest bootable unit; suite slots contract-stubbed). **Success gate: builds green with ZERO core→suite internal references** (every suite touchpoint via Abstractions). |
+| **lock status** | FULL on Migrate-execution — decision-only plan; no repo creation, no extraction, no code movement, no release. |
+| **deferred/parked** | B3 → Sync split; F14/Forge → later; PR #1073 → parked. |
+| **decision (for owner)** | Ratify the core boundary + cut line → then the first execution candidate (skeleton around Abstractions + kernel host shell) becomes the first narrow Migrate-execution release. |
