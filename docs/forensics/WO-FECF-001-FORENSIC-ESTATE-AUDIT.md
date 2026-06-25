@@ -786,4 +786,77 @@ The only *live-execution* evidence class — it can change a surface's status al
 
 ---
 
-*Pass 3 performed under read-only authorization. No move, delete, migration, or canon action. Label changes are evidence-driven. Remaining Unknowns are reported with their specific cause, not hidden. PR held at ratification checkpoint — not merged.*
+*Pass 3 performed under read-only authorization. No move, delete, migration, or canon action. Label changes are evidence-driven. Remaining Unknowns are reported with their specific cause, not hidden.*
+
+---
+
+## Appendix H — FECF Amendment Process
+
+FECF is now **governing doctrine**, not a one-time document. A governing doctrine must define how it changes — otherwise future agents quietly edit it instead of versioning it (the exact drift FECF exists to prevent). This appendix is added on ratification.
+
+**Standing principle:** FECF is *ratified, versioned, and governable* — **not "finished."** Evidence work is never complete; this audit reached **sufficient evidentiary maturity to become the governing standard.** Future evidence can legitimately change classifications (Passes 2–5 proved exactly that) — and must do so through versioned amendment, never silent rewrite.
+
+### H1 — Every doctrine change requires (all five)
+1. **Evidence** — what was observed, with its source.
+2. **Reason** — why the change is warranted.
+3. **Backward-compatibility assessment** — what prior findings/labels this affects.
+4. **Confidence impact** — which labels move, and to what (per the FECF ladder).
+5. **Version increment** — per H2.
+
+### H2 — Versioning rules
+| Change kind | Increment | Example |
+|---|---|---|
+| **Major doctrine change** (new lifecycle phase, changed gate semantics) | `v1.x → v2.0` | adding a phase after Ratify |
+| **New evidence/doctrine appendix** | letter increment | Appendix `H → I → J…` |
+| **Correction of an existing finding** (evidence overturns a prior claim) | appendix **revision in place**, labelled (e.g. "Pass-N corrected") | App. F retractions |
+| **New audit pass** (same doctrine, more evidence) | appendix subsection (`G5`, `G6`, …) | Passes 3–5 |
+
+### H3 — What may NOT change without amendment
+- The confidence ladder semantics (§ legend) and the Topology Confidence Ladder (C1).
+- The Lexicon (Appendix I) — terms are frozen; redefinition is a major change.
+- The Ratification gate (E2) and the five-phase lifecycle (E1).
+- The standing rule: *confidence → truth, eligibility → approval, target-home → destination, classification → implementation* only via the gate.
+
+### H4 — Amendment record (append-only)
+| Date | Version | Change | Evidence | Confidence impact |
+|---|---|---|---|---|
+| 2026-06-24 | v1.1–v1.5 | Appendices A–E (doctrine) | the audit body | established the framework |
+| 2026-06-24 | App. F | Pass 2 corrections (un-shallow) | full history | 3 Contradicted retracted |
+| 2026-06-25 | App. G | Passes 3–5 (evidence hardening) | measurement/execution | R18→Proven, runtime execution-verified |
+| 2026-06-25 | App. H, I | Amendment Process + frozen Lexicon (ratification) | — | governance established |
+
+---
+
+## Appendix I — Lexicon (frozen vocabulary)
+
+Terminology drifts faster than architecture on large projects; these definitions are **frozen** (changes require an Appendix-H amendment). This consolidates and supersedes the seed D-Lexicon.
+
+| Term | Frozen definition |
+|---|---|
+| **Discovery** | Observe and record what exists. Read-only; no estate change. |
+| **Classification** | Assign kind / liveness / authority / quality / target-home, each with a confidence label. Not a decision to keep, move, or delete. |
+| **Recovery** (action) | Physically preserve/extract a *ratified* asset — its own WO. Never performed during discovery/classification. |
+| **Migration** | Place a recovered asset into its *ratified* home — its own WO; gated on Ratification + Recovery. |
+| **Implementation** | Any change to files, structure, history, or runtime. Not permitted under a discovery/classification WO. |
+| **Ratification** | A no-code review (gate E2) that accepts/rejects a classification or topology and grants authority for the specific items reviewed. |
+| **Canon Candidate** | A surface that claims or behaves like the source of truth; scored for/against, never assumed canonical. |
+| **Recovery Candidate** | A surface classified as *possibly worth preserving*; not approval for recovery. |
+| **Target Home** | A confidence-laddered *hypothesis* about where a surface would belong post-split. Not an approved destination. |
+| **Strata** | Distinct kinds (runtime/governance/experimental/frozen/archive/residue/fantasy…) co-located in one physical root; scored independently. |
+| **Authority Chain** | The ordered set of documents/mechanisms that actually govern (e.g. `baseline.md` > CLAUDE.md aspirational text; `spec-lock/` gates > marketing canon). The chain is evidenced, not declared. |
+| **Negative Evidence** | A recorded search that did **not** find a claimed thing — scope searched + what was absent + conclusion. |
+| **Coverage Gate** | The thresholds (per gated area) that must be met before recommendations; below threshold ⇒ stop and report. |
+| **Discovery Exhaustion** | The point at which additional passes stop producing classification-changing findings — *not* "all unknowns eliminated." The Pass-5 criterion ("no classification-changing surprise") is a discovery-exhaustion signal. |
+| **Classification Drift** | Multiple kinds (production/experimental/frozen/historical/governance/agent-generated/research) sharing one physical location — the headline estate risk (R18). |
+| **Evidence Ladder** | The reachability ordering a surface can occupy: **present → build-referenced → runtime-reachable → actually-live** (Pass 5/G6). Movement up the ladder requires execution evidence. |
+| **Confidence labels** | Proven · Corroborated · Inferred · Suspected · Unknown · Contradicted — never promoted to truth except by evidence or the gate. |
+
+---
+
+## Ratification status
+
+**The framework has reached sufficient evidentiary maturity to become the governing doctrine for future estate audits. Future amendments remain evidence-driven and versioned (Appendix H).**
+
+FECF was exercised against four failure modes and self-corrected each time: shallow history (Pass 2), structural assumptions (Pass 3), quality assumptions (Pass 4), runtime assumptions (Pass 5) — preserving Unknowns where execution was environment-blocked rather than manufacturing certainty. That self-correcting behavior, not the elimination of every Unknown, is the validation. **Endpoint: ratified, versioned, and governable — not finished.**
+
+*No move, delete, migration, or canon action was performed under WO-FECF-001. Confidence is not promoted to truth; eligibility is not promoted to approval; a target home is not promoted to a destination; classification is not promoted to implementation — except by passing the gate. Unknowns are reported, not hidden.*
