@@ -684,3 +684,15 @@
 | **pending (deferred, no churn)** | On the next real touch of `MIGRATE-CORE-WO-1.md`, add **Gate M1 — Execution Authorization** (all required: explicit owner release · target repo provisioned · history method chosen · skeleton scope fixed · success gate unchanged = build green + zero core→suite internal refs). |
 | **lock status** | Unchanged. Recovery/Migrate-execution ACTIVE-LOCKED. Operating-memory preservation only. |
 | **decision (for owner)** | Next explicit decision (handoff Part XII): (1) release execution + provision `TerraFusionOS`; (2) keep holding; (3) redirect (#1073, B3/Sync, F14/Forge, external-estate classification). Holding for direction. |
+
+## Loop 43 — Full Agent Handoff adopted as standalone continuity document (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L43 |
+| **trigger** | Owner delivered a cleaned, standalone "TerraFusion Full Agent Handoff" (§§1–19) — usable without rereading history; explicitly **operating memory, NOT an execution release**. |
+| **action** | Wrote `FULL-AGENT-HANDOFF.md` faithfully (exec summary, two-lock state, FECF doctrine, forensic conclusions, sovereign-source & path-identity rules, decision locks, WO state, allowed/prohibited work, next-signal gates, first-packet spec, evidence hierarchy, agent operating rules, operator checklist). Cross-linked with `MASTER-PLAYBOOK-HANDOFF.md` + `MIGRATE-CORE-WO-1.md`. **Docs-only — allowed work §9 (handoff clarity / evidence indexing); no code moved, no repo created, no lock released.** |
+| **frozen-state validation (at adoption)** | HEAD `11441d6f1` (Loop 42, CI-green run 28189070708), clean tree, no scope drift. |
+| **evidence** | `FULL-AGENT-HANDOFF.md` (+ README index link + Master-Playbook cross-link) |
+| **lock status** | Unchanged. Two-lock rule intact (explicit execution release + `TerraFusionOS` provisioned); both unsatisfied. Recovery/Migrate-execution ACTIVE-LOCKED. |
+| **decision (for owner)** | Awaiting exactly one explicit signal: (1) release execution + provision `TerraFusionOS` → run WO-CORE-1; (2) keep holding; (3) redirect to a named decision-layer target. No authorization inferred from silence. |

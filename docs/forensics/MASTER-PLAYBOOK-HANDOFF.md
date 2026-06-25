@@ -6,6 +6,7 @@
 > drift (seam present; fences intact). Recovery lock holds; Migrate-execution remains locked.
 
 **Date:** 2026-06-25 · **Branch:** `claude/terrafusion-forensic-playbook-u3kvx6` · **PR:** #1080 (draft)
+**Companion:** [`FULL-AGENT-HANDOFF.md`](FULL-AGENT-HANDOFF.md) (standalone continuity doc — usable without history) · [`MIGRATE-CORE-WO-1.md`](MIGRATE-CORE-WO-1.md) (first execution WO, ratified, not released)
 
 ---
 
