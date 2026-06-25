@@ -34,6 +34,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./setupTests.vitest.ts'],
     retry: 2,
+    // Use forks instead of worker_threads to avoid a Node 24 / V8 background
+    // JIT crash (SIGABRT, exit 134) that surfaces when error-boundary tests
+    // trigger heavy string concatenation and the worker isolate is torn down
+    // before the TurboFan optimization task completes.
+    pool: 'forks',
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
