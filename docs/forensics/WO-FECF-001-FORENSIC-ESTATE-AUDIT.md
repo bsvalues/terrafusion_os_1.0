@@ -240,7 +240,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 3. **Genuinely real applications mislabeled by the umbrella — Proven.** `web-audit-tracker` is `@terrafusion/web-audit-tracker` **v1.2.0** — a full Vite + React + Tauri product (54 files, ~20K LOC, `drizzle.config.ts`, `client/`, an MCP server). `operations-dashboard` (v1.0.0, 2.8K LOC) is a real dashboard module. Calling these "sci-fi trash" would be the exact name-over-evidence error this WO forbids.
 
 **Unwired ≠ dead — orphaned-by-reorganization is the more likely reading.** "Wired to nothing live" describes only the *current* dependency graph, and in this estate disconnection is a documented, recurring event (162 dirs swept to QUARANTINE; pnpm globs a non-existent `agents/`; `applications/` missing; `ai-systems/ai-systems` doubly-nested). Evidence that these modules were *meant* to be wired and were orphaned, not invented-and-abandoned:
-- **A guarded mount point exists.** `os-platform/infrastructure/plugins-beyond-plugins/PluginBeyondPluginsIntegrator.js:104,121` does `if (typeof MorphicResonancePlugin !== 'undefined') { this.morphicResonance = new MorphicResonancePlugin(aiSwarm, quantumLayer) }` (and the same for `DimensionalFoldingPlugin`) — an integration designed to attach the plugin when present and no-op when not. The wiring is *latent/guarded*, not absent-by-design. **Proven.**
+- **A guarded mount point exists.** `os-platform/infrastructure/plugins-beyond-plugins/PluginBeyondPluginsIntegrator.js:104,121` does `if (typeof MorphicResonancePlugin !== 'undefined') { this.morphicResonance = new MorphicResonancePlugin(aiSwarm, quantumLayer) }` (and the same for `DimensionalFoldingPlugin`) — an integration designed to attach the plugin when present and no-op when not. The wiring is *latent/guarded*, not absent-by-design. **Proven.** *(Pass 3/App. G2: a reachability trace confirms **zero importers** of these plugins anywhere except this single guarded integrator — frontend 0 edges, backend 0 import edges — so "currently unwired" is now Proven, not inferred. Pass 3/App. G3 also adjudicated stratum-2: `security-analytics-quantum` is real code (TensorFlow/crypto/bcrypt/jwt) in quantum-marketing clothing — Corroborated-real, distinct from the fantasy stratum.)*
 - **Move/duplication churn is Proven.** `autonomous-research-engine` exists in **5 locations** (QUARANTINE ×4, `tests/marketplace/`, `specialized/`) — the "moved, copied, misplaced" signature.
 - **History [Pass-2 corrected].** Pass 1 saw `specialized/` only at the shallow-boundary commit. **Full history:** it entered **2025-10-15** ("[THREE PILLARS] Phase 4 Complete: Infrastructure & Specialized") — ~8 months old (App. F). Its *age* is now known; whether it was ever **runtime-wired** remains **Suspected-unwired** (call-graph not traced — not a history question).
 
@@ -288,7 +288,7 @@ Estate disk footprint (top): `QUARANTINE/ 2.3G`, `docs/ 242M`, `packages/ 162M`,
 | R15 | `.gitignore` and git index disagree | `ui-token-compliance.contract.json`, `ui-token-ratchet.contract.json`, `_validator_proof.log.err`, `.playwright-mcp/*` are **named in `.gitignore` yet tracked** (`git check-ignore` exit 1 — overridden by force-add or pre-ignore commit). Ignore policy is not enforced by the tree. | Contradicted (Proven) |
 | R16 | ~~Claim-doc commit hashes unverifiable; rewrite suspected~~ **RETRACTED (Pass 2)** | All cited commits (`b1204e4ef`, `2638e5f82`, `f2d36c610`…) **resolve** on full history (App. F). The "absent → rewrite" inference was a shallow-clone artifact. (`bfg.jar` remains committed as residue but no longer implies orphaned commits.) | Corrected |
 | R17 | Author path / placeholder-secret leakage | `_validator_proof.log.err` exposes `C:\Users\bsval\…`; `dev-audit/payloads.json` tracks a `"secret"` key (placeholder `xxx`). | Proven |
-| R18 | **Classification drift (headline risk)** | Production, experimental, frozen, historical, governance, agent-generated, and research systems share the same physical roots (`os-platform/`, `packages/`, `docs/`). Treating them as one category is how real software gets archived by accident and fantasy code gets promoted by accident. See Appendix A (FECF v1.1). | Corroborated |
+| R18 | **Classification drift (headline risk)** | Production, experimental, frozen, historical, governance, agent-generated, and research systems share the same physical roots. **Pass 3 (App. G1) measured this across 4 roots — `backend/` (17-in-sln / 26-out / 7 TS-scaffold), `os-platform/` (4 strata), `packages/` (3), `docs/` (3) — a repeated pattern, not one example.** Treating them as one category is how real software gets archived by accident and fantasy code gets promoted by accident. See Appendix A. | **Proven (Pass 3)** |
 
 ---
 
@@ -685,3 +685,54 @@ Migration Work Orders               → place assets into ratified homes
 ---
 
 *Pass 2 performed under read-only authorization (un-shallow only). No move, delete, migration, or canon action. Reclassifications are evidence-driven, not by guess. The shallow-clone caveat that capped Pass 1 is now lifted for lineage axes; non-history unknowns (F2) remain.*
+
+---
+
+## Appendix G — Pass 3: Doctrine Evidence Hardening (read-only)
+
+The ratifier was **not yet satisfied the doctrine is sufficiently evidenced.** Per FECF E2 ("evidence stability across an additional pass") this pass targets the doctrine's *load-bearing* claims — the ones resting on a single example or on indirect inference — and converts them to measurement. Read-only; no moves; reclassification by evidence only.
+
+### G1 — "Classification drift" (R18) — from one example to a measured pattern → **Proven**
+
+Pass 1–2 evidenced R18 with a single worked case (`os-platform/specialized/`). Pass 3 measures strata co-located in **each** major root:
+
+| Root | Co-located strata (measured) | Drift? |
+|---|---|---|
+| `backend/` | **17** csproj in `TerraFusion.sln` (canonical) · **26** csproj *not* in it (orphan/secondary) · **7** TS-scaffold dirs with 0 csproj (`consciousness`, `ai-swarm`, `coordination`, `neural-backend`, `quantum-performance`, `gauge-theory`, `ai-swarm-service`) | ✅ 3 strata |
+| `os-platform/` | `core` (governance) · `development/testing-suite` (experimental) · `specialized` (frozen) · `ai-systems` (scaffold) | ✅ 4 strata |
+| `packages/` | 22 dirs: ~13 live workspace · 5 excluded-as-broken · ~3 no-`package.json` scaffolds | ✅ 3 strata |
+| `docs/` | authority (`baseline.md`) · residue (celebration corpus) · archive (`legacy/`, `ci/archived/`) | ✅ 3 strata |
+
+**Four independent roots each mix ≥3 strata in one physical location.** R18 is a repeated, measured pattern, not an anecdote. **Corroborated → Proven.**
+
+### G2 — "Unwired" — from "not in workspace" to a reachability trace → **Proven (fantasy stratum)**
+
+Pass 1–2 inferred "unwired" from workspace exclusion. Pass 3 traces actual import edges:
+- Live frontend (`frontend/apps/os-shell`) → `os-platform/specialized`: **0 import edges.**
+- Live backend (`backend/src`) → fantasy classes: **0 import edges** (the 38 textual "specialized" hits are the bare word in C# identifiers/comments, not dependencies; C# cannot import the TS tree).
+- Fantasy plugins (`MorphicResonancePlugin`, `DimensionalFoldingPlugin`) repo-wide: **zero importers** except the single guarded integrator (`PluginBeyondPluginsIntegrator.js`) + self.
+
+"Currently unwired" for the fantasy stratum is now a **Proven reachability fact**, not an inference. (Pairs with prior-liveness, still Unknown — App. F.)
+
+### G3 — Stratum-2 adjudicated → the three-strata model holds → **Corroborated-real**
+
+The doctrine claims a *middle* stratum (quantum-washed but possibly-real) distinct from fantasy. Read `security-analytics-quantum/src/index.ts`: it imports **real** `@tensorflow/tfjs-node`, `crypto`, `bcrypt`, `jsonwebtoken`, `winston`, `uuid` and defines substantive `SecurityConfig`/`ThreatModel`/`SecurityEvent` interfaces. This is **real security-analytics code wearing a "quantum" marketing name** — categorically unlike `morphic-resonance` (FTL theater). The three-strata distinction (fantasy / quantum-washed-real / real-product) is **validated on a second module**, not just `web-audit-tracker`. *"Quantum-resistant" cryptographic claims remain unverified (Suspected).*
+
+### G4 — Resurrection scan (the named open item) — **attempted; honestly inconclusive**
+
+Ran `git log --diff-filter=D` ∩ `--diff-filter=A` on full history. Naive intersection = **20,786** paths; filtered to live source extensions = **1,570**. **Neither is a valid resurrection count:** both are dominated by the documented consolidation **mass-moves** (the 2026-02-12 QUARANTINE sweep deletes-and-re-adds tens of thousands of paths; rename detection was skipped at this scale). A genuine delete→rebuild signal cannot be isolated without **move-aware analysis** that excludes the known batch-move commits. **Status: bounded completeness item, partially run — Unknown (method-limited), not a fabricated figure.** Honest non-result is reported rather than presenting 20,786 as "resurrections."
+
+### G-summary — label changes (Pass 3)
+
+| Claim | Was | Now | Basis |
+|---|---|---|---|
+| R18 classification drift | Corroborated | **Proven** | 4 roots × ≥3 strata, measured (G1) |
+| Fantasy stratum "unwired" | Inferred | **Proven** | reachability trace, 0 importers (G2) |
+| Stratum-2 real-vs-theater | Suspected | **Corroborated-real** (≥1 module) | code reads real libs/logic (G3) |
+| Resurrection cycles | Unknown (shallow) | **Unknown (method-limited)** | move-noise dominates (G4) |
+
+**Net:** three load-bearing doctrine claims hardened to Proven/Corroborated by measurement; one completeness item honestly remains Unknown for a stated methodological reason (not for lack of history). The doctrine's empirical foundation is materially stronger; the remaining gap is named and bounded.
+
+---
+
+*Pass 3 performed under read-only authorization. No move, delete, migration, or canon action. Label changes are evidence-driven. Remaining Unknowns are reported with their specific cause, not hidden. PR held at ratification checkpoint — not merged.*
