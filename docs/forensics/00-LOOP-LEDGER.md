@@ -543,3 +543,16 @@
 | **build-safety (HR-4)** | `dotnet` unavailable locally → CI validates; claim limited to "references migrated, structurally consistent." |
 | **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
 | **decision (for owner)** | After `IForgeStatisticsService` green → **R2 complete; PAUSE for owner review** before the B-tier (DTO-first) sub-phase: `SyncReadinessDto`/`ModuleDto`/`ValuationDTOs`/`NegativeCacheStatistics` must be promoted *before* their interfaces (`IWorkbenchSyncReadinessService`, `IModuleCatalog`, `IValuationService`, `ICacheStatisticsService`), then the `ITerraFusionSyncService` cluster; `IStatisticalAnalysisService` never. |
+
+## Loop 33 — R2 A-tier SEALED (all 4 A interfaces CI-green); paused for B-tier review (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L33 |
+| **trigger** | `IForgeStatisticsService` green on `1653b6f7d` → R2 A-tier complete; planned pause point |
+| **ForgeStats verdict** | **GREEN** (run 28145370052, head_sha `1653b6f7d` verified): Backend .NET Tests ✓ (8m36s), Warning Gate `/warnaserror` ✓, Quality Gate ✓, Vitest ✓, Security ✓, Frontend ✓. |
+| **R2 A-tier sealed** | **All 4 A interfaces CI-green**: `IGisDataService` (d7a31aaf6), `IPacsReachabilityProbeService` (122ebdf2c), `IWorkbenchSyncReadinessRefreshRunner` (535d1cc94), `IForgeStatisticsService` (1653b6f7d). |
+| **Phase-1 totals** | shared-contracts now in canonical Abstractions home: **3 DTO clusters** (GisTf/Kernel/CanonicalTf) + **4 A interfaces**, every increment build-+test-green. Interface-move trap catalogue proven: shared-ns swap-vs-add, Sync transitive-ref, CS1574 doc-cref, unqualified DI registration. |
+| **Build & Package note** | the run-level `cancelled` on every increment = the **tail-job foot-gun** (Seal Gate fast + Build & Package canceled; gating jobs green). The pasted Build & Package log showed `dotnet publish` succeeding (all `TerraFusion.*.dll` incl. Abstractions present) then an external cancel during `tar`. The `native-shell/ui/dist` zip warning is **pre-existing** (frontend not built into that path) and unrelated to the contract moves — flagged for owner as a separate release-config item, out of scope for this lock. |
+| **lock status** | PARTIALLY RELEASED (R1 DTOs + R2 A-interfaces); B/C + all other migration ACTIVE-LOCKED. |
+| **decision (for owner)** | **PAUSE — B-tier review checkpoint.** B-tier is DTO-first (entities/Core-coupled signatures). Recommended order: promote gating DTOs first (`SyncReadinessDto`, `ModuleDto`, `ValuationDTOs`, `NegativeCacheStatistics`), each verified, then their interfaces; `ITerraFusionSyncService` cluster last (`LegacySystemHealth` + ~10 POCOs); `IStatisticalAnalysisService` never. Awaiting owner go to open a B-tier release, or to pause Phase-1 here. |
