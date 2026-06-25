@@ -1,0 +1,133 @@
+{
+  "reviewIndexVersion": 1,
+  "createdAt": "2026-06-23T16:00:00Z",
+  "updatedAt": "2026-06-23T16:30:00Z",
+  "maintainedBy": "human-operator",
+  "scope": "Synthetic manual review ledger for accepted CP-002 reports. No protected data is included.",
+  "sourceContract": "CP-002 report-intake contract",
+  "authorityBoundary": {
+    "mode": "manual_static_review_ledger_only",
+    "doesNotDiscoverReports": true,
+    "doesNotIngestReports": true,
+    "doesNotReadFiles": true,
+    "doesNotFetchApis": true,
+    "doesNotExecuteCommands": true,
+    "doesNotActivateAutomations": true,
+    "doesNotMutateQueueCanonOrRuntime": true,
+    "doesNotCreateBrainOrCortexAuthority": true
+  },
+  "reviewRecords": [
+    {
+      "reviewId": "rev-cp3-0001",
+      "reportId": "rpt-pulse-0001",
+      "reportFilename": "20260623T150000Z__terrafusion-daily-pulse__rpt-pulse-0001.json",
+      "monitorId": "terrafusion-daily-pulse",
+      "laneId": "daily-pulse",
+      "reviewedAt": "2026-06-23T16:05:00Z",
+      "reviewedBy": "human-operator",
+      "reviewStatus": "reviewed",
+      "disposition": "accept-as-evidence",
+      "severity": "Info",
+      "linkedFindingIds": [
+        "find-pulse-0001"
+      ],
+      "linkedEvidenceIds": [
+        "ev-pulse-0001"
+      ],
+      "proposedWorkOrderIds": [],
+      "createdWorkOrderIds": [],
+      "rejectedFindingIds": [],
+      "deferredFindingIds": [],
+      "blockedFindingIds": [],
+      "evidenceRefs": [
+        "ev-pulse-0001"
+      ],
+      "reportEvidenceIds": [
+        "ev-pulse-0001"
+      ],
+      "evidenceSummary": "Synthetic pulse report reviewed as evidence-only.",
+      "evidenceLocation": "ops/control-panel/examples/report-intake.example.json",
+      "confidence": "verified",
+      "workOrderStatus": null,
+      "notes": "No Work Order needed from this synthetic informational finding.",
+      "reviewerNotes": "Retain as evidence only.",
+      "finalHandling": "evidence-only"
+    },
+    {
+      "reviewId": "rev-cp3-0002",
+      "reportId": "rpt-gov-0001",
+      "reportFilename": "20260623T143000Z__governance-drift-monitor__rpt-gov-0001.json",
+      "monitorId": "governance-drift-monitor",
+      "laneId": "governance-drift",
+      "reviewedAt": "2026-06-23T16:15:00Z",
+      "reviewedBy": "human-operator",
+      "reviewStatus": "needs-human-decision",
+      "disposition": "prepare-work-order",
+      "severity": "Needs Decision",
+      "linkedFindingIds": [
+        "find-gov-0001"
+      ],
+      "linkedEvidenceIds": [
+        "ev-gov-0001"
+      ],
+      "proposedWorkOrderIds": [
+        "WO-CANON-EXAMPLE"
+      ],
+      "createdWorkOrderIds": [],
+      "rejectedFindingIds": [],
+      "deferredFindingIds": [],
+      "blockedFindingIds": [],
+      "evidenceRefs": [
+        "ev-gov-0001"
+      ],
+      "reportEvidenceIds": [
+        "ev-gov-0001"
+      ],
+      "evidenceSummary": "Synthetic authority wording finding needs human decision before any doc cleanup.",
+      "evidenceLocation": "docs/example-authority-note.md",
+      "confidence": "medium",
+      "workOrderStatus": "proposed",
+      "notes": "Prepared as a proposed Work Order ID only; no mutation is authorized by this record.",
+      "reviewerNotes": "Human must decide whether to create the Work Order.",
+      "finalHandling": "proposed-wo"
+    },
+    {
+      "reviewId": "rev-cp3-0003",
+      "reportId": "rpt-reject-0001",
+      "reportFilename": "20260623T144500Z__governance-drift-monitor__rpt-reject-0001.json",
+      "monitorId": "governance-drift-monitor",
+      "laneId": "governance-drift",
+      "reviewedAt": "2026-06-23T16:25:00Z",
+      "reviewedBy": "human-operator",
+      "reviewStatus": "rejected",
+      "disposition": "reject",
+      "severity": "P1",
+      "linkedFindingIds": [
+        "find-reject-0001"
+      ],
+      "linkedEvidenceIds": [
+        "ev-reject-0001"
+      ],
+      "proposedWorkOrderIds": [],
+      "createdWorkOrderIds": [],
+      "rejectedFindingIds": [
+        "find-reject-0001"
+      ],
+      "deferredFindingIds": [],
+      "blockedFindingIds": [],
+      "evidenceRefs": [
+        "ev-reject-0001"
+      ],
+      "reportEvidenceIds": [
+        "ev-reject-0001"
+      ],
+      "evidenceSummary": "Synthetic report rejected because it asked the Control Panel to execute a command.",
+      "evidenceLocation": "ops/control-panel/examples/report-intake.rejected.example.json",
+      "confidence": "verified",
+      "workOrderStatus": "rejected",
+      "notes": "Boundary violation: Control Panel may prepare prompts only.",
+      "reviewerNotes": "Request a compliant static report if the finding remains relevant.",
+      "finalHandling": "rejected"
+    }
+  ]
+}

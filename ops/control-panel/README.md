@@ -39,6 +39,7 @@ Automations run
 | `control-panel.spec.json` | Control panel lanes, status model, and authority boundaries |
 | `report-schema.json` | Expected report sections for the six monitoring automations |
 | `report-intake.spec.json` | Accepted static report intake contract, lane mapping, evidence metadata, and rejection rules |
+| `review-index.spec.json` | Manual report review ledger contract for accepted CP-002 reports |
 | `launch-actions.json` | Prompt-launch actions and scoped Work Order templates |
 | `index.html` | Static read-only mockup for operator review |
 
@@ -107,6 +108,25 @@ YYYYMMDDTHHMMSSZ__<monitorId>__<reportId>.json
 ```
 
 Report intake is manual/static until a later approved Work Order. This contract does not create live ingestion, read files, activate automations, add runtime wiring, add HTML fetch calls, or create a new control plane.
+
+## Manual Report Review Index
+
+CP-002 defines the accepted static report shape. CP-003 defines the manual review and disposition shape after an accepted report exists.
+
+The review index is maintained manually by the operator. The Control Panel does not discover reports, read report files, fetch APIs, execute commands, activate automations, mutate queue truth, promote canon, or create Brain/Cortex authority.
+
+Review records may link:
+
+- source report IDs and report filenames
+- monitor IDs and Control Panel lane IDs
+- finding IDs
+- evidence IDs or report evidence IDs
+- proposed Work Order IDs
+- created Work Order IDs after a human decision
+
+Final handling records whether a finding became evidence-only, proposed Work Order, created Work Order, deferred, rejected, blocked, resolved, or no-action.
+
+Only a later separate Work Order may authorize live ingestion, UI behavior, automation activation, runtime wiring, queue mutation, canon promotion, or any execution path.
 
 ## Workspace Placeholders
 
