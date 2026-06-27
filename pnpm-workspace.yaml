@@ -59,6 +59,8 @@ packages:
   - 'apps/*'
 
 allowBuilds:
+  # Generated from pnpm build-script approval evidence. Keep exact package names
+  # only; update this policy when dependency graph/build-script prompts change.
   '@scarf/scarf': false
   '@tailwindcss/oxide': false
   '@tree-sitter-grammars/tree-sitter-yaml': false
@@ -67,7 +69,7 @@ allowBuilds:
   bufferutil: false
   core-js: false
   core-js-pure: false
-  electron: false
+  electron: true
   es5-ext: false
   esbuild: true
   keytar: false
