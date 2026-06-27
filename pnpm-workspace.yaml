@@ -3,6 +3,14 @@
 # Contract: Defines workspace packages for pnpm -w commands
 # ============================================================================
 
+overrides:
+  # Preserve the existing lockfile/package governance override in pnpm 11+,
+  # where package.json "pnpm.overrides" is ignored.
+  shell-quote: '>=1.8.4'
+  # packages/terrabuild -> aframe@1.7.1 resolves this dependency to a GitHub
+  # tarball. Use the same npm package/version to avoid transitive exotic deps.
+  'aframe@1.7.1>three-bmfont-text': 3.0.0
+
 packages:
   # OS Core and other packages (Gate enforcement layer)
   - 'packages/*'
@@ -49,3 +57,24 @@ packages:
 
   # Apps (Slice M+ — Electron cockpit and future GUI apps)
   - 'apps/*'
+
+allowBuilds:
+  # Generated from pnpm build-script approval evidence. Keep exact package names
+  # only; update this policy when dependency graph/build-script prompts change.
+  '@scarf/scarf': false
+  '@tailwindcss/oxide': false
+  '@tree-sitter-grammars/tree-sitter-yaml': false
+  '@vscode/vsce-sign': false
+  better-sqlite3: false
+  bufferutil: false
+  core-js: false
+  core-js-pure: false
+  electron: true
+  es5-ext: false
+  esbuild: true
+  keytar: false
+  msw: false
+  sharp: false
+  tree-sitter: false
+  tree-sitter-json: false
+  unrs-resolver: false

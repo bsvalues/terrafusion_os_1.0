@@ -568,7 +568,8 @@
   },
   "pnpm": {
     "overrides": {
-      "shell-quote": ">=1.8.4"
+      "shell-quote": ">=1.8.4",
+      "aframe@1.7.1>three-bmfont-text": "3.0.0"
     }
   }
 }

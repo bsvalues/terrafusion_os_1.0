@@ -1,0 +1,110 @@
+# Package Governance Follow-up
+
+## Current Scope
+
+This follow-up records and repairs the package-governance blockers found while packaging PR #1083. It is limited to dependency metadata and policy documentation.
+
+Included:
+
+- Add missing integrity metadata for the SheetJS `xlsx` tarball already referenced by `packages/terrabuild`.
+- Replace the `aframe@1.7.1` transitive `three-bmfont-text` GitHub tarball with the same `three-bmfont-text@3.0.0` registry package through a precise pnpm override.
+- Preserve the existing `shell-quote` override in `pnpm-workspace.yaml` for pnpm 11+, where `package.json` `pnpm.overrides` is ignored.
+- Mirror the exact `aframe@1.7.1>three-bmfont-text` override in `package.json` `pnpm.overrides` for pnpm 9 CI jobs that still read that legacy config location during frozen installs.
+
+Not included:
+
+- Runtime code changes.
+- Dependency version modernization.
+- Azure pipeline YAML changes.
+- GitHub workflow changes.
+- Docker, Helm, Kubernetes, or deployment behavior changes.
+- Secrets, county data, PACS, or SQL changes.
+
+## SheetJS xlsx Integrity
+
+`packages/terrabuild` references:
+
+```text
+https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+```
+
+The existing `pnpm-lock.yaml` entry had a tarball URL but no integrity field, which caused pnpm to fail before local hooks could complete. The repaired lockfile keeps the same tarball and version, adding only the verified SHA-512 SRI metadata.
+
+## terrabuild Exotic Transitive Dependency
+
+The next blocker was:
+
+```text
+packages/terrabuild -> aframe@1.7.1 -> three-bmfont-text
+```
+
+`aframe@1.7.1` resolved `three-bmfont-text` through this GitHub tarball:
+
+```text
+https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695
+```
+
+pnpm blocked that transitive exotic dependency during workspace tooling resolution. The narrow repair uses:
+
+```yaml
+overrides:
+  "aframe@1.7.1>three-bmfont-text": 3.0.0
+```
+
+This keeps the `aframe` version unchanged and resolves only that transitive package to the normal npm registry package at the same version.
+
+The override is intentionally present in both pnpm config locations:
+
+- `pnpm-workspace.yaml` for pnpm 11+ local tooling.
+- `package.json` `pnpm.overrides` for pnpm 9 CI workflows that run `pnpm install --frozen-lockfile`.
+
+## Local Hook Impact
+
+The original failures affected local pre-commit and pre-push tooling because those hooks entered workspace dependency resolution before reaching the intended docs/tooling checks. This repair removes the known package-governance blockers that stopped pnpm before local gates could run.
+
+Clean worktrees still need an explicit local dependency bootstrap before hooks that require installed binaries such as Prettier or Vitest can run. That bootstrap decision is separate from this package-governance repair.
+
+## Build-script Approval Policy
+
+pnpm 11.7.0 blocked install-time scripts during local clean-worktree hook execution after the lockfile and exotic dependency issues were repaired. The repo still declares `packageManager: pnpm@9.0.0`; this PR does not change `packageManager`, require a pnpm upgrade, or require CI to run pnpm 11.
+
+The pnpm 11 policy is still recorded because it makes package-governance metadata explicit for local tooling and avoids relying on weaker or older pnpm behavior. CI and developer environments should converge on the repo-pinned pnpm version or document any intentional local deviation before changing this policy.
+
+The approval decision uses the exact `allowBuilds` map generated from pnpm build-script approval evidence with explicit package arguments:
+
+- `esbuild` is approved because the local gate runs through `tsx`, and `tsx` requires esbuild-backed tooling.
+- `electron` is approved because active workspace scripts and Electron paths may require Electron's install script for local tooling/runtime correctness.
+- Telemetry, native, binary, Tree-sitter, Sharp, SQLite, Keytar, MSW, and compatibility-package postinstall scripts are intentionally ignored by exact package name.
+
+Approved:
+
+```text
+electron
+esbuild
+```
+
+Intentionally ignored:
+
+```text
+@scarf/scarf
+@tailwindcss/oxide
+@tree-sitter-grammars/tree-sitter-yaml
+@vscode/vsce-sign
+better-sqlite3
+bufferutil
+core-js
+core-js-pure
+es5-ext
+keytar
+msw
+sharp
+tree-sitter
+tree-sitter-json
+unrs-resolver
+```
+
+This policy does not approve wildcard packages and does not authorize production runtime behavior.
+
+## Future Follow-up
+
+If `packages/terrabuild` no longer needs `aframe`, replace or remove that dependency in a separate product/package work order. Do not fold dependency modernization into this governance repair.

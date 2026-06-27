@@ -6,6 +6,7 @@ settings:
 
 overrides:
   shell-quote: '>=1.8.4'
+  aframe@1.7.1>three-bmfont-text: 3.0.0
 
 importers:
 
@@ -10223,6 +10224,9 @@ packages:
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
 
+  flatten-vertex-data@1.0.2:
+    resolution: {integrity: sha512-BvCBFK2NZqerFTdMDgqfHBwxYWnxeCkwONsw6PvBMcUXqo8U/KDWwmXhqx1x2kLIg7DqIsJfOaJFOmlua3Lxuw==}
+
   follow-redirects@1.15.11:
     resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
     engines: {node: '>=4.0'}
@@ -14404,9 +14408,11 @@ packages:
   thread-stream@2.7.0:
     resolution: {integrity: sha512-qQiRWsU/wvNolI6tbbCKd9iKaTnCXsTwVxhhKM6nctPdujTyztjlbUkUTUymidWcMnZ5pWR0ej4a0tjsW021vw==}
 
-  three-bmfont-text@https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695:
-    resolution: {tarball: https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695}
-    version: 3.0.0
+  three-bmfont-text@3.0.0:
+    resolution: {integrity: sha512-Zx5bA/2uuz1vfSQuqAQ54L+2LNyddqcZAOVfLOXQ/GsD2EOKjKfAvPXz7KMI8h1D5D7JgfEBl6ZxY+117THIFQ==}
+
+  three-buffer-vertex-data@1.0.0:
+    resolution: {integrity: sha512-nm5odzyCltxNPBPh/3E5mXzZUra1LW8l1GsCbhc25GBM7LwejQX5rHOeDWiyDLd4q1xCSoA6KauX1Pfv7/Kn3w==}
 
   three-mesh-bvh@0.7.8:
     resolution: {integrity: sha512-BGEZTOIC14U0XIRw3tO4jY7IjP7n7v24nv9JXS1CyeVRWOCkcOMhRnmENUjuV39gktAw4Ofhr0OvIAiTspQrrw==}
@@ -15463,7 +15469,7 @@ packages:
     hasBin: true
 
   xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz:
-    resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz}
+    resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz, integrity: sha512-oLDq3jw7AcLqKWH2AhCpVTZl8mf6X2YReP+Neh0SJUzV/BdZYjth94tG5toiMB1PPrYtxOCfaoUCkvtuH+3AJA==}
     version: 0.20.3
     engines: {node: '>=0.8'}
     hasBin: true
@@ -24196,7 +24202,7 @@ snapshots:
       load-bmfont: 1.4.2(debug@4.4.3)
       super-animejs: 3.1.0
       three: super-three@0.173.5
-      three-bmfont-text: https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695
+      three-bmfont-text: 3.0.0
     transitivePeerDependencies:
       - supports-color
 
@@ -27245,6 +27251,10 @@ snapshots:
       rimraf: 3.0.2
 
   flatted@3.3.3: {}
+
+  flatten-vertex-data@1.0.2:
+    dependencies:
+      dtype: 2.0.0
 
   follow-redirects@1.15.11: {}
 
@@ -32217,12 +32227,19 @@ snapshots:
     dependencies:
       real-require: 0.2.0
 
-  three-bmfont-text@https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695:
+  three-bmfont-text@3.0.0:
     dependencies:
       array-shuffle: 1.0.1
+      inherits: 2.0.4
       layout-bmfont-text: 1.3.4
       nice-color-palettes: 3.0.0
+      object-assign: 4.1.1
       quad-indices: 2.0.1
+      three-buffer-vertex-data: 1.0.0
+
+  three-buffer-vertex-data@1.0.0:
+    dependencies:
+      flatten-vertex-data: 1.0.2
 
   three-mesh-bvh@0.7.8(three@0.179.1):
     dependencies:
