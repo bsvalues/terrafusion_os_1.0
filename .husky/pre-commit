@@ -91,11 +91,25 @@ if [ -n "$UNTRACKED_GOVERNED" ]; then
   exit 1
 fi
 # Gate 1: UI Token Contract (Lumin design system — scoped Gen2 + ratchet)
-if command -v pnpm >/dev/null 2>&1; then
-  echo "🎨 Running UI token contract check (read-only ratchet)..."
-  pnpm -s tdc:ui:tokens:check || exit 1
+STAGED_FILES="$(git diff --cached --name-only 2>/dev/null || true)"
+RUN_UI_TOKEN_GATE=0
+
+if [ -n "$STAGED_FILES" ]; then
+  TOKEN_RELEVANT_FILES="$(echo "$STAGED_FILES" | grep -Ev '^(docs/|\.md$|\.husky/pre-commit$)' || true)"
+  if echo "$TOKEN_RELEVANT_FILES" | grep -Eq '^(frontend/|apps/|packages/|os-platform/|tools/|scripts/|src/|components/|styles/|tokens/|themes/|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.npmrc$|\.husky/)'; then
+    RUN_UI_TOKEN_GATE=1
+  fi
+fi
+
+if [ "$RUN_UI_TOKEN_GATE" = "1" ]; then
+  if command -v pnpm >/dev/null 2>&1; then
+    echo "Running UI token gate for staged UI/package/runtime changes."
+    pnpm -s tdc:ui:tokens:check || exit 1
+  else
+    echo "pnpm not available - skipping UI token audit"
+  fi
 else
-  echo "⚠️  pnpm not available - skipping UI token audit"
+  echo "Skipping UI token gate: no staged UI/package/runtime files."
 fi
 
 # Gate 2: lint-staged (ESLint + Prettier + dotnet format)
