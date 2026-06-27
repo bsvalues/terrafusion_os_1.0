@@ -115,3 +115,5 @@ Backend tests may be added later only after they are confirmed stable, low-frict
 ## Operator Handoff
 
 The operator should use `docs/migration/azure-pipelines-first-run.md` for the exact browser steps, first-run capture template, allowed fixes, and prohibited fixes for Azure activation.
+
+For the first-pass branch protection recommendation after successful initial Azure runs, see `docs/migration/azure-branch-policy-proposal.md`.
