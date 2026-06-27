@@ -9,6 +9,7 @@ Included:
 - Add missing integrity metadata for the SheetJS `xlsx` tarball already referenced by `packages/terrabuild`.
 - Replace the `aframe@1.7.1` transitive `three-bmfont-text` GitHub tarball with the same `three-bmfont-text@3.0.0` registry package through a precise pnpm override.
 - Preserve the existing `shell-quote` override in `pnpm-workspace.yaml` for pnpm 11+, where `package.json` `pnpm.overrides` is ignored.
+- Mirror the exact `aframe@1.7.1>three-bmfont-text` override in `package.json` `pnpm.overrides` for pnpm 9 CI jobs that still read that legacy config location during frozen installs.
 
 Not included:
 
@@ -51,6 +52,11 @@ overrides:
 ```
 
 This keeps the `aframe` version unchanged and resolves only that transitive package to the normal npm registry package at the same version.
+
+The override is intentionally present in both pnpm config locations:
+
+- `pnpm-workspace.yaml` for pnpm 11+ local tooling.
+- `package.json` `pnpm.overrides` for pnpm 9 CI workflows that run `pnpm install --frozen-lockfile`.
 
 ## Local Hook Impact
 
