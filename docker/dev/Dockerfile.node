@@ -1,0 +1,18 @@
+FROM node:20-bookworm-slim
+
+LABEL org.opencontainers.image.title="TerraFusion local Node dev toolbox"
+LABEL org.opencontainers.image.description="Local-only Node/pnpm toolbox for TerraFusion developer workflows"
+
+ENV PNPM_HOME=/home/node/.local/share/pnpm
+ENV PATH="${PNPM_HOME}:${PATH}"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && corepack enable \
+    && corepack prepare pnpm@9.0.0 --activate
+
+WORKDIR /workspace
+USER node
+
+CMD ["bash"]

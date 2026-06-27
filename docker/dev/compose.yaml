@@ -1,0 +1,63 @@
+name: terrafusion-local-dev
+
+services:
+  node-toolbox:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile.node
+    image: terrafusion/local-node-toolbox:dev
+    profiles:
+      - tooling
+    working_dir: /workspace
+    environment:
+      TF_DEV_MODE: ${TF_DEV_MODE:-local}
+    volumes:
+      - ../..:/workspace
+      - pnpm-store:/home/node/.local/share/pnpm/store
+      - root-node-modules:/workspace/node_modules
+      - frontend-node-modules:/workspace/frontend/node_modules
+    command: bash
+
+  dotnet-toolbox:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile.dotnet
+    image: terrafusion/local-dotnet-toolbox:dev
+    profiles:
+      - tooling
+    working_dir: /workspace
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+    volumes:
+      - ../..:/workspace
+      - nuget-packages:/root/.nuget/packages
+    command: bash
+
+  frontend-dev:
+    extends:
+      service: node-toolbox
+    profiles:
+      - frontend
+    ports:
+      - "5173:5173"
+    environment:
+      TF_DEV_MODE: ${TF_DEV_MODE:-local}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+    command: >
+      bash -lc "pnpm -C frontend install --frozen-lockfile
+      && pnpm -C frontend run dev --host 0.0.0.0"
+
+  backend-check:
+    extends:
+      service: dotnet-toolbox
+    profiles:
+      - backend
+    command: >
+      bash -lc "dotnet --info
+      && dotnet restore backend/TerraFusion.sln"
+
+volumes:
+  pnpm-store:
+  root-node-modules:
+  frontend-node-modules:
+  nuget-packages:
