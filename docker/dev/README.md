@@ -44,11 +44,20 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run
 
 ## Frontend Dev Server
 
+Install frontend dependencies into the Docker-managed `frontend-node-modules` volume first:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling run --rm node-toolbox pnpm --filter ./frontend install --frozen-lockfile
+```
+
+Then start Vite:
+
 ```powershell
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend up frontend-dev
 ```
 
-The Vite server is exposed on `http://localhost:5173`.
+The Vite server is exposed on `http://localhost:${TF_VITE_PORT:-5173}`. The frontend API URL is
+derived as `http://localhost:${TF_API_PORT:-5000}`.
 
 ## Backend Restore Check
 

@@ -10,7 +10,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && corepack enable \
-    && corepack prepare pnpm@9.0.0 --activate
+    && corepack prepare pnpm@9.0.0 --activate \
+    && mkdir -p \
+        /home/node/.local/share/pnpm/store \
+        /workspace/node_modules \
+        /workspace/frontend/node_modules \
+    && chown -R node:node /home/node/.local/share/pnpm /workspace
 
 WORKDIR /workspace
 USER node

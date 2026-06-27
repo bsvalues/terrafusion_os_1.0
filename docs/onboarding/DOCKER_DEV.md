@@ -12,6 +12,13 @@ county SQL, county data, or secrets handling.
 - A backend restore-check profile.
 - Placeholder-only environment values.
 
+## Authorization Boundary
+
+WO-DEVOPS-005B approved a fresh local-only Docker developer baseline after WO-DEVOPS-005A
+identified existing production-like and county/PACS-marked surfaces. The approved implementation
+lane is limited to `docker/dev/**` and this onboarding document. Existing production Compose, Helm,
+county demo, PACS, SQL, and quarantined artifacts are excluded rather than reused.
+
 ## What This Baseline Excludes
 
 - `backend/helm/**`
@@ -45,11 +52,20 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run
 
 ## Frontend Dev
 
+Install frontend dependencies into the Docker-managed `frontend-node-modules` volume first:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling run --rm node-toolbox pnpm --filter ./frontend install --frozen-lockfile
+```
+
+Then start Vite:
+
 ```powershell
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend up frontend-dev
 ```
 
-Open `http://localhost:5173`.
+Open `http://localhost:${TF_VITE_PORT:-5173}`. The frontend API URL is derived from
+`${TF_API_PORT:-5000}`.
 
 ## Backend Check
 
