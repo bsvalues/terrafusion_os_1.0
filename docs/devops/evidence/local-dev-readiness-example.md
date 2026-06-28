@@ -7,7 +7,7 @@ machine passed all checks.
 DATE_TIME: 2026-06-27T00:00:00Z example
 OPERATOR_OR_AGENT: example-agent
 REPO: bsvalues/terrafusion_os_1.0
-WORKTREE: C:\Users\bsval\.codex-worktrees\example-local-platform
+WORKTREE: C:\Users\<user>\.codex-worktrees\example-local-platform
 BRANCH: wo/example-local-platform
 HEAD: example-sha
 WORKTREE_STATUS: clean

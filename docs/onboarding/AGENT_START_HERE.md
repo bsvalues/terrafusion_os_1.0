@@ -11,8 +11,8 @@ For onboarding and local-platform work, start with:
 - `docs/onboarding/DEVELOPER_ONBOARDING.md`
 - a dedicated clean worktree from current `origin/main`
 
-Historical worktrees, including `C:\Users\bsval\.codex-worktrees\devops-main-baseline`, are evidence
-of prior migration work and are not the default for new work.
+Historical worktrees, including `<user-home>\.codex-worktrees\devops-main-baseline`, are evidence of
+prior migration work and are not the default for new work.
 
 Do not work from:
 

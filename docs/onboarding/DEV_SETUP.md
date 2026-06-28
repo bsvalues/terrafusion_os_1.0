@@ -12,8 +12,8 @@ production deployment, or mutation of unrelated dirty checkouts.
 - Canonical onboarding entrypoint: `docs/onboarding/DEVELOPER_ONBOARDING.md`
 - Worktree rule: create a dedicated clean worktree for the active work order from current
   `origin/main`
-- Historical DevOps migration baseline: `C:\Users\bsval\.codex-worktrees\devops-main-baseline`
-  was used for Azure migration and is not the default onboarding worktree
+- Historical DevOps migration baseline: `<user-home>\.codex-worktrees\devops-main-baseline` was
+  used for Azure migration and is not the default onboarding worktree
 - Backend solution: `backend/TerraFusion.sln`
 - Frontend workspace: `frontend/package.json`
 - Azure pipeline YAML:

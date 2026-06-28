@@ -143,7 +143,7 @@ if ($azAvailable) {
 }
 
 if ($hardFailures -gt 0) {
-    Write-Result "FAIL" "Readiness completed with $hardFailures hard failure(s)."
+    Write-Host "FAIL: Readiness completed with $hardFailures hard failure(s)."
     exit 1
 }
 
