@@ -45,7 +45,7 @@ Full sales drain against restored S4 baseline. Source: Windows SQL Server 2019 `
 
 ## Sales Drain Execution
 
-**Endpoint:** `POST http://localhost:5046/api/sync/doctrine/drain/sales`  
+**Endpoint:** `POST http://localhost:${TF_API_PORT:-5046}/api/sync/doctrine/drain/sales`  
 **Body:**
 ```json
 {
