@@ -56,6 +56,23 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --p
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config
 ```
 
+## Command Truth Table
+
+| Command | Purpose | Creates Docker resources? | Starts long-running service? | Cleanup command | Safe for audit? |
+| --- | --- | --- | --- | --- | --- |
+| `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1` | Check local prerequisites and repo path assumptions. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config` | Validate YAML and placeholder env rendering. Expected to show `services: {}` because services are profile-gated. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling config` | Validate toolbox service definitions. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend config` | Validate frontend service definition. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config` | Validate backend restore-check service definition. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm node-toolbox` | Open an interactive Node/pnpm toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` for full cache cleanup | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm dotnet-toolbox` | Open an interactive .NET SDK toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` for full cache cleanup | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling run --rm node-toolbox pnpm --filter ./frontend install --frozen-lockfile` | Install frontend dependencies into Docker-managed volumes. | Yes: creates/updates toolbox image, network, and dependency volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend up frontend-dev` | Start the local Vite dev server. | Yes | Yes | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down` | No |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend run --rm backend-check` | Run .NET SDK info and backend restore check. | Yes: may build image, create network, and create NuGet cache volume. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down` | Remove local-dev containers and networks for the Compose project. Keeps named cache volumes. | Removes containers and networks | No | Not needed | Yes, for local-dev cleanup only |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | Remove local-dev containers, networks, and cache volumes for the Compose project. | Removes containers, networks, and cache volumes | No | Not needed | No, destructive to local caches |
+
 Start an interactive Node toolbox:
 
 ```powershell
@@ -107,16 +124,16 @@ With the provided `docker/dev/.env.example`, the typical Compose project prefix 
 `terrafusion-dev`; Compose may report `terrafusion-local-dev` if the top-level Compose name wins in
 your environment.
 
-This is local developer machine state, not repo mutation and not deployment behavior. Cleanup for
-profile-gated services must enable the profiles that created the resources:
+This is local developer machine state, not repo mutation and not deployment behavior. Cleanup targets
+the Compose project; it does not need a profile wildcard:
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
 ```
 
-These commands remove containers, networks, and optionally volumes for the selected profiles. They do
-not remove the local toolbox images.
+These commands remove containers, networks, and optionally named cache volumes for the Compose
+project. They do not remove the local toolbox images.
 
 Avoid global Docker prune commands unless a separate cleanup decision authorizes them.
 
