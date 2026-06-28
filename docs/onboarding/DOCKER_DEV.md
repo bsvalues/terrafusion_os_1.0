@@ -99,16 +99,24 @@ services or connect to external databases.
 The first toolbox build or `run --rm` command can create local Docker state:
 
 - images: `terrafusion/local-node-toolbox:dev` and `terrafusion/local-dotnet-toolbox:dev`
-- network: `terrafusion-dev_default`
-- volumes: `terrafusion-dev_pnpm-store`, `terrafusion-dev_root-node-modules`,
-  `terrafusion-dev_frontend-node-modules`, and `terrafusion-dev_nuget-packages`
+- network: `<compose project>_default`
+- volumes: `<compose project>_pnpm-store`, `<compose project>_root-node-modules`,
+  `<compose project>_frontend-node-modules`, and `<compose project>_nuget-packages`
 
-This is local developer machine state, not repo mutation and not deployment behavior. Cleanup is:
+With the provided `docker/dev/.env.example`, the typical Compose project prefix is
+`terrafusion-dev`; Compose may report `terrafusion-local-dev` if the top-level Compose name wins in
+your environment.
+
+This is local developer machine state, not repo mutation and not deployment behavior. Cleanup for
+profile-gated services must enable the profiles that created the resources:
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes
 ```
+
+These commands remove containers, networks, and optionally volumes for the selected profiles. They do
+not remove the local toolbox images.
 
 Avoid global Docker prune commands unless a separate cleanup decision authorizes them.
 
