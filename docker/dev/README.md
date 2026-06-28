@@ -28,6 +28,20 @@ From the repository root:
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
 ```
 
+This bare config command validates the YAML and placeholder environment file. Because every service
+in this local-dev compose file is profile-gated, the rendered output is expected to show
+`services: {}`.
+
+To validate the actual local-dev service definitions, include the profile you intend to inspect:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling config
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend config
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config
+```
+
+These commands still only render Compose configuration. They do not start services.
+
 ## Tooling Shells
 
 Open a Node/pnpm toolbox:
@@ -71,11 +85,20 @@ PACS bridge, county integration, or production service.
 ## Cleanup
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down
 ```
 
-To remove local cache volumes:
+Toolbox build/run commands can create local Docker images, a `<compose project>_default` network,
+and named cache volumes for `pnpm`, `node_modules`, and NuGet packages. With the provided
+`.env.example`, the typical Compose project prefix is `terrafusion-dev`; Compose may report
+`terrafusion-local-dev` if the top-level Compose name wins in your environment.
+
+`docker compose down` removes containers and networks for the selected profiles. It does not remove
+the toolbox images. To also remove local cache volumes:
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes
 ```
+
+Do not use global Docker prune commands as part of this runbook; they can delete unrelated local
+developer assets.
