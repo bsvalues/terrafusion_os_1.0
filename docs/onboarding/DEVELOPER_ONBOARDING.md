@@ -50,15 +50,9 @@ That Docker command is read-only and may render `services: {}` because local-dev
 profile-gated. Use `docs/onboarding/DOCKER_DEV.md` for the profile-specific validation and run
 commands.
 
-Cleanup is limited to the local-dev Compose project:
-
-```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
-```
-
-Use `down --volumes` only when you intentionally want to remove local Docker cache volumes. Do not
-use global Docker prune commands as part of onboarding.
+Cleanup is limited to the local-dev Compose project. Use the command truth table in
+`docs/onboarding/DOCKER_DEV.md` for the current cleanup command and whether it removes cache volumes.
+Do not use global Docker prune commands as part of onboarding.
 
 ## Repo Identity Check
 
