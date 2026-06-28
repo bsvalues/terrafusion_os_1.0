@@ -35,14 +35,24 @@ TerraFusion OS is a **county property-assessment platform** targeting Washington
 
 ## Quick Start
 
-Start with the canonical onboarding guide:
+Start with the canonical onboarding guide. It is the first page for new developers and agents:
 
 - [Developer Onboarding](docs/onboarding/DEVELOPER_ONBOARDING.md)
 - [Local Docker Dev](docs/onboarding/DOCKER_DEV.md)
 - [Docker Troubleshooting](docs/onboarding/DOCKER_TROUBLESHOOTING.md)
 
-The short manual path below is useful after you have confirmed repo identity, worktree isolation, and
-local readiness.
+The first safe local commands are read-only:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
+```
+
+The Docker config command validates local-dev YAML and placeholder env values. It is expected to
+render `services: {}` until you choose a profile in [Local Docker Dev](docs/onboarding/DOCKER_DEV.md).
+
+The short manual path below is useful only after you have confirmed repo identity, worktree
+isolation, and local readiness.
 
 ```bash
 # Clone
