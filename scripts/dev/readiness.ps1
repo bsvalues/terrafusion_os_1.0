@@ -72,16 +72,29 @@ if ($gitAvailable) {
     }
 
     $branch = Get-CommandText -Command @("git", "branch", "--show-current")
-    if ($LASTEXITCODE -eq 0 -and $branch) {
-        Write-Result "INFO" "Git branch: $branch"
-    }
-    else {
-        $shortHead = Get-CommandText -Command @("git", "rev-parse", "--short", "HEAD")
-        if ($LASTEXITCODE -eq 0 -and $shortHead) {
-            Write-Result "INFO" "Git branch: detached HEAD at $shortHead"
+    $branchExitCode = $LASTEXITCODE
+    if ($branchExitCode -eq 0) {
+        if ($branch) {
+            Write-Result "INFO" "Git branch: $branch"
         }
         else {
-            Write-Result "WARN" "Git branch could not be determined."
+            $shortHead = Get-CommandText -Command @("git", "rev-parse", "--short", "HEAD")
+            if ($LASTEXITCODE -eq 0 -and $shortHead) {
+                Write-Result "INFO" "Git branch: detached HEAD at $shortHead"
+            }
+            else {
+                Write-Result "WARN" "Git branch is empty, and the current commit could not be determined."
+            }
+        }
+    }
+    else {
+        $branchFailure = if ($branch) { " $branch" } else { "" }
+        $shortHead = Get-CommandText -Command @("git", "rev-parse", "--short", "HEAD")
+        if ($LASTEXITCODE -eq 0 -and $shortHead) {
+            Write-Result "WARN" "Git branch command failed; current commit is $shortHead.$branchFailure"
+        }
+        else {
+            Write-Result "WARN" "Git branch could not be determined.$branchFailure"
         }
     }
 
