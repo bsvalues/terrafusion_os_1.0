@@ -45,8 +45,10 @@ worktree per work order:
 
 ```powershell
 git fetch origin --prune
-git worktree add -b wo/example-local-platform C:\Users\bsval\.codex-worktrees\example-local-platform origin/main
-cd C:\Users\bsval\.codex-worktrees\example-local-platform
+$worktreeRoot = Join-Path $HOME ".codex-worktrees"
+$worktreePath = Join-Path $worktreeRoot "example-local-platform"
+git worktree add -b wo/example-local-platform $worktreePath origin/main
+Set-Location $worktreePath
 git status --short --branch
 ```
 

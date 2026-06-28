@@ -3,6 +3,7 @@ param()
 
 $ErrorActionPreference = "Continue"
 $hardFailures = 0
+$repoRoot = $null
 
 function Write-Result {
     param(
@@ -22,7 +23,7 @@ function Get-CommandText {
     try {
         $output = & $Command[0] @($Command | Select-Object -Skip 1) 2>&1
         $lines = ($output | ForEach-Object { $_.ToString().Trim() }) | Where-Object { $_ }
-        return [string]::Join(" ", $lines)
+        return [string]::Join("`n", $lines)
     }
     catch {
         return $_.Exception.Message
@@ -43,6 +44,11 @@ function Test-Tool {
     }
 
     $version = Get-CommandText -Command $VersionCommand
+    if ($LASTEXITCODE -ne 0) {
+        Write-Result $MissingLevel "$Name is available, but its version command failed. $version"
+        return $false
+    }
+
     Write-Result "PASS" "$Name available. $version"
     return $true
 }
@@ -54,6 +60,7 @@ $gitAvailable = Test-Tool -Name "git" -VersionCommand @("git", "--version") -Mis
 if ($gitAvailable) {
     $topLevel = Get-CommandText -Command @("git", "rev-parse", "--show-toplevel")
     if ($LASTEXITCODE -eq 0 -and $topLevel) {
+        $repoRoot = $topLevel.Trim()
         Write-Result "PASS" "Git repository root: $topLevel"
     }
     else {
@@ -106,7 +113,8 @@ $requiredPaths = @(
 )
 
 foreach ($path in $requiredPaths) {
-    if (Test-Path -LiteralPath $path) {
+    $resolvedPath = if ($repoRoot) { Join-Path -Path $repoRoot -ChildPath $path } else { $path }
+    if (Test-Path -LiteralPath $resolvedPath) {
         Write-Result "PASS" "Required path exists: $path"
     }
     else {
@@ -115,7 +123,8 @@ foreach ($path in $requiredPaths) {
 }
 
 $envPath = "docker/dev/.env"
-if (Test-Path -LiteralPath $envPath) {
+$resolvedEnvPath = if ($repoRoot) { Join-Path -Path $repoRoot -ChildPath $envPath } else { $envPath }
+if (Test-Path -LiteralPath $resolvedEnvPath) {
     Write-Result "INFO" "Local Docker env file exists: $envPath"
 }
 else {

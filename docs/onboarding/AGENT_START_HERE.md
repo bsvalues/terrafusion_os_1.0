@@ -88,6 +88,8 @@ Run only the commands that match the active work order. Documentation-only work 
 
 - `docs/onboarding/DEVELOPER_ONBOARDING.md`
 - `docs/onboarding/DOCKER_DEV.md`
+- `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
+- `docs/agents/DEVOPS_AGENT_HANDOFF_TEMPLATE.md`
 - `scripts/dev/readiness.ps1`
 - `azure-pipelines/pr-validation.yml`
 - `azure-pipelines/build-main.yml`
