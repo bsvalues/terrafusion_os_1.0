@@ -1,11 +1,19 @@
 # Developer Setup
 
-This onboarding guide is for local development and CI-oriented validation from the clean DevOps baseline. It does not authorize secrets handling, county runtime access, PACS or SQL access, production deployment, or mutation of unrelated dirty checkouts.
+This guide is supporting detail for the canonical onboarding entrypoint:
+`docs/onboarding/DEVELOPER_ONBOARDING.md`.
+
+Use it for local development and CI-oriented validation after confirming repo identity and worktree
+isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
+production deployment, or mutation of unrelated dirty checkouts.
 
 ## Repository Baseline
 
-- Canonical clean DevOps worktree: `C:\Users\bsval\.codex-worktrees\devops-main-baseline`
-- Repo root: `C:\Users\bsval\.codex-worktrees\devops-main-baseline`
+- Canonical onboarding entrypoint: `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- Worktree rule: create a dedicated clean worktree for the active work order from current
+  `origin/main`
+- Historical DevOps migration baseline: `C:\Users\bsval\.codex-worktrees\devops-main-baseline`
+  was used for Azure migration and is not the default onboarding worktree
 - Backend solution: `backend/TerraFusion.sln`
 - Frontend workspace: `frontend/package.json`
 - Azure pipeline YAML:
@@ -37,7 +45,14 @@ Top-level surfaces you will use most often:
 
 ## First Commands
 
-Run these from the repo root unless noted otherwise:
+Before installing dependencies or running builds, run the read-only readiness checker:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
+```
+
+Then run only the commands that match the active work order from the repo root unless noted
+otherwise:
 
 ```powershell
 git status --short --branch
@@ -59,17 +74,21 @@ pnpm run check:generated
 ## Suggested First-Pass Order
 
 1. Confirm you are in the intended worktree and branch.
-2. Read `AGENTS.md` and `docs/migration/build-truth-sheet.md`.
-3. Install dependencies with `pnpm install --frozen-lockfile`.
-4. Run the fast PR-validation command set first.
-5. Run backend build and frontend build only after the fast gates are stable.
+2. Read `AGENTS.md` and `docs/onboarding/DEVELOPER_ONBOARDING.md`.
+3. Run `scripts/dev/readiness.ps1`.
+4. For local Docker dev, read `docs/onboarding/DOCKER_DEV.md`.
+5. Install dependencies with `pnpm install --frozen-lockfile` only when the active work order needs it.
+6. Run the fast PR-validation command set first.
+7. Run backend build and frontend build only after the fast gates are stable.
 
 ## Local Dev Notes
 
-- Use the clean worktree for DevOps documentation and Azure-first-pass work.
+- Use a dedicated clean worktree for DevOps documentation, onboarding, and Azure-first-pass work.
 - Treat the main shared checkout as evidence-only if it is dirty or conflicted.
 - Prefer the documented command surfaces over ad hoc alternatives.
 - GitHub workflow history is useful reference, but Azure validation truth comes from the Azure pipeline YAML plus live Azure runs.
+- Local Docker development is documented in `docs/onboarding/DOCKER_DEV.md` and uses only
+  `docker/dev/**`.
 
 ## Azure DevOps Access
 

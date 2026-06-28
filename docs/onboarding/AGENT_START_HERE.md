@@ -6,9 +6,13 @@ This is the minimum safe preflight for any agent or human operator starting work
 
 Start with the active work order. Do not widen scope because adjacent files exist.
 
-For the DevOps migration lane, operate from the clean worktree:
+For onboarding and local-platform work, start with:
 
-- `C:\Users\bsval\.codex-worktrees\devops-main-baseline`
+- `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- a dedicated clean worktree from current `origin/main`
+
+Historical worktrees, including `C:\Users\bsval\.codex-worktrees\devops-main-baseline`, are evidence
+of prior migration work and are not the default for new work.
 
 Do not work from:
 
@@ -36,10 +40,13 @@ Stop if:
 1. `brain/packs/README.md`
 2. `AGENTS.md`
 3. The active work-order packet
-4. The nearest supporting docs for your lane
+4. `docs/onboarding/DEVELOPER_ONBOARDING.md`
+5. The nearest supporting docs for your lane
 
-For DevOps onboarding and Azure migration, read:
+For DevOps onboarding, local Docker, and Azure migration, read as applicable:
 
+- `docs/onboarding/DOCKER_DEV.md`
+- `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
 - `docs/migration/build-truth-sheet.md`
 - `docs/migration/azure-devops-cutover.md`
 - `docs/migration/azure-pipelines-first-run.md`
@@ -79,6 +86,9 @@ Run only the commands that match the active work order. Documentation-only work 
 
 ## Expected Files For The DevOps Lane
 
+- `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- `docs/onboarding/DOCKER_DEV.md`
+- `scripts/dev/readiness.ps1`
 - `azure-pipelines/pr-validation.yml`
 - `azure-pipelines/build-main.yml`
 - `docs/migration/build-truth-sheet.md`

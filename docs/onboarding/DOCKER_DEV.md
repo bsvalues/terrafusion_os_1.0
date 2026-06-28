@@ -4,6 +4,9 @@ TerraFusion local Docker support is a developer-experience baseline only. It is 
 architecture decision and does not authorize deployment, image publishing, Helm, Kubernetes, PACS,
 county SQL, county data, or secrets handling.
 
+Start with `docs/onboarding/DEVELOPER_ONBOARDING.md` before running Docker commands. Use
+`docs/onboarding/DOCKER_TROUBLESHOOTING.md` for local Docker failures.
+
 ## What This Baseline Provides
 
 - A Node 20 / pnpm 9 toolbox container.
@@ -33,6 +36,10 @@ county demo, PACS, SQL, and quarantined artifacts are excluded rather than reuse
 ## First Run
 
 From the repository root:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
+```
 
 ```powershell
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
