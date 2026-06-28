@@ -35,6 +35,15 @@ TerraFusion OS is a **county property-assessment platform** targeting Washington
 
 ## Quick Start
 
+Start with the canonical onboarding guide:
+
+- [Developer Onboarding](docs/onboarding/DEVELOPER_ONBOARDING.md)
+- [Local Docker Dev](docs/onboarding/DOCKER_DEV.md)
+- [Docker Troubleshooting](docs/onboarding/DOCKER_TROUBLESHOOTING.md)
+
+The short manual path below is useful after you have confirmed repo identity, worktree isolation, and
+local readiness.
+
 ```bash
 # Clone
 git clone https://github.com/bsvalues/terrafusion_os_1.0.git
@@ -191,6 +200,9 @@ See [AGENTS.md](./AGENTS.md) for full governance rules.
 
 | Document | Purpose |
 |----------|---------|
+| [Developer Onboarding](docs/onboarding/DEVELOPER_ONBOARDING.md) | Canonical new-dev and new-agent entrypoint |
+| [Docker Dev Onboarding](docs/onboarding/DOCKER_DEV.md) | Local-only Docker developer baseline |
+| [Docker Troubleshooting](docs/onboarding/DOCKER_TROUBLESHOOTING.md) | Local Docker failure matrix |
 | [AGENTS.md](./AGENTS.md) | Agent operating rules, governance surface |
 | [CLAUDE.md](./CLAUDE.md) | Development guide, architecture patterns |
 | [STANDARD.md](./STANDARD.md) | Coding standards |
@@ -207,4 +219,3 @@ Copyright 2025 BS Values. See [LICENSE](./LICENSE).
 ---
 
 **GitHub**: [bsvalues/terrafusion_os_1.0](https://github.com/bsvalues/terrafusion_os_1.0)
-
