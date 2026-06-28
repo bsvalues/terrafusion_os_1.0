@@ -24,6 +24,36 @@ production systems, county data, PACS, county SQL, secrets, Helm, Kubernetes, or
 5. `docs/onboarding/DOCKER_TROUBLESHOOTING.md` when Docker fails.
 6. `docs/onboarding/AGENT_START_HERE.md` for agent handoff and preflight.
 
+## Canonical Local-Dev Path
+
+Use this path before trying ad hoc setup commands:
+
+1. Confirm repo identity and clean worktree state.
+2. Run the read-only readiness checker.
+3. Validate Docker local-dev Compose with placeholder env values.
+4. Choose a profile-specific Docker command only after config validation passes.
+5. Clean up only the local-dev Compose project when you are done.
+
+Run these commands from the repository root of the intended worktree. The first local command is:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
+```
+
+The first Docker command is:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
+```
+
+That Docker command is read-only and may render `services: {}` because local-dev services are
+profile-gated. Use `docs/onboarding/DOCKER_DEV.md` for the profile-specific validation and run
+commands.
+
+Cleanup is limited to the local-dev Compose project. Use the command truth table in
+`docs/onboarding/DOCKER_DEV.md` for the current cleanup command and whether it removes cache volumes.
+Do not use global Docker prune commands as part of onboarding.
+
 ## Repo Identity Check
 
 From the checkout you intend to use:

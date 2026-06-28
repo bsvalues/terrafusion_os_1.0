@@ -45,7 +45,8 @@ Top-level surfaces you will use most often:
 
 ## First Commands
 
-Before installing dependencies or running builds, run the read-only readiness checker:
+Before installing dependencies or running builds, follow the canonical path in
+`docs/onboarding/DEVELOPER_ONBOARDING.md`. The first command is the read-only readiness checker:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
