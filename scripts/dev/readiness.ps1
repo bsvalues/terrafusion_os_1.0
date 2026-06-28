@@ -23,6 +23,10 @@ function Get-CommandText {
     try {
         $output = & $Command[0] @($Command | Select-Object -Skip 1) 2>&1
         $lines = ($output | ForEach-Object { $_.ToString().Trim() }) | Where-Object { $_ }
+        if (-not $lines) {
+            return ""
+        }
+
         return [string]::Join("`n", $lines)
     }
     catch {
@@ -68,7 +72,31 @@ if ($gitAvailable) {
     }
 
     $branch = Get-CommandText -Command @("git", "branch", "--show-current")
-    Write-Result "INFO" "Git branch: $branch"
+    $branchExitCode = $LASTEXITCODE
+    if ($branchExitCode -eq 0) {
+        if ($branch) {
+            Write-Result "INFO" "Git branch: $branch"
+        }
+        else {
+            $shortHead = Get-CommandText -Command @("git", "rev-parse", "--short", "HEAD")
+            if ($LASTEXITCODE -eq 0 -and $shortHead) {
+                Write-Result "INFO" "Git branch: detached HEAD at $shortHead"
+            }
+            else {
+                Write-Result "WARN" "Git branch is empty, and the current commit could not be determined."
+            }
+        }
+    }
+    else {
+        $branchFailure = if ($branch) { " $branch" } else { "" }
+        $shortHead = Get-CommandText -Command @("git", "rev-parse", "--short", "HEAD")
+        if ($LASTEXITCODE -eq 0 -and $shortHead) {
+            Write-Result "WARN" "Git branch command failed; current commit is $shortHead.$branchFailure"
+        }
+        else {
+            Write-Result "WARN" "Git branch could not be determined.$branchFailure"
+        }
+    }
 
     $status = Get-CommandText -Command @("git", "status", "--short", "--branch")
     if ($status -match "`n|\s[A-Z?]{1,2}\s") {
