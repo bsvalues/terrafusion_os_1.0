@@ -24,6 +24,7 @@ function Get-CommandText {
     param([Parameter(Mandatory = $true)][string[]]$Command)
 
     try {
+        $global:LASTEXITCODE = 0
         $output = & $Command[0] @($Command | Select-Object -Skip 1) 2>&1
         $lines = ($output | ForEach-Object { $_.ToString().Trim() }) | Where-Object { $_ }
         if (-not $lines) {
@@ -33,6 +34,7 @@ function Get-CommandText {
         return [string]::Join("`n", $lines)
     }
     catch {
+        $global:LASTEXITCODE = 1
         return $_.Exception.Message
     }
 }
