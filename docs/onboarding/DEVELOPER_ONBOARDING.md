@@ -34,7 +34,7 @@ Use this path before trying ad hoc setup commands:
 4. Choose a profile-specific Docker command only after config validation passes.
 5. Clean up only the local-dev Compose project when you are done.
 
-The first local command is:
+Run these commands from the repository root of the intended worktree. The first local command is:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
