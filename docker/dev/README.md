@@ -50,13 +50,13 @@ These commands still only render Compose configuration. They do not start servic
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling config` | Validate toolbox service definitions. | No | No | Not needed | Yes |
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend config` | Validate frontend service definition. | No | No | Not needed | Yes |
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config` | Validate backend restore-check service definition. | No | No | Not needed | Yes |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm node-toolbox` | Open an interactive Node/pnpm toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down` | No, mutates local Docker state |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm dotnet-toolbox` | Open an interactive .NET SDK toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down` | No, mutates local Docker state |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling run --rm node-toolbox pnpm --filter ./frontend install --frozen-lockfile` | Install frontend dependencies into Docker-managed volumes. | Yes: creates/updates toolbox image, network, and dependency volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes` | No, mutates local Docker state |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend up frontend-dev` | Start the local Vite dev server. | Yes | Yes | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down` | No |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend run --rm backend-check` | Run .NET SDK info and backend restore check. | Yes: may build image, create network, and create NuGet cache volume. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes` | No, mutates local Docker state |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down` | Remove local-dev containers and networks for all profiles. | Removes resources | No | Not needed | Yes, for local-dev cleanup only |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes` | Remove local-dev containers, networks, and cache volumes for all profiles. | Removes resources and cache volumes | No | Not needed | No, destructive to local caches |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm node-toolbox` | Open an interactive Node/pnpm toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` for full cache cleanup | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example run --rm dotnet-toolbox` | Open an interactive .NET SDK toolbox. | Yes: may build image, create network, and create cache volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` for full cache cleanup | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling run --rm node-toolbox pnpm --filter ./frontend install --frozen-lockfile` | Install frontend dependencies into Docker-managed volumes. | Yes: creates/updates toolbox image, network, and dependency volumes. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend up frontend-dev` | Start the local Vite dev server. | Yes | Yes | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down` | No |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend run --rm backend-check` | Run .NET SDK info and backend restore check. | Yes: may build image, create network, and create NuGet cache volume. | No | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | No, mutates local Docker state |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down` | Remove local-dev containers and networks for the Compose project. Keeps named cache volumes. | Removes containers and networks | No | Not needed | Yes, for local-dev cleanup only |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes` | Remove local-dev containers, networks, and cache volumes for the Compose project. | Removes containers, networks, and cache volumes | No | Not needed | No, destructive to local caches |
 
 ## Tooling Shells
 
@@ -101,7 +101,7 @@ PACS bridge, county integration, or production service.
 ## Cleanup
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
 ```
 
 Toolbox build/run commands can create local Docker images, a `<compose project>_default` network,
@@ -109,11 +109,11 @@ and named cache volumes for `pnpm`, `node_modules`, and NuGet packages. With the
 `.env.example`, the typical Compose project prefix is `terrafusion-dev`; Compose may report
 `terrafusion-local-dev` if the top-level Compose name wins in your environment.
 
-`docker compose down` removes containers and networks for the selected profiles. It does not remove
-the toolbox images. To also remove local cache volumes:
+`docker compose down` removes containers and networks for the Compose project. It does not remove
+the toolbox images or named cache volumes. To also remove local cache volumes:
 
 ```powershell
-docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile "*" down --volumes
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
 ```
 
 Do not use global Docker prune commands as part of this runbook; they can delete unrelated local
