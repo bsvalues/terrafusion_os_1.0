@@ -45,6 +45,17 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
 ```
 
+The bare Compose config command validates the file and placeholder env values. It is expected to
+render `services: {}` because local-dev services are only enabled through profiles.
+
+Validate the profile-specific service definitions before running a toolbox or local service:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling config
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend config
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config
+```
+
 Start an interactive Node toolbox:
 
 ```powershell
@@ -82,6 +93,24 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --p
 
 This runs `dotnet --info` and restores `backend/TerraFusion.sln`. It does not launch production
 services or connect to external databases.
+
+## Local Docker Artifacts
+
+The first toolbox build or `run --rm` command can create local Docker state:
+
+- images: `terrafusion/local-node-toolbox:dev` and `terrafusion/local-dotnet-toolbox:dev`
+- network: `terrafusion-dev_default`
+- volumes: `terrafusion-dev_pnpm-store`, `terrafusion-dev_root-node-modules`,
+  `terrafusion-dev_frontend-node-modules`, and `terrafusion-dev_nuget-packages`
+
+This is local developer machine state, not repo mutation and not deployment behavior. Cleanup is:
+
+```powershell
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down
+docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
+```
+
+Avoid global Docker prune commands unless a separate cleanup decision authorizes them.
 
 ## Governance Notes
 
