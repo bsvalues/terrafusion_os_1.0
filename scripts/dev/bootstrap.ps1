@@ -142,17 +142,22 @@ $requiredPaths = @(
     "docker/dev/.env.example"
 )
 
-foreach ($path in $requiredPaths) {
-    Test-RequiredPath -Path $path | Out-Null
-}
+if ($repoRoot) {
+    foreach ($path in $requiredPaths) {
+        Test-RequiredPath -Path $path | Out-Null
+    }
 
-$envPath = "docker/dev/.env"
-$resolvedEnvPath = if ($repoRoot) { Join-Path -Path $repoRoot -ChildPath $envPath } else { $envPath }
-if (Test-Path -LiteralPath $resolvedEnvPath) {
-    Write-Result "INFO" "Local Docker env file exists: $envPath"
+    $envPath = "docker/dev/.env"
+    $resolvedEnvPath = Join-Path -Path $repoRoot -ChildPath $envPath
+    if (Test-Path -LiteralPath $resolvedEnvPath) {
+        Write-Result "INFO" "Local Docker env file exists: $envPath"
+    }
+    else {
+        Write-Result "WARN" "Local Docker env file is absent. Use placeholders from docker/dev/.env.example if local Docker dev needs a .env file."
+    }
 }
 else {
-    Write-Result "WARN" "Local Docker env file is absent. Use placeholders from docker/dev/.env.example if local Docker dev needs a .env file."
+    Write-Result "WARN" "Skipping repo-relative path checks because the repository root could not be determined."
 }
 
 Write-Result "INFO" "Next docs:"
