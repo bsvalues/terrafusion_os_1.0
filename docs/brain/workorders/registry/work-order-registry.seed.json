@@ -307,13 +307,13 @@
           "name": "registry json parse",
           "command": "node -e \"const fs=require('fs'); JSON.parse(fs.readFileSync('docs/brain/workorders/registry/work-order-registry.seed.json','utf8'))\"",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
       "stopConditions": [
@@ -645,7 +645,7 @@
       ]
     },
     {
-      "id": "WO-0013",
+      "id": "WO-BRAIN-0013",
       "title": "Product Gate: ServiceRegistry Activation Verification",
       "program": "Brain Current Queue",
       "goal": "Verify ServiceRegistry activation state using read-only inspection and existing tests.",
@@ -690,7 +690,12 @@
           "riskClass": "R1",
           "blocked": false
         }
-      ]
+      ],
+      "provenance": {
+        "createdAt": "2026-06-29T00:00:00Z",
+        "source": "docs/brain/canon/next-queue.json; historical id WO-0013",
+        "schemaVersion": "0.1.0"
+      }
     },
     {
       "id": "WO-LOCALOPS-000",
