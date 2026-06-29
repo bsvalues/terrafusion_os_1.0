@@ -75,8 +75,8 @@ This evidence does not prove:
 
 ## Remaining Risks
 
-- Clean-worktree materialization is slow and has left incomplete worktrees in previous WOs; delete
-  candidates require a separate hygiene cleanup WO.
+- Clean-worktree materialization is slow and has left incomplete worktrees in previous WOs; worktree
+  deletion candidates require a separate hygiene cleanup WO.
 - Local Docker `.env` remains intentionally absent by default; placeholder values live in
   `docker/dev/.env.example`.
 - Node and pnpm local versions may differ from repo-declared baselines; use
