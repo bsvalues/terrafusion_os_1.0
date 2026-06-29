@@ -21,7 +21,7 @@ package metadata, or authorize writes outside the local-dev toolchain truth scop
 | PowerShell | `scripts/dev/readiness.ps1`, `scripts/dev/bootstrap.ps1`, `scripts/dev/smoke.ps1` | Required for Windows onboarding scripts | Scripts are read-only by default and use `pwsh`. |
 | Node.js | `package.json`, `.nvmrc`, Docker toolbox image | `package.json` allows `>=18.0.0 <25.0.0`; `.nvmrc` is `18.19.0`; Docker toolbox uses Node 20 | Do not infer a Node upgrade from local machine state. |
 | pnpm | `package.json`, `pnpm-workspace.yaml` | `packageManager: pnpm@9.0.0` | `pnpm-workspace.yaml` carries compatibility metadata for newer pnpm behavior. |
-| .NET SDK | `global.json` | SDK `8.0.0`, `rollForward: latestMajor` | Local machines may report a newer installed 8.x SDK through roll-forward. |
+| .NET SDK | `global.json` | SDK `8.0.0`, `rollForward: latestMajor` | Local machines may report a newer installed SDK through roll-forward if the exact 8.0.0 SDK is unavailable. |
 | Docker | `docker/dev/compose.yaml`, `docs/onboarding/DOCKER_DEV.md` | Required only for local Docker dev | Compose commands must use `docker/dev/.env.example` unless a local `.env` is intentionally created. |
 | Azure CLI | `scripts/dev/readiness.ps1`, Azure DevOps docs | Optional for Azure DevOps inspection | Not required for basic local onboarding. Do not store tokens in repo files. |
 
