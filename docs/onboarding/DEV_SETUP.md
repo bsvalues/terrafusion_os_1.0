@@ -3,6 +3,8 @@
 This guide is supporting detail for the canonical onboarding entrypoint:
 `docs/onboarding/DEVELOPER_ONBOARDING.md`.
 
+For declared versus observed tool versions, use `docs/onboarding/TOOLCHAIN_TRUTH.md`.
+
 Use it for local development and CI-oriented validation after confirming repo identity and worktree
 isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
 production deployment, or mutation of unrelated dirty checkouts.

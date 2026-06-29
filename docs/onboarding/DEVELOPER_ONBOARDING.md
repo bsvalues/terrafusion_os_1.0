@@ -19,11 +19,12 @@ production systems, county data, PACS, county SQL, secrets, Helm, Kubernetes, or
 
 1. `AGENTS.md` for global governance and worktree isolation.
 2. This guide.
-3. `docs/onboarding/DEV_SETUP.md` for tool versions and command truth.
-4. `docs/onboarding/DOCKER_DEV.md` for local Docker dev commands.
-5. `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md` for the smallest local-dev health check.
-6. `docs/onboarding/DOCKER_TROUBLESHOOTING.md` when Docker fails.
-7. `docs/onboarding/AGENT_START_HERE.md` for agent handoff and preflight.
+3. `docs/onboarding/TOOLCHAIN_TRUTH.md` for declared and observed local toolchain truth.
+4. `docs/onboarding/DEV_SETUP.md` for setup details and command truth.
+5. `docs/onboarding/DOCKER_DEV.md` for local Docker dev commands.
+6. `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md` for the smallest local-dev health check.
+7. `docs/onboarding/DOCKER_TROUBLESHOOTING.md` when Docker fails.
+8. `docs/onboarding/AGENT_START_HERE.md` for agent handoff and preflight.
 
 ## Canonical Local-Dev Path
 
@@ -174,6 +175,7 @@ Stop and escalate when work requires any of these:
 ## Next Guide Links
 
 - `docs/onboarding/DEV_SETUP.md`
+- `docs/onboarding/TOOLCHAIN_TRUTH.md`
 - `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`
 - `docs/onboarding/DOCKER_DEV.md`
 - `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
