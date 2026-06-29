@@ -104,6 +104,7 @@ Passing does not mean:
 - `docs/devops/evidence/local-dev-readiness-example.md`
 - `docs/devops/evidence/docker-dev-evidence-pack.md`
 - `docs/devops/evidence/LOCAL_DEV_EVIDENCE_TEMPLATE.md`
+- `docs/devops/evidence/local-dev-operating-rollup.md`
 
 ## Stop Gates
 
