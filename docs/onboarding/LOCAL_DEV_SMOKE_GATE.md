@@ -4,6 +4,15 @@ The local dev smoke gate is the smallest boring check for a TerraFusion develope
 that the documented local-dev command surface is reachable without installing packages, starting
 services, creating env files, running migrations, reading secrets, or mutating Git.
 
+## Authorization
+
+This document and `scripts/dev/smoke.ps1` are created under `WO-DEVOPS-006J - Local Dev Smoke Gate`
+in the TerraFusion local development chain. The authorized lane is local developer tooling and
+onboarding documentation only.
+
+This work order does not expand the root Core Governance Surface, modify repo-shape policy, or
+authorize writes outside the local-dev smoke gate scope.
+
 ## Command
 
 Run from the repository root or any subdirectory inside the intended worktree:
