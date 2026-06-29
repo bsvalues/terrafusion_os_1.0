@@ -4,14 +4,18 @@ This guide is supporting detail for the canonical onboarding entrypoint:
 `docs/onboarding/DEVELOPER_ONBOARDING.md`.
 
 For declared versus observed tool versions, use `docs/onboarding/TOOLCHAIN_TRUTH.md`.
+For the operator-facing local-dev command order and stop gates, use
+`docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`.
 
-Use it for local development and CI-oriented validation after confirming repo identity and worktree
-isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
+Use this guide for local development and CI-oriented validation after confirming repo identity and
+worktree isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
 production deployment, or mutation of unrelated dirty checkouts.
 
 ## Repository Baseline
 
 - Canonical onboarding entrypoint: `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- Local-dev operating packet: `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`
+- Smallest local-dev smoke gate: `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`
 - Worktree rule: create a dedicated clean worktree for the active work order from current
   `origin/main`
 - Historical DevOps migration baseline: `<user-home>\.codex-worktrees\devops-main-baseline` was
@@ -78,17 +82,20 @@ pnpm run check:generated
 
 1. Confirm you are in the intended worktree and branch.
 2. Read `AGENTS.md` and `docs/onboarding/DEVELOPER_ONBOARDING.md`.
-3. Run `scripts/dev/readiness.ps1`.
-4. For local Docker dev, read `docs/onboarding/DOCKER_DEV.md`.
-5. Install dependencies with `pnpm install --frozen-lockfile` only when the active work order needs it.
-6. Run the fast PR-validation command set first.
-7. Run backend build and frontend build only after the fast gates are stable.
+3. Read `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`.
+4. Run `scripts/dev/readiness.ps1`.
+5. Run `scripts/dev/bootstrap.ps1` or `scripts/dev/smoke.ps1` when local-dev evidence is needed.
+6. For local Docker dev, read `docs/onboarding/DOCKER_DEV.md`.
+7. Install dependencies with `pnpm install --frozen-lockfile` only when the active work order needs it.
+8. Run the fast PR-validation command set first.
+9. Run backend build and frontend build only after the fast gates are stable.
 
 ## Local Dev Notes
 
 - Use a dedicated clean worktree for DevOps documentation, onboarding, and Azure-first-pass work.
 - Treat the main shared checkout as evidence-only if it is dirty or conflicted.
 - Prefer the documented command surfaces over ad hoc alternatives.
+- Use `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md` when you need one boring local-dev health signal.
 - GitHub workflow history is useful reference, but Azure validation truth comes from the Azure pipeline YAML plus live Azure runs.
 - Local Docker development is documented in `docs/onboarding/DOCKER_DEV.md` and uses only
   `docker/dev/**`.
