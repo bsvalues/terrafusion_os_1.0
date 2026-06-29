@@ -21,8 +21,9 @@ production systems, county data, PACS, county SQL, secrets, Helm, Kubernetes, or
 2. This guide.
 3. `docs/onboarding/DEV_SETUP.md` for tool versions and command truth.
 4. `docs/onboarding/DOCKER_DEV.md` for local Docker dev commands.
-5. `docs/onboarding/DOCKER_TROUBLESHOOTING.md` when Docker fails.
-6. `docs/onboarding/AGENT_START_HERE.md` for agent handoff and preflight.
+5. `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md` for the smallest local-dev health check.
+6. `docs/onboarding/DOCKER_TROUBLESHOOTING.md` when Docker fails.
+7. `docs/onboarding/AGENT_START_HERE.md` for agent handoff and preflight.
 
 ## Canonical Local-Dev Path
 
@@ -50,6 +51,16 @@ Bootstrap inspect mode reports Git/worktree state, required tools, required docs
 presence, and read-only Docker Compose config validation for the bare, tooling, frontend, and backend
 profiles. It does not install dependencies, create env files, start Docker services, restore .NET
 packages, run migrations, read secrets, or mutate Git.
+
+For the smallest local-dev health gate, run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1
+```
+
+Run that command from the repository root. If you are in a subdirectory, use a path that resolves
+from the current directory, such as `..\scripts\dev\smoke.ps1` from `docs/`. The smoke gate wraps
+readiness plus bootstrap inspect and is documented in `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`.
 
 The first Docker command is:
 
@@ -163,6 +174,7 @@ Stop and escalate when work requires any of these:
 ## Next Guide Links
 
 - `docs/onboarding/DEV_SETUP.md`
+- `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`
 - `docs/onboarding/DOCKER_DEV.md`
 - `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
 - `docs/onboarding/TROUBLESHOOTING.md`
