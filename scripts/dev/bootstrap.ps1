@@ -75,6 +75,39 @@ function Test-RequiredPath {
     return $false
 }
 
+function Test-ComposeConfig {
+    param(
+        [string[]]$Profiles = @()
+    )
+
+    if (-not $repoRoot) {
+        Write-Result "WARN" "Skipping Docker Compose config validation because the repository root could not be determined."
+        return
+    }
+
+    $composeFile = Join-Path -Path $repoRoot -ChildPath "docker/dev/compose.yaml"
+    $envFile = Join-Path -Path $repoRoot -ChildPath "docker/dev/.env.example"
+    if (-not (Test-Path -LiteralPath $composeFile) -or -not (Test-Path -LiteralPath $envFile)) {
+        Write-Result "WARN" "Skipping Docker Compose config validation because docker/dev/compose.yaml or docker/dev/.env.example is missing."
+        return
+    }
+
+    $composeArgs = @("compose", "-f", $composeFile, "--env-file", $envFile)
+    foreach ($profile in $Profiles) {
+        $composeArgs += @("--profile", $profile)
+    }
+    $composeArgs += "config"
+
+    $label = if ($Profiles.Count -gt 0) { "profile '$($Profiles -join ",")'" } else { "bare profile-gated" }
+    $output = Get-CommandText -Command (@("docker") + $composeArgs)
+    if ($LASTEXITCODE -eq 0) {
+        Write-Result "PASS" "Docker Compose $label config validates."
+    }
+    else {
+        Write-Result "WARN" "Docker Compose $label config failed. Review docs/onboarding/DOCKER_TROUBLESHOOTING.md. $output"
+    }
+}
+
 Write-Result "INFO" "TerraFusion bootstrap mode: $Mode"
 Write-Result "INFO" "Bootstrap inspect mode is read-only. It does not install, restore, start services, create env files, run migrations, read secrets, or mutate Git."
 Write-Result "INFO" "Current path: $(Get-Location)"
@@ -138,6 +171,7 @@ $requiredPaths = @(
     "docs/onboarding/DEV_SETUP.md",
     "docs/onboarding/DEVELOPER_ONBOARDING.md",
     "docs/onboarding/DOCKER_DEV.md",
+    "docs/onboarding/DOCKER_TROUBLESHOOTING.md",
     "docker/dev/compose.yaml",
     "docker/dev/.env.example"
 )
@@ -155,6 +189,13 @@ if ($repoRoot) {
     else {
         Write-Result "WARN" "Local Docker env file is absent. Use placeholders from docker/dev/.env.example if local Docker dev needs a .env file."
     }
+
+    if ($dockerAvailable) {
+        Test-ComposeConfig
+        Test-ComposeConfig -Profiles @("tooling")
+        Test-ComposeConfig -Profiles @("frontend")
+        Test-ComposeConfig -Profiles @("backend")
+    }
 }
 else {
     Write-Result "WARN" "Skipping repo-relative path checks because the repository root could not be determined."
@@ -163,6 +204,7 @@ else {
 Write-Result "INFO" "Next docs:"
 Write-Result "INFO" "- docs/onboarding/DEV_SETUP.md"
 Write-Result "INFO" "- docs/onboarding/DOCKER_DEV.md"
+Write-Result "INFO" "- docs/onboarding/DOCKER_TROUBLESHOOTING.md"
 
 if ($hardFailures -gt 0) {
     Write-Host "FAIL: Bootstrap inspect completed with $hardFailures hard failure(s)."

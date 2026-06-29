@@ -45,8 +45,8 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
 docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
 ```
 
-The bare Compose config command validates the file and placeholder env values. It is expected to
-render `services: {}` because local-dev services are only enabled through profiles.
+The bare Compose config command validates the file and placeholder env values. It may render
+`services: {}` because local-dev services are only enabled through profiles.
 
 Validate the profile-specific service definitions before running a toolbox or local service:
 
@@ -61,7 +61,7 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --p
 | Command | Purpose | Creates Docker resources? | Starts long-running service? | Cleanup command | Safe for audit? |
 | --- | --- | --- | --- | --- | --- |
 | `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1` | Check local prerequisites and repo path assumptions. | No | No | Not needed | Yes |
-| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config` | Validate YAML and placeholder env rendering. Expected to show `services: {}` because services are profile-gated. | No | No | Not needed | Yes |
+| `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config` | Validate YAML and placeholder env rendering. May show `services: {}` because services are profile-gated. | No | No | Not needed | Yes |
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile tooling config` | Validate toolbox service definitions. | No | No | Not needed | Yes |
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile frontend config` | Validate frontend service definition. | No | No | Not needed | Yes |
 | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example --profile backend config` | Validate backend restore-check service definition. | No | No | Not needed | Yes |
