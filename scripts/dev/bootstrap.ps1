@@ -92,14 +92,14 @@ function Test-ComposeConfig {
         return
     }
 
-    $args = @("compose", "-f", $composeFile, "--env-file", $envFile)
+    $composeArgs = @("compose", "-f", $composeFile, "--env-file", $envFile)
     foreach ($profile in $Profiles) {
-        $args += @("--profile", $profile)
+        $composeArgs += @("--profile", $profile)
     }
-    $args += "config"
+    $composeArgs += "config"
 
     $label = if ($Profiles.Count -gt 0) { "profile '$($Profiles -join ",")'" } else { "bare profile-gated" }
-    $output = Get-CommandText -Command (@("docker") + $args)
+    $output = Get-CommandText -Command (@("docker") + $composeArgs)
     if ($LASTEXITCODE -eq 0) {
         Write-Result "PASS" "Docker Compose $label config validates."
     }
@@ -171,6 +171,7 @@ $requiredPaths = @(
     "docs/onboarding/DEV_SETUP.md",
     "docs/onboarding/DEVELOPER_ONBOARDING.md",
     "docs/onboarding/DOCKER_DEV.md",
+    "docs/onboarding/DOCKER_TROUBLESHOOTING.md",
     "docker/dev/compose.yaml",
     "docker/dev/.env.example"
 )
