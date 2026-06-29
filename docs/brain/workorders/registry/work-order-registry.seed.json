@@ -650,7 +650,7 @@
       "program": "Brain Current Queue",
       "goal": "Verify ServiceRegistry activation state using read-only inspection and existing tests.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [],
       "allowedSystems": [
         {
@@ -674,7 +674,19 @@
           "name": "existing tests",
           "command": "read-only inspection + existing tests per docs/brain/canon/next-queue.json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/evidence/WO-0013-proof.md",
+          "description": "PASS evidence for the ServiceRegistry activation verification product gate."
+        },
+        {
+          "kind": "file",
+          "location": "docs/brain/evidence/WO-0013-serviceregistry-verification.md",
+          "description": "Verdict and disposition evidence for the ServiceRegistry verification."
         }
       ],
       "stopConditions": [
