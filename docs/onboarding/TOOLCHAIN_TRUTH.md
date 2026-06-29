@@ -5,6 +5,14 @@ for developer setup only. It does not authorize dependency upgrades, package-man
 runtime behavior changes, production deployment, secrets handling, county data access, PACS access,
 or county SQL access.
 
+## Authorization
+
+This document is created under `WO-DEVOPS-006K - Toolchain Truth Sheet` in the TerraFusion local
+development chain. The authorized lane is local developer onboarding documentation only.
+
+This work order does not expand the root Core Governance Surface, modify repo-shape policy, change
+package metadata, or authorize writes outside the local-dev toolchain truth scope.
+
 ## Canonical Sources
 
 | Tool | Canonical source | Declared truth | Notes |
