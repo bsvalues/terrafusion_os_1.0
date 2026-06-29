@@ -40,6 +40,17 @@ Run these commands from the repository root of the intended worktree. The first 
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1
 ```
 
+For a fuller inspect-only local bootstrap, run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1
+```
+
+Bootstrap inspect mode reports Git/worktree state, required tools, required docs, local Docker env
+presence, and read-only Docker Compose config validation for the bare, tooling, frontend, and backend
+profiles. It does not install dependencies, create env files, start Docker services, restore .NET
+packages, run migrations, read secrets, or mutate Git.
+
 The first Docker command is:
 
 ```powershell
