@@ -681,12 +681,12 @@
         {
           "kind": "file",
           "location": "docs/brain/evidence/WO-0013-proof.md",
-          "description": "PASS evidence for the ServiceRegistry activation verification product gate."
+          "summary": "PASS evidence for the ServiceRegistry activation verification product gate."
         },
         {
           "kind": "file",
           "location": "docs/brain/evidence/WO-0013-serviceregistry-verification.md",
-          "description": "Verdict and disposition evidence for the ServiceRegistry verification."
+          "summary": "Verdict and disposition evidence for the ServiceRegistry verification."
         }
       ],
       "stopConditions": [
