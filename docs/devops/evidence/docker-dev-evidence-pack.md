@@ -4,6 +4,15 @@ This evidence pack closes the local Docker reality lane for TerraFusion develope
 local-development evidence only. It does not authorize production Docker, Helm, Kubernetes, image
 publishing, release, deployment, secrets, PACS, county SQL, or county data access.
 
+## Authorization
+
+This document is created under `WO-DEVOPS-006I - Docker Dev Evidence Pack` in the TerraFusion DevOps
+Local Docker Reality Closure chain. The authorized lane is documentation/evidence only and follows
+the already-existing evidence path `docs/devops/evidence/**`.
+
+This packet does not expand the root repository shape, modify governance policy, or authorize writes
+outside the local-development evidence lane.
+
 ## Scope Proven
 
 - Local Docker entrypoint is `docker/dev/compose.yaml`.
@@ -77,6 +86,26 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example dow
 - Unrelated Docker containers, images, networks, and volumes are not inspected, stopped, removed, or
   pruned by this lane.
 
+### Multi-Worktree Cleanup Risk
+
+`docker/dev/.env.example` sets a shared Compose project name. In a multi-worktree setup, two
+worktrees using the default env file can point at the same local Docker project and cache volumes.
+
+Operator-safe cleanup therefore means:
+
+- Run cleanup only for a local-dev Compose project you own.
+- Check `docker ps`, `docker network ls`, and `docker volume ls` before deleting volumes when
+  multiple TerraFusion worktrees are active.
+- Prefer a per-worktree project name for isolated experiments, for example:
+
+```powershell
+docker compose -p terrafusion-dev-my-worktree -f docker/dev/compose.yaml --env-file docker/dev/.env.example config
+docker compose -p terrafusion-dev-my-worktree -f docker/dev/compose.yaml --env-file docker/dev/.env.example down --volumes
+```
+
+This evidence packet records the risk; it does not change `docker/dev/.env.example` or the Compose
+contract.
+
 ## Known Non-Goals
 
 - No production Docker contract.
@@ -98,6 +127,8 @@ docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example dow
   separate package/tooling work orders.
 - Cleanup commands are safe for the local-dev Compose project, but operators still need to avoid
   global Docker prune commands on machines with unrelated workloads.
+- The default Compose project name can collide across multiple local TerraFusion worktrees unless the
+  operator uses a per-worktree `-p` project name.
 
 ## Evidence Boundary
 
