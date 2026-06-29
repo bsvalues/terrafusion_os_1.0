@@ -1,0 +1,173 @@
+{
+  "schemaVersion": "1.0.0",
+  "policyId": "terrafusion-next-work-order-scoring-v1",
+  "description": "Deterministic advisory scoring policy for selecting the next TerraFusion Work Order from registry evidence.",
+  "hardExclusions": [
+    {
+      "id": "dependency-not-cleared",
+      "description": "A required upstream Work Order is not complete, waived, or explicitly superseded.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "terminal-status",
+      "description": "Candidate is already complete, cancelled, or superseded.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "risk-exceeds-authority",
+      "description": "Candidate risk class exceeds the current Goal + Loop authority boundary.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "protected-system-required",
+      "description": "Candidate requires secrets, credentials, protected data, PACS, county SQL, production deployment, release, or destructive cleanup without explicit authorization.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "missing-prerequisite-evidence",
+      "description": "Required prerequisite evidence is missing or not linked from the registry.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "ambiguous-state",
+      "description": "Active PR, branch, worktree, or validation state is ambiguous and the candidate is not explicitly a read-only audit.",
+      "verdict": "blocked"
+    },
+    {
+      "id": "scope-expansion-required",
+      "description": "Candidate would require runtime, CI, Docker, Kubernetes, or production expansion outside the current authorized chain.",
+      "verdict": "blocked"
+    }
+  ],
+  "factors": [
+    {
+      "id": "dependency-readiness",
+      "label": "Dependency readiness",
+      "weight": 25,
+      "direction": "higher-is-better",
+      "description": "Required upstream Work Orders are complete or explicitly waived."
+    },
+    {
+      "id": "risk-authority-fit",
+      "label": "Risk and authority fit",
+      "weight": 20,
+      "direction": "higher-is-better",
+      "description": "Candidate remains inside the current authorized risk class and stop-gate model."
+    },
+    {
+      "id": "evidence-readiness",
+      "label": "Evidence readiness",
+      "weight": 15,
+      "direction": "higher-is-better",
+      "description": "Required evidence exists, is current, and is linked from the registry."
+    },
+    {
+      "id": "operational-value",
+      "label": "Operational value",
+      "weight": 15,
+      "direction": "higher-is-better",
+      "description": "Candidate closes an active lane, unlocks follow-up work, or reduces operator friction."
+    },
+    {
+      "id": "scope-reversibility",
+      "label": "Scope size and reversibility",
+      "weight": 10,
+      "direction": "higher-is-better",
+      "description": "Smaller, easier-to-revert Work Orders score higher than broad or irreversible work."
+    },
+    {
+      "id": "safety-margin",
+      "label": "Safety margin",
+      "weight": 10,
+      "direction": "higher-is-better",
+      "description": "Candidate avoids protected systems and has clear stop conditions."
+    },
+    {
+      "id": "blocker-pressure",
+      "label": "Blocker pressure",
+      "weight": 5,
+      "direction": "higher-is-better",
+      "description": "Candidates with fewer known blockers, review threads, auth walls, or unstable checks score higher."
+    }
+  ],
+  "decisionBands": [
+    {
+      "verdict": "recommend",
+      "minimumScore": 85,
+      "maximumScore": 100,
+      "description": "Strong next candidate when no hard exclusions apply."
+    },
+    {
+      "verdict": "eligible",
+      "minimumScore": 70,
+      "maximumScore": 84,
+      "description": "Safe candidate, but not necessarily the best next step."
+    },
+    {
+      "verdict": "defer",
+      "minimumScore": 50,
+      "maximumScore": 69,
+      "description": "Do not start automatically unless higher-value or lower-risk candidates are unavailable."
+    },
+    {
+      "verdict": "weak",
+      "minimumScore": 0,
+      "maximumScore": 49,
+      "description": "Not useful enough to start unless explicitly selected."
+    },
+    {
+      "verdict": "blocked",
+      "minimumScore": 0,
+      "maximumScore": 100,
+      "description": "A hard exclusion prevents automatic selection regardless of numeric score."
+    }
+  ],
+  "tieBreakers": [
+    {
+      "order": 1,
+      "id": "lower-risk-class",
+      "description": "Lower risk class wins."
+    },
+    {
+      "order": 2,
+      "id": "fewer-unresolved-blockers",
+      "description": "Candidate with fewer unresolved blockers wins."
+    },
+    {
+      "order": 3,
+      "id": "newer-dependency-evidence",
+      "description": "Candidate whose dependency chain has more recent completion evidence wins."
+    },
+    {
+      "order": 4,
+      "id": "active-lane-closure",
+      "description": "Candidate that closes the current active lane wins."
+    },
+    {
+      "order": 5,
+      "id": "lexicographic-work-order-id",
+      "description": "Lexicographically smaller Work Order ID wins."
+    }
+  ],
+  "resultContract": {
+    "requiredFields": [
+      "workOrderId",
+      "verdict",
+      "score",
+      "factorBreakdown",
+      "hardExclusions",
+      "blockers",
+      "evidenceReferences",
+      "nextRecommendedAction"
+    ],
+    "scoreRange": {
+      "minimum": 0,
+      "maximum": 100
+    },
+    "factorValueRange": {
+      "minimum": 0,
+      "maximum": 1
+    },
+    "hardExclusionVerdict": "blocked"
+  }
+}
