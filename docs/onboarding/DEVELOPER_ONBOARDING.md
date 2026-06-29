@@ -58,8 +58,9 @@ For the smallest local-dev health gate, run:
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1
 ```
 
-The smoke gate wraps readiness plus bootstrap inspect and is documented in
-`docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`.
+Run that command from the repository root. If you are in a subdirectory, use a path that resolves
+from the current directory, such as `..\scripts\dev\smoke.ps1` from `docs/`. The smoke gate wraps
+readiness plus bootstrap inspect and is documented in `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`.
 
 The first Docker command is:
 

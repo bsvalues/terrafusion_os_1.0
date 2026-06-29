@@ -23,12 +23,25 @@ function Invoke-SmokeStep {
     )
 
     Write-Result "INFO" "Running smoke step: $Name"
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $ScriptPath
-    if ($LASTEXITCODE -eq 0) {
+    $pwshCommand = Get-Command pwsh -ErrorAction SilentlyContinue
+    if (-not $pwshCommand) {
+        Write-Result "FAIL" "pwsh is not available; cannot run $Name."
+        return
+    }
+
+    & $pwshCommand.Source -NoProfile -ExecutionPolicy Bypass -File $ScriptPath
+    $stepStarted = $?
+    $stepExitCode = $LASTEXITCODE
+    if ($stepStarted -and $stepExitCode -eq 0) {
         Write-Result "PASS" "$Name completed."
     }
     else {
-        Write-Result "FAIL" "$Name failed with exit code $LASTEXITCODE."
+        if ($null -eq $stepExitCode) {
+            Write-Result "FAIL" "$Name failed before an exit code was reported."
+        }
+        else {
+            Write-Result "FAIL" "$Name failed with exit code $stepExitCode."
+        }
     }
 }
 
@@ -50,11 +63,18 @@ Write-Result "INFO" "TerraFusion local smoke gate is read-only."
 Write-Result "INFO" "It does not install packages, create env files, start Docker services, run migrations, read secrets, or mutate Git."
 Write-Result "INFO" "Current path: $(Get-Location)"
 
-$repoRoot = Get-RepoRoot
-if (-not $repoRoot) {
-    Write-Result "FAIL" "Current path is not inside a Git worktree."
+$gitCommand = Get-Command git -ErrorAction SilentlyContinue
+if (-not $gitCommand) {
+    Write-Result "FAIL" "git is not available; install Git or add it to PATH before running local smoke checks."
 }
 else {
+    $repoRoot = Get-RepoRoot
+}
+
+if ($gitCommand -and -not $repoRoot) {
+    Write-Result "FAIL" "Current path is not inside a Git worktree."
+}
+elseif ($repoRoot) {
     Write-Result "PASS" "Git repository root: $repoRoot"
 
     $readiness = Join-Path -Path $repoRoot -ChildPath "scripts/dev/readiness.ps1"

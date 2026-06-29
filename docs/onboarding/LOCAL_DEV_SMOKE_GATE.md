@@ -15,14 +15,20 @@ authorize writes outside the local-dev smoke gate scope.
 
 ## Command
 
-Run from the repository root or any subdirectory inside the intended worktree:
+From the repository root of the intended worktree, run:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1
 ```
 
-If you are in a subdirectory, use a repo-root-relative path or invoke it through PowerShell after
-resolving the script path.
+If you are in a subdirectory, invoke the script with a path that is valid from the current directory.
+For example, from `docs/`:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File ..\scripts\dev\smoke.ps1
+```
+
+The script locates the repository root after PowerShell has successfully opened the script file.
 
 ## What It Runs
 
