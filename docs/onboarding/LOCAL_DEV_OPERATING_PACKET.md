@@ -47,6 +47,14 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1
 pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1
 ```
 
+Each local-dev script supports `-Help` for usage and read-only behavior notes:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1 -Help
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1 -Help
+pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1 -Help
+```
+
 Validate Docker local-dev config before starting any Docker service:
 
 ```powershell

@@ -1,8 +1,27 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$Help
+)
 
 $ErrorActionPreference = "Continue"
 $hardFailures = 0
+
+function Show-Usage {
+    Write-Host "TerraFusion local smoke gate"
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1 -Help"
+    Write-Host ""
+    Write-Host "Behavior:"
+    Write-Host "  Read-only. Runs readiness.ps1 and bootstrap.ps1 inspect mode from the detected repo root."
+    Write-Host "  Does not install packages, create env files, start Docker services, run migrations, read secrets, or mutate Git."
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
 
 function Write-Result {
     param(
