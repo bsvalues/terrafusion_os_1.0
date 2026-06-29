@@ -32,6 +32,7 @@ Read in this order:
 From a dedicated worktree created from current `origin/main`:
 
 ```powershell
+pwd
 git remote -v
 git branch --show-current
 git rev-parse --show-toplevel
