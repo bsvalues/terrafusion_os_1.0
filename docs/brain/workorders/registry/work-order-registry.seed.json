@@ -1,0 +1,746 @@
+{
+  "schemaVersion": "0.1.0",
+  "generatedBy": "WO-WOE-003",
+  "generatedAt": "2026-06-29T00:00:00Z",
+  "description": "Representative seed registry for the TerraFusion Work Order Engine. Data only; no automation authority.",
+  "records": [
+    {
+      "id": "WO-WOE-000",
+      "title": "Promote Work Order Operator Pattern",
+      "program": "Work Order Engine",
+      "goal": "Turn the proven DevOps goal/loop operating pattern into reusable TerraFusion operator doctrine.",
+      "riskClass": "R1",
+      "status": "pr_open",
+      "dependencies": [
+        {
+          "id": "WO-WOE-001",
+          "status": "satisfied",
+          "evidence": ["discovery report in chat transcript"]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order operator docs",
+          "paths": ["docs/brain/agents/**", "docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, CI, deployment, protected data"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/agents/work-order-operator.md",
+        "docs/brain/workorders/WO-WOE-000-promote-work-order-operator-pattern.md"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        ".github/workflows/**",
+        "azure-pipelines/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "pr",
+          "description": "Draft PR exists with doctrine-only scope."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1102",
+          "summary": "Draft PR for Work Order Operator doctrine."
+        },
+        {
+          "kind": "commit",
+          "location": "9bdc5397610305d1b039d58401c821b37511a389",
+          "summary": "docs(brain): promote work order operator pattern"
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "derivedState": {
+        "github": {
+          "prNumber": 1102,
+          "prUrl": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1102",
+          "state": "open",
+          "isDraft": true,
+          "mergeState": "unknown"
+        }
+      },
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if doctrine requires runtime, CI, merge-policy, or production authority."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-002",
+          "reason": "The operator pattern needs a canonical Work Order data model.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "PR remains open/draft unless separately advanced."
+      },
+      "provenance": {
+        "createdAt": "2026-06-29T00:00:00Z",
+        "source": "WO-WOE-003 registry seed",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-WOE-001",
+      "title": "Work Order System Discovery",
+      "program": "Work Order Engine",
+      "goal": "Inventory existing work-order artifacts, templates, evidence locations, state sources, and automation blockers.",
+      "riskClass": "R0",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Read-only Brain/work-order discovery",
+          "paths": ["docs/brain/**", "brain/**", "WO*.md"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "All writes"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "command",
+          "description": "Read-only artifact inventory."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "chat transcript",
+          "summary": "Discovery report identified schema, registry, scoring, query, operator packet, and evidence rollup gaps."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "read-only scope",
+          "command": "git status --short",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "state_mismatch",
+          "description": "Stop if discovery reveals competing Brain or suite-local queue authority."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-002",
+          "reason": "Discovery found no canonical WO schema.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-002",
+      "title": "Work Order Data Model",
+      "program": "Work Order Engine",
+      "goal": "Define the canonical Work Order schema and companion data-model specification.",
+      "riskClass": "R1",
+      "status": "merged",
+      "dependencies": [
+        {
+          "id": "WO-WOE-001",
+          "status": "satisfied"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order schema",
+          "paths": ["docs/brain/workorders/schema/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, CI, query tools, migration"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/schema/work-order.schema.json",
+        "docs/brain/workorders/schema/WORK_ORDER_DATA_MODEL.md"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        ".github/workflows/**",
+        "azure-pipelines/**",
+        "package.json"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Schema and markdown specification exist."
+        },
+        {
+          "kind": "command",
+          "description": "JSON parses and git diff check passes."
+        },
+        {
+          "kind": "pr",
+          "description": "PR merged with checks green."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1103",
+          "summary": "Merged schema/spec PR."
+        },
+        {
+          "kind": "commit",
+          "location": "b4714ea2a62f57a8db29d0ad1a86cba77acb44dc",
+          "summary": "docs(brain): define work order data model"
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "json parse",
+          "command": "node -e \"const fs=require('fs'); JSON.parse(fs.readFileSync('docs/brain/workorders/schema/work-order.schema.json','utf8'))\"",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "derivedState": {
+        "github": {
+          "prNumber": 1103,
+          "prUrl": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1103",
+          "state": "merged",
+          "isDraft": false,
+          "mergeState": "clean"
+        }
+      },
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if schema work requires runtime, CI, or query-tool implementation."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-003",
+          "reason": "Schema is available; seed a small registry before scoring/query tooling.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-003",
+      "title": "Work Order Registry Seed",
+      "program": "Work Order Engine",
+      "goal": "Create a representative registry of known completed/current WOs from the DevOps chain and next Brain candidates.",
+      "riskClass": "R1",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-WOE-002",
+          "status": "satisfied"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order registry",
+          "paths": ["docs/brain/workorders/registry/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, CI, automation execution, broad migration"
+        }
+      ],
+      "allowedFiles": ["docs/brain/workorders/registry/**"],
+      "blockedFiles": [
+        "docs/brain/workorders/active/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Registry seed JSON and README exist."
+        },
+        {
+          "kind": "command",
+          "description": "Registry JSON parses."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "registry json parse",
+          "command": "node -e \"const fs=require('fs'); JSON.parse(fs.readFileSync('docs/brain/workorders/registry/work-order-registry.seed.json','utf8'))\"",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if registry seed requires broad migration or live PR-state querying."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-004",
+          "reason": "Once seed records exist, deterministic next-WO scoring can be defined.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-004",
+      "title": "Next-WO Scoring Rules",
+      "program": "Work Order Engine",
+      "goal": "Define deterministic scoring rules for what work order should run next.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-WOE-003",
+          "status": "required"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order scoring docs",
+          "paths": ["docs/brain/workorders/scoring/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Automation runner and live state mutation"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Scoring rules doc/schema exists."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if scoring requires implementing the query engine."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-005",
+          "reason": "Scoring rules should drive a read-only query tool.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-005",
+      "title": "Read-Only WO Query Tool",
+      "program": "Work Order Engine",
+      "goal": "Create a read-only command that reports active lane, completed WOs, blocked WOs, next recommended WO, and rationale.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-WOE-004",
+          "status": "required"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order query data/tooling",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Write behavior, PR mutation, branch mutation, runtime code"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "command",
+          "description": "Query command returns deterministic read-only output."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "query smoke",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --registry docs/brain/workorders/registry/work-order-registry.seed.json",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if the tool needs write behavior or live GitHub mutation."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-006",
+          "reason": "Read-only query output can be connected to goal/loop doctrine.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-006",
+      "title": "Goal + Loop Integration",
+      "program": "Work Order Engine",
+      "goal": "Connect the WO registry to the goal/loop model as doctrine: goal owns intent, loop owns repeated execution, WO owns governed packet, evidence proves completion.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-WOE-005",
+          "status": "required"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order doctrine",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime automation and CI changes"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Goal/loop integration note exists."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "conflicting_canon",
+          "description": "Stop if goal/loop doctrine conflicts with one-Brain authority."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-007",
+          "reason": "Operators need the rules for how Codex uses the Work Order Engine.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-007",
+      "title": "Operator Packet",
+      "program": "Work Order Engine",
+      "goal": "Create the operator packet defining continuation, stop, merge, and next-WO rules.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-WOE-006",
+          "status": "required"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order operator docs",
+          "paths": ["docs/brain/workorders/**", "docs/brain/agents/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, CI, production, secrets"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Operator packet exists."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop if the packet would grant merge, cleanup, or production authority beyond existing user authorization."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-008",
+          "reason": "A baseline evidence rollup should close the initial Work Order Engine lane.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-WOE-008",
+      "title": "Evidence Rollup",
+      "program": "Work Order Engine",
+      "goal": "Record the Work Order Engine baseline: registry state, scoring rules, query output, limitations, and next program recommendation.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-WOE-007",
+          "status": "required"
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Brain work-order evidence docs",
+          "paths": ["docs/brain/workorders/**", "docs/brain/evidence/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, CI, deployment, protected data"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Evidence rollup exists."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if rollup requires executing downstream backend/workbench WOs."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-009",
+          "reason": "After baseline, decide whether to seed backend/workbench candidates more deeply.",
+          "riskClass": "R0",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-DEVOPS-006I",
+      "title": "Docker Dev Evidence Pack",
+      "program": "DevOps Local Development",
+      "goal": "Create final evidence summarizing local Docker dev support and non-goals.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "DevOps documentation",
+          "paths": ["docs/**", "docker/dev/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Production deployment, runtime behavior, secrets, county data"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "pr",
+          "description": "Local dev chain PRs merged through PR #1085 and later local-dev packets."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "local-dev validation",
+          "command": "scripts/dev/readiness.ps1 and Docker config checks",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "production_risk",
+          "description": "Local Docker docs do not authorize production Docker, Helm, Kubernetes, release, or deployment."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-WOE-003",
+          "reason": "DevOps chain provides representative completed records for the Work Order Engine registry.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-0013",
+      "title": "Product Gate: ServiceRegistry Activation Verification",
+      "program": "Brain Current Queue",
+      "goal": "Verify ServiceRegistry activation state using read-only inspection and existing tests.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Read-only product gate evidence",
+          "paths": ["docs/brain/evidence/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Backend behavior change without a separate WO"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Evidence artifact recording active or honestly-not-active state and gap list."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "existing tests",
+          "command": "read-only inspection + existing tests per docs/brain/canon/next-queue.json",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if activation requires backend behavior change."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-LOCALOPS-000",
+          "reason": "LocalOps planning envelope remains a visible queue candidate after product gate work.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-LOCALOPS-000",
+      "title": "Planning Envelope",
+      "program": "LocalOps",
+      "goal": "Define the LocalOps chain head before executing local AI/operator work.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "LocalOps planning docs",
+          "paths": [
+            "docs/brain/workorders/active/WO-LOCALOPS-000-planning-envelope.md"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Autonomous repair, shell agent, AI mutation of records, county indexing without approval rules"
+        }
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Per-WO proof blocks defined in LocalOps chain."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "planning proof",
+          "command": "per-WO required_proof blocks",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "WO-LOCALOPS-006 shell UI remains R4 and requires explicit architect sign-off at dispatch."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-LOCALOPS-001",
+          "reason": "First implementation slice after planning envelope.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    }
+  ]
+}
