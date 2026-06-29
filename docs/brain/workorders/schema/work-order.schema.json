@@ -1,0 +1,607 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/work-order.schema.json",
+  "title": "TerraFusion Work Order",
+  "description": "Canonical data model for a governed TerraFusion work order packet. The schema describes state and evidence; it does not authorize automation by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "program",
+    "goal",
+    "riskClass",
+    "status",
+    "dependencies",
+    "allowedSystems",
+    "blockedSystems",
+    "evidenceRequired",
+    "validationGates",
+    "stopConditions",
+    "nextCandidates"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^WO-[A-Z0-9]+-[0-9A-Z]+(-[A-Z0-9]+)*$",
+      "description": "Stable work order identifier, for example WO-WOE-002."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "program": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Owning program or lane, for example Work Order Engine, DevOps, LocalOps, Backend, or Workbench."
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "riskClass": {
+      "$ref": "#/$defs/riskClass"
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dependency"
+      }
+    },
+    "allowedSystems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/systemScope"
+      }
+    },
+    "blockedSystems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/systemScope"
+      }
+    },
+    "allowedFiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pathPattern"
+      },
+      "default": []
+    },
+    "blockedFiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pathPattern"
+      },
+      "default": []
+    },
+    "evidenceRequired": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceRequirement"
+      }
+    },
+    "evidenceProduced": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceArtifact"
+      },
+      "default": []
+    },
+    "validationGates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/validationGate"
+      }
+    },
+    "derivedState": {
+      "$ref": "#/$defs/derivedState",
+      "description": "Git, GitHub, worktree, and validation state observed by tools. This is derived evidence, not hand-authored authority."
+    },
+    "stopConditions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/stopCondition"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/blocker"
+      },
+      "default": []
+    },
+    "nextCandidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nextCandidate"
+      }
+    },
+    "authority": {
+      "$ref": "#/$defs/authority",
+      "description": "Explicit authority granted for actions such as write, push, ready, merge, cleanup, or cloud mutation."
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    }
+  },
+  "$defs": {
+    "riskClass": {
+      "type": "string",
+      "enum": ["R0", "R1", "R2", "R3", "R4", "R5"],
+      "description": "R0 read-only; R1 docs/operator truth; R2 local developer tooling; R3 CI/governance/tooling; R4 runtime behavior; R5 production, security, protected data, release, or deployment."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "ready",
+        "in_progress",
+        "blocked",
+        "deferred",
+        "pr_open",
+        "review",
+        "merged",
+        "complete",
+        "superseded",
+        "cancelled"
+      ]
+    },
+    "dependencyStatus": {
+      "type": "string",
+      "enum": ["required", "satisfied", "blocked", "deferred", "unknown"]
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/dependencyStatus"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceRef"
+          },
+          "default": []
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "systemScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pathPattern"
+          },
+          "default": []
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "pathPattern": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Repository-relative file or glob path."
+    },
+    "evidenceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "command",
+            "file",
+            "pr",
+            "check",
+            "review",
+            "manual_attestation",
+            "external_system",
+            "other"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "evidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "location"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "command_output",
+            "file",
+            "pr",
+            "check",
+            "commit",
+            "review",
+            "manual_attestation",
+            "external_system",
+            "other"
+          ]
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "freshness": {
+          "$ref": "#/$defs/freshness"
+        }
+      }
+    },
+    "evidenceRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "staleAfter": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "validationGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "command", "required"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "result": {
+          "type": "string",
+          "enum": ["not_run", "pass", "fail", "skipped", "blocked", "unknown"],
+          "default": "not_run"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceRef"
+          },
+          "default": []
+        }
+      }
+    },
+    "derivedState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "git": {
+          "$ref": "#/$defs/gitState"
+        },
+        "github": {
+          "$ref": "#/$defs/githubState"
+        },
+        "worktree": {
+          "$ref": "#/$defs/worktreeState"
+        },
+        "validation": {
+          "$ref": "#/$defs/validationState"
+        }
+      }
+    },
+    "gitState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "branch": {
+          "type": "string"
+        },
+        "head": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string"
+        },
+        "ahead": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "behind": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "changedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "githubState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "prUrl": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["none", "open", "closed", "merged", "unknown"]
+        },
+        "isDraft": {
+          "type": "boolean"
+        },
+        "mergeState": {
+          "type": "string",
+          "enum": ["clean", "blocked", "dirty", "unstable", "unknown"]
+        },
+        "unresolvedThreads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/checkState"
+          },
+          "default": []
+        }
+      }
+    },
+    "checkState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["queued", "in_progress", "completed", "skipped", "unknown"]
+        },
+        "conclusion": {
+          "type": "string",
+          "enum": [
+            "success",
+            "failure",
+            "cancelled",
+            "skipped",
+            "timed_out",
+            "neutral",
+            "action_required",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "worktreeState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "registered": {
+          "type": "boolean"
+        },
+        "clean": {
+          "type": "boolean"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "validationState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allRequiredPassed": {
+          "type": "boolean"
+        },
+        "lastRunAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "stopCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "description"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "authority_wall",
+            "scope_boundary",
+            "state_mismatch",
+            "validation_failure",
+            "dependency_blocked",
+            "protected_data",
+            "production_risk",
+            "destructive_action",
+            "conflicting_canon",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "description", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "human_decision",
+            "auth",
+            "validation",
+            "scope",
+            "dependency",
+            "platform",
+            "data_protection",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "resolved", "deferred", "unknown"]
+        },
+        "requiredAuthority": {
+          "type": "string"
+        }
+      }
+    },
+    "nextCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reason", "riskClass"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "riskClass": {
+          "$ref": "#/$defs/riskClass"
+        },
+        "blocked": {
+          "type": "boolean",
+          "default": false
+        },
+        "score": {
+          "type": "number"
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mayWrite": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayCommit": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayPush": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayOpenPr": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayMarkReady": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayMerge": {
+          "type": "boolean",
+          "default": false
+        },
+        "mayCleanup": {
+          "type": "boolean",
+          "default": false
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
