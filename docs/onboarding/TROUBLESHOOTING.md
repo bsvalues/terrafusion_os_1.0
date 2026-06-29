@@ -5,6 +5,9 @@ Use this matrix for common local and Azure-first-pass setup failures. Keep fixes
 Start with `docs/onboarding/DEVELOPER_ONBOARDING.md`. For Docker-specific failures, use
 `docs/onboarding/DOCKER_TROUBLESHOOTING.md`.
 
+For local-dev command order and stop gates, use `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`.
+For the smallest health check, use `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`.
+
 ## Troubleshooting Matrix
 
 | Symptom | Likely cause | How to verify | Safe first action | Escalate when |
@@ -22,6 +25,8 @@ Start with `docs/onboarding/DEVELOPER_ONBOARDING.md`. For Docker-specific failur
 | Backend SDK mismatch | local SDK differs from repo baseline | compare `dotnet --info` with `global.json` | install/use .NET `8.0.x` | restore/build still selects the wrong SDK |
 | Tier-1 tests fail unexpectedly | local deps incomplete or frontend environment drift | rerun after clean install and note first failure | capture exact command and first error line | issue appears deterministic and needs a scoped fix packet |
 | Docker local dev fails | Docker Desktop, Compose, env, or port issue | `docker compose -f docker/dev/compose.yaml --env-file docker/dev/.env.example config` | use `docs/onboarding/DOCKER_TROUBLESHOOTING.md` | production Compose, Helm, PACS, county SQL, or secrets are implicated |
+| Local smoke gate fails | readiness or bootstrap inspect found a local prerequisite problem | `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/smoke.ps1` | inspect the first failed child command and use `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md` | fixing it would require installs, Docker startup, dependency changes, runtime code, or secrets |
+| Tool version is unclear | local tool differs from repo-declared or observed baseline | compare `package.json`, `.nvmrc`, `global.json`, and `docs/onboarding/TOOLCHAIN_TRUTH.md` | use the repo-declared version unless the active work order documents a local deviation | package-manager or SDK migration is implied |
 
 ## Common Failure Patterns
 

@@ -9,6 +9,7 @@ Start with the active work order. Do not widen scope because adjacent files exis
 For onboarding and local-platform work, start with:
 
 - `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`
 - a dedicated clean worktree from current `origin/main`
 
 Historical worktrees, including `<user-home>\.codex-worktrees\devops-main-baseline`, are evidence of
@@ -41,10 +42,13 @@ Stop if:
 2. `AGENTS.md`
 3. The active work-order packet
 4. `docs/onboarding/DEVELOPER_ONBOARDING.md`
-5. The nearest supporting docs for your lane
+5. `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md` for local-dev command order and stop gates
+6. The nearest supporting docs for your lane
 
 For DevOps onboarding, local Docker, and Azure migration, read as applicable:
 
+- `docs/onboarding/TOOLCHAIN_TRUTH.md`
+- `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`
 - `docs/onboarding/DOCKER_DEV.md`
 - `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
 - `docs/migration/build-truth-sheet.md`
@@ -87,6 +91,9 @@ Run only the commands that match the active work order. Documentation-only work 
 ## Expected Files For The DevOps Lane
 
 - `docs/onboarding/DEVELOPER_ONBOARDING.md`
+- `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`
+- `docs/onboarding/TOOLCHAIN_TRUTH.md`
+- `docs/onboarding/LOCAL_DEV_SMOKE_GATE.md`
 - `docs/onboarding/DOCKER_DEV.md`
 - `docs/onboarding/DOCKER_TROUBLESHOOTING.md`
 - `docs/agents/DEVOPS_AGENT_HANDOFF_TEMPLATE.md`
