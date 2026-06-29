@@ -7,8 +7,8 @@ For declared versus observed tool versions, use `docs/onboarding/TOOLCHAIN_TRUTH
 For the operator-facing local-dev command order and stop gates, use
 `docs/onboarding/LOCAL_DEV_OPERATING_PACKET.md`.
 
-Use it for local development and CI-oriented validation after confirming repo identity and worktree
-isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
+Use this guide for local development and CI-oriented validation after confirming repo identity and
+worktree isolation. It does not authorize secrets handling, county runtime access, PACS or SQL access,
 production deployment, or mutation of unrelated dirty checkouts.
 
 ## Repository Baseline
