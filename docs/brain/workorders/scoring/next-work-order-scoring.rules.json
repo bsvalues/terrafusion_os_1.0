@@ -100,26 +100,20 @@
     {
       "verdict": "eligible",
       "minimumScore": 70,
-      "maximumScore": 84,
+      "maximumScore": 84.999,
       "description": "Safe candidate, but not necessarily the best next step."
     },
     {
       "verdict": "defer",
       "minimumScore": 50,
-      "maximumScore": 69,
+      "maximumScore": 69.999,
       "description": "Do not start automatically unless higher-value or lower-risk candidates are unavailable."
     },
     {
       "verdict": "weak",
       "minimumScore": 0,
-      "maximumScore": 49,
+      "maximumScore": 49.999,
       "description": "Not useful enough to start unless explicitly selected."
-    },
-    {
-      "verdict": "blocked",
-      "minimumScore": 0,
-      "maximumScore": 100,
-      "description": "A hard exclusion prevents automatic selection regardless of numeric score."
     }
   ],
   "tieBreakers": [

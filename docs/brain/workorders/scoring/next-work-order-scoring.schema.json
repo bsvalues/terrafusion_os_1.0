@@ -21,7 +21,8 @@
     },
     "policyId": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$"
     },
     "description": {
       "type": "string",
@@ -111,15 +112,15 @@
       "required": ["verdict", "minimumScore", "maximumScore", "description"],
       "properties": {
         "verdict": {
-          "enum": ["recommend", "eligible", "defer", "weak", "blocked"]
+          "enum": ["recommend", "eligible", "defer", "weak"]
         },
         "minimumScore": {
-          "type": "integer",
+          "type": "number",
           "minimum": 0,
           "maximum": 100
         },
         "maximumScore": {
-          "type": "integer",
+          "type": "number",
           "minimum": 0,
           "maximum": 100
         },
