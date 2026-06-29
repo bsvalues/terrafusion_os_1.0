@@ -95,24 +95,32 @@
       "verdict": "recommend",
       "minimumScore": 85,
       "maximumScore": 100,
+      "minimumInclusive": true,
+      "maximumInclusive": true,
       "description": "Strong next candidate when no hard exclusions apply."
     },
     {
       "verdict": "eligible",
       "minimumScore": 70,
-      "maximumScore": 84.999,
+      "maximumScore": 85,
+      "minimumInclusive": true,
+      "maximumInclusive": false,
       "description": "Safe candidate, but not necessarily the best next step."
     },
     {
       "verdict": "defer",
       "minimumScore": 50,
-      "maximumScore": 69.999,
+      "maximumScore": 70,
+      "minimumInclusive": true,
+      "maximumInclusive": false,
       "description": "Do not start automatically unless higher-value or lower-risk candidates are unavailable."
     },
     {
       "verdict": "weak",
       "minimumScore": 0,
-      "maximumScore": 49.999,
+      "maximumScore": 50,
+      "minimumInclusive": true,
+      "maximumInclusive": false,
       "description": "Not useful enough to start unless explicitly selected."
     }
   ],

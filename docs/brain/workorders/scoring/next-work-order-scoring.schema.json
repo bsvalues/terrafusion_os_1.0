@@ -109,7 +109,14 @@
     "decisionBand": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["verdict", "minimumScore", "maximumScore", "description"],
+      "required": [
+        "verdict",
+        "minimumScore",
+        "maximumScore",
+        "minimumInclusive",
+        "maximumInclusive",
+        "description"
+      ],
       "properties": {
         "verdict": {
           "enum": ["recommend", "eligible", "defer", "weak"]
@@ -123,6 +130,12 @@
           "type": "number",
           "minimum": 0,
           "maximum": 100
+        },
+        "minimumInclusive": {
+          "type": "boolean"
+        },
+        "maximumInclusive": {
+          "type": "boolean"
         },
         "description": {
           "type": "string",

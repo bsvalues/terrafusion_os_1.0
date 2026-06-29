@@ -66,12 +66,12 @@ Scores must be computed from normalized factor values in the range `0.0` to `1.0
 
 | Score | Verdict | Meaning |
 | ---: | --- | --- |
-| 85.0-100.0 | `recommend` | Strong next WO if no hard exclusions apply. |
-| 70.0-84.999 | `eligible` | Safe candidate, but not necessarily the best next step. |
-| 50.0-69.999 | `defer` | Do not start automatically; needs stronger evidence or lower-risk alternatives first. |
-| 0.0-49.999 | `weak` | Not useful enough to start unless explicitly chosen by the operator. |
+| `85 <= score <= 100` | `recommend` | Strong next WO if no hard exclusions apply. |
+| `70 <= score < 85` | `eligible` | Safe candidate, but not necessarily the best next step. |
+| `50 <= score < 70` | `defer` | Do not start automatically; needs stronger evidence or lower-risk alternatives first. |
+| `0 <= score < 50` | `weak` | Not useful enough to start unless explicitly chosen by the operator. |
 
-Scores are evaluated as decimals without implicit rounding. Hard exclusions always produce `blocked` outside the numeric band table regardless of score.
+Scores are evaluated as decimals without implicit rounding. Bands use lower-inclusive and upper-exclusive comparisons, except `recommend`, which includes the maximum score of `100`. Hard exclusions always produce `blocked` outside the numeric band table regardless of score.
 
 ## Tie-Breakers
 
