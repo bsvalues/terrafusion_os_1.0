@@ -1,9 +1,28 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$Help
+)
 
 $ErrorActionPreference = "Continue"
 $hardFailures = 0
 $repoRoot = $null
+
+function Show-Usage {
+    Write-Host "TerraFusion local readiness checker"
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/readiness.ps1 -Help"
+    Write-Host ""
+    Write-Host "Behavior:"
+    Write-Host "  Read-only. Checks local tools, repo identity, required docs, Docker availability, and local .env presence."
+    Write-Host "  Does not install packages, create env files, start Docker services, run migrations, read secrets, or mutate Git."
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
 
 function Write-Result {
     param(

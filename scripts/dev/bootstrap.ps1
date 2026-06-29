@@ -1,5 +1,7 @@
 [CmdletBinding()]
 param(
+    [switch]$Help,
+
     [ValidateSet("inspect")]
     [string]$Mode = "inspect"
 )
@@ -7,6 +9,27 @@ param(
 $ErrorActionPreference = "Continue"
 $hardFailures = 0
 $repoRoot = $null
+
+function Show-Usage {
+    Write-Host "TerraFusion local bootstrap"
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1 -Mode inspect"
+    Write-Host "  pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dev/bootstrap.ps1 -Help"
+    Write-Host ""
+    Write-Host "Modes:"
+    Write-Host "  inspect  Read-only prerequisite, repo, docs, env, and Docker Compose config checks."
+    Write-Host ""
+    Write-Host "Behavior:"
+    Write-Host "  Read-only. Does not install packages, create env files, start Docker services, restore .NET packages,"
+    Write-Host "  run migrations, read secrets, or mutate Git."
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
 
 function Write-Result {
     param(
