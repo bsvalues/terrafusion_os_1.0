@@ -1,7 +1,8 @@
 # Local Dev Operating Rollup
 
-This rollup closes the local-dev operating packet chain through `WO-DEVOPS-006O`. It separates
-merged proof from remaining work and keeps the lane local-first.
+This rollup is the `WO-DEVOPS-006O` closure artifact for the local-dev operating packet chain. It
+records merged proof through `WO-DEVOPS-006N`, separates that proof from remaining work, and keeps
+the lane local-first.
 
 It does not authorize release, deployment, runtime feature work, production Docker, Helm,
 Kubernetes, image publishing, secrets, county data, PACS, or county SQL.
