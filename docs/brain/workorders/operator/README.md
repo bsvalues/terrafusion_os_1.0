@@ -14,8 +14,8 @@ The Work Order Operator is responsible for:
 - reading current repo, worktree, PR, validation, and evidence state;
 - classifying the active Work Order risk class;
 - executing only inside the Work Order authority boundary;
-- committing, opening PRs, resolving in-scope review comments, and merging only when the chain grants
-  that authority and branch protection is green;
+- committing, opening PRs, and resolving in-scope review comments;
+- stopping for merge unless the human explicitly authorizes that specific PR merge;
 - continuing to the next same-risk Work Order when the chain explicitly permits it;
 - stopping at true authority walls.
 
@@ -46,8 +46,9 @@ The operator may continue automatically when all of these are true:
 - no protected systems are touched;
 - no explicit human gate is reached.
 
-Routine PR creation, green checks, merge readiness, and successful merge are not stop gates when the
-chain grants that authority.
+Routine PR creation, green checks, and merge readiness are not stop gates when the chain grants that
+authority. Merge itself remains a human authority wall unless the human explicitly authorizes that
+specific PR merge.
 
 ## Stop Rules
 
@@ -63,9 +64,9 @@ The operator must stop when the next action requires:
 - broad migration of existing Work Orders;
 - write behavior from a read-only query or evidence tool.
 
-## Merge Rules
+## Merge Readiness Rules
 
-Autonomous merge is permitted only when the active chain grants merge authority and all conditions hold:
+The operator may report merge readiness only when all conditions hold:
 
 - PR is open and not draft;
 - branch protection is green;
@@ -75,7 +76,8 @@ Autonomous merge is permitted only when the active chain grants merge authority 
 - no protected systems or forbidden paths changed;
 - no admin override is required.
 
-If any condition fails, classify the blocker instead of forcing a merge.
+The operator must not merge from this packet alone. Merge requires explicit human authorization for
+the specific PR. If any condition fails, classify the blocker instead of asking for merge.
 
 ## Review Comment Handling
 
