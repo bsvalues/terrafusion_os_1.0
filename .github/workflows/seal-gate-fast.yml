@@ -208,9 +208,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Lint failed (temporarily non-blocking until 2026-07-31). Fix lint; this will become a merge blocker."
-          today="$(date -u +%F)"
           cutoff="2026-07-31"
+          echo "::warning::Lint failed (temporarily non-blocking before $cutoff UTC). Fix lint; this will become a merge blocker on $cutoff."
+          today="$(date -u +%F)"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
             exit 1
@@ -588,9 +588,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "::warning::Governance tests failed (temporarily non-blocking until 2026-07-31). See Issue #266."
-          today="$(date -u +%F)"
           cutoff="2026-07-31"
+          echo "::warning::Governance tests failed (temporarily non-blocking before $cutoff UTC). See Issue #266. This becomes a merge blocker on $cutoff."
+          today="$(date -u +%F)"
           if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
             echo "::error::Governance test escape hatch expired on $cutoff. All governance tests must pass."
             exit 1
