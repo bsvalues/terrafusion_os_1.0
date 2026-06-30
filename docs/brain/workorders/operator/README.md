@@ -7,6 +7,11 @@ This packet defines how Codex uses the TerraFusion Work Order Engine as an opera
 It is a governance and operating guide only. It does not implement automation, mutate GitHub, change
 CI, grant production authority, or override the one-Brain model.
 
+Permanent doctrine:
+
+- [`WORK_ORDER_OPERATOR_DOCTRINE.md`](WORK_ORDER_OPERATOR_DOCTRINE.md) promotes the proven operator
+  pattern into reusable TerraFusion operating doctrine.
+
 ## Operator Role
 
 The Work Order Operator is responsible for:
