@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-30
 **Base:** `origin/main` at `c45d2ebf91b16e6323f12191d0a1b3c6a7dd7b77`
-**Worktree:** `C:\Users\bsval\.codex-worktrees\backend-reality-audit-2`
+**Worktree:** dedicated clean backend audit worktree
 **Branch:** `wo/backend-reality-audit-2`
 **Mode:** backend operational discovery with evidence artifact
 
@@ -59,7 +59,7 @@ backend/api-unified/Program.cs
 Observed traits:
 
 - Minimal API plus controllers.
-- Proxies `/pilot/**` to `PILOT_BASE_URL`, defaulting to `http://localhost:4317`.
+- Proxies `/pilot/**` to `PILOT_BASE_URL`; local default behavior should be treated as environment-configured, for example `http://localhost:${TF_PILOT_PORT}`.
 - Exposes simple demo endpoints: `/health`, `/api/status`, `/api/counties`, `/api/counties/{countyId}/properties`.
 - Returns generated placeholder property IDs for county property requests. Treat this as demo/minimal API behavior, not canonical backend truth.
 
@@ -109,11 +109,11 @@ Observed registry-related surfaces:
 - `backend/src/TerraFusion.API/Controllers/ServiceRegistryController.cs`
 - `backend/src/TerraFusion.Abstractions/Interfaces/IServiceDiscoveryService.cs`
 - Multiple DI registrations via `AddScoped`, `AddSingleton`, and `AddTransient` in backend source.
-- Module and service health tests exist, including `ModuleRuntimeHealthTests` references under API tests.
+- Module and service health naming appears in code and filter attempts, but this audit did not find dedicated module-runtime or service-registry test source coverage under `backend/TerraFusion.API.Tests`.
 
 Audit finding:
 
-- Service registry and module health surfaces exist, but the registry activation contract is not summarized in one operator-facing proof.
+- Service registry and module health surfaces exist, but the registry activation contract is not summarized in one operator-facing proof and should not be treated as test-backed by this audit.
 - `WO-BACKEND-003` should verify startup orchestration, registered service coverage, orphaned registrations, and health check coverage.
 
 ## Build and Test Command Truth
@@ -144,7 +144,7 @@ Results:
 | `dotnet restore backend\TerraFusion.sln` | PASS | Restored all solution projects. |
 | `dotnet build backend\TerraFusion.sln --no-restore` after restore | PASS | 0 warnings, 0 errors, elapsed 00:02:17.47. |
 | `dotnet test backend\tests\TerraFusion.Unit.SmokeTests\TerraFusion.Unit.SmokeTests.csproj --no-build` | PASS | 391 passed, 0 failed, 0 skipped. |
-| Focused API test filter | PASS | 1 passed, 0 failed. The command restored and built `backend/TerraFusion.API.Tests`, which is outside `backend/TerraFusion.sln`. |
+| Focused API test filter | PASS | 1 passed, 0 failed. Evidence indicates this matched `HealthContractTests`; this audit did not prove service-registry or module-runtime test coverage. The command restored and built `backend/TerraFusion.API.Tests`, which is outside `backend/TerraFusion.sln`. |
 
 ## Warning Truth
 
