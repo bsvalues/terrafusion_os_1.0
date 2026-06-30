@@ -7,10 +7,19 @@ import { fileURLToPath } from "node:url";
 const DEFAULT_REGISTRY = "docs/brain/workorders/registry/work-order-registry.seed.json";
 const DEFAULT_RULES = "docs/brain/workorders/scoring/next-work-order-scoring.rules.json";
 const RISK_ORDER = ["R0", "R1", "R2", "R3", "R4", "R5"];
+const COMPLETED_STATUSES = new Set(["complete", "merged"]);
 const TERMINAL_STATUSES = new Set(["complete", "merged", "cancelled", "superseded"]);
-const ACTIVE_STATUSES = new Set(["in_progress", "pr_open"]);
-const SELECTABLE_STATUSES = new Set(["ready", "planned", "proposed"]);
-const BLOCKED_STATUSES = new Set(["blocked", "failed", "needs_human", "deferred"]);
+const ACTIVE_STATUSES = new Set(["in_progress", "pr_open", "review"]);
+const SELECTABLE_STATUSES = new Set(["ready", "proposed"]);
+const BLOCKED_STATUSES = new Set(["blocked", "deferred"]);
+
+function readOptionValue(argv, index, optionName) {
+  const value = argv[index + 1];
+  if (!value || value.startsWith("--")) {
+    throw new Error(`Missing value for ${optionName}`);
+  }
+  return value;
+}
 
 function parseArgs(argv) {
   const args = {
@@ -25,11 +34,14 @@ function parseArgs(argv) {
     if (arg === "--json") {
       args.json = true;
     } else if (arg === "--registry") {
-      args.registry = argv[++index];
+      args.registry = readOptionValue(argv, index, arg);
+      index += 1;
     } else if (arg === "--rules") {
-      args.rules = argv[++index];
+      args.rules = readOptionValue(argv, index, arg);
+      index += 1;
     } else if (arg === "--authority") {
-      args.authority = argv[++index];
+      args.authority = readOptionValue(argv, index, arg);
+      index += 1;
     } else if (arg === "--help" || arg === "-h") {
       args.help = true;
     } else {
@@ -130,7 +142,13 @@ function hardExclusions(record, authority) {
   const exclusions = [];
   if (TERMINAL_STATUSES.has(record.status)) exclusions.push("terminal-status");
   if (ACTIVE_STATUSES.has(record.status)) exclusions.push("active-work-order");
-  if (!TERMINAL_STATUSES.has(record.status) && !ACTIVE_STATUSES.has(record.status) && !SELECTABLE_STATUSES.has(record.status)) {
+  if (BLOCKED_STATUSES.has(record.status)) exclusions.push("blocked-status");
+  if (
+    !TERMINAL_STATUSES.has(record.status) &&
+    !ACTIVE_STATUSES.has(record.status) &&
+    !SELECTABLE_STATUSES.has(record.status) &&
+    !BLOCKED_STATUSES.has(record.status)
+  ) {
     exclusions.push("unsupported-status");
   }
   if (riskRank(record.riskClass) > riskRank(authority)) exclusions.push("risk-exceeds-authority");
@@ -144,6 +162,49 @@ function hardExclusions(record, authority) {
 
   if (record.status === "unknown") exclusions.push("ambiguous-state");
   return exclusions;
+}
+
+function unresolvedBlockerCount(record) {
+  const blockers = Array.isArray(record.blockers) ? record.blockers : [];
+  return blockers.filter((blocker) => blocker.status !== "resolved").length;
+}
+
+function evidenceTimestamp(record) {
+  const evidence = Array.isArray(record.evidenceProduced) ? record.evidenceProduced : [];
+  const timestamps = evidence
+    .flatMap((artifact) => [
+      artifact.freshness?.observedAt,
+      artifact.generatedAt,
+      artifact.completedAt,
+      artifact.createdAt,
+    ])
+    .filter(Boolean)
+    .map((value) => Date.parse(value))
+    .filter((value) => !Number.isNaN(value));
+  return timestamps.length > 0 ? Math.max(...timestamps) : 0;
+}
+
+function topFactorSummary(score) {
+  return [...score.factorBreakdown]
+    .sort((a, b) => b.contribution - a.contribution || a.id.localeCompare(b.id))
+    .slice(0, 3)
+    .map((factor) => `${factor.id} ${factor.contribution}`)
+    .join(", ");
+}
+
+function blockedSummary(exclusions) {
+  if (exclusions.length === 0) return "No hard exclusions.";
+  return `Hard exclusions: ${exclusions.join(", ")}.`;
+}
+
+function recommendationText(score, rank = null, activeLane = null) {
+  if (score.verdict === "blocked") {
+    return `Resolve before execution. ${blockedSummary(score.hardExclusions)}`;
+  }
+  const rankText = rank === null ? "Candidate" : `Rank ${rank}`;
+  const laneText = activeLane && score.program === activeLane ? " Continues the active lane." : "";
+  const blockerText = `${score.blockers.length} known blocker${score.blockers.length === 1 ? "" : "s"}.`;
+  return `${rankText}: ${score.verdict} at ${score.score}. Top factors: ${topFactorSummary(score)}. ${blockerText}${laneText}`;
 }
 
 function factorValues(record, authority) {
@@ -193,25 +254,67 @@ function scoreRecord(record, rules, authority) {
     hardExclusions: exclusions,
     blockers: record.blockers ?? [],
     evidenceReferences: (record.evidenceProduced ?? []).map((evidence) => evidence.location ?? evidence.description),
-    nextRecommendedAction: exclusions.length > 0 ? "Resolve hard exclusions before execution." : "Eligible for Goal + Loop selection.",
+    nextRecommendedAction: null,
   };
+}
+
+function compareByTieBreaker(a, b, tieBreaker, recordById, activeLane) {
+  const aRecord = recordById.get(a.workOrderId) ?? {};
+  const bRecord = recordById.get(b.workOrderId) ?? {};
+
+  if (tieBreaker.id === "lower-risk-class") {
+    return riskRank(a.riskClass) - riskRank(b.riskClass);
+  }
+  if (tieBreaker.id === "fewer-unresolved-blockers") {
+    return unresolvedBlockerCount(aRecord) - unresolvedBlockerCount(bRecord);
+  }
+  if (tieBreaker.id === "newer-dependency-evidence") {
+    return evidenceTimestamp(bRecord) - evidenceTimestamp(aRecord);
+  }
+  if (tieBreaker.id === "active-lane-closure") {
+    const aActive = activeLane && a.program === activeLane ? 1 : 0;
+    const bActive = activeLane && b.program === activeLane ? 1 : 0;
+    return bActive - aActive;
+  }
+  if (tieBreaker.id === "lexicographic-work-order-id") {
+    return a.workOrderId.localeCompare(b.workOrderId);
+  }
+  return 0;
+}
+
+function compareCandidates(a, b, rules, recordById, activeLane) {
+  if (b.score !== a.score) return b.score - a.score;
+  const tieBreakers = Array.isArray(rules.tieBreakers) ? rules.tieBreakers : [];
+  for (const tieBreaker of tieBreakers) {
+    const result = compareByTieBreaker(a, b, tieBreaker, recordById, activeLane);
+    if (result !== 0) return result;
+  }
+  return a.workOrderId.localeCompare(b.workOrderId);
 }
 
 function summarize(registry, rules, authority) {
   const records = registry.records ?? [];
-  const scored = records.map((record) => scoreRecord(record, rules, authority));
-  const completed = records.filter((record) => TERMINAL_STATUSES.has(record.status)).map((record) => record.id);
-  const blocked = scored.filter((record) => record.verdict === "blocked").map((record) => ({
-    id: record.workOrderId,
-    reasons: record.hardExclusions,
-  }));
+  const recordById = new Map(records.map((record) => [record.id, record]));
   const activeLane = records.find((record) => ACTIVE_STATUSES.has(record.status))?.program ?? null;
+  const scored = records.map((record) => {
+    const score = scoreRecord(record, rules, authority);
+    score.nextRecommendedAction = recommendationText(score, null, activeLane);
+    return score;
+  });
+  const completed = records.filter((record) => COMPLETED_STATUSES.has(record.status)).map((record) => record.id);
+  const blocked = scored
+    .filter((record) => record.verdict === "blocked")
+    .filter((record) => !record.hardExclusions.includes("terminal-status") && !record.hardExclusions.includes("active-work-order"))
+    .map((record) => ({
+      id: record.workOrderId,
+      reasons: record.hardExclusions,
+    }));
   const ranked = scored
     .filter((record) => record.verdict !== "blocked" && SELECTABLE_STATUSES.has(record.status))
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      if (riskRank(a.riskClass) !== riskRank(b.riskClass)) return riskRank(a.riskClass) - riskRank(b.riskClass);
-      return a.workOrderId.localeCompare(b.workOrderId);
+    .sort((a, b) => compareCandidates(a, b, rules, recordById, activeLane))
+    .map((record, index) => {
+      record.nextRecommendedAction = recommendationText(record, index + 1, activeLane);
+      return record;
     });
   const next = ranked[0] ?? null;
 
