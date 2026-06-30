@@ -184,8 +184,10 @@ When the Work Order grants PR authority, the operator may:
 - resolve review threads after a scoped fix;
 - report merge readiness only after checks are green, review threads are resolved, and scope is clean.
 
-The operator must not merge unless the owner authorizes that specific PR merge or the Work Order
-explicitly grants merge authority for that exact PR.
+The operator must not merge unless the owner has explicitly authorized that specific PR merge. A
+Work Order may record that authorization after the owner grants it, but the Work Order text itself is
+not sufficient merge authority. Branch/merge strategy remains a human approval trigger under root
+governance.
 
 ## Non-Goals
 
@@ -209,6 +211,11 @@ Expected validation for doctrine-only updates:
 git diff --check
 node docs/brain/workorders/tools/wo-query.mjs --json
 ```
+
+Root and directory-local `AGENTS.md` requirements remain additive. For this repository, mandatory
+gates such as `pnpm run type-check` and
+`node --test os-platform/core/tests/phase83-tools.test.mjs` remain required where the applicable
+checkout can run them, and branch protection remains the full-repo enforcement point for every PR.
 
 If sparse checkout prevents the query tool from resolving all required paths, validate `git diff --check`
 locally and rely on PR checks for full-repo validation. Do not broaden sparse checkout or modify unrelated
