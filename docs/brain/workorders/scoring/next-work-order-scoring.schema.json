@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/next-work-order-scoring.schema.json",
+  "title": "TerraFusion Next Work Order Scoring Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "description",
+    "hardExclusions",
+    "factors",
+    "decisionBands",
+    "tieBreakers",
+    "resultContract"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$"
+    },
+    "policyId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hardExclusions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/hardExclusion"
+      }
+    },
+    "factors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/factor"
+      }
+    },
+    "decisionBands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/decisionBand"
+      }
+    },
+    "tieBreakers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/tieBreaker"
+      }
+    },
+    "resultContract": {
+      "$ref": "#/$defs/resultContract"
+    }
+  },
+  "$defs": {
+    "hardExclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "verdict"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verdict": {
+          "const": "blocked"
+        }
+      }
+    },
+    "factor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "weight", "direction", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "direction": {
+          "enum": ["higher-is-better", "lower-is-better"]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "decisionBand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "minimumScore",
+        "maximumScore",
+        "minimumInclusive",
+        "maximumInclusive",
+        "description"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": ["recommend", "eligible", "defer", "weak"]
+        },
+        "minimumScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "maximumScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "minimumInclusive": {
+          "type": "boolean"
+        },
+        "maximumInclusive": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "tieBreaker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order", "id", "description"],
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "resultContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredFields",
+        "scoreRange",
+        "factorValueRange",
+        "hardExclusionVerdict"
+      ],
+      "properties": {
+        "requiredFields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "scoreRange": {
+          "$ref": "#/$defs/numericRange"
+        },
+        "factorValueRange": {
+          "$ref": "#/$defs/numericRange"
+        },
+        "hardExclusionVerdict": {
+          "const": "blocked"
+        }
+      }
+    },
+    "numericRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
