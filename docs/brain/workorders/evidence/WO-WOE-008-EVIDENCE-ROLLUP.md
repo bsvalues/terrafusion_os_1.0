@@ -4,6 +4,8 @@
 
 This packet records the Work Order Engine MVP baseline after WO-WOE-001 through WO-WOE-007. It is evidence and operator truth only. It does not implement automation, change schemas, change registry entries, touch runtime code, change CI, or start the next program.
 
+Write-lane authority for this packet was explicitly granted by the owner for WO-WOE-008 under `docs/brain/workorders/evidence/**`. That authorization is limited to this evidence rollup and does not expand the default repository write lanes for future work.
+
 ## Baseline
 
 | Field | Value |
@@ -200,9 +202,11 @@ The Work Order Engine MVP must stop for:
 - conflicting canon between the Constitution, Brain/Cortex, domain packs, local `AGENTS.md`, and the WO;
 - write behavior from read-only query/evidence tools.
 
-## Recommended Next Program
+## Next Program Candidate
 
-Recommended next program: Program 2 - Backend Operational Excellence.
+Owner-requested next program candidate: Program 2 - Backend Operational Excellence.
+
+This is not the current Brain queue recommendation. The current seed registry and read-only query output still rank `WO-LOCALOPS-000` as the next ready queued work order because the registry has not yet been refreshed with the completed WOE chain. That queue result remains authoritative until a future governed registry update changes it. Backend Operational Excellence is recorded here only as an owner-requested candidate for review after WOE MVP closure.
 
 Goal:
 
