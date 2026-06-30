@@ -39,9 +39,9 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 | WO-WOE-006 | Goal + Loop Integration | **DONE/IN FLIGHT** | PR #1108 merged (docs/brain WOs connect to goal loop) |
 | WO-WOE-007 | Operator Packet / README integration | **MERGE WATCH** | PR #1110 `docs(brain): define work order operator packet` |
 | WO-WOE-008 | Evidence Rollup | **DONE** | PR #1111 merged, commit `150df914f` |
-| WO-WOE-009 | Full Program Playbook Register | **THIS WO** | This file; PR pending |
-| WO-WOE-010 | Cross-program dependency graph | **NEXT after 009** | — |
-| WO-WOE-011 | Operator dashboard / next-WO report | QUEUED | — |
+| WO-WOE-009 | Full Program Playbook Register | **CLOSED** | PR #1114 |
+| WO-WOE-010 | Goal/Loop Program Playbook Binding | **EXECUTING** | This PR |
+| WO-WOE-011 | Operator dashboard / next-WO report | QUEUED | After 010 |
 
 ---
 
