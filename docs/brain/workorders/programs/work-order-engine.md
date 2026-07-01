@@ -42,9 +42,9 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 | WO-WOE-009 | Full Program Playbook Register | **CLOSED** | PR #1114 |
 | WO-WOE-010 | Goal/Loop Program Playbook Binding | **CLOSED** | PR #1117 |
 | WO-WOE-011 | Full Goal/Loop Operator Playbook | **CLOSED** | PR #1130 |
-| WO-WOE-012 | Autonomous Same-Risk Continuation Gate | **EXECUTING** | This PR — cross-program advance + wall ledger |
-| WO-WOE-013 | Program Queue UI / Report | QUEUED | After 012 — note: "UI" is frontend code (R2, authorization); "Report" docs portion is R1 |
-| WO-WOE-014 | Cross-Program Dependency Graph | QUEUED | After 012 — docs (R1) |
+| WO-WOE-012 | Autonomous Same-Risk Continuation Gate | **CLOSED** | PR #1138 |
+| WO-WOE-013 | Program Queue UI / Report | **SOFT WALL** | "UI" is frontend code (R2) — requires authorization |
+| WO-WOE-014 | Cross-Program Dependency Graph | **EXECUTING** | This PR — authorization→unblocks map |
 
 ---
 
