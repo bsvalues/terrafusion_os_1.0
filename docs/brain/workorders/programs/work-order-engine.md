@@ -40,8 +40,11 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 | WO-WOE-007 | Operator Packet / README integration | **MERGE WATCH** | PR #1110 `docs(brain): define work order operator packet` |
 | WO-WOE-008 | Evidence Rollup | **DONE** | PR #1111 merged, commit `150df914f` |
 | WO-WOE-009 | Full Program Playbook Register | **CLOSED** | PR #1114 |
-| WO-WOE-010 | Goal/Loop Program Playbook Binding | **EXECUTING** | This PR |
-| WO-WOE-011 | Operator dashboard / next-WO report | QUEUED | After 010 |
+| WO-WOE-010 | Goal/Loop Program Playbook Binding | **CLOSED** | PR #1117 |
+| WO-WOE-011 | Full Goal/Loop Operator Playbook | **EXECUTING** | This PR — operator doctrine layer |
+| WO-WOE-012 | Autonomous Same-Risk Continuation Gate | QUEUED | After 011 |
+| WO-WOE-013 | Program Queue UI / Report | QUEUED | After 012 |
+| WO-WOE-014 | Cross-Program Dependency Graph | QUEUED | After 013 |
 
 ---
 
