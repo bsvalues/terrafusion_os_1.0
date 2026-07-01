@@ -38,8 +38,8 @@ The packet is intentionally evidence-first. It separates "known and proven" from
 |------------------|--------------------|
 | `AGENTS.md` | Worktree isolation, authority walls, governance surfaces, branch protection. |
 | `brain/packs/README.md` | One-Brain doctrine and domain-pack routing. |
-| `docs/brain/workorders/playbooks/PROGRAM_PLAYBOOK_REGISTER.md` | Program map and /goal + /loop model. |
-| `docs/brain/workorders/playbooks/GOAL_LOOP_WORK_ORDER_MODEL.md` | Goal/loop/WO/evidence relationship. |
+| `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md` | Program map and /goal + /loop model. |
+| `docs/brain/workorders/GOAL_LOOP_PLAYBOOK.md` and `docs/brain/workorders/goal-loop/` | Goal/loop/WO/evidence relationship. |
 | `docs/brain/workorders/operator/WORK_ORDER_OPERATOR_DOCTRINE.md` | Operator continuation and stop-gate doctrine once merged. |
 | `docs/brain/workorders/programs/backend-operational-excellence.md` | Backend operational program register, with historical naming caveats. |
 | `docs/brain/workorders/evidence/WO-BACKEND-001-BACKEND-REALITY-AUDIT.md` | Backend reality baseline. |
@@ -146,7 +146,7 @@ For docs/evidence-only backend WOs:
 
 1. Revert the PR commit.
 2. Re-run `git diff --check` on the revert.
-3. Re-run `node docs\brain\workorders\tools\wo-query.mjs --json` if the work
+3. Re-run `node docs/brain/workorders/tools/wo-query.mjs --json` if the work
    order touched Work Order evidence or docs.
 4. Confirm no runtime, CI, schema, deployment, secret, county, PACS, or SQL
    surface changed.
