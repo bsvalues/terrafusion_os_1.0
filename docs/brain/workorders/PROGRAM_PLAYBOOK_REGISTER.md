@@ -92,7 +92,8 @@ active program's same-risk unblocked WOs until a true wall.
 
 | File | Purpose |
 |------|---------|
-| [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md) | Prime directive: human = authority wall, not dispatcher; continue-without-asking rules |
+| [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md) | Prime directive: human = authority wall, not dispatcher; continue-without-asking rules (within-program) |
+| [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) | Cross-program advance: on wall/exhaustion, record + park + advance to next safe lane (WO-WOE-012) |
 | [OPERATOR_EXECUTION_PLAYBOOK.md](OPERATOR_EXECUTION_PLAYBOOK.md) | The per-loop procedure + mandatory result block |
 | [NEXT_ACTION_MATRIX.md](NEXT_ACTION_MATRIX.md) | Deterministic "what to do next" from PR/gate/risk/wall state |
 | [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md) | Current cross-program queue snapshot |
@@ -136,3 +137,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-06-30 | Initial register created | WO-WOE-009 |
 | 2026-06-30 | Added /goal column, stop-wall column, goal/loop command layer section | WO-WOE-010 |
 | 2026-07-01 | Added Management Dashboard program (P8-MGMT), Operator Doctrine Layer, refreshed statuses; SW register extended to SW-01..SW-10 | WO-WOE-011 |
+| 2026-07-01 | Added Autonomous Same-Risk Continuation Gate (cross-program advance + wall ledger) | WO-WOE-012 |

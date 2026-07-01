@@ -84,14 +84,20 @@ nothing new.** The gap is reachability/deployment, not construction.
 
 ---
 
-## Global Walls In Effect
+## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-| Wall | What it parks |
-|------|---------------|
-| SW-01 | Azure frontend deploy (P8), any cloud provisioning (Azure runtime) |
-| SW-02 | DUPE-001B delete, any `canonical_tf.*` mutation |
-| SW-04 | Benton production launch / county go-live |
-| SW-10 | Backend auth/security policy changes |
+*(Updated 2026-07-01 after the 5-lane autonomous run)*
+
+| Program | Parked WO | Wall | Reason | Evidence |
+|---------|-----------|------|--------|----------|
+| p8-management-dashboard | MGMT-005 frontend deploy | SW-01 / SW-10 | deploy SPA + auth posture | `WO_P8_MGMT_004_*` |
+| benton-data-quality | DUPE-001B (delete 30 rows) | SW-02 | data mutation | `WO_DATA_BENTON_DUPE_001` |
+| benton-data-quality | quarantine classification (owner 87,909 / imprv-attr 1.87M) | SW-03 | credentialed DB read | `WO_DATA_BENTON_{OWNER,IMPR_LAND}_001` |
+| backend-excellence | BACKEND-004/005/006 | SW-09 / SW-10 | health/config/auth code + GIT_SHA | `WO_BACKEND_001_*` |
+| property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
+| terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
+
+**Next safe lanes (unblocked):** work-order-engine (WOE-012→014, docs), brain-operator (WO-BRAIN-001).
 
 ---
 
