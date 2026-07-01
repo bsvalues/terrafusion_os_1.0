@@ -46,13 +46,13 @@ Required command for the canonical backend solution:
 
 ```powershell
 dotnet restore backend\TerraFusion.sln
-dotnet build backend\TerraFusion.sln --no-restore --property:WarningLevel=999
+dotnet build backend\TerraFusion.sln --no-restore --property:WarningLevel=999 --property:TreatWarningsAsErrors=true
 ```
 
 Pass criteria:
 
 - Build exits successfully.
-- Warning count is 0.
+- Warning count is 0 and the command fails automatically if warnings are emitted.
 - Error count is 0.
 - No production configuration or secret is required.
 
@@ -232,9 +232,16 @@ This gate does not authorize:
 
 ## Current Program Impact
 
-`WO-BACKEND-005` defines the release gate contract needed by later backend WOs.
-It does not claim the backend is release-ready today. It establishes what must
-be proven before a future release request can be considered.
+`WO-BACKEND-005` defines the release gate contract in the active owner-authorized
+backend loop. It does not claim the backend is release-ready today. It establishes
+what must be proven before a future release request can be considered.
+
+If an older or alternate backend program register assigns runtime configuration,
+auth/security proof, release gate, or operational packet work to different WO
+numbers, that register remains a dependency source for automated queue routing.
+This evidence file does not skip runtime configuration or auth/security proof;
+it defines the release-gate contract that those proofs must satisfy before any
+future release approval.
 
 ## Done / Not Done
 
@@ -257,4 +264,7 @@ Not done:
 
 ## Next Recommended WO
 
-Proceed to `WO-BACKEND-006 - Operational Packet`.
+Proceed under the active owner-authorized backend loop to `WO-BACKEND-006 - Operational Packet`.
+
+For automated registry-driven execution, reconcile any older backend program numbering before using this
+evidence file to advance a release decision.
