@@ -1,7 +1,12 @@
 # Stop Walls
 
-**Authority:** WO-WOE-010  
+**Authority:** WO-WOE-010
 **Classification:** Operator Doctrine
+
+> **SUPERSEDED (2026-07-01, WO-WOE-011):** The canonical stop-wall list is now
+> [`../STOP_WALL_REGISTER.md`](../STOP_WALL_REGISTER.md) (SW-01..SW-10). This file is retained for
+> history; its SW-04..SW-09 numbering was remapped — see the Reconciliation table in the register.
+> When they disagree, the register wins.
 
 A stop wall is an authority boundary that a `/loop` must not cross without explicit operator
 authorization. Reaching a stop wall is not a failure — it is correct behavior. The Brain surfaces
