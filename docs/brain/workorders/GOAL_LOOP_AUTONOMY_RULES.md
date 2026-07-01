@@ -85,6 +85,7 @@ Reaching a wall is success. Emit the result block (see
 
 | Concern | Canonical file |
 |---------|----------------|
+| Cross-program advance on wall/exhaustion | [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) |
 | Which programs exist / current status | [PROGRAM_PLAYBOOK_REGISTER.md](PROGRAM_PLAYBOOK_REGISTER.md) |
 | Cross-program current queue snapshot | [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md) |
 | How to run a loop step-by-step | [OPERATOR_EXECUTION_PLAYBOOK.md](OPERATOR_EXECUTION_PLAYBOOK.md) |
