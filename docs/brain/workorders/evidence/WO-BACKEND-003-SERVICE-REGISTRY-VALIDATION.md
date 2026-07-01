@@ -10,8 +10,13 @@ Mode: evidence-only validation
 RESULT: PASS_WITH_GAP
 
 The backend ServiceRegistry surface is active for dependency injection, hosted startup registration,
-registry mutation, registry serving, and focused unit coverage. The platform-wide seed path remains a
-runtime behavior gap and is not repaired in this work order.
+registry mutation, registry serving, and focused unit coverage. Two ServiceRegistry maturity gaps
+remain outside this evidence-only work order:
+
+- platform-wide seed path and reader/writer path alignment
+- registered-service health coverage and orphan-registration detection
+
+Those gaps are not repaired here because doing so would change runtime startup or registry semantics.
 
 ## Evidence
 
@@ -63,6 +68,24 @@ The repository's `platform.json` exists at the repository root. Prior evidence i
 service registry is active for backend self-registration but not yet reliable as a platform-wide
 native-app discovery surface.
 
+There is also an unresolved path-alignment risk between the registry writer and reader surfaces:
+
+- `ServiceRegistry` derives `service-registry.json` from `env.ContentRootPath\..\..\service-registry.json`.
+- `ServiceRegistryController` derives its read path from `AppContext.BaseDirectory\..\..\..\..\..\service-registry.json`.
+
+That means `/api/service-registry` should not be assumed to reflect `RegisterServiceAsync()` writes
+until a focused repair proves both surfaces resolve the same canonical file at runtime.
+
+### Registered-service health and orphan coverage
+
+The current validation proves the `ServiceRegistry` class behavior and backend startup registration
+path. It does not prove that every registered service has a health endpoint, nor does it detect orphaned
+registrations. That gap was already called out by the Program 2 playbook and by
+`docs/brain/workorders/evidence/WO-BACKEND-001-BACKEND-REALITY-AUDIT.md`.
+
+Treat this evidence packet as a partial ServiceRegistry activation proof, not as complete
+service-registry maturity or release readiness.
+
 ## Not changed
 
 - No backend runtime code changed.
@@ -79,17 +102,27 @@ Service registry activation is proven as partial:
 
 - active: DI registration, hosted registration path, controller serving, and unit coverage
 - gap: default platform seed path
+- gap: ServiceRegistry writer and controller reader may resolve different registry file paths
+- gap: registered-service health coverage and orphan-registration detection are not yet proven
 
-The seed-path repair would change runtime startup behavior by broadening the initial registry
-contents from backend self-registration to platform service entries. That should be handled as a
-narrow follow-up work order rather than folded into this validation packet.
+The seed-path/path-alignment repair would change runtime startup or serving behavior by making the
+registry file contract canonical. Health/orphan coverage would add a stricter operational proof gate.
+Both should be handled as narrow follow-up work orders rather than folded into this validation packet.
 
 ## Next
 
-Proceed to WO-BACKEND-004 - Health / Readiness Truth.
+Proceed to WO-BACKEND-004 - Health / Readiness Truth only for endpoint truth documentation. Do not
+treat WO-BACKEND-003 as fully closed for release readiness until the follow-up registry maturity items
+below are resolved or explicitly deferred.
 
 Create a later narrow repair packet if Program 2 elects to fix the ServiceRegistry seed path:
 
 ```text
 WO-BACKEND-003B - ServiceRegistry Platform Seed Path Repair
+```
+
+Create a later narrow evidence/repair packet for registry maturity coverage:
+
+```text
+WO-BACKEND-003C - ServiceRegistry Health Coverage and Orphan Detection
 ```
