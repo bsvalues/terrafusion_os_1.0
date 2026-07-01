@@ -7,7 +7,7 @@
 
 ## Purpose
 
-Close the initial Backend Operational Excellence baseline by recording what has
+Record the initial Backend Operational Excellence baseline by separating what has
 been proven, what is still pending in PR review/checks, what remains partial, and
 what must not be overclaimed.
 
@@ -17,6 +17,22 @@ county data access, service connections, Key Vault changes, CI changes, or
 runtime behavior changes.
 
 ## Work Order Summary
+
+### Numbering and canon reconciliation
+
+This rollup follows the active owner-authorized backend execution loop used for
+this batch:
+
+- `WO-BACKEND-005 - Release Gate Definition`
+- `WO-BACKEND-006 - Operational Packet`
+- `WO-BACKEND-007 - Evidence Rollup`
+
+The existing backend program canon may still assign those numbers to runtime
+configuration, auth/security endpoint proof, and release-gate work. This rollup
+does not claim those canonical runtime-configuration or auth/security WOs are
+complete, and it does not supersede the program register. Treat registry/program
+numbering reconciliation as a separate Work Order Engine follow-up before using
+these IDs for automated queue advancement or release approval.
 
 | WO | Title | PR | State at rollup creation | Evidence / outcome |
 |----|-------|----|--------------------------|--------------------|
@@ -39,7 +55,7 @@ Local validation used by this program:
 - `dotnet test backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~TerraFusion.Unit.Tests.Stage3.ServiceRegistryTests" --logger "console;verbosity=minimal" --artifacts-path <temp>`
 - `dotnet test backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~TerraFusion.Unit.Tests.Controllers.SimpleHealthControllerGitShaTests" --logger "console;verbosity=minimal" --artifacts-path <temp>`
 - `git diff --check`
-- `node docs\brain\workorders\tools\wo-query.mjs --json`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
 
 Remote PR checks remain the authoritative validation gate for all open PRs.
 
@@ -59,7 +75,9 @@ The following are proven by open PR evidence once those PRs merge:
 - Service registry validation evidence exists and focused service registry tests
   pass.
 - Health/readiness endpoint truth is documented and focused health tests pass.
-- Backend release gates are defined.
+- Backend release gates are defined for the active owner-authorized loop; this
+  does not replace any older runtime-configuration or auth/security proof WOs in
+  the program canon.
 - Backend operational packet exists.
 
 ## Partial
@@ -124,6 +142,8 @@ The following remain owner-controlled authority walls:
   Prettier or Vitest PATH issue.
 - The merged backend program register should be reconciled later with the active
   owner-authorized Program 2 loop labels.
+- Runtime-configuration and auth/security endpoint proof work remains unclaimed
+  unless a canon-aligned follow-up explicitly completes or reclassifies it.
 
 ## No-Overclaim Statement
 
@@ -131,6 +151,10 @@ This rollup does not claim TerraFusion backend production readiness. It claims
 that the initial backend operational evidence lane has produced a governed
 baseline for build truth, warning discipline, service registry proof,
 health/readiness truth, release gates, and operator packet structure.
+
+It does not claim completion of runtime-configuration contract work or
+auth/security endpoint proof where those remain defined by existing program
+canon.
 
 Release readiness still requires owner decision, merged evidence PRs, green
 remote checks, and any additional runtime, schema, county, PACS, deployment, or
