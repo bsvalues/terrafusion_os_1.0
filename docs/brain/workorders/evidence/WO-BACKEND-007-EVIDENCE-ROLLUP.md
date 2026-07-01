@@ -38,11 +38,11 @@ these IDs for automated queue advancement or release approval.
 |----|-------|----|--------------------------|--------------------|
 | WO-BACKEND-001 | Backend Reality Audit | #1118 | Merged | Backend inventory, build/test truth, health/readiness split, Dais persistence status, service-registry gaps, and recommended next WOs. |
 | WO-BACKEND-002 | Build Warning Burn-Down | #1120 | Merged | Canonical backend solution and out-of-solution API test project build warning-clean; low-risk nullable test warnings repaired. |
-| WO-BACKEND-003 | Service Registry Validation | #1124 | Open/draft, checks in progress or branch behind at last poll | Service registry activation evidence and focused `ServiceRegistryTests` pass 8/8. |
-| WO-BACKEND-004 | Health / Readiness Truth | #1126 | Open/draft, checks in progress or branch behind at last poll | Health/readiness endpoint truth matrix and focused health test pass 4/4. |
-| WO-BACKEND-005 | Release Gate Definition | #1127 | Open/draft, checks in progress at last poll | Backend release gate criteria across build, warnings, tests, migration, county isolation, lane guard, health/readiness, registry, audit/trace, and rollback. |
-| WO-BACKEND-006 | Operational Packet | #1128 | Open/draft, checks in progress at last poll | Backend operational packet covering objective, capability, canon, boundaries, execution, validation, evidence, rollback, and promotion criteria. |
-| WO-BACKEND-007 | Evidence Rollup | this PR | Created by this WO | Final baseline rollup with done/not-done and next-lane recommendation. |
+| WO-BACKEND-003 | Service Registry Validation | #1124 | Merged | Service registry activation evidence and focused `ServiceRegistryTests` pass 8/8. |
+| WO-BACKEND-004 | Health / Readiness Truth | #1126 | Merged | Health/readiness endpoint truth matrix and focused health test pass 4/4. |
+| WO-BACKEND-005 | Release Gate Definition | #1127 | Merged | Backend release gate criteria across build, warnings, tests, migration, county isolation, lane guard, health/readiness, registry, audit/trace, and rollback. |
+| WO-BACKEND-006 | Operational Packet | #1128 | Merged | Backend operational packet covering objective, capability, canon, boundaries, execution, validation, evidence, rollback, and promotion criteria. |
+| WO-BACKEND-007 | Evidence Rollup | this PR | Pending merge | Final baseline rollup with done/not-done and next-lane recommendation. |
 
 ## Validation Summary
 
@@ -59,7 +59,7 @@ Local validation used by this program:
 
 Remote PR checks remain the authoritative validation gate for all open PRs.
 
-## Proven
+## Proven (merged evidence only)
 
 The following are proven by merged evidence:
 
@@ -67,11 +67,6 @@ The following are proven by merged evidence:
 - The canonical backend solution can build warning-clean.
 - The out-of-solution API test warning surface was repaired to warning-clean
   without runtime code changes.
-- Backend operational work can be routed through Work Orders, evidence, PRs, and
-  normal remote checks.
-
-The following are proven by open PR evidence once those PRs merge:
-
 - Service registry validation evidence exists and focused service registry tests
   pass.
 - Health/readiness endpoint truth is documented and focused health tests pass.
@@ -79,17 +74,21 @@ The following are proven by open PR evidence once those PRs merge:
   does not replace any older runtime-configuration or auth/security proof WOs in
   the program canon.
 - Backend operational packet exists.
+- Backend operational work can be routed through Work Orders, evidence, PRs, and
+  normal remote checks.
+
+## Pending Merge
+
+- This rollup is evidence-backed but not authoritative on `main` until PR #1129
+  merges.
 
 ## Partial
 
 The backend remains partial in these areas:
 
 - Not every backend endpoint has an endpoint-by-endpoint operational contract.
-- Service registry evidence is not authoritative on `main` until PR #1124
-  merges.
-- Health/readiness truth is not authoritative on `main` until PR #1126 merges.
-- Release gate and operational packet are not authoritative on `main` until PRs
-  #1127 and #1128 merge.
+- Runtime-configuration and auth/security proof remains unclaimed unless a
+  canon-aligned follow-up completes or reclassifies that work.
 - `docs/brain/workorders/tools/wo-query.mjs --json` still reports stale seed
   registry recommendations relative to the active Backend Operational Excellence
   loop.
