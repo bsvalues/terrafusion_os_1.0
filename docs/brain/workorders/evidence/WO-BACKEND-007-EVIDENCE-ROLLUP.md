@@ -1,0 +1,167 @@
+# WO-BACKEND-007 - Backend Operational Excellence Evidence Rollup
+
+**Date:** 2026-07-01
+**Goal:** `GOAL-BACKEND-OPERATIONAL-EXCELLENCE`
+**Loop:** `LOOP-BACKEND-OPERATIONAL-EXCELLENCE`
+**Mode:** Backend evidence rollup / no runtime change
+
+## Purpose
+
+Close the initial Backend Operational Excellence baseline by recording what has
+been proven, what is still pending in PR review/checks, what remains partial, and
+what must not be overclaimed.
+
+This rollup is evidence-only. It does not authorize release, deployment,
+production access, schema migration, PACS access, county SQL access, protected
+county data access, service connections, Key Vault changes, CI changes, or
+runtime behavior changes.
+
+## Work Order Summary
+
+| WO | Title | PR | State at rollup creation | Evidence / outcome |
+|----|-------|----|--------------------------|--------------------|
+| WO-BACKEND-001 | Backend Reality Audit | #1118 | Merged | Backend inventory, build/test truth, health/readiness split, Dais persistence status, service-registry gaps, and recommended next WOs. |
+| WO-BACKEND-002 | Build Warning Burn-Down | #1120 | Merged | Canonical backend solution and out-of-solution API test project build warning-clean; low-risk nullable test warnings repaired. |
+| WO-BACKEND-003 | Service Registry Validation | #1124 | Open/draft, checks in progress or branch behind at last poll | Service registry activation evidence and focused `ServiceRegistryTests` pass 8/8. |
+| WO-BACKEND-004 | Health / Readiness Truth | #1126 | Open/draft, checks in progress or branch behind at last poll | Health/readiness endpoint truth matrix and focused health test pass 4/4. |
+| WO-BACKEND-005 | Release Gate Definition | #1127 | Open/draft, checks in progress at last poll | Backend release gate criteria across build, warnings, tests, migration, county isolation, lane guard, health/readiness, registry, audit/trace, and rollback. |
+| WO-BACKEND-006 | Operational Packet | #1128 | Open/draft, checks in progress at last poll | Backend operational packet covering objective, capability, canon, boundaries, execution, validation, evidence, rollback, and promotion criteria. |
+| WO-BACKEND-007 | Evidence Rollup | this PR | Created by this WO | Final baseline rollup with done/not-done and next-lane recommendation. |
+
+## Validation Summary
+
+Local validation used by this program:
+
+- `dotnet restore backend\TerraFusion.sln`
+- `dotnet build backend\TerraFusion.sln --no-restore --property:WarningLevel=999`
+- `dotnet build backend\TerraFusion.API.Tests\TerraFusion.API.Tests.csproj --no-restore --property:WarningLevel=999`
+- `dotnet test backend\tests\TerraFusion.Unit.SmokeTests\TerraFusion.Unit.SmokeTests.csproj --no-build --logger "console;verbosity=minimal"`
+- `dotnet test backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~TerraFusion.Unit.Tests.Stage3.ServiceRegistryTests" --logger "console;verbosity=minimal" --artifacts-path <temp>`
+- `dotnet test backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj --filter "FullyQualifiedName~TerraFusion.Unit.Tests.Controllers.SimpleHealthControllerGitShaTests" --logger "console;verbosity=minimal" --artifacts-path <temp>`
+- `git diff --check`
+- `node docs\brain\workorders\tools\wo-query.mjs --json`
+
+Remote PR checks remain the authoritative validation gate for all open PRs.
+
+## Proven
+
+The following are proven by merged evidence:
+
+- A clean backend reality audit exists on `main`.
+- The canonical backend solution can build warning-clean.
+- The out-of-solution API test warning surface was repaired to warning-clean
+  without runtime code changes.
+- Backend operational work can be routed through Work Orders, evidence, PRs, and
+  normal remote checks.
+
+The following are proven by open PR evidence once those PRs merge:
+
+- Service registry validation evidence exists and focused service registry tests
+  pass.
+- Health/readiness endpoint truth is documented and focused health tests pass.
+- Backend release gates are defined.
+- Backend operational packet exists.
+
+## Partial
+
+The backend remains partial in these areas:
+
+- Not every backend endpoint has an endpoint-by-endpoint operational contract.
+- Service registry evidence is not authoritative on `main` until PR #1124
+  merges.
+- Health/readiness truth is not authoritative on `main` until PR #1126 merges.
+- Release gate and operational packet are not authoritative on `main` until PRs
+  #1127 and #1128 merge.
+- `docs/brain/workorders/tools/wo-query.mjs --json` still reports stale seed
+  registry recommendations relative to the active Backend Operational Excellence
+  loop.
+- Some out-of-solution API test execution failures remain classified as separate
+  backend operational gaps rather than warning-baseline failures.
+
+## Missing
+
+This program does not yet provide:
+
+- production deployment proof,
+- release tag proof,
+- live service smoke proof,
+- schema migration proof,
+- PACS integration proof,
+- county SQL proof,
+- protected county data proof,
+- production observability proof,
+- exhaustive endpoint auth matrix,
+- exhaustive county isolation proof, or
+- automatic Work Order Engine scheduling.
+
+## Blocked / Authority Walls
+
+The following remain owner-controlled authority walls:
+
+- merging open PRs,
+- release authorization,
+- deployment authorization,
+- production access,
+- schema migration application,
+- PACS access,
+- county SQL access,
+- protected data access,
+- service connection or Key Vault changes,
+- destructive cleanup,
+- branch strategy conflicts, and
+- architecture/ADR decisions that supersede current canon.
+
+## Known Operational Risks
+
+- Open backend evidence PRs may need branch updates from `main` before they can
+  become merge-ready.
+- CI may remain long-running for docs/evidence-only backend PRs because the
+  repository's remote checks are broad. This is remote validation cost, not a
+  backend runtime change.
+- Local hooks currently depend on local Node tooling availability. For
+  docs/evidence/governance-only backend WOs, owner-authorized local hook bypass
+  was used when validation had already passed and the local blocker was the known
+  Prettier or Vitest PATH issue.
+- The merged backend program register should be reconciled later with the active
+  owner-authorized Program 2 loop labels.
+
+## No-Overclaim Statement
+
+This rollup does not claim TerraFusion backend production readiness. It claims
+that the initial backend operational evidence lane has produced a governed
+baseline for build truth, warning discipline, service registry proof,
+health/readiness truth, release gates, and operator packet structure.
+
+Release readiness still requires owner decision, merged evidence PRs, green
+remote checks, and any additional runtime, schema, county, PACS, deployment, or
+security proof required by the release scope.
+
+## Next Recommended Lane
+
+After open Backend Program 2 PRs are merged, the next recommended lane is a
+targeted backend operational gap queue, selected from the evidence:
+
+1. reconcile the Work Order registry/query seed with the active backend loop,
+2. classify remaining out-of-solution API test execution failures,
+3. define an endpoint auth/security matrix if runtime scope is authorized, or
+4. proceed to the next program only after owner review of the backend merge queue.
+
+## Done / Not Done
+
+Done:
+
+- Backend operational evidence chain is summarized.
+- Merged and pending evidence are separated.
+- Validation commands are recorded.
+- Known partial/missing/blocker state is explicit.
+- Release/deployment/runtime overclaiming is avoided.
+- No runtime, CI, schema, registry, automation, deployment, secret, county data,
+  PACS, or SQL changes are included.
+
+Not done:
+
+- No PR merge is authorized by this file.
+- No release is authorized.
+- No deployment is authorized.
+- No production or protected-data access occurred.
+- No schema migration was applied.
