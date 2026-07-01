@@ -31,7 +31,7 @@ boundaries.
 |------|-------------------|------------------|
 | Build gate | Canonical backend solution builds successfully. | Required |
 | Warning gate | Canonical backend solution and approved out-of-solution backend test project build with 0 warnings. | Required |
-| Test gate | Required focused and canonical backend tests pass, or every failure is classified with an owner and non-release risk decision. | Required |
+| Test gate | Focused and canonical backend tests must pass, or every failure must be classified with an owner and a non-release risk decision. | Required |
 | Migration gate | No unapplied or unreviewed schema migration is introduced; live/shared DB migration is separately authorized. | Required |
 | County isolation gate | County-scoped behavior is explicitly tested or marked not touched. | Required for county-impacting changes |
 | Lane guard gate | Change scope stays inside the authorized work order lane. | Required |
