@@ -20,6 +20,7 @@ changing auth, runtime behavior, pipeline behavior, deployment behavior, schemas
 | Public liveness | `GET /health` | anonymous | API process is responding and returns stable artifact identity shape including `GitSha`. | External/load-balancer liveness and basic release smoke. |
 | Simple readiness | `GET /health/ready` | anonymous | Controller-level "Ready" response with message `TerraFusion OS is initializing`. | Lightweight startup/readiness hint only; not a constitutional or dependency gate. |
 | Simple liveness | `GET /health/live` | anonymous | Controller-level "Live" response. | Basic process liveness. |
+| Infrastructure liveness | `GET /healthz` | anonymous minimal API route | K8s/infra-style liveness endpoint mapped in `Program.cs`; currently returns a simple healthy payload. | Infrastructure smoke and workflow compatibility probe. |
 | Constitutional proof | `GET /healthz/proof` | not explicitly `[AllowAnonymous]` on controller | Returns proof payload and HTTP 200 only when SpecLock and StateMesh guards are verified; otherwise HTTP 503. | Governance/constitutional readiness evidence. |
 | Constitutional readiness | `GET /healthz/ready` | not explicitly `[AllowAnonymous]` on controller | Returns 200 only when SpecLock and StateMesh guards are verified; otherwise 503 with reason. | Readiness gate for governance-sensitive operation. |
 | System health | `GET /api/system/health` | anonymous action | Aggregates orchestration/module-loader state and returns `Healthy` or `Degraded` response. | Operator diagnostic view of module/system state. |
@@ -37,6 +38,14 @@ changing auth, runtime behavior, pipeline behavior, deployment behavior, schemas
 - `GET /health` returns `Status`, `Timestamp`, `Environment`, `Version`, `Service`, and `GitSha`.
 - `GET /health/ready` returns `Status = Ready`.
 - `GET /health/live` returns `Status = Live`.
+
+### Infrastructure liveness contract
+
+`backend/src/TerraFusion.API/Program.cs`:
+
+- Maps `GET /healthz` as an anonymous infrastructure liveness probe.
+- Returns a simple healthy response and is used by existing workflow smoke checks.
+- Is distinct from `GET /healthz/proof` and `GET /healthz/ready`, which are controller-based constitutional proof/readiness surfaces.
 
 ### Constitutional proof/readiness contract
 
@@ -81,6 +90,7 @@ Passed! - Failed: 0, Passed: 4, Skipped: 0, Total: 4
 - `/api/system/health` is a diagnostic endpoint and can return a degraded payload instead of failing the HTTP call.
 - Domain-specific probes are not interchangeable with global readiness.
 - The backend currently has a multi-surface health model. Operators should choose the probe based on intent rather than treating all health routes as equivalent.
+- `/healthz` is infrastructure liveness; `/healthz/ready` is constitutional readiness. They are not interchangeable.
 
 ## Not Changed
 
@@ -95,4 +105,8 @@ Passed! - Failed: 0, Passed: 4, Skipped: 0, Total: 4
 
 ## Next
 
-Proceed to WO-BACKEND-005 - Release Gate Definition.
+Proceed under the active owner-authorized backend loop to WO-BACKEND-005 - Release Gate Definition.
+
+Note: older or alternate backend program registers may use different numbering for runtime configuration,
+auth/security proof, release gate, and operational packet work. This packet records the current health
+truth only; it does not supersede those dependency requirements or authorize release readiness.
