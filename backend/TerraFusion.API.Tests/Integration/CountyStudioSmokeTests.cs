@@ -259,7 +259,8 @@ public class CountyStudioSmokeTests
 
         // ── 12. Save scenario A + promote to AdjustmentSet ───────────────────
         var savedA = await svc.SaveScenarioAsync(scenA.ScenarioId, "bsvalues");
-        Assert.Equal("Saved", savedA.Status);
+        Assert.NotNull(savedA);
+        Assert.Equal("Saved", savedA!.Status);
 
         var effectiveScope = System.Text.Json.JsonSerializer.Serialize(new
         {
