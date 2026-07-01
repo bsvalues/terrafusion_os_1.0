@@ -33,7 +33,7 @@ public sealed class AuditCorrelationTests
         log!.Type.Should().StartWith("Authentication:");
         log.CorrelationId.Should().Be(correlationId);
 
-        using var doc = JsonDocument.Parse(log.Data);
+        using var doc = ParseAuditData(log.Data);
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("failed");
     }
 
@@ -54,7 +54,7 @@ public sealed class AuditCorrelationTests
         log!.Type.Should().StartWith("Authentication:");
         log.CorrelationId.Should().Be(correlationId);
 
-        using var doc = JsonDocument.Parse(log.Data);
+        using var doc = ParseAuditData(log.Data);
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("successful");
     }
 
@@ -75,7 +75,7 @@ public sealed class AuditCorrelationTests
         log!.Type.Should().StartWith("Authorization:");
         log.CorrelationId.Should().Be(correlationId);
 
-        using var doc = JsonDocument.Parse(log.Data);
+        using var doc = ParseAuditData(log.Data);
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("denied");
     }
 
@@ -96,7 +96,7 @@ public sealed class AuditCorrelationTests
         log!.Type.Should().StartWith("Authorization:");
         log.CorrelationId.Should().Be(correlationId);
 
-        using var doc = JsonDocument.Parse(log.Data);
+        using var doc = ParseAuditData(log.Data);
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("granted");
         doc.RootElement.GetProperty("Success").GetBoolean().Should().BeTrue();
     }
@@ -122,7 +122,7 @@ public sealed class AuditCorrelationTests
         log!.Type.Should().StartWith("ConfigurationChange:");
         log.CorrelationId.Should().Be(correlationId);
 
-        using var doc = JsonDocument.Parse(log.Data);
+        using var doc = ParseAuditData(log.Data);
         doc.RootElement.GetProperty("Details").GetString().Should().Contain("Configuration changed");
         doc.RootElement.GetProperty("OldValue").GetString().Should().Be("Assessor");
         doc.RootElement.GetProperty("NewValue").GetString().Should().Be("CountyAdmin");
@@ -147,7 +147,7 @@ public sealed class AuditCorrelationTests
 
         log.Should().NotBeNull();
 
-        using var doc = JsonDocument.Parse(log!.Data);
+        using var doc = ParseAuditData(log!.Data);
         doc.RootElement.GetProperty("Setting").GetString().Should().Be("Privileges:RoleAssignment");
     }
 
@@ -188,5 +188,11 @@ public sealed class AuditCorrelationTests
         var auditLogger = new AuditLogger(logger, config, accessor, provider);
 
         return (auditLogger, provider, correlationId);
+    }
+
+    private static JsonDocument ParseAuditData(string? data)
+    {
+        data.Should().NotBeNull();
+        return JsonDocument.Parse(data!);
     }
 }
