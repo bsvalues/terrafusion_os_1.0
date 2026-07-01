@@ -71,8 +71,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var status = await response.Content.ReadFromJsonAsync<SystemStatusReport>();
-            status.Should().NotBeNull();
+            var status = await response.Content.ReadFromJsonAsync<SystemStatusReport>()
+                ?? throw new InvalidOperationException("System status response body was empty.");
             status.OverallHealth.Should().BeGreaterThan(95.0, "System health should be excellent");
             status.TotalSubsystems.Should().Be(6, "Should have 6 subsystems");
             status.OperationalSubsystems.Should().Be(6, "All subsystems should be operational");
@@ -86,8 +86,8 @@ namespace TerraFusion.API.Tests
             var expectedSubsystems = new[] { "monitoring", "analytics", "ai-orchestration", "integration", "performance", "security" };
             foreach (var subsystemId in expectedSubsystems)
             {
-                var subsystem = status.Subsystems.FirstOrDefault(s => s.SubsystemId == subsystemId);
-                subsystem.Should().NotBeNull($"Subsystem '{subsystemId}' should exist");
+                var subsystem = status.Subsystems.FirstOrDefault(s => s.SubsystemId == subsystemId)
+                    ?? throw new InvalidOperationException($"Subsystem '{subsystemId}' was missing.");
                 subsystem.Status.Should().Be("operational", $"Subsystem '{subsystemId}' should be operational");
                 subsystem.HealthScore.Should().BeGreaterThan(90.0, $"Subsystem '{subsystemId}' should have high health score");
 
@@ -107,8 +107,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var health = await response.Content.ReadFromJsonAsync<SubsystemHealthReport>();
-            health.Should().NotBeNull();
+            var health = await response.Content.ReadFromJsonAsync<SubsystemHealthReport>()
+                ?? throw new InvalidOperationException("Subsystem health response body was empty.");
             health.TotalSubsystems.Should().Be(6);
             health.HealthySubsystems.Should().BeGreaterThanOrEqualTo(5, "Most subsystems should be healthy");
             health.AverageHealthScore.Should().BeGreaterThan(95.0, "Average health should be excellent");
@@ -136,8 +136,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var metrics = await response.Content.ReadFromJsonAsync<SystemMetricsReport>();
-            metrics.Should().NotBeNull();
+            var metrics = await response.Content.ReadFromJsonAsync<SystemMetricsReport>()
+                ?? throw new InvalidOperationException("System metrics response body was empty.");
 
             // Infrastructure metrics
             metrics.TotalRequests.Should().BeGreaterThan(0);
@@ -190,8 +190,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var analysis = await response.Content.ReadFromJsonAsync<CrossSystemAnalysisReport>();
-            analysis.Should().NotBeNull();
+            var analysis = await response.Content.ReadFromJsonAsync<CrossSystemAnalysisReport>()
+                ?? throw new InvalidOperationException("Cross-system analysis response body was empty.");
             analysis.TotalCorrelations.Should().BeGreaterThan(0);
             analysis.StrongCorrelations.Should().BeGreaterThan(0);
             analysis.OverallSystemCoherence.Should().BeGreaterThan(90.0, "System coherence should be > 90%");
@@ -225,8 +225,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var diagnostics = await response.Content.ReadFromJsonAsync<SystemDiagnosticsReport>();
-            diagnostics.Should().NotBeNull();
+            var diagnostics = await response.Content.ReadFromJsonAsync<SystemDiagnosticsReport>()
+                ?? throw new InvalidOperationException("System diagnostics response body was empty.");
             diagnostics.TotalTests.Should().BeGreaterThan(0);
             diagnostics.PassedTests.Should().BeGreaterThan(0);
             diagnostics.OverallScore.Should().BeGreaterThan(90.0, "Diagnostic score should be > 90%");
@@ -266,8 +266,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var status = await response.Content.ReadFromJsonAsync<dynamic>();
-            status.Should().NotBeNull();
+            _ = await response.Content.ReadFromJsonAsync<dynamic>()
+                ?? throw new InvalidOperationException("Monitoring status response body was empty.");
 
             _output.WriteLine("✓ Monitoring system operational");
         }
@@ -337,8 +337,8 @@ namespace TerraFusion.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var status = await response.Content.ReadFromJsonAsync<dynamic>();
-            status.Should().NotBeNull();
+            _ = await response.Content.ReadFromJsonAsync<dynamic>()
+                ?? throw new InvalidOperationException("Integration status response body was empty.");
 
             _output.WriteLine("✓ Integration system operational");
         }
@@ -689,17 +689,17 @@ namespace TerraFusion.API.Tests
     public class SystemStatusReport
     {
         public double OverallHealth { get; set; }
-        public string SystemStatus { get; set; }
+        public string SystemStatus { get; set; } = string.Empty;
         public int TotalSubsystems { get; set; }
         public int OperationalSubsystems { get; set; }
-        public List<SubsystemHealthInfo> Subsystems { get; set; }
+        public List<SubsystemHealthInfo> Subsystems { get; set; } = new();
     }
 
     public class SubsystemHealthInfo
     {
-        public string SubsystemId { get; set; }
-        public string SubsystemName { get; set; }
-        public string Status { get; set; }
+        public string SubsystemId { get; set; } = string.Empty;
+        public string SubsystemName { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double HealthScore { get; set; }
     }
 
@@ -708,7 +708,7 @@ namespace TerraFusion.API.Tests
         public int TotalSubsystems { get; set; }
         public int HealthySubsystems { get; set; }
         public double AverageHealthScore { get; set; }
-        public Dictionary<string, List<string>> DependencyGraph { get; set; }
+        public Dictionary<string, List<string>> DependencyGraph { get; set; } = new();
     }
 
     public class SystemMetricsReport
@@ -735,22 +735,22 @@ namespace TerraFusion.API.Tests
         public int TotalCorrelations { get; set; }
         public int StrongCorrelations { get; set; }
         public int IdentifiedBottlenecks { get; set; }
-        public List<SystemCorrelation> Correlations { get; set; }
-        public List<OptimizationPath> OptimizationPaths { get; set; }
+        public List<SystemCorrelation> Correlations { get; set; } = new();
+        public List<OptimizationPath> OptimizationPaths { get; set; } = new();
         public double OverallSystemCoherence { get; set; }
         public int IntegrationMaturity { get; set; }
     }
 
     public class SystemCorrelation
     {
-        public string SourceSubsystem { get; set; }
-        public string TargetSubsystem { get; set; }
+        public string SourceSubsystem { get; set; } = string.Empty;
+        public string TargetSubsystem { get; set; } = string.Empty;
         public double CorrelationStrength { get; set; }
     }
 
     public class OptimizationPath
     {
-        public List<string> InvolvedSubsystems { get; set; }
+        public List<string> InvolvedSubsystems { get; set; } = new();
     }
 
     public class SystemDiagnosticsReport
@@ -758,15 +758,15 @@ namespace TerraFusion.API.Tests
         public int TotalTests { get; set; }
         public int PassedTests { get; set; }
         public double OverallScore { get; set; }
-        public string SystemHealth { get; set; }
+        public string SystemHealth { get; set; } = string.Empty;
         public double TotalDuration { get; set; }
-        public List<DiagnosticTest> Tests { get; set; }
+        public List<DiagnosticTest> Tests { get; set; } = new();
     }
 
     public class DiagnosticTest
     {
-        public string TestName { get; set; }
-        public string Status { get; set; }
+        public string TestName { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public double Score { get; set; }
         public double Duration { get; set; }
     }
