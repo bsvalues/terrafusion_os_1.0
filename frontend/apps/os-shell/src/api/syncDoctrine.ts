@@ -21,9 +21,11 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { getViteEnv } from '@/env/getViteEnv';
+import { apiFetch, apiFetchJson } from '@/lib/apiBase';
 
-const API_BASE_URL = getViteEnv().VITE_API_URL || '';
+// Invariant B (see src/lib/apiBase.ts): pass BARE paths (no /api prefix, no
+// absolute base). apiFetch/apiFetchJson prepend /api in the browser so every
+// request rides the Vite proxy — no hardcoded VITE_API_URL, no CORS bypass.
 
 // ───────────────────────────────────────────────────────────────
 // DTO types — mirror DoctrineStatusController response shape.
@@ -170,14 +172,11 @@ export interface DoctrineBatchDetail {
  */
 export async function getDoctrineState(
   recentGateLimit = 25,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<DoctrineState> {
-  const url = `${API_BASE_URL}/sync/doctrine/state?recentGateLimit=${recentGateLimit}`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) {
-    throw new Error(`getDoctrineState failed: HTTP ${res.status} ${res.statusText}`);
-  }
-  return (await res.json()) as DoctrineState;
+  return apiFetchJson<DoctrineState>(`/sync/doctrine/state?recentGateLimit=${recentGateLimit}`, {
+    signal,
+  });
 }
 
 /**
@@ -185,12 +184,7 @@ export async function getDoctrineState(
  * the dashboard only needs lane health (not the full state).
  */
 export async function getDoctrineLanes(signal?: AbortSignal): Promise<DoctrineLanes> {
-  const url = `${API_BASE_URL}/sync/doctrine/lanes`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) {
-    throw new Error(`getDoctrineLanes failed: HTTP ${res.status} ${res.statusText}`);
-  }
-  return (await res.json()) as DoctrineLanes;
+  return apiFetchJson<DoctrineLanes>('/sync/doctrine/lanes', { signal });
 }
 
 /**
@@ -199,14 +193,12 @@ export async function getDoctrineLanes(signal?: AbortSignal): Promise<DoctrineLa
  */
 export async function getDoctrineBatch(
   loadBatchId: string,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<DoctrineBatchDetail> {
-  const url = `${API_BASE_URL}/sync/doctrine/batch/${encodeURIComponent(loadBatchId)}`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) {
-    throw new Error(`getDoctrineBatch failed: HTTP ${res.status} ${res.statusText}`);
-  }
-  return (await res.json()) as DoctrineBatchDetail;
+  return apiFetchJson<DoctrineBatchDetail>(
+    `/sync/doctrine/batch/${encodeURIComponent(loadBatchId)}`,
+    { signal }
+  );
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -285,16 +277,18 @@ export interface DoctrineDrainResponse {
 export async function postDoctrineDrain(
   lane: DrainLaneName,
   request: DoctrineDrainRequest,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<DoctrineDrainResponse> {
-  const url = `${API_BASE_URL}/sync/doctrine/drain/${lane}`;
   const body = JSON.stringify({
     OperatorName: request.operatorName,
     WorkingYear: request.workingYear ?? 2026,
     FullCorpus: request.fullCorpus ?? true,
     TopN: request.topN ?? null,
   });
-  const res = await fetch(url, {
+  // apiFetch (not apiFetchJson) — this endpoint returns the SAME envelope on
+  // both 200 (Succeeded) and 500 (Failed); we must parse the body ourselves,
+  // so we need the raw Response rather than a throw-on-non-2xx helper.
+  const res = await apiFetch(`/sync/doctrine/drain/${lane}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body,
@@ -307,7 +301,7 @@ export async function postDoctrineDrain(
     parsed = JSON.parse(text) as DoctrineDrainResponse;
   } catch (e) {
     throw new Error(
-      `postDoctrineDrain(${lane}) HTTP ${res.status} returned non-JSON: ${text.slice(0, 200)}`,
+      `postDoctrineDrain(${lane}) HTTP ${res.status} returned non-JSON: ${text.slice(0, 200)}`
     );
   }
   return parsed;
