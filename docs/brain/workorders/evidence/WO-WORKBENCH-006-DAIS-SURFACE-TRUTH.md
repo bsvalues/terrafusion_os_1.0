@@ -120,7 +120,7 @@ front-end service posture and the need for backend/county-isolation proof before
 
 ## Governed Tool Surface
 
-Observed Workbench Dais tool IDs include:
+Observed Workbench Dais tool IDs wired to user actions include:
 
 - `explain_senior_exemption_impact`
 - `summarize_levy_rate_components`
@@ -135,11 +135,15 @@ Observed Workbench Dais tool IDs include:
 - `process_exemption_renewal`
 - `file_appeal`
 - `schedule_boe_hearing`
-- `get_certification_progress`
-- `sign_off_certification_step`
 - `queue_notice_for_mailing`
-- `get_queue_statistics`
 - `escalate_task`
+
+Declared or copy/test-visible Dais tool IDs not currently proven as user-action invocations in
+`PropertyDais.tsx`:
+
+- `get_certification_progress`
+- `get_queue_statistics`
+- `sign_off_certification_step`
 
 The UI records success/error history with tool IDs and correlation IDs. This packet does not prove
 backend tool authorization, policy gates, persistence behavior, or TerraTrace emission for those
@@ -161,7 +165,8 @@ Write-like Dais actions observed in the Workbench tab:
 - Process exemption renewal
 - File appeal
 - Schedule BOE hearing
-- Sign off certification step
+- Certification progress/sign-off is visible in copy/interfaces/tests but not proven as a wired
+  Workbench user action in this packet.
 - Queue notices for mailing
 - Escalate task
 
@@ -169,7 +174,7 @@ High-risk or promotion-blocking paths:
 
 - `assemble_boe_packet`
 - `schedule_boe_hearing`
-- `sign_off_certification_step`
+- `sign_off_certification_step` only if a future packet proves it is wired to a Workbench user action
 - any certification sign-off or deadline behavior
 - any notice publication or delivery behavior
 - any Dossier packet/document custody handoff
