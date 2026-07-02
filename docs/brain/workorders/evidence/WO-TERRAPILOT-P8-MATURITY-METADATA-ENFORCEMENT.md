@@ -35,6 +35,19 @@ The new static test validates:
   trace evidence,
 - any future `promoted` claim requires operator approval, promotion date, and rollback path.
 
+The guard is wired into the existing `test:governed` command so required core-governance paths run
+the maturity parity and promotion-evidence checks instead of relying on a manual one-off command.
+
+The JSON metadata also points to `tools/registry/tool-maturity.schema.json`, and that schema encodes
+the same core invariants for editor and schema-aware validation:
+
+- state-to-level consistency,
+- non-live tools require disclosure,
+- `backend-integrated` requires live integration plus contract, backing service, verification
+  command, and trace evidence,
+- `promoted` requires live integration plus operator approval, promotion date, rollback path, and
+  backend-integration evidence.
+
 ## Current Metadata Baseline
 
 All current TerraPilot manifest tools are recorded as:
@@ -53,7 +66,7 @@ and contract shape; they do not prove live backend/product integration.
 - No tool was marked `backend-integrated`.
 - No backend integration was added.
 - No runtime behavior changed.
-- No CI workflow changed.
+- No CI workflow changed. The existing governed test script now includes the maturity guard.
 - No schema migration or database operation was performed.
 - No deployment behavior changed.
 - No secrets, credentials, county data, PACS, county SQL, or live database access were used.
