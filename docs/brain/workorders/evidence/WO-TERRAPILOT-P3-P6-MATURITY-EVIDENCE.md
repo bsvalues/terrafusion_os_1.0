@@ -1,8 +1,8 @@
 # WO-TERRAPILOT-P3-P6 - Tool Maturity Evidence
 
-**Program:** P5 - TerraPilot Tool Maturity  
-**Date:** 2026-07-02  
-**Mode:** Governance/evidence. No runtime change, no backend integration, no tool promotion.  
+**Program:** P5 - TerraPilot Tool Maturity
+**Date:** 2026-07-02
+**Mode:** Governance/evidence. No runtime change, no backend integration, no tool promotion.
 **Sources:** `tools/registry/terrapilot.tools.json`, `os-platform/core/pilot/handlers.ts`,
 `os-platform/core/pilot/handlers.real.ts`, and current P5 program canon.
 

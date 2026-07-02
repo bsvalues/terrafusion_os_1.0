@@ -1,7 +1,7 @@
 # WO-TERRAPILOT-P7 - Evidence Rollup
 
-**Program:** P5 - TerraPilot Tool Maturity  
-**Date:** 2026-07-02  
+**Program:** P5 - TerraPilot Tool Maturity
+**Date:** 2026-07-02
 **Scope:** P2-P7 governance/evidence closeout. No runtime code changed.
 
 ## Completed Work Orders
