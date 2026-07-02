@@ -199,10 +199,10 @@ Known enforcement gap:
 
 These are findings only, not fixes:
 
-1. Route tree includes R3 extension tabs (`clerk`, `treasury`, `audit`) beyond the six-tab canonical list printed by the compliance gate.
-2. `frontend/apps/os-shell/src/contracts/workbench.ts` defines `WorkbenchTabSlug` through `dossier` and omits `pilot`, while runtime route/tab code uses `pilot`.
-3. `suiteRegistry.ts` defines `VALID_WORKBENCH_TAB_IDS` with `summary`, `forge`, `atlas`, `dais`, `clerk`, `treasury`, `audit`, `dossier`, `pilot`, which is broader than the compliance gate's printed canonical list.
-4. Browser route mode and window-adapter mode do not fully agree for `clerk`, `treasury`, and `audit`.
+1. Route tree includes R3 extension tabs (`clerk`, `treasury`, `audit`) beyond the compliance gate's printed canonical list; the current scanner only inspects `slug:` lines in Workbench context, so React Router child paths are not the same signal (`scripts/spec-gates/workbench-compliance.mjs:135-146`).
+2. `frontend/apps/os-shell/src/contracts/workbench.ts` defines `WorkbenchTabSlug` through `dossier`, includes `clerk`, `treasury`, and `audit`, and still omits `pilot`, while runtime route/tab code uses `pilot` (`frontend/apps/os-shell/src/contracts/workbench.ts:16-25`).
+3. `suiteRegistry.ts` defines `VALID_WORKBENCH_TAB_IDS` with `summary`, `forge`, `atlas`, `dais`, `clerk`, `treasury`, `audit`, `dossier`, `pilot`, which is broader than the compliance gate's printed canonical list (`frontend/apps/os-shell/src/config/suiteRegistry.ts:603-616`; scanner behavior in `scripts/spec-gates/workbench-compliance.mjs:135-146`).
+4. Browser route mode and window-adapter mode do not fully agree for `clerk`, `treasury`, and `audit`: the window adapter maps `clerk` and `audit` to `dossier`, and maps `treasury` to `dais` (`frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx:728-733`).
 5. The deep-link contract proves active-tab fallback for unknown slugs, but not a live URL rewrite.
 6. The no-parcel helper output `/property/search?openTab=<tabId>` is not registered as a dedicated
    search route and may be interpreted as `parcelId=search` by `/property/:parcelId`.
