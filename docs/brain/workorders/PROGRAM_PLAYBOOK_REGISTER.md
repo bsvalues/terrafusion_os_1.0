@@ -25,7 +25,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | P2 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | ACTIVE | WO-DATA-BENTON-ADDR-001 (DUPE-001B parked @ SW-02) |
 | P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | QUEUED | WO-BACKEND-001 |
 | P4 | [Property Workbench](programs/property-workbench.md) | `/goal property-workbench` | QUEUED | WO-WORKBENCH-001 |
-| P5 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `/goal terrapilot-maturity` | ACTIVE | WO-TERRAPILOT-P2 |
+| P5 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `/goal terrapilot-maturity` | ACTIVE | WO-TERRAPILOT-P8 |
 | P6 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | ACTIVE | WO-WOE-012 (011 in PR) |
 | P7 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `/goal brain-operator` | QUEUED | WO-BRAIN-001 |
 | P8 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | ACTIVE | WO-AZURE-001 |
