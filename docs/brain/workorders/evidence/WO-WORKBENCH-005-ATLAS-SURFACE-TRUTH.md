@@ -14,9 +14,11 @@ This packet records the current TerraFusion Atlas surface inside the Property Wo
 modify Atlas behavior, Workbench routing, GIS adapters, map-token handling, package dependencies,
 CI, deployment behavior, county data, PACS, or SQL access.
 
-Allowed system: Property Workbench Atlas evidence.
+Allowed in this packet:
 
-Blocked systems:
+- Property Workbench Atlas evidence.
+
+Blocked in this packet:
 
 - Runtime code changes
 - Shell tab or route changes
