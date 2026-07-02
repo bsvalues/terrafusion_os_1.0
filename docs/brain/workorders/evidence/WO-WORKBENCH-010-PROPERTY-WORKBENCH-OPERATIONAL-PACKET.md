@@ -33,6 +33,13 @@ claims:
 - `WO-WORKBENCH-009` records end-to-end parcel flow evidence.
 - `WO-WORKBENCH-010` packages those results into this operator packet.
 
+Naming reconciliation: the owner-authorized active Program 3 `/goal` + `/loop`
+uses the sequence above. Older Work Order program-register text may still assign
+`WO-WORKBENCH-009` to reserved-office gating and `WO-WORKBENCH-010` to
+end-to-end parcel flow until the Program 3 register update merges. This packet
+must not be used as evidence that reserved-office gating is complete, and it
+should merge only after the Program 3 register reflects the active sequence.
+
 The Program 3 evidence PRs become authoritative when merged. Until then, this
 packet is an active-loop operating packet that records the current evidence
 shape without overclaiming production readiness or runtime completeness.
@@ -43,7 +50,7 @@ shape without overclaiming production readiness or runtime completeness.
 |------------------|--------------------|
 | `AGENTS.md` | Worktree isolation, authority walls, governance surfaces, and branch protection. |
 | `brain/packs/README.md` | One-Brain doctrine and domain-pack routing. |
-| `brain/packs/shell/README.md` | Workbench shell and routing boundary. |
+| `brain/packs/shell/README.md` | OS shell routing boundary for the Workbench surface. |
 | `brain/packs/forge/README.md` | Forge valuation-engineering boundary. |
 | `brain/packs/atlas/README.md` | Atlas GIS/spatial boundary. |
 | `brain/packs/dais/README.md` | Dais assessor-administration boundary. |
