@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,16 +25,18 @@ public class SimpleHealthController : ControllerBase
     {
         _logger.LogInformation("Simple health check requested");
 
-        // Prometheus PR-9 / HIGH #32: expose immutable artifact identity.
-        // TF_GIT_SHA is stamped at docker build time via --build-arg GIT_SHA;
-        // when running outside a container (or built without the arg) the
-        // env var is unset and we return "unknown" so the response shape is
-        // stable for clients.
-        var gitSha = Environment.GetEnvironmentVariable("TF_GIT_SHA");
-        if (string.IsNullOrWhiteSpace(gitSha))
-        {
-            gitSha = "unknown";
-        }
+        // Prometheus PR-9 / HIGH #32 + WO-BACKEND-005: expose immutable artifact
+        // identity. Resolved from the env var (docker --build-arg GIT_SHA) OR the
+        // commit stamped into the assembly at build time (SourceRevisionId, set
+        // from GITHUB_SHA in CI), so a non-docker (zip) deploy is no longer stuck
+        // reporting "unknown". Falls back to "unknown" only when neither exists.
+        var informationalVersion = Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion;
+        var gitSha = ResolveGitSha(
+            Environment.GetEnvironmentVariable("TF_GIT_SHA"),
+            informationalVersion);
 
         return Ok(new
         {
@@ -81,5 +84,38 @@ public class SimpleHealthController : ControllerBase
             Status = "Live",
             Timestamp = DateTime.UtcNow
         });
+    }
+
+    /// <summary>
+    /// Resolves the deployed commit for the /health <c>gitSha</c> field, in
+    /// priority order (WO-BACKEND-005):
+    /// <list type="number">
+    ///   <item><description><c>TF_GIT_SHA</c> env var (docker --build-arg GIT_SHA).</description></item>
+    ///   <item><description>the commit stamped into the assembly
+    ///     InformationalVersion at build time — the SDK appends
+    ///     "+&lt;sha&gt;" when <c>SourceRevisionId</c> is set (CI sets it from
+    ///     GITHUB_SHA), so a zip/non-docker deploy still carries its commit.</description></item>
+    ///   <item><description>the literal "unknown" when neither is available.</description></item>
+    /// </list>
+    /// Pure and static so it is deterministically unit-testable without an
+    /// ambient assembly or environment.
+    /// </summary>
+    public static string ResolveGitSha(string? envSha, string? informationalVersion)
+    {
+        if (!string.IsNullOrWhiteSpace(envSha))
+        {
+            return envSha;
+        }
+
+        if (!string.IsNullOrWhiteSpace(informationalVersion))
+        {
+            var plusIndex = informationalVersion.IndexOf('+');
+            if (plusIndex >= 0 && plusIndex < informationalVersion.Length - 1)
+            {
+                return informationalVersion[(plusIndex + 1)..];
+            }
+        }
+
+        return "unknown";
     }
 }

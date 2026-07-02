@@ -60,9 +60,14 @@ public sealed class SimpleHealthControllerGitShaTests
                 "PR-9 contract: /health response MUST carry a gitSha field even when the env var is unset");
 
             var gitShaValue = gitShaProperty!.GetValue(payload) as string;
-            gitShaValue.Should().Be(
-                "unknown",
-                "when TF_GIT_SHA is not set the field MUST fall back to the literal string \"unknown\" so clients can detect a non-tagged build");
+            // WO-BACKEND-005: when TF_GIT_SHA is unset the field is now resolved
+            // from the build-stamped assembly InformationalVersion (CI sets
+            // SourceRevisionId from GITHUB_SHA → a real sha; a plain local build
+            // with no stamp → "unknown"). Either way the field MUST be populated
+            // and non-empty. Deterministic sha/"unknown" branch selection is
+            // covered by ResolveGitSha_* below.
+            gitShaValue.Should().NotBeNullOrWhiteSpace(
+                "the /health gitSha field MUST always be populated — a build-stamped commit or the literal \"unknown\", never blank");
         }
         finally
         {
@@ -123,6 +128,24 @@ public sealed class SimpleHealthControllerGitShaTests
             "PR-9 is additive — the existing Status field MUST still be present");
 
         statusProperty!.GetValue(payload).Should().Be("Healthy");
+    }
+
+    // WO-BACKEND-005: deterministic coverage of the gitSha resolution priority
+    // (env → build-stamped InformationalVersion "+<sha>" → "unknown"), without
+    // depending on the ambient assembly version or process environment.
+    [Theory]
+    [InlineData("abc1234", null, "abc1234")]              // env wins when set
+    [InlineData("abc1234", "1.0.0+def5678", "abc1234")]   // env wins over the build stamp
+    [InlineData(null, "1.0.0+def5678", "def5678")]        // stamp used when env unset
+    [InlineData("", "1.0.0+def5678", "def5678")]          // blank env → stamp
+    [InlineData(null, "1.0.0", "unknown")]                // no stamp → unknown
+    [InlineData(null, null, "unknown")]                   // nothing → unknown
+    [InlineData("   ", "   ", "unknown")]                 // whitespace only → unknown
+    public void ResolveGitSha_ResolvesInPriorityOrder(string? envSha, string? informationalVersion, string expected)
+    {
+        SimpleHealthController.ResolveGitSha(envSha, informationalVersion)
+            .Should()
+            .Be(expected);
     }
 
     /// <summary>

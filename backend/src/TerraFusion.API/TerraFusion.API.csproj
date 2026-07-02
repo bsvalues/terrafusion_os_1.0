@@ -8,6 +8,16 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <!--
+      WO-BACKEND-005 (build provenance / Git SHA truth): when the build
+      environment provides the commit (GitHub Actions sets GITHUB_SHA), bake it
+      into the assembly InformationalVersion — the SDK appends "+<sha>" when
+      SourceRevisionId is set. No git exec at build time, so no Warning-Gate
+      fragility. When unset (some local builds) InformationalVersion carries no
+      "+sha" and /health honestly reports gitSha="unknown". Read back at runtime
+      by SimpleHealthController.ResolveGitSha().
+    -->
+    <SourceRevisionId Condition="'$(SourceRevisionId)' == '' and '$(GITHUB_SHA)' != ''">$(GITHUB_SHA)</SourceRevisionId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DotNetWatchBuild)' == 'true'">
