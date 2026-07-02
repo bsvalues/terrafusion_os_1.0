@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tool-maturity.schema.json",
+  "title": "TerraPilot Tool Maturity Metadata Schema",
+  "description": "Governance schema for TerraPilot maturity metadata. It records evidence status only and does not promote tools.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "generatedBy",
+    "generatedOn",
+    "purpose",
+    "maturityStates",
+    "defaultDisclosure",
+    "tools"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "generatedBy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedOn": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maturityStates": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "declared",
+          "stub-contract",
+          "contract-covered",
+          "backend-integrated",
+          "promoted"
+        ]
+      },
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true
+    },
+    "defaultDisclosure": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ToolMaturity"
+      }
+    }
+  },
+  "definitions": {
+    "Level": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ]
+    },
+    "State": {
+      "enum": [
+        "declared",
+        "stub-contract",
+        "contract-covered",
+        "backend-integrated",
+        "promoted"
+      ]
+    },
+    "ToolMaturity": {
+      "type": "object",
+      "required": [
+        "toolId",
+        "level",
+        "state",
+        "liveIntegration",
+        "disclosureRequired",
+        "disclosure",
+        "owner",
+        "evidence",
+        "promotion"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "toolId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "level": {
+          "$ref": "#/definitions/Level"
+        },
+        "state": {
+          "$ref": "#/definitions/State"
+        },
+        "liveIntegration": {
+          "type": "boolean"
+        },
+        "disclosureRequired": {
+          "type": "boolean"
+        },
+        "disclosure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "object",
+          "required": [
+            "manifest",
+            "handlerParity",
+            "promotionProtocol"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "manifest": {
+              "type": "string",
+              "minLength": 1
+            },
+            "handlerParity": {
+              "type": "string",
+              "minLength": 1
+            },
+            "promotionProtocol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contract": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "backingService": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "verificationCommand": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "traceEvidence": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "promotion": {
+          "type": "object",
+          "required": [
+            "targetState",
+            "operatorApproval",
+            "promotionDate",
+            "rollbackPath"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "targetState": {
+              "enum": [
+                "declared",
+                "stub-contract",
+                "contract-covered",
+                "backend-integrated",
+                "promoted",
+                null
+              ]
+            },
+            "operatorApproval": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "promotionDate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "rollbackPath": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

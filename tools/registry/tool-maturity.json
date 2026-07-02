@@ -1,0 +1,2356 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedBy": "WO-TERRAPILOT-P8",
+  "generatedOn": "2026-07-02",
+  "purpose": "Machine-readable TerraPilot tool maturity metadata. This file is governance metadata only; it does not promote tools or change runtime behavior.",
+  "maturityStates": [
+    "declared",
+    "stub-contract",
+    "contract-covered",
+    "backend-integrated",
+    "promoted"
+  ],
+  "defaultDisclosure": "tool layer in development",
+  "tools": [
+    {
+      "toolId": "route_to_parcel",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "assign_task",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "check_cert_status",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "run_valuation_model",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "assemble_boe_packet",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "draft_notice",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "draft_appeal_response",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_value_change",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_model_results",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_dossier",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "synthesize_evidence",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "generate_commissioner_memo",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "request_trace_redaction",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_senior_exemption_impact",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_parcel_casefile",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "compare_assessed_value_history",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_levy_rate_components",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_model_inputs",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "draft_value_change_notice",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "draft_boe_appeal_response",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_sales_comps_rationale",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "generate_morning_brief",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "classify_county_finding",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "propose_rate_adjustment",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "apply_rate_adjustment_to_draft",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "rerun_ratio_study",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "compare_matrix_versions",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "flag_parcel_data_issue",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_spatial_anomaly",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "open_appeal_packet",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "generate_calibration_memo",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "export_equalization_package",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "export_audit_bundle",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "search_trace_by_correlation",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "add_dossier_note",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "query_parcel_layers",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "calculate_pilt_payment",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "run_income_valuation",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "calculate_depreciation",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "check_exemption_eligibility",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "process_exemption_renewal",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "file_appeal",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "schedule_boe_hearing",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "get_certification_progress",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "sign_off_certification_step",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "queue_notice_for_mailing",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "get_queue_statistics",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "escalate_task",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "search_recorded_documents",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "get_title_chain",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_recording_fees",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "record_document",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "release_lien",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_parcel_recordings",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "get_tax_statement",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "explain_tax_breakdown",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "record_payment",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "check_delinquency_status",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "create_installment_plan",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "summarize_collection_stats",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "initiate_tax_sale",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "audit_roll_summary",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "check_levy_compliance",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "submit_audit_finding",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "reconcile_cross_office",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "generate_compliance_report",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_ping",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_doctor",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_gatefast",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_corpus_status",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_list_dir",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_read_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_write_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_search_files",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_terminal_exec",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_create_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_delete_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_rename_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_diff_files",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_git_status",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_file_outline",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_diagnostics",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_bookmarks",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_file_index",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_recent_files",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_symbol_search",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_snippets",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_minimap",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_editor_settings",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_find_replace",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_format_file",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_editor_layout",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_folding_ranges",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_line_markers",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_hover_info",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_goto_definition",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_completions",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_editor_themes",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_code_actions",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_find_references",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_rename_symbol",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_signature_help",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_document_highlights",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_git_diff",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_document_links",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "canon_inlay_hints",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_calculate_rollback",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_calculate_interest",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_evaluate_penalty_exceptions",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_initiate_removal",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_enroll_parcel",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_get_interest_rates",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "cu_list_classifications",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "report_generate_rollback_notice",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "report_generate_levy_certification",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "report_generate_cost_valuation",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    },
+    {
+      "toolId": "report_generate_ratio_study",
+      "level": "L1",
+      "state": "stub-contract",
+      "liveIntegration": false,
+      "disclosureRequired": true,
+      "disclosure": "tool layer in development",
+      "owner": "TerraPilot Tool Maturity Program",
+      "evidence": {
+        "manifest": "tools/registry/terrapilot.tools.json",
+        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+      },
+      "promotion": {
+        "targetState": null,
+        "operatorApproval": null,
+        "promotionDate": null,
+        "rollbackPath": null
+      }
+    }
+  ]
+}
