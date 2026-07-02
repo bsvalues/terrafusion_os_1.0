@@ -8,6 +8,15 @@ The Property Workbench has a coherent end-to-end parcel flow from route/selectio
 
 This work order is evidence-only. No runtime code, route code, package files, CI, schema/migration, county data, PACS integration, tool policy, or deployment surface was changed.
 
+## Naming Reconciliation
+
+The owner-authorized active Program 3 `/goal` + `/loop` assigns this packet to
+`WO-WORKBENCH-009 - End-to-End Parcel Flow Evidence` and assigns
+`WO-WORKBENCH-010` to the Property Workbench Operational Packet. Older program
+register text may still describe different late-chain numbering until the
+Program 3 register update lands. This packet follows the active owner-authorized
+loop and does not claim completion of any reserved-office gating work.
+
 ## Scope
 
 Goal: document the observed end-to-end parcel assessor flow across the canonical Property Workbench path.
@@ -88,7 +97,7 @@ The shell does not directly perform suite business writes. It hosts and coordina
 Observed behavior:
 
 - `selectParcel(parcelId)` sets the active parcel
-- parcel evidence load uses `getDataProvider().getParcel(parcelId)`
+- parcel evidence load uses `const provider = getDataProvider(); provider.getParcel(parcelId)`
 - related data loads in parallel after the parcel shell is usable
 - related data includes assessments, documents, appeals, tax statements, recording history, audit trail, and recent operations
 - missing/unauthorized parcel evidence produces an explicit blocker state rather than allowing silent reliance
@@ -121,7 +130,7 @@ Registry tests also identify nine valid Workbench tab IDs:
 
 Program 3 has focused on the canonical assessor chain, not on promoting Clerk, Treasury, or Audit maturity.
 
-## Suite Boundary Observations
+## Domain / OS Feature Boundary Observations
 
 Forge:
 
@@ -143,9 +152,9 @@ Dossier:
 - owns records, evidence, documents, narratives, packets, and custody
 - does not initiate workflows
 
-Pilot:
+Pilot (OS feature, not a constitutional suite):
 
-- owns tool invocation control and reasoning surface behavior
+- owns tool invocation control and reasoning surface behavior as an OS feature
 - must not directly write suite-owned data
 - routes actions through TerraPilot tools and TerraTrace evidence
 
