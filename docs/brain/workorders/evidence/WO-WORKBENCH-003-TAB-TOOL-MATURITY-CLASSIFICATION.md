@@ -55,8 +55,8 @@ These are observed facts, not repairs:
 
 1. Shell domain pack says canonical tab order is `Summary -> Forge -> Atlas -> Dais -> Dossier -> Pilot`.
 2. `PropertyWorkbench.tsx` and `Router.tsx` implement nine tabs: Summary, Forge, Atlas, Dais, Clerk, Treasury, Audit, Dossier, Pilot.
-3. `frontend/apps/os-shell/src/config/workbenchRoles.ts` says locked order is `Summary -> Forge -> Atlas -> Dais -> Clerk -> Treasury -> Audit -> Dossier -> Pilot`.
-4. `workbenchRoles.ts` exports `ALL_TAB_SLUGS` with only eight tabs and omits `pilot`.
+3. `frontend/apps/os-shell/src/config/workbenchRoles.ts` says locked order is `Summary -> Forge -> Atlas -> Dais -> Clerk -> Treasury -> Audit -> Dossier`.
+4. `workbenchRoles.ts` exports `ALL_TAB_SLUGS` with those eight tabs and omits `pilot`.
 5. `frontend/apps/os-shell/src/contracts/workbench.ts` defines `WorkbenchTabSlug` through `dossier` and omits `pilot`, while `PropertyWorkbench.tsx`, `PropertyWorkbenchWindow.tsx`, and `suiteRegistry.ts` use `pilot`.
 6. `scripts/spec-gates/workbench-compliance.mjs` prints canonical tabs as `summary | forge | atlas | dais | dossier | pilot`, while runtime includes Clerk/Treasury/Audit.
 7. `frontend/apps/os-shell/src/config/suiteRegistry.ts` includes `VALID_WORKBENCH_TAB_IDS` with all nine runtime tabs.
@@ -233,6 +233,14 @@ Expected validation meaning:
 - Existing Workbench compliance gate remains green.
 - Work Order query remains readable.
 - Evidence file has no whitespace errors.
+
+Observed validation result on 2026-07-01:
+
+- `node scripts/spec-gates/workbench-compliance.mjs`: PASS. Output reported
+  `Workbench Compliance PASSED` and no forbidden routes or non-canonical tabs found.
+- `node docs/brain/workorders/tools/wo-query.mjs --json`: PASS. Output returned
+  schema version `0.1.0` in read-only mode with a ranked next-work-order response.
+- `git diff --check`: PASS. No whitespace errors reported.
 
 ## Proven
 
