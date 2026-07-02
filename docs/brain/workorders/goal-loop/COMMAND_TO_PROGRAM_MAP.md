@@ -17,7 +17,7 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P2 | NO | `once`, `program`, `evidence`, `discovery` |
+| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P8 | YES — maturity metadata enforcement requires a separate implementation WO | `once`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -115,18 +115,22 @@ No active stop walls at WO-WORKBENCH-001.
 ### /goal terrapilot-maturity → P5
 
 **File:** [programs/terrapilot-tool-maturity.md](../programs/terrapilot-tool-maturity.md)  
-**Success condition:** At least one tool reaches L3 (live-integrated); L0/L1 tools disclosed as unavailable.
+**Success condition:** TerraPilot maturity claims are governed by protocol, evidence, and machine-readable metadata before any live promotion is attempted.
 
 | WO | Title | Status |
 |----|-------|--------|
 | WO-TERRAPILOT-P1 | Tool maturity matrix | DONE/PARTIAL |
-| WO-TERRAPILOT-P2 | Promotion protocol | **NEXT** |
-| WO-TERRAPILOT-P3 | Handler parity audit | QUEUED |
-| WO-TERRAPILOT-P4 | Stub disclosure UI | QUEUED |
-| WO-TERRAPILOT-P5 | First live-integrated tool | QUEUED |
-| WO-TERRAPILOT-P6 | Tool promotion evidence rollup | QUEUED |
+| WO-TERRAPILOT-P2 | Promotion protocol | COMPLETE IN PR |
+| WO-TERRAPILOT-P3 | Maturity metadata enforcement review | COMPLETE IN PR |
+| WO-TERRAPILOT-P4 | Stub-to-live promotion candidate queue | COMPLETE IN PR |
+| WO-TERRAPILOT-P5 | Handler / manifest / maturity parity evidence | COMPLETE IN PR |
+| WO-TERRAPILOT-P6 | Tooling operator packet | COMPLETE IN PR |
+| WO-TERRAPILOT-P7 | Evidence rollup | COMPLETE IN PR |
+| WO-TERRAPILOT-P8 | Maturity metadata enforcement | **NEXT — separate implementation WO** |
 
-No active stop walls at WO-TERRAPILOT-P2.
+WO-TERRAPILOT-P8 may proceed only as a narrow metadata/test implementation. Any runtime promotion,
+backend integration, deployment, secrets, county data, PACS, live DB access, or schema migration is a
+stop wall.
 
 ---
 
