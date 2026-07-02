@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -328,6 +330,78 @@ public class AuditController : ControllerBase
         });
     }
 
+    // ── GET api/audit/trail ─────────────────────────────────────────
+    // Per-parcel audit event trail, read from AuditEvents. Returns the
+    // canonical AuditEvent[] shape consumed by the Dais AuditTab.
+    // NOTE: domain audit-event capture is not yet wired (AU-2 interceptor
+    // is unimplemented), so AuditEvents is currently empty and this returns
+    // [] honestly rather than 404. AuditEvents has no CountyId column, so
+    // isolation here is the authenticated county gate + per-parcel scope.
+
+    [HttpGet("trail")]
+    public async Task<IActionResult> GetAuditTrail([FromQuery] string? parcelId)
+    {
+        if (string.IsNullOrWhiteSpace(parcelId))
+            return BadRequest(new { message = "parcelId is required" });
+
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        var events = await _db.AuditEvents
+            .AsNoTracking()
+            .Where(e => e.EntityId == parcelId)
+            .OrderByDescending(e => e.Timestamp)
+            .ToListAsync();
+
+        return Ok(events.Select(AuditTrailMapper.Map).ToList());
+    }
+
+    // ── GET api/audit/search ────────────────────────────────────────
+    // Filtered audit-event search across parcels/users/actions/date-range.
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchAuditTrail(
+        [FromQuery] string? parcelId,
+        [FromQuery] string? startDate,
+        [FromQuery] string? endDate,
+        [FromQuery] string? userId,
+        [FromQuery] string? category,
+        [FromQuery] string? action)
+    {
+        var countyId = await ResolveCountyIdAsync();
+        if (countyId is null) return Forbid();
+
+        IQueryable<AuditEvent> query = _db.AuditEvents.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(parcelId)) query = query.Where(e => e.EntityId == parcelId);
+        if (!string.IsNullOrWhiteSpace(userId)) query = query.Where(e => e.UserId == userId);
+        if (!string.IsNullOrWhiteSpace(action)) query = query.Where(e => e.Action.Contains(action));
+        if (TryParseUtc(startDate, out var start)) query = query.Where(e => e.Timestamp >= start);
+        if (TryParseUtc(endDate, out var end)) query = query.Where(e => e.Timestamp <= end);
+
+        var events = await query
+            .OrderByDescending(e => e.Timestamp)
+            .Take(500)
+            .ToListAsync();
+
+        IEnumerable<AuditTrailEventDto> mapped = events.Select(AuditTrailMapper.Map);
+        if (!string.IsNullOrWhiteSpace(category))
+            mapped = mapped.Where(m => string.Equals(m.Category, category, StringComparison.OrdinalIgnoreCase));
+
+        return Ok(mapped.ToList());
+    }
+
+    private static bool TryParseUtc(string? value, out DateTime utc)
+    {
+        if (!string.IsNullOrWhiteSpace(value)
+            && DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out utc))
+        {
+            return true;
+        }
+        utc = default;
+        return false;
+    }
+
     // ── Request DTOs ────────────────────────────────────────────────
 
     public record SubmitFindingRequest
@@ -349,5 +423,80 @@ public class AuditController : ControllerBase
         public int TaxYear { get; init; }
         public string[]? Offices { get; init; }
         public Guid? CountyId { get; init; }
+    }
+}
+
+/// <summary>
+/// Canonical per-parcel audit event shape consumed by the Dais AuditTab /
+/// AuditTrailPage (serialized camelCase: eventId, parcelId, timestamp, …).
+/// </summary>
+public sealed class AuditTrailEventDto
+{
+    public string EventId { get; init; } = string.Empty;
+    public string ParcelId { get; init; } = string.Empty;
+    public DateTime Timestamp { get; init; }
+    public string UserId { get; init; } = string.Empty;
+    public string UserName { get; init; } = string.Empty;
+    public string Action { get; init; } = string.Empty;
+    public string Category { get; init; } = "system";
+    public string Details { get; init; } = string.Empty;
+    public string? PreviousValue { get; init; }
+    public string? NewValue { get; init; }
+}
+
+/// <summary>Maps the AuditEvents entity to the Dais AuditEvent contract.</summary>
+public static class AuditTrailMapper
+{
+    public static AuditTrailEventDto Map(AuditEvent e)
+    {
+        string details = e.DetailsJson ?? string.Empty;
+        string? previousValue = null;
+        string? newValue = null;
+
+        if (!string.IsNullOrWhiteSpace(e.DetailsJson))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(e.DetailsJson);
+                if (doc.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    if (doc.RootElement.TryGetProperty("previousValue", out var pv)) previousValue = pv.ToString();
+                    if (doc.RootElement.TryGetProperty("newValue", out var nv)) newValue = nv.ToString();
+                    if (doc.RootElement.TryGetProperty("details", out var d)) details = d.ToString();
+                }
+            }
+            catch (JsonException)
+            {
+                // Non-JSON DetailsJson: keep the raw string as details.
+            }
+        }
+
+        return new AuditTrailEventDto
+        {
+            EventId = e.Id,
+            ParcelId = e.EntityId,
+            Timestamp = e.Timestamp,
+            UserId = e.UserId,
+            UserName = e.UserId, // AuditEvents carries no separate display name
+            Action = string.IsNullOrWhiteSpace(e.Action) ? e.Type.ToString() : e.Action,
+            Category = MapCategory(e.Entity),
+            Details = details,
+            PreviousValue = previousValue,
+            NewValue = newValue,
+        };
+    }
+
+    /// <summary>Derives the Dais category taxonomy from the entity name.</summary>
+    public static string MapCategory(string? entity)
+    {
+        var s = entity?.ToLowerInvariant() ?? string.Empty;
+        if (s.Contains("appeal")) return "appeal";
+        if (s.Contains("permit")) return "permit";
+        if (s.Contains("exemption")) return "exemption";
+        if (s.Contains("document")) return "document";
+        if (s.Contains("field")) return "field";
+        if (s.Contains("parcel") || s.Contains("property") || s.Contains("assessment") || s.Contains("valuation"))
+            return "assessment";
+        return "system";
     }
 }
