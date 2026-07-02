@@ -83,9 +83,10 @@ This is the correct integration shape for a Workbench assistant surface. Pilot i
 Observed policy model:
 
 - `read_only` tools do not require confirmation
-- `write_low` tools do not require confirmation in current policy
+- `write_low` tools can require confirmation when the manifest/preflight sets
+  `requiresConfirmation` / `confirmationRequired`
 - `write_high` tools require confirmation and reason
-- `irreversible` tools require confirmation, reason, and supervisor approval
+- `irreversible` tools require confirmation, reason, and an approval token
 
 The Workbench Pilot tab additionally filters to Muse-mode read-only tools, so write-capable tools are not presented in the tab by default.
 
