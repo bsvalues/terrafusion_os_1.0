@@ -54,8 +54,8 @@ Workbench Atlas proof surface:
 - `frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx`
 - `frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.test.tsx`
 - `frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/atlasGeo.contract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/atlasNeighborhood.contract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/atlas/atlasGeo.contract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/atlas/atlasNeighborhood.contract.test.tsx`
 
 ## Observed Runtime Shape
 
@@ -84,9 +84,18 @@ The hook also exposes boundary and layer wrapper hooks for Workbench consumption
 `canonical` are treated as live; `unavailable`, `stub`, and `empty` are treated as unavailable; other
 nonempty sources are treated as fallback.
 
-When live GIS data or a Mapbox token is unavailable, the Workbench tab renders explicit unavailable
-or deterministic preview states rather than inventing live map evidence. A satellite map renders only
-when a live boundary source, centroid, and `VITE_MAPBOX_ACCESS_TOKEN` are present.
+Important gaps carried forward:
+
+- In the preferred combined backend response shape, `AtlasGisController.GetParcel` returns nested
+  `{ boundary, layers }` data without a top-level `source`. The current hook reads `raw.source`, so
+  combined-response layer source mapping is not proven by this packet.
+- When a live boundary and centroid are available but `VITE_MAPBOX_ACCESS_TOKEN` is absent,
+  `PropertyAtlas` mounts the map canvas before returning without constructing the Mapbox map. A
+  deterministic token-missing fallback for that exact state is not proven by this packet.
+
+A satellite map renders only when a live boundary source, centroid, and `VITE_MAPBOX_ACCESS_TOKEN`
+are present. Token-missing behavior remains a promotion blocker until a UI or evidence packet proves
+the fallback.
 
 ## Governed Tool Surface
 
@@ -167,9 +176,9 @@ data, PACS connectivity, production authorization, geometry write safety, or rel
 | --- | --- | --- |
 | Atlas Workbench tab | Implemented, backend-dependent | `PropertyAtlas.tsx`, Workbench Atlas tests |
 | Parcel GIS read hook | Implemented, source-disclosing | `useAtlasGis.ts` |
-| Boundary/layer source honesty | Implemented | Workbench source badges and honesty tests |
+| Boundary/layer source honesty | Partial | Workbench source badges and honesty tests; combined-response layer source mapping not proven |
 | Live map rendering | Implemented when live source, centroid, and token exist | `PropertyAtlas.tsx` |
-| Deterministic map preview | Implemented fallback/preview posture | `PropertyAtlas.tsx` |
+| Deterministic map preview | Partial | token-missing live-boundary fallback not proven |
 | Governed Atlas tool actions | Implemented in UI, backend policy not proven here | `query_parcel_layers`, `explain_spatial_anomaly` |
 | Atlas export helpers | Present in service layer, custody not proven | `atlasService.ts` |
 | Spatial write safety | Not proven | no write-lane enforcement proof captured |
@@ -180,11 +189,15 @@ data, PACS connectivity, production authorization, geometry write safety, or rel
 1. Backend authorization proof is not captured for `query_parcel_layers` or
    `explain_spatial_anomaly`.
 2. Mapbox token governance is runtime-environment dependent and not validated here.
-3. Direct Benton ArcGIS fallback paths exist in Atlas service adapters and need county-runtime
+3. Combined-response layer source mapping is not proven because the hook reads a top-level source
+   while the preferred backend shape nests boundary/layer data.
+4. Missing-token behavior with live boundary and centroid may leave the map canvas without a
+   deterministic unavailable/preview state; this requires UI or evidence follow-up.
+5. Direct Benton ArcGIS fallback paths exist in Atlas service adapters and need county-runtime
    governance before production claims.
-4. Exported GeoJSON/CSV artifact custody is not tied to Dossier evidence handling in this packet.
-5. Geometry writes, annotations, bookmarks, and neighborhood-definition changes are not proven safe.
-6. Standalone Atlas-suite surfaces exist outside the Property Workbench tab; this packet classifies
+6. Exported GeoJSON/CSV artifact custody is not tied to Dossier evidence handling in this packet.
+7. Geometry writes, annotations, bookmarks, and neighborhood-definition changes are not proven safe.
+8. Standalone Atlas-suite surfaces exist outside the Property Workbench tab; this packet classifies
    only the Workbench Atlas surface and directly inspected suite evidence.
 
 ## Validation Run
@@ -202,9 +215,10 @@ Expected validation result: PASS.
 ## Conclusion
 
 The Workbench Atlas surface is materially implemented as a parcel-scoped Atlas tab with
-backend-dependent parcel GIS reads, source-honesty disclosures, live-map eligibility checks, preview
-fallbacks, and governed spatial tool actions. It is not a production release claim. The next safe
-Workbench packet is Dais Surface Truth.
+backend-dependent parcel GIS reads, source-honesty disclosures, live-map eligibility checks, partial
+preview fallback evidence, and governed spatial tool actions. It is not a production release claim.
+Combined-response source mapping and token-missing live-boundary fallback behavior remain gaps. The
+next safe Workbench packet is Dais Surface Truth.
 
 NEXT_RECOMMENDED_WO: WO-WORKBENCH-006 — Dais Surface Truth
 STOP_TYPE: ATLAS_SURFACE_TRUTH_CAPTURED
