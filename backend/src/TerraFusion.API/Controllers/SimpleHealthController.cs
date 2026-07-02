@@ -9,10 +9,14 @@ namespace TerraFusion.API.Controllers;
 public class SimpleHealthController : ControllerBase
 {
     private readonly ILogger<SimpleHealthController> _logger;
+    private readonly IHostApplicationLifetime _lifetime;
 
-    public SimpleHealthController(ILogger<SimpleHealthController> logger)
+    public SimpleHealthController(
+        ILogger<SimpleHealthController> logger,
+        IHostApplicationLifetime lifetime)
     {
         _logger = logger;
+        _lifetime = lifetime;
     }
 
     [HttpGet]
@@ -45,9 +49,25 @@ public class SimpleHealthController : ControllerBase
     [HttpGet("ready")]
     public IActionResult Ready()
     {
-        return Ok(new
+        // Readiness truth (WO-BACKEND-004): report Ready only once the host has
+        // fully started. While still initializing, return 503 NotReady so a load
+        // balancer / orchestrator does not route traffic to an instance that is
+        // not yet serving. Status and Message must never contradict each other —
+        // the previous implementation returned Status="Ready" together with
+        // Message="...is initializing", which was self-contradictory.
+        if (_lifetime.ApplicationStarted.IsCancellationRequested)
         {
-            Status = "Ready",
+            return Ok(new
+            {
+                Status = "Ready",
+                Timestamp = DateTime.UtcNow,
+                Message = "TerraFusion OS is ready to serve requests"
+            });
+        }
+
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+        {
+            Status = "NotReady",
             Timestamp = DateTime.UtcNow,
             Message = "TerraFusion OS is initializing"
         });
