@@ -105,13 +105,14 @@ Forge overview and sub-tabs invoke governed tools through Pilot API calls. Obser
 - `compare_assessed_value_history`
 - `run_valuation_model`
 - `propose_rate_adjustment`
-- `apply_rate_adjustment`
+- `apply_rate_adjustment_to_draft`
 - `rerun_ratio_study`
 - `compare_matrix_versions`
 - `generate_calibration_memo`
 - `flag_parcel_data_issue`
 - `explain_model_inputs`
 - `summarize_sales_comps_rationale`
+- `run_income_valuation`
 
 The `run_valuation_model` path is labeled as `write_high` in the Forge types and UI copy requires
 confirmation before execution. This packet does not validate backend enforcement for those tools; it
@@ -128,6 +129,9 @@ Forge-owned actions observed in the Workbench surface:
 - Reconciliation submission for supervisor review
 - Calibration proposal and memo tool calls
 - Parcel issue routing into a correction lane
+- Sketch observation saves through `SketchModule.onSaveObservation`, which currently flow into
+  pending IndexedDB observation state and therefore need ownership, sync, privacy, and custody proof
+  before release claims.
 
 Important distinction: `useCommitReconciliation` posts to
 `/api/forge/{parcelId}/reconciliation/commit`, but code comments state it creates a
@@ -140,8 +144,10 @@ Potentially sensitive or write-like calls that need backend proof before promoti
 - `POST /api/forge/sales/recompute-recommendations`
 - `POST /api/forge/{parcelId}/reconciliation/commit`
 - `run_valuation_model`
-- `apply_rate_adjustment`
+- `apply_rate_adjustment_to_draft`
+- `run_income_valuation`
 - `flag_parcel_data_issue`
+- Sketch pending observation saves containing measurement, GLA, and location-like fields
 
 This packet does not certify those as production-safe. It classifies them as present and needing
 backend/tool-policy proof before any release gate can claim operational readiness.
