@@ -120,23 +120,32 @@ records that the Workbench surface presents them as governed tool calls.
 
 ## Write-Lane Posture
 
-Forge-owned actions observed in the Workbench surface:
+Direct Forge-owned reads/artifacts observed in the Workbench surface:
 
 - Valuation explanation and value-change analysis
 - Cost, sales, income, and reconciliation reads
-- Sales qualification override requests
-- Sales recommendation recompute requests
-- Reconciliation submission for supervisor review
 - Calibration proposal and memo tool calls
-- Parcel issue routing into a correction lane
 - Sketch observation saves through `SketchModule.onSaveObservation`, which currently flow into
   pending IndexedDB observation state and therefore need ownership, sync, privacy, and custody proof
   before release claims.
 
+Requests routed to an owning service or downstream lane:
+
+- Sales qualification override requests
+- Sales recommendation recompute requests
+- Reconciliation submission for supervisor review
+- Parcel issue routing into a correction lane
+
 Important distinction: `useCommitReconciliation` posts to
 `/api/forge/{parcelId}/reconciliation/commit`, but code comments state it creates a
 `RECONCILIATION_PENDING` flag and does not update assessed value. That is consistent with the
-observed UI copy: "Submit for Supervisor Review."
+observed UI copy: "Submit for Supervisor Review." This packet therefore treats the reconciliation
+commit as a routed supervisor-review request, not as direct assessed-value mutation owned by the
+Forge Workbench tab.
+
+Likewise, `flag_parcel_data_issue` and correction-lane routing are carried as request flows that
+need owning-service and TerraTrace proof before promotion; they are not promoted here as
+Forge-owned writes.
 
 Potentially sensitive or write-like calls that need backend proof before promotion:
 
