@@ -42,16 +42,17 @@ The Property Workbench is referenced in memory as "window contract + routes froz
 
 | WO | Title | Status | Description |
 |----|-------|--------|-------------|
-| WO-WORKBENCH-001 | Current surface audit | **NEXT** | What routes/tabs/panels exist in the UI? What currently renders real data vs placeholder? |
-| WO-WORKBENCH-002 | Route and tab truth matrix | QUEUED | For each route/tab: what data source, what API, what honest-empty state should show |
-| WO-WORKBENCH-003 | Parcel detail path integration | QUEUED | Wire parcel detail view to `GET /api/counties/benton/parcels?parcelNumber=X` |
-| WO-WORKBENCH-004 | Forge tab data contract | QUEUED | CostForge / ValuForge tab: what data, what API, honest empty if not loaded |
-| WO-WORKBENCH-005 | Atlas/map tab data contract | QUEUED | Atlas map tab: geom availability (79,199 shapes), MapLibre integration decision |
-| WO-WORKBENCH-006 | Dais workflow tab contract | QUEUED | Dais tab: workflow state, appeal queue, honest empty |
-| WO-WORKBENCH-007 | Dossier/evidence tab contract | QUEUED | Dossier tab: parcel history, notes, evidence; honest empty vs placeholder |
-| WO-WORKBENCH-008 | Pilot/tool assistant contract | QUEUED | Pilot AI assistant: what tools are live vs stub in the workbench context |
-| WO-WORKBENCH-009 | Reserved office gating closure | QUEUED | Ensure "reserved" boundary check is implemented for non-workbench routes |
-| WO-WORKBENCH-010 | End-to-end parcel flow evidence packet | QUEUED | Prove full parcel flow: search → detail → forge → atlas → dossier |
+| WO-WORKBENCH-001 | Workbench Reality Audit | COMPLETE / PR OPEN | What routes/tabs/panels exist in the UI? What currently renders real data vs placeholder? |
+| WO-WORKBENCH-002 | Routing / Deep-Link Truth | COMPLETE / PR OPEN | Parcel-scoped route and deep-link evidence for `/property/:parcelId[/tab]`. |
+| WO-WORKBENCH-003 | Tab + Tool Maturity Classification | COMPLETE / PR OPEN | Classify canonical tabs, R3 extension tabs, tool surfaces, and write-like requests. |
+| WO-WORKBENCH-004 | Forge Surface Truth | IN FLIGHT | CostForge / ValuForge tab surface, data sources, write lanes, and honest empty states. |
+| WO-WORKBENCH-005 | Atlas Surface Truth | IN FLIGHT | Atlas map/GIS tab surface, source posture, token behavior, and export/custody caveats. |
+| WO-WORKBENCH-006 | Dais Surface Truth | QUEUED | Dais workflow tab surface, workflow state, appeal/notice actions, and honest empty states. |
+| WO-WORKBENCH-007 | Dossier Surface Truth | QUEUED | Dossier evidence/document surface, parcel history, notes, exports, and custody posture. |
+| WO-WORKBENCH-008 | Pilot Integration Truth | QUEUED | Pilot assistant/tool integration in Workbench context. |
+| WO-WORKBENCH-009 | End-to-End Parcel Flow Evidence | QUEUED | Prove assessor flow: search/detail context → Forge → Atlas → Dais/Dossier/Pilot evidence. |
+| WO-WORKBENCH-010 | Property Workbench Operational Packet | QUEUED | Package Workbench operation, validation, authority walls, rollback, and promotion criteria. |
+| WO-WORKBENCH-011 | Evidence Rollup | QUEUED | Close Program 3 baseline with evidence, known gaps, and next-lane recommendation. |
 
 ---
 
@@ -59,10 +60,10 @@ The Property Workbench is referenced in memory as "window contract + routes froz
 
 ```
 001 → 002 → 003 ─┐
-                  ├─ 004, 005, 006, 007, 008 (parallel) → 009 → 010
+                  ├─ 004, 005, 006, 007, 008 (surface truth packets) → 009 → 010 → 011
 ```
 
-003 (parcel detail integration) can start after 001+002. Tabs 004-008 can be audited in parallel. 009 and 010 require all tab contracts complete.
+003 classifies the tab/tool maturity baseline after 001+002. Surface truth packets 004-008 can be audited in parallel once the maturity baseline exists. 009, 010, and 011 require all canonical surface truth packets complete.
 
 ---
 
