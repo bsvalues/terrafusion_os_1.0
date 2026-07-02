@@ -2895,7 +2895,14 @@ if (Directory.Exists(uiPath))
       context.Response.StatusCode = 404;
       await context.Response.WriteAsync($"index.html not found at {indexPath}");
     }
-  });
+  })
+  // WO-P8-MGMT-006: the SPA shell (index.html) must load anonymously so the
+  // browser can boot the app and run its own login flow against the API.
+  // This exposes ONLY the static shell fallback — the block above still 404s
+  // /api and /hubs, and every real API endpoint keeps the deny-by-default
+  // FallbackPolicy (RequireAuthenticatedUser). Model: anonymous shell,
+  // protected APIs.
+  .AllowAnonymous();
 }
 
 // Map Prometheus metrics endpoint
