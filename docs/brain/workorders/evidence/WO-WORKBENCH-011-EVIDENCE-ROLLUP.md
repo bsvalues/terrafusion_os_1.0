@@ -96,11 +96,13 @@ runtime, CI, schema, deployment, package, or data-surface changes.
 
 ## Next Recommended Program / Lane
 
-NEXT_RECOMMENDED_PROGRAM: Program 4 - TerraPilot
+NEXT_RECOMMENDED_PROGRAM: P5 - TerraPilot Tool Maturity
+NEXT_RECOMMENDED_WO: WO-TERRAPILOT-P2 - Promotion protocol
 
 Rationale: Program 3 established the Property Workbench assessor-experience evidence baseline and
-identified Pilot integration as a governed action surface. The next highest-leverage lane is
-TerraPilot registry, handler parity, contract parity, maturity metadata, and promotion protocol.
+identified Pilot integration as a governed action surface. The registered next TerraPilot lane is
+P5 - TerraPilot Tool Maturity, with WO-TERRAPILOT-P2 as the next work order. That lane governs the
+promotion protocol before handler parity, maturity metadata, and real integration work are claimed.
 
 ## Done / Not Done
 
