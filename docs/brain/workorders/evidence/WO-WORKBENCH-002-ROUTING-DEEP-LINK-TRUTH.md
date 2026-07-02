@@ -59,7 +59,29 @@ Operational interpretation:
 
 - `/property/:parcelId[/tab]` is implemented as the canonical parcel-context route family.
 - `/property` is the parcel search/intake route.
+- `/property/search` is not registered as a search route. With the current route tree, it can be
+  interpreted as `parcelId=search` by the dynamic `/property/:parcelId` route.
 - Standalone suite homes coexist with Workbench parcel tabs, but parcel-scoped suite work should route through the Workbench.
+
+## Route / Tab Truth Matrix
+
+This matrix records the current route, data-source, API, and honest-empty truth required by the
+Property Workbench program definition. It is evidence only; it does not certify production readiness
+or repair missing contracts.
+
+| Surface | Route / entrypoint | Observed data source | Observed API dependency | Honest-empty / gap behavior |
+| --- | --- | --- | --- | --- |
+| Search | `/property` | `PropertySearch` UI surface | Not proven in this WO | Search/intake route exists, but data/API behavior is not proven here. |
+| Summary | `/property/:parcelId` | `PropertyWorkbench` index / summary child | Not proven in this WO | Missing or unknown tab slug resolves active tab to `summary`; no URL rewrite proven. |
+| Forge | `/property/:parcelId/forge` | `PropertyForge` tab surface | Not proven in this WO | Deep-link route exists; data/API and empty-state behavior require Forge surface truth. |
+| Atlas | `/property/:parcelId/atlas` | `PropertyAtlas` tab surface | Not proven in this WO | Deep-link route exists; data/API and empty-state behavior require Atlas surface truth. |
+| Dais | `/property/:parcelId/dais` | `PropertyDais` tab surface | Not proven in this WO | Deep-link route exists; data/API and empty-state behavior require Dais surface truth. |
+| Dossier | `/property/:parcelId/dossier` | `PropertyDossier` tab surface | Not proven in this WO | Deep-link route exists; data/API and empty-state behavior require Dossier surface truth. |
+| Pilot | `/property/:parcelId/pilot` | `PropertyPilot` tab surface | Not proven in this WO | Deep-link route exists; Workbench Pilot integration behavior requires Pilot truth. |
+| Clerk | `/property/:parcelId/clerk` | `PropertyClerk` tab surface | Not proven in this WO | R3 extension route exists; constitutional/maturity status is not proven here. |
+| Treasury | `/property/:parcelId/treasury` | `PropertyTreasury` tab surface | Not proven in this WO | R3 extension route exists; constitutional/maturity status is not proven here. |
+| Audit | `/property/:parcelId/audit` | `PropertyAudit` tab surface | Not proven in this WO | R3 extension route exists; constitutional/maturity status is not proven here. |
+| No-parcel suite fallback | `/property/search?openTab=<tabId>` helper output | `suiteRegistry.ts` helper output only | Not routed as a dedicated search route | Drift: helper/test contract exists, but the router does not register `/property/search`. |
 
 ## Deep-Link Resolution
 
@@ -93,12 +115,12 @@ Important nuance:
 
 Source: `frontend/apps/os-shell/src/config/suiteRegistry.ts`
 
-The registry provides a single context-aware helper path for Workbench suite links:
+The registry provides context-aware helper output for Workbench suite links:
 
 - with parcel context: `/property/<parcelId>/<tab>`
-- without parcel context: `/property/search?openTab=<tabId>`
+- without parcel context: `/property/search?openTab=<tabId>` helper output only
 
-Confirmed helper contracts:
+Confirmed helper functions:
 
 - `getWorkbenchHref(...)`
 - `getWorkbenchHrefById(...)`
@@ -122,6 +144,9 @@ Operational interpretation:
 - Suite tiles/actions can generate Workbench links without hardcoding URL strings.
 - `gpt` remains a standalone suite, but parcel-context GPT intent maps to the Pilot tab.
 - `pilot` as an OS feature does not behave as a normal workbench suite in `getWorkbenchHrefByIdWithContext`.
+- The no-parcel `/property/search?openTab=<tabId>` output is not a confirmed routable search URL.
+  It is carried as route drift because `Router.tsx` registers `/property` and `/property/:parcelId`,
+  not `/property/search`.
 
 ## Window Adapter Routing
 
@@ -179,6 +204,8 @@ These are findings only, not fixes:
 3. `suiteRegistry.ts` defines `VALID_WORKBENCH_TAB_IDS` with `summary`, `forge`, `atlas`, `dais`, `clerk`, `treasury`, `audit`, `dossier`, `pilot`, which is broader than the compliance gate's printed canonical list.
 4. Browser route mode and window-adapter mode do not fully agree for `clerk`, `treasury`, and `audit`.
 5. The deep-link contract proves active-tab fallback for unknown slugs, but not a live URL rewrite.
+6. The no-parcel helper output `/property/search?openTab=<tabId>` is not registered as a dedicated
+   search route and may be interpreted as `parcelId=search` by `/property/:parcelId`.
 
 ## Validation Run
 
@@ -210,6 +237,7 @@ Expected validation meaning:
 - Runtime parity between route-based Workbench and the desktop window adapter for all tabs.
 - Whether R3 extension tabs are constitutionally approved, transitional, or drift.
 - Whether `WorkbenchTabSlug`, `VALID_WORKBENCH_TAB_IDS`, `WORKBENCH_TABS`, and `workbench-compliance.mjs` should be reconciled.
+- Whether `/property/search?openTab=<tabId>` is intended to become a routable fallback URL or should be replaced by `/property?openTab=<tabId>`.
 
 ## Next Recommended WO
 
