@@ -8,6 +8,11 @@ The Property Workbench Dossier surface is implemented as a parcel-scoped records
 
 This work order is evidence-only. No runtime code, route code, package files, CI, schemas, county data, PACS integrations, or deployment surfaces were changed.
 
+Write-lane authorization for this packet comes from the owner-authorized
+Program 3 Workbench `/goal` + `/loop`, which explicitly permits docs/evidence
+artifacts under `docs/brain/workorders/evidence/**` while blocking runtime,
+CI, schema, deployment, secrets, county data, PACS, and SQL changes.
+
 ## Scope
 
 Goal: classify the Dossier tab and related support surfaces in the canonical assessor Workbench experience.
@@ -77,7 +82,7 @@ Observed Workbench/Pilot tool identifiers associated with Dossier include:
 Classification:
 
 - read-only summary/export actions are operationally useful but still require traceability
-- write-low note and packet assembly/finalization actions require Dossier write-lane proof
+- write-lane note and packet assembly/finalization actions require Dossier write-lane proof
 - any workflow/action that would initiate or mutate an appeal remains out of Dossier scope
 
 ## Write-Lane And Custody Posture
