@@ -13,6 +13,11 @@ Establish the current truth of the Property Workbench before implementation.
 This audit does not change runtime code, routing, tabs, backend endpoints,
 workflow behavior, county data, PACS/SQL access, or deployment behavior.
 
+Write-lane authorization for this packet comes from the owner-authorized
+Program 3 Workbench `/goal` + `/loop`, which explicitly permits docs/evidence
+artifacts under `docs/brain/workorders/evidence/**` while blocking runtime,
+CI, schema, deployment, secrets, county data, PACS, and SQL changes.
+
 The Workbench is a Tier-0 OS surface. Parcel-scoped assessor work must route
 through the Workbench, not standalone suite windows.
 
@@ -174,7 +179,7 @@ git diff --check
 
 - `workbench-compliance`: PASS
 - `wo-query`: PASS
-- `git diff --check`: pending at commit time
+- `git diff --check`: PASS
 
 ## Next Recommended Work Orders
 
