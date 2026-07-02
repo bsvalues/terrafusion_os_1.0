@@ -34,12 +34,13 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO | Title | Status | Description |
 |----|-------|--------|-------------|
 | WO-TERRAPILOT-P1 | Tool maturity matrix | **DONE/PARTIAL** | Enumerate all manifest-registered tools; assign current maturity level |
-| WO-TERRAPILOT-P2 | Promotion protocol | **COMPLETE IN PR** | Define the formal promotion gate from stub-contract to live/backend-integrated |
+| WO-TERRAPILOT-P2 | Promotion protocol | **COMPLETE IN PR** | Define the formal promotion gate from L1/stub-contract to L3/backend-integrated and L4/promoted |
 | WO-TERRAPILOT-P3 | Maturity metadata enforcement review | **COMPLETE IN PR** | Inspect whether machine-readable maturity metadata exists and where enforcement should live |
 | WO-TERRAPILOT-P4 | Stub-to-live promotion candidate queue | **COMPLETE IN PR** | Identify first promotion candidates without promoting them |
 | WO-TERRAPILOT-P5 | Handler / manifest / maturity parity evidence | **COMPLETE IN PR** | Prove handler parity and current maturity state from manifest and handlers |
 | WO-TERRAPILOT-P6 | Tooling operator packet | **COMPLETE IN PR** | Package operator rules for future TerraPilot maturity work |
 | WO-TERRAPILOT-P7 | Evidence rollup | **COMPLETE IN PR** | Roll up P2-P6 evidence and stop before live promotion |
+| WO-TERRAPILOT-P8 | Maturity metadata enforcement | **NEXT** | Add machine-readable maturity metadata and focused tests without promoting tools |
 
 ---
 
@@ -74,6 +75,6 @@ decisions.
 
 ## Disclosure Rule
 
-Until WO-TERRAPILOT-P5 produces an L3 tool:
+Until a future operator-authorized implementation WO produces an L3/L4 tool:
 - TerraPilot must be disclosed as "tool layer in development" in all demo scripts
 - No demo should show TerraPilot as a working AI assistant without a live-integrated tool

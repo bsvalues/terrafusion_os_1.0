@@ -22,6 +22,18 @@ product capability. This protocol defines the minimum evidence required before a
 | `backend-integrated` | Handler calls a real backend/API and returns real data. | Handler evidence, backing service, auth model, trace evidence, and live/focused validation. |
 | `promoted` | Backend-integrated tool is approved for operator-facing use. | All backend-integrated evidence plus operator approval, date, owner, rollback path, and UI disclosure update. |
 
+Protocol state mapping:
+
+- L0 `Declared` maps to `declared`.
+- L1 `Runnable` maps to `stub-contract`.
+- L2 `Contract-covered` maps to `contract-covered`.
+- L3 `Live-integrated` maps to `backend-integrated`.
+- L4 `Promoted` maps to `promoted`.
+
+Tools may not skip states. A tool cannot be marked `backend-integrated` until `contract-covered`
+evidence exists, and it cannot be marked `promoted` until `backend-integrated` evidence and operator
+approval exist.
+
 ## Required Promotion Evidence
 
 Every promotion request must name:

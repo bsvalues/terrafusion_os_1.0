@@ -18,7 +18,7 @@
 ## Proven
 
 - TerraPilot manifest currently declares 117 tools.
-- Manifest/handler parity is complete: 117 declared tools have at least one handler registration.
+- Manifest/handler parity is complete: 117 manifest-declared tools have at least one handler registration.
 - 54 tools have real-handler registrations in `handlers.real.ts`.
 - 63 tools are stub-only by handler-registration comparison.
 - No handler-orphan L0 gap was found.

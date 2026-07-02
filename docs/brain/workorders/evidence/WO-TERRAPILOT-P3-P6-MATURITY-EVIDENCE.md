@@ -37,11 +37,11 @@ Candidate queue:
 
 | Candidate | Current evidence | Promotion blockers |
 |-----------|------------------|--------------------|
-| `summarize_levy_rate_components` | Declared read-only tool with real handler registration. | Needs live backend probe, auth boundary, trace evidence, and operator approval. |
-| `compare_assessed_value_history` | Declared read-only tool with real handler registration. | Needs backing endpoint proof, auth boundary, trace evidence, and operator approval. |
-| `summarize_parcel_casefile` | Declared read-only tool with real handler registration. | Needs Dossier backing-service proof, auth boundary, trace evidence, and operator approval. |
-| `calculate_pilt_payment` | Declared read-only tool with real handler registration. | Needs PILT backing-service proof, auth boundary, trace evidence, and operator approval. |
-| `explain_model_results` | Declared read-only Muse tool with real handler registration. | Requires live backend proof and may require LLM/key decision if narration depends on Muse. |
+| `summarize_levy_rate_components` | Manifest-declared read-only tool with real handler registration. | Needs live backend probe, auth boundary, trace evidence, and operator approval. |
+| `compare_assessed_value_history` | Manifest-declared read-only tool with real handler registration. | Needs backing endpoint proof, auth boundary, trace evidence, and operator approval. |
+| `summarize_parcel_casefile` | Manifest-declared read-only tool with real handler registration. | Needs Dossier backing-service proof, auth boundary, trace evidence, and operator approval. |
+| `calculate_pilt_payment` | Manifest-declared read-only tool with real handler registration. | Needs PILT backing-service proof, auth boundary, trace evidence, and operator approval. |
+| `explain_model_results` | Manifest-declared read-only Muse tool with real handler registration. | Requires live backend proof and may require LLM/key decision if narration depends on Muse. |
 
 No candidate is promoted by this evidence packet.
 
@@ -57,7 +57,7 @@ Observed results:
 
 | Metric | Count |
 |--------|-------|
-| Declared manifest tools | 117 |
+| Manifest-declared tools | 117 |
 | Stub handler registrations | 80 |
 | Real handler registrations | 54 |
 | Union handled tools | 117 |
