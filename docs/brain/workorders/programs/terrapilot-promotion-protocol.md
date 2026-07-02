@@ -1,114 +1,78 @@
 # TerraPilot Tool Promotion Protocol
 
 **WO:** WO-TERRAPILOT-P2
-**Program:** P5 — TerraPilot Tool Maturity
-**Date:** 2026-07-01
-**Authority:** Operator Doctrine — the formal L0→L4 promotion gate
-**Classification:** Protocol (docs). No runtime change, no tool promoted by this document.
+**Program:** P5 - TerraPilot Tool Maturity
+**Date:** 2026-07-02
+**Authority:** Work Order Operator doctrine
+**Classification:** Protocol. No runtime change, no backend integration, no tool promotion.
 
----
+## Purpose
 
-## 0. Purpose
+TerraPilot must not present manifest registration, contract coverage, or a stub response as live
+product capability. This protocol defines the minimum evidence required before a tool can move from
+`stub-contract` to `backend-integrated` or `promoted`.
 
-Prevent "manifest green" from being mistaken for live capability. A tool that is manifest-registered
-but not backend-integrated is **not** a working tool. This protocol defines the required evidence,
-review, and approval to move a TerraPilot tool up the maturity ladder — and the disclosure rule that
-holds until a tool is genuinely live.
+## Maturity States
 
----
+| State | Meaning | Minimum evidence |
+|-------|---------|------------------|
+| `declared` | Tool exists in the manifest only. | Manifest entry with risk, write lane, and schema fields. |
+| `stub-contract` | Handler exists and returns an honest stub or deterministic contract response. | Handler registration, contract-shaped response, and stub disclosure. |
+| `contract-covered` | Contract and integration target are documented, but handler is not proven live. | Request/response contract, owning service, integration target, and verification plan. |
+| `backend-integrated` | Handler calls a real backend/API and returns real data. | Handler evidence, backing service, auth model, trace evidence, and live/focused validation. |
+| `promoted` | Backend-integrated tool is approved for operator-facing use. | All backend-integrated evidence plus operator approval, date, owner, rollback path, and UI disclosure update. |
 
-## 1. The Maturity Ladder (canonical)
+Protocol state mapping:
 
-| Level | Label | Definition | Disclosure required in UI/docs |
-|-------|-------|------------|-------------------------------|
-| **L0** | Declared | In manifest/registry only; **no handler** | "not available" |
-| **L1** | Runnable | Handler exists but returns stub/canned/empty; **no backend integration** | "not yet integrated (stub)" |
-| **L2** | Contract-covered | Handler + schema/contract + integration spec written; still stub data | "contract-covered, not live" |
-| **L3** | Live-integrated | Handler calls a **real backend/API** returning **real data**; trace emitted | "live" (source badge) |
-| **L4** | Promoted | L3 + tests + evidence doc + **operator approval** | "live, approved" |
+- L0 `Declared` maps to `declared`.
+- L1 `Runnable` maps to `stub-contract`.
+- L2 `Contract-covered` maps to `contract-covered`.
+- L3 `Live-integrated` maps to `backend-integrated`.
+- L4 `Promoted` maps to `promoted`.
 
-**Rule:** a tool below L3 must be disclosed as not-live in every UI surface and operator-facing doc.
-Green contract coverage (L2) is **not** live capability.
+Tools may not skip states. A tool cannot be marked `backend-integrated` until `contract-covered`
+evidence exists, and it cannot be marked `promoted` until `backend-integrated` evidence and operator
+approval exist.
 
----
+## Required Promotion Evidence
 
-## 2. Promotion Gates (evidence required to advance)
+Every promotion request must name:
 
-### L0 → L1 (Declared → Runnable)
-- A handler is registered in the tool dispatcher (toolId → handler) and returns a **well-formed,
-  honestly-labeled stub** (`source:"stub"`, no fabricated domain data).
-- Evidence: handler file:line; a probe showing the stub response with `source:"stub"`.
+- Current state and target state.
+- Tool ID and manifest location.
+- Owner and owning service.
+- Backing endpoint, service, or data source.
+- Integration surface and auth boundary.
+- Verification method and exact command/probe.
+- TerraTrace/correlation evidence requirement.
+- UI/operator disclosure rule.
+- Rollback or demotion path.
+- Promotion date and approving operator for `promoted`.
 
-### L1 → L2 (Runnable → Contract-covered)
-- Request/response **schema** defined and validated; an **integration spec** documents the real
-  backend endpoint/service the handler will call and the data mapping.
-- A **contract test** asserts the schema and the stub-disclosure (badge/`source` field).
-- Evidence: schema location; spec doc; passing contract test.
+## Stop Gates
 
-### L2 → L3 (Contract-covered → Live-integrated) — **the real bar**
-- Handler calls a **real** service/DbContext/API (not a stub) and returns **real data**.
-- The response carries a **live** source marker (not `stub`), and a **trace event** is emitted
-  (immutable, correlation-id).
-- Verified by a **live probe** (or authenticated live test) showing real data, and by the
-  handler no longer returning the stub branch.
-- **This step changes runtime behavior → crosses SW-09** and, if it wires a new backend/LLM,
-  **SW-08/SW-10**. It requires explicit operator authorization (it is not a docs WO).
-- Evidence: live probe output with real data; trace event; handler diff removing the stub path.
+A tool may not move to `backend-integrated` or `promoted` inside a docs/evidence work order. Stop and
+open a separate authorized implementation work order if promotion requires:
 
-### L3 → L4 (Live-integrated → Promoted)
-- L3 evidence **plus**: unit/contract/e2e tests green; an **evidence rollup doc**; and **operator
-  approval** recorded (named approver, date, WO id).
-- Only at L4 may a demo/doc present the tool as a working assistant.
+- Runtime behavior changes.
+- Backend integration or handler rewiring.
+- Deployment or service startup changes.
+- Secrets, credentials, Key Vault, PACS, county SQL, county data, or live database access.
+- Schema migration or data mutation.
+- New auth scope or protected data exposure.
 
----
+## Disclosure Rule
 
-## 3. Review Step
+Until a tool is `backend-integrated`, every UI, operator packet, and demo script must describe it as
+not live. Acceptable labels include:
 
-Each promotion PR must:
-1. Cite the current level and the target level.
-2. Attach the evidence listed in §2 for the target gate.
-3. For L2→L3 and above: name the stop wall(s) crossed (SW-08/09/10) and the authorization reference.
-4. Pass the honesty contract (no fabricated data; stub disclosed until L3; source badge correct).
+- `stub-contract`
+- `contract-covered, not live`
+- `tool layer in development`
 
-A tool may not skip levels. L2→L3 may not be self-approved by the executing agent — it is an
-operator authority wall.
+Green manifest validation is not a live-capability claim.
 
----
+## Completion
 
-## 4. Disclosure Rule (in force now)
-
-Until WO-TERRAPILOT-P5 produces a genuine **L3** tool:
-- TerraPilot is disclosed as **"tool layer in development"** in all demo scripts and docs.
-- No demo presents TerraPilot as a working AI assistant.
-- The deployed pilot surface already models this correctly: `/api/pilot/health` returns
-  `{"status":"degraded","runtimeOnline":false,"message":"Pilot runtime offline — using .NET fallback
-  stubs"}`; `/api/pilot/tools` and `/api/pilot/traces` return `source:"stub"`, `runtimeOnline:false`.
-  **This honest degraded disclosure is the target behavior for all L0/L1 tools — preserve it.**
-
----
-
-## 5. Stop Walls In This Program
-
-| Wall | Where |
-|------|-------|
-| SW-09 runtime behavior | any L2→L3 promotion (handler starts returning real data) |
-| SW-08 external integration | wiring a new backend/LLM/service for a tool |
-| SW-10 auth/security | if a tool requires new auth scope or exposes protected data |
-| SW-03 secrets | if integration needs credentials (LLM keys, DB) |
-
-WO-TERRAPILOT-P3/P4/P6 (handler parity, stub disclosure, evidence rollup) are **read-only/docs (R0/R1)**
-and cross no wall. **P5 is a candidate *review*** (read-only) — the actual L2→L3 promotion it
-recommends is a separate, operator-authorized WO.
-
----
-
-## 6. Change Log
-
-| Date | Change | WO |
-|------|--------|----|
-| 2026-07-01 | Protocol authored | WO-TERRAPILOT-P2 |
-
----
-
-**WO-TERRAPILOT-P2: COMPLETE.** Enables P3 (handler parity), P4 (stub disclosure), P5 (candidate
-review), P6 (rollup).
+WO-TERRAPILOT-P2 is complete when this protocol exists and subsequent P5 evidence uses it as the
+promotion gate.
