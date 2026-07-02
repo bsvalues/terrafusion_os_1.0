@@ -1,7 +1,9 @@
 using System.Reflection;
+using System.Threading;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
 using Xunit;
@@ -41,7 +43,8 @@ public sealed class SimpleHealthControllerGitShaTests
             Environment.SetEnvironmentVariable("TF_GIT_SHA", null);
 
             var controller = new SimpleHealthController(
-                NullLogger<SimpleHealthController>.Instance);
+                NullLogger<SimpleHealthController>.Instance,
+                StubLifetime.Instance);
 
             var actionResult = controller.Get();
             var ok = actionResult as OkObjectResult;
@@ -77,7 +80,8 @@ public sealed class SimpleHealthControllerGitShaTests
             Environment.SetEnvironmentVariable("TF_GIT_SHA", fakeSha);
 
             var controller = new SimpleHealthController(
-                NullLogger<SimpleHealthController>.Instance);
+                NullLogger<SimpleHealthController>.Instance,
+                StubLifetime.Instance);
 
             var actionResult = controller.Get();
             var ok = actionResult as OkObjectResult;
@@ -104,7 +108,8 @@ public sealed class SimpleHealthControllerGitShaTests
     public void Health_Response_RetainsHealthyStatusContract()
     {
         var controller = new SimpleHealthController(
-            NullLogger<SimpleHealthController>.Instance);
+            NullLogger<SimpleHealthController>.Instance,
+            StubLifetime.Instance);
 
         var actionResult = controller.Get();
         var ok = actionResult as OkObjectResult;
@@ -118,5 +123,18 @@ public sealed class SimpleHealthControllerGitShaTests
             "PR-9 is additive — the existing Status field MUST still be present");
 
         statusProperty!.GetValue(payload).Should().Be("Healthy");
+    }
+
+    /// <summary>
+    /// Minimal stub for the readiness-gating dependency added in WO-BACKEND-004.
+    /// These gitSha tests exercise Get() only, so the lifetime value is irrelevant.
+    /// </summary>
+    private sealed class StubLifetime : IHostApplicationLifetime
+    {
+        public static readonly StubLifetime Instance = new();
+        public CancellationToken ApplicationStarted => CancellationToken.None;
+        public CancellationToken ApplicationStopping => CancellationToken.None;
+        public CancellationToken ApplicationStopped => CancellationToken.None;
+        public void StopApplication() { }
     }
 }
