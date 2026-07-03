@@ -17,7 +17,7 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P12 | YES — metadata promotion and live promotion remain owner decisions | `once`, `evidence`, `discovery` |
+| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P13 | YES — metadata change and live promotion remain owner decisions | `once`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -130,13 +130,15 @@ No active stop walls at WO-WORKBENCH-001.
 | WO-TERRAPILOT-P9 | First promotion candidate decision | COMPLETE IN PR |
 | WO-TERRAPILOT-P10 | Contract-covered candidate evidence packet | COMPLETE IN PR |
 | WO-TERRAPILOT-P11 | Contract-covered metadata decision | COMPLETE IN PR |
-| WO-TERRAPILOT-P12 | Contract-covered metadata change authorization packet | **NEXT — OWNER DECISION** |
+| WO-TERRAPILOT-P12 | Contract-covered metadata change authorization packet | COMPLETE IN PR |
+| WO-TERRAPILOT-P13 | Contract-covered metadata change | **NEXT — OWNER AUTHORIZATION REQUIRED** |
 
 WO-TERRAPILOT-P11 decided that `summarize_levy_rate_components` remains a valid candidate for a
 future `contract-covered` metadata change, but it did not mutate maturity metadata. WO-TERRAPILOT-P12
-is the next owner-decision packet for whether to authorize that metadata change. Any runtime
-promotion, backend integration, `liveIntegration: true` claim, deployment, secrets, county data, PACS,
-live DB access, or schema migration is a stop wall before any separate runtime promotion WO.
+records the exact owner-decision packet for whether to authorize that metadata change. WO-TERRAPILOT-P13
+must not start unless the owner explicitly authorizes the metadata change. Any runtime promotion,
+backend integration, `liveIntegration: true` claim, deployment, secrets, county data, PACS, live DB
+access, or schema migration is a stop wall before any separate runtime promotion WO.
 
 ---
 
