@@ -1802,7 +1802,6 @@ namespace TerraFusion.Core.Services
             try
             {
                 var auditEvents = await _context.AuditEvents
-                    .Include(ae => ae.User)
                     .Where(ae => ae.Entity == entityType && ae.EntityId == entityId)
                     .OrderByDescending(ae => ae.Timestamp)
                     .ToListAsync();
@@ -1821,7 +1820,6 @@ namespace TerraFusion.Core.Services
             try
             {
                 var query = _context.AuditEvents
-                    .Include(ae => ae.User)
                     .Where(ae => ae.UserId == userId);
 
                 if (startDate.HasValue)
@@ -2066,7 +2064,9 @@ namespace TerraFusion.Core.Services
                 IpAddress = auditEvent.IpAddress,
                 UserAgent = auditEvent.UserAgent,
                 SessionId = auditEvent.SessionId,
-                User = MapToUserDto(auditEvent.User),
+                // WO-AU2-5B: UserId is a plain actor identifier (no CollaborationUser
+                // navigation). Surface it on the DTO without a profile lookup.
+                User = new CollaborationUserDto { UserId = auditEvent.UserId, Name = auditEvent.UserId },
                 Details = !string.IsNullOrEmpty(auditEvent.DetailsJson) ? JsonSerializer.Deserialize<Dictionary<string, object>>(auditEvent.DetailsJson) ?? new Dictionary<string, object>() : new Dictionary<string, object>()
             };
         }
