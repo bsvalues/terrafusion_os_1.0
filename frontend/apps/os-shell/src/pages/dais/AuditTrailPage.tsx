@@ -9,6 +9,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import type { AuditEvent } from '../../components/dais/AuditTab';
 import { Badge } from '../../components/ui/badge';
 import type { BadgeProps } from '../../components/ui/badge';
+import { apiFetchJson } from '../../lib/apiBase';
 
 // ============================================================================
 // API
@@ -32,9 +33,8 @@ async function searchAuditTrail(filters: AuditFilters): Promise<AuditEvent[]> {
   if (filters.category) params.set('category', filters.category);
   if (filters.action) params.set('action', filters.action);
 
-  const res = await fetch(`/api/audit/search?${params.toString()}`);
-  if (!res.ok) throw new Error(`Failed to search audit trail: ${res.statusText}`);
-  return res.json();
+  // Authed apiFetch (Invariant B: bare path, getApiBase() prepends /api).
+  return apiFetchJson<AuditEvent[]>(`/audit/search?${params.toString()}`);
 }
 
 // ============================================================================
