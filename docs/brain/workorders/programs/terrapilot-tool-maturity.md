@@ -48,6 +48,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | **COMPLETE IN PR** | Update only `summarize_levy_rate_components` maturity metadata and supporting evidence/routing docs |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | **COMPLETE IN PR** | Close the L2 metadata chain and record the stop wall before live/backend integration |
 | WO-TERRAPILOT-P15 | Future promotion authorization decision packet | **COMPLETE IN PR** | Record owner decision choices and evidence required before any future live/backend integration; no implementation in this packet |
+| WO-TERRAPILOT-P16 | Live integration design packet | **BLOCKED — OWNER AUTHORIZATION REQUIRED** | Design-only packet for a possible future live/backend integration path; no implementation unless separately authorized |
 
 ---
 
@@ -63,7 +64,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision packet -> stop before live/backend integration
+P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision packet -> P16 blocked until owner authorization
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work

@@ -17,7 +17,7 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-maturity` | P5 | Owner decision before live/backend promotion | YES — live promotion remains an owner/runtime decision | `once`, `evidence`, `discovery` |
+| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -134,6 +134,7 @@ No active stop walls at WO-WORKBENCH-001.
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | COMPLETE IN PR |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | COMPLETE IN PR |
 | WO-TERRAPILOT-P15 | Future promotion authorization decision packet | COMPLETE IN PR |
+| WO-TERRAPILOT-P16 | Live integration design packet | BLOCKED — owner authorization required |
 
 WO-TERRAPILOT-P11 decided that `summarize_levy_rate_components` remains a valid candidate for a
 future `contract-covered` metadata change, but it did not mutate maturity metadata. WO-TERRAPILOT-P12

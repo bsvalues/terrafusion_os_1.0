@@ -4,6 +4,22 @@
 
 Decision packet only. This work order does not authorize or implement live/backend integration.
 
+## Authorization
+
+Owner authorization for WO-TERRAPILOT-P15 allowed evidence/governance documentation under
+`docs/brain/workorders/**` to create the future promotion decision packet and update the
+TerraPilot program routing docs. This authorization did not include runtime code, handler behavior,
+tool metadata mutation, CI workflow changes, schema/database changes, deployment, secrets, county
+data, PACS, SQL, or live DB access.
+
+Authorized file scope:
+
+- `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
+- `docs/brain/workorders/evidence/WO-TERRAPILOT-P15-FUTURE-PROMOTION-AUTHORIZATION-DECISION.md`
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
+- `docs/brain/workorders/programs/terrapilot-tool-maturity.md`
+
 ## Current Truth
 
 `summarize_levy_rate_components` is the current TerraPilot promotion-path candidate.
