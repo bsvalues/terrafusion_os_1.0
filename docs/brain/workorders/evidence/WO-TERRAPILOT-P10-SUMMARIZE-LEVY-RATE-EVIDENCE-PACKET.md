@@ -14,6 +14,20 @@ This packet does not promote the tool, does not mark it `contract-covered`, and 
 backend/product integration. It records the current evidence, the missing evidence, and the stop
 gates that must remain in force before any future `backend-integrated` or `promoted` claim.
 
+## Authorization and Scope
+
+This `docs/brain/**` evidence packet is authorized by
+`WO-TERRAPILOT-P10 - summarize_levy_rate_components Evidence Packet` under the
+`GOAL-TERRAPILOT-TOOL-MATURITY` loop. The owner-approved P10 scope is evidence only:
+
+- inspect maturity metadata, registry metadata, and current handler/manifest references,
+- document current state and missing evidence before promotion,
+- update program/playbook routing only where needed for the next governance work order.
+
+This authorization does not permit runtime implementation, handler behavior changes, backend
+integration, CI workflow changes, schema/database migration, deployment, secrets, county data, PACS,
+county SQL, live DB access, or promotion to `backend-integrated`/`live`.
+
 ## Candidate
 
 | Field | Value |
@@ -41,7 +55,9 @@ gates that must remain in force before any future `backend-integrated` or `promo
 - `os-platform/core/tests/r1-contract-alignment.test.mjs`
 - `os-platform/core/tests/r1-auth-smoke.test.mjs`
 - `os-platform/core/tests/r1-live-smoke.test.mjs`
+- `os-platform/core/tests/phase83-tools.test.mjs`
 - `os-platform/core/tests/phase85-tools.test.mjs`
+- `os-platform/core/tests/tool-maturity.test.mjs`
 
 ## Current Manifest Contract
 
@@ -114,7 +130,7 @@ evidence-only and leaves `tools/registry/tool-maturity.json` unchanged.
 
 The tool must not be marked `backend-integrated` until a separate authorized work order provides:
 
-- focused live/focused validation against the owning backend service,
+- focused live validation against the owning backend service,
 - proof that the backing service is available in the intended environment,
 - auth model evidence that does not expose credentials or secrets,
 - TerraTrace/correlation evidence for a real execution path,
@@ -154,10 +170,15 @@ Validation for this evidence packet:
 
 ```powershell
 git diff --check
+pnpm run type-check
 node docs/brain/workorders/tools/wo-query.mjs --json
 node --test os-platform/core/tests/tool-maturity.test.mjs
 node --test os-platform/core/tests/phase83-tools.test.mjs
 ```
+
+Validation result: all commands passed. `pnpm run type-check` required materializing the local
+sparse checkout paths used by `tsconfig.core.json`; no tracked lockfile or runtime changes were
+kept from that local validation setup.
 
 ## Next Recommended Work
 
