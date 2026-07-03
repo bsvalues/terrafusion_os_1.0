@@ -40,7 +40,8 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P5 | Handler / manifest / maturity parity evidence | **COMPLETE IN PR** | Prove handler parity and current maturity state from manifest and handlers |
 | WO-TERRAPILOT-P6 | Tooling operator packet | **COMPLETE IN PR** | Package operator rules for future TerraPilot maturity work |
 | WO-TERRAPILOT-P7 | Evidence rollup | **COMPLETE IN PR** | Roll up P2-P6 evidence and stop before live promotion |
-| WO-TERRAPILOT-P8 | Maturity metadata enforcement | **NEXT** | Add machine-readable maturity metadata and focused tests without promoting tools |
+| WO-TERRAPILOT-P8 | Maturity metadata enforcement | **COMPLETE IN PR** | Add machine-readable maturity metadata and focused tests without promoting tools |
+| WO-TERRAPILOT-P9 | First promotion candidate decision | **NEXT — OWNER DECISION** | Decide whether a separate runtime WO may attempt the first L2/L3 candidate |
 
 ---
 
@@ -56,12 +57,15 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) → P2 → P3 → P4 → P5 → P6 → P7
+P1 (partial) → P2 → P3 → P4 → P5 → P6 → P7 → P8 → P9 decision
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work
 order because it changes tool behavior and may require deployment, auth, secrets, or county data
 decisions.
+
+P8 adds enforcement metadata and static tests only. It does not move any tool to `backend-integrated`
+or `promoted`.
 
 ---
 
