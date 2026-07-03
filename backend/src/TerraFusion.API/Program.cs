@@ -2267,8 +2267,12 @@ builder.Services.AddAutoMapper(
 // Program.cs references both assemblies, so it can bridge them safely.
 TerraFusion.Data.TerraFusionDbContext.OnModelCreatingExtensions = TerraFusion.AI.Data.GptAiEntityConfigurations.Apply;
 
-// Register database context with SQLite fallback
-builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
+// Register database context with SQLite fallback.
+// WO-AU2-1: the primary (request-pipeline) context carries the audit-field
+// stamping interceptor. CLI/ETL/seeding hosts build their own contexts above
+// and deliberately do NOT get it (no bulk audit stamping).
+builder.Services.AddScoped<TerraFusion.Data.Auditing.AuditableEntityInterceptor>();
+builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>((sp, options) =>
 {
   var connectionString = ResolvePrimaryConnectionString(builder.Configuration, builder.Environment);
   var provider = builder.Configuration["DatabaseProvider"];
@@ -2287,6 +2291,8 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
     // SQLite for development
     options.UseSqlite(ResolveSqliteConnectionString(connectionString, builder.Environment.ContentRootPath));
   }
+
+  options.AddInterceptors(sp.GetRequiredService<TerraFusion.Data.Auditing.AuditableEntityInterceptor>());
 });
 
 // Register TerraFusionContext (Identity context for TerraGaiaService)

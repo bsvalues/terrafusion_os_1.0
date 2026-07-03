@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.DTOs;
 
 namespace TerraFusion.Core.Entities
@@ -546,6 +547,7 @@ namespace TerraFusion.Core.Entities
 
     // Audit and Compliance Entities
     [Table("AuditEvents")]
+    [Index(nameof(EntityId), nameof(Timestamp))] // WO-AU2-2: per-parcel trail lookup
     public class AuditEvent
     {
         [Key]
@@ -584,7 +586,11 @@ namespace TerraFusion.Core.Entities
         [Required]
         [StringLength(100)]
         public string SessionId { get; set; } = string.Empty;
-        
+
+        // WO-AU2-2: county context for audit-event isolation. Nullable + additive
+        // (no backfill); AU2-3 event emission will populate it going forward.
+        public Guid? CountyId { get; set; }
+
         // Navigation Properties
         [ForeignKey(nameof(UserId))]
         public virtual CollaborationUser User { get; set; } = null!;
