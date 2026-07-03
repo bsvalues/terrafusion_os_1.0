@@ -1650,6 +1650,8 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusi
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICodexService, TerraFusion.Core.Services.CodexService>();
 
 // Register governed tool audit service (FISMA-compliant Dais tool invocation logging)
+// WO-AU2-3: IAuditEventWriter emits per-parcel AuditEvents rows (the trail feed).
+builder.Services.AddScoped<TerraFusion.API.Services.IAuditEventWriter, TerraFusion.API.Services.AuditEventWriter>();
 builder.Services.AddScoped<TerraFusion.API.Services.IGovernedToolAuditService, TerraFusion.API.Services.GovernedToolAuditService>();
 
 // Register Dais CRUD services (appeals, exemptions, certifications, notices, queue)

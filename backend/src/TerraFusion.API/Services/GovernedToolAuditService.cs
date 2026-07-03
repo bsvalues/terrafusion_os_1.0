@@ -1,4 +1,5 @@
 using System.Text.Json;
+using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 
@@ -17,11 +18,16 @@ public interface IGovernedToolAuditService
 public class GovernedToolAuditService : IGovernedToolAuditService
 {
     private readonly ITerraFusionDbContext _db;
+    private readonly IAuditEventWriter _auditEvents;
     private readonly ILogger<GovernedToolAuditService> _logger;
 
-    public GovernedToolAuditService(ITerraFusionDbContext db, ILogger<GovernedToolAuditService> logger)
+    public GovernedToolAuditService(
+        ITerraFusionDbContext db,
+        IAuditEventWriter auditEvents,
+        ILogger<GovernedToolAuditService> logger)
     {
         _db = db;
+        _auditEvents = auditEvents;
         _logger = logger;
     }
 
@@ -60,5 +66,39 @@ public class GovernedToolAuditService : IGovernedToolAuditService
                 "Failed to persist audit log for tool={ToolName} parcel={ParcelId}",
                 toolName, parcelId);
         }
+
+        // WO-AU2-3: also emit a per-parcel domain AuditEvents row so the Dais
+        // audit trail (/api/audit/trail + /search) populates. Self-contained and
+        // resilient (AuditEventWriter never throws).
+        var (entity, type) = MapTool(toolName);
+        await _auditEvents.WriteAsync(
+            entity: entity,
+            entityId: parcelId,
+            action: toolName,
+            type: type,
+            detailsJson: JsonSerializer.Serialize(new { toolName, status }),
+            cancellationToken: ct);
+    }
+
+    /// <summary>Maps a governed Dais tool name to the AuditEvent (Entity, Type) it represents.</summary>
+    private static (string Entity, AuditEventType Type) MapTool(string toolName)
+    {
+        var t = (toolName ?? string.Empty).ToLowerInvariant();
+        if (t.Contains("appeal") || t.Contains("boe") || t.Contains("hearing"))
+            return ("Appeal", t.Contains("file") ? AuditEventType.Create : AuditEventType.Update);
+        if (t.Contains("exempt"))
+            return ("Exemption",
+                t.Contains("create") ? AuditEventType.Create
+                : t.Contains("eligibility") ? AuditEventType.View
+                : AuditEventType.Update);
+        if (t.Contains("certification"))
+            return ("Certification", AuditEventType.Update);
+        if (t.Contains("notice"))
+            return ("Notice", AuditEventType.Create);
+        if (t.Contains("queue"))
+            return ("Queue", AuditEventType.Update);
+        if (t.Contains("classify"))
+            return ("Assessment", AuditEventType.Update);
+        return ("Dais", AuditEventType.Update);
     }
 }
