@@ -37,17 +37,25 @@ using TerraFusion.Data.Services.PacsSources;
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// SYNC-POP-2 debug + diagnostic surface. Active in Development only;
-/// guarded write/destructive endpoints additionally require the
-/// <c>ALLOW_DESTRUCTIVE_DEBUG</c> env var. See
-/// <c>docs/sync/sync-pop-2-findings.md</c> for the arc this controller
-/// supports.
+/// SYNC-POP-2 debug + diagnostic surface. See
+/// <c>docs/sync/sync-pop-2-findings.md</c> for the arc this controller supports.
+///
+/// Security posture (layered, WO-BACKEND-SEC-DEBUG-001):
+///   1. Environment gate — the controller is only added to the MVC feature set
+///      in Development (see Program.cs NamespaceExcludingControllerFeatureProvider);
+///      in every other environment its routes do not exist (404).
+///   2. Authorization — where it IS mapped, the whole controller requires an
+///      authenticated caller in the SystemAdmin/Administrator role. It is NO
+///      LONGER [AllowAnonymous]: destructive DB mutations can never be invoked
+///      without an admin token. Operator sync tooling must send an admin Bearer.
+///   3. Destructive env gate — truncate/destructive endpoints additionally
+///      require <c>ALLOW_DESTRUCTIVE_DEBUG=true</c> (unchanged).
 ///
 /// Endpoint posture:
-///   GET  canonical-counts                — read-only, safe in any env
-///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query
-///   POST sync-pop-2/run-chain            — proof-run; writes legacy_pacs_raw
-///   POST sync-pop-2/truncate-raw-landing — DESTRUCTIVE, env-guarded
+///   GET  canonical-counts                — read-only counts (admin)
+///   GET  sync-pop-2/pacs-table-columns   — read-only INFORMATION_SCHEMA query (admin)
+///   POST sync-pop-2/run-chain            — proof-run; writes legacy_pacs_raw (admin)
+///   POST sync-pop-2/truncate-raw-landing — DESTRUCTIVE, admin + env-guarded
 ///
 /// The doctrine-clean alternative for production landing is the existing
 /// <c>POST /api/sync/sales/run</c> (S2-B + S3); this controller exists
@@ -56,7 +64,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/debug")]
-[AllowAnonymous]
+[Authorize(Roles = "SystemAdmin,Administrator")]
 public class CanonicalDebugController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
