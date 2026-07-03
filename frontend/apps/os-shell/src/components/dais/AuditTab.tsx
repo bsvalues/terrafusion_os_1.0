@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { apiFetchJson } from '../../lib/apiBase';
 
 // ============================================================================
 // Types
@@ -39,11 +40,10 @@ const CATEGORY_COLORS: Record<AuditEvent['category'], string> = {
 };
 
 async function fetchAuditTrail(parcelId: string): Promise<AuditEvent[]> {
-  const res = await fetch(
-    `/api/audit/trail?parcelId=${encodeURIComponent(parcelId)}`
+  // Authed apiFetch (Invariant B: bare path, getApiBase() prepends /api).
+  return apiFetchJson<AuditEvent[]>(
+    `/audit/trail?parcelId=${encodeURIComponent(parcelId)}`
   );
-  if (!res.ok) throw new Error(`Failed to fetch audit trail: ${res.statusText}`);
-  return res.json();
 }
 
 // ============================================================================
