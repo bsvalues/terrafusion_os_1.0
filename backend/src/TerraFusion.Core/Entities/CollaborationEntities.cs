@@ -548,6 +548,7 @@ namespace TerraFusion.Core.Entities
     // Audit and Compliance Entities
     [Table("AuditEvents")]
     [Index(nameof(EntityId), nameof(Timestamp))] // WO-AU2-2: per-parcel trail lookup
+    [Index(nameof(UserId))] // WO-AU2-5B: preserve the by-user index after FK decoupling
     public class AuditEvent
     {
         [Key]
@@ -562,8 +563,11 @@ namespace TerraFusion.Core.Entities
         [Required]
         [StringLength(100)]
         public string EntityId { get; set; } = string.Empty;
-        
+
+        // WO-AU2-5B: plain actor identifier (JWT GovernmentUser GUID or "system").
+        // StringLength(450) pins the pre-FK column type so decoupling touches only the FK.
         [Required]
+        [StringLength(450)]
         public string UserId { get; set; } = string.Empty;
         
         [Required]
@@ -591,9 +595,9 @@ namespace TerraFusion.Core.Entities
         // (no backfill); AU2-3 event emission will populate it going forward.
         public Guid? CountyId { get; set; }
 
-        // Navigation Properties
-        [ForeignKey(nameof(UserId))]
-        public virtual CollaborationUser User { get; set; } = null!;
+        // WO-AU2-5B: UserId is a plain actor identifier (JWT GovernmentUser GUID or
+        // "system"), NOT a CollaborationUsers key. The former [ForeignKey] navigation
+        // made every trail insert violate FK_AuditEvents_CollaborationUsers_UserId.
     }
 
     [Table("DocumentAuditEvents")]
