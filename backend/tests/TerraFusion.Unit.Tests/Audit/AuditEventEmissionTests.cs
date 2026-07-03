@@ -75,6 +75,27 @@ public sealed class AuditEventEmissionTests
         row.CountyId.Should().BeNull();
     }
 
+    [Fact]
+    public async Task Writer_ResolvesCountyCodeClaimToCountyGuid()
+    {
+        // WO-AUDIT-COUNTY-FILTER-001: a countyCode/name claim (not a GUID) must resolve to the
+        // real county GUID so the county-isolated trail can surface the row.
+        await using var db = NewDb(nameof(Writer_ResolvesCountyCodeClaimToCountyGuid));
+        var countyGuid = Guid.NewGuid();
+        db.Counties.Add(new County { Id = countyGuid, Name = "Benton", State = "WA", FipsCode = "003" });
+        await db.SaveChangesAsync();
+
+        var accessor = new FakeUserContext
+        {
+            Current = new RequestUserContext(true, "u1", "Benton", Array.Empty<string>())
+        };
+        var writer = new AuditEventWriter(db, accessor, NullLogger<AuditEventWriter>.Instance);
+
+        await writer.WriteAsync("Appeal", "P1", "file_appeal", AuditEventType.Create);
+
+        db.AuditEvents.Single().CountyId.Should().Be(countyGuid);
+    }
+
     // ── GovernedToolAuditService emission ───────────────────────────────
 
     [Fact]
