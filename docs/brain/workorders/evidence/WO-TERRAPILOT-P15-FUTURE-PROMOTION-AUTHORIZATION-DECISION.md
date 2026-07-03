@@ -137,7 +137,7 @@ If owner wants to explore live integration later:
 
 - `WO-TERRAPILOT-P16 — Live Integration Design Packet`
 
-P16 must be design-only unless the owner explicitly authorizes runtime implementation.
+P16 must remain design-only. Any runtime implementation requires a separate owner-authorized WO.
 
 ## Non-Changes
 
