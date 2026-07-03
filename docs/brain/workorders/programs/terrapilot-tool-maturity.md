@@ -42,7 +42,8 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P7 | Evidence rollup | **COMPLETE IN PR** | Roll up P2-P6 evidence and stop before live promotion |
 | WO-TERRAPILOT-P8 | Maturity metadata enforcement | **COMPLETE IN PR** | Add machine-readable maturity metadata and focused tests without promoting tools |
 | WO-TERRAPILOT-P9 | First promotion candidate decision | **COMPLETE IN PR** | Decide whether a separate runtime WO may attempt the first L2/L3 candidate |
-| WO-TERRAPILOT-P10 | Contract-covered candidate evidence packet | **NEXT — EVIDENCE PACKET** | Document contract, owner, backing target, auth boundary, verification method, trace requirement, UI disclosure, and rollback path for the first candidate |
+| WO-TERRAPILOT-P10 | Contract-covered candidate evidence packet | **COMPLETE IN PR** | Document contract, owner, backing target, auth boundary, verification method, trace requirement, UI disclosure, and rollback path for the first candidate |
+| WO-TERRAPILOT-P11 | Contract-covered metadata decision | **NEXT — METADATA DECISION** | Decide whether P10 evidence is sufficient to move `summarize_levy_rate_components` to `contract-covered`, without claiming live integration |
 
 ---
 
@@ -58,7 +59,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) → P2 → P3 → P4 → P5 → P6 → P7 → P8 → P9 decision → P10 evidence packet
+P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work
@@ -67,6 +68,10 @@ decisions.
 
 P8 adds enforcement metadata and static tests only. It does not move any tool to `backend-integrated`
 or `promoted`.
+
+P10 records candidate evidence only. P11 may decide whether `summarize_levy_rate_components` can move
+to `contract-covered`, but it must still stop before `backend-integrated`, `liveIntegration: true`,
+or `promoted` unless a separate operator-authorized runtime work order exists.
 
 ---
 
