@@ -53,7 +53,7 @@ public sealed class GovernedToolAuditServiceTests
     public async Task LogInvocationAsync_WritesExactlyOneAuditRow()
     {
         await using var db = CreateDbContext(nameof(LogInvocationAsync_WritesExactlyOneAuditRow));
-        var svc = new GovernedToolAuditService(db, NullLogger<GovernedToolAuditService>.Instance);
+        var svc = new GovernedToolAuditService(db, new Mock<IAuditEventWriter>().Object, NullLogger<GovernedToolAuditService>.Instance);
 
         await svc.LogInvocationAsync(
             "check_exemption_eligibility",
@@ -76,7 +76,7 @@ public sealed class GovernedToolAuditServiceTests
     public async Task LogInvocationAsync_TwoDistinctTools_WritesTwoRows()
     {
         await using var db = CreateDbContext(nameof(LogInvocationAsync_TwoDistinctTools_WritesTwoRows));
-        var svc = new GovernedToolAuditService(db, NullLogger<GovernedToolAuditService>.Instance);
+        var svc = new GovernedToolAuditService(db, new Mock<IAuditEventWriter>().Object, NullLogger<GovernedToolAuditService>.Instance);
 
         await svc.LogInvocationAsync("check_exemption_eligibility", "parcel-1", "user-a", "eligible", CancellationToken.None);
         await svc.LogInvocationAsync("create_exemption", "parcel-2", "user-b", "created", CancellationToken.None);
@@ -132,7 +132,7 @@ public sealed class GovernedToolAuditServiceTests
         await using var db = CreateDbContext(nameof(CheckExemptionEligibility_WithRealAuditService_WritesOneRow));
         await SeedCounty(db, BentonCountyId);
 
-        var realAudit = new GovernedToolAuditService(db, NullLogger<GovernedToolAuditService>.Instance);
+        var realAudit = new GovernedToolAuditService(db, new Mock<IAuditEventWriter>().Object, NullLogger<GovernedToolAuditService>.Instance);
         var controller = BuildController(db, realAudit);
 
         var result = await controller.CheckExemptionEligibility(
