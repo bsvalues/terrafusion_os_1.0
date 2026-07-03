@@ -335,8 +335,8 @@
     },
     {
       "toolId": "summarize_levy_rate_components",
-      "level": "L1",
-      "state": "stub-contract",
+      "level": "L2",
+      "state": "contract-covered",
       "liveIntegration": false,
       "disclosureRequired": true,
       "disclosure": "tool layer in development",
@@ -344,7 +344,11 @@
       "evidence": {
         "manifest": "tools/registry/terrapilot.tools.json",
         "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
-        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
+        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md",
+        "contract": "docs/brain/workorders/evidence/WO-TERRAPILOT-P10-SUMMARIZE-LEVY-RATE-EVIDENCE-PACKET.md#current-manifest-contract",
+        "backingService": "docs/brain/workorders/evidence/WO-TERRAPILOT-P10-SUMMARIZE-LEVY-RATE-EVIDENCE-PACKET.md#current-handler-evidence",
+        "verificationCommand": "node --test os-platform/core/tests/tool-maturity.test.mjs && node --test os-platform/core/tests/phase83-tools.test.mjs",
+        "traceEvidence": "docs/brain/workorders/evidence/WO-TERRAPILOT-P10-SUMMARIZE-LEVY-RATE-EVIDENCE-PACKET.md#current-test-evidence"
       },
       "promotion": {
         "targetState": null,
