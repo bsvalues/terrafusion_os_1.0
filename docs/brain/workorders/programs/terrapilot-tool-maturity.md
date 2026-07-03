@@ -43,7 +43,8 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P8 | Maturity metadata enforcement | **COMPLETE IN PR** | Add machine-readable maturity metadata and focused tests without promoting tools |
 | WO-TERRAPILOT-P9 | First promotion candidate decision | **COMPLETE IN PR** | Decide whether a separate runtime WO may attempt the first L2/L3 candidate |
 | WO-TERRAPILOT-P10 | Contract-covered candidate evidence packet | **COMPLETE IN PR** | Document contract, owner, backing target, auth boundary, verification method, trace requirement, UI disclosure, and rollback path for the first candidate |
-| WO-TERRAPILOT-P11 | Contract-covered metadata decision | **NEXT — METADATA DECISION** | Decide whether P10 evidence is sufficient to move `summarize_levy_rate_components` to `contract-covered`, without claiming live integration |
+| WO-TERRAPILOT-P11 | Contract-covered metadata decision | **COMPLETE IN PR** | Decide whether P10 evidence is sufficient to justify a follow-up `contract-covered` metadata-change packet, without mutating metadata or claiming live integration |
+| WO-TERRAPILOT-P12 | Contract-covered metadata change authorization packet | **NEXT — OWNER DECISION** | Decide whether to authorize the actual L1/stub-contract to L2/contract-covered metadata change while keeping `liveIntegration: false` |
 
 ---
 
@@ -59,7 +60,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision
+P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work
@@ -69,9 +70,11 @@ decisions.
 P8 adds enforcement metadata and static tests only. It does not move any tool to `backend-integrated`
 or `promoted`.
 
-P10 records candidate evidence only. P11 may decide whether `summarize_levy_rate_components` can move
-to `contract-covered`, but it must still stop before `backend-integrated`, `liveIntegration: true`,
-or `promoted` unless a separate operator-authorized runtime work order exists.
+P10 records candidate evidence only. P11 records that `summarize_levy_rate_components` remains a
+candidate for `contract-covered`, but it does not change maturity metadata. P12 is the owner-decision
+packet for any actual metadata change. All TerraPilot maturity work must still stop before `backend-integrated`,
+`liveIntegration: true`, or `promoted` unless a separate operator-authorized runtime work order
+exists.
 
 ---
 
