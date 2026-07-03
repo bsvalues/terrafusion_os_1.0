@@ -72,7 +72,7 @@ or `promoted`.
 
 P10 records candidate evidence only. P11 records that `summarize_levy_rate_components` remains a
 candidate for `contract-covered`, but it does not change maturity metadata. P12 is the owner-decision
-packet for any actual metadata change. All P5 work must still stop before `backend-integrated`,
+packet for any actual metadata change. All TerraPilot maturity work must still stop before `backend-integrated`,
 `liveIntegration: true`, or `promoted` unless a separate operator-authorized runtime work order
 exists.
 

@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-01 — WO-WOE-011)*
+*(Updated 2026-07-03 — WO-TERRAPILOT-P11)*
 
 | # | Program | /goal command | Status | Next WO |
 |---|---------|--------------|--------|---------|
