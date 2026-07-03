@@ -17,7 +17,7 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P15 | YES — live promotion remains an owner/runtime decision | `once`, `evidence`, `discovery` |
+| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -133,17 +133,18 @@ No active stop walls at WO-WORKBENCH-001.
 | WO-TERRAPILOT-P12 | Contract-covered metadata change authorization packet | COMPLETE IN PR |
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | COMPLETE IN PR |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | COMPLETE IN PR |
-| WO-TERRAPILOT-P15 | Future promotion authorization decision packet | OWNER DECISION REQUIRED |
+| WO-TERRAPILOT-P15 | Future promotion authorization decision packet | COMPLETE IN PR |
+| WO-TERRAPILOT-P16 | Live integration design packet | BLOCKED — owner authorization required |
 
 WO-TERRAPILOT-P11 decided that `summarize_levy_rate_components` remains a valid candidate for a
 future `contract-covered` metadata change, but it did not mutate maturity metadata. WO-TERRAPILOT-P12
 recorded the exact owner-decision packet for whether to authorize that metadata change.
 WO-TERRAPILOT-P13 applies only that authorized L2 / `contract-covered` metadata change while keeping
-`liveIntegration: false`. Any runtime promotion, backend integration, `liveIntegration: true` claim,
-deployment, secrets, county data, PACS, live DB access, or schema migration is a stop wall before any
-separate runtime promotion WO. WO-TERRAPILOT-P14 is the evidence-only stop-gate rollup; it must
-not implement live/backend integration. WO-TERRAPILOT-P15 is an owner decision packet and remains
-blocked before any live/backend implementation.
+`liveIntegration: false`. WO-TERRAPILOT-P14 is the evidence-only stop-gate rollup. WO-TERRAPILOT-P15
+records the future promotion authorization choices and the required proof before any live/backend
+promotion path. Any runtime promotion, backend integration, `liveIntegration: true` claim, deployment,
+secrets, county data, PACS, live DB access, or schema migration remains a stop wall before a separate
+owner-authorized runtime promotion WO.
 
 ---
 
