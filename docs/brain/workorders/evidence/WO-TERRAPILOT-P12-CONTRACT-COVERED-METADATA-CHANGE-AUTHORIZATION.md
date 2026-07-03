@@ -30,6 +30,19 @@ If authorized in a separate work order, update only the `summarize_levy_rate_com
 The proposed future change is a contract-coverage metadata claim only. It must not claim live
 backend integration, production readiness, or promoted user-facing capability.
 
+The future metadata-change work order must also update the machine-readable evidence fields for
+this tool rather than only flipping `level` and `state`. The required `evidence` object must record
+the L2 proof references for:
+
+- `contract`,
+- `backingService`,
+- `verificationCommand`,
+- `traceEvidence`.
+
+Those references must point to the request/response contract evidence, owning/backing service
+evidence, verification method, and trace/evidence packet that justify `contract-covered` while
+keeping `liveIntegration: false`.
+
 ## Required Proof Before Metadata Change
 
 A future metadata-change work order must verify:
@@ -52,15 +65,10 @@ If the future metadata-change work order is authorized, validation must include:
 
 ```powershell
 git diff --check
+pnpm run type-check
 node docs/brain/workorders/tools/wo-query.mjs --json
 node --test os-platform/core/tests/tool-maturity.test.mjs
 node --test os-platform/core/tests/phase83-tools.test.mjs
-```
-
-If the future work order touches package or TypeScript boundaries, it must also run:
-
-```powershell
-pnpm run type-check
 ```
 
 ## Owner Decision Choices
@@ -78,10 +86,11 @@ The owner decision for the next work order is one of:
 If a future metadata-change PR is merged and later found to overclaim evidence, rollback is:
 
 1. Revert only the `summarize_levy_rate_components` maturity entry to `L1` / `stub-contract`.
-2. Keep `liveIntegration: false`.
-3. Keep disclosure required.
-4. Add a follow-up evidence note explaining why the metadata claim was rolled back.
-5. Do not change handler behavior or backend integration while rolling back metadata.
+2. Revert any supporting evidence/routing docs changed by P13.
+3. Keep `liveIntegration: false`.
+4. Keep disclosure required.
+5. Add a follow-up evidence note explaining why the metadata claim was rolled back.
+6. Do not change handler behavior or backend integration while rolling back metadata.
 
 ## Explicit Non-Changes
 
