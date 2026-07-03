@@ -108,7 +108,7 @@ Executed validation:
 - `node docs/brain/workorders/tools/wo-query.mjs --json`
 - `node --test os-platform/core/tests/tool-maturity.test.mjs`
 - `node --test os-platform/core/tests/phase83-tools.test.mjs`
-- `node -e "<AJV schema validation for tools/registry/tool-maturity.json>"`
+- `node -e "const Ajv=require('ajv'); const fs=require('fs'); const schema=JSON.parse(fs.readFileSync('tools/registry/tool-maturity.schema.json','utf8')); const data=JSON.parse(fs.readFileSync('tools/registry/tool-maturity.json','utf8')); const ajv=new Ajv({allErrors:true,strict:false}); const validate=ajv.compile(schema); if(!validate(data)){ console.error(JSON.stringify(validate.errors,null,2)); process.exit(1); } console.log('tool-maturity schema validation PASS');"`
 
 ## Rollback Path
 
