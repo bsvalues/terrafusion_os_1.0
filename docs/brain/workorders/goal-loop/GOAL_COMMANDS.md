@@ -100,12 +100,12 @@ Success:  All workbench tabs have live data, honest empty states, and validated 
 Goal:     Prevent TerraPilot manifest/handler/stub drift and mature tools toward verified integration.
 Program:  P5 — TerraPilot Tool Maturity
 File:     programs/terrapilot-tool-maturity.md
-Success:  At least one tool reaches L3 (live-integrated); no tool is represented as working at L0/L1.
+Success:  TerraPilot maturity claims are explicit, evidence-backed, and stopped before live/backend promotion unless separately authorized.
 ```
 
-**Current state:** WO-TERRAPILOT-P15 is next as an owner-decision packet. P2 through P14 have
-recorded maturity protocol, metadata enforcement, candidate evidence, the P13 L2 metadata change,
-and the P14 stop gate before any live/backend-integrated claim.
+**Current state:** WO-TERRAPILOT-P15 records the owner-decision boundary for any future live/backend
+promotion path. P2 through P14 recorded maturity protocol, metadata enforcement, candidate evidence,
+the P13 L2 metadata change, and the P14 stop gate before any live/backend-integrated claim.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 

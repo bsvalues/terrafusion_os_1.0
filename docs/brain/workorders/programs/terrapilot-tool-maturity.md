@@ -47,7 +47,8 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P12 | Contract-covered metadata change authorization packet | **COMPLETE IN PR** | Record the owner-decision packet for whether to authorize the actual L1/stub-contract to L2/contract-covered metadata change while keeping `liveIntegration: false` |
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | **COMPLETE IN PR** | Update only `summarize_levy_rate_components` maturity metadata and supporting evidence/routing docs |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | **COMPLETE IN PR** | Close the L2 metadata chain and record the stop wall before live/backend integration |
-| WO-TERRAPILOT-P15 | Future promotion authorization decision packet | **OWNER DECISION REQUIRED** | Decide whether any future work may attempt live/backend integration; no implementation in this packet |
+| WO-TERRAPILOT-P15 | Future promotion authorization decision packet | **COMPLETE IN PR** | Record owner decision choices and evidence required before any future live/backend integration; no implementation in this packet |
+| WO-TERRAPILOT-P16 | Live integration design packet | **BLOCKED — OWNER AUTHORIZATION REQUIRED** | Design-only packet for a possible future live/backend integration path; no implementation unless separately authorized |
 
 ---
 
@@ -63,7 +64,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision -> stop before live/backend integration
+P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision packet -> P16 blocked until owner authorization
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work
@@ -79,7 +80,8 @@ authorization packet for any actual metadata change. P13 applies only the owner-
 `contract-covered` metadata change. All TerraPilot maturity work must still stop before
 `backend-integrated`, `liveIntegration: true`, or `promoted` unless a separate operator-authorized
 runtime work order exists. P14 is evidence/governance only and must not implement live/backend
-integration. P15 is an owner decision packet only; it must not implement live/backend integration.
+integration. P15 is an owner decision packet only; it must not implement live/backend integration and
+it does not authorize metadata promotion beyond the existing L2 / `contract-covered` state.
 
 ---
 
