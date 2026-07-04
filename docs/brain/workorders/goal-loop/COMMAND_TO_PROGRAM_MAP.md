@@ -93,16 +93,18 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 |----|-------|--------|
 | WO-BACKEND-000 | Backend Operational Excellence Program Playbook | CLOSED |
 | WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | COMPLETE — evidence preserved in OE-002 packet |
-| WO-BACKEND-OE-002 | Build Warning Register | THIS WO |
+| WO-BACKEND-OE-001-S | Baseline generated residue classification | COMPLETE |
+| WO-BACKEND-OE-002 | Build Warning Register | CLOSED |
+| WO-BACKEND-OE-PLAYBOOK-REFRESH | Full Backend OE Work Order Playbook | THIS WO |
 | WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | NEXT |
-| WO-BACKEND-OE-004 | Service Registry Runtime Validation | QUEUED |
-| WO-BACKEND-OE-005 | Health and Readiness Truth | QUEUED |
-| WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | QUEUED |
-| WO-BACKEND-OE-007 | Migration and Rollback Proof | QUEUED |
-| WO-BACKEND-OE-008 | Broader Dais / Workflow E2E Proof | QUEUED |
+| WO-BACKEND-OE-004 | Health and Readiness Semantics Proof | QUEUED |
+| WO-BACKEND-OE-005 | Service Registry Runtime Validation | QUEUED |
+| WO-BACKEND-OE-006 | Security/Auth/County-Isolation Proof Matrix | QUEUED |
+| WO-BACKEND-OE-007 | Migration and Rollback Proof Register | QUEUED |
+| WO-BACKEND-OE-008 | Dais Workflow E2E Proof Expansion Plan | QUEUED |
 | WO-BACKEND-OE-009 | Backend Release Gate Definition | QUEUED |
 | WO-BACKEND-OE-010 | Backend Operational Runbook | QUEUED |
-| WO-BACKEND-OE-011 | Backend Diagnostics and Observability Map | QUEUED |
+| WO-BACKEND-OE-011 | Diagnostics and Observability Map | QUEUED |
 | WO-BACKEND-OE-012 | Backend Operational Packet | QUEUED |
 | WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | QUEUED |
 

@@ -77,9 +77,9 @@ Success:  Backend operational truth, warnings, runtime validation, release gates
           next lane.
 ```
 
-**Current state:** WO-BACKEND-000 registers the program playbook. After it lands,
-WO-BACKEND-OE-001 is the read-only backend operational baseline. This lane is hardening/proof/release
-discipline, not a foundation rebuild.
+**Current state:** WO-BACKEND-000 is merged, WO-BACKEND-OE-001 established the baseline,
+WO-BACKEND-OE-002 recorded the zero-warning register, and the refreshed playbook routes next to
+WO-BACKEND-OE-003. This lane is hardening/proof/release discipline, not a foundation rebuild.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
