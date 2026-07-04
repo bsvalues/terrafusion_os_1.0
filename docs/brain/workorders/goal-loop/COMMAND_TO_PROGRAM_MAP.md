@@ -95,7 +95,7 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 | WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | COMPLETE — evidence preserved in OE-002 packet |
 | WO-BACKEND-OE-001-S | Baseline generated residue classification | COMPLETE |
 | WO-BACKEND-OE-002 | Build Warning Register | CLOSED |
-| WO-BACKEND-OE-PLAYBOOK-REFRESH | Full Backend OE Work Order Playbook | THIS WO |
+| WO-BACKEND-OE-PLAYBOOK-REFRESH | Full Backend OE Work Order Playbook | CLOSED |
 | WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | NEXT |
 | WO-BACKEND-OE-004 | Health and Readiness Semantics Proof | QUEUED |
 | WO-BACKEND-OE-005 | Service Registry Runtime Validation | QUEUED |

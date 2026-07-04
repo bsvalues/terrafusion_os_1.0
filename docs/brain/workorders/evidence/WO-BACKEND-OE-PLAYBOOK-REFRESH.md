@@ -1,4 +1,4 @@
-# WO-BACKEND-OE-PLAYBOOK-REFRESH - Backend Operational Excellence Playbook Refresh
+# WO-BACKEND-OE-PLAYBOOK-REFRESH — Backend Operational Excellence Playbook Refresh
 
 | Field | Value |
 |-------|-------|

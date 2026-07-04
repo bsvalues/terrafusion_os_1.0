@@ -1,4 +1,4 @@
-# P3 - Backend Operational Excellence
+# P3 — Backend Operational Excellence
 
 | Field | Value |
 |-------|-------|
@@ -8,7 +8,7 @@
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
 | Last Updated | 2026-07-04 |
-| Current WO | `WO-BACKEND-OE-003` |
+| Next WO | `WO-BACKEND-OE-003` |
 
 ---
 
@@ -205,7 +205,7 @@ Blocked scope:
 
 Deliverable:
 
-- `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMATICS-PROOF.md`
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md`
 
 Validation:
 
