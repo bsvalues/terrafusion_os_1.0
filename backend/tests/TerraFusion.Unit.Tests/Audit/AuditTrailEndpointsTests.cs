@@ -44,12 +44,14 @@ public sealed class AuditTrailEndpointsTests
         return controller;
     }
 
+    private static readonly Guid OtherCountyId = new("22222222-2222-2222-2222-222222222222");
+
     private static async Task Seed(DataDbContext db)
     {
         db.AuditEvents.AddRange(
-            new AuditEvent { Id = "e1", Entity = "Parcel", EntityId = "P1", UserId = "u1", Action = "ValueChanged", Type = AuditEventType.Update, Timestamp = DateTime.UtcNow.AddMinutes(-5), DetailsJson = "{\"previousValue\":\"100\",\"newValue\":\"200\",\"details\":\"reval\"}" },
-            new AuditEvent { Id = "e2", Entity = "Appeal", EntityId = "P1", UserId = "u2", Action = "AppealFiled", Type = AuditEventType.Create, Timestamp = DateTime.UtcNow, DetailsJson = "not-json" },
-            new AuditEvent { Id = "e3", Entity = "Parcel", EntityId = "P2", UserId = "u1", Action = "Viewed", Type = AuditEventType.View, Timestamp = DateTime.UtcNow, DetailsJson = "" });
+            new AuditEvent { Id = "e1", Entity = "Parcel", EntityId = "P1", UserId = "u1", Action = "ValueChanged", Type = AuditEventType.Update, Timestamp = DateTime.UtcNow.AddMinutes(-5), CountyId = CountyId, DetailsJson = "{\"previousValue\":\"100\",\"newValue\":\"200\",\"details\":\"reval\"}" },
+            new AuditEvent { Id = "e2", Entity = "Appeal", EntityId = "P1", UserId = "u2", Action = "AppealFiled", Type = AuditEventType.Create, Timestamp = DateTime.UtcNow, CountyId = CountyId, DetailsJson = "not-json" },
+            new AuditEvent { Id = "e3", Entity = "Parcel", EntityId = "P2", UserId = "u1", Action = "Viewed", Type = AuditEventType.View, Timestamp = DateTime.UtcNow, CountyId = CountyId, DetailsJson = "" });
         await db.SaveChangesAsync();
     }
 
@@ -113,6 +115,66 @@ public sealed class AuditTrailEndpointsTests
             parcelId: null, startDate: null, endDate: null, userId: null, category: "appeal", action: null));
 
         events.Should().ContainSingle().Which.EventId.Should().Be("e2");
+    }
+
+    // ── WO-AUDIT-COUNTY-FILTER-001: county isolation ────────────────────
+
+    [Fact]
+    public async Task Trail_ExcludesEventsFromAnotherCounty()
+    {
+        await using var db = CreateDb(nameof(Trail_ExcludesEventsFromAnotherCounty));
+        await Seed(db); // e1,e2 on P1 in CountyId
+        db.AuditEvents.Add(new AuditEvent
+        {
+            Id = "x1", Entity = "Appeal", EntityId = "P1", UserId = "u9", Action = "AppealFiled",
+            Type = AuditEventType.Create, Timestamp = DateTime.UtcNow.AddMinutes(1),
+            CountyId = OtherCountyId, DetailsJson = "{}"
+        });
+        await db.SaveChangesAsync();
+
+        var events = Ok(await CreateController(db).GetAuditTrail("P1"));
+
+        events.Should().HaveCount(2);
+        events.Select(e => e.EventId).Should().BeEquivalentTo(new[] { "e1", "e2" });
+        events.Select(e => e.EventId).Should().NotContain("x1");
+    }
+
+    [Fact]
+    public async Task Search_ExcludesEventsFromAnotherCounty()
+    {
+        await using var db = CreateDb(nameof(Search_ExcludesEventsFromAnotherCounty));
+        await Seed(db);
+        db.AuditEvents.Add(new AuditEvent
+        {
+            Id = "x1", Entity = "Appeal", EntityId = "P1", UserId = "u9", Action = "AppealFiled",
+            Type = AuditEventType.Create, Timestamp = DateTime.UtcNow, CountyId = OtherCountyId, DetailsJson = "{}"
+        });
+        await db.SaveChangesAsync();
+
+        var events = Ok(await CreateController(db).SearchAuditTrail(
+            parcelId: null, startDate: null, endDate: null, userId: null, category: "appeal", action: null));
+
+        // Only the in-county appeal (e2), not the other-county one (x1).
+        events.Should().ContainSingle().Which.EventId.Should().Be("e2");
+    }
+
+    [Fact]
+    public async Task Search_CategoryFilter_AppliedBeforePaging()
+    {
+        // 3 non-matching Parcel events (newest) + 1 matching Appeal (oldest); pageSize 2.
+        // If category filtered AFTER paging, the Appeal would fall outside the window and be lost.
+        await using var db = CreateDb(nameof(Search_CategoryFilter_AppliedBeforePaging));
+        var baseTime = DateTime.UtcNow;
+        for (var i = 0; i < 3; i++)
+            db.AuditEvents.Add(new AuditEvent { Id = $"p{i}", Entity = "Parcel", EntityId = "P1", UserId = "u1", Action = "Viewed", Type = AuditEventType.View, Timestamp = baseTime.AddMinutes(i + 1), CountyId = CountyId, DetailsJson = "" });
+        db.AuditEvents.Add(new AuditEvent { Id = "app", Entity = "Appeal", EntityId = "P1", UserId = "u2", Action = "AppealFiled", Type = AuditEventType.Create, Timestamp = baseTime, CountyId = CountyId, DetailsJson = "{}" });
+        await db.SaveChangesAsync();
+
+        var events = Ok(await CreateController(db).SearchAuditTrail(
+            parcelId: null, startDate: null, endDate: null, userId: null, category: "appeal", action: null,
+            page: 1, pageSize: 2));
+
+        events.Should().ContainSingle().Which.EventId.Should().Be("app");
     }
 
     [Theory]
