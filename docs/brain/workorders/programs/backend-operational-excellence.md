@@ -1,11 +1,13 @@
 # P3 — Backend Operational Excellence
 
-**Program:** P3
-**Goal:** `GOAL-BACKEND-OPERATIONAL-EXCELLENCE`
-**Loop:** `LOOP-BACKEND-OPERATIONAL-EXCELLENCE`
-**Status:** ACTIVE
-**Owner:** Operator (bsvalues@gmail.com)
-**Last Updated:** 2026-07-03
+| Field | Value |
+|-------|-------|
+| Program | P3 |
+| Goal | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` |
+| Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
+| Status | ACTIVE |
+| Owner | Operator (bsvalues@gmail.com) |
+| Last Updated | 2026-07-03 |
 
 ---
 
@@ -17,7 +19,7 @@ and rollback discipline.
 
 ## Non-Goal
 
-Do not rebuild TerraDais persistence. Do not reopen foundation work unless WO-BACKEND-001 discovers a
+Do not rebuild TerraDais persistence. Do not reopen foundation work unless WO-BACKEND-OE-001 discovers a
 current regression. Do not treat passing slices as production readiness.
 
 ## Known Baseline
@@ -53,47 +55,51 @@ current regression. Do not treat passing slices as production readiness.
 
 ## Work Orders
 
+The `WO-BACKEND-OE-*` prefix is intentional. Earlier backend evidence packets
+already use `WO-BACKEND-001` through `WO-BACKEND-007`; this renewed operational
+excellence chain preserves those completed IDs and avoids ambiguous routing.
+
 | WO | Title | Mode | Status | Purpose |
 |----|-------|------|--------|---------|
 | WO-BACKEND-000 | Backend Operational Excellence Program Playbook | Docs/governance creation | **THIS WO** | Register the program, goal, loop, chain, scope, evidence, and stop gates |
-| WO-BACKEND-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | NEXT | Establish current backend operational truth on `origin/main` |
-| WO-BACKEND-002 | Build Warning Register | Docs/evidence first | QUEUED | Capture every backend warning verbatim and classify release risk |
-| WO-BACKEND-003 | Build Warning Burn-down | Small implementation slices only | QUEUED | Fix only warning-register-approved warnings |
-| WO-BACKEND-004 | Service Registry Runtime Validation | Evidence + targeted tests | QUEUED | Prove service registry runtime behavior and failure modes |
-| WO-BACKEND-005 | Health and Readiness Truth | Audit + narrow implementation if authorized | QUEUED | Define what health/readiness endpoints actually prove |
-| WO-BACKEND-006 | Backend Security / Auth / County Isolation Proof | Evidence-first; tests if scoped | QUEUED | Prove protected paths enforce auth, role, county, and audit expectations |
-| WO-BACKEND-007 | Migration and Rollback Proof | Controlled validation; no production DB | QUEUED | Prove persistence can be migrated and recovered safely |
-| WO-BACKEND-008 | Broader Dais / Workflow E2E Proof | Targeted test expansion | QUEUED | Prove Dais behavior beyond happy-path audited slices |
-| WO-BACKEND-009 | Backend Release Gate Definition | Governance/docs + optional gate wiring later | QUEUED | Define objective backend release-ready criteria |
-| WO-BACKEND-010 | Backend Operational Runbook | Runbook creation | QUEUED | Create backend startup, validation, failure triage, rollback, and evidence runbook |
-| WO-BACKEND-011 | Backend Diagnostics and Observability Map | Evidence and docs first | QUEUED | Map logs, metrics, traces, audit events, health checks, and diagnostic signals |
-| WO-BACKEND-012 | Backend Operational Packet | Operational packet assembly | QUEUED | Consolidate the program into an executable operational packet |
-| WO-BACKEND-013 | Evidence Rollup and Program Closeout | Evidence rollup | QUEUED | Close the program with proof, gaps, deferred work, and next-lane recommendation |
+| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | NEXT | Establish current backend operational truth on `origin/main` |
+| WO-BACKEND-OE-002 | Build Warning Register | Docs/evidence first | QUEUED | Capture every backend warning verbatim and classify release risk |
+| WO-BACKEND-OE-003 | Build Warning Burn-down | Small implementation slices only | QUEUED | Fix only warning-register-approved warnings |
+| WO-BACKEND-OE-004 | Service Registry Runtime Validation | Evidence + targeted tests | QUEUED | Prove service registry runtime behavior and failure modes |
+| WO-BACKEND-OE-005 | Health and Readiness Truth | Audit + narrow implementation if authorized | QUEUED | Define what health/readiness endpoints actually prove |
+| WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | Evidence-first; tests if scoped | QUEUED | Prove protected paths enforce auth, role, county, and audit expectations |
+| WO-BACKEND-OE-007 | Migration and Rollback Proof | Controlled validation; no production DB | QUEUED | Prove persistence can be migrated and recovered safely |
+| WO-BACKEND-OE-008 | Broader Dais / Workflow E2E Proof | Targeted test expansion | QUEUED | Prove Dais behavior beyond happy-path audited slices |
+| WO-BACKEND-OE-009 | Backend Release Gate Definition | Governance/docs + optional gate wiring later | QUEUED | Define objective backend release-ready criteria |
+| WO-BACKEND-OE-010 | Backend Operational Runbook | Runbook creation | QUEUED | Create backend startup, validation, failure triage, rollback, and evidence runbook |
+| WO-BACKEND-OE-011 | Backend Diagnostics and Observability Map | Evidence and docs first | QUEUED | Map logs, metrics, traces, audit events, health checks, and diagnostic signals |
+| WO-BACKEND-OE-012 | Backend Operational Packet | Operational packet assembly | QUEUED | Consolidate the program into an executable operational packet |
+| WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | Evidence rollup | QUEUED | Close the program with proof, gaps, deferred work, and next-lane recommendation |
 
 ## Dependency Chain
 
 ```text
 WO-BACKEND-000
-  -> WO-BACKEND-001
-  -> WO-BACKEND-002
-  -> WO-BACKEND-003
-  -> WO-BACKEND-004
-  -> WO-BACKEND-005
-  -> WO-BACKEND-006
-  -> WO-BACKEND-007
-  -> WO-BACKEND-008
-  -> WO-BACKEND-009
-  -> WO-BACKEND-010
-  -> WO-BACKEND-011
-  -> WO-BACKEND-012
-  -> WO-BACKEND-013
+  -> WO-BACKEND-OE-001
+  -> WO-BACKEND-OE-002
+  -> WO-BACKEND-OE-003
+  -> WO-BACKEND-OE-004
+  -> WO-BACKEND-OE-005
+  -> WO-BACKEND-OE-006
+  -> WO-BACKEND-OE-007
+  -> WO-BACKEND-OE-008
+  -> WO-BACKEND-OE-009
+  -> WO-BACKEND-OE-010
+  -> WO-BACKEND-OE-011
+  -> WO-BACKEND-OE-012
+  -> WO-BACKEND-OE-013
 ```
 
 ---
 
 ## WO Definitions
 
-### WO-BACKEND-001 — Backend Operational Excellence Baseline
+### WO-BACKEND-OE-001 — Backend Operational Excellence Baseline
 
 **Mode:** read-only discovery / evidence baseline.
 
@@ -113,7 +119,7 @@ Output:
 - Health/readiness endpoint map.
 - Auth/security/county-isolation evidence map.
 - Release-readiness gap list.
-- Recommendation for WO-BACKEND-002.
+- Recommendation for WO-BACKEND-OE-002.
 
 Allowed:
 
@@ -134,7 +140,7 @@ Done:
 
 - Backend baseline report exists and the next WO is selected from evidence.
 
-### WO-BACKEND-002 — Build Warning Register
+### WO-BACKEND-OE-002 — Build Warning Register
 
 **Mode:** docs/evidence first; implementation only if explicitly authorized after register.
 
@@ -154,13 +160,13 @@ Done:
 
 - Warnings are no longer vague debt. Each warning has a disposition and next action.
 
-### WO-BACKEND-003 — Build Warning Burn-down
+### WO-BACKEND-OE-003 — Build Warning Burn-down
 
 **Mode:** small implementation slices only.
 
 Dependency:
 
-- WO-BACKEND-002 complete.
+- WO-BACKEND-OE-002 complete.
 
 Purpose:
 
@@ -187,7 +193,7 @@ Done:
 
 - Warning count reduced or justified, and no new warnings introduced.
 
-### WO-BACKEND-004 — Service Registry Runtime Validation
+### WO-BACKEND-OE-004 — Service Registry Runtime Validation
 
 **Mode:** evidence + targeted tests.
 
@@ -216,7 +222,7 @@ Done:
 
 - Service registry is not just present; it is operationally understandable and test-backed.
 
-### WO-BACKEND-005 — Health and Readiness Truth
+### WO-BACKEND-OE-005 — Health and Readiness Truth
 
 **Mode:** audit + implementation if narrow.
 
@@ -245,7 +251,7 @@ Done:
 
 - Health/readiness stops being a vague status page and becomes an operational contract.
 
-### WO-BACKEND-006 — Backend Security / Auth / County Isolation Proof
+### WO-BACKEND-OE-006 — Backend Security / Auth / County Isolation Proof
 
 **Mode:** evidence-first; tests if scoped.
 
@@ -281,7 +287,7 @@ Done:
 
 - Security posture is described from evidence, not assumption.
 
-### WO-BACKEND-007 — Migration and Rollback Proof
+### WO-BACKEND-OE-007 — Migration and Rollback Proof
 
 **Mode:** controlled validation; no production DB.
 
@@ -316,7 +322,7 @@ Done:
 
 - Persistence readiness includes rollback/recovery evidence, not just "migration file exists."
 
-### WO-BACKEND-008 — Broader Dais / Workflow E2E Proof
+### WO-BACKEND-OE-008 — Broader Dais / Workflow E2E Proof
 
 **Mode:** targeted test expansion.
 
@@ -339,7 +345,7 @@ Done:
 
 - Dais proof covers realistic failure modes, not only success slices.
 
-### WO-BACKEND-009 — Backend Release Gate Definition
+### WO-BACKEND-OE-009 — Backend Release Gate Definition
 
 **Mode:** governance/docs + optional gate wiring later.
 
@@ -373,7 +379,7 @@ Done:
 
 - No more implied production-readiness. Release readiness has a checklist.
 
-### WO-BACKEND-010 — Backend Operational Runbook
+### WO-BACKEND-OE-010 — Backend Operational Runbook
 
 **Mode:** runbook creation.
 
@@ -398,7 +404,7 @@ Done:
 
 - A future operator can validate and recover the backend without rediscovering the system.
 
-### WO-BACKEND-011 — Backend Diagnostics and Observability Map
+### WO-BACKEND-OE-011 — Backend Diagnostics and Observability Map
 
 **Mode:** evidence and docs first.
 
@@ -418,7 +424,7 @@ Done:
 
 - Operational visibility is mapped and gaps are explicit.
 
-### WO-BACKEND-012 — Backend Operational Packet
+### WO-BACKEND-OE-012 — Backend Operational Packet
 
 **Mode:** operational packet assembly.
 
@@ -446,7 +452,7 @@ Done:
 
 - Backend Operational Excellence can be operated, validated, evidenced, and recovered.
 
-### WO-BACKEND-013 — Evidence Rollup and Program Closeout
+### WO-BACKEND-OE-013 — Evidence Rollup and Program Closeout
 
 **Mode:** evidence rollup.
 
@@ -486,7 +492,7 @@ Stop and request owner authority if the work requires:
 
 ## Completion Criteria
 
-Program closeout requires WO-BACKEND-013 to show:
+Program closeout requires WO-BACKEND-OE-013 to show:
 
 - Build health evidence.
 - Warning disposition.

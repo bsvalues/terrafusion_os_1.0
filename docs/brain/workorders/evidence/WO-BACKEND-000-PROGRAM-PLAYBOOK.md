@@ -57,19 +57,19 @@ Command aliases:
 The registered backend chain is:
 
 1. WO-BACKEND-000 — Backend Operational Excellence Program Playbook
-2. WO-BACKEND-001 — Backend Operational Excellence Baseline
-3. WO-BACKEND-002 — Build Warning Register
-4. WO-BACKEND-003 — Build Warning Burn-down
-5. WO-BACKEND-004 — Service Registry Runtime Validation
-6. WO-BACKEND-005 — Health and Readiness Truth
-7. WO-BACKEND-006 — Backend Security / Auth / County Isolation Proof
-8. WO-BACKEND-007 — Migration and Rollback Proof
-9. WO-BACKEND-008 — Broader Dais / Workflow E2E Proof
-10. WO-BACKEND-009 — Backend Release Gate Definition
-11. WO-BACKEND-010 — Backend Operational Runbook
-12. WO-BACKEND-011 — Backend Diagnostics and Observability Map
-13. WO-BACKEND-012 — Backend Operational Packet
-14. WO-BACKEND-013 — Evidence Rollup and Program Closeout
+2. WO-BACKEND-OE-001 — Backend Operational Excellence Baseline
+3. WO-BACKEND-OE-002 — Build Warning Register
+4. WO-BACKEND-OE-003 — Build Warning Burn-down
+5. WO-BACKEND-OE-004 — Service Registry Runtime Validation
+6. WO-BACKEND-OE-005 — Health and Readiness Truth
+7. WO-BACKEND-OE-006 — Backend Security / Auth / County Isolation Proof
+8. WO-BACKEND-OE-007 — Migration and Rollback Proof
+9. WO-BACKEND-OE-008 — Broader Dais / Workflow E2E Proof
+10. WO-BACKEND-OE-009 — Backend Release Gate Definition
+11. WO-BACKEND-OE-010 — Backend Operational Runbook
+12. WO-BACKEND-OE-011 — Backend Diagnostics and Observability Map
+13. WO-BACKEND-OE-012 — Backend Operational Packet
+14. WO-BACKEND-OE-013 — Evidence Rollup and Program Closeout
 
 ## Explicit Non-Changes
 
@@ -91,9 +91,9 @@ The registered backend chain is:
 
 After this playbook lands, the next recommended WO is:
 
-- `WO-BACKEND-001 — Backend Operational Excellence Baseline`
+- `WO-BACKEND-OE-001 — Backend Operational Excellence Baseline`
 
-WO-BACKEND-001 is read-only discovery and evidence baseline only. It should establish current backend
+WO-BACKEND-OE-001 is read-only discovery and evidence baseline only. It should establish current backend
 operational truth on `origin/main` before any implementation hardening begins.
 
 ## Stop Gate
