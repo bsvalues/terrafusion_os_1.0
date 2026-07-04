@@ -333,10 +333,8 @@ public class AuditController : ControllerBase
     // ── GET api/audit/trail ─────────────────────────────────────────
     // Per-parcel audit event trail, read from AuditEvents. Returns the
     // canonical AuditEvent[] shape consumed by the Dais AuditTab.
-    // NOTE: domain audit-event capture is not yet wired (AU-2 interceptor
-    // is unimplemented), so AuditEvents is currently empty and this returns
-    // [] honestly rather than 404. AuditEvents has no CountyId column, so
-    // isolation here is the authenticated county gate + per-parcel scope.
+    // NOTE: rows are row-level county-isolated (AuditEvents.CountyId) and per-parcel
+    // scoped, then paged. Empty when the parcel has no events for the caller's county.
 
     [HttpGet("trail")]
     public async Task<IActionResult> GetAuditTrail(
@@ -356,7 +354,7 @@ public class AuditController : ControllerBase
         var events = await _db.AuditEvents
             .AsNoTracking()
             .Where(e => e.CountyId == countyId.Value && e.EntityId == parcelId)
-            .OrderByDescending(e => e.Timestamp)
+            .OrderByDescending(e => e.Timestamp).ThenByDescending(e => e.Id) // stable paging tiebreaker
             .Skip(skip)
             .Take(take)
             .ToListAsync();
@@ -396,7 +394,7 @@ public class AuditController : ControllerBase
 
         var (skip, take) = Paginate(page, pageSize);
         var events = await query
-            .OrderByDescending(e => e.Timestamp)
+            .OrderByDescending(e => e.Timestamp).ThenByDescending(e => e.Id) // stable paging tiebreaker
             .Skip(skip)
             .Take(take)
             .ToListAsync();
@@ -409,11 +407,13 @@ public class AuditController : ControllerBase
     private const int DefaultPageSize = 200;
     private const int MaxPageSize = 500;
 
+    private const int MaxPage = 1_000_000; // caps skip well under int.MaxValue (1e6 * 500 = 5e8)
+
     private static (int Skip, int Take) Paginate(int? page, int? pageSize)
     {
-        var p = page is > 0 ? page.Value : 1;
+        var p = page is > 0 ? Math.Min(page.Value, MaxPage) : 1;
         var size = pageSize is > 0 ? Math.Min(pageSize.Value, MaxPageSize) : DefaultPageSize;
-        return ((p - 1) * size, size);
+        return ((p - 1) * size, size); // (p-1)*size ≤ (1e6-1)*500 < int.MaxValue → no overflow
     }
 
     /// <summary>

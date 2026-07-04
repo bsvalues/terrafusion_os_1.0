@@ -87,7 +87,8 @@ public sealed class AuditEventEmissionTests
 
         var accessor = new FakeUserContext
         {
-            Current = new RequestUserContext(true, "u1", "Benton", Array.Empty<string>())
+            // lowercase — exercises the case-insensitive name match (County.Name = "Benton").
+            Current = new RequestUserContext(true, "u1", "benton", Array.Empty<string>())
         };
         var writer = new AuditEventWriter(db, accessor, NullLogger<AuditEventWriter>.Instance);
 

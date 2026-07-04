@@ -103,11 +103,13 @@ public sealed class AuditEventWriter : IAuditEventWriter
         if (Guid.TryParse(countyIdOrCode, out var direct)) return direct;
 
         var code = countyIdOrCode.Trim();
+        var lowered = code.ToLowerInvariant();
         var fipsPadded = code.All(char.IsDigit) ? code.PadLeft(3, '0') : code;
 
+        // Case-insensitive name match (auth may supply "benton"/"BENTON"); exact FIPS.
         var match = await _db.Counties
             .AsNoTracking()
-            .Where(c => c.Name == code
+            .Where(c => c.Name.ToLower() == lowered
                 || (c.FipsCode != null && (c.FipsCode == code || c.FipsCode == fipsPadded)))
             .Select(c => (Guid?)c.Id)
             .FirstOrDefaultAsync(ct);
