@@ -15,7 +15,11 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 |-----------------|---------|---------|----------|---------------------|
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
-| `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
+| `backend-excellence` | P3 | WO-BACKEND-000 until merged; then WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
+| `backend-start` | P3 | WO-BACKEND-000 until merged; then WO-BACKEND-001 | NO | `program` |
+| `backend-status` | P3 | WO-BACKEND-000 until merged; then WO-BACKEND-001 | NO | `evidence`, `discovery` |
+| `backend-next` | P3 | WO-BACKEND-000 until merged; then WO-BACKEND-001 | NO | `once`, `evidence` |
+| `backend-stop` | P3 | Park backend loop at current WO | YES — operator stop command | `once` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
@@ -81,20 +85,29 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 ### /goal backend-excellence → P3
 
 **File:** [programs/backend-operational-excellence.md](../programs/backend-operational-excellence.md)  
-**Success condition:** Runtime truth passes all gates; operational runbook exists; release hygiene enforced.
+**Success condition:** Backend operational truth, warnings, runtime validation, release gates,
+runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE to choose the next lane.
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-BACKEND-001 | Runtime truth audit | **NEXT** |
-| WO-BACKEND-002 | Health check contract | QUEUED |
-| WO-BACKEND-003 | Logging and observability | QUEUED |
-| WO-BACKEND-004 | Release hygiene | QUEUED |
-| WO-BACKEND-005 | Error handling sweep | QUEUED |
-| WO-BACKEND-006 | Performance baseline | QUEUED |
-| WO-BACKEND-007 | Integration test coverage | QUEUED |
-| WO-BACKEND-008 | Operational runbook | QUEUED |
+| WO-BACKEND-000 | Backend Operational Excellence Program Playbook | **THIS WO** |
+| WO-BACKEND-001 | Backend Operational Excellence Baseline | **NEXT AFTER 000** |
+| WO-BACKEND-002 | Build Warning Register | QUEUED |
+| WO-BACKEND-003 | Build Warning Burn-down | QUEUED |
+| WO-BACKEND-004 | Service Registry Runtime Validation | QUEUED |
+| WO-BACKEND-005 | Health and Readiness Truth | QUEUED |
+| WO-BACKEND-006 | Backend Security / Auth / County Isolation Proof | QUEUED |
+| WO-BACKEND-007 | Migration and Rollback Proof | QUEUED |
+| WO-BACKEND-008 | Broader Dais / Workflow E2E Proof | QUEUED |
+| WO-BACKEND-009 | Backend Release Gate Definition | QUEUED |
+| WO-BACKEND-010 | Backend Operational Runbook | QUEUED |
+| WO-BACKEND-011 | Backend Diagnostics and Observability Map | QUEUED |
+| WO-BACKEND-012 | Backend Operational Packet | QUEUED |
+| WO-BACKEND-013 | Evidence Rollup and Program Closeout | QUEUED |
 
-No active stop walls at WO-BACKEND-001.
+No active stop walls at WO-BACKEND-001. Stop walls begin if work requires production deployment,
+secrets, county data, PACS, live DB, schema migration apply, TerraPilot P16, or backend runtime
+mutation outside the active WO.
 
 ---
 

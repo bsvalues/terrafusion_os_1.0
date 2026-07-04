@@ -17,13 +17,13 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-03 — WO-TERRAPILOT-P15)*
+*(Updated 2026-07-03 — WO-BACKEND-000)*
 
 | # | Program | /goal command | Status | Next WO |
 |---|---------|--------------|--------|---------|
 | P1 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | ACTIVE | WO-DEPLOY-BENTON-003D (if authorized) |
 | P2 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | ACTIVE | WO-DATA-BENTON-ADDR-001 (DUPE-001B parked @ SW-02) |
-| P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | QUEUED | WO-BACKEND-001 |
+| P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | ACTIVE | WO-BACKEND-000 until merged; then WO-BACKEND-001 |
 | P4 | [Property Workbench](programs/property-workbench.md) | `/goal property-workbench` | QUEUED | WO-WORKBENCH-001 |
 | P5 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `/goal terrapilot-maturity` | STOP GATE | WO-TERRAPILOT-P16 (blocked; owner authorization required) |
 | P6 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | ACTIVE | WO-WOE-012 (011 in PR) |
@@ -140,3 +140,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-01 | Added Management Dashboard program (P8-MGMT), Operator Doctrine Layer, refreshed statuses; SW register extended to SW-01..SW-10 | WO-WOE-011 |
 | 2026-07-01 | Added Autonomous Same-Risk Continuation Gate (cross-program advance + wall ledger) | WO-WOE-012 |
 | 2026-07-01 | Added Cross-Program Dependency Graph (authorization→unblocks map, prerequisite chains) | WO-WOE-014 |
+| 2026-07-03 | Replaced stale backend program with Backend Operational Excellence hardening/proof/release discipline chain | WO-BACKEND-000 |
