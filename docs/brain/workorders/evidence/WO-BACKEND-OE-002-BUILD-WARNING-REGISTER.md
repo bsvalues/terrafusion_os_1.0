@@ -6,13 +6,21 @@
 **Date:** 2026-07-04  
 **Baseline commit:** `64291909e2f6b8c6fe9a503009c118b05a6c67a5`
 
+## Authorization
+
+This docs/brain evidence packet was explicitly authorized by the owner as
+WO-BACKEND-OE-002. The authorization was limited to Work Order Engine governance
+and Backend Operational Excellence evidence files; it did not authorize backend
+runtime, schema, CI, deployment, secrets, county data, PACS, or TerraPilot
+maturity changes.
+
 ## Verdict
 
 The canonical backend solution currently builds with zero warnings.
 
 | Field | Result |
 |-------|--------|
-| Canonical build command | `dotnet build backend\TerraFusion.sln` |
+| Canonical build command | `dotnet build backend/TerraFusion.sln` |
 | Build result | PASS |
 | Warning count | 0 |
 | Error count | 0 |
@@ -25,11 +33,16 @@ The canonical backend solution currently builds with zero warnings.
 WO-BACKEND-OE-001 established the current backend operational baseline from the clean
 `wo/backend-oe-baseline` worktree at `origin/main`.
 
+This packet is also the persisted baseline evidence reference for WO-BACKEND-OE-001.
+A separate standalone WO-BACKEND-OE-001 evidence file was not created; the baseline
+findings needed for warning-register routing are preserved below so operators can
+audit why warning burn-down is not the next lane.
+
 Observed validation:
 
-- `dotnet build backend\TerraFusion.sln`: PASS, `0 Warning(s)`, `0 Error(s)`.
-- `dotnet test backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj`: PASS, 3471 passed.
-- `dotnet test backend\TerraFusion.sln --no-build`: 2244 passed, 29 failed, 4 skipped.
+- `dotnet build backend/TerraFusion.sln`: PASS, `0 Warning(s)`, `0 Error(s)`.
+- `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj`: PASS, 3471 passed.
+- `dotnet test backend/TerraFusion.sln --no-build`: 2244 passed, 29 failed, 4 skipped.
 - `node docs/brain/workorders/tools/wo-query.mjs --json`: PASS.
 
 The solution test failures are not build warnings. They are operational validation blockers and

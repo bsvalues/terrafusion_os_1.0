@@ -64,7 +64,7 @@ excellence chain preserves those completed IDs and avoids ambiguous routing.
 | WO | Title | Mode | Status | Purpose |
 |----|-------|------|--------|---------|
 | WO-BACKEND-000 | Backend Operational Excellence Program Playbook | Docs/governance creation | **THIS WO** | Register the program, goal, loop, chain, scope, evidence, and stop gates |
-| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | COMPLETE | Established current backend operational truth on `origin/main`; build is zero-warning, with non-warning blockers classified |
+| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | COMPLETE (evidence preserved in OE-002 packet) | Established current backend operational truth on `origin/main`; build is zero-warning, with non-warning blockers classified |
 | WO-BACKEND-OE-002 | Build Warning Register | Docs/evidence register | THIS WO | Record zero-warning canonical build state and separate non-warning blockers from warning debt |
 | WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | Docs/evidence decision register | NEXT | Classify Docker/Testcontainers and local test reliability blockers before runtime validation work |
 | WO-BACKEND-OE-004 | Service Registry Runtime Validation | Evidence + targeted tests | QUEUED | Prove service registry runtime behavior and failure modes |
@@ -140,7 +140,7 @@ Blocked:
 
 Done:
 
-- Backend baseline report exists and the next WO is selected from evidence.
+- Backend baseline findings are preserved in an evidence packet and the next WO is selected from evidence.
 
 ### WO-BACKEND-OE-002 — Build Warning Register
 
