@@ -8,29 +8,33 @@
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
 | Last Updated | 2026-07-04 |
+| Next WO | `WO-BACKEND-OE-003` |
 
 ---
 
 ## Goal
 
-Turn the backend from implemented and slice-verified into an operationally governed platform with
-explicit build health, readiness proof, diagnostics, runtime validation, release criteria, evidence,
-and rollback discipline.
+Turn the backend from implemented and slice-verified into an operationally governed backend platform
+with explicit environment dependencies, readiness semantics, security proof, migration and rollback
+evidence, release gates, runbooks, diagnostics, and closeout evidence.
 
-## Non-Goal
+## Current Facts
 
-Do not rebuild TerraDais persistence. Do not reopen foundation work unless WO-BACKEND-OE-001 discovers a
-current regression. Do not treat passing slices as production readiness.
+- Canonical backend solution build is zero-warning: `0 Warning(s)`, `0 Error(s)`.
+- Warning burn-down is not active work.
+- Full solution test pass is blocked by integration environment dependencies, not warnings.
+- Dais persistence exists.
+- Service registry exists.
+- Health/readiness endpoints exist but semantics are not release-proven.
+- Security/auth/county/audit proof exists but is not consolidated into a release-grade matrix.
 
-## Known Baseline
+## Non-Goals
 
-- TerraPilot Tool Maturity is parked at P15.
-- `origin/main` baseline for this program playbook: `2195309dacabc22eb4f0f0939178331d8ded86d4`.
-- Backend/Dais foundation is believed implemented.
-- Service registry activation is believed implemented.
-- WO-BACKEND-OE-001 confirmed the canonical backend build passes with `0 Warning(s)` and `0 Error(s)`.
-- Warning burn-down is not currently required; non-warning blockers are tracked separately.
-- The next work is production discipline, not foundation rebuild.
+- Do not rebuild Dais persistence.
+- Do not invent warning debt.
+- Do not promote TerraPilot tools.
+- Do not touch county data, PACS, live databases, production resources, or secrets.
+- Do not use Backend OE to repair local Prettier/Vitest hook tooling.
 
 ## Risk And Sovereignty Boundary
 
@@ -46,43 +50,44 @@ current regression. Do not treat passing slices as production readiness.
 ## Program Rules
 
 - Observe current backend truth before implementation.
-- Preserve the zero-warning backend build posture; do not invent warning burn-down work when the
-  register is empty.
+- Preserve the zero-warning backend build posture.
 - Do not create EF migrations or apply database updates without an explicit migration WO.
 - Do not access production, live county services, PACS, protected county data, or secrets.
 - Do not continue TerraPilot P16, promote TerraPilot tools, or change tool maturity metadata.
 - Treat passing build/test slices as evidence, not as production readiness.
+- Treat local Prettier/Vitest hook absence as Developer Experience debt, not Backend OE debt.
 
 ---
 
-## Work Orders
+## Completed Opening History
 
-The `WO-BACKEND-OE-*` prefix is intentional. Earlier backend evidence packets
-already use `WO-BACKEND-001` through `WO-BACKEND-007`; this renewed operational
-excellence chain preserves those completed IDs and avoids ambiguous routing.
+| WO | Status | Evidence |
+|----|--------|----------|
+| `WO-BACKEND-000` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-000-PROGRAM-PLAYBOOK.md` |
+| `WO-BACKEND-OE-001` | COMPLETE | Baseline findings preserved in `WO-BACKEND-OE-002-BUILD-WARNING-REGISTER.md` |
+| `WO-BACKEND-OE-001-S` | COMPLETE | Generated validation residue classified and cleaned from the baseline worktree |
+| `WO-BACKEND-OE-002` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-002-BUILD-WARNING-REGISTER.md` |
 
-| WO | Title | Mode | Status | Purpose |
-|----|-------|------|--------|---------|
-| WO-BACKEND-000 | Backend Operational Excellence Program Playbook | Docs/governance creation | **THIS WO** | Register the program, goal, loop, chain, scope, evidence, and stop gates |
-| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | COMPLETE (evidence preserved in OE-002 packet) | Established current backend operational truth on `origin/main`; build is zero-warning, with non-warning blockers classified |
-| WO-BACKEND-OE-002 | Build Warning Register | Docs/evidence register | THIS WO | Record zero-warning canonical build state and separate non-warning blockers from warning debt |
-| WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | Docs/evidence decision register | NEXT | Classify Docker/Testcontainers and local test reliability blockers before runtime validation work |
-| WO-BACKEND-OE-004 | Service Registry Runtime Validation | Evidence + targeted tests | QUEUED | Prove service registry runtime behavior and failure modes |
-| WO-BACKEND-OE-005 | Health and Readiness Truth | Audit + narrow implementation if authorized | QUEUED | Define what health/readiness endpoints actually prove |
-| WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | Evidence-first; tests if scoped | QUEUED | Prove protected paths enforce auth, role, county, and audit expectations |
-| WO-BACKEND-OE-007 | Migration and Rollback Proof | Controlled validation; no production DB | QUEUED | Prove persistence can be migrated and recovered safely |
-| WO-BACKEND-OE-008 | Broader Dais / Workflow E2E Proof | Targeted test expansion | QUEUED | Prove Dais behavior beyond happy-path audited slices |
-| WO-BACKEND-OE-009 | Backend Release Gate Definition | Governance/docs + optional gate wiring later | QUEUED | Define objective backend release-ready criteria |
-| WO-BACKEND-OE-010 | Backend Operational Runbook | Runbook creation | QUEUED | Create backend startup, validation, failure triage, rollback, and evidence runbook |
-| WO-BACKEND-OE-011 | Backend Diagnostics and Observability Map | Evidence and docs first | QUEUED | Map logs, metrics, traces, audit events, health checks, and diagnostic signals |
-| WO-BACKEND-OE-012 | Backend Operational Packet | Operational packet assembly | QUEUED | Consolidate the program into an executable operational packet |
-| WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | Evidence rollup | QUEUED | Close the program with proof, gaps, deferred work, and next-lane recommendation |
+## Remaining Work Order Chain
 
-## Dependency Chain
+| WO | Title | Mode | Dependency | Status | Next |
+|----|-------|------|------------|--------|------|
+| `WO-BACKEND-OE-003` | Integration Test Environment Dependency Register | Evidence/register documentation first | OE-002 merged | NEXT | OE-004 unless release-blocking repair |
+| `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | QUEUED | OE-005 |
+| `WO-BACKEND-OE-005` | Service Registry Runtime Validation | Evidence + targeted validation | OE-004 merged | QUEUED | OE-006 |
+| `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | QUEUED | OE-007 |
+| `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | QUEUED | OE-008 |
+| `WO-BACKEND-OE-008` | Dais Workflow E2E Proof Expansion Plan | Test-plan/evidence first | OE-007 merged | QUEUED | OE-009 |
+| `WO-BACKEND-OE-009` | Backend Release Gate Definition | Governance/release checklist | OE-008 merged | QUEUED | OE-010 |
+| `WO-BACKEND-OE-010` | Backend Operational Runbook | Runbook creation | OE-009 merged | QUEUED | OE-011 |
+| `WO-BACKEND-OE-011` | Diagnostics and Observability Map | Evidence/docs | OE-010 merged | QUEUED | OE-012 |
+| `WO-BACKEND-OE-012` | Backend Operational Packet | Operational packet assembly | OE-011 merged | QUEUED | OE-013 |
+| `WO-BACKEND-OE-013` | Evidence Rollup and Program Closeout | Evidence rollup / closeout | OE-012 merged | QUEUED | Program close |
 
 ```text
 WO-BACKEND-000
   -> WO-BACKEND-OE-001
+  -> WO-BACKEND-OE-001-S
   -> WO-BACKEND-OE-002
   -> WO-BACKEND-OE-003
   -> WO-BACKEND-OE-004
@@ -99,246 +104,275 @@ WO-BACKEND-000
 
 ---
 
-## WO Definitions
+## Work Order Definitions
 
-### WO-BACKEND-OE-001 — Backend Operational Excellence Baseline
+### WO-BACKEND-OE-003 - Integration Test Environment Dependency Register
 
-**Mode:** read-only discovery / evidence baseline.
-
-Purpose:
-
-- Establish current backend operational truth on `origin/main`.
-
-Output:
-
-- Build result.
-- Warning count.
-- Warning categories.
-- Test inventory.
-- Test results.
-- Dais proof points.
-- Service registry proof points.
-- Health/readiness endpoint map.
-- Auth/security/county-isolation evidence map.
-- Release-readiness gap list.
-- Recommendation for WO-BACKEND-OE-002.
-
-Allowed:
-
-- Read-only inspection.
-- `dotnet build`.
-- Existing tests if no external services or secrets are required.
-- `pnpm run type-check` if needed.
-
-Blocked:
-
-- Edits.
-- Commits.
-- Migrations.
-- Runtime config changes.
-- Live DB, PACS, or county resources.
-
-Done:
-
-- Backend baseline findings are preserved in an evidence packet and the next WO is selected from evidence.
-
-### WO-BACKEND-OE-002 — Build Warning Register
-
-**Mode:** docs/evidence register.
+**Mode:** evidence/register documentation first.
+**Dependency:** `WO-BACKEND-OE-002` merged.
 
 Purpose:
 
-- Record the backend warning state from WO-BACKEND-OE-001 evidence.
-- Confirm the canonical backend build currently has `0 Warning(s)` and `0 Error(s)`.
-- Separate non-warning operational blockers from warning debt.
+- Classify the Docker/Testcontainers SQL Server dependency that blocks full solution test pass.
 
-Output:
+Questions:
 
-- Zero-warning register verdict.
-- Canonical build command and result.
-- Empty warning ledger.
-- Non-warning blocker list.
-- Recommendation for the next backend OE work order.
+- Which tests require Docker/Testcontainers?
+- Which projects are affected?
+- Is SQL Server container required?
+- Are secrets, PACS, county data, or live services required?
+- Is the failure an environment prerequisite, test defect, backend defect, or release-gate blocker?
+- How should this lane be represented in CI/release validation?
 
-Done:
+Allowed scope:
 
-- Warning debt is either explicitly registered or, as of WO-BACKEND-OE-001, confirmed empty.
-- No warning burn-down work is invented when warning count is zero.
+- Source and test inventory.
+- Existing safe command evidence.
+- Documentation/evidence only unless a separate repair WO is authorized.
 
-### WO-BACKEND-OE-003 — Integration Test Environment Dependency Register
+Blocked scope:
 
-**Mode:** docs/evidence decision register.
-
-Dependency:
-
-- WO-BACKEND-OE-002 complete.
-
-Purpose:
-
-- Classify non-warning validation blockers discovered by WO-BACKEND-OE-001.
-
-Scope:
-
-- Docker/Testcontainers SQL Server dependency in `TerraFusion.Integration.Tests.Sync.*` and Atlas SQL Server tests.
-- `TerraFusion.API.Tests` Windows file-lock issue on `MvcTestingAppManifest.json`.
-- Test-lane segmentation and release-gate implications.
-
-Blocked:
-
-- Backend runtime changes.
-- CI workflow changes unless separately authorized.
+- Backend runtime code changes.
+- CI workflow changes.
 - Docker/Testcontainers service startup unless explicitly authorized.
 - Test weakening or exclusion without policy-backed evidence.
+- Secrets, PACS, county data, live services, migrations, or deployment.
+
+Deliverable:
+
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-003-INTEGRATION-TEST-ENVIRONMENT-DEPENDENCY-REGISTER.md`
+
+Verdict options:
+
+- Documented prerequisite.
+- Segmented CI lane.
+- Local-only integration lane.
+- Repair target.
+- Release-gate blocker.
 
 Validation:
 
-- `git diff --check`.
-- `node docs/brain/workorders/tools/wo-query.mjs --json`.
-- Evidence review against WO-BACKEND-OE-001 test output.
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+- No backend/runtime file changes.
 
-Done:
+Stop type:
 
-- Each non-warning blocker has a disposition: documented prerequisite, skipped/segmented CI lane,
-  local-only integration lane, repair target, or release-gate blocker.
+- `BACKEND_INTEGRATION_DEPENDENCY_REGISTER_READY_FOR_PR`
 
-### WO-BACKEND-OE-004 — Service Registry Runtime Validation
+Next routing:
 
-**Mode:** evidence + targeted tests.
+- `WO-BACKEND-OE-004` unless evidence says the dependency is a release-blocking repair.
 
-Purpose:
+### WO-BACKEND-OE-004 - Health and Readiness Semantics Proof
 
-- Move service registry from wired in startup to runtime-validated and failure-mode understood.
-
-Checks:
-
-- `Program.cs` registration path.
-- `StartupOrchestrationService` behavior.
-- Startup success path.
-- Degraded/failure path.
-- Registry drift behavior.
-- Logging/observability.
-- Environment-specific config behavior.
-
-Output:
-
-- Service registry validation report.
-- Failure-mode matrix.
-- Required test additions, if any.
-- Runtime proof if safe.
-
-Done:
-
-- Service registry is not just present; it is operationally understandable and test-backed.
-
-### WO-BACKEND-OE-005 — Health and Readiness Truth
-
-**Mode:** audit + implementation if narrow.
+**Mode:** evidence + narrow endpoint contract proof.
+**Dependency:** `WO-BACKEND-OE-003` merged.
 
 Purpose:
 
 - Define what backend health/readiness endpoints actually prove.
 
+Known endpoints to classify:
+
+- `/healthz`
+- `/healthz/ready`
+- `/health/codex369`
+- `/api/transcendence/health`
+- Levy `/health`
+
 Questions:
 
-- Which health endpoints exist?
-- Which readiness endpoints exist?
-- Which dependencies do they check?
-- Do they distinguish live, degraded, unavailable, and unauthenticated?
-- Are endpoints safe for production exposure?
-- Are they county/data safe?
+- Is the endpoint liveness, readiness, dependency readiness, or feature health?
+- Does it require auth?
+- Is it production-safe?
+- Does it expose sensitive information?
+- Which dependencies are checked?
+- What does failure mean operationally?
+- Which endpoint should release gates rely on?
 
-Output:
+Allowed scope:
 
-- Endpoint inventory.
-- Readiness semantics table.
-- Missing checks.
-- Proposed endpoint contract.
-- Test plan.
+- Source inspection.
+- Existing safe tests if available.
+- Evidence and endpoint contract documentation.
 
-Done:
+Blocked scope:
 
-- Health/readiness stops being a vague status page and becomes an operational contract.
+- Service startup unless explicitly authorized.
+- Production, county, PACS, live DB, or secret access.
+- Backend runtime behavior changes unless a separate WO authorizes them.
 
-### WO-BACKEND-OE-006 — Backend Security / Auth / County Isolation Proof
+Deliverable:
 
-**Mode:** evidence-first; tests if scoped.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md`
+
+Validation:
+
+- Source inspection.
+- Existing safe tests if available.
+- No service startup unless explicitly authorized.
+- No production/county/PACS access.
+
+Stop type:
+
+- `BACKEND_HEALTH_READINESS_SEMANTICS_PROVEN`
+
+Next routing:
+
+- `WO-BACKEND-OE-005`
+
+### WO-BACKEND-OE-005 - Service Registry Runtime Validation
+
+**Mode:** evidence + targeted validation.
+**Dependency:** `WO-BACKEND-OE-004` merged.
 
 Purpose:
 
-- Prove backend protected paths enforce auth, role, county, and audit expectations.
+- Move service registry from source-wired to runtime-understood.
+
+Questions:
+
+- Where is `ServiceRegistry` registered?
+- Where is `StartupOrchestrationService` registered?
+- What gets seeded?
+- What failure modes exist?
+- What logs prove registry startup?
+- What tests cover registration and startup orchestration?
+- What gaps remain before release?
+
+Allowed scope:
+
+- Source inspection.
+- Targeted existing tests.
+- Evidence and validation matrix.
+
+Blocked scope:
+
+- Runtime mutation.
+- Broad startup rewiring.
+- Production/live resources.
+
+Deliverable:
+
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-005-SERVICE-REGISTRY-RUNTIME-VALIDATION.md`
+
+Validation:
+
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+- Targeted existing tests if safe.
+
+Stop type:
+
+- `BACKEND_SERVICE_REGISTRY_RUNTIME_VALIDATED`
+
+Next routing:
+
+- `WO-BACKEND-OE-006`
+
+### WO-BACKEND-OE-006 - Security/Auth/County-Isolation Proof Matrix
+
+**Mode:** evidence matrix first.
+**Dependency:** `WO-BACKEND-OE-005` merged.
+
+Purpose:
+
+- Consolidate auth, authorization, county isolation, audit, and security proof into one release-grade
+  matrix.
 
 Scope:
 
-- Auth-required endpoints.
-- Role/permission checks.
-- `CountyId` filters.
-- Cross-county denial behavior.
-- Audit/security event emission where expected.
-- No owner-sensitive or county-sensitive leak in responses.
+- Authentication middleware.
+- Authorization policies.
+- Controller security boundary tests.
+- Dais county isolation.
+- Cross-county denial tests.
+- Audit correlation tests.
+- Security event surfaces.
+- Owner/PII leak checks where existing evidence supports them.
 
-Blocked:
+Blocked scope:
 
 - Auth architecture rewrite.
 - New identity provider.
 - Secrets changes.
 - Production credentials.
-- County DB/PACS access.
+- Live county/PACS resources.
 
-Output:
+Deliverable:
 
-- Security/readiness proof matrix.
-- Tests run.
-- Gaps by endpoint/domain.
-- Risk-ranked follow-up WOs.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-006-SECURITY-AUTH-COUNTY-ISOLATION-PROOF-MATRIX.md`
 
-Done:
+Validation:
 
-- Security posture is described from evidence, not assumption.
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+- Existing safe tests/evidence only unless a separate implementation WO authorizes more.
 
-### WO-BACKEND-OE-007 — Migration and Rollback Proof
+Stop type:
 
-**Mode:** controlled validation; no production DB.
+- `BACKEND_SECURITY_PROOF_MATRIX_READY`
+
+Next routing:
+
+- `WO-BACKEND-OE-007`
+
+### WO-BACKEND-OE-007 - Migration and Rollback Proof Register
+
+**Mode:** evidence/register first.
+**Dependency:** `WO-BACKEND-OE-006` merged.
 
 Purpose:
 
-- Prove backend persistence can be migrated and recovered safely.
+- Inventory backend migrations and classify rollback/readiness evidence.
 
 Scope:
 
-- Migration presence.
-- Migration apply in safe/local/test context.
-- Rollback/down-path evidence where available.
-- Dais migration status.
-- Schema drift detection.
-- No accidental production mutation.
+- Dais migration.
+- PACS/sync migrations.
+- Audit-event migrations.
+- Migration ordering.
+- `Down` methods where present.
+- Migration apply/rollback proof if already existing.
+- Schema drift risks.
 
-Blocked:
+Blocked scope:
 
-- Production database update.
-- Live county data.
-- Unapproved EF migration creation.
-- Destructive schema operations.
+- `dotnet ef database update`.
+- New migration creation.
+- Destructive schema operation.
+- Production DB.
+- County/PACS data.
 
-Output:
+Deliverable:
 
-- Migration inventory.
-- Apply/rollback proof or documented blocker.
-- Schema risk register.
-- Recovery notes.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-007-MIGRATION-ROLLBACK-PROOF-REGISTER.md`
 
-Done:
+Validation:
 
-- Persistence readiness includes rollback/recovery evidence, not just "migration file exists."
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+- No migration creation or database mutation.
 
-### WO-BACKEND-OE-008 — Broader Dais / Workflow E2E Proof
+Stop type:
 
-**Mode:** targeted test expansion.
+- `BACKEND_MIGRATION_ROLLBACK_REGISTER_READY`
+
+Next routing:
+
+- `WO-BACKEND-OE-008`
+
+### WO-BACKEND-OE-008 - Dais Workflow E2E Proof Expansion Plan
+
+**Mode:** test-plan/evidence first.
+**Dependency:** `WO-BACKEND-OE-007` merged.
 
 Purpose:
 
-- Prove Dais behavior beyond happy-path audited slices.
+- Define the next Dais proof gaps without rebuilding persistence.
 
-Test targets:
+Test areas:
 
 - Dais CRUD unhappy paths.
 - Malformed payloads.
@@ -348,97 +382,163 @@ Test targets:
 - Validation errors.
 - Audit/trace behavior.
 - Restart persistence if safe.
+- Controller/service boundary behavior.
 
-Done:
+Deliverable:
 
-- Dais proof covers realistic failure modes, not only success slices.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-008-DAIS-WORKFLOW-E2E-PROOF-EXPANSION-PLAN.md`
 
-### WO-BACKEND-OE-009 — Backend Release Gate Definition
+Output:
 
-**Mode:** governance/docs + optional gate wiring later.
+- Existing proof.
+- Missing proof.
+- Proposed test slices.
+- Release relevance.
+- Risk ranking.
+
+Validation:
+
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+- No backend/runtime implementation unless a follow-up WO authorizes it.
+
+Stop type:
+
+- `BACKEND_DAIS_E2E_PROOF_PLAN_READY`
+
+Next routing:
+
+- `WO-BACKEND-OE-009`
+
+### WO-BACKEND-OE-009 - Backend Release Gate Definition
+
+**Mode:** governance/release checklist.
+**Dependency:** `WO-BACKEND-OE-008` merged.
 
 Purpose:
 
-- Define objective criteria for backend release-ready.
+- Define objective criteria for backend release readiness.
 
 Release gate must include:
 
-- Build green.
-- Warning threshold met.
-- Test suite matrix green.
-- Migrations verified.
-- Rollback documented.
-- County isolation verified.
-- Auth/security proof present.
-- Service registry healthy.
-- Health/readiness semantics verified.
-- Audit/trace hooks verified.
-- Runbook updated.
+- Backend build green.
+- Warning count threshold.
+- Unit test lane.
+- Integration test lane classification.
+- Health/readiness semantics.
+- Service registry validation.
+- Security/auth/county-isolation proof.
+- Migration/rollback proof.
+- Audit/trace proof.
+- Runbook exists.
 - Evidence attached.
+- Known blockers classified.
 
-Output:
+Deliverable:
 
-- Backend release checklist.
-- Required validation commands.
-- Pass/fail definitions.
-- Promotion criteria.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-009-BACKEND-RELEASE-GATE-DEFINITION.md`
 
-Done:
+Validation:
 
-- No more implied production-readiness. Release readiness has a checklist.
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
 
-### WO-BACKEND-OE-010 — Backend Operational Runbook
+Stop type:
+
+- `BACKEND_RELEASE_GATE_DEFINED`
+
+Next routing:
+
+- `WO-BACKEND-OE-010`
+
+### WO-BACKEND-OE-010 - Backend Operational Runbook
 
 **Mode:** runbook creation.
+**Dependency:** `WO-BACKEND-OE-009` merged.
 
 Purpose:
 
-- Create the operator runbook for backend startup, validation, failure triage, rollback, and evidence capture.
+- Create the operator runbook for backend validation, triage, rollback, and evidence capture.
 
 Runbook must cover:
 
-- Local/dev validation.
-- Shared validation environment.
-- Build/test commands.
+- Build validation.
+- Unit test validation.
+- Integration test prerequisite handling.
 - Health/readiness interpretation.
 - Service registry triage.
+- Auth/security proof references.
 - Migration safety.
 - Rollback procedure.
-- Log locations.
+- Known blocker triage.
 - Evidence capture.
 - Escalation triggers.
 
-Done:
+Deliverables:
 
-- A future operator can validate and recover the backend without rediscovering the system.
+- `docs/brain/workorders/runbooks/BACKEND_OPERATIONAL_RUNBOOK.md`
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-010-BACKEND-OPERATIONAL-RUNBOOK.md`
 
-### WO-BACKEND-OE-011 — Backend Diagnostics and Observability Map
+Validation:
 
-**Mode:** evidence and docs first.
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+
+Stop type:
+
+- `BACKEND_OPERATIONAL_RUNBOOK_READY`
+
+Next routing:
+
+- `WO-BACKEND-OE-011`
+
+### WO-BACKEND-OE-011 - Diagnostics and Observability Map
+
+**Mode:** evidence/docs.
+**Dependency:** `WO-BACKEND-OE-010` merged.
 
 Purpose:
 
-- Map backend logs, metrics, traces, audit events, health checks, and diagnostic signals.
+- Map backend diagnostics and operational signals.
 
-Output:
+Scope:
 
-- Diagnostics inventory.
-- What each signal proves.
-- What is missing.
-- Minimum observability requirements for release.
-- Follow-up instrumentation WOs if needed.
+- Logs.
+- Health checks.
+- Readiness checks.
+- Audit events.
+- Security events.
+- Service registry events.
+- Exception surfaces.
+- Test artifacts.
+- CI evidence.
+- Missing observability.
 
-Done:
+Deliverable:
 
-- Operational visibility is mapped and gaps are explicit.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-011-DIAGNOSTICS-OBSERVABILITY-MAP.md`
 
-### WO-BACKEND-OE-012 — Backend Operational Packet
+Validation:
+
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+
+Stop type:
+
+- `BACKEND_DIAGNOSTICS_OBSERVABILITY_MAPPED`
+
+Next routing:
+
+- `WO-BACKEND-OE-012`
+
+### WO-BACKEND-OE-012 - Backend Operational Packet
 
 **Mode:** operational packet assembly.
+**Dependency:** `WO-BACKEND-OE-011` merged.
 
 Purpose:
 
-- Consolidate the backend program into an executable operational packet.
+- Assemble the Backend Operational Excellence packet.
 
 Packet must include:
 
@@ -456,58 +556,112 @@ Packet must include:
 - Promotion criteria.
 - Done definition.
 
-Done:
+Deliverable:
 
-- Backend Operational Excellence can be operated, validated, evidenced, and recovered.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-012-BACKEND-OPERATIONAL-PACKET.md`
 
-### WO-BACKEND-OE-013 — Evidence Rollup and Program Closeout
+Validation:
 
-**Mode:** evidence rollup.
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+
+Stop type:
+
+- `BACKEND_OPERATIONAL_PACKET_READY`
+
+Next routing:
+
+- `WO-BACKEND-OE-013`
+
+### WO-BACKEND-OE-013 - Evidence Rollup and Program Closeout
+
+**Mode:** evidence rollup / closeout.
+**Dependency:** `WO-BACKEND-OE-012` merged.
 
 Purpose:
 
-- Close the program with proof, gaps, deferred work, and next-lane recommendation.
+- Close the Backend Operational Excellence program with proof, deferred items, and next-lane
+  recommendation.
 
-Output:
+Rollup must include:
 
-- Completed WO list.
+- Completed WOs.
 - Evidence links.
 - Validation summary.
-- Release-gate status.
+- Build/warning state.
+- Integration-test dependency state.
+- Release gate state.
+- Runbook state.
 - Remaining risks.
 - Deferred WOs.
-- Recommendation: continue backend, move to Property Workbench, move to County Runtime, or move to
-  Release Engineering.
+- Recommended next program:
+  - Property Workbench.
+  - County Runtime.
+  - Release Engineering.
+  - Continue Backend OE only if blockers remain.
 
-Done:
+Deliverable:
 
-- Program state is clear enough that WOE can compute the next lane.
+- `docs/brain/workorders/evidence/WO-BACKEND-OE-013-EVIDENCE-ROLLUP-PROGRAM-CLOSEOUT.md`
+
+Validation:
+
+- `git diff --check`
+- `node docs/brain/workorders/tools/wo-query.mjs --json`
+
+Stop type:
+
+- `BACKEND_OPERATIONAL_EXCELLENCE_PROGRAM_CLOSED`
 
 ---
 
-## Stop Conditions
+## Autonomous Continuation Rule
 
-Stop and request owner authority if the work requires:
+Codex may proceed from one Backend OE evidence/doc WO to the next only when:
 
-- Production deployment.
-- Secrets, credentials, PACS, county SQL, live DB, or protected county data.
-- Schema migration creation or apply.
-- Destructive schema or data operation.
-- Auth architecture rewrite or identity-provider change.
-- Runtime behavior change outside the current WO.
-- Conflicting canon about backend readiness or release criteria.
-- Continuing TerraPilot P16 or promoting TerraPilot tools.
+- Current WO is merged to `origin/main`.
+- PR checks are green/acceptable.
+- Review threads are resolved.
+- No backend/runtime code changes are required.
+- No secrets, county data, PACS, live DB, or live county resources are touched.
+- Next WO is same or lower risk.
+- Next WO is already defined in this playbook.
 
-## Completion Criteria
+Codex must stop for owner decision when:
 
-Program closeout requires WO-BACKEND-OE-013 to show:
+- Implementation is required.
+- Backend/runtime code change is required.
+- Test repair is required.
+- CI/release gate wiring is required.
+- Docker/Testcontainers repair is required.
+- Secrets, county data, PACS, live services, or live DB are implicated.
+- Review requires scope expansion outside the current WO.
+- Local tooling bypass is needed.
 
-- Build health evidence.
-- Warning disposition.
-- Runtime validation evidence.
-- Release gate checklist.
-- Security/readiness proof.
-- Migration/rollback proof.
-- Operational runbook.
-- Diagnostics map.
-- Deferred risk register.
+---
+
+## Optional Separate DevEx Lane - Not Backend OE
+
+Program:
+
+- Developer Experience / Local Hook Bootstrap.
+
+Work order:
+
+- `WO-DEVEX-HOOKS-001 - Local Prettier/Vitest Hook Bootstrap Diagnosis`.
+
+Trigger:
+
+- Only if local hook failures recur or the owner authorizes it.
+
+Purpose:
+
+- Fix or document local pre-commit/pre-push tooling prerequisites.
+
+Not part of:
+
+- Backend Operational Excellence.
+
+Why:
+
+- Prettier/Vitest hook absence is local tooling debt, not backend release debt.

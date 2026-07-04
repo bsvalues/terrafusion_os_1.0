@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-04 — WO-BACKEND-OE-002)*
+*(Updated 2026-07-04 — WO-BACKEND-OE-PLAYBOOK-REFRESH)*
 
 | # | Program | /goal command | Status | Next WO |
 |---|---------|--------------|--------|---------|
@@ -40,7 +40,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
-| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-003 | — |
+| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-003 | Evidence/register classification next |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
 
@@ -142,3 +142,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-01 | Added Cross-Program Dependency Graph (authorization→unblocks map, prerequisite chains) | WO-WOE-014 |
 | 2026-07-03 | Replaced stale backend program with Backend Operational Excellence hardening/proof/release discipline chain | WO-BACKEND-000 |
 | 2026-07-04 | Recorded zero-warning backend build register and routed next work to integration-test dependency classification | WO-BACKEND-OE-002 |
+| 2026-07-04 | Refreshed Backend OE full executable playbook from OE-003 through OE-013 | WO-BACKEND-OE-PLAYBOOK-REFRESH |
