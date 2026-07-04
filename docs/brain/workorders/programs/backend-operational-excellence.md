@@ -7,7 +7,7 @@
 | Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
-| Last Updated | 2026-07-03 |
+| Last Updated | 2026-07-04 |
 
 ---
 
@@ -28,7 +28,8 @@ current regression. Do not treat passing slices as production readiness.
 - `origin/main` baseline for this program playbook: `2195309dacabc22eb4f0f0939178331d8ded86d4`.
 - Backend/Dais foundation is believed implemented.
 - Service registry activation is believed implemented.
-- Previous backend build passed with warnings remaining.
+- WO-BACKEND-OE-001 confirmed the canonical backend build passes with `0 Warning(s)` and `0 Error(s)`.
+- Warning burn-down is not currently required; non-warning blockers are tracked separately.
 - The next work is production discipline, not foundation rebuild.
 
 ## Risk And Sovereignty Boundary
@@ -45,7 +46,8 @@ current regression. Do not treat passing slices as production readiness.
 ## Program Rules
 
 - Observe current backend truth before implementation.
-- Keep warning burn-down tied to a warning register; no broad cleanup.
+- Preserve the zero-warning backend build posture; do not invent warning burn-down work when the
+  register is empty.
 - Do not create EF migrations or apply database updates without an explicit migration WO.
 - Do not access production, live county services, PACS, protected county data, or secrets.
 - Do not continue TerraPilot P16, promote TerraPilot tools, or change tool maturity metadata.
@@ -62,9 +64,9 @@ excellence chain preserves those completed IDs and avoids ambiguous routing.
 | WO | Title | Mode | Status | Purpose |
 |----|-------|------|--------|---------|
 | WO-BACKEND-000 | Backend Operational Excellence Program Playbook | Docs/governance creation | **THIS WO** | Register the program, goal, loop, chain, scope, evidence, and stop gates |
-| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | NEXT | Establish current backend operational truth on `origin/main` |
-| WO-BACKEND-OE-002 | Build Warning Register | Docs/evidence first | QUEUED | Capture every backend warning verbatim and classify release risk |
-| WO-BACKEND-OE-003 | Build Warning Burn-down | Small implementation slices only | QUEUED | Fix only warning-register-approved warnings |
+| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | Read-only discovery / evidence baseline | COMPLETE | Established current backend operational truth on `origin/main`; build is zero-warning, with non-warning blockers classified |
+| WO-BACKEND-OE-002 | Build Warning Register | Docs/evidence register | THIS WO | Record zero-warning canonical build state and separate non-warning blockers from warning debt |
+| WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | Docs/evidence decision register | NEXT | Classify Docker/Testcontainers and local test reliability blockers before runtime validation work |
 | WO-BACKEND-OE-004 | Service Registry Runtime Validation | Evidence + targeted tests | QUEUED | Prove service registry runtime behavior and failure modes |
 | WO-BACKEND-OE-005 | Health and Readiness Truth | Audit + narrow implementation if authorized | QUEUED | Define what health/readiness endpoints actually prove |
 | WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | Evidence-first; tests if scoped | QUEUED | Prove protected paths enforce auth, role, county, and audit expectations |
@@ -142,27 +144,30 @@ Done:
 
 ### WO-BACKEND-OE-002 — Build Warning Register
 
-**Mode:** docs/evidence first; implementation only if explicitly authorized after register.
+**Mode:** docs/evidence register.
 
 Purpose:
 
-- Capture every backend warning verbatim and classify release risk.
+- Record the backend warning state from WO-BACKEND-OE-001 evidence.
+- Confirm the canonical backend build currently has `0 Warning(s)` and `0 Error(s)`.
+- Separate non-warning operational blockers from warning debt.
 
 Output:
 
-- Warning ledger.
-- Category per warning: nullable/reference safety, obsolete API, dead/deprecated code, analyzer/style,
-  package/runtime concern, or configuration risk.
-- Owner/disposition per warning.
-- Fix/defer recommendation.
+- Zero-warning register verdict.
+- Canonical build command and result.
+- Empty warning ledger.
+- Non-warning blocker list.
+- Recommendation for the next backend OE work order.
 
 Done:
 
-- Warnings are no longer vague debt. Each warning has a disposition and next action.
+- Warning debt is either explicitly registered or, as of WO-BACKEND-OE-001, confirmed empty.
+- No warning burn-down work is invented when warning count is zero.
 
-### WO-BACKEND-OE-003 — Build Warning Burn-down
+### WO-BACKEND-OE-003 — Integration Test Environment Dependency Register
 
-**Mode:** small implementation slices only.
+**Mode:** docs/evidence decision register.
 
 Dependency:
 
@@ -170,28 +175,31 @@ Dependency:
 
 Purpose:
 
-- Fix high-signal warnings that affect runtime safety, maintainability, or release confidence.
+- Classify non-warning validation blockers discovered by WO-BACKEND-OE-001.
 
 Scope:
 
-- Only warnings approved by the warning register.
+- Docker/Testcontainers SQL Server dependency in `TerraFusion.Integration.Tests.Sync.*` and Atlas SQL Server tests.
+- `TerraFusion.API.Tests` Windows file-lock issue on `MvcTestingAppManifest.json`.
+- Test-lane segmentation and release-gate implications.
 
 Blocked:
 
-- Broad cleanup.
-- Unrelated refactors.
-- Style-only churn unless explicitly approved.
-- Runtime behavior changes not tied to a warning.
+- Backend runtime changes.
+- CI workflow changes unless separately authorized.
+- Docker/Testcontainers service startup unless explicitly authorized.
+- Test weakening or exclusion without policy-backed evidence.
 
 Validation:
 
-- `dotnet build backend/TerraFusion.sln`.
-- Relevant targeted tests.
-- `pnpm run type-check` if coupled.
+- `git diff --check`.
+- `node docs/brain/workorders/tools/wo-query.mjs --json`.
+- Evidence review against WO-BACKEND-OE-001 test output.
 
 Done:
 
-- Warning count reduced or justified, and no new warnings introduced.
+- Each non-warning blocker has a disposition: documented prerequisite, skipped/segmented CI lane,
+  local-only integration lane, repair target, or release-gate blocker.
 
 ### WO-BACKEND-OE-004 — Service Registry Runtime Validation
 
