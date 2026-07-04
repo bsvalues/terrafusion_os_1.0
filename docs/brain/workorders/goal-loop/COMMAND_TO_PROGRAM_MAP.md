@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010  
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-04
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -16,10 +16,10 @@ resolves.
 |-----------------|---------|---------|----------|---------------------|
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
-| `backend-excellence` | P3 | WO-BACKEND-000 | NO | `once`, `program`, `evidence`, `discovery` |
-| `backend-start` | P3 | WO-BACKEND-000 | NO | `program` |
-| `backend-status` | P3 | WO-BACKEND-000 | NO | `evidence`, `discovery` |
-| `backend-next` | P3 | WO-BACKEND-000 | NO | `once`, `evidence` |
+| `backend-excellence` | P3 | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence`, `discovery` |
+| `backend-start` | P3 | WO-BACKEND-OE-003 | NO | `program` |
+| `backend-status` | P3 | WO-BACKEND-OE-003 | NO | `evidence`, `discovery` |
+| `backend-next` | P3 | WO-BACKEND-OE-003 | NO | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
@@ -91,10 +91,10 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-BACKEND-000 | Backend Operational Excellence Program Playbook | **THIS WO** |
-| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | **NEXT AFTER 000** |
-| WO-BACKEND-OE-002 | Build Warning Register | QUEUED |
-| WO-BACKEND-OE-003 | Build Warning Burn-down | QUEUED |
+| WO-BACKEND-000 | Backend Operational Excellence Program Playbook | CLOSED |
+| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | COMPLETE — evidence preserved in OE-002 packet |
+| WO-BACKEND-OE-002 | Build Warning Register | THIS WO |
+| WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | NEXT |
 | WO-BACKEND-OE-004 | Service Registry Runtime Validation | QUEUED |
 | WO-BACKEND-OE-005 | Health and Readiness Truth | QUEUED |
 | WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | QUEUED |
@@ -106,7 +106,7 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 | WO-BACKEND-OE-012 | Backend Operational Packet | QUEUED |
 | WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | QUEUED |
 
-No active stop walls at WO-BACKEND-OE-001. Stop walls begin if work requires production deployment,
+No active stop walls at WO-BACKEND-OE-003. Stop walls begin if work requires production deployment,
 secrets, county data, PACS, live DB, schema migration apply, TerraPilot P16, or backend runtime
 mutation outside the active WO.
 
