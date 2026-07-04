@@ -4,18 +4,23 @@
 **Last Updated:** 2026-07-03
 **Classification:** Operator Doctrine — current state snapshot
 
-This file maps every `/goal` command to its program, current next WO, blockers, allowed loop modes,
-and active stop walls. Update this file when a WO completes or a blocker resolves.
+This file maps every `/goal` command or command alias to its program, current next WO, blockers,
+allowed loop modes, and active stop walls. Update this file when a WO completes or a blocker
+resolves.
 
 ---
 
 ## Quick Reference Table
 
-| `/goal` command | Program | Next WO | Blocked? | Allowed /loop modes |
+| Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
-| `backend-excellence` | P3 | WO-BACKEND-001 | NO | `once`, `program`, `evidence`, `discovery` |
+| `backend-excellence` | P3 | WO-BACKEND-000 | NO | `once`, `program`, `evidence`, `discovery` |
+| `backend-start` | P3 | WO-BACKEND-000 | NO | `program` |
+| `backend-status` | P3 | WO-BACKEND-000 | NO | `evidence`, `discovery` |
+| `backend-next` | P3 | WO-BACKEND-000 | NO | `once`, `evidence` |
+| `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
@@ -81,20 +86,29 @@ and active stop walls. Update this file when a WO completes or a blocker resolve
 ### /goal backend-excellence → P3
 
 **File:** [programs/backend-operational-excellence.md](../programs/backend-operational-excellence.md)  
-**Success condition:** Runtime truth passes all gates; operational runbook exists; release hygiene enforced.
+**Success condition:** Backend operational truth, warnings, runtime validation, release gates,
+runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE to choose the next lane.
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-BACKEND-001 | Runtime truth audit | **NEXT** |
-| WO-BACKEND-002 | Health check contract | QUEUED |
-| WO-BACKEND-003 | Logging and observability | QUEUED |
-| WO-BACKEND-004 | Release hygiene | QUEUED |
-| WO-BACKEND-005 | Error handling sweep | QUEUED |
-| WO-BACKEND-006 | Performance baseline | QUEUED |
-| WO-BACKEND-007 | Integration test coverage | QUEUED |
-| WO-BACKEND-008 | Operational runbook | QUEUED |
+| WO-BACKEND-000 | Backend Operational Excellence Program Playbook | **THIS WO** |
+| WO-BACKEND-OE-001 | Backend Operational Excellence Baseline | **NEXT AFTER 000** |
+| WO-BACKEND-OE-002 | Build Warning Register | QUEUED |
+| WO-BACKEND-OE-003 | Build Warning Burn-down | QUEUED |
+| WO-BACKEND-OE-004 | Service Registry Runtime Validation | QUEUED |
+| WO-BACKEND-OE-005 | Health and Readiness Truth | QUEUED |
+| WO-BACKEND-OE-006 | Backend Security / Auth / County Isolation Proof | QUEUED |
+| WO-BACKEND-OE-007 | Migration and Rollback Proof | QUEUED |
+| WO-BACKEND-OE-008 | Broader Dais / Workflow E2E Proof | QUEUED |
+| WO-BACKEND-OE-009 | Backend Release Gate Definition | QUEUED |
+| WO-BACKEND-OE-010 | Backend Operational Runbook | QUEUED |
+| WO-BACKEND-OE-011 | Backend Diagnostics and Observability Map | QUEUED |
+| WO-BACKEND-OE-012 | Backend Operational Packet | QUEUED |
+| WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | QUEUED |
 
-No active stop walls at WO-BACKEND-001.
+No active stop walls at WO-BACKEND-OE-001. Stop walls begin if work requires production deployment,
+secrets, county data, PACS, live DB, schema migration apply, TerraPilot P16, or backend runtime
+mutation outside the active WO.
 
 ---
 

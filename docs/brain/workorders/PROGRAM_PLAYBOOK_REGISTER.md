@@ -17,13 +17,13 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-03 — WO-TERRAPILOT-P15)*
+*(Updated 2026-07-03 — WO-BACKEND-000)*
 
 | # | Program | /goal command | Status | Next WO |
 |---|---------|--------------|--------|---------|
 | P1 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | ACTIVE | WO-DEPLOY-BENTON-003D (if authorized) |
 | P2 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | ACTIVE | WO-DATA-BENTON-ADDR-001 (DUPE-001B parked @ SW-02) |
-| P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | QUEUED | WO-BACKEND-001 |
+| P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | ACTIVE | WO-BACKEND-000 |
 | P4 | [Property Workbench](programs/property-workbench.md) | `/goal property-workbench` | QUEUED | WO-WORKBENCH-001 |
 | P5 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `/goal terrapilot-maturity` | STOP GATE | WO-TERRAPILOT-P16 (blocked; owner authorization required) |
 | P6 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | ACTIVE | WO-WOE-012 (011 in PR) |
@@ -40,7 +40,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
-| Backend operational truth not established | WO-BACKEND-001+ | — |
+| Backend operational truth not established | WO-BACKEND-OE-001+ | — |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
 
@@ -140,3 +140,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-01 | Added Management Dashboard program (P8-MGMT), Operator Doctrine Layer, refreshed statuses; SW register extended to SW-01..SW-10 | WO-WOE-011 |
 | 2026-07-01 | Added Autonomous Same-Risk Continuation Gate (cross-program advance + wall ledger) | WO-WOE-012 |
 | 2026-07-01 | Added Cross-Program Dependency Graph (authorization→unblocks map, prerequisite chains) | WO-WOE-014 |
+| 2026-07-03 | Replaced stale backend program with Backend Operational Excellence hardening/proof/release discipline chain | WO-BACKEND-000 |

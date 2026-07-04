@@ -67,15 +67,26 @@ Success:  All open anomaly groups are documented with evidence; cleanup WOs are 
 ### /goal backend-excellence
 
 ```
-Goal:     Make the backend release-gated, diagnosable, and operationally governed.
+Goal:     Turn the backend into an operationally governed platform with explicit build health,
+          readiness proof, diagnostics, runtime validation, release criteria, evidence, and
+          rollback discipline.
 Program:  P3 — Backend Operational Excellence
 File:     programs/backend-operational-excellence.md
-Success:  Runtime truth passes all gates; operational runbook exists; release hygiene enforced.
+Success:  Backend operational truth, warnings, runtime validation, release gates, runbooks,
+          diagnostics, rollback, and evidence rollup are explicit enough for WOE to choose the
+          next lane.
 ```
 
-**Current state:** WO-BACKEND-001 is next (QUEUED). No blockers from current PRs.
+**Current state:** WO-BACKEND-000 registers the program playbook. After it lands,
+WO-BACKEND-OE-001 is the read-only backend operational baseline. This lane is hardening/proof/release
+discipline, not a foundation rebuild.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+**Command aliases:** `/backend-start`, `/backend-status`, `/backend-next`, `/backend-stop`
+
+**Blocked:** production deployment, secrets, county data, PACS, live DB, schema migration apply,
+TerraPilot P16, and any backend runtime mutation not explicitly authorized by the current WO.
 
 ---
 
