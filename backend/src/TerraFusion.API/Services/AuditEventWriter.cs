@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.DTOs;
@@ -60,7 +62,11 @@ public sealed class AuditEventWriter : IAuditEventWriter
             var actor = ctx.IsAuthenticated && !string.IsNullOrWhiteSpace(ctx.UserId)
                 ? ctx.UserId!
                 : SystemActor;
-            Guid? countyId = Guid.TryParse(ctx.CountyId, out var parsed) ? parsed : null;
+            // WO-AUDIT-COUNTY-FILTER-001: the request context's CountyId may be a countyCode
+            // (the accessor falls back to it), so resolve non-GUID values to the real county
+            // GUID — otherwise the row is written county-unattributed and the county-isolated
+            // trail/search can never surface it.
+            Guid? countyId = await ResolveCountyIdAsync(ctx.CountyId, cancellationToken);
 
             _db.AuditEvents.Add(new AuditEvent
             {
@@ -85,5 +91,29 @@ public sealed class AuditEventWriter : IAuditEventWriter
                 "Failed to write AuditEvent entity={Entity} entityId={EntityId} action={Action}",
                 entity, entityId, action);
         }
+    }
+
+    /// <summary>
+    /// Resolves the request's county claim (a GUID, or a countyCode/name/FIPS fallback) to
+    /// the canonical county GUID. Returns null when absent or unresolvable.
+    /// </summary>
+    private async Task<Guid?> ResolveCountyIdAsync(string? countyIdOrCode, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(countyIdOrCode)) return null;
+        if (Guid.TryParse(countyIdOrCode, out var direct)) return direct;
+
+        var code = countyIdOrCode.Trim();
+        var lowered = code.ToLowerInvariant();
+        var fipsPadded = code.All(char.IsDigit) ? code.PadLeft(3, '0') : code;
+
+        // Case-insensitive name match (auth may supply "benton"/"BENTON"); exact FIPS.
+        var match = await _db.Counties
+            .AsNoTracking()
+            .Where(c => c.Name.ToLower() == lowered
+                || (c.FipsCode != null && (c.FipsCode == code || c.FipsCode == fipsPadded)))
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(ct);
+
+        return match;
     }
 }

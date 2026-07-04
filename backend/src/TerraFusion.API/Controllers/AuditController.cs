@@ -333,13 +333,14 @@ public class AuditController : ControllerBase
     // ── GET api/audit/trail ─────────────────────────────────────────
     // Per-parcel audit event trail, read from AuditEvents. Returns the
     // canonical AuditEvent[] shape consumed by the Dais AuditTab.
-    // NOTE: domain audit-event capture is not yet wired (AU-2 interceptor
-    // is unimplemented), so AuditEvents is currently empty and this returns
-    // [] honestly rather than 404. AuditEvents has no CountyId column, so
-    // isolation here is the authenticated county gate + per-parcel scope.
+    // NOTE: rows are row-level county-isolated (AuditEvents.CountyId) and per-parcel
+    // scoped, then paged. Empty when the parcel has no events for the caller's county.
 
     [HttpGet("trail")]
-    public async Task<IActionResult> GetAuditTrail([FromQuery] string? parcelId)
+    public async Task<IActionResult> GetAuditTrail(
+        [FromQuery] string? parcelId,
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null)
     {
         if (string.IsNullOrWhiteSpace(parcelId))
             return BadRequest(new { message = "parcelId is required" });
@@ -347,10 +348,15 @@ public class AuditController : ControllerBase
         var countyId = await ResolveCountyIdAsync();
         if (countyId is null) return Forbid();
 
+        // WO-AUDIT-COUNTY-FILTER-001: isolate rows to the caller's county (not just gate
+        // access), and page the result so a hot parcel can't return an unbounded response.
+        var (skip, take) = Paginate(page, pageSize);
         var events = await _db.AuditEvents
             .AsNoTracking()
-            .Where(e => e.EntityId == parcelId)
-            .OrderByDescending(e => e.Timestamp)
+            .Where(e => e.CountyId == countyId.Value && e.EntityId == parcelId)
+            .OrderByDescending(e => e.Timestamp).ThenByDescending(e => e.Id) // stable paging tiebreaker
+            .Skip(skip)
+            .Take(take)
             .ToListAsync();
 
         return Ok(events.Select(AuditTrailMapper.Map).ToList());
@@ -366,29 +372,93 @@ public class AuditController : ControllerBase
         [FromQuery] string? endDate,
         [FromQuery] string? userId,
         [FromQuery] string? category,
-        [FromQuery] string? action)
+        [FromQuery] string? action,
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null)
     {
         var countyId = await ResolveCountyIdAsync();
         if (countyId is null) return Forbid();
 
-        IQueryable<AuditEvent> query = _db.AuditEvents.AsNoTracking();
+        // WO-AUDIT-COUNTY-FILTER-001: county isolation on the row set (not just access).
+        IQueryable<AuditEvent> query = _db.AuditEvents.AsNoTracking()
+            .Where(e => e.CountyId == countyId.Value);
 
         if (!string.IsNullOrWhiteSpace(parcelId)) query = query.Where(e => e.EntityId == parcelId);
         if (!string.IsNullOrWhiteSpace(userId)) query = query.Where(e => e.UserId == userId);
         if (!string.IsNullOrWhiteSpace(action)) query = query.Where(e => e.Action.Contains(action));
         if (TryParseUtc(startDate, out var start)) query = query.Where(e => e.Timestamp >= start);
         if (TryParseUtc(endDate, out var end)) query = query.Where(e => e.Timestamp <= end);
+        // Category is derived from Entity; apply it in SQL BEFORE paging so a category
+        // filter can't silently drop matches that fell outside the page window.
+        if (!string.IsNullOrWhiteSpace(category)) query = ApplyCategoryFilter(query, category);
 
+        var (skip, take) = Paginate(page, pageSize);
         var events = await query
-            .OrderByDescending(e => e.Timestamp)
-            .Take(500)
+            .OrderByDescending(e => e.Timestamp).ThenByDescending(e => e.Id) // stable paging tiebreaker
+            .Skip(skip)
+            .Take(take)
             .ToListAsync();
 
-        IEnumerable<AuditTrailEventDto> mapped = events.Select(AuditTrailMapper.Map);
-        if (!string.IsNullOrWhiteSpace(category))
-            mapped = mapped.Where(m => string.Equals(m.Category, category, StringComparison.OrdinalIgnoreCase));
+        return Ok(events.Select(AuditTrailMapper.Map).ToList());
+    }
 
-        return Ok(mapped.ToList());
+    // ── Paging + category helpers (WO-AUDIT-COUNTY-FILTER-001) ───────
+
+    private const int DefaultPageSize = 200;
+    private const int MaxPageSize = 500;
+
+    private const int MaxPage = 1_000_000; // caps skip well under int.MaxValue (1e6 * 500 = 5e8)
+
+    private static (int Skip, int Take) Paginate(int? page, int? pageSize)
+    {
+        var p = page is > 0 ? Math.Min(page.Value, MaxPage) : 1;
+        var size = pageSize is > 0 ? Math.Min(pageSize.Value, MaxPageSize) : DefaultPageSize;
+        return ((p - 1) * size, size); // (p-1)*size ≤ (1e6-1)*500 < int.MaxValue → no overflow
+    }
+
+    /// <summary>
+    /// Translatable Entity predicate that mirrors <see cref="AuditTrailMapper.MapCategory"/>
+    /// (case-insensitive substring, same precedence: appeal &gt; permit &gt; exemption &gt;
+    /// document &gt; field &gt; assessment &gt; system). Unknown category ⇒ no rows.
+    /// Applied in SQL so category filtering happens before the page window.
+    /// </summary>
+    private static IQueryable<AuditEvent> ApplyCategoryFilter(IQueryable<AuditEvent> q, string category)
+    {
+        switch (category.Trim().ToLowerInvariant())
+        {
+            case "appeal":
+                return q.Where(e => e.Entity.ToLower().Contains("appeal"));
+            case "permit":
+                return q.Where(e => e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("appeal"));
+            case "exemption":
+                return q.Where(e => e.Entity.ToLower().Contains("exemption")
+                    && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit"));
+            case "document":
+                return q.Where(e => e.Entity.ToLower().Contains("document")
+                    && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("exemption"));
+            case "field":
+                return q.Where(e => e.Entity.ToLower().Contains("field")
+                    && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document"));
+            case "assessment":
+                return q.Where(e =>
+                    (e.Entity.ToLower().Contains("parcel") || e.Entity.ToLower().Contains("property")
+                        || e.Entity.ToLower().Contains("assessment") || e.Entity.ToLower().Contains("valuation"))
+                    && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document")
+                    && !e.Entity.ToLower().Contains("field"));
+            case "system":
+                return q.Where(e =>
+                    !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document")
+                    && !e.Entity.ToLower().Contains("field") && !e.Entity.ToLower().Contains("parcel")
+                    && !e.Entity.ToLower().Contains("property") && !e.Entity.ToLower().Contains("assessment")
+                    && !e.Entity.ToLower().Contains("valuation"));
+            default:
+                return q.Where(e => false);
+        }
     }
 
     private static bool TryParseUtc(string? value, out DateTime utc)
