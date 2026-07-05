@@ -29,8 +29,14 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Blocked | `WO-LOCAL-093` | TBD | No auto | Owner authorization required |
 | [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Future | `WO-WORKBENCH-001` | `WO-WORKBENCH-002` | No auto until selected | Owner or WOE selection required |
+| [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
+| [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Active | `WO-DATA-BENTON-DUPE-001B` | `WO-DATA-BENTON-ADDR-001` | Evidence-only until mutation auth | Stop on data mutation |
+| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Active | `WO-WOE-012` | `WO-WOE-013` | Auto within WOE docs/governance | Stop on schema/tooling scope expansion |
+| [AI / Brain / Operator System](programs/brain-operator-system.md) | `/goal brain-operator` | `/loop program` | Queued | `WO-BRAIN-001` | TBD | No auto until selected | Owner or WOE selection required |
+| [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active | `WO-AZURE-001` | `WO-AZURE-006` boundary | No auto deploy | Stop on Azure/deployment/county production boundary |
+| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Active | `WO-P8-MGMT-004` | deploy at SW-01 | No auto deploy | Stop on deployment authorization |
 
-**Active program graph:** [TerraFusion Active Program Work Order Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
+**Active program graph:** [TerraFusion Active Goal/Loop Execution Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 
 ---
 

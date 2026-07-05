@@ -62,8 +62,9 @@ Property Workbench work. It creates the operating graph that controls those lane
 
 Codex is the operator. The owner is the authority wall, not the dispatcher for every next Work Order.
 Inside an active `/goal` plus `/loop`, Codex may create worktrees, execute scoped WOs, validate,
-commit, push, open PRs, resolve in-scope review comments, update from `origin/main`, merge clean PRs,
-verify `origin/main`, and continue to the next defined WO when no stop gate is hit.
+commit, push, open PRs, resolve in-scope review comments, update from `origin/main`, prepare clean
+PRs for owner merge authorization, verify `origin/main` after an authorized merge, and continue to
+the next defined WO when no stop gate is hit.
 
 Codex may continue automatically from one Work Order to the next only when:
 

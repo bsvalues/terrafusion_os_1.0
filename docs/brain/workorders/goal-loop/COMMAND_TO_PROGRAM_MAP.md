@@ -25,7 +25,7 @@ resolves.
 | `backend-status` | P3 | WO-BACKEND-OE-003 | NO | `evidence`, `discovery` |
 | `backend-next` | P3 | WO-BACKEND-OE-003 | NO | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
-| `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence` |
+| `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence`, `discovery` |
 | `sync-status` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `evidence`, `discovery` |
 | `sync-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence` |
 | `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |

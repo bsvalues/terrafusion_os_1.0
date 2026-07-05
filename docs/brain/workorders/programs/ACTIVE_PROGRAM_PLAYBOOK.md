@@ -39,10 +39,11 @@ no stop gate is hit:
 7. Open a PR.
 8. Resolve review comments inside the authorized scope.
 9. Update from `origin/main` if behind.
-10. Merge the PR when checks are green/acceptable, review threads are resolved, changed files remain
-    in authorized scope, and no global stop gate is hit.
-11. Verify `origin/main`.
-12. Continue to the next Work Order in the same `/goal` plus `/loop` if allowed.
+10. Prepare the PR for owner merge authorization when checks are green/acceptable, review threads are
+    resolved, changed files remain in authorized scope, and no global stop gate is hit.
+11. Merge only when the owner has explicitly authorized that merge under the active Work Order.
+12. Verify `origin/main` after merge.
+13. Continue to the next Work Order in the same `/goal` plus `/loop` if allowed.
 
 Codex must return to the owner only for true authority walls.
 
@@ -123,10 +124,15 @@ Create and keep current the active TerraFusion `/goal` plus `/loop` execution gr
 
 ### Stop Type
 
-`GOAL_LOOP_MASTER_PLAYBOOK_MERGED_CHAIN_EXECUTION_ACTIVE`
+`GOAL_LOOP_MASTER_PLAYBOOK_CREATED_READY_FOR_CHAIN_EXECUTION`
 
-After merge, proceed to Program 1 / Backend Operational Excellence at `WO-BACKEND-OE-003` unless the
-owner selects a different active program.
+Routing note:
+
+- `wo-query` currently reports an older LocalOps/Work Order Engine recommendation. Until the registry
+  backing `wo-query` is refreshed, this mismatch is a routing reconciliation gate, not authority to
+  run both lanes.
+- After merge and owner authorization, proceed to Program 1 / Backend Operational Excellence at
+  `WO-BACKEND-OE-003` unless the owner selects a different active program.
 
 ---
 
@@ -204,10 +210,10 @@ local hook bypass.
 
 ### Completed Work Orders
 
-- `WO-057` - `tools/sync` boundary selected.
-- `WO-058` - Gate 14 enforcement created before implementation.
-- `WO-130` - C1 Workbook Admission Validator.
-- `WO-131` - C2 Column-Terminalization Checker.
+- `WO-SYNC-057` - `tools/sync` boundary selected.
+- `WO-SYNC-058` - Gate 14 enforcement created before implementation.
+- `WO-SYNC-130` - C1 Workbook Admission Validator.
+- `WO-SYNC-131` - C2 Column-Terminalization Checker.
 
 ### Current Tool Stack
 
