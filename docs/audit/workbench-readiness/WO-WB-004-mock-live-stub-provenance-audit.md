@@ -4,7 +4,7 @@
 **Repo:** `terrafusion_os_1.0` · **Base:** `origin/main` @ `77269a65` · **Method:** counts **computed** from `tools/registry/tool-maturity.json` + `tools/registry/terrapilot.tools.json` (not estimated); data-mode contract read first-hand; cited `file:line`.
 **Builds on:** WO-WB-001/002/003.
 
-This is the **census**. The workbench sources runtime data through exactly **two channels**; this WO quantifies the provenance of each and issues the mock/live/stub verdict.
+This is the **census**. The workbench sources runtime data through **three channels**; this WO quantifies the provenance of each and issues the mock/live/stub verdict.
 
 ---
 
@@ -12,18 +12,17 @@ This is the **census**. The workbench sources runtime data through exactly **two
 
 | Channel | How surfaces use it | Provenance question |
 |---------|--------------------|---------------------|
-| **Domain-data channel** | stores + domain hooks (`usePropertyStore`, `useForgeValuation`, `useParcelBoundary/Layers`, `useDossierDetails`) backed by `LiveDataProvider` | live vs mock/fixtures? |
+| **Domain-data channel** | stores + domain hooks (`usePropertyStore`, `useForgeValuation`, `useParcelBoundary/Layers`, `useDossierDetails`) backed by the `DataProvider` | live vs gated non-live? |
 | **Governed-tool channel** | `invokeTool(toolId)` → the 117-tool TerraPilot registry | backend-integrated vs stub? |
+| **Direct-API channel** | some tabs call `/api/*` directly (e.g. Atlas GIS), not via a hook or tool | live endpoint vs unavailable? |
 
-## 2. Domain-data channel — **live-only by contract**
+## 2. Domain-data channel — **live by default, gated non-live modes**
 
-- `frontend/apps/os-shell/src/services/dataProvider.ts:38` — `export type DataMode = 'live';` (the type admits only `'live'`).
-- `dataProvider.ts:82` — **"Fail-fast contract: any non-live `VITE_DATA_MODE` throws immediately"**; unset or `'live'` is the canonical default (`:42,:87-90`).
-- `LiveDataProvider.ts:347` — `readonly mode: DataMode = 'live';`; results are stamped `dataSource: 'live'` (`:215,:338`).
+- `frontend/apps/os-shell/src/services/dataProvider.ts:88` — `allowNonLive = VITE_ALLOW_NON_LIVE_MODE === '1'`.
+- `dataProvider.ts:95` — "'snapshot' and 'fixtures' are gated behind `VITE_ALLOW_NON_LIVE_MODE=1`"; `resolveDataMode` returns `snapshot` (`:99-105`) or `fixtures` (`:108-114`) **only when that flag is set**, and otherwise **throws** ("requires `VITE_ALLOW_NON_LIVE_MODE=1`"). Unset / `'live'` is the canonical default (`:85-90`).
+- `LiveDataProvider.ts:347` — the live provider stamps `dataSource: 'live'` (`:215,:338`).
 
-**Verdict:** the domain-data channel has **no runtime mock/fixtures mode** — the provider hard-fails on anything but live. Fixtures exist **only in tests** (e.g. `__tests__/…`), never in a shipped data path.
-
-> **Correction to WO-WB-001 §4.1 wording:** the `PropertyWorkbench.tsx:172` inline comment "`DataProvider → snapshot/live/fixtures`" is **stale** — the current `DataMode` is live-only and fail-fast. Recorded as a stale-comment finding for the Gap Register (WO-WB-005).
+**Verdict:** the domain channel is **live by default**. Non-live `snapshot`/`fixtures` modes **do exist** but are gated behind an explicit opt-in env flag; a non-live mode requested *without* the flag fail-fasts. So in a normal build there is no mock data, but `snapshot`/`fixtures` are a real (developer-gated) capability — the `PropertyWorkbench.tsx:172` "`snapshot/live/fixtures`" comment is therefore **accurate, not stale** (correcting this WO's earlier draft and superseding any WO-WB-001 implication otherwise).
 
 ## 3. Governed-tool channel — the maturity census (computed)
 
@@ -60,20 +59,21 @@ Source: `tools/registry/tool-maturity.json` (schemaVersion, `generatedBy: WO-TER
 | Classification | Where it applies | Evidence |
 |----------------|------------------|----------|
 | **MOCK (fabricated data at runtime)** | **nowhere** | honesty contracts forbid it (WO-WB-001 §5); domain provider fail-fasts on non-live (§2); tool responses are disclosed, not faked |
-| **LIVE** | domain-data channel (when endpoints respond) + the 1 contract-covered tool's contract path | `LiveDataProvider` live-only (§2); `summarize_levy_rate_components` L2 (§3.1) |
-| **STUB (pre-integration, disclosed)** | governed-tool channel | 116/117 stub-contract, 0 backend-integrated, all `disclosureRequired` (§3.1) |
+| **LIVE** | domain-data + direct-API channels, when endpoints respond (default build) | `LiveDataProvider` default-live (§2); direct `/api/*` calls (§1) |
+| **STUB (pre-integration, disclosed)** | governed-tool channel — **all 117 tools**, including the 1 L2 | `liveIntegration:false` for all 117; 116 stub-contract + 1 contract-covered; 0 backend-integrated (§3.1) |
 | **STUB (UI placeholder)** | `income/DcfPanel.tsx` | the one source-level UI stub (WO-WB-001 §4.2) |
+| **Gated non-live (dev only)** | `snapshot` / `fixtures` domain modes | available only behind `VITE_ALLOW_NON_LIVE_MODE=1` (§2) |
 
-There is **no mock surface** at runtime. The honesty of the workbench is structural: domain data is live-or-fail-fast, tool data is stub-but-disclosed, and the UI renders `unavailable`/preloaded-store states rather than fabrications.
+**Important:** the single `contract-covered` (L2) tool is **not** live — `contract-covered` means it has contract + backing-service evidence, but its `liveIntegration` is still `false` (like all 117). No tool is in the LIVE bucket. There is **no mock surface** in a default build; the honesty of the workbench is structural — domain/API data is live (or `unavailable`), tool data is stub-but-disclosed, non-live domain modes are opt-in only, and the UI renders `unavailable`/preloaded-store states rather than fabrications.
 
 ## 5. Per-surface provenance
 
 | Surface | Domain-data channel | Governed-tool channel (maturity) |
 |---------|--------------------|----------------------------------|
-| Summary | live parcel/CAMA store (live-only) | minimal tool use |
+| Summary | live parcel/CAMA store (live default) | minimal tool use |
 | Forge | live forge hooks (26 forge tools) | all L1 stub-contract |
-| Atlas | live GIS hooks (2 atlas tools) | all L1 stub-contract |
-| Dais | live (levy/appeals) + store | 21 dais tools — 20 L1 + **1 L2** (`summarize_levy_rate_components`) |
+| Atlas | live GIS hooks + **direct `/api/*` GIS calls** (2 atlas tools) | all L1 stub-contract |
+| Dais | live (levy/appeals) + store | 21 dais tools — 20 L1 + **1 L2** (`summarize_levy_rate_components`, contract-covered but still `liveIntegration:false`) |
 | Clerk | live `recordings` store slice | 6 clerk tools — all L1 stub-contract |
 | Treasury | live `taxStatements` store slice | 7 treasury tools — all L1 stub-contract |
 | Audit | live `auditTrail` store slice | 6 audit tools — all L1 stub-contract |
@@ -81,6 +81,8 @@ There is **no mock surface** at runtime. The honesty of the workbench is structu
 | Pilot | lists the registry itself | 15 pilot tools — all L1 stub-contract |
 
 (The 28 `os`-suite tools are orchestration/route/trace, not tab-scoped.)
+
+**Direct-API channel:** several tabs also issue direct `/api/*` calls outside the store/hook and tool channels (grep of `pages/workbench/tabs/**` shows `fetch`/`/api/`/`apiClient` in Atlas, Dais, Dossier, Audit, Clerk, Treasury, Pilot, and forge `CostApproach`/`ForgeOverview`). These hit live backend endpoints (or render `unavailable`); their per-endpoint backend readiness is a backend concern out of this program's read-only frontend scope. Their existence is why the channel model is three, not two.
 
 ## 6. Readiness implication
 
