@@ -20,6 +20,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -240,8 +241,16 @@ export const PropertyClerk: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-clerk space-y-4'>
+    <div className='tf-suite-clerk space-y-4' data-testid='property-clerk-tab'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
+
+      <div className='flex items-center justify-between gap-3 px-2' data-testid='clerk-baseline-disclosure'>
+        <p className='text-xs tf-text-dim'>
+          Recording and title tools are invoked on demand through governed tooling; values shown are
+          returned from the tool response or the recording history loaded for this parcel, never inferred.
+        </p>
+        <WorkbenchSourceBadge source={recordings.length > 0 ? 'live' : 'unavailable'} />
+      </div>
 
       {/* Recording history from store */}
       {recordings.length > 0 && (
