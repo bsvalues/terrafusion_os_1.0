@@ -1,6 +1,6 @@
 # /goal Command Definitions
 
-**Authority:** WO-WOE-010  
+**Authority:** WO-WOE-010
 **Classification:** Operator Doctrine
 
 ---
@@ -32,6 +32,23 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ## Program Commands
 
+### /goal program-status
+
+```
+Goal:     Inspect the master active-program graph and surface active, parked, and owner-gated lanes.
+Program:  Master Active Program Playbook
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
+```
+
+**Current state:** Backend OE is the next executable program, routed to `WO-BACKEND-OE-003`.
+
+**Command aliases:** `/program-status`, `/program-next`, `/program-stop`
+
+**Allowed loop modes:** `once`, `evidence`, `discovery`
+
+---
+
 ### /goal benton-demo
 
 ```
@@ -43,7 +60,7 @@ Success:  All preflight checklist items verified; operator holds the deploy auth
 
 **Current state:** WO-DEPLOY-BENTON-003B is next. Blocked until PR #1112 merges.
 
-**Allowed loop modes:** `once`, `program`, `merge-watch`, `evidence`, `recovery`  
+**Allowed loop modes:** `once`, `program`, `merge-watch`, `evidence`, `recovery`
 **Blocked loop modes:** none (but WO-DEPLOY-BENTON-003D/003E require explicit deploy authorization)
 
 ---
@@ -59,7 +76,7 @@ Success:  All open anomaly groups are documented with evidence; cleanup WOs are 
 
 **Current state:** WO-DATA-BENTON-DUPE-001 investigation CLOSED (PR #1115). Next: WO-DATA-BENTON-DUPE-001B (DELETE 30 rows) — **STOP WALL: data mutation, requires explicit operator authorization.**
 
-**Allowed loop modes:** `evidence`, `discovery`, `once` (for read-only WOs)  
+**Allowed loop modes:** `evidence`, `discovery`, `once` (for read-only WOs)
 **Blocked loop modes:** `program` (until data-mutation authorization granted for DUPE-001B)
 
 ---
@@ -102,6 +119,71 @@ Success:  All workbench tabs have live data, honest empty states, and validated 
 **Current state:** WO-WORKBENCH-001 is next (QUEUED).
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+**Command aliases:** `/terrapilot-status`, `/terrapilot-stop`
+
+---
+
+### /goal sync-status
+
+```
+Goal:     Inspect Sovereign Sync workbook tooling state before any owner-selected implementation WO.
+Program:  Sovereign Sync Workbook Tooling
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees WO-SYNC-132 as the next owner-selection-gated workbook tooling WO.
+```
+
+**Current state:** `WO-SYNC-132` is next after owner choice. Do not start Sync implementation from this
+status command.
+
+**Command aliases:** `/sync-status`, `/sync-next`, `/sync-stop`
+
+**Allowed loop modes:** `evidence`, `discovery`, `once`
+
+---
+
+### /goal devex-hooks-status
+
+```
+Goal:     Inspect local Prettier/Vitest hook tooling debt without mixing it into product lanes.
+Program:  DevEx Hook Tooling
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees WO-DEVEX-HOOKS-001 as a separate follow-up lane.
+```
+
+**Current state:** Owner-gated follow-up only.
+
+**Command alias:** `/devex-hooks-status`
+
+---
+
+### /goal local-omen-status
+
+```
+Goal:     Inspect Local OMEN runtime repair state without authorizing runtime mutation.
+Program:  Local OMEN Runtime Repair
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees WO-LOCAL-093 as a diagnosis-first runtime repair gate.
+```
+
+**Current state:** Blocked at runtime repair gate.
+
+**Command alias:** `/local-omen-status`
+
+---
+
+### /goal core-import-status
+
+```
+Goal:     Inspect WO-CORE-1 runtime-import disposition before any sovereign repo import.
+Program:  WO-CORE-1 Runtime Import Disposition
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees runtime import as owner-gated and not authorized by status checks.
+```
+
+**Current state:** Owner-gated.
+
+**Command alias:** `/core-import-status`
 
 ---
 
@@ -163,7 +245,7 @@ Success:  Azure App Service requirements documented; slot strategy defined; roll
 
 **Current state:** WO-AZURE-001 is next. Parallel to WO-DEPLOY-BENTON-003B but depends on P1 preflight clearing.
 
-**Allowed loop modes:** `once`, `evidence`, `discovery`  
+**Allowed loop modes:** `once`, `evidence`, `discovery`
 **Blocked loop modes:** `program` until explicit deploy authorization (WO-AZURE-006 is an authority wall)
 
 ---

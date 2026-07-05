@@ -1,8 +1,8 @@
 # TerraFusion Program Playbook Register
 
-**Version:** 1.0  
-**Date:** 2026-06-30  
-**Authority:** TerraFusion Brain / WO-WOE-009  
+**Version:** 1.0
+**Date:** 2026-06-30
+**Authority:** TerraFusion Brain / WO-WOE-009
 **Classification:** Operator Doctrine — canonical planning surface
 
 ---
@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-04 — WO-BACKEND-OE-PLAYBOOK-REFRESH)*
+*(Updated 2026-07-04 — WO-MASTER-PLAYBOOK-001)*
 
 | # | Program | /goal command | Status | Next WO |
 |---|---------|--------------|--------|---------|
@@ -30,6 +30,8 @@ This register is the canonical source of truth for all active TerraFusion work o
 | P7 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `/goal brain-operator` | QUEUED | WO-BRAIN-001 |
 | P8 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | ACTIVE | WO-AZURE-001 |
 | P8-MGMT | [Management Dashboard (roadmap Phase 8)](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | ACTIVE | WO-P8-MGMT-004 (deploy @ SW-01) |
+
+**Active program graph:** [TerraFusion Active Program Work Order Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 
 ---
 
@@ -73,6 +75,7 @@ These actions require explicit operator authorization. The Brain and Claude do n
 
 ## Program Files
 
+- [Active Program Work Order Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 - [P1 — Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md)
 - [P2 — Benton Data Quality](programs/benton-data-quality.md)
 - [P3 — Backend Operational Excellence](programs/backend-operational-excellence.md)
@@ -143,3 +146,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-03 | Replaced stale backend program with Backend Operational Excellence hardening/proof/release discipline chain | WO-BACKEND-000 |
 | 2026-07-04 | Recorded zero-warning backend build register and routed next work to integration-test dependency classification | WO-BACKEND-OE-002 |
 | 2026-07-04 | Refreshed Backend OE full executable playbook from OE-003 through OE-013 | WO-BACKEND-OE-PLAYBOOK-REFRESH |
+| 2026-07-04 | Added master active-program playbook and global continuation/stop rules | WO-MASTER-PLAYBOOK-001 |
