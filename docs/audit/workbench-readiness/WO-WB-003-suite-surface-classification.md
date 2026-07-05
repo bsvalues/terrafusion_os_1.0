@@ -23,7 +23,7 @@ Classifies each of the 9 parcel-tab suite surfaces by **archetype**, **data sour
 |------|-----------|---------|
 | **A** | Store-backed core | reads the parcel store (`DataProvider → snapshot/live/fixtures`) |
 | **B** | Hook-backed domain | dedicated domain hooks returning source-tagged data |
-| **C** | Governed-tool MWUX | `invokeTool(toolId)` governed-tool console; idle → `unavailable` |
+| **C** | Governed-tool MWUX (store-preload hybrid) | invokes governed tools via `invokeTool(toolId)`, **and** reads a preloaded parcel store slice that it renders at idle when present |
 | **D** | Hook + tool hybrid | live hook for primary data + `invokeTool` for AI synthesis |
 | **E** | Tool-catalog surface | lists/filters the governed tool registry itself |
 
@@ -37,9 +37,9 @@ Classifies each of the 9 parcel-tab suite surfaces by **archetype**, **data sour
 | Forge | **B** | forge hooks `useCostApproach`/`useSalesComparison`/`useIncomeApproach`/`useReconciliation` (`hooks/forge/useForgeValuation`, `PropertyForge.tsx:33`; `ForgeOverview.tsx:78-89`) | LIVE (+ DcfPanel stub) | ✅ | ✅ real |
 | Atlas | **B** | `useParcelBoundary`/`useParcelLayers` → live GIS (`PropertyAtlas.tsx:7-12,674-742`) | LIVE | ✅ | ✅ real |
 | Dais | **C** | `invokeTool` (`PropertyDais.tsx:33`); e.g. `summarize_levy_rate_components` (`:305`) | LIVE | ✅ | ✅ real |
-| Clerk | **C** | `invokeTool` (`PropertyClerk.tsx:18`); e.g. `get_title_chain` (`:144`), `record_document` | LIVE | ❌ | ❌ **window-aliased → Dossier** |
-| Treasury | **C** | `invokeTool` (`PropertyTreasury.tsx:19`); e.g. `get_tax_statement` (`:151`), `explain_tax_breakdown` (`:170`) | LIVE | ❌ | ❌ **window-aliased → Dais** |
-| Audit | **C** | `invokeTool` (`PropertyAudit.tsx:17`); e.g. `audit_roll_summary` (`:128`), `check_levy_compliance` (`:147`) | LIVE | ❌ | ❌ **window-aliased → Dossier** |
+| Clerk | **C** | store slice `recordings` (`PropertyClerk.tsx:86`, rendered at `:247-248`) + `invokeTool` (`:18`); e.g. `get_title_chain` (`:144`), `record_document` | LIVE | ❌ | ❌ **window-aliased → Dossier** |
+| Treasury | **C** | store slice `taxStatements` (`PropertyTreasury.tsx:115`) + `invokeTool` (`:19`); e.g. `get_tax_statement` (`:151`), `explain_tax_breakdown` (`:170`) | LIVE | ❌ | ❌ **window-aliased → Dais** |
+| Audit | **C** | store slice `auditTrail` (`PropertyAudit.tsx:96`) + `invokeTool` (`:17`); e.g. `audit_roll_summary` (`:128`), `check_levy_compliance` (`:147`) | LIVE | ❌ | ❌ **window-aliased → Dossier** |
 | Dossier | **D** | `useDossierDetails` hook (`PropertyDossier.tsx:39`) + `invokeTool` (`:25`); "UI → hook → real API → correlationId UX" (`:11`) | LIVE | ❌ | ✅ real |
 | Pilot | **E** | `listPilotTools('muse')` (`PropertyPilot.tsx:84`) + `filterMuseReadOnlyTools` (`:16`) | LIVE (read-only) | ❌ | ✅ real |
 
@@ -48,7 +48,7 @@ Classifies each of the 9 parcel-tab suite surfaces by **archetype**, **data sour
 - **Summary (A):** the parcel identity/CAMA surface; its badge is `live`/`fallback` from the store's `source`. The workbench-wide "evidence unavailable" blocker (WO-WB-001 §4.1) protects it.
 - **Forge (B):** the deepest surface — 5 state sub-tabs, its own year context, and the only source-level stub (`DcfPanel`). Reconciliation has its own honesty contract requiring live cost+sales+income indications.
 - **Atlas (B):** the only GIS surface; falls back to an SVG preview when the GIS source is `unavailable`.
-- **Dais / Clerk / Treasury / Audit (C):** all four are `invokeTool` governed-tool consoles that render `unavailable` at idle and only show data after an explicit invocation. **Three of the four (Clerk, Treasury, Audit) are window-aliased** — so in the window path they never render their own console. On honesty-contract coverage the four split: **Dais has a honesty-contract test; Clerk, Treasury, and Audit do not.**
+- **Dais / Clerk / Treasury / Audit (C):** all four are `invokeTool` governed-tool consoles — **but they are store-preload hybrids, not pure tool-consoles.** When the selected parcel carries preloaded related data, they render that store slice at idle *before* any tool invocation: Clerk shows "Loaded Recording History" from `recordings` (`PropertyClerk.tsx:86,247-248`), Audit reads `auditTrail` (`PropertyAudit.tsx:96`), Treasury reads `taxStatements` (`PropertyTreasury.tsx:115`). This is still honest (real store data, not fabricated); the surfaces fall to an `unavailable`/empty state only when the parcel carries no such data. **Three of the four (Clerk, Treasury, Audit) are window-aliased** — so in the window path they never render their own console. On honesty-contract coverage the four split: **Dais has a honesty-contract test; Clerk, Treasury, and Audit do not.**
 - **Dossier (D):** hybrid — live document/detail data via a hook, plus AI synthesis via governed tools, disclosed separately.
 - **Pilot (E):** the governed tool catalog itself — lists Muse read-only tools; the only surface whose "data" *is* the registry.
 
@@ -56,8 +56,8 @@ Classifies each of the 9 parcel-tab suite surfaces by **archetype**, **data sour
 
 ## 3. Cross-cutting patterns
 
-1. **Two sourcing families:** (A/B/D) read **domain data** via stores/hooks; (C/E) are **tool-driven** — they invoke or list governed tools. The C surfaces are the ones whose runtime richness depends most directly on tool-maturity promotion.
-2. **Idle honesty is uniform:** every surface renders an explicit `unavailable`/`fallback` state at idle and never fabricates — enforced by the honesty tests where present and by the shared "evidence unavailable" blocker everywhere.
+1. **Sourcing spectrum, not a clean split:** A/B/D read **domain data** via stores/hooks; E is a tool catalog; the **C surfaces are hybrids** — they read a preloaded parcel store slice *and* invoke governed tools. So every surface except Pilot is store/hook-backed to some degree; what the C surfaces additionally depend on for their *tool-driven* richness is tool-maturity promotion.
+2. **Idle honesty is uniform:** at idle a surface renders either honestly-sourced **preloaded store data** (the C hybrids, when the parcel carries it) or an explicit `unavailable`/`fallback` state — **never fabricated data**. Enforced by the honesty tests where present and the shared "evidence unavailable" blocker everywhere.
 3. **Honesty-contract coverage is skewed to A/B:** Summary, Forge, Atlas, Dais have contracts; the tool-heavy Clerk/Treasury/Audit and the hybrid Dossier + catalog Pilot do **not** — the surfaces most dependent on tool output are the least honesty-contract-gated.
 4. **Window aliasing concentrates on C:** the 3 aliased tabs (Clerk/Treasury/Audit) are all archetype-C governed-tool consoles — i.e., the window adapter never got their consoles, substituting Dossier/Dais.
 
