@@ -5,6 +5,8 @@
 
 This packet recommends the **first completion slice** — the first concrete implementation Work Order that should follow this read-only readiness program. It does **not** implement anything; it presents candidates, assesses them, and recommends one for operator authorization.
 
+> **Write-surface authorization.** `docs/audit/**` sits outside the repo-root `AGENTS.md` "CORE GOVERNANCE SURFACE (ALLOWED SCOPE)", which explicitly states *"Anything outside this scope requires explicit authorization."* The operator gave that explicit authorization for `docs/audit/workbench-readiness/` when launching this program (repo `terrafusion_os_1.0`, docs-only, dedicated worktree). Every WO-WB doc is compliant on that basis; no core-governance or code path is touched.
+
 ---
 
 ## 1. Constraints on "the first slice"
@@ -47,7 +49,7 @@ So **G1 is the strategic priority but not the frontend first slice.** It should 
 
 **Authorize C1 — Honesty-Contract Backfill — as the first completion slice** (a future implementation WO, e.g. `WO-WB-IMPL-001`), scoped to:
 
-- Add `PropertyClerk.honesty.contract.test.tsx`, `PropertyTreasury.honesty.contract.test.tsx`, `PropertyAudit.honesty.contract.test.tsx`, `PropertyDossier.honesty.contract.test.tsx`, `PropertyPilot.honesty.contract.test.tsx`, mirroring the existing 4 (`PropertyAtlas/PropertyDais/PropertyForge/PropertySummary.honesty.contract.test.tsx`).
+- Add `PropertyClerk.honesty.contract.test.tsx`, `PropertyTreasury.honesty.contract.test.tsx`, `PropertyAudit.honesty.contract.test.tsx`, `PropertyDossier.honesty.contract.test.tsx`, and `PropertyPilot.honesty.contract.test.tsx`, mirroring the four existing separate files: `PropertyAtlas.honesty.contract.test.tsx`, `PropertyDais.honesty.contract.test.tsx`, `PropertyForge.honesty.contract.test.tsx`, and `PropertySummary.honesty.contract.test.tsx`.
 - Each asserts the established honesty contract (WO-WB-001 §5 / WO-WB-003): a `WorkbenchSourceBadge` on data elements, `unavailable`/`fallback` at idle, no tool invocation on mount, no aspirational "AI-powered" language.
 - **Test-only change** — no component edits unless a test surfaces a genuine honesty defect (which would then be its own reported finding).
 
