@@ -21,6 +21,7 @@ import {
 import {
   InvocationHistory,
   ParcelContextHeader,
+  WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
 import { ExecutionConsole } from '../../../components/pilot/ExecutionConsole';
@@ -148,7 +149,7 @@ export const PropertyPilot: React.FC = () => {
         icon='🎮'
         title='Pilot'
         parcelId={parcelId}
-        subtitle={`AI analysis tools for parcel ${parcelId}`}
+        subtitle={`Read-only reasoning & explanation tools for parcel ${parcelId}`}
         actions={
           <button
             onClick={() => window.open(`/property/${encodeURIComponent(parcelId)}/pilot`, '_blank')}
@@ -158,6 +159,14 @@ export const PropertyPilot: React.FC = () => {
           </button>
         }
       />
+
+      <div className='flex items-center justify-between gap-3 px-2' data-testid='pilot-baseline-disclosure'>
+        <p className='text-xs tf-text-dim'>
+          This panel lists governed read-only reasoning tools returned from the tool registry;
+          it never invokes a tool or infers a result on its own.
+        </p>
+        <WorkbenchSourceBadge source={!toolsLoading && !toolsError ? 'live' : 'unavailable'} />
+      </div>
 
       {!toolsLoading && !toolsError && (
         <div className='tf-status-info rounded-xl p-4' data-testid='pilot-muse-scope'>
