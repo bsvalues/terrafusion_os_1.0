@@ -32,6 +32,27 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ## Program Commands
 
+### /goal goal-loop-master-playbook
+
+```
+Goal:     Create and keep current the active TerraFusion /goal + /loop execution graph.
+Program:  Master Goal/Loop Playbook Governance
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Active program chains, continuation rules, stop gates, and command routing are governed
+          from one baseline playbook.
+```
+
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is active until merged. After merge, the
+playbook governs continuation and routes next to Backend OE `WO-BACKEND-OE-003` unless the owner
+selects a different active program.
+
+**Allowed loop modes:** `once`, `evidence`
+
+**Blocked:** runtime/backend/tools-sync implementation, hook repair, OE-003 execution inside this
+packet, Sync execution, TerraPilot P16, migrations, secrets, county/PACS data, deployment.
+
+---
+
 ### /goal program-status
 
 ```
@@ -104,6 +125,28 @@ WO-BACKEND-OE-003. This lane is hardening/proof/release discipline, not a founda
 
 **Blocked:** production deployment, secrets, county data, PACS, live DB, schema migration apply,
 TerraPilot P16, and any backend runtime mutation not explicitly authorized by the current WO.
+
+---
+
+### /goal sync-workbook-tooling
+
+```
+Goal:     Continue Sovereign Sync workbook tooling only after owner selection.
+Program:  Sovereign Sync Workbook Tooling
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Workbook lifecycle checks are built-fresh, synthetic-safe, evidence-backed, and Gate-14 compliant.
+```
+
+**Current state:** `WO-SYNC-132` is next after owner selection. Do not start Sync implementation from
+a status command or from Backend OE.
+
+**Command aliases:** `/sync-status`, `/sync-next`, `/sync-stop`
+
+**Allowed loop modes:** `evidence`, `discovery`, `once` before selection; `program` only after owner
+selects Sync.
+
+**Blocked:** Gate 14 changes, forbidden content scan shape, county/live data, cross-lane
+implementation, or any weakening of sync guards.
 
 ---
 
@@ -182,6 +225,22 @@ Success:  Operator sees runtime import as owner-gated and not authorized by stat
 **Current state:** Owner-gated.
 
 **Command alias:** `/core-import-status`
+
+---
+
+### /goal workbench-status
+
+```
+Goal:     Inspect Property Workbench lane state without starting product behavior changes.
+Program:  Property Workbench
+File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
+Success:  Operator sees Property Workbench as a future lane and does not execute it unless selected.
+```
+
+**Current state:** Future high-value product lane. Do not start until owner selection or WOE ranking
+selects it.
+
+**Command alias:** `/workbench-status`
 
 ---
 

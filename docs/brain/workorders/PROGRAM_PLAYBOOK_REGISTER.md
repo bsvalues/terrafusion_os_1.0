@@ -17,21 +17,26 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-04 — WO-MASTER-PLAYBOOK-001)*
+*(Updated 2026-07-05 — WO-GOAL-LOOP-MASTER-PLAYBOOK-001)*
 
-| # | Program | /goal command | Status | Next WO |
-|---|---------|--------------|--------|---------|
-| P1 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | ACTIVE | WO-DEPLOY-BENTON-003D (if authorized) |
-| P2 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | ACTIVE | WO-DATA-BENTON-ADDR-001 (DUPE-001B parked @ SW-02) |
-| P3 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `/goal backend-excellence` | ACTIVE | WO-BACKEND-OE-003 |
-| P4 | [Property Workbench](programs/property-workbench.md) | `/goal property-workbench` | QUEUED | WO-WORKBENCH-001 |
-| P5 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `/goal terrapilot-maturity` | STOP GATE | WO-TERRAPILOT-P16 (blocked; owner authorization required) |
-| P6 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | ACTIVE | WO-WOE-012 (011 in PR) |
-| P7 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `/goal brain-operator` | QUEUED | WO-BRAIN-001 |
-| P8 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | ACTIVE | WO-AZURE-001 |
-| P8-MGMT | [Management Dashboard (roadmap Phase 8)](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | ACTIVE | WO-P8-MGMT-004 (deploy @ SW-01) |
+| Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
+|---------|------|------|--------|------------|---------|--------------|------------|
+| [Master Goal/Loop Playbook Governance](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-0---master-playbook-governance) | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` | Active until merged | `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` | `WO-BACKEND-OE-003` after merge | Finish PR, then govern continuation | Stop on local hook bypass, out-of-scope review, or runtime/tooling implementation |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-003` | `WO-BACKEND-OE-004` after OE-003 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or local hook bypass |
+| [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
+| [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
+| [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
+| [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Blocked | `WO-LOCAL-093` | TBD | No auto | Owner authorization required |
+| [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
+| [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Future | `WO-WORKBENCH-001` | `WO-WORKBENCH-002` | No auto until selected | Owner or WOE selection required |
+| [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
+| [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Active | `WO-DATA-BENTON-DUPE-001B` | `WO-DATA-BENTON-ADDR-001` | Evidence-only until mutation auth | Stop on data mutation |
+| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Active | `WO-WOE-012` | `WO-WOE-013` | Auto within WOE docs/governance | Stop on schema/tooling scope expansion |
+| [AI / Brain / Operator System](programs/brain-operator-system.md) | `/goal brain-operator` | `/loop program` | Queued | `WO-BRAIN-001` | TBD | No auto until selected | Owner or WOE selection required |
+| [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active | `WO-AZURE-001` | `WO-AZURE-006` boundary | No auto deploy | Stop on Azure/deployment/county production boundary |
+| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Active | `WO-P8-MGMT-004` | deploy at SW-01 | No auto deploy | Stop on deployment authorization |
 
-**Active program graph:** [TerraFusion Active Program Work Order Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
+**Active program graph:** [TerraFusion Active Goal/Loop Execution Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 
 ---
 
@@ -43,6 +48,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
 | Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-003 | Evidence/register classification next |
+| Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
 
@@ -147,3 +153,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-04 | Recorded zero-warning backend build register and routed next work to integration-test dependency classification | WO-BACKEND-OE-002 |
 | 2026-07-04 | Refreshed Backend OE full executable playbook from OE-003 through OE-013 | WO-BACKEND-OE-PLAYBOOK-REFRESH |
 | 2026-07-04 | Added master active-program playbook and global continuation/stop rules | WO-MASTER-PLAYBOOK-001 |
+| 2026-07-05 | Promoted active program graph to explicit goal/loop execution playbook and command routing | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 |

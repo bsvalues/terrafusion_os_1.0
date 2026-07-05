@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-07-05
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -14,6 +14,7 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | NO | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
 | `program-next` | Master Playbook | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
@@ -24,6 +25,7 @@ resolves.
 | `backend-status` | P3 | WO-BACKEND-OE-003 | NO | `evidence`, `discovery` |
 | `backend-next` | P3 | WO-BACKEND-OE-003 | NO | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
+| `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence`, `discovery` |
 | `sync-status` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `evidence`, `discovery` |
 | `sync-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence` |
 | `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |
@@ -34,6 +36,7 @@ resolves.
 | `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-001 | YES — owner-gated follow-up | `evidence`, `discovery` |
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
+| `workbench-status` | P4 | WO-WORKBENCH-001 | YES — future lane, owner/WOE selection required | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
