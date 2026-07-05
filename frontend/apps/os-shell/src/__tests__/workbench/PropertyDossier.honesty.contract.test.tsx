@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import * as dossierServiceModule from '../../services/dossierService';
@@ -135,6 +135,15 @@ describe('PropertyDossier source honesty contract', () => {
     const disclosure = screen.getByTestId('dossier-baseline-disclosure');
     const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
     expect(badge).toHaveAttribute('data-source', 'unavailable');
+  });
+
+  it('baseline disclosure badge reflects live once dossier details load', async () => {
+    render(<TestWrapper parcelId='12345-001' />);
+    const disclosure = screen.getByTestId('dossier-baseline-disclosure');
+    await waitFor(() => {
+      const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
+      expect(badge).toHaveAttribute('data-source', 'live');
+    });
   });
 
   it('all badges avoid synthetic live claims at idle', () => {

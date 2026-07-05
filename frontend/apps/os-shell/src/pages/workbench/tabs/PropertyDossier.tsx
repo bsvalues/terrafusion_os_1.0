@@ -707,9 +707,9 @@ export const PropertyDossier: React.FC = () => {
       <div className='flex items-center justify-between gap-3 px-2' data-testid='dossier-baseline-disclosure'>
         <p className='text-xs tf-text-dim'>
           Dossier documents, evidence, and casefile summaries are requested via governed tooling;
-          values shown are returned from the tool response or the live dossier feed, never inferred.
+          values shown are returned from the tool response or the live dossier API, never inferred.
         </p>
-        <WorkbenchSourceBadge source='unavailable' />
+        <WorkbenchSourceBadge source={dossierDetails.data ? 'live' : 'unavailable'} />
       </div>
 
       {/* Documents on File from Store */}
