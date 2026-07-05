@@ -14,7 +14,7 @@ Source of truth: `frontend/apps/os-shell/src/Router.tsx:217-226` (route registra
 
 | # | Tab | Route path | Route component (Router.tsx) | Window component (Window:73-83) | Parity | Enabled |
 |---|-----|-----------|------------------------------|----------------------------------|--------|---------|
-| 1 | summary | `` (index) | `PropertySummary` | `PropertySummary` | ✅ same | yes |
+| 1 | summary | (index) | `PropertySummary` | `PropertySummary` | ✅ same | yes |
 | 2 | forge | `forge` | `PropertyForge` | `PropertyForge` | ✅ same | yes |
 | 3 | atlas | `atlas` | `PropertyAtlas` | `PropertyAtlas` | ✅ same | yes |
 | 4 | dais | `dais` | `PropertyDais` | `PropertyDais` | ✅ same | yes |
@@ -24,11 +24,11 @@ Source of truth: `frontend/apps/os-shell/src/Router.tsx:217-226` (route registra
 | 8 | dossier | `dossier` | `PropertyDossier` | `PropertyDossier` | ✅ same | yes |
 | 9 | pilot | `pilot` | `PropertyPilot` | `PropertyPilot` | ✅ same | yes |
 
-- **Index route:** Summary is registered as `<Route index>` (not `path='summary'`) — `Router.tsx:218`, enforced by the host-integrity contract.
+- **Index route:** Summary is registered as an index route — `` `<Route index />` `` (not `path='summary'`) — `Router.tsx:218`, enforced by the host-integrity contract.
 - **Lazy loading:** all route components are `lazy()` (`Router.tsx:53-62`); the window adapter lazy-loads only **6** distinct components (`PropertyWorkbenchWindow.tsx:50-67`).
 - **Parity verdict:** **route path = 9 real surfaces; window path = 6 real + 3 aliased** (clerk→Dossier, treasury→Dais, audit→Dossier). The 3 aliased tabs are a UI gap in the window adapter, carried from WO-WB-001 §2.1 for the Gap Register.
 
-## 2. Forge sub-tab matrix (state-based, **not routed**)
+## 2. Forge sub-tab matrix (state-based; query-param deep-linkable, **not path-routed**)
 
 `PropertyForge.tsx` is a **sub-tab switcher**, not a nested router: `useState<ForgeSubTab>` (`PropertyForge.tsx:110`), all sub-tabs stay mounted via `display:none` to preserve state (`PropertyForge.tsx:14`), each owns its own tool-invocation state (`PropertyForge.tsx:16`).
 
@@ -41,19 +41,19 @@ Source of truth: `frontend/apps/os-shell/src/Router.tsx:217-226` (route registra
 | reconcile | Reconciliation | `Reconciliation` | `tabs/forge/Reconciliation.tsx` |
 | (sketch) | Sketch | SketchModule | referenced from `PropertyForge.tsx` |
 
-Imports at `PropertyForge.tsx:34-38`; sub-tab list at `PropertyForge.tsx:50-57`. **Implication for deep-linking:** Forge sub-tabs have **no URL** — they cannot be reached by route, only by in-tab state. (DcfPanel, the income stub from WO-WB-001 §4.2, lives under `income/` and is surfaced via the Income sub-tab.)
+Imports at `PropertyForge.tsx:34-38`; sub-tab list at `PropertyForge.tsx:50-57`. **Deep-linking (corrected):** although the active sub-tab is held in `useState`, the **initial** sub-tab is seeded from the URL — `readInitialSubTab` (`PropertyForge.tsx:77-83`) reads `?tab` / `?subTab` / `?initialSubTab` from `location.search` via `URLSearchParams`, and also honors `location.state` / launch metadata (`PropertyForge.tsx:65,111`). So Forge sub-tabs **are** deep-linkable by query string (e.g. `/property/:id/forge?tab=cost`); what they lack is a distinct **path** segment per sub-tab. (DcfPanel, the income stub from WO-WB-001 §4.2, lives under `income/` and is surfaced via the Income sub-tab.)
 
 ## 3. Operator sync-surface route matrix (separate namespace — **not parcel tabs**)
 
-Registered as top-level `workbench/sync-*` routes (`Router.tsx:241-254+`), **not** under `/property/:parcelId`. Each is an operator surface, not a parcel-scoped tab.
+Registered as top-level `workbench/sync…` routes (`Router.tsx:241-273`), **not** under `/property/:parcelId`. Each is an operator surface, not a parcel-scoped tab. **Route paths (verified exactly) use a mixed convention** — two hyphenated (`sync-readiness`, `sync-doctrine`) and three under a `sync/` slash sub-namespace with detail routes (`sync/quarantine`, `sync/commits`+`/:commitId`, `sync/corpus`+`/:runId`). That inconsistency is itself a finding for the Gap Register (WO-WB-005).
 
 | Route path | Component | File | Origin WO | Router.tsx |
 |-----------|-----------|------|-----------|-----------|
 | `workbench/sync-readiness` | `SyncReadinessConsole` | `sync-readiness/SyncReadinessConsole.tsx` | OPS-1-B | `:241` |
 | `workbench/sync-doctrine` | `SyncDoctrineConsole` | `sync-doctrine/SyncDoctrineConsole.tsx` | DASHBOARD-1 | `:247` |
-| `workbench/sync-quarantine` | `SyncQuarantinePage` | `sync-quarantine/SyncQuarantinePage.tsx` | SYNC-UX-1A | `:253` |
-| `workbench/sync-commits` | `SyncCommitsPage` | `sync-commits/SyncCommitsPage.tsx` | SYNC-UX-1B | (near `:91` import) |
-| `workbench/sync-corpus` | `SyncCorpusPage` | `sync-corpus/SyncCorpusPage.tsx` | SYNC-UX-1C | (near `:98` import) |
+| `workbench/sync/quarantine` | `SyncQuarantinePage` | `sync-quarantine/SyncQuarantinePage.tsx` | SYNC-UX-1A | `:253` |
+| `workbench/sync/commits` (+ `/:commitId`) | `SyncCommitsPage` | `sync-commits/SyncCommitsPage.tsx` | SYNC-UX-1B | `:259`, `:263` |
+| `workbench/sync/corpus` (+ `/:runId`) | `SyncCorpusPage` | `sync-corpus/SyncCorpusPage.tsx` | SYNC-UX-1C | `:269`, `:273` |
 
 > **Scope flag (carried from WO-WB-001 §7):** these five sync surfaces live under `pages/workbench/` but are a **distinct operator lane** (Sync ops), not the parcel workbench. Whether they belong in "Property Workbench readiness" needs operator confirmation. This matrix records them for completeness but treats them as out-of-primary-scope pending that call.
 
@@ -88,8 +88,8 @@ Workbench-wide gates (not per-tab): `workbench.contractGates`, `workbench.writeL
 
 ## 6. Unknowns (deferred)
 
-1. Exact `Router.tsx` line numbers for `sync-commits`/`sync-corpus` route elements (imports confirmed near `:91`/`:98`; element registrations follow the `:241-254` block — not individually pinned here).
-2. Whether any tab is further gated by role visibility at runtime (`useWorkbenchRoles`) beyond the static `enabled:true` — flagged for WO-WB-003.
-3. Per-tab data-source/maturity mapping (which tool each tab calls, and its maturity state) — that is WO-WB-003 (surface classification) + WO-WB-004 (mock/live/stub provenance).
+1. Whether any tab is further gated by role visibility at runtime (`useWorkbenchRoles`) beyond the static `enabled:true` — flagged for WO-WB-003.
+2. Per-tab data-source/maturity mapping (which tool each tab calls, and its maturity state) — that is WO-WB-003 (surface classification) + WO-WB-004 (mock/live/stub provenance).
+3. Whether the mixed sync route convention (`sync-readiness` vs `sync/quarantine`) is intentional namespacing or drift — noted as a finding; disposition is an operator/Sync-lane call, not this program's.
 
 **STOP_TYPE:** `WB_ROUTE_TAB_MATRIX_COMPLETE`
