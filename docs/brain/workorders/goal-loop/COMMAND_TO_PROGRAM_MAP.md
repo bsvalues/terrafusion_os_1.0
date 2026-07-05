@@ -1,6 +1,6 @@
 # Command-to-Program Map
 
-**Authority:** WO-WOE-010  
+**Authority:** WO-WOE-010
 **Last Updated:** 2026-07-04
 **Classification:** Operator Doctrine — current state snapshot
 
@@ -14,6 +14,9 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
+| `program-next` | Master Playbook | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence` |
+| `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence`, `discovery` |
@@ -21,8 +24,16 @@ resolves.
 | `backend-status` | P3 | WO-BACKEND-OE-003 | NO | `evidence`, `discovery` |
 | `backend-next` | P3 | WO-BACKEND-OE-003 | NO | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
+| `sync-status` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `evidence`, `discovery` |
+| `sync-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence` |
+| `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |
 | `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
+| `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
+| `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
+| `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-001 | YES — owner-gated follow-up | `evidence`, `discovery` |
+| `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
+| `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -33,7 +44,7 @@ resolves.
 
 ### /goal benton-demo → P1
 
-**File:** [programs/benton-demo-deployment.md](../programs/benton-demo-deployment.md)  
+**File:** [programs/benton-demo-deployment.md](../programs/benton-demo-deployment.md)
 **Success condition:** All preflight checklist items verified; operator holds deploy authorization decision.
 
 | WO | Title | Status | Notes |
@@ -60,7 +71,7 @@ resolves.
 
 ### /goal benton-data-quality → P2
 
-**File:** [programs/benton-data-quality.md](../programs/benton-data-quality.md)  
+**File:** [programs/benton-data-quality.md](../programs/benton-data-quality.md)
 **Success condition:** All data anomaly groups documented and classified; cleanup WOs authorized before execution.
 
 | WO | Title | Status | Notes |
@@ -85,7 +96,7 @@ resolves.
 
 ### /goal backend-excellence → P3
 
-**File:** [programs/backend-operational-excellence.md](../programs/backend-operational-excellence.md)  
+**File:** [programs/backend-operational-excellence.md](../programs/backend-operational-excellence.md)
 **Success condition:** Backend operational truth, warnings, runtime validation, release gates,
 runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE to choose the next lane.
 
@@ -116,7 +127,7 @@ mutation outside the active WO.
 
 ### /goal property-workbench → P4
 
-**File:** [programs/property-workbench.md](../programs/property-workbench.md)  
+**File:** [programs/property-workbench.md](../programs/property-workbench.md)
 **Success condition:** All workbench tabs have live data, honest empty states, and validated tab contracts.
 
 | WO | Title | Status |
@@ -130,7 +141,7 @@ No active stop walls at WO-WORKBENCH-001.
 
 ### /goal terrapilot-maturity → P5
 
-**File:** [programs/terrapilot-tool-maturity.md](../programs/terrapilot-tool-maturity.md)  
+**File:** [programs/terrapilot-tool-maturity.md](../programs/terrapilot-tool-maturity.md)
 **Success condition:** TerraPilot maturity claims are governed by protocol, evidence, and machine-readable metadata before any live promotion is attempted.
 
 | WO | Title | Status |
@@ -166,7 +177,7 @@ owner-authorized runtime promotion WO.
 
 ### /goal work-order-engine → P6
 
-**File:** [programs/work-order-engine.md](../programs/work-order-engine.md)  
+**File:** [programs/work-order-engine.md](../programs/work-order-engine.md)
 **Success condition:** Brain can query the WO engine, score next WOs, and present a plan the operator can act on.
 
 | WO | Title | Status |
@@ -182,7 +193,7 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 
 ### /goal brain-operator → P7
 
-**File:** [programs/brain-operator-system.md](../programs/brain-operator-system.md)  
+**File:** [programs/brain-operator-system.md](../programs/brain-operator-system.md)
 **Success condition:** Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 
 | WO | Title | Status |
@@ -196,7 +207,7 @@ No active stop walls at WO-BRAIN-001.
 
 ### /goal azure-county-runtime → P8
 
-**File:** [programs/azure-county-runtime.md](../programs/azure-county-runtime.md)  
+**File:** [programs/azure-county-runtime.md](../programs/azure-county-runtime.md)
 **Success condition:** Azure App Service requirements documented; slot strategy defined; rollback runbook exists. No county production boundary until authorized.
 
 | WO | Title | Status |
