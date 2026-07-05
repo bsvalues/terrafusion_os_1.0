@@ -165,7 +165,7 @@ export const PropertyPilot: React.FC = () => {
           This panel lists governed read-only reasoning tools returned from the tool registry;
           it never invokes a tool or infers a result on its own.
         </p>
-        <WorkbenchSourceBadge source={tools.length > 0 ? 'live' : 'unavailable'} />
+        <WorkbenchSourceBadge source={!toolsLoading && !toolsError ? 'live' : 'unavailable'} />
       </div>
 
       {!toolsLoading && !toolsError && (

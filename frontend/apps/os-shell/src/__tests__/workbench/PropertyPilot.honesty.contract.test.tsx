@@ -139,6 +139,18 @@ describe('PropertyPilot source honesty contract', () => {
     });
   });
 
+  it('shows live on a successful registry load even when no eligible tools return', async () => {
+    // Registry reachable but nothing passes filterMuseReadOnlyTools — this is a live
+    // (successful) result, not an unavailable one. The badge must reflect load success,
+    // not tool count.
+    listPilotToolsMock.mockResolvedValueOnce({ count: 0, tools: [] });
+    render(<Wrapper><PropertyPilot /></Wrapper>);
+    const disclosure = screen.getByTestId('pilot-baseline-disclosure');
+    await waitFor(() => {
+      expect(disclosure.querySelector('[data-testid="workbench-source-badge"]')).toHaveAttribute('data-source', 'live');
+    });
+  });
+
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
     render(<Wrapper><PropertyPilot /></Wrapper>);
     for (const badge of screen.getAllByTestId('workbench-source-badge')) {
