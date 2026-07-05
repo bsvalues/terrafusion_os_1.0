@@ -48,7 +48,7 @@ Classifies each of the 9 parcel-tab suite surfaces by **archetype**, **data sour
 - **Summary (A):** the parcel identity/CAMA surface; its badge is `live`/`fallback` from the store's `source`. The workbench-wide "evidence unavailable" blocker (WO-WB-001 §4.1) protects it.
 - **Forge (B):** the deepest surface — 5 state sub-tabs, its own year context, and the only source-level stub (`DcfPanel`). Reconciliation has its own honesty contract requiring live cost+sales+income indications.
 - **Atlas (B):** the only GIS surface; falls back to an SVG preview when the GIS source is `unavailable`.
-- **Dais / Clerk / Treasury / Audit (C):** all four are `invokeTool` governed-tool consoles that render `unavailable` at idle and only show data after an explicit invocation. **Three of the four (Clerk, Treasury, Audit) are window-aliased** — so in the window path they never render their own console. **None of the four has a honesty-contract test** (only Dais does, at the tab level).
+- **Dais / Clerk / Treasury / Audit (C):** all four are `invokeTool` governed-tool consoles that render `unavailable` at idle and only show data after an explicit invocation. **Three of the four (Clerk, Treasury, Audit) are window-aliased** — so in the window path they never render their own console. On honesty-contract coverage the four split: **Dais has a honesty-contract test; Clerk, Treasury, and Audit do not.**
 - **Dossier (D):** hybrid — live document/detail data via a hook, plus AI synthesis via governed tools, disclosed separately.
 - **Pilot (E):** the governed tool catalog itself — lists Muse read-only tools; the only surface whose "data" *is* the registry.
 
