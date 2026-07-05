@@ -20,7 +20,7 @@ This is a practical guide to operating the Property Workbench **in its current s
 
 The workbench is built to **never fabricate**. Learn its three honest signals:
 
-1. **Source badge** (`WorkbenchSourceBadge`) — every data element discloses where it came from: `live`, `fallback`, or `unavailable`. If you don't see live data, the badge tells you why.
+1. **Source badge** (`WorkbenchSourceBadge`) — every data element discloses where it came from: `live`, `partial` (only some fields are live), `fallback`, or `unavailable`. If you don't see fully-live data, the badge tells you why.
 2. **`unavailable` at idle** — before you invoke a tool, tool-driven panels show `unavailable`, not fake sample data. That is correct behavior.
 3. **"Property Evidence Unavailable" blocker** — if a parcel's authenticated evidence can't load, the whole workbench blocks with an explicit message and a Retry, rather than showing a half-populated parcel. Blocked ≠ broken; it means the live feed didn't return evidence.
 
