@@ -10,7 +10,7 @@
 
 ## 1. Executive truth baseline
 
-The Property Workbench is a **mature, heavily-tested, honest-by-construction UI surface** — not a skeleton. The readiness gap is **not** the UI and **not** data honesty; it is the **tool → backend integration maturity** behind the surfaces, which the repo already tracks and discloses explicitly.
+The Property Workbench is a **mature, heavily-tested, honest-by-construction UI surface** — not a skeleton. The **primary, systemic** readiness gap is **tool → backend integration maturity** (which the repo already tracks and discloses), layered under an already-honest UI — **not** a data-honesty problem. There are also **localized UI gaps** that must be tracked, not waved away: the `DcfPanel` income stub (§4.2) and a **route-vs-window tab-parity gap** where the window adapter renders only 6 distinct components and aliases Clerk/Treasury/Audit (§2.1). Both are logged for the Gap Register (WO-WB-005).
 
 Two layers, stated precisely:
 
@@ -30,7 +30,9 @@ This distinction is the spine of the whole readiness program: the completion wor
 | `PropertyWorkbench` | `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx:156` | Route-based hub — `/property/:parcelId/*`; ContextRibbon → WorkbenchRail + `<Outlet>` → ActivityFeed |
 | `PropertyWorkbenchWindow` | `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx` (≈717–1015) | Desktop window adapter — state-driven tabs (no nested router); adds `WorkbenchStartScene`, `SegmentHandoffBanner`, `TabBar`, `WorkbenchTabCtx.Provider` |
 
-Both entry paths feed the **same** canonical 9-tab inventory.
+The two entry paths declare the **same 9 tab labels**, but they are **not** at parity in what they render:
+
+> **Route-vs-window tab-parity gap (verified).** The route path (`Router.tsx:217-226`) mounts the real `PropertyClerk`, `PropertyTreasury`, and `PropertyAudit` components. The window adapter, however, lazy-loads only **six** distinct components (`PropertyWorkbenchWindow.tsx:50-67`) and its `TAB_COMPONENTS` map (`PropertyWorkbenchWindow.tsx:73-83`) **aliases** `clerk → PropertyDossier`, `treasury → PropertyDais`, and `audit → PropertyDossier`. So in the window path, the Clerk/Treasury/Audit tabs render Dossier/Dais content, not their own surfaces. This is a genuine **UI gap** in the window adapter (Clerk/Treasury/Audit unimplemented there), logged for WO-WB-005. Later WOs must treat the two entry paths as **route = 9 real surfaces, window = 6 real + 3 aliased**, not "the same 9 tabs".
 
 > **Correction to the WO brief:** the brief's named file `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchSurface.tsx` **does not exist** on `origin/main`. The actual entry components are `PropertyWorkbench.tsx` and `PropertyWorkbenchWindow.tsx`. All later WOs use the real names.
 
@@ -122,7 +124,7 @@ Every suite surface calls **real** data hooks / governed tools and derives a sou
 - `route_to_parcel`, `run_valuation_model`, `summarize_dossier`, `export_audit_bundle`, `audit_roll_summary` → **L1, stub-contract, liveIntegration:false, disclosureRequired:true**.
 - `summarize_levy_rate_components` → **L2, contract-covered** (adds backing-service + verification-command + trace evidence).
 
-**So:** the surfaces are wired-live and honest, but the tools they call are mostly not yet backend-integrated — so runtime output is honestly *unavailable* until promotion. Mock/live/stub provenance is audited in depth in WO-WB-004.
+**So:** the surfaces are wired-live and honest, but **most of the sampled** tools they call are not yet backend-integrated — so runtime output is honestly *unavailable* until promotion. This is a **sample, not a census**: a minority are already further along (e.g. `summarize_levy_rate_components` is `L2 / contract-covered`), and the full per-state distribution across all 117 tools is deferred to WO-WB-004. The claim here is therefore "most sampled workbench tools are pre-integration", not "all tools".
 
 ---
 
@@ -164,6 +166,6 @@ The workbench is guarded by an unusually strong test suite. Categories:
 
 ## 8. Verdict
 
-The Property Workbench is **substantially complete and honest at the UI layer**, with strong contract-test coverage. The path to "ready" is **tool promotion + backend integration** under the existing honest UI, plus closing a small set of documented gaps (the skipped launch-surface test, the stale tab-count header, the DcfPanel stub). This baseline anchors WO-WB-002 (route/tab reality matrix) through WO-WB-008 (rollup).
+The Property Workbench is **substantially complete and honest at the route-based UI layer**, with strong contract-test coverage. The path to "ready" is **tool promotion + backend integration** under the existing honest UI, plus closing a small set of documented gaps: the skipped launch-surface test (§5), the stale 6-vs-9 tab-count header (§2.2), the `DcfPanel` income stub (§4.2), and the **window-adapter tab-parity gap** where Clerk/Treasury/Audit are aliased rather than implemented (§2.1). This baseline anchors WO-WB-002 (route/tab reality matrix) through WO-WB-008 (rollup).
 
 **STOP_TYPE:** `WB_CURRENT_STATE_AUDIT_COMPLETE`
