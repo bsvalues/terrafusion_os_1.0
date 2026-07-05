@@ -703,6 +703,15 @@ export const PropertyDossier: React.FC = () => {
   return (
     <div className='tf-suite-dossier space-y-4' data-testid='property-dossier-tab'>
       <ParcelContextHeader icon='📁' title='TerraDossier' parcelId={parcelId} subtitle={`Document & evidence dossier for ${parcelId}`} />
+
+      <div className='flex items-center justify-between gap-3 px-2' data-testid='dossier-baseline-disclosure'>
+        <p className='text-xs tf-text-dim'>
+          Dossier documents, evidence, and casefile summaries are requested via governed tooling;
+          values shown are returned from the tool response or the live dossier feed, never inferred.
+        </p>
+        <WorkbenchSourceBadge source='unavailable' />
+      </div>
+
       {/* Documents on File from Store */}
       {documents.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
