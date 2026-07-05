@@ -53,6 +53,10 @@ Backend Operational Excellence is the next executable TerraFusion program.
 - Purpose: Integration Test Environment Dependency Register.
 - Mode: docs/evidence only.
 - Runtime/backend implementation remains blocked unless a later WO explicitly authorizes it.
+- Routing note: this is the owner-selected master-playbook route. The legacy read-only `wo-query`
+  registry/scoring output may still report an older LocalOps recommendation until a separate
+  registry refresh updates that data source; if the two surfaces disagree, Codex must stop at a
+  routing reconciliation gate.
 
 Parked or owner-gated lanes:
 
@@ -105,4 +109,3 @@ Not done:
 Stop type:
 
 - `MASTER_ACTIVE_PROGRAM_PLAYBOOK_CREATED_READY_FOR_CHAIN_EXECUTION`
-

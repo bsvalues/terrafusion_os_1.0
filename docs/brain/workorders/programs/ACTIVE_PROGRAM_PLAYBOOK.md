@@ -47,6 +47,14 @@ Next executable:
 
 - `WO-BACKEND-OE-003` — Integration Test Environment Dependency Register.
 
+Routing note:
+
+- This master playbook records the owner-selected active program graph for chain execution.
+- The legacy read-only `wo-query` registry/scoring output may still report an older LocalOps
+  recommendation until a separate registry refresh updates that data source.
+- If `wo-query` and this master playbook disagree during execution, treat the mismatch as a
+  routing reconciliation gate, not as authority to run both lanes.
+
 Backend OE chain:
 
 | WO | Purpose | Mode | Stop Type |
@@ -72,10 +80,10 @@ Backend OE chain:
 
 Completed:
 
-- `WO-057` — `tools/sync` boundary selected.
-- `WO-058` — Gate 14 enforcement created before implementation.
-- `WO-130` — C1 Workbook Admission Validator merged.
-- `WO-131` — C2 Column-Terminalization Checker merged.
+- `WO-SYNC-057` — `tools/sync` boundary selected.
+- `WO-SYNC-058` — Gate 14 enforcement created before implementation.
+- `WO-SYNC-130` — C1 Workbook Admission Validator merged.
+- `WO-SYNC-131` — C2 Column-Terminalization Checker merged.
 
 Current tool stack:
 
@@ -178,9 +186,11 @@ Status:
 Current facts:
 
 - Docker Desktop recovered.
-- `williamos-postgres-proof` exists on `127.0.0.1:15432` but is unhealthy.
+- `williamos-postgres-proof` exists on loopback proof Postgres
+  `${WILLIAMOS_POSTGRES_PROOF_HOST:-127.0.0.1}:${WILLIAMOS_POSTGRES_PROOF_PORT:-15432}` but is
+  unhealthy.
 - App proof container is missing.
-- Ports 3100/3101 are clear.
+- Proof app ports `${WILLIAMOS_APP_PORT:-3100}` / `${WILLIAMOS_AUX_PORT:-3101}` are clear.
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
@@ -312,4 +322,3 @@ The command map must expose these operator commands:
 - `/devex-hooks-status`
 - `/local-omen-status`
 - `/core-import-status`
-

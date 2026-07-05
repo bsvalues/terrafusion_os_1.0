@@ -120,8 +120,6 @@ Success:  All workbench tabs have live data, honest empty states, and validated 
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
-**Command aliases:** `/terrapilot-status`, `/terrapilot-stop`
-
 ---
 
 ### /goal sync-status
@@ -201,6 +199,8 @@ promotion path. P2 through P14 recorded maturity protocol, metadata enforcement,
 the P13 L2 metadata change, and the P14 stop gate before any live/backend-integrated claim.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+**Command aliases:** `/terrapilot-status`, `/terrapilot-stop`
 
 ---
 

@@ -14,7 +14,7 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
-| `program-status` | Master Playbook | Active program graph | NO | `evidence`, `discovery` |
+| `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
 | `program-next` | Master Playbook | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
