@@ -146,6 +146,19 @@ describe('PropertyDossier source honesty contract', () => {
     });
   });
 
+  it('baseline disclosure badge stays "unavailable" when loaded details belong to a DIFFERENT parcel (stale nav)', async () => {
+    // useDossierDetails keeps the previous parcel's data until the new fetch
+    // resolves; the getDetails mock returns details for parcel 12345-001, but the
+    // current route parcel is 99999-999. The parcel-identity guard must keep the
+    // badge unavailable rather than reading live for the stale detail.
+    render(<TestWrapper parcelId='99999-999' />);
+    const disclosure = screen.getByTestId('dossier-baseline-disclosure');
+    // Wait until the (mismatched) detail has actually loaded into the component.
+    await screen.findByText('456 Oak Ave, Kennewick, WA');
+    const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
+    expect(badge).toHaveAttribute('data-source', 'unavailable');
+  });
+
   it('all badges avoid synthetic live claims at idle', () => {
     render(<TestWrapper parcelId='12345-001' />);
     for (const badge of screen.getAllByTestId('workbench-source-badge')) {

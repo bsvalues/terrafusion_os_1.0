@@ -709,7 +709,11 @@ export const PropertyDossier: React.FC = () => {
           Dossier documents, evidence, and casefile summaries are requested via governed tooling;
           values shown are returned from the tool response or the live dossier API, never inferred.
         </p>
-        <WorkbenchSourceBadge source={dossierDetails.data ? 'live' : 'unavailable'} />
+        {/* Parcel-identity guard: useDossierDetails keeps the previous parcel's
+            data until the new fetch resolves (it only clears on parcelId->null),
+            so gate on the loaded detail belonging to THIS parcel to avoid reading
+            live for a stale previous parcel's dossier during navigation. */}
+        <WorkbenchSourceBadge source={dossierDetails.data?.parcelId === parcelId ? 'live' : 'unavailable'} />
       </div>
 
       {/* Documents on File from Store */}
