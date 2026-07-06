@@ -95,19 +95,16 @@ interface ComplianceReportResult {
 export const PropertyAudit: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const auditTrail = usePropertyStore((s) => s.auditTrail);
-  // Source provenance for the baseline disclosure badge. This reflects whether
-  // THIS PARCEL was loaded from the live property evidence feed (activeParcel set,
-  // not loading, no error) — the honest signal the store exposes. It is NOT keyed
-  // on the auditTrail row count (a live load can legitimately return zero entries);
-  // propertyStore exposes no audit-slice-specific load provenance, so the
-  // disclosure copy is scoped to parcel-context, not audit-evidence, load state.
+  // Source provenance for the baseline disclosure badge — SLICE-AWARE: auditTrail
+  // lives in the eager related-data bundle, whose load lifecycle the store tracks via
+  // relatedDataStatus. The badge reads live only once that bundle has actually loaded
+  // for THIS parcel — not merely when the parcel shell loaded (activeParcelLoading
+  // clears before the bundle resolves). The parcelId guard prevents a stale previous
+  // parcel's 'loaded' status from reading live during navigation. It is NOT keyed on
+  // the auditTrail row count (a live load can legitimately return zero entries).
   const activeParcel = usePropertyStore((s) => s.activeParcel);
-  const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
-  const parcelError = usePropertyStore((s) => s.activeParcelError);
-  // Require the loaded parcel to be THIS tab's parcel: during parcel-to-parcel
-  // navigation the store can still hold the previous activeParcel for one frame
-  // (before selectParcel runs), which must not read as live for the new parcel.
-  const evidenceLoaded = activeParcel?.parcelId === parcelId && !parcelLoading && !parcelError;
+  const relatedDataStatus = usePropertyStore((s) => s.relatedDataStatus);
+  const evidenceLoaded = activeParcel?.parcelId === parcelId && relatedDataStatus === 'loaded';
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
