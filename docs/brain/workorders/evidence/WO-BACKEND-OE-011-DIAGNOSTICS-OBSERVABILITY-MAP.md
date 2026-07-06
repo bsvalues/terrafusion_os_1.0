@@ -49,10 +49,21 @@ No backend runtime behavior was changed in this work order.
 | Domain audit events | OE-006 maps `AuditEventWriter` and domain audit tests. | Actor/county-attributed domain audit writes are covered by safe tests. | Every domain/action or production sink. | Proven for covered slices only. |
 | Entity audit stamping | OE-006 maps `AuditableEntityInterceptor`. | Auditable entities receive actor/time metadata on saves. | Complete covered-entity inventory or live persistence proof. | Source-proven; release packet should scope claims. |
 | Security events | OE-006 maps auth, role, permission, county-claim, and cross-county denial evidence. | Protected-path and denial behavior exists for tested slices. | Exhaustive controller/action coverage or public endpoint allowlist completion. | Partial release matrix. |
+| Exception and error-path surfaces | Source inspection maps `GlobalExceptionHandlingMiddleware`, controller/service `LogError` plus 500-response patterns, health-check exception logging, and hosted-service startup/migration failure logging. | Backend exception/error-path surfaces exist at middleware, controller/service, health-check, and hosted-service levels. | Uniform error schema, route-wide middleware wiring, correlation propagation, alerting, or complete exception observability across every route. | Partial; release packet must carry exception observability as mapped but not complete. |
 | Migration evidence | OE-007 inventories migration classes and rollback-source evidence. | Migration source and `Down` method inventory are known. | Apply/rollback execution, SQL-only rollback, schema drift proof, or live DB safety. | Source-present only unless safe execution proof is added. |
 | Dais E2E artifacts | OE-008 maps Dais proof gaps and future slices. | Dais proof boundaries and next test areas are explicit. | Release-grade Dais E2E completeness. | Plan-ready, not implementation-complete. |
 | Operational runbook | OE-010 creates `BACKEND_OPERATIONAL_RUNBOOK.md`. | Future operators have validation, triage, rollback-decision, evidence, and escalation procedure. | Runtime control, deployment, or DB mutation authority. | Operable with explicit stop gates. |
 | CI evidence | PR checks and Backend OE validation runs provide build, test, gate, evidence, and seal artifacts. | Pull-request validation trail exists. | Production telemetry or live runtime behavior. | Required as release evidence; not runtime observability. |
+
+## Exception And Error-Path Surface Map
+
+| Surface | Source evidence | What it proves | What it does not prove | Release handling |
+|---------|-----------------|----------------|------------------------|------------------|
+| Global exception middleware | `backend/src/TerraFusion.Core/Middleware/GlobalExceptionHandlingMiddleware.cs` logs unhandled request exceptions and API error responses. | A global request exception-handling component exists. | That every backend host/pipeline uses it, that every response is ProblemDetails-compatible, or that correlation is propagated to every error. | Treat as source-present exception surface; require wiring/runtime proof before release-complete claim. |
+| Controller-local 500 paths | Source inspection finds broad controller `LogError` and `StatusCode(500, ...)` patterns across API/Core controllers. | Many controller error paths log exceptions and return explicit 500 responses. | Uniform response shape, sanitized response body, or complete endpoint inventory. | Carry as mapped-but-partial; release gate should require endpoint/action error policy review before production-readiness claim. |
+| Health-check exception paths | `PacsReadinessHealthCheck` logs PACS contract violations and unexpected readiness failures; `ModuleConsistencyHealthCheck` logs consistency-check errors. | Dependency/readiness failures have explicit health-check error signals. | Alerting, production sink delivery, or complete dependency coverage. | Use with OE-004 readiness limits and PACS readiness tag caveat. |
+| Hosted-service startup/migration failures | `AutoMigrateHostedService` logs auto-migration failure while allowing backend continuation; OE-005 maps service-registry startup/orchestration logs. | Startup and migration-adjacent failure signals exist. | Safe migration execution, rollback execution, or degraded-readiness propagation. | Carry as operational triage signal, not migration safety proof. |
+| Audit/error response middleware boundary | OE-006 maps `AuditLoggingMiddleware` for downstream/controller 4xx/5xx response audit surfaces. | Controller-level error responses are intended audit surfaces. | Middleware-level authorization denial audit or exception correlation completeness. | Keep as partial until targeted auth-denial and exception-correlation proof exists. |
 
 ## Diagnostics By Operational Question
 
@@ -80,6 +91,7 @@ No backend runtime behavior was changed in this work order.
 | PACS readiness tag alignment | `/healthz/ready` may omit PACS readiness. | Repair or formally disposition before production readiness claim. |
 | Public endpoint allowlist and full action-policy map | Anonymous/protected posture is not fully release-reviewed. | Carry as release-gate follow-up. |
 | Middleware-level 401/403 audit proof | Authorization denials may be overclaimed as audited. | Require targeted proof or instrumentation design before claiming complete security audit. |
+| Uniform exception correlation and response contract | Global middleware, controller-local 500 paths, health checks, and hosted services expose different error-path surfaces. | Require route/pipeline wiring proof, response-shape policy, and correlation propagation proof before claiming complete exception observability. |
 | Migration apply/rollback execution artifact | Persistence rollback readiness is not execution-proven. | Prove in safe environment or scope release to source-present migration readiness. |
 | Dais authenticated HTTP/restart/certification/cross-county mutation proof | Dais E2E remains planned, not complete. | Use OE-008 slices as future implementation/test WOs. |
 | Production telemetry sink map | No live logging/metrics/tracing platform is proven. | Defer to release engineering or observability implementation lane. |
@@ -107,9 +119,16 @@ This work order does not claim:
 - health/readiness behavior changes,
 - service registry repair,
 - security policy changes,
+- uniform exception handling or correlation across every backend route,
 - migration apply/rollback execution,
 - Dais E2E implementation,
 - or deployment authority.
+
+## Review Closure
+
+PR #1232 review asked OE-011 to map exception/error-path surfaces before OE-012 consumes this
+packet. This revision adds the exception/error-path signal, a dedicated surface map, an explicit
+missing-observability gap, and a non-claim for uniform route-wide exception handling/correlation.
 
 ## Validation
 
