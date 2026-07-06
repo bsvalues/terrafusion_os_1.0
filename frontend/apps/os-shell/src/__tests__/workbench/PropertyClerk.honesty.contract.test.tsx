@@ -167,6 +167,40 @@ describe('PropertyClerk source honesty contract', () => {
     expect(badgeSource()).toBe('live');
   });
 
+  it('baseline badge shows "unavailable" when the store holds a DIFFERENT parcel (stale nav frame)', () => {
+    // During parcel-to-parcel navigation the store can still hold the previous
+    // activeParcel for one frame; that must not read as live for this tab's parcel.
+    storeView = {
+      recordings: [
+        { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
+      ],
+      activeParcel: { parcelId: 'SOME-OTHER-PARCEL' },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    render(<TestWrapper parcelId={PARCEL_ID} />);
+    expect(badgeSource()).toBe('unavailable');
+  });
+
+  it('disclosure copy is state-aware — never claims live loading while the badge reads unavailable', () => {
+    // Idle: badge unavailable, so the copy must NOT assert the parcel is loaded live.
+    const { rerender } = render(<TestWrapper />);
+    let disclosure = screen.getByTestId('clerk-baseline-disclosure');
+    expect(disclosure.textContent).toMatch(/not currently available/i);
+    expect(disclosure.textContent).not.toMatch(/is loaded from the live property evidence feed/i);
+
+    // Loaded: badge live, so the copy asserts the live-loaded state.
+    storeView = {
+      recordings: [],
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    rerender(<TestWrapper />);
+    disclosure = screen.getByTestId('clerk-baseline-disclosure');
+    expect(disclosure.textContent).toMatch(/is loaded from the live property evidence feed/i);
+  });
+
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
     storeView = {
       recordings: [],

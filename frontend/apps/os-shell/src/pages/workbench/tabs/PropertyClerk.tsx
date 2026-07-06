@@ -85,15 +85,18 @@ interface RecordingSummaryResult {
 export const PropertyClerk: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const recordings = usePropertyStore((s) => s.recordings);
-  // Source provenance for the baseline disclosure badge. The parcel evidence
-  // bundle (recordings included) is loaded together in propertyStore.selectParcel;
-  // its load success is signalled by activeParcel being set with no active
-  // load/error — NOT by whether the recordings array happens to be non-empty
-  // (a live load can legitimately return zero recordings).
+  // Source provenance for the baseline disclosure badge. This reflects whether
+  // THIS PARCEL was loaded from the live property evidence feed (activeParcel set
+  // for this parcelId, not loading, no error) — the honest signal the store
+  // exposes. It is NOT keyed on the recordings row count (a live load can
+  // legitimately return zero recordings), and it requires the loaded parcel to be
+  // this tab's parcel so a stale previous activeParcel during navigation does not
+  // read as live. propertyStore exposes no recording-slice-specific provenance, so
+  // the disclosure copy is scoped to parcel-context, not recording-evidence, load.
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
   const parcelError = usePropertyStore((s) => s.activeParcelError);
-  const evidenceLoaded = Boolean(activeParcel) && !parcelLoading && !parcelError;
+  const evidenceLoaded = activeParcel?.parcelId === parcelId && !parcelLoading && !parcelError;
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -255,9 +258,11 @@ export const PropertyClerk: React.FC = () => {
 
       <div className='flex items-center justify-between gap-3 px-2' data-testid='clerk-baseline-disclosure'>
         <p className='text-xs tf-text-dim'>
-          This parcel's recording context is loaded from the live property evidence feed; recording and
-          title tools are invoked on demand through governed tooling and their results are shown only
-          after you run them, never inferred.
+          {evidenceLoaded
+            ? 'This parcel is loaded from the live property evidence feed.'
+            : 'Live property evidence for this parcel is not currently available.'}{' '}
+          Recording and title tools are invoked on demand through governed tooling; their results are
+          shown only after you run them, never inferred.
         </p>
         <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
       </div>
