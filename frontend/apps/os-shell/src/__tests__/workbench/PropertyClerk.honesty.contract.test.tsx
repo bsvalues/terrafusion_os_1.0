@@ -4,10 +4,13 @@
  * Source honesty contract for the PropertyClerk tab (WO-WB-INSTR-003).
  * Mirrors the Dossier/Pilot/Dais honesty contracts. Ensures:
  *   1. Baseline disclosure box carries a WorkbenchSourceBadge
- *   2. That badge shows "unavailable" when no recording history is loaded
- *   3. It reflects "live" once recording history is loaded (state-driven, not hardcoded)
+ *   2. That badge shows "unavailable" when the parcel evidence has not loaded
+ *   3. It reflects "live" once the parcel evidence bundle loads successfully —
+ *      including a successful load that returns zero recordings (load-success
+ *      provenance, NOT recording row count), and it flips on the empty -> loaded
+ *      transition (not memoized at mount)
  *   4. No aspirational "AI-powered" language
- *   5. Baseline disclosure uses governed / returned-from wording
+ *   5. Baseline disclosure uses governed / live-evidence / never-inferred wording
  *   6. No tool is invoked on mount (the tab only lists tools)
  *
  * Reuses the mock setup from PropertyClerk.test.tsx.
@@ -25,19 +28,30 @@ import PropertyClerk from '../../pages/workbench/tabs/PropertyClerk';
 
 vi.mock('../../api/pilotApi');
 
-let clerkRecordings: Array<{
-  recordingId: string;
-  documentType: string;
-  grantor?: string;
-  grantee?: string;
-  recordingDate: string;
-}> = [];
+// Mutable store view driven per-test to exercise the load-provenance states.
+interface StoreView {
+  recordings: Array<{
+    recordingId: string;
+    documentType: string;
+    grantor?: string;
+    grantee?: string;
+    recordingDate: string;
+  }>;
+  activeParcel: { parcelId: string } | null;
+  activeParcelLoading: boolean;
+  activeParcelError: { message: string } | null;
+}
+
+let storeView: StoreView = {
+  recordings: [],
+  activeParcel: null,
+  activeParcelLoading: false,
+  activeParcelError: null,
+};
 
 vi.mock('../../stores/propertyStore', () => ({
-  usePropertyStore: (selector: (s: { recordings: typeof clerkRecordings }) => unknown) => {
-    const state = { recordings: clerkRecordings };
-    return typeof selector === 'function' ? selector(state) : state;
-  },
+  usePropertyStore: (selector: (s: StoreView) => unknown) =>
+    typeof selector === 'function' ? selector(storeView) : storeView,
 }));
 
 vi.mock('../../runtime/env', () => ({
@@ -77,22 +91,23 @@ const TestWrapper: React.FC<{ parcelId?: string }> = ({ parcelId = PARCEL_ID }) 
   </MemoryRouter>
 );
 
-const oneRecording = [
-  {
-    recordingId: 'REC-1',
-    documentType: 'Deed',
-    grantor: 'Alice',
-    grantee: 'Bob',
-    recordingDate: '2026-01-15',
-  },
-];
+const badgeSource = () =>
+  screen
+    .getByTestId('clerk-baseline-disclosure')
+    .querySelector('[data-testid="workbench-source-badge"]')
+    ?.getAttribute('data-source');
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('PropertyClerk source honesty contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    clerkRecordings = [];
+    storeView = {
+      recordings: [],
+      activeParcel: null,
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
   });
 
   it('baseline disclosure box carries a WorkbenchSourceBadge', () => {
@@ -101,24 +116,64 @@ describe('PropertyClerk source honesty contract', () => {
     expect(disclosure.querySelector('[data-testid="workbench-source-badge"]')).toBeInTheDocument();
   });
 
-  it('baseline badge shows "unavailable" when no recording history is loaded', () => {
-    clerkRecordings = [];
+  it('baseline badge shows "unavailable" before the parcel evidence loads', () => {
     render(<TestWrapper />);
-    const disclosure = screen.getByTestId('clerk-baseline-disclosure');
-    const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
-    expect(badge).toHaveAttribute('data-source', 'unavailable');
+    expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge reflects live once recording history is loaded', () => {
-    clerkRecordings = oneRecording;
+  it('baseline badge shows "unavailable" while the parcel evidence is loading', () => {
+    storeView = { ...storeView, activeParcelLoading: true };
     render(<TestWrapper />);
-    const disclosure = screen.getByTestId('clerk-baseline-disclosure');
-    const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
-    expect(badge).toHaveAttribute('data-source', 'live');
+    expect(badgeSource()).toBe('unavailable');
+  });
+
+  it('baseline badge shows "unavailable" when the parcel evidence load errored', () => {
+    storeView = {
+      ...storeView,
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelError: { message: 'load failed' },
+    };
+    render(<TestWrapper />);
+    expect(badgeSource()).toBe('unavailable');
+  });
+
+  it('baseline badge reflects "live" on a successful evidence load even with zero recordings', () => {
+    // Load-success provenance, NOT row count: a live load returning no recordings
+    // is still live, not unavailable.
+    storeView = {
+      recordings: [],
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    render(<TestWrapper />);
+    expect(badgeSource()).toBe('live');
+  });
+
+  it('baseline badge flips unavailable -> live on the empty -> loaded transition (not memoized)', () => {
+    const { rerender } = render(<TestWrapper />);
+    expect(badgeSource()).toBe('unavailable');
+
+    // Parcel evidence finishes loading successfully.
+    storeView = {
+      recordings: [
+        { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
+      ],
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    rerender(<TestWrapper />);
+    expect(badgeSource()).toBe('live');
   });
 
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
-    clerkRecordings = oneRecording;
+    storeView = {
+      recordings: [],
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
     render(<TestWrapper />);
     for (const badge of screen.getAllByTestId('workbench-source-badge')) {
       expect(['unavailable', 'live']).toContain(badge.getAttribute('data-source'));
@@ -130,9 +185,11 @@ describe('PropertyClerk source honesty contract', () => {
     expect(screen.getByTestId('property-clerk-tab').textContent).not.toMatch(/AI-powered/i);
   });
 
-  it('baseline disclosure uses governed / returned-from wording', () => {
+  it('baseline disclosure uses governed / live-evidence / never-inferred wording', () => {
     render(<TestWrapper />);
-    expect(screen.getByTestId('clerk-baseline-disclosure').textContent).toMatch(/governed|returned from|never inferred/i);
+    expect(screen.getByTestId('clerk-baseline-disclosure').textContent).toMatch(
+      /governed|live property evidence|never inferred/i,
+    );
   });
 
   it('does not invoke any tool on mount without user action', () => {

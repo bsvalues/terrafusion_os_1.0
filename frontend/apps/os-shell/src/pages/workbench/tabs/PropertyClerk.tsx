@@ -85,6 +85,15 @@ interface RecordingSummaryResult {
 export const PropertyClerk: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const recordings = usePropertyStore((s) => s.recordings);
+  // Source provenance for the baseline disclosure badge. The parcel evidence
+  // bundle (recordings included) is loaded together in propertyStore.selectParcel;
+  // its load success is signalled by activeParcel being set with no active
+  // load/error — NOT by whether the recordings array happens to be non-empty
+  // (a live load can legitimately return zero recordings).
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const parcelError = usePropertyStore((s) => s.activeParcelError);
+  const evidenceLoaded = Boolean(activeParcel) && !parcelLoading && !parcelError;
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -246,10 +255,11 @@ export const PropertyClerk: React.FC = () => {
 
       <div className='flex items-center justify-between gap-3 px-2' data-testid='clerk-baseline-disclosure'>
         <p className='text-xs tf-text-dim'>
-          Recording and title tools are invoked on demand through governed tooling; values shown are
-          returned from the tool response or the recording history loaded for this parcel, never inferred.
+          This parcel's recording context is loaded from the live property evidence feed; recording and
+          title tools are invoked on demand through governed tooling and their results are shown only
+          after you run them, never inferred.
         </p>
-        <WorkbenchSourceBadge source={recordings.length > 0 ? 'live' : 'unavailable'} />
+        <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
       </div>
 
       {/* Recording history from store */}
