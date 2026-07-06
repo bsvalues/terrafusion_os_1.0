@@ -21,6 +21,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -113,6 +114,15 @@ interface TaxSaleResult {
 export const PropertyTreasury: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const taxStatements = usePropertyStore((s) => s.taxStatements);
+  // Source provenance for the baseline disclosure badge. The parcel evidence
+  // bundle (taxStatements included) is loaded together in propertyStore.selectParcel;
+  // its load success is signalled by activeParcel being set with no active
+  // load/error — NOT by whether the taxStatements array happens to be non-empty
+  // (a live load can legitimately return zero statements).
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const parcelError = usePropertyStore((s) => s.activeParcelError);
+  const evidenceLoaded = Boolean(activeParcel) && !parcelLoading && !parcelError;
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -289,8 +299,17 @@ export const PropertyTreasury: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-treasury space-y-4'>
+    <div className='tf-suite-treasury space-y-4' data-testid='property-treasury-tab'>
       <ParcelContextHeader icon='💰' title='TerraTreasury' parcelId={parcelId} subtitle={`Tax & collection services for ${parcelId}`} />
+
+      <div className='flex items-center justify-between gap-3 px-2' data-testid='treasury-baseline-disclosure'>
+        <p className='text-xs tf-text-dim'>
+          This parcel's tax context is loaded from the live property evidence feed; tax and collection
+          tools are invoked on demand through governed tooling and their results are shown only after
+          you run them, never inferred.
+        </p>
+        <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
+      </div>
 
       {/* Tax History from Store */}
       {taxStatements.length > 0 && (
