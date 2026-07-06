@@ -102,13 +102,15 @@ vi.mock('../../components/workbench/ActivityFeed', () => ({ ActivityFeed: () => 
 // ── Component-layer deps used by the REAL Clerk/Treasury/Audit tabs ────────────
 // (NOT stubbing the tab modules — they render for real.)
 vi.mock('../../api/pilotApi', () => ({
-  invokeTool: vi.fn().mockResolvedValue({ success: true, data: {} }),
+  // Matches the real invokeTool contract: { success, correlationId, result?: { output } }.
+  invokeTool: vi.fn().mockResolvedValue({ success: true, correlationId: 'acc-corr-1', result: { output: '' } }),
   listPilotTools: vi.fn().mockResolvedValue({ count: 0, tools: [] }),
   filterMuseReadOnlyTools: (tools: unknown[]) => tools,
 }));
 
 vi.mock('../../runtime/env', () => ({
-  getEnv: () => ({ VITE_API_URL: 'http://localhost', VITE_PILOT_API_URL: 'http://localhost/api/pilot' }),
+  // Matches the real getEnv() shape: { DEV, PROD, MODE }.
+  getEnv: () => ({ DEV: false, PROD: false, MODE: 'test' }),
 }));
 
 import PropertyWorkbenchWindow from '../../pages/workbench/PropertyWorkbenchWindow';
