@@ -32,6 +32,14 @@ import { isApiFetchError } from '../services/LiveDataProvider';
 // State Shape
 // ---------------------------------------------------------------------------
 
+/**
+ * Provenance of the eager related-data bundle (assessments/documents/appeals/
+ * taxStatements/recordings/auditTrail/operations) for the active parcel.
+ * The bundle is loaded all-or-nothing in selectParcel, so 'loaded' means every
+ * rendered related slice is available. Drives slice-aware Workbench honesty badges.
+ */
+export type RelatedDataStatus = 'idle' | 'loading' | 'loaded' | 'error';
+
 interface PropertyState {
   // Active parcel (selected via search or navigation)
   activeParcel: Property | null;
@@ -59,6 +67,10 @@ interface PropertyState {
   auditTrail: AuditEntry[];
   operations: OperationTrace[];
 
+  // Provenance of the eager related-data bundle for the active parcel (see
+  // RelatedDataStatus). 'loaded' means the rendered related slice is available.
+  relatedDataStatus: RelatedDataStatus;
+
   // History
   recentParcels: PropertySearchResult[];
 
@@ -75,6 +87,13 @@ interface PropertyState {
 
 const MAX_RECENT = 10;
 const PARCEL_EVIDENCE_TIMEOUT_MS = 20_000;
+
+// Monotonic token for the latest selectParcel() invocation. Each call captures
+// its own requestSeq; the shell and related-data (bundle) continuations bail if a
+// newer selectParcel has started — even for the SAME parcelId (re-select/refresh),
+// where a parcelId-only guard would let a stale bundle overwrite the newer load's
+// slices or relatedDataStatus.
+let selectParcelSeq = 0;
 const EMPTY_RELATED_DATA = {
   assessments: [],
   documents: [],
@@ -125,6 +144,7 @@ export const usePropertyStore = create<PropertyState>()(
       recordings: [],
       auditTrail: [],
       operations: [],
+      relatedDataStatus: 'idle',
       recentParcels: [],
 
       // Search parcels
@@ -148,21 +168,24 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
+        const requestSeq = ++selectParcelSeq;
         set({
           activeParcelLoading: true,
           activeParcelLoadingParcelId: parcelId,
           activeParcelError: null,
+          relatedDataStatus: 'idle',
           ...EMPTY_RELATED_DATA,
         });
         try {
           const provider = getDataProvider();
           const parcel = await withParcelEvidenceTimeout(parcelId, provider.getParcel(parcelId));
-          if (get().activeParcelLoadingParcelId !== parcelId) return;
+          if (selectParcelSeq !== requestSeq) return;
           if (!parcel) {
             set({
               activeParcel: null,
               activeParcelLoading: false,
               activeParcelLoadingParcelId: null,
+              relatedDataStatus: 'idle',
               ...EMPTY_RELATED_DATA,
               activeParcelError: {
                 parcelId,
@@ -194,6 +217,7 @@ export const usePropertyStore = create<PropertyState>()(
             activeParcelLoading: false,
             activeParcelLoadingParcelId: null,
             activeParcelError: null,
+            relatedDataStatus: 'loading',
             ...EMPTY_RELATED_DATA,
           });
 
@@ -208,7 +232,7 @@ export const usePropertyStore = create<PropertyState>()(
               provider.getRecentOperations(parcelId),
             ])
             .then(([assessments, documents, appeals, taxStatements, recordings, auditTrail, operations]) => {
-              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              if (selectParcelSeq !== requestSeq) return;
               set({
                 assessments,
                 documents,
@@ -217,10 +241,11 @@ export const usePropertyStore = create<PropertyState>()(
                 recordings,
                 auditTrail,
                 operations,
+                relatedDataStatus: 'loaded',
               });
             })
             .catch(() => {
-              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              if (selectParcelSeq !== requestSeq) return;
               set({
                 assessments: [],
                 documents: [],
@@ -229,14 +254,16 @@ export const usePropertyStore = create<PropertyState>()(
                 recordings: [],
                 auditTrail: [],
                 operations: [],
+                relatedDataStatus: 'error',
               });
             });
         } catch (error) {
-          if (get().activeParcelLoadingParcelId !== parcelId) return;
+          if (selectParcelSeq !== requestSeq) return;
           set({
             activeParcel: null,
             activeParcelLoading: false,
             activeParcelLoadingParcelId: null,
+            relatedDataStatus: 'idle',
             ...EMPTY_RELATED_DATA,
             activeParcelError: isApiFetchError(error)
               ? {
@@ -267,6 +294,7 @@ export const usePropertyStore = create<PropertyState>()(
           activeParcelLoading: false,
           activeParcelLoadingParcelId: null,
           activeParcelError: null,
+          relatedDataStatus: 'idle',
           ...EMPTY_RELATED_DATA,
         });
       },
