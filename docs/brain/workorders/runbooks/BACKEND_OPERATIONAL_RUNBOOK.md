@@ -131,6 +131,41 @@ Blocked from this runbook:
 - Destructive schema operation.
 - County/PACS data access.
 
+## Rollback Procedure
+
+This runbook defines rollback as an operator decision procedure, not an authorization to mutate a
+live system. If a validation gate fails or a release candidate must be backed out, use this sequence:
+
+1. Stop forward promotion and record the failing gate, branch, commit SHA, command, and evidence
+   file that triggered rollback consideration.
+2. Classify the rollback type:
+   - Documentation/evidence rollback: revert or supersede the evidence packet through a normal PR.
+   - Application artifact rollback: select the last release artifact whose Backend OE gates were
+     green or explicitly dispositioned.
+   - Configuration rollback: restore the last approved configuration only if the active release
+     packet authorizes that environment.
+   - Migration rollback: use OE-007 source evidence to determine whether a `Down` method or SQL-only
+     rollback exists, then stop for explicit database authority before applying anything.
+3. Confirm the rollback boundary does not require production secrets, county SQL, PACS, live county
+   data, or destructive cleanup. If it does, stop for owner authorization.
+4. Re-run the non-mutating gates that prove the rollback candidate is safe to consider:
+   - source identity,
+   - backend build and warning posture,
+   - unit lane,
+   - release gate disposition,
+   - relevant health/readiness and service-registry evidence.
+5. Record the rollback decision in the active release packet or closeout evidence:
+   - selected rollback target,
+   - gates rerun,
+   - gates not rerun and why,
+   - remaining risk,
+   - owner authorization required before any live environment action.
+6. Do not apply schema changes, deploy artifacts, restart services, or modify runtime configuration
+   from this runbook. Those actions require a separate authorized WO or release operation.
+
+Rollback is considered operable only when the rollback target, validation evidence, environment
+boundary, and required authority are all explicit.
+
 ## Dais E2E Proof Gap Handling
 
 Use OE-008 to constrain Dais claims.

@@ -53,6 +53,7 @@ OE-013.
 | County isolation proof references | Uses OE-006; preserves cross-county read/mutation denial proof boundaries. |
 | Migration safety | Uses OE-007; blocks migration apply/update and schema mutation from the runbook. |
 | Rollback evidence interpretation | Uses OE-007; distinguishes source `Down` methods from executed apply/rollback proof. |
+| Rollback procedure | Defines an operator decision sequence for documentation/evidence, artifact, configuration, and migration rollback without authorizing live mutation. |
 | Dais E2E gap handling | Uses OE-008; blocks release-grade Dais E2E claims until planned proof slices are closed or deferred. |
 | Known blocker triage | Lists Docker/Testcontainers, API.Tests file lock, readiness ambiguity, registry gaps, security map gaps, migration execution gaps, Dais E2E gaps, and local hook debt. |
 | Evidence capture | Defines branch, SHA, command, result, gate disposition, PR/commit, and non-claim capture requirements. |
@@ -68,6 +69,12 @@ OE-010 changes the OE-009 release gate as follows:
 | Diagnostics map | BLOCKER | Still pending OE-011. |
 | Operational packet | BLOCKER | Still pending OE-012. |
 | Evidence rollup | BLOCKER | Still pending OE-013. |
+
+## Review Closure
+
+The runbook now includes a concrete rollback procedure. It defines how an operator classifies a
+rollback type, selects a rollback target, reruns non-mutating gates, records evidence, and stops for
+owner authority before any live deployment, configuration, service, or database mutation.
 
 ## Explicit Non-Claims
 
