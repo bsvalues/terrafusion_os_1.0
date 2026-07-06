@@ -7,8 +7,8 @@
 | Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
-| Last Updated | 2026-07-05 |
-| Next WO | `WO-BACKEND-OE-005` after `WO-BACKEND-OE-004` merges |
+| Last Updated | 2026-07-06 |
+| Next WO | `WO-BACKEND-OE-006` after `WO-BACKEND-OE-005` merges |
 
 ---
 
@@ -26,7 +26,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 - The integration dependency is classified as a Docker/Testcontainers prerequisite and segmented
   integration-lane candidate, not warning debt.
 - Dais persistence exists.
-- Service registry exists.
+- Service registry is source-wired and class-tested; OE-005 classifies runtime proof as partial
+  because writer/reader path alignment and registered-service health/orphan coverage remain unproven.
 - Health/readiness endpoints exist and OE-004 classifies their current semantics; release-gate
   policy still needs to decide which readiness signal is authoritative.
 - Security/auth/county/audit proof exists but is not consolidated into a release-grade matrix.
@@ -71,15 +72,16 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-001-S` | COMPLETE | Generated validation residue classified and cleaned from the baseline worktree |
 | `WO-BACKEND-OE-002` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-002-BUILD-WARNING-REGISTER.md` |
 | `WO-BACKEND-OE-003` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-003-INTEGRATION-TEST-ENVIRONMENT-DEPENDENCY-REGISTER.md` |
-| `WO-BACKEND-OE-004` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md` |
+| `WO-BACKEND-OE-004` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md` |
+| `WO-BACKEND-OE-005` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-005-SERVICE-REGISTRY-RUNTIME-VALIDATION.md` |
 
 ## Remaining Work Order Chain
 
 | WO | Title | Mode | Dependency | Status | Next |
 |----|-------|------|------------|--------|------|
 | `WO-BACKEND-OE-003` | Integration Test Environment Dependency Register | Evidence/register documentation first | OE-002 merged | CLOSED | OE-004 |
-| `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | READY FOR PR | OE-005 |
-| `WO-BACKEND-OE-005` | Service Registry Runtime Validation | Evidence + targeted validation | OE-004 merged | QUEUED | OE-006 |
+| `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | CLOSED | OE-005 |
+| `WO-BACKEND-OE-005` | Service Registry Runtime Validation | Evidence + targeted validation | OE-004 merged | READY FOR PR | OE-006 |
 | `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | QUEUED | OE-007 |
 | `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | QUEUED | OE-008 |
 | `WO-BACKEND-OE-008` | Dais Workflow E2E Proof Expansion Plan | Test-plan/evidence first | OE-007 merged | QUEUED | OE-009 |
