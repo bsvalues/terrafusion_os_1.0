@@ -17,11 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-06 — WO-BACKEND-OE-008)*
+*(Updated 2026-07-06 — WO-BACKEND-OE-009)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-008` | `WO-BACKEND-OE-009` after OE-008 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-009` | `WO-BACKEND-OE-010` after OE-009 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
@@ -46,7 +46,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
-| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-009 | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate policy still needed |
+| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-010 | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate criteria defined in WO-BACKEND-OE-009; operational runbook handling still needed |
 | Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
@@ -159,3 +159,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-06 | Consolidated backend security/auth/county-isolation proof matrix and routed next to migration/rollback proof | WO-BACKEND-OE-006 |
 | 2026-07-06 | Inventoried backend migration and rollback source evidence and routed next to Dais E2E proof planning | WO-BACKEND-OE-007 |
 | 2026-07-06 | Planned Dais workflow E2E proof expansion and routed next to backend release gate definition | WO-BACKEND-OE-008 |
+| 2026-07-06 | Defined backend release gate criteria and routed next to operational runbook | WO-BACKEND-OE-009 |
