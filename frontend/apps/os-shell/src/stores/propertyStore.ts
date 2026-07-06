@@ -87,6 +87,13 @@ interface PropertyState {
 
 const MAX_RECENT = 10;
 const PARCEL_EVIDENCE_TIMEOUT_MS = 20_000;
+
+// Monotonic token for the latest selectParcel() invocation. Each call captures
+// its own requestSeq; the shell and related-data (bundle) continuations bail if a
+// newer selectParcel has started — even for the SAME parcelId (re-select/refresh),
+// where a parcelId-only guard would let a stale bundle overwrite the newer load's
+// slices or relatedDataStatus.
+let selectParcelSeq = 0;
 const EMPTY_RELATED_DATA = {
   assessments: [],
   documents: [],
@@ -161,6 +168,7 @@ export const usePropertyStore = create<PropertyState>()(
 
       // Select a parcel — sets active and eagerly loads all related data
       selectParcel: async (parcelId: string) => {
+        const requestSeq = ++selectParcelSeq;
         set({
           activeParcelLoading: true,
           activeParcelLoadingParcelId: parcelId,
@@ -171,7 +179,7 @@ export const usePropertyStore = create<PropertyState>()(
         try {
           const provider = getDataProvider();
           const parcel = await withParcelEvidenceTimeout(parcelId, provider.getParcel(parcelId));
-          if (get().activeParcelLoadingParcelId !== parcelId) return;
+          if (selectParcelSeq !== requestSeq) return;
           if (!parcel) {
             set({
               activeParcel: null,
@@ -224,7 +232,7 @@ export const usePropertyStore = create<PropertyState>()(
               provider.getRecentOperations(parcelId),
             ])
             .then(([assessments, documents, appeals, taxStatements, recordings, auditTrail, operations]) => {
-              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              if (selectParcelSeq !== requestSeq) return;
               set({
                 assessments,
                 documents,
@@ -237,7 +245,7 @@ export const usePropertyStore = create<PropertyState>()(
               });
             })
             .catch(() => {
-              if (get().activeParcel?.parcelId !== parcel.parcelId) return;
+              if (selectParcelSeq !== requestSeq) return;
               set({
                 assessments: [],
                 documents: [],
@@ -250,7 +258,7 @@ export const usePropertyStore = create<PropertyState>()(
               });
             });
         } catch (error) {
-          if (get().activeParcelLoadingParcelId !== parcelId) return;
+          if (selectParcelSeq !== requestSeq) return;
           set({
             activeParcel: null,
             activeParcelLoading: false,

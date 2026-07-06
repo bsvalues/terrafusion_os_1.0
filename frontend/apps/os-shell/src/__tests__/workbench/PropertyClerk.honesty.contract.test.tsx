@@ -23,12 +23,13 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyClerk from '../../pages/workbench/tabs/PropertyClerk';
+// Type-only import (erased at runtime) so the test's status union stays aligned
+// with the store's real state machine while the module is still runtime-mocked below.
+import type { RelatedDataStatus } from '../../stores/propertyStore';
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock('../../api/pilotApi');
-
-type RelatedDataStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 // Mutable store view driven per-test to exercise the slice-load-provenance states.
 interface StoreView {

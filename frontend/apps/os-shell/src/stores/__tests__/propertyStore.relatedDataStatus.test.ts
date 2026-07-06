@@ -123,6 +123,37 @@ describe('propertyStore relatedDataStatus provenance', () => {
     expect(usePropertyStore.getState().activeParcelError?.status).toBe(404);
   });
 
+  it('ignores a stale related-data completion when the same parcel is re-selected', async () => {
+    // codex race: re-selecting/refreshing the same parcel while an earlier bundle
+    // is in flight must not let the stale bundle overwrite the newer load's status.
+    let rejectStale: (reason?: unknown) => void = () => {};
+    const stalePending = new Promise((_, reject) => {
+      rejectStale = reject;
+    });
+    // First select's tax call hangs (stale bundle in flight); second select's resolves.
+    providerMock.getTaxStatements
+      .mockReturnValueOnce(stalePending)
+      .mockResolvedValueOnce([]);
+
+    void usePropertyStore.getState().selectParcel('P-PROV-001');
+    await waitFor(() => {
+      expect(usePropertyStore.getState().relatedDataStatus).toBe('loading');
+    });
+
+    // Re-select the same parcel — a newer bundle supersedes the stale one.
+    void usePropertyStore.getState().selectParcel('P-PROV-001');
+    await waitFor(() => {
+      expect(usePropertyStore.getState().relatedDataStatus).toBe('loaded');
+    });
+
+    // The stale first bundle now REJECTS — its continuation must bail, not clobber.
+    rejectStale(new Error('stale bundle rejected'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(usePropertyStore.getState().relatedDataStatus).toBe('loaded');
+  });
+
   it('resets to "idle" on clearParcel', async () => {
     void usePropertyStore.getState().selectParcel('P-PROV-001');
     await waitFor(() => {
