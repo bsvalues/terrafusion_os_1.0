@@ -5,8 +5,9 @@
 **Category:** Documentation (pre-implementation checkpoint; no code change)
 **Governing decision:** GOAL-TF-WB-G2-WINDOW-ALIASING-001 → Option D (merged, PR #1221, `3c92adee`)
 
-**Authorization:** Operator authorized GOAL-TF-WB-G2-WINDOW-ALIASING-FIX-001. Allowed writes:
-`pages/workbench/PropertyWorkbenchWindow.tsx`, `pages/workbench/tabs/**`, `__tests__/workbench/**`,
+**Authorization:** Operator authorized GOAL-TF-WB-G2-WINDOW-ALIASING-FIX-001. Allowed writes (full repo-relative paths):
+`frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx`,
+`frontend/apps/os-shell/src/pages/workbench/tabs/**`, `frontend/apps/os-shell/src/__tests__/workbench/**`,
 `docs/audit/workbench-readiness/**`. AGENTS.md out-of-lane write proceeds under this explicit authorization. No
 backend/registry/route(outside window)/API/deploy/PACS.
 
