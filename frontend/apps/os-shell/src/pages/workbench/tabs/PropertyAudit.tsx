@@ -19,6 +19,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -94,6 +95,16 @@ interface ComplianceReportResult {
 export const PropertyAudit: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const auditTrail = usePropertyStore((s) => s.auditTrail);
+  // Source provenance for the baseline disclosure badge. This reflects whether
+  // THIS PARCEL was loaded from the live property evidence feed (activeParcel set,
+  // not loading, no error) — the honest signal the store exposes. It is NOT keyed
+  // on the auditTrail row count (a live load can legitimately return zero entries);
+  // propertyStore exposes no audit-slice-specific load provenance, so the
+  // disclosure copy is scoped to parcel-context, not audit-evidence, load state.
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
+  const parcelError = usePropertyStore((s) => s.activeParcelError);
+  const evidenceLoaded = Boolean(activeParcel) && !parcelLoading && !parcelError;
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
@@ -228,8 +239,19 @@ export const PropertyAudit: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-audit space-y-4'>
+    <div className='tf-suite-audit space-y-4' data-testid='property-audit-tab'>
       <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`Financial compliance & audit for ${parcelId}`} />
+
+      <div className='flex items-center justify-between gap-3 px-2' data-testid='audit-baseline-disclosure'>
+        <p className='text-xs tf-text-dim'>
+          {evidenceLoaded
+            ? 'This parcel is loaded from the live property evidence feed.'
+            : 'Live property evidence for this parcel is not currently available.'}{' '}
+          Compliance and audit tools are invoked on demand through governed tooling; their results are
+          shown only after you run them, never inferred.
+        </p>
+        <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
+      </div>
 
       {/* Audit History from Store */}
       {auditTrail.length > 0 && (
