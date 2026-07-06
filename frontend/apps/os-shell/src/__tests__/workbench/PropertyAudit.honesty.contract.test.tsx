@@ -1,19 +1,18 @@
 /**
  * PropertyAudit.honesty.contract.test.tsx
  *
- * Source honesty contract for the PropertyAudit tab (WO-WB-INSTR-005).
- * Mirrors the Treasury/Clerk/Pilot/Dossier/Dais honesty contracts. Ensures:
+ * Source honesty contract for the PropertyAudit tab (WO-WB-INSTR-005, slice-aware
+ * under WO-WB-PROV-005). Ensures:
  *   1. Baseline disclosure box carries a WorkbenchSourceBadge
- *   2. That badge shows "unavailable" before/while the parcel evidence loads and on error
- *   3. It reflects "live" once the parcel evidence bundle loads successfully —
- *      including a successful load that returns zero audit entries (load-success
- *      provenance, NOT audit row count), and it flips on the empty -> loaded
- *      transition (not memoized at mount)
- *   4. No aspirational "AI-powered" language
- *   5. Baseline disclosure uses governed / live-evidence / never-inferred wording
+ *   2. That badge shows "unavailable" until the related-data bundle (which holds the
+ *      auditTrail slice) has loaded — including while the parcel shell is up but the
+ *      bundle is still loading, and after a bundle load error
+ *   3. It reflects "live" once relatedDataStatus === 'loaded' for THIS parcel —
+ *      including a load that returns zero audit entries (load-success provenance,
+ *      NOT row count), and it flips on the transition (not memoized at mount)
+ *   4. A stale previous parcel's loaded status does not read as live (parcelId guard)
+ *   5. No aspirational "AI-powered" language; state-aware disclosure copy
  *   6. No tool is invoked on mount (the tab only lists tools)
- *
- * Reuses the mock setup from PropertyAudit.test.tsx.
  */
 
 import '@testing-library/jest-dom';
@@ -23,6 +22,8 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyAudit from '../../pages/workbench/tabs/PropertyAudit';
+// Type-only import (erased at runtime) so the status union stays aligned with the store.
+import type { RelatedDataStatus } from '../../stores/propertyStore';
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -36,15 +37,13 @@ interface StoreView {
     timestamp: string;
   }>;
   activeParcel: { parcelId: string } | null;
-  activeParcelLoading: boolean;
-  activeParcelError: { message: string } | null;
+  relatedDataStatus: RelatedDataStatus;
 }
 
 let storeView: StoreView = {
   auditTrail: [],
   activeParcel: null,
-  activeParcelLoading: false,
-  activeParcelError: null,
+  relatedDataStatus: 'idle',
 };
 
 vi.mock('../../stores/propertyStore', () => ({
@@ -95,6 +94,12 @@ const oneEntry = [
   { entryId: 'AU-1', action: 'value_change', actor: 'assessor', timestamp: '2026-01-15T10:00:00Z' },
 ];
 
+const loadedFor = (parcelId: string, auditTrail: StoreView['auditTrail'] = []): StoreView => ({
+  auditTrail,
+  activeParcel: { parcelId },
+  relatedDataStatus: 'loaded',
+});
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('PropertyAudit source honesty contract', () => {
@@ -103,8 +108,7 @@ describe('PropertyAudit source honesty contract', () => {
     storeView = {
       auditTrail: [],
       activeParcel: null,
-      activeParcelLoading: false,
-      activeParcelError: null,
+      relatedDataStatus: 'idle',
     };
   });
 
@@ -114,72 +118,47 @@ describe('PropertyAudit source honesty contract', () => {
     expect(disclosure.querySelector('[data-testid="workbench-source-badge"]')).toBeInTheDocument();
   });
 
-  it('baseline badge shows "unavailable" before the parcel evidence loads', () => {
+  it('baseline badge shows "unavailable" before the parcel evidence loads (idle)', () => {
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge shows "unavailable" while the parcel evidence is loading', () => {
-    storeView = { ...storeView, activeParcelLoading: true };
+  it('baseline badge shows "unavailable" while the parcel shell is up but the related bundle is still loading', () => {
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'loading' };
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge shows "unavailable" when the parcel evidence load errored', () => {
-    storeView = {
-      ...storeView,
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelError: { message: 'load failed' },
-    };
+  it('baseline badge shows "unavailable" when the related evidence bundle load errored', () => {
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'error' };
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge reflects "live" on a successful evidence load even with zero audit entries', () => {
-    storeView = {
-      auditTrail: [],
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+  it('baseline badge reflects "live" on a loaded bundle even with zero audit entries', () => {
+    storeView = loadedFor(PARCEL_ID, []);
     render(<TestWrapper />);
     expect(badgeSource()).toBe('live');
   });
 
-  it('baseline badge flips unavailable -> live on the empty -> loaded transition (not memoized)', () => {
+  it('baseline badge flips unavailable -> live on the loading -> loaded transition (not memoized)', () => {
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'loading' };
     const { rerender } = render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
 
-    storeView = {
-      auditTrail: oneEntry,
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, oneEntry);
     rerender(<TestWrapper />);
     expect(badgeSource()).toBe('live');
   });
 
-  it('baseline badge shows "unavailable" when the store holds a DIFFERENT parcel (stale nav frame)', () => {
-    // During parcel-to-parcel navigation the store can still hold the previous
-    // activeParcel for one frame; that must not read as live for this tab's parcel.
-    storeView = {
-      auditTrail: oneEntry,
-      activeParcel: { parcelId: 'SOME-OTHER-PARCEL' },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+  it('baseline badge shows "unavailable" when a DIFFERENT parcel bundle is loaded (stale nav frame)', () => {
+    storeView = loadedFor('SOME-OTHER-PARCEL', oneEntry);
     render(<TestWrapper parcelId={PARCEL_ID} />);
     expect(badgeSource()).toBe('unavailable');
   });
 
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
-    storeView = {
-      auditTrail: oneEntry,
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, oneEntry);
     render(<TestWrapper />);
     for (const badge of screen.getAllByTestId('workbench-source-badge')) {
       expect(['unavailable', 'live']).toContain(badge.getAttribute('data-source'));
@@ -187,19 +166,12 @@ describe('PropertyAudit source honesty contract', () => {
   });
 
   it('disclosure copy is state-aware — never claims live loading while the badge reads unavailable', () => {
-    // Idle: badge unavailable, so the copy must NOT assert the parcel is loaded live.
     const { rerender } = render(<TestWrapper />);
     let disclosure = screen.getByTestId('audit-baseline-disclosure');
     expect(disclosure.textContent).toMatch(/not currently available/i);
     expect(disclosure.textContent).not.toMatch(/is loaded from the live property evidence feed/i);
 
-    // Loaded: badge live, so the copy asserts the live-loaded state.
-    storeView = {
-      auditTrail: oneEntry,
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, oneEntry);
     rerender(<TestWrapper />);
     disclosure = screen.getByTestId('audit-baseline-disclosure');
     expect(disclosure.textContent).toMatch(/is loaded from the live property evidence feed/i);
