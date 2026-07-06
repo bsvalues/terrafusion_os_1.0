@@ -8,7 +8,7 @@
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
 | Last Updated | 2026-07-06 |
-| Next WO | `WO-BACKEND-OE-010` after `WO-BACKEND-OE-009` merges |
+| Next WO | `WO-BACKEND-OE-012` after `WO-BACKEND-OE-011` merges |
 
 ---
 
@@ -84,7 +84,9 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-006` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-006-SECURITY-AUTH-COUNTY-ISOLATION-PROOF-MATRIX.md` |
 | `WO-BACKEND-OE-007` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-007-MIGRATION-ROLLBACK-PROOF-REGISTER.md` |
 | `WO-BACKEND-OE-008` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-008-DAIS-WORKFLOW-E2E-PROOF-EXPANSION-PLAN.md` |
-| `WO-BACKEND-OE-009` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-009-BACKEND-RELEASE-GATE-DEFINITION.md` |
+| `WO-BACKEND-OE-009` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-009-BACKEND-RELEASE-GATE-DEFINITION.md` |
+| `WO-BACKEND-OE-010` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-010-BACKEND-OPERATIONAL-RUNBOOK.md`; `docs/brain/workorders/runbooks/BACKEND_OPERATIONAL_RUNBOOK.md` |
+| `WO-BACKEND-OE-011` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-011-DIAGNOSTICS-OBSERVABILITY-MAP.md` |
 
 ## Remaining Work Order Chain
 
@@ -96,9 +98,9 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | CLOSED | OE-007 |
 | `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | CLOSED | OE-008 |
 | `WO-BACKEND-OE-008` | Dais Workflow E2E Proof Expansion Plan | Test-plan/evidence first | OE-007 merged | CLOSED | OE-009 |
-| `WO-BACKEND-OE-009` | Backend Release Gate Definition | Governance/release checklist | OE-008 merged | READY FOR PR | OE-010 |
-| `WO-BACKEND-OE-010` | Backend Operational Runbook | Runbook creation | OE-009 merged | QUEUED | OE-011 |
-| `WO-BACKEND-OE-011` | Diagnostics and Observability Map | Evidence/docs | OE-010 merged | QUEUED | OE-012 |
+| `WO-BACKEND-OE-009` | Backend Release Gate Definition | Governance/release checklist | OE-008 merged | CLOSED | OE-010 |
+| `WO-BACKEND-OE-010` | Backend Operational Runbook | Runbook creation | OE-009 merged | CLOSED | OE-011 |
+| `WO-BACKEND-OE-011` | Diagnostics and Observability Map | Evidence/docs | OE-010 merged | READY FOR PR | OE-012 |
 | `WO-BACKEND-OE-012` | Backend Operational Packet | Operational packet assembly | OE-011 merged | QUEUED | OE-013 |
 | `WO-BACKEND-OE-013` | Evidence Rollup and Program Closeout | Evidence rollup / closeout | OE-012 merged | QUEUED | Program close |
 
