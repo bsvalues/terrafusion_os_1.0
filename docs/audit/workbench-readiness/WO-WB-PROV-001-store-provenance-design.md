@@ -46,11 +46,18 @@ shell).
 | **Treasury** | same parcel-shell predicate | `taxStatements` (store slice) | parcel-shell-aware → slice-aware possible | same slice-aware predicate | low | PROV-004 |
 | **Audit** | same parcel-shell predicate | `auditTrail` (store slice) | parcel-shell-aware → slice-aware possible | same slice-aware predicate | low | PROV-005 |
 | **Pilot** | `!toolsLoading && !toolsError` | Pilot tool list (`listPilotTools` on mount) | **already tool-list-aware** (not parcel-shell) | unchanged | none | PROV-006 (align/verify) |
-| **Dossier** | `dossierDetails.data ? 'live' : 'unavailable'` | `useDossierDetails(parcelId)` detail | **already detail-slice-aware** (not parcel-shell) | unchanged | none | PROV-007 (align/verify) |
+| **Dossier** | `dossierDetails.data ? 'live' : 'unavailable'` | `useDossierDetails(parcelId)` detail | detail-slice-aware but **NOT parcel-keyed** | add component-level parcel-identity guard | med | PROV-007 |
 
-Pilot and Dossier are **already** driven by the exact slice each renders (the tool list and the dossier detail
-respectively), not by parcel-shell state. They need no component change; PROV-006/007 are verification + test/doc
-alignment only (no manufactured churn).
+Pilot is **already** driven by the exact slice it renders (the tool list), not by parcel-shell state — PROV-006 is
+verification + test/doc alignment only (no manufactured churn).
+
+Dossier's badge is keyed to `dossierDetails.data`, which is the detail slice — but it is **not parcel-keyed**:
+`useDossierDetails` only clears `data` when `parcelId` becomes null, not when it *changes* (see
+`frontend/apps/os-shell/src/hooks/useDossierDetails.ts`). After navigating from parcel A (details loaded) to parcel B,
+A's `data` stays non-null while B is fetching, so the badge would read `live` for stale A details. The `useDossierDetails`
+hook lives in `hooks/**` (outside this program's allowed write set), so **PROV-007 fixes this at the component level**
+(`PropertyDossier.tsx`) by gating the badge on the loaded detail actually belonging to the current `parcelId` — the same
+parcel-identity discipline the C-tabs use. This makes PROV-007 a real (small) component change, not verify-only.
 
 Dossier's post-invocation `WorkbenchSourceBadge source='live'` badges (appeal packet / equalization / audit bundle) are
 correlationId-gated — they render only after a successful governed tool response — and remain honest; out of scope here.
@@ -83,7 +90,8 @@ C-tabs.
 3. **PROV-005** — Audit wired to `relatedDataStatus` + contract test.
 4. **PROV-006** — Pilot: verify already tool-list-aware; add/adjust a contract assertion only if it strengthens the
    contract; otherwise docs-only confirmation.
-5. **PROV-007** — Dossier: verify already detail-slice-aware; docs/test alignment only.
+5. **PROV-007** — Dossier: add a component-level parcel-identity guard so the badge does not read `live` for a
+   previous parcel's stale detail (the `useDossierDetails` hook is out of scope); update the Dossier honesty test.
 6. **PROV-008** — evidence rollup.
 
 ## 6. Stop-wall check (none tripped)
