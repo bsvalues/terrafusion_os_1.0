@@ -85,18 +85,17 @@ interface RecordingSummaryResult {
 export const PropertyClerk: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const recordings = usePropertyStore((s) => s.recordings);
-  // Source provenance for the baseline disclosure badge. This reflects whether
-  // THIS PARCEL was loaded from the live property evidence feed (activeParcel set
-  // for this parcelId, not loading, no error) — the honest signal the store
-  // exposes. It is NOT keyed on the recordings row count (a live load can
-  // legitimately return zero recordings), and it requires the loaded parcel to be
-  // this tab's parcel so a stale previous activeParcel during navigation does not
-  // read as live. propertyStore exposes no recording-slice-specific provenance, so
-  // the disclosure copy is scoped to parcel-context, not recording-evidence, load.
+  // Source provenance for the baseline disclosure badge. This is SLICE-AWARE:
+  // recordings live in the eager related-data bundle, whose load lifecycle the
+  // store now tracks via relatedDataStatus. The badge reads live only once that
+  // bundle has actually loaded for THIS parcel — not merely when the parcel shell
+  // loaded (activeParcelLoading clears before the bundle resolves). The parcelId
+  // guard prevents a stale previous parcel's 'loaded' status from reading live
+  // during navigation. It is NOT keyed on the recordings row count (a live load
+  // can legitimately return zero recordings).
   const activeParcel = usePropertyStore((s) => s.activeParcel);
-  const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
-  const parcelError = usePropertyStore((s) => s.activeParcelError);
-  const evidenceLoaded = activeParcel?.parcelId === parcelId && !parcelLoading && !parcelError;
+  const relatedDataStatus = usePropertyStore((s) => s.relatedDataStatus);
+  const evidenceLoaded = activeParcel?.parcelId === parcelId && relatedDataStatus === 'loaded';
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
