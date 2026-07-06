@@ -47,7 +47,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
-| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-003 | Evidence/register classification next |
+| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-009 | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate policy still needed |
 | Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
@@ -154,3 +154,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-04 | Refreshed Backend OE full executable playbook from OE-003 through OE-013 | WO-BACKEND-OE-PLAYBOOK-REFRESH |
 | 2026-07-04 | Added master active-program playbook and global continuation/stop rules | WO-MASTER-PLAYBOOK-001 |
 | 2026-07-05 | Promoted active program graph to explicit goal/loop execution playbook and command routing | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 |
+| 2026-07-05 | Classified Backend OE integration-test Docker/Testcontainers dependency and routed next to health/readiness semantics | WO-BACKEND-OE-003 |
