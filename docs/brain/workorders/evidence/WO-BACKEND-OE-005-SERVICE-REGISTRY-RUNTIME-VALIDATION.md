@@ -9,7 +9,7 @@ Mode: evidence + targeted validation
 
 ## Result
 
-RESULT: PASS_WITH_RELEASE_GAPS
+RESULT: PASS_WITH_GAP
 
 ServiceRegistry is source-wired, startup-wired, controller-served, and covered by focused class-level
 tests. Runtime release readiness is still partial because the current evidence does not prove that the
