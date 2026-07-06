@@ -114,11 +114,12 @@ interface TaxSaleResult {
 export const PropertyTreasury: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const taxStatements = usePropertyStore((s) => s.taxStatements);
-  // Source provenance for the baseline disclosure badge. The parcel evidence
-  // bundle (taxStatements included) is loaded together in propertyStore.selectParcel;
-  // its load success is signalled by activeParcel being set with no active
-  // load/error — NOT by whether the taxStatements array happens to be non-empty
-  // (a live load can legitimately return zero statements).
+  // Source provenance for the baseline disclosure badge. This reflects whether
+  // THIS PARCEL was loaded from the live property evidence feed (activeParcel set,
+  // not loading, no error) — the honest signal the store exposes. It is NOT keyed
+  // on the taxStatements row count (a live load can legitimately return zero
+  // statements); propertyStore exposes no tax-slice-specific load provenance, so
+  // the disclosure copy is scoped to parcel-context, not tax-evidence, load state.
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
   const parcelError = usePropertyStore((s) => s.activeParcelError);
@@ -304,9 +305,9 @@ export const PropertyTreasury: React.FC = () => {
 
       <div className='flex items-center justify-between gap-3 px-2' data-testid='treasury-baseline-disclosure'>
         <p className='text-xs tf-text-dim'>
-          This parcel's tax context is loaded from the live property evidence feed; tax and collection
-          tools are invoked on demand through governed tooling and their results are shown only after
-          you run them, never inferred.
+          This parcel is loaded from the live property evidence feed. Tax and collection tools are
+          invoked on demand through governed tooling; their results are shown only after you run them,
+          never inferred.
         </p>
         <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
       </div>

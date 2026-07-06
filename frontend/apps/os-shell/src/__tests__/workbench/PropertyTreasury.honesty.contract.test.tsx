@@ -53,10 +53,6 @@ vi.mock('../../stores/propertyStore', () => ({
     typeof selector === 'function' ? selector(storeView) : storeView,
 }));
 
-vi.mock('../../runtime/env', () => ({
-  getEnv: () => ({ VITE_API_URL: 'http://localhost:5000' }),
-}));
-
 vi.mock('../../components/workbench', () => ({
   ParcelContextHeader: ({ title, parcelId, subtitle }: { title: string; parcelId: string; subtitle?: string }) => (
     <div>
