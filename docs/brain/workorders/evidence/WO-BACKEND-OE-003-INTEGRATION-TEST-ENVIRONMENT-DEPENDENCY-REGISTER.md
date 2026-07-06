@@ -25,7 +25,8 @@ health, and backend runtime defects.
 
 From `WO-BACKEND-OE-001` and `WO-BACKEND-OE-002`:
 
-- `dotnet build backend\TerraFusion.sln`: PASS, `0 Warning(s)`, `0 Error(s)`.
+- `dotnet build backend/TerraFusion.sln` (Windows equivalent: `backend\TerraFusion.sln`): PASS,
+  `0 Warning(s)`, `0 Error(s)`.
 - `dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj`: PASS, 3471 passed.
 - `dotnet test backend/TerraFusion.sln --no-build`: 2244 passed, 29 failed, 4 skipped.
 - The 29 full-solution failures were classified as Docker/Testcontainers SQL Server dependency

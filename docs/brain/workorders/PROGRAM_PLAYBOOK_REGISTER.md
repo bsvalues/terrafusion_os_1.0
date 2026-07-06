@@ -17,12 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-05 — WO-GOAL-LOOP-MASTER-PLAYBOOK-001)*
+*(Updated 2026-07-05 — WO-BACKEND-OE-003)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Master Goal/Loop Playbook Governance](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-0---master-playbook-governance) | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` | Active until merged | `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` | `WO-BACKEND-OE-003` after merge | Finish PR, then govern continuation | Stop on local hook bypass, out-of-scope review, or runtime/tooling implementation |
-| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-003` | `WO-BACKEND-OE-004` after OE-003 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or local hook bypass |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-003` | `WO-BACKEND-OE-004` after OE-003 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
