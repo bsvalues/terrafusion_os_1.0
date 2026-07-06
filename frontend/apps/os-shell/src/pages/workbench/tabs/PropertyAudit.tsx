@@ -104,7 +104,10 @@ export const PropertyAudit: React.FC = () => {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const parcelLoading = usePropertyStore((s) => s.activeParcelLoading);
   const parcelError = usePropertyStore((s) => s.activeParcelError);
-  const evidenceLoaded = Boolean(activeParcel) && !parcelLoading && !parcelError;
+  // Require the loaded parcel to be THIS tab's parcel: during parcel-to-parcel
+  // navigation the store can still hold the previous activeParcel for one frame
+  // (before selectParcel runs), which must not read as live for the new parcel.
+  const evidenceLoaded = activeParcel?.parcelId === parcelId && !parcelLoading && !parcelError;
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
 
   // State for each tool
