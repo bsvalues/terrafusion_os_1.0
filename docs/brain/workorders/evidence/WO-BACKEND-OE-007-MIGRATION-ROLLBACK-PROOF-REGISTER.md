@@ -102,6 +102,8 @@ The current evidence does not prove:
 | Command | Result |
 |---------|--------|
 | Migration inventory and `Down` method source inspection | PASS |
+| `git diff --check` | PASS |
+| `node docs/brain/workorders/tools/wo-query.mjs --json` | PASS |
 | `dotnet ef database update` | Not run by rule |
 | `dotnet ef migrations add` | Not run by rule |
 | Production/live DB validation | Not run by rule |
