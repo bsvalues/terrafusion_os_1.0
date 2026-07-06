@@ -802,10 +802,19 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved */
-  const filteredTabs = useMemo(
-    () => TABS.filter((tab) => visibleTabs.includes(tab.id)),
-    [visibleTabs]
-  );
+  const filteredTabs = useMemo(() => {
+    const base = TABS.filter((tab) => visibleTabs.includes(tab.id));
+    // Always keep the active tab renderable: a deep-launch (metadata.tabId) into a
+    // tab hidden by the current role's defaults would otherwise leave activeTab
+    // absent from the render loop and show a blank workbench. Force the requested
+    // tab into the visible set so its panel mounts (role hiding is a UX declutter
+    // with a show-all toggle, not a host-boundary gate — that is validateWorkbenchHost).
+    if (!base.some((tab) => tab.id === activeTab)) {
+      const active = TABS.find((tab) => tab.id === activeTab);
+      if (active) return [...base, active];
+    }
+    return base;
+  }, [visibleTabs, activeTab]);
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(

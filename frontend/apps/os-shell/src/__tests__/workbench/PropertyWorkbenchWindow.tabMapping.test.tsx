@@ -16,13 +16,17 @@
 
 import '@testing-library/jest-dom';
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock } = vi.hoisted(() => ({
+const ALL_TABS = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
+
+const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock, visibleTabsHolder } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   selectParcelMock: vi.fn(),
   openWorkbenchWindowMock: vi.fn(),
+  // Mutable so a test can simulate a role whose defaults hide clerk/treasury/audit.
+  visibleTabsHolder: { value: ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'] },
 }));
 
 // ── Tab module stubs (named exports mirror the window's lazy imports) ──────────
@@ -88,10 +92,10 @@ vi.mock('../../auth/useAuthContext', () => ({
   useAuthContext: () => ({ countyId: 'benton', userId: 'u-test', roles: ['assessor'] }),
 }));
 
-// All nine tabs visible so their buttons render and are in filteredTabs.
+// Visible-tab set is mutable per test (defaults to all nine).
 vi.mock('../../hooks/useWorkbenchRoles', () => ({
   useWorkbenchRoles: () => ({
-    visibleTabs: ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'],
+    visibleTabs: visibleTabsHolder.value,
     hiddenCount: 0,
     showAll: true,
     toggleShowAll: vi.fn(),
@@ -115,6 +119,7 @@ const renderWindow = (tabId: string) =>
 describe('PropertyWorkbenchWindow tab→component mapping (G2 Option D)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    visibleTabsHolder.value = [...ALL_TABS];
   });
 
   // ── Launch path (proves the resolvedInitialTab remap is removed) ────────────
@@ -160,6 +165,18 @@ describe('PropertyWorkbenchWindow tab→component mapping (G2 Option D)', () => 
     await screen.findByTestId('stub-summary');
     fireEvent.click(screen.getByRole('tab', { name: /audit/i }));
     expect(await screen.findByTestId('stub-audit')).toBeInTheDocument();
+  });
+
+  // ── Deep-launch into a role-hidden tab still renders (no blank workbench) ────
+
+  it('deep-launching into a role-hidden tab (clerk) still mounts the real tab, not a blank panel', async () => {
+    // Simulate a role whose defaults hide clerk/treasury/audit. Removing the old
+    // remap must not leave activeTab absent from the render loop; the active tab is
+    // forced into the visible set so its panel still mounts.
+    visibleTabsHolder.value = ['summary', 'forge', 'atlas', 'dossier'];
+    renderWindow('clerk');
+    expect(await screen.findByTestId('stub-clerk')).toBeInTheDocument();
+    expect(screen.queryByTestId('stub-dossier')).not.toBeInTheDocument();
   });
 
   // ── Regression: the six always-real tabs still render their own components ───
