@@ -8,7 +8,7 @@
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
 | Last Updated | 2026-07-05 |
-| Next WO | `WO-BACKEND-OE-004` after `WO-BACKEND-OE-003` merges |
+| Next WO | `WO-BACKEND-OE-005` after `WO-BACKEND-OE-004` merges |
 
 ---
 
@@ -27,7 +27,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
   integration-lane candidate, not warning debt.
 - Dais persistence exists.
 - Service registry exists.
-- Health/readiness endpoints exist but semantics are not release-proven.
+- Health/readiness endpoints exist and OE-004 classifies their current semantics; release-gate
+  policy still needs to decide which readiness signal is authoritative.
 - Security/auth/county/audit proof exists but is not consolidated into a release-grade matrix.
 
 ## Non-Goals
@@ -69,14 +70,15 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-001` | COMPLETE | Baseline findings preserved in `WO-BACKEND-OE-002-BUILD-WARNING-REGISTER.md` |
 | `WO-BACKEND-OE-001-S` | COMPLETE | Generated validation residue classified and cleaned from the baseline worktree |
 | `WO-BACKEND-OE-002` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-002-BUILD-WARNING-REGISTER.md` |
-| `WO-BACKEND-OE-003` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-003-INTEGRATION-TEST-ENVIRONMENT-DEPENDENCY-REGISTER.md` |
+| `WO-BACKEND-OE-003` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-003-INTEGRATION-TEST-ENVIRONMENT-DEPENDENCY-REGISTER.md` |
+| `WO-BACKEND-OE-004` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md` |
 
 ## Remaining Work Order Chain
 
 | WO | Title | Mode | Dependency | Status | Next |
 |----|-------|------|------------|--------|------|
-| `WO-BACKEND-OE-003` | Integration Test Environment Dependency Register | Evidence/register documentation first | OE-002 merged | READY FOR PR | OE-004 |
-| `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | NEXT AFTER OE-003 MERGE | OE-005 |
+| `WO-BACKEND-OE-003` | Integration Test Environment Dependency Register | Evidence/register documentation first | OE-002 merged | CLOSED | OE-004 |
+| `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | READY FOR PR | OE-005 |
 | `WO-BACKEND-OE-005` | Service Registry Runtime Validation | Evidence + targeted validation | OE-004 merged | QUEUED | OE-006 |
 | `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | QUEUED | OE-007 |
 | `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | QUEUED | OE-008 |
