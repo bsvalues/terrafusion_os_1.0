@@ -1,19 +1,19 @@
 /**
  * PropertyClerk.honesty.contract.test.tsx
  *
- * Source honesty contract for the PropertyClerk tab (WO-WB-INSTR-003).
- * Mirrors the Dossier/Pilot/Dais honesty contracts. Ensures:
+ * Source honesty contract for the PropertyClerk tab (WO-WB-INSTR-003, slice-aware
+ * under WO-WB-PROV-003). Ensures:
  *   1. Baseline disclosure box carries a WorkbenchSourceBadge
- *   2. That badge shows "unavailable" when the parcel evidence has not loaded
- *   3. It reflects "live" once the parcel evidence bundle loads successfully —
+ *   2. That badge shows "unavailable" until the related-data bundle (which holds
+ *      the recordings slice) has loaded — including while the parcel shell is up
+ *      but the bundle is still loading, and after a bundle load error
+ *   3. It reflects "live" once relatedDataStatus === 'loaded' for THIS parcel —
  *      including a successful load that returns zero recordings (load-success
- *      provenance, NOT recording row count), and it flips on the empty -> loaded
- *      transition (not memoized at mount)
- *   4. No aspirational "AI-powered" language
- *   5. Baseline disclosure uses governed / live-evidence / never-inferred wording
+ *      provenance, NOT recording row count), and it flips on the transition
+ *      (not memoized at mount)
+ *   4. A stale previous parcel's loaded status does not read as live (parcelId guard)
+ *   5. No aspirational "AI-powered" language; state-aware disclosure copy
  *   6. No tool is invoked on mount (the tab only lists tools)
- *
- * Reuses the mock setup from PropertyClerk.test.tsx.
  */
 
 import '@testing-library/jest-dom';
@@ -28,7 +28,9 @@ import PropertyClerk from '../../pages/workbench/tabs/PropertyClerk';
 
 vi.mock('../../api/pilotApi');
 
-// Mutable store view driven per-test to exercise the load-provenance states.
+type RelatedDataStatus = 'idle' | 'loading' | 'loaded' | 'error';
+
+// Mutable store view driven per-test to exercise the slice-load-provenance states.
 interface StoreView {
   recordings: Array<{
     recordingId: string;
@@ -38,24 +40,18 @@ interface StoreView {
     recordingDate: string;
   }>;
   activeParcel: { parcelId: string } | null;
-  activeParcelLoading: boolean;
-  activeParcelError: { message: string } | null;
+  relatedDataStatus: RelatedDataStatus;
 }
 
 let storeView: StoreView = {
   recordings: [],
   activeParcel: null,
-  activeParcelLoading: false,
-  activeParcelError: null,
+  relatedDataStatus: 'idle',
 };
 
 vi.mock('../../stores/propertyStore', () => ({
   usePropertyStore: (selector: (s: StoreView) => unknown) =>
     typeof selector === 'function' ? selector(storeView) : storeView,
-}));
-
-vi.mock('../../runtime/env', () => ({
-  getEnv: () => ({ VITE_API_URL: 'http://localhost:5000' }),
 }));
 
 vi.mock('../../components/workbench', () => ({
@@ -97,6 +93,12 @@ const badgeSource = () =>
     .querySelector('[data-testid="workbench-source-badge"]')
     ?.getAttribute('data-source');
 
+const loadedFor = (parcelId: string, recordings: StoreView['recordings'] = []): StoreView => ({
+  recordings,
+  activeParcel: { parcelId },
+  relatedDataStatus: 'loaded',
+});
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('PropertyClerk source honesty contract', () => {
@@ -105,8 +107,7 @@ describe('PropertyClerk source honesty contract', () => {
     storeView = {
       recordings: [],
       activeParcel: null,
-      activeParcelLoading: false,
-      activeParcelError: null,
+      relatedDataStatus: 'idle',
     };
   });
 
@@ -116,68 +117,52 @@ describe('PropertyClerk source honesty contract', () => {
     expect(disclosure.querySelector('[data-testid="workbench-source-badge"]')).toBeInTheDocument();
   });
 
-  it('baseline badge shows "unavailable" before the parcel evidence loads', () => {
+  it('baseline badge shows "unavailable" before the parcel evidence loads (idle)', () => {
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge shows "unavailable" while the parcel evidence is loading', () => {
-    storeView = { ...storeView, activeParcelLoading: true };
+  it('baseline badge shows "unavailable" while the parcel shell is up but the related bundle is still loading', () => {
+    // Slice-aware: activeParcel is set for this parcel, but relatedDataStatus is
+    // 'loading' — the recordings bundle has not resolved, so the badge is NOT live.
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'loading' };
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge shows "unavailable" when the parcel evidence load errored', () => {
-    storeView = {
-      ...storeView,
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelError: { message: 'load failed' },
-    };
+  it('baseline badge shows "unavailable" when the related evidence bundle load errored', () => {
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'error' };
     render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
   });
 
-  it('baseline badge reflects "live" on a successful evidence load even with zero recordings', () => {
-    // Load-success provenance, NOT row count: a live load returning no recordings
+  it('baseline badge reflects "live" on a loaded bundle even with zero recordings', () => {
+    // Load-success provenance, NOT row count: a loaded bundle with no recordings
     // is still live, not unavailable.
-    storeView = {
-      recordings: [],
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, []);
     render(<TestWrapper />);
     expect(badgeSource()).toBe('live');
   });
 
-  it('baseline badge flips unavailable -> live on the empty -> loaded transition (not memoized)', () => {
+  it('baseline badge flips unavailable -> live on the loading -> loaded transition (not memoized)', () => {
+    storeView = { ...storeView, activeParcel: { parcelId: PARCEL_ID }, relatedDataStatus: 'loading' };
     const { rerender } = render(<TestWrapper />);
     expect(badgeSource()).toBe('unavailable');
 
-    // Parcel evidence finishes loading successfully.
-    storeView = {
-      recordings: [
-        { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
-      ],
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    // Related bundle finishes loading successfully.
+    storeView = loadedFor(PARCEL_ID, [
+      { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
+    ]);
     rerender(<TestWrapper />);
     expect(badgeSource()).toBe('live');
   });
 
-  it('baseline badge shows "unavailable" when the store holds a DIFFERENT parcel (stale nav frame)', () => {
+  it('baseline badge shows "unavailable" when a DIFFERENT parcel bundle is loaded (stale nav frame)', () => {
     // During parcel-to-parcel navigation the store can still hold the previous
-    // activeParcel for one frame; that must not read as live for this tab's parcel.
-    storeView = {
-      recordings: [
-        { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
-      ],
-      activeParcel: { parcelId: 'SOME-OTHER-PARCEL' },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    // parcel's loaded bundle for one frame; that must not read as live here.
+    storeView = loadedFor('SOME-OTHER-PARCEL', [
+      { recordingId: 'REC-1', documentType: 'Deed', grantor: 'Alice', grantee: 'Bob', recordingDate: '2026-01-15' },
+    ]);
     render(<TestWrapper parcelId={PARCEL_ID} />);
     expect(badgeSource()).toBe('unavailable');
   });
@@ -190,24 +175,14 @@ describe('PropertyClerk source honesty contract', () => {
     expect(disclosure.textContent).not.toMatch(/is loaded from the live property evidence feed/i);
 
     // Loaded: badge live, so the copy asserts the live-loaded state.
-    storeView = {
-      recordings: [],
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, []);
     rerender(<TestWrapper />);
     disclosure = screen.getByTestId('clerk-baseline-disclosure');
     expect(disclosure.textContent).toMatch(/is loaded from the live property evidence feed/i);
   });
 
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
-    storeView = {
-      recordings: [],
-      activeParcel: { parcelId: PARCEL_ID },
-      activeParcelLoading: false,
-      activeParcelError: null,
-    };
+    storeView = loadedFor(PARCEL_ID, []);
     render(<TestWrapper />);
     for (const badge of screen.getAllByTestId('workbench-source-badge')) {
       expect(['unavailable', 'live']).toContain(badge.getAttribute('data-source'));
