@@ -8,7 +8,7 @@
 | Status | ACTIVE |
 | Owner | Operator (bsvalues@gmail.com) |
 | Last Updated | 2026-07-06 |
-| Next WO | `WO-BACKEND-OE-007` after `WO-BACKEND-OE-006` merges |
+| Next WO | `WO-BACKEND-OE-008` after `WO-BACKEND-OE-007` merges |
 
 ---
 
@@ -32,6 +32,9 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
   policy still needs to decide which readiness signal is authoritative.
 - Security/auth/county/audit proof is consolidated in OE-006, with release gaps for public endpoint
   allowlisting, exhaustive controller/action policy mapping, and runtime observability.
+- Migration source is inventoried in OE-007: EF migration classes include `Down` methods in the
+  inspected contexts, but apply/rollback execution, SQL-only rollback, and schema drift proof remain
+  release-gate gaps.
 
 ## Non-Goals
 
@@ -75,7 +78,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-003` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-003-INTEGRATION-TEST-ENVIRONMENT-DEPENDENCY-REGISTER.md` |
 | `WO-BACKEND-OE-004` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md` |
 | `WO-BACKEND-OE-005` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-005-SERVICE-REGISTRY-RUNTIME-VALIDATION.md` |
-| `WO-BACKEND-OE-006` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-006-SECURITY-AUTH-COUNTY-ISOLATION-PROOF-MATRIX.md` |
+| `WO-BACKEND-OE-006` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-006-SECURITY-AUTH-COUNTY-ISOLATION-PROOF-MATRIX.md` |
+| `WO-BACKEND-OE-007` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-007-MIGRATION-ROLLBACK-PROOF-REGISTER.md` |
 
 ## Remaining Work Order Chain
 
@@ -84,8 +88,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-003` | Integration Test Environment Dependency Register | Evidence/register documentation first | OE-002 merged | CLOSED | OE-004 |
 | `WO-BACKEND-OE-004` | Health and Readiness Semantics Proof | Evidence + narrow endpoint contract proof | OE-003 merged | CLOSED | OE-005 |
 | `WO-BACKEND-OE-005` | Service Registry Runtime Validation | Evidence + targeted validation | OE-004 merged | CLOSED | OE-006 |
-| `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | READY FOR PR | OE-007 |
-| `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | QUEUED | OE-008 |
+| `WO-BACKEND-OE-006` | Security/Auth/County-Isolation Proof Matrix | Evidence matrix first | OE-005 merged | CLOSED | OE-007 |
+| `WO-BACKEND-OE-007` | Migration and Rollback Proof Register | Evidence/register first | OE-006 merged | READY FOR PR | OE-008 |
 | `WO-BACKEND-OE-008` | Dais Workflow E2E Proof Expansion Plan | Test-plan/evidence first | OE-007 merged | QUEUED | OE-009 |
 | `WO-BACKEND-OE-009` | Backend Release Gate Definition | Governance/release checklist | OE-008 merged | QUEUED | OE-010 |
 | `WO-BACKEND-OE-010` | Backend Operational Runbook | Runbook creation | OE-009 merged | QUEUED | OE-011 |
