@@ -9,7 +9,10 @@
  * Gate hierarchy:
  *   PRIMARY (MUST PASS):  Forge, Atlas, Dais
  *   SECONDARY (SHOULD):   Dossier, Pilot
- *   REGISTRY (INVENTORY): Clerk, Treasury, Audit exist in VALID_WORKBENCH_TAB_IDS
+ *   PROMOTED (WO-WB-PARITY-003): Clerk, Treasury, Audit now render real surfaces
+ *                          in route context (after the G2 fix mounted them in both
+ *                          hosts) — no longer inventory-only.
+ *   REGISTRY (INVENTORY): Clerk, Treasury, Audit also exist in VALID_WORKBENCH_TAB_IDS
  *   WORKBENCH-LEVEL:      9 tab IDs, maximized window size
  * ======================================================================
  */
@@ -17,7 +20,7 @@
 import '@testing-library/jest-dom';
 import React, { Suspense } from 'react';
 import { vi, describe, it, expect, beforeAll, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -58,6 +61,11 @@ vi.mock('../../stores/propertyStore', () => ({
       documents: [],
       // Pilot reads operations from store
       operations: [],
+      // Clerk / Treasury / Audit read these slices + slice-load provenance
+      recordings: [],
+      taxStatements: [],
+      auditTrail: [],
+      relatedDataStatus: 'idle',
     };
     return typeof selector === 'function' ? selector(state) : state;
   },
@@ -294,6 +302,15 @@ const LazyDossier = React.lazy(() =>
 const LazyPilot = React.lazy(() =>
   import('../../pages/workbench/tabs/PropertyPilot').then((m) => ({ default: m.PropertyPilot }))
 );
+const LazyClerk = React.lazy(() =>
+  import('../../pages/workbench/tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
+);
+const LazyTreasury = React.lazy(() =>
+  import('../../pages/workbench/tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
+);
+const LazyAudit = React.lazy(() =>
+  import('../../pages/workbench/tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
+);
 
 // =========================================================================
 // PRIMARY GATE — MUST PASS: Forge, Atlas, Dais
@@ -502,6 +519,62 @@ describe('Workbench Real Hosting Gate', () => {
       });
 
       expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
+    });
+  });
+
+  // =========================================================================
+  // PROMOTED GATE — Clerk, Treasury, Audit now host REAL surfaces
+  // (WO-WB-PARITY-003). Previously inventory-only; closes the real-hosting gate to
+  // a full 9/9 render-gated tabs.
+  // SCOPE NOTE (matches the existing Forge/Atlas/Dais gates): this renders the real
+  // component inside a route-shaped wrapper to prove the COMPONENT is a real
+  // interactive surface (not a placeholder). It does NOT render through Router.tsx's
+  // path→element binding, so it does not by itself lock the route MAPPING — that is
+  // covered by the window TAB_COMPONENTS mapping test + code review + the parity
+  // audit (see WO-WB-PARITY-004 §3 "known limitation").
+  // =========================================================================
+
+  describe.each([
+    ['clerk', 'property-clerk-tab', LazyClerk],
+    ['treasury', 'property-treasury-tab', LazyTreasury],
+    ['audit', 'property-audit-tab', LazyAudit],
+  ])('PROMOTED GATE — %s', (tabSlug, testId, LazyComponent) => {
+    it('renders a real surface, not a PlaceholderModule', async () => {
+      render(
+        <TabTestWrapper tabSlug={tabSlug}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyComponent />
+          </Suspense>
+        </TabTestWrapper>
+      );
+
+      expect(
+        await screen.findByTestId(testId, {}, { timeout: 5000 })
+      ).toBeInTheDocument();
+
+      expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
+    });
+
+    it('contains at least one interactive element (button, select, or input)', async () => {
+      render(
+        <TabTestWrapper tabSlug={tabSlug}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyComponent />
+          </Suspense>
+        </TabTestWrapper>
+      );
+
+      const root = await screen.findByTestId(testId, {}, { timeout: 5000 });
+
+      // Scope to the tab root so the assertion proves THIS surface is interactive,
+      // not some element elsewhere in the document or leftover from another test.
+      const interactiveElements = [
+        ...within(root).queryAllByRole('button'),
+        ...within(root).queryAllByRole('combobox'),
+        ...within(root).queryAllByRole('textbox'),
+        ...root.querySelectorAll('select, input'),
+      ];
+      expect(interactiveElements.length).toBeGreaterThanOrEqual(1);
     });
   });
 
