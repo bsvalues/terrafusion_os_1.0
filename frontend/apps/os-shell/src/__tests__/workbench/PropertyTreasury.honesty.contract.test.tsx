@@ -174,6 +174,25 @@ describe('PropertyTreasury source honesty contract', () => {
     }
   });
 
+  it('disclosure copy is state-aware — never claims live loading while the badge reads unavailable', () => {
+    // Idle: badge unavailable, so the copy must NOT assert the parcel is loaded live.
+    const { rerender } = render(<TestWrapper />);
+    let disclosure = screen.getByTestId('treasury-baseline-disclosure');
+    expect(disclosure.textContent).toMatch(/not currently available/i);
+    expect(disclosure.textContent).not.toMatch(/is loaded from the live property evidence feed/i);
+
+    // Loaded: badge live, so the copy asserts the live-loaded state.
+    storeView = {
+      taxStatements: oneStatement,
+      activeParcel: { parcelId: PARCEL_ID },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    rerender(<TestWrapper />);
+    disclosure = screen.getByTestId('treasury-baseline-disclosure');
+    expect(disclosure.textContent).toMatch(/is loaded from the live property evidence feed/i);
+  });
+
   it('does not use aspirational "AI-powered" language', () => {
     render(<TestWrapper />);
     expect(screen.getByTestId('property-treasury-tab').textContent).not.toMatch(/AI-powered/i);

@@ -305,9 +305,11 @@ export const PropertyTreasury: React.FC = () => {
 
       <div className='flex items-center justify-between gap-3 px-2' data-testid='treasury-baseline-disclosure'>
         <p className='text-xs tf-text-dim'>
-          This parcel is loaded from the live property evidence feed. Tax and collection tools are
-          invoked on demand through governed tooling; their results are shown only after you run them,
-          never inferred.
+          {evidenceLoaded
+            ? 'This parcel is loaded from the live property evidence feed.'
+            : 'Live property evidence for this parcel is not currently available.'}{' '}
+          Tax and collection tools are invoked on demand through governed tooling; their results are
+          shown only after you run them, never inferred.
         </p>
         <WorkbenchSourceBadge source={evidenceLoaded ? 'live' : 'unavailable'} />
       </div>
