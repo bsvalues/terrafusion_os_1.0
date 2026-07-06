@@ -17,11 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-06 — WO-BACKEND-OE-006)*
+*(Updated 2026-07-06 — WO-BACKEND-OE-007)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-006` | `WO-BACKEND-OE-007` after OE-006 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-007` | `WO-BACKEND-OE-008` after OE-007 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
@@ -157,3 +157,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-05 | Classified backend health/readiness endpoint semantics and routed next to ServiceRegistry runtime validation | WO-BACKEND-OE-004 |
 | 2026-07-06 | Classified ServiceRegistry runtime validation as partial and routed next to security/auth/county-isolation proof | WO-BACKEND-OE-005 |
 | 2026-07-06 | Consolidated backend security/auth/county-isolation proof matrix and routed next to migration/rollback proof | WO-BACKEND-OE-006 |
+| 2026-07-06 | Inventoried backend migration and rollback source evidence and routed next to Dais E2E proof planning | WO-BACKEND-OE-007 |
