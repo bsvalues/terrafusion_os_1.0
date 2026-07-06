@@ -25,9 +25,9 @@ A lane is executable by Claude now only if **all** hold:
 | [0] ServiceRegistry activation verification | ✅ (head) | ❌ backend | ◑ Codex-adjacent | — | **NO** (not Claude's scope) |
 | [1] live-DB Dais migration | ❌ | ❌ DB | — | ✅ DB apply | **NO** |
 | [2] dock/top-bar frontend vitest sweep | ❌ ("why not yet") | ✅ | ✅ | ❌ | **NO** — not the Brain head; promoting it = queue override |
-| [3] LocalOps WO-000 | ❌ | ❌ backend/AI | — | ✅ architect sign-off | **NO** |
+| [3] LocalOps WO-LOCALOPS-000 | ❌ | ❌ backend/AI | — | ✅ architect sign-off | **NO** |
 | [4] worktree-isolation hardening | ❌ | ◑ | ✅ | ✅ tooling | **NO** |
-| WO-0001 Dais stub-test honesty | ❌ (active, not head) | ✅ | ✅ | ❌ | **NO** — not confirmed at head |
+| WO-0001 Dais stub-test honesty | ❌ (active, not head) | ❌ backend (.NET `DaisPersistenceAcceptanceTests.cs`) | ◑ Codex-adjacent | ❌ | **NO** — backend/.NET lane, not Claude's frontend scope |
 
 ## 3. Result
 
@@ -35,9 +35,10 @@ A lane is executable by Claude now only if **all** hold:
 
 - The Brain's **head recommendation** (queue[0], ServiceRegistry) is a **backend** product-gate — outside Claude's
   frontend/docs scope and adjacent to the **active** Codex Backend OE lane (#1233).
-- The Claude-appropriate frontend lanes ([2] dock/top-bar vitest sweep; WO-0001 Dais stub-test honesty) are **not** at the
-  Brain head ("why not yet"). Executing them now would **override Brain sequencing** — the exact overreach the
-  governance correction (GOAL-TF-CLAUDE-OPERATOR-QUEUE-001, codex P1) forbade.
+- The one Claude-appropriate frontend lane ([2] dock/top-bar vitest sweep) is **not** at the Brain head ("why not yet").
+  Executing it now would **override Brain sequencing** — the exact overreach the governance correction
+  (GOAL-TF-CLAUDE-OPERATOR-QUEUE-001, codex P1) forbade. (WO-0001 Dais stub-test honesty is a **backend/.NET** lane —
+  `DaisPersistenceAcceptanceTests.cs` — not a Claude frontend candidate at all.)
 
 ## 4. Consequence
 

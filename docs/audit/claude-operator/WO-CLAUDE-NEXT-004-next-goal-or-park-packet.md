@@ -26,20 +26,25 @@ lane. Consistent with the standing posture and the Brain queue head.
 ServiceRegistry (backend) — a Codex/backend lane, likely **not** Claude's; if so, it routes to Codex, and Claude stays
 parked.
 
-**Option C — Explicitly ratify a Claude-appropriate non-head lane.** Two clean, non-overlapping, frontend/docs-only
-candidates the operator could authorize (each currently "why not yet" per the Brain):
+**Option C — Explicitly ratify a Claude-appropriate non-head lane.** Exactly **one** clean, non-overlapping,
+frontend/docs-only candidate the operator could authorize (currently "why not yet" per the Brain):
 
 | Ratifiable lane | Shape | Allowed files | Blocked | Stop walls | Non-overlap w/ Codex |
 |-----------------|-------|---------------|---------|-----------|:--------------------:|
-| **C1. Dock/top-bar launch-surface truth sweep** (Brain queue[2]) | run frontend launch-surface + shell-truth vitest batches; record an evidence note; classify failures mine-vs-fleet-vs-stale | `__tests__/**` (run only) + `docs/audit/**` | shell **routing** changes (R4 → stop) | fix needs shell routing / fleet-owned file | ✅ frontend, no backend |
-| **C2. Dais fake-green stub-test honesty** (WO-0001) | replace 34 fake-green Dais stub tests with real assertions | `__tests__/**` + `docs/audit/**` | Dais component behavior change | real behavior/route change needed | ✅ frontend tests |
+| **C1. Dock/top-bar launch-surface truth sweep** (Brain queue[2]) | run frontend launch-surface + shell-truth vitest batches; record an evidence note; classify failures mine-vs-fleet-vs-stale | `frontend/apps/os-shell/src/__tests__/**` (run only) + `docs/audit/**` | shell **routing** changes (R4 → stop) | fix needs shell routing / fleet-owned file | ✅ frontend, no backend |
 
-Both need explicit ratification because they are **not** the Brain's head item.
+C1 needs explicit ratification because it is **not** the Brain's head item.
+
+**Not offered as a Claude frontend lane — WO-0001 (Dais stub-test honesty).** An earlier draft listed "replace 34
+fake-green Dais stub tests" as a second frontend candidate. That is a mischaracterization: WO-0001's target is
+`backend/tests/TerraFusion.Unit.Tests/Wave4/DaisPersistenceAcceptanceTests.cs` — a **backend/.NET** suite, still marked
+unresolved with its own allowed set (`docs/brain/memory/**`, `docs/brain/**`). It is a Codex/backend lane, not a
+Claude frontend/docs lane, and is therefore **not** presented as an Option-C candidate here.
 
 ## 3. If Option C is chosen — packet skeleton (not executed here)
 
 ```
-/goal create GOAL-TF-WB-<C1|C2>-001
+/goal create GOAL-TF-WB-C1-001
 /loop run  LOOP-...
 Allowed: frontend/apps/os-shell/src/__tests__/** ; docs/audit/**
 Blocked: backend/** ; tools/registry/** ; route/window impl ; package/build/CI ; PACS/county ; Codex Backend OE ; --admin / hook bypass
@@ -49,8 +54,8 @@ STOP if a fix requires component behavior / routing / backend.
 
 ## 4. Non-overlap proof with Codex Backend OE
 
-Codex Backend OE (#1233, `WO-BACKEND-OE-*`, `backend/**`) is disjoint from every Option-C candidate (`__tests__/**` +
-`docs/audit/**`). No file/path overlap.
+Codex Backend OE (#1233, `WO-BACKEND-OE-*`, `backend/**`) is disjoint from the Option-C candidate
+(`frontend/apps/os-shell/src/__tests__/**` + `docs/audit/**`). No file/path overlap.
 
 ## 5. Recommendation
 
