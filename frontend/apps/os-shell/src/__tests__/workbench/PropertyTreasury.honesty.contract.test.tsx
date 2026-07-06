@@ -161,6 +161,19 @@ describe('PropertyTreasury source honesty contract', () => {
     expect(badgeSource()).toBe('live');
   });
 
+  it('baseline badge shows "unavailable" when the store holds a DIFFERENT parcel (stale nav frame)', () => {
+    // During parcel-to-parcel navigation the store can still hold the previous
+    // activeParcel for one frame; that must not read as live for this tab's parcel.
+    storeView = {
+      taxStatements: oneStatement,
+      activeParcel: { parcelId: 'SOME-OTHER-PARCEL' },
+      activeParcelLoading: false,
+      activeParcelError: null,
+    };
+    render(<TestWrapper parcelId={PARCEL_ID} />);
+    expect(badgeSource()).toBe('unavailable');
+  });
+
   it('all badges avoid synthetic claims (unavailable or live only)', () => {
     storeView = {
       taxStatements: oneStatement,
