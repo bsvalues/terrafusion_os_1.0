@@ -17,11 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-06 — WO-BACKEND-OE-010)*
+*(Updated 2026-07-06 — WO-BACKEND-OE-011)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-010` | `WO-BACKEND-OE-011` after OE-010 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-011` | `WO-BACKEND-OE-012` after OE-011 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
@@ -161,3 +161,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-06 | Planned Dais workflow E2E proof expansion and routed next to backend release gate definition | WO-BACKEND-OE-008 |
 | 2026-07-06 | Defined backend release gate criteria and routed next to operational runbook | WO-BACKEND-OE-009 |
 | 2026-07-06 | Created backend operational runbook and routed next to diagnostics/observability map | WO-BACKEND-OE-010 |
+| 2026-07-06 | Mapped backend diagnostics and observability signals and routed next to operational packet | WO-BACKEND-OE-011 |
