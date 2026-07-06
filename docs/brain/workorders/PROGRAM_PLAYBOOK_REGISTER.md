@@ -17,12 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-05 — WO-GOAL-LOOP-MASTER-PLAYBOOK-001)*
+*(Updated 2026-07-05 — WO-BACKEND-OE-003)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Master Goal/Loop Playbook Governance](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-0---master-playbook-governance) | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` | Active until merged | `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` | `WO-BACKEND-OE-003` after merge | Finish PR, then govern continuation | Stop on local hook bypass, out-of-scope review, or runtime/tooling implementation |
-| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-003` | `WO-BACKEND-OE-004` after OE-003 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or local hook bypass |
+| [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Active | `WO-BACKEND-OE-003` | `WO-BACKEND-OE-004` after OE-003 merges | Auto if same-risk docs/evidence | Stop on implementation, infra repair, secrets, protected data, or non-docs hook bypass; docs-only hook bypass requires evidence |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Follow-up | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
@@ -47,7 +46,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
-| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-003 | Evidence/register classification next |
+| Backend full solution tests depend on Docker/Testcontainers SQL Server lane | WO-BACKEND-OE-009 | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate policy still needed |
 | Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
@@ -154,3 +153,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-04 | Refreshed Backend OE full executable playbook from OE-003 through OE-013 | WO-BACKEND-OE-PLAYBOOK-REFRESH |
 | 2026-07-04 | Added master active-program playbook and global continuation/stop rules | WO-MASTER-PLAYBOOK-001 |
 | 2026-07-05 | Promoted active program graph to explicit goal/loop execution playbook and command routing | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 |
+| 2026-07-05 | Classified Backend OE integration-test Docker/Testcontainers dependency and routed next to health/readiness semantics | WO-BACKEND-OE-003 |
