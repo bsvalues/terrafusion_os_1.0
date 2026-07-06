@@ -84,7 +84,7 @@ created, and no databases or services were started.
 | Certification gate behavior is statutory/high-risk | Major | Dais domain pack escalates certification sign-off gating. | Any behavior change requires owner authority; tests may be added if they preserve behavior. |
 | Dossier custody boundary not E2E-proven | Major | Dais pack forbids direct document custody; Workbench evidence says Dossier remains evidence owner. | Keep Dais notice/appeal handoff claims limited until boundary proof exists. |
 | Integration environment remains segmented | Major | OE-003 classified Docker/Testcontainers dependency. | Provider-backed proof remains segmented until OE-009 defines release gate handling. |
-| Local restore/test prep missing in fresh worktree | Minor | Focused no-restore test failed due missing `project.assets.json`. | Not Dais failure; do not conflate with release risk. |
+| Local restore/test prep missing in fresh worktree | Minor | Focused no-restore test failed due to missing `project.assets.json`. | Not Dais failure; do not conflate with release risk. |
 
 ## Release Readiness Interpretation
 
