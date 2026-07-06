@@ -65,19 +65,30 @@ const PropertyDossier = lazy(() =>
 const PropertyPilot = lazy(() =>
   import('./tabs/PropertyPilot').then((m) => ({ default: m.PropertyPilot }))
 );
+const PropertyClerk = lazy(() =>
+  import('./tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
+);
+const PropertyTreasury = lazy(() =>
+  import('./tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
+);
+const PropertyAudit = lazy(() =>
+  import('./tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
+);
 
 // ============================================================================
 // Tab → Component Map
 // ============================================================================
 
+// G2 fix (Option D): clerk/treasury/audit mount their REAL components — matching
+// the route-based Workbench (Router.tsx) — instead of aliasing to Dossier/Dais.
 const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.FC>> = {
   summary: PropertySummary,
   forge: PropertyForge,
   atlas: PropertyAtlas,
   dais: PropertyDais,
-  clerk: PropertyDossier,
-  treasury: PropertyDais,
-  audit: PropertyDossier,
+  clerk: PropertyClerk,
+  treasury: PropertyTreasury,
+  audit: PropertyAudit,
   dossier: PropertyDossier,
   pilot: PropertyPilot,
 };
@@ -724,11 +735,12 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   const session = useSession();
   const auth = useAuthContext();
 
-  // Resolve initial tab from metadata slug
+  // Resolve initial tab from metadata slug.
+  // G2 fix (Option D): no clerk/audit→dossier or treasury→dais remap — a
+  // deep-launch into clerk/treasury/audit opens the real tab. TABS.find still
+  // validates the slug and falls back to 'summary' for unknown ones.
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
     if (!initialTab || initialTab === '/' as string) return 'summary';
-    if (initialTab === 'clerk' || initialTab === 'audit') return 'dossier';
-    if (initialTab === 'treasury') return 'dais';
     const valid = TABS.find((t) => t.id === initialTab);
     return valid?.id ?? 'summary';
   }, [initialTab]);
@@ -790,10 +802,19 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved */
-  const filteredTabs = useMemo(
-    () => TABS.filter((tab) => visibleTabs.includes(tab.id)),
-    [visibleTabs]
-  );
+  const filteredTabs = useMemo(() => {
+    const base = TABS.filter((tab) => visibleTabs.includes(tab.id));
+    // Always keep the active tab renderable: a deep-launch (metadata.tabId) into a
+    // tab hidden by the current role's defaults would otherwise leave activeTab
+    // absent from the render loop and show a blank workbench. Force the requested
+    // tab into the visible set so its panel mounts (role hiding is a UX declutter
+    // with a show-all toggle, not a host-boundary gate — that is validateWorkbenchHost).
+    if (!base.some((tab) => tab.id === activeTab)) {
+      const active = TABS.find((tab) => tab.id === activeTab);
+      if (active) return [...base, active];
+    }
+    return base;
+  }, [visibleTabs, activeTab]);
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
