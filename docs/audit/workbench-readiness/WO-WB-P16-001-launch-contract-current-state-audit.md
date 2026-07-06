@@ -48,13 +48,21 @@ crash vector (§WO-WB-P16-002). Tests: Forge/Atlas/Dossier → `/property/:parce
 re-entry same URL; structural URL proof; broken module → no navigation; **standalone → asserted
 `navigate('/statistics-studio')` etc.**; no-parcel → `/property?openTab=forge`.
 
-## 4. The one staleness the re-author must correct
+## 4. Stale/false assertions the re-author must correct
 
-The original test 7 asserts standalone tiles call `navigate('/:moduleId')`. Since **WO-SUITE-ROUTING-001**, standalone
-launch calls `activateModule(mod.moduleId ?? mod.id, { source: 'system' })` instead (the bare navigate had no registered
-route and silently no-op'd). A verbatim restore would assert behavior the product no longer has and **fail**. The
-re-author updates test 7 to the shipped behavior. This is a **test-truth correction, not a product change** — no product
-file is edited in this lane.
+**(a) Standalone behavior.** The original test 7 asserts standalone tiles call `navigate('/:moduleId')`. Since
+**WO-SUITE-ROUTING-001**, standalone launch calls `activateModule(mod.moduleId ?? mod.id, { source: 'system' })` instead
+(the bare navigate had no registered route and silently no-op'd). A verbatim restore would assert behavior the product no
+longer has and **fail**. The re-author updates test 7 to the shipped behavior.
+
+**(b) False Forge/Atlas workbench cases (codex #1237 P2).** The original test asserted Forge and Atlas tiles route into
+the workbench. Verified first-hand: the shipped **Atlas suite is all `standalone`** (`AtlasSuiteHome`) and **Forge does
+not use `SuiteModuleGrid`** at all — so those cases claim launches the app does not perform. The re-author drops them and
+uses fixtures that mirror the **real** workbench tiles (Dais `certification` → `dais`; Dossier `documents` → `dossier`;
+`defense` → `dais`) and real standalone tiles (`atlas`, `terra-levy`, `management-dashboard`).
+
+Both are **test-truth corrections, not product changes** — no product file is edited in this lane. A residual gap (the
+test does not drive the module-private real arrays through the grid) is flagged for a follow-up lane.
 
 ## 5. Conclusion
 

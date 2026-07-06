@@ -42,12 +42,22 @@ The real `SuiteModuleGrid` is imported and rendered — it is the actual unit un
 
 **Five docs** — P16-001/002/003/005/006 in `docs/audit/workbench-readiness/`.
 
-## 3. Behavior-truth correction (only substantive delta from the original)
+## 3. Behavior-truth corrections (test-only; no product file edited)
 
-Original test 7 asserted standalone tiles call `navigate('/:moduleId')`. Since WO-SUITE-ROUTING-001 the product calls
-`activateModule(mod.moduleId ?? mod.id, { source: 'system' })`. Test 7 now asserts the shipped behavior
-(`activateModule` called with the moduleId + `source: 'system'`, and `navigate` NOT called). **No product file was
-edited** — the correction aligns the test with already-shipped behavior.
+1. **Standalone behavior (test 7).** Original test 7 asserted standalone tiles call `navigate('/:moduleId')`. Since
+   WO-SUITE-ROUTING-001 the product calls `activateModule(mod.moduleId ?? mod.id, { source: 'system' })`. Test 7 now
+   asserts the shipped behavior (`activateModule` with the moduleId + `source: 'system'`; `navigate` NOT called).
+2. **False Forge/Atlas workbench cases (codex #1237 P2).** The original/first-draft test asserted **Forge → workbench**
+   and **Atlas → workbench**. Verified first-hand against the suite homes: the shipped **Atlas suite is all standalone**
+   and **Forge does not use `SuiteModuleGrid`** — so those cases claimed launches the app does not perform. Removed; the
+   workbench cases now mirror the real **Dais** (`certification` → `dais`) and **Dossier** (`documents` → `dossier`;
+   `defense` → `dais`) tiles, and standalone cases mirror real tiles (`atlas`, `terra-levy`, `management-dashboard`).
+
+Both are test-only corrections aligning the test with already-shipped behavior — no product file was edited.
+
+**Known coverage gap (flagged, not closed):** the test guards the grid routing *mechanism*, not the literal shipped tile
+arrays (`DAIS_MODULES`/`DOSSIER_MODULES`/`ATLAS_MODULES` are module-private; suite-home deeplink tests stub the grid).
+Closing it needs a product `export` (outside this tests-only lane) → recommended small follow-up lane.
 
 ## 4. What was intentionally NOT touched
 
@@ -63,9 +73,10 @@ scope = allowed files only; no `--admin` / no break-glass.
 
 ## 6. Coverage honesty
 
-No redundant tests were manufactured. The re-author restores the eight cases the contract requires and corrects one
-stale assertion. The skipped test is now a live guard against parcel actions leaking into standalone windows (and vice
-versa).
+No redundant tests were manufactured. The re-author restores the eight cases the contract requires, corrects two stale
+assertions (standalone behavior + false Forge/Atlas workbench cases), and binds every fixture to a real shipped launch
+mode. The skipped test is now a live guard against parcel actions leaking into standalone windows (and vice versa), with
+the residual real-tile-array coverage gap explicitly flagged for follow-up.
 
 ## 7. Next lane
 

@@ -1,35 +1,41 @@
 /**
  * launchSurfaceContractParcelWorkbench.contract.test.tsx
  *
- * Phase 16 — Parcel-to-Workbench Launch Contract
- * ================================================
+ * Phase 16 — Parcel-to-Workbench Launch Contract (SuiteModuleGrid routing mechanism)
+ * =================================================================================
  *
- * Enforces the constitutional invariant:
- *   Every parcel-scoped action routes into the Property Workbench.
- *   No parcel tool opens as a standalone window.
- *   Cross-parcel operational tools remain standalone.
- *   Window reuse: same parcel + tab = same URL = no window multiplication.
+ * Enforces the routing invariant of `SuiteModuleGrid.handleLaunch`:
+ *   - launchMode 'workbench' + active parcel → navigate('/property/:parcelId/:tab')
+ *     (every parcel-scoped tile routes INTO the Property Workbench, never a standalone window)
+ *   - launchMode 'workbench' + NO active parcel → navigate('/property?openTab=:tab')
+ *   - launchMode 'standalone' → activateModule(moduleId, {source}) — never /property/, never navigate
+ *   - the destination tab is driven by `workbenchTab`, independent of which suite owns the tile
+ *   - same parcel + same tab = same URL = natural window reuse (URL identity)
+ *   - a workbench tile with no `workbenchTab` is a silent no-op (guard)
  *
- * Proves SuiteModuleGrid.handleLaunch routes correctly based on
- * launchMode: 'workbench' | 'standalone'.
- *
- * Contract invariants:
- *   1. launchMode='workbench' + active parcel → navigate('/property/:parcelId/:tab')
- *   2. launchMode='workbench' + NO active parcel → navigate('/property?openTab=:tab')
- *   3. launchMode='standalone' → activateModule(moduleId) — never /property/, never navigate
- *   4. Same parcel + same tab = same URL = natural window reuse (URL identity)
- *   5. countyId + parcelId + tab survive: URL is source of truth (structural)
- *   6. workbenchTab missing → no navigation (guard protects against broken defs)
- *   7. Cross-parcel tools (ratio study, calibration, batch) never touch /property/
+ * SCOPE (read before extending this test):
+ *   This guards the GRID ROUTING MECHANISM, not per-suite tile configuration. The fixtures
+ *   below are synthetic, but each one MIRRORS a real shipped tile so the contract reflects
+ *   real behavior rather than a counterfactual:
+ *     - workbench tiles mirror the real Dais tiles (certification/appeals → tab 'dais') and
+ *       Dossier tiles (documents/evidence → tab 'dossier'; defense → tab 'dais')
+ *     - standalone tiles mirror the real Atlas ('atlas') and Dais ('terra-levy',
+ *       'management-dashboard') tiles, which really launch via activateModule
+ *   It does NOT assert which suite marks which tile workbench-vs-standalone. Notably the real
+ *   Atlas suite is ALL standalone and Forge does not use SuiteModuleGrid at all — so this test
+ *   deliberately does NOT claim Forge/Atlas launch into the Workbench. Guarding the literal
+ *   shipped arrays (DAIS_MODULES / DOSSIER_MODULES / ATLAS_MODULES) is a SEPARATE coverage gap:
+ *   those arrays are module-private and the suite-home deeplink tests stub SuiteModuleGrid, so
+ *   no test currently exercises the real tile defs through the real grid. Closing that needs a
+ *   product `export` (out of this tests-only lane) and is flagged as a follow-up.
  *
  * RE-AUTHORIZED (WO-WB-P16-004): un-skipped by adding the missing shallow mock for
- * `orchestration/moduleActivation` — SuiteModuleGrid imports `activateModule` from it,
- * and the real module's transitive graph (config/moduleComponents → desktopStore +
- * moduleLoaderStore + notificationStore + telemetry) crashed the vitest worker
- * ("Worker exited unexpectedly" / tinypool). Stubbing that one import lets the real
- * SuiteModuleGrid render safely. Test 3/7 (standalone) is updated to the current
- * behavior: standalone launch now calls `activateModule(targetId)` (WO-SUITE-ROUTING-001),
- * not a bare navigate('/:moduleId') — a test-only correction, no product change.
+ * `orchestration/moduleActivation` — SuiteModuleGrid imports `activateModule` from it, and the
+ * real module's transitive graph (config/moduleComponents → desktopStore + moduleLoaderStore +
+ * notificationStore + telemetry) crashed the vitest worker ("Worker exited unexpectedly" /
+ * tinypool). Stubbing that one import lets the real SuiteModuleGrid render safely. The standalone
+ * assertion reflects current behavior: standalone launch calls `activateModule(targetId, {source})`
+ * (WO-SUITE-ROUTING-001), not a bare navigate('/:moduleId') — a test-only correction, no product change.
  *
  * @see src/components/suites/SuiteModuleGrid.tsx — handleLaunch()
  */
@@ -79,68 +85,72 @@ vi.mock('../../stores/propertyStore', () => ({
 }));
 
 // ── Test Fixtures ─────────────────────────────────────────────────────────────
+// Synthetic, but each mirrors a REAL shipped tile (see SCOPE note above).
 
-/** A parcel-scoped Forge workbench module */
-const forgeWorkbenchMod: SuiteModuleDef = {
-  id: 'costforge',
-  label: 'CostForge',
-  icon: () => React.createElement('span', null, '🔥'),
-  description: 'Cost approach calculator',
+/** Mirrors a real Dais workbench tile (DaisSuiteHome: certification/appeals → tab 'dais'). */
+const daisWorkbenchTile: SuiteModuleDef = {
+  id: 'certification',
+  label: 'Certification',
+  icon: () => React.createElement('span', null, '✅'),
+  description: 'Assessment roll certification workflow',
   launchMode: 'workbench',
-  workbenchTab: 'forge',
+  workbenchTab: 'dais',
 };
 
-/** A parcel-scoped Atlas workbench module */
-const atlasWorkbenchMod: SuiteModuleDef = {
-  id: 'gis',
-  label: 'TerraGIS',
-  icon: () => React.createElement('span', null, '🗺️'),
-  description: 'GIS viewer',
-  launchMode: 'workbench',
-  workbenchTab: 'atlas',
-};
-
-/** A parcel-scoped Dossier workbench module */
-const dossierWorkbenchMod: SuiteModuleDef = {
-  id: 'dossier-view',
-  label: 'Dossier',
+/** Mirrors a real Dossier workbench tile (DossierSuiteHome: documents/evidence → tab 'dossier'). */
+const dossierWorkbenchTile: SuiteModuleDef = {
+  id: 'documents',
+  label: 'Document Manager',
   icon: () => React.createElement('span', null, '📁'),
-  description: 'Parcel document viewer',
+  description: 'Parcel document repository',
   launchMode: 'workbench',
   workbenchTab: 'dossier',
 };
 
-/** Cross-parcel standalone tool — ratio study */
-const ratioStudyStandaloneMod: SuiteModuleDef = {
-  id: 'statistics-studio',
-  label: 'Ratio Study',
+/**
+ * Mirrors the real Dossier "Defense Packets" tile, which launches the DAIS tab from the
+ * Dossier suite — proves the destination follows `workbenchTab`, not the owning suite.
+ */
+const crossTabWorkbenchTile: SuiteModuleDef = {
+  id: 'defense',
+  label: 'Defense Packets',
+  icon: () => React.createElement('span', null, '🛡️'),
+  description: 'BOE appeal defense packet assembly via the Dais workbench flow',
+  launchMode: 'workbench',
+  workbenchTab: 'dais',
+};
+
+/** Mirrors the real Atlas TerraGIS tile — genuinely standalone (moduleId 'atlas'). */
+const atlasStandaloneTile: SuiteModuleDef = {
+  id: 'gis',
+  label: 'TerraGIS',
+  icon: () => React.createElement('span', null, '🗺️'),
+  description: 'GIS surface',
+  launchMode: 'standalone',
+  moduleId: 'atlas',
+};
+
+/** Mirrors the real Dais TerraLevy tile — standalone (moduleId 'terra-levy'). */
+const levyStandaloneTile: SuiteModuleDef = {
+  id: 'terra-levy',
+  label: 'TerraLevy',
+  icon: () => React.createElement('span', null, '🧾'),
+  description: 'County-wide levy rates by district',
+  launchMode: 'standalone',
+  moduleId: 'terra-levy',
+};
+
+/** Mirrors the real Dais Management tile — standalone (moduleId 'management-dashboard'). */
+const mgmtStandaloneTile: SuiteModuleDef = {
+  id: 'management-dashboard',
+  label: 'Management',
   icon: () => React.createElement('span', null, '📊'),
-  description: 'County-wide ratio study',
+  description: 'Assessor operations dashboard',
   launchMode: 'standalone',
-  moduleId: 'statistics-studio',
+  moduleId: 'management-dashboard',
 };
 
-/** Cross-parcel standalone tool — batch cost run */
-const batchCostStandaloneMod: SuiteModuleDef = {
-  id: 'batch-cost-run',
-  label: 'Batch Cost Runs',
-  icon: () => React.createElement('span', null, '⚙️'),
-  description: 'Batch cost model runs',
-  launchMode: 'standalone',
-  moduleId: 'batch-cost-run',
-};
-
-/** Cross-parcel standalone tool — calibration */
-const calibrationStandaloneMod: SuiteModuleDef = {
-  id: 'regression-studio',
-  label: 'Regression Studio',
-  icon: () => React.createElement('span', null, '📉'),
-  description: 'MRA regression models',
-  launchMode: 'standalone',
-  moduleId: 'regression-studio',
-};
-
-/** Broken workbench module — missing workbenchTab */
+/** Broken workbench module — missing workbenchTab (guard case). */
 const brokenWorkbenchMod: SuiteModuleDef = {
   id: 'broken-mod',
   label: 'Broken Module',
@@ -172,83 +182,78 @@ describe('launchSurfaceContractParcelWorkbench', () => {
     vi.clearAllMocks();
   });
 
-  // ── 1. Forge parcel actions route into Property Workbench ──────────────────
+  // ── 1. A Dais workbench tile routes into the Property Workbench Dais tab ────
 
-  it('routes Forge parcel actions into Property Workbench, not standalone Forge windows', async () => {
+  it('routes a Dais workbench tile into the Property Workbench, not a standalone window', async () => {
     const user = userEvent.setup();
-    renderGrid([forgeWorkbenchMod]);
+    renderGrid([daisWorkbenchTile]);
 
-    await user.click(screen.getByRole('button', { name: /CostForge/i }));
+    await user.click(screen.getByRole('button', { name: /Certification/i }));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     const destination = mockNavigate.mock.calls[0][0] as string;
     expect(destination).toMatch(/^\/property\//);
-    expect(destination).toContain('/forge');
+    expect(destination).toContain('/dais');
     expect(destination).toContain('benton-12345');
-    expect(destination).not.toBe('/costforge');
-    expect(destination).not.toBe('/forge');
     // Parcel action must not fall through to a standalone module window.
     expect(mockActivateModule).not.toHaveBeenCalled();
   });
 
-  // ── 2. Atlas parcel actions route into Property Workbench ──────────────────
+  // ── 2. A Dossier workbench tile routes into the Property Workbench Dossier tab ─
 
-  it('routes Atlas parcel actions into Property Workbench, not standalone GIS windows', async () => {
+  it('routes a Dossier workbench tile into the Property Workbench, not a standalone document window', async () => {
     const user = userEvent.setup();
-    renderGrid([atlasWorkbenchMod]);
+    renderGrid([dossierWorkbenchTile]);
 
-    await user.click(screen.getByRole('button', { name: /TerraGIS/i }));
-
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    const destination = mockNavigate.mock.calls[0][0] as string;
-    expect(destination).toMatch(/^\/property\//);
-    expect(destination).toContain('/atlas');
-    expect(destination).toContain('benton-12345');
-    expect(destination).not.toBe('/gis');
-    expect(destination).not.toBe('/terra-gis');
-  });
-
-  // ── 3. Dossier parcel actions route into Property Workbench ───────────────
-
-  it('routes Dossier parcel actions into Property Workbench, not standalone document windows', async () => {
-    const user = userEvent.setup();
-    renderGrid([dossierWorkbenchMod]);
-
-    await user.click(screen.getByRole('button', { name: /Dossier/i }));
+    await user.click(screen.getByRole('button', { name: /Document Manager/i }));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     const destination = mockNavigate.mock.calls[0][0] as string;
     expect(destination).toMatch(/^\/property\//);
     expect(destination).toContain('/dossier');
     expect(destination).toContain('benton-12345');
+    expect(mockActivateModule).not.toHaveBeenCalled();
+  });
+
+  // ── 3. Destination follows workbenchTab, not the owning suite ──────────────
+
+  it('routes to the tab named by workbenchTab even when a different suite owns the tile', async () => {
+    // Real case: the Dossier "Defense Packets" tile launches the Dais tab.
+    const user = userEvent.setup();
+    renderGrid([crossTabWorkbenchTile]);
+
+    await user.click(screen.getByRole('button', { name: /Defense Packets/i }));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    const destination = mockNavigate.mock.calls[0][0] as string;
+    expect(destination).toBe('/property/benton-12345/dais');
   });
 
   // ── 4. Same parcel + tab re-entry → same URL = natural window reuse ────────
 
   it('reuses the existing workbench window for same parcel+tab re-entry', async () => {
     const user = userEvent.setup();
-    renderGrid([forgeWorkbenchMod]);
+    renderGrid([daisWorkbenchTile]);
 
-    await user.click(screen.getByRole('button', { name: /CostForge/i }));
+    await user.click(screen.getByRole('button', { name: /Certification/i }));
     const firstUrl = mockNavigate.mock.calls[0][0] as string;
 
     mockNavigate.mockClear();
 
-    await user.click(screen.getByRole('button', { name: /CostForge/i }));
+    await user.click(screen.getByRole('button', { name: /Certification/i }));
     const secondUrl = mockNavigate.mock.calls[0][0] as string;
 
     // Same URL = same route = React Router reuses the existing mounted component.
     expect(secondUrl).toBe(firstUrl);
   });
 
-  // ── 5. Context survives refresh/navigation — structural proof ──────────────
+  // ── 5. Context is encoded in the URL — structural proof ────────────────────
 
-  it('preserves countyId + parcelId + tab slug across refresh and browser navigation', () => {
-    // Structural proof: tab state and parcel context are encoded in the URL.
-    // /property/benton-12345/forge encodes parcelId (route param) + tab (sub-route);
-    // countyId travels in the x-county-id header (FISMA isolation), not the path.
+  it('encodes parcelId + tab slug in the URL, with countyId carried out-of-band', () => {
+    // Structural proof: parcelId (route param) + tab (sub-route) live in the path;
+    // countyId travels in the x-county-id header (FISMA isolation), NOT the path.
     const parcelId = 'R112233445566';
-    const tab = 'forge';
+    const tab = 'dais';
     const countyId = 'benton';
 
     const workbenchUrl = `/property/${parcelId}/${tab}`;
@@ -273,47 +278,47 @@ describe('launchSurfaceContractParcelWorkbench', () => {
     expect(mockActivateModule).not.toHaveBeenCalled();
   });
 
-  // ── 7. Cross-parcel tools remain standalone — activateModule, never /property/ ─
+  // ── 7. Standalone tiles activate a module — never route into /property/ ─────
 
-  it('launches cross-parcel operational tools as standalone modules (never into the Workbench)', async () => {
+  it('launches standalone tiles via activateModule (never into the Workbench)', async () => {
     // Current behavior (WO-SUITE-ROUTING-001): standalone tiles call
-    // activateModule(moduleId) to open a desktop window — NOT navigate('/:moduleId')
-    // (that path had no registered route and silently no-op'd). This test enforces
-    // that standalone tools open standalone and never route into /property/.
+    // activateModule(moduleId, {source}) to open a desktop window — NOT
+    // navigate('/:moduleId') (that path had no registered route and silently no-op'd).
+    // Fixtures mirror the real standalone tiles: Atlas TerraGIS, Dais TerraLevy/Management.
     const user = userEvent.setup();
-    renderGrid([ratioStudyStandaloneMod, batchCostStandaloneMod, calibrationStandaloneMod]);
+    renderGrid([atlasStandaloneTile, levyStandaloneTile, mgmtStandaloneTile]);
 
-    await user.click(screen.getByRole('button', { name: /Ratio Study/i }));
-    expect(mockActivateModule).toHaveBeenCalledWith('statistics-studio', expect.objectContaining({ source: 'system' }));
+    await user.click(screen.getByRole('button', { name: /TerraGIS/i }));
+    expect(mockActivateModule).toHaveBeenCalledWith('atlas', expect.objectContaining({ source: 'system' }));
     expect(mockNavigate).not.toHaveBeenCalled();
 
     mockActivateModule.mockClear();
 
-    await user.click(screen.getByRole('button', { name: /Batch Cost/i }));
-    expect(mockActivateModule).toHaveBeenCalledWith('batch-cost-run', expect.objectContaining({ source: 'system' }));
+    await user.click(screen.getByRole('button', { name: /TerraLevy/i }));
+    expect(mockActivateModule).toHaveBeenCalledWith('terra-levy', expect.objectContaining({ source: 'system' }));
     expect(mockNavigate).not.toHaveBeenCalled();
 
     mockActivateModule.mockClear();
 
-    await user.click(screen.getByRole('button', { name: /Regression/i }));
-    expect(mockActivateModule).toHaveBeenCalledWith('regression-studio', expect.objectContaining({ source: 'system' }));
+    await user.click(screen.getByRole('button', { name: /Management/i }));
+    expect(mockActivateModule).toHaveBeenCalledWith('management-dashboard', expect.objectContaining({ source: 'system' }));
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   // ── Bonus: no-parcel fallback routes to property search with tab intent ────
 
-  it('routes workbench modules to property search when no parcel is active', async () => {
+  it('routes workbench tiles to property search when no parcel is active', async () => {
     mockActiveParcel = null;
     const user = userEvent.setup();
-    renderGrid([forgeWorkbenchMod]);
+    renderGrid([daisWorkbenchTile]);
 
-    await user.click(screen.getByRole('button', { name: /CostForge/i }));
+    await user.click(screen.getByRole('button', { name: /Certification/i }));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     const destination = mockNavigate.mock.calls[0][0] as string;
-    // Falls back to /property?openTab=forge — not a standalone window.
+    // Falls back to /property?openTab=dais — not a standalone window.
     expect(destination).toContain('/property');
-    expect(destination).toContain('openTab=forge');
-    expect(destination).not.toMatch(/^\/costforge/);
+    expect(destination).toContain('openTab=dais');
+    expect(mockActivateModule).not.toHaveBeenCalled();
   });
 });
