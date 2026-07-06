@@ -44,13 +44,15 @@ Child routes (`Router.tsx:217-226`), verified verbatim:
 `Router.tsx:60-62` lazy-imports the real `PropertyClerk`/`PropertyTreasury`/`PropertyAudit`. **Route path = 9 distinct
 real tab surfaces.**
 
-## 3. Window path — aliases 3 tabs, does NOT import the real components
+## 3. Window path — aliases 3 tabs via TWO mechanisms
 
 **Entry:** `PropertyWorkbenchWindow.tsx` — the desktop app-window adapter. It uses **state-based** tab switching +
 `WorkbenchTabCtx` (not React Router) because a Router cannot be nested inside the app-window's Router
 (`PropertyWorkbenchWindow.tsx:9-11`).
 
-Its tab→component map (`PropertyWorkbenchWindow.tsx:73-83`), verified verbatim:
+### 3a. Alias mechanism #1 — the tab→component map
+
+`TAB_COMPONENTS` (`PropertyWorkbenchWindow.tsx:73-83`), verified verbatim:
 
 ```
 const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.FC>> = {
@@ -67,11 +69,32 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
 ```
 
 The window's lazy imports (`PropertyWorkbenchWindow.tsx:50-67`) include only Summary/Forge/Atlas/Dais/Dossier/Pilot —
-**`PropertyClerk`, `PropertyTreasury`, and `PropertyAudit` are not imported at all** (grep: 0 matches). The tab bar
-(`TABS`, `PropertyWorkbenchWindow.tsx:105-114`) still lists all nine labels including "Clerk", "Treasury", "Audit".
+**`PropertyClerk`, `PropertyTreasury`, and `PropertyAudit` are not imported at all** (grep: 0 matches).
 
-**Net window behavior:** clicking **Clerk** renders **Dossier**; **Treasury** renders **Dais**; **Audit** renders
-**Dossier**. Six distinct components are mounted across nine labels.
+### 3b. Alias mechanism #2 — the initial-tab remap (launch path)
+
+`resolvedInitialTab` (`PropertyWorkbenchWindow.tsx:727-731`), verified verbatim:
+
+```
+const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
+  if (!initialTab || initialTab === '/' as string) return 'summary';
+  if (initialTab === 'clerk' || initialTab === 'audit') return 'dossier';   // ALIAS at launch
+  if (initialTab === 'treasury') return 'dais';                             // ALIAS at launch
+  const valid = TABS.find((t) => t.id === initialTab);
+  return valid?.id ?? 'summary';
+}, [initialTab]);
+```
+
+When the window is **launched** with `metadata.tabId` = `clerk`/`audit`/`treasury` (the deep-link/launch path), the
+active tab is remapped to `dossier`/`dais` *before* first render. So the alias is enforced in **two** places: the
+component map (mechanism #1) and the initial-tab resolution (mechanism #2). **Both must be corrected to actually close
+G2** — fixing only `TAB_COMPONENTS` would still land a `tabId=clerk` launch on the Dossier tab.
+
+The tab bar (`TABS`, `PropertyWorkbenchWindow.tsx:105-114`) still lists all nine labels including "Clerk", "Treasury",
+"Audit".
+
+**Net window behavior:** selecting (or launching into) **Clerk** renders **Dossier**; **Treasury** renders **Dais**;
+**Audit** renders **Dossier**. Six distinct components are mounted across nine labels.
 
 ## 4. Are the real components window-compatible? — YES
 
@@ -87,12 +110,11 @@ re-pointed at them.
 
 ## 5. Test coverage
 
-- `__tests__/workbench/PropertyWorkbenchWindow.segmentContext.test.tsx` exists but carries its **own local**
-  `TAB_COMPONENTS` copy (line 73) for segment-context assertions; it does **not** assert the production alias mapping
-  (no `clerk → Dossier` expectation). So the alias is **not pinned by a test** — a future re-point would not break it
-  (to be re-verified at implementation time).
-- No test asserts that the window's "Clerk"/"Treasury"/"Audit" labels render their real components — i.e. the mislabel is
-  **uncovered**.
+- `__tests__/workbench/PropertyWorkbenchWindow.segmentContext.test.tsx` exercises only the **segment-context bridge**; it
+  does **not** reference `TAB_COMPONENTS`, the `resolvedInitialTab` remap, or the `clerk`/`treasury`/`audit` labels at all
+  (grep: 0 matches). So **neither** alias mechanism is pinned or covered by a test — the mislabel is entirely uncovered,
+  and re-pointing the map/remap would not break this test.
+- No test asserts that the window's "Clerk"/"Treasury"/"Audit" labels render their real components.
 
 ## 6. Truth summary
 
@@ -108,7 +130,8 @@ re-pointed at them.
 | Dossier | PropertyDossier | PropertyDossier | no |
 | Pilot | PropertyPilot | PropertyPilot | no |
 
-**Confirmed:** the route path is honest (9/9 real); the window path mislabels 3 tabs. The real components exist and are
+**Confirmed:** the route path is honest (9/9 real); the window path mislabels 3 tabs via **two** mechanisms
+(`TAB_COMPONENTS` map at :73-83 and the `resolvedInitialTab` launch remap at :727-731). The real components exist and are
 window-compatible, so the gap is a stale mapping, not a missing surface. Impact classification → WO-WB-G2-002.
 
 **Docs-only. No implementation. No stop wall.**

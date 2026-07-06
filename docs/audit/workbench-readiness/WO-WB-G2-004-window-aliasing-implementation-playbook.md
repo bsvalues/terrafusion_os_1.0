@@ -27,9 +27,19 @@ In `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx`:
    treasury: PropertyTreasury,   // was PropertyDais
    audit:    PropertyAudit,      // was PropertyDossier
    ```
+3. **Remove the initial-tab (launch) alias** in `resolvedInitialTab` (`:727-731`) — delete these two branches so a
+   `metadata.tabId` of `clerk`/`audit`/`treasury` resolves to itself (validated against `TABS`) instead of being
+   remapped:
+   ```
+   -  if (initialTab === 'clerk' || initialTab === 'audit') return 'dossier';
+   -  if (initialTab === 'treasury') return 'dais';
+   ```
+   (The subsequent `TABS.find(...)` already validates the slug and falls back to `summary` for unknown ones, so removing
+   the two branches is sufficient and safe.)
 
-No other change. The tab bar (`TABS`), context provider (`WorkbenchTabCtx.Provider`), and reserved-boundary host-violation
-guard are unaffected.
+**Both** changes are required. Fixing only step 2 would leave a `tabId=clerk` launch opening the Dossier tab (step 3
+governs the launch path; step 2 governs tab-switching). The tab bar (`TABS`), context provider
+(`WorkbenchTabCtx.Provider`), and reserved-boundary host-violation guard are otherwise unaffected.
 
 ## 2. Allowed files (future lane)
 
@@ -46,16 +56,20 @@ guard are unaffected.
 
 ## 4. Expected tests
 
-- Add a window-mapping contract test in `__tests__/workbench/`: for `clerk`/`treasury`/`audit`, the window renders the
-  **real** component (assert a stable testid unique to each — `property-clerk-tab` / `property-treasury-tab` /
-  `property-audit-tab` — appears when that tab is active), and does **not** render the Dossier/Dais testid under those
-  labels.
-- Re-verify `PropertyWorkbenchWindow.segmentContext.test.tsx` still passes (it carries a local `TAB_COMPONENTS` copy;
-  update that copy if the test relies on it).
+- Add a window-mapping contract test in `__tests__/workbench/` covering **both** paths:
+  - **Tab-switch path:** activating `clerk`/`treasury`/`audit` renders the **real** component (assert a stable testid
+    unique to each — `property-clerk-tab` / `property-treasury-tab` / `property-audit-tab` — appears when that tab is
+    active) and does **not** render the Dossier/Dais testid under those labels.
+  - **Launch path:** rendering `PropertyWorkbenchWindow` with `metadata.tabId` = `clerk`/`treasury`/`audit` opens that
+    real tab (not `dossier`/`dais`) — i.e. the `resolvedInitialTab` remap is gone.
+- Re-verify `PropertyWorkbenchWindow.segmentContext.test.tsx` still passes. (Note: that test exercises only the
+  segment-context bridge and does **not** reference `TAB_COMPONENTS` or the alias, so it is not expected to be affected;
+  confirm at implementation time.)
 
 ## 5. Acceptance criteria
 
-- Window "Clerk"/"Treasury"/"Audit" tabs mount `PropertyClerk`/`PropertyTreasury`/`PropertyAudit` respectively.
+- Window "Clerk"/"Treasury"/"Audit" tabs mount `PropertyClerk`/`PropertyTreasury`/`PropertyAudit` respectively (tab-switch path).
+- Launching the window with `metadata.tabId` = clerk/treasury/audit opens that real tab, not dossier/dais (launch path).
 - Route path unchanged; both hosts now render 9/9 real surfaces.
 - Each tab's honesty badge (slice-aware, from the completed provenance program) renders in the window path too.
 - Frontend Gate + Vitest Full Suite + required contexts green; no --admin / no break-glass.
@@ -63,7 +77,8 @@ guard are unaffected.
 ## 6. Rollback plan
 
 Single-file, single-commit change → revert the commit (restore the three `TAB_COMPONENTS` entries to
-Dossier/Dais/Dossier and drop the three imports). No data or schema involved; rollback is instantaneous and side-effect-free.
+Dossier/Dais/Dossier, restore the two `resolvedInitialTab` alias branches, and drop the three imports). No data or schema
+involved; rollback is instantaneous and side-effect-free.
 
 ## 7. Stop walls (future lane)
 

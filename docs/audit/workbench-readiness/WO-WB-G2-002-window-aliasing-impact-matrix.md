@@ -9,7 +9,9 @@
 
 ## 1. Per-tab impact
 
-For each aliased tab (source of truth: `PropertyWorkbenchWindow.tsx:73-83` + `TABS:105-114`):
+For each aliased tab (source of truth: `PropertyWorkbenchWindow.tsx:73-83` component map, `:727-731` initial-tab remap,
+`TABS:105-114` labels). The alias is enforced by **two** mechanisms — the `TAB_COMPONENTS` map (tab-switch path) and the
+`resolvedInitialTab` remap (launch path) — both of which must be corrected to close G2:
 
 | Aliased tab | Displayed label | Actual rendered component (window) | Lost surface behavior | User-visible risk | Route path has real surface? | Test coverage of the mislabel |
 |-------------|-----------------|-----------------------------------|-----------------------|-------------------|------------------------------|-------------------------------|
@@ -38,7 +40,7 @@ The other six tabs (Summary/Forge/Atlas/Dais/Dossier/Pilot) render their real co
 |---------|-----------|-------|
 | **Route surface** (`/property/:parcelId/*`) | ❌ No | Renders all 9 real components (honest). |
 | **App-window surface** (`PropertyWorkbenchWindow`) | ✅ Yes | The desktop-shell adapter mislabels Clerk/Treasury/Audit. |
-| **Launch surface** | ⚠️ Indirect | Only insofar as a launch entry opens the window adapter; the mislabel is inherited from the window map, not the launcher. |
+| **Launch surface** | ✅ Yes (directly) | The window's `resolvedInitialTab` remap (`PropertyWorkbenchWindow.tsx:727-731`) rewrites launch `metadata.tabId` = clerk/audit → dossier and treasury → dais *before first render*. So a deep-link/launch into "Clerk"/"Treasury"/"Audit" opens the aliased tab directly — this is a second alias mechanism beyond the component map. |
 | **Workbench operator flow** | ✅ Yes (window only) | Clerk/Treasury/Audit workflows are unreachable when the Workbench is opened as an app-window rather than via route. |
 
 ## 4. Exposure question (open, for the decision packet)

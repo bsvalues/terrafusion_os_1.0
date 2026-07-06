@@ -20,9 +20,10 @@
 ## 2. Decision
 
 - **DECISION:** **D** — re-point the window `TAB_COMPONENTS` (`PropertyWorkbenchWindow.tsx:73-83`) for
-  `clerk`/`treasury`/`audit` at the real `PropertyClerk`/`PropertyTreasury`/`PropertyAudit` components.
-- **IMPLEMENTATION_REQUIRED:** yes — small, frontend-only (3 imports + 3 map lines + a window-mapping test). **Not**
-  executed in this decision-only goal.
+  `clerk`/`treasury`/`audit` at the real components **and** remove the `resolvedInitialTab` launch remap (`:727-731`).
+  Both alias mechanisms must be fixed together to actually close G2.
+- **IMPLEMENTATION_REQUIRED:** yes — small, frontend-only (3 imports + 3 map lines + delete 2 remap branches + a
+  window-mapping test covering both tab-switch and launch paths). **Not** executed in this decision-only goal.
 - **Root cause:** the alias is **stale/vestigial** — it predates the real Clerk/Treasury/Audit components (built during
   the Workbench readiness + honesty programs) and was never re-pointed. It is not a compatibility constraint: the real
   components mount under the window's `WorkbenchTabCtx` via `useWorkbenchTab`'s dual-source read.
@@ -30,12 +31,13 @@
 ## 3. Evidence (first-hand, cited)
 
 - Route children render real components: `Router.tsx:217-226` (clerk/treasury/audit → PropertyClerk/Treasury/Audit).
-- Window aliases + omits real imports: `PropertyWorkbenchWindow.tsx:73-83` (map) and `:50-67` (imports — Clerk/Treasury/
-  Audit absent; grep = 0).
+- Window aliases via **two** mechanisms: `PropertyWorkbenchWindow.tsx:73-83` (`TAB_COMPONENTS` map) and `:727-731`
+  (`resolvedInitialTab` launch remap); real imports omitted at `:50-67` (Clerk/Treasury/Audit absent; grep = 0).
 - Window-compatibility: `context/workbenchTabContext.tsx:77-84` (dual-source), `PropertyWorkbenchWindow.tsx:919`
   (`WorkbenchTabCtx.Provider`).
-- Alias not pinned by tests: `PropertyWorkbenchWindow.segmentContext.test.tsx` uses a local `TAB_COMPONENTS` copy and does
-  not assert the production alias.
+- Alias not covered by tests: `PropertyWorkbenchWindow.segmentContext.test.tsx` exercises only the segment-context bridge
+  and does **not** reference `TAB_COMPONENTS`, the `resolvedInitialTab` remap, or the alias labels (grep = 0) — so the
+  mislabel is entirely uncovered.
 
 ## 4. Validation
 
