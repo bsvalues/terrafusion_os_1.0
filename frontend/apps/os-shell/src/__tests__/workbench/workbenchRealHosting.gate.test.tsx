@@ -20,7 +20,7 @@
 import '@testing-library/jest-dom';
 import React, { Suspense } from 'react';
 import { vi, describe, it, expect, beforeAll, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -524,10 +524,14 @@ describe('Workbench Real Hosting Gate', () => {
 
   // =========================================================================
   // PROMOTED GATE — Clerk, Treasury, Audit now host REAL surfaces
-  // (WO-WB-PARITY-003). Previously inventory-only; the G2 fix (#1223) made both
-  // the route host (Router.tsx) and the window host (PropertyWorkbenchWindow
-  // TAB_COMPONENTS) mount these real components, so they are now render-gated in
-  // route context — closing the real-hosting gate to a full 9/9 rendered tabs.
+  // (WO-WB-PARITY-003). Previously inventory-only; closes the real-hosting gate to
+  // a full 9/9 render-gated tabs.
+  // SCOPE NOTE (matches the existing Forge/Atlas/Dais gates): this renders the real
+  // component inside a route-shaped wrapper to prove the COMPONENT is a real
+  // interactive surface (not a placeholder). It does NOT render through Router.tsx's
+  // path→element binding, so it does not by itself lock the route MAPPING — that is
+  // covered by the window TAB_COMPONENTS mapping test + code review + the parity
+  // audit (see WO-WB-PARITY-004 §3 "known limitation").
   // =========================================================================
 
   describe.each([
@@ -560,13 +564,15 @@ describe('Workbench Real Hosting Gate', () => {
         </TabTestWrapper>
       );
 
-      await screen.findByTestId(testId, {}, { timeout: 5000 });
+      const root = await screen.findByTestId(testId, {}, { timeout: 5000 });
 
+      // Scope to the tab root so the assertion proves THIS surface is interactive,
+      // not some element elsewhere in the document or leftover from another test.
       const interactiveElements = [
-        ...screen.queryAllByRole('button'),
-        ...screen.queryAllByRole('combobox'),
-        ...screen.queryAllByRole('textbox'),
-        ...document.querySelectorAll('select, input'),
+        ...within(root).queryAllByRole('button'),
+        ...within(root).queryAllByRole('combobox'),
+        ...within(root).queryAllByRole('textbox'),
+        ...root.querySelectorAll('select, input'),
       ];
       expect(interactiveElements.length).toBeGreaterThanOrEqual(1);
     });

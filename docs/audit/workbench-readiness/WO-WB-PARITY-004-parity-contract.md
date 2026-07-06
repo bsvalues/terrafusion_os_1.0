@@ -26,13 +26,26 @@ host stayed correct. This contract + its tests make a future drift fail CI inste
 
 ## 3. What enforces the contract (tests on `origin/main`)
 
-- **Route host:** `workbenchRealHosting.gate.test.tsx` renders each of the 9 tabs in route context and asserts its real
-  `property-<tab>-tab` surface (Forge/Atlas/Dais/Dossier/Pilot + Clerk/Treasury/Audit promoted in WO-WB-PARITY-003) — i.e.
-  no tab hosts a placeholder or the wrong surface.
-- **Window host:** `PropertyWorkbenchWindow.tabMapping.test.tsx` asserts each tab maps to its real component on both the
-  tab-switch and launch paths, and that no tab renders another tab's surface (e.g. clerk ≠ dossier).
+- **Component realness (both hosts' target):** `workbenchRealHosting.gate.test.tsx` renders each of the 9 tab components
+  in a route-shaped wrapper and asserts its real `property-<tab>-tab` surface with an interactive control
+  (Forge/Atlas/Dais/Dossier/Pilot + Clerk/Treasury/Audit promoted in WO-WB-PARITY-003) — i.e. every tab's component is a
+  real surface, not a placeholder.
+- **Window host mapping (test-locked):** `PropertyWorkbenchWindow.tabMapping.test.tsx` asserts the window's
+  `TAB_COMPONENTS` (and launch `resolvedInitialTab`) map each tab to its real component and that no tab renders another
+  tab's surface (e.g. clerk ≠ dossier). This is the one host whose path→component mapping is directly rendered-through.
 - **Registry invariant:** exactly 9 valid tab IDs (`workbenchRealHosting.gate` WORKBENCH-LEVEL + registry-completeness).
 - **Entrypoint routing:** `workbenchEntrypoints.parity.test.ts` keeps launcher hrefs aligned with registry routes.
+
+### Known limitation (honest scope)
+
+No test renders **through** `Router.tsx`'s literal path→element binding for workbench tabs — the real-hosting gate (both
+the pre-existing Forge/Atlas/Dais gates and the new promoted ones) renders each component in a hand-built route, not the
+real app router, and the route contract tests only assert that route path strings exist, not which element is mounted. So
+a future edit that re-aliased a `Router.tsx` child route (e.g. `clerk → <PropertyDossier/>`) would not be caught by these
+tests. Route-host mapping parity is therefore maintained by **(a)** the window-mapping test (which pins the canonical
+tab→component map), **(b)** this contract + the WO-WB-PARITY-001 audit, and **(c)** code review. Rendering the full
+`Router.tsx` in a focused unit test is out of scope (it pulls the whole-app provider tree); a future lane could add a
+route-integration test if desired.
 
 ## 4. Change rules (for future edits)
 

@@ -35,9 +35,12 @@ No alias remains in either host.
 
 ## 4. Tests added (PARITY-003)
 
-Clerk/Treasury/Audit now render-gated in route context (previously inventory-only): each asserts `property-<tab>-tab`
-renders (not a placeholder) with ≥1 interactive element — mirroring the existing Dais tool-tab gate. The real-hosting gate
-now certifies a full **9/9 rendered** tabs.
+Clerk/Treasury/Audit now render-gated (previously inventory-only): each asserts `property-<tab>-tab` renders (not a
+placeholder) with ≥1 interactive element **scoped to the tab root** — mirroring the existing Dais tool-tab gate. The
+real-hosting gate now certifies a full **9/9 rendered** tabs. **Scope note:** like the pre-existing gates, this renders
+the component in a route-shaped wrapper (proving component realness), not through `Router.tsx`'s path→element binding —
+route-mapping parity is enforced by the window `tabMapping` test + audit + review (see WO-WB-PARITY-004 §3). The window
+host's tab→component mapping is the one directly rendered-through.
 
 ## 5. Validation
 

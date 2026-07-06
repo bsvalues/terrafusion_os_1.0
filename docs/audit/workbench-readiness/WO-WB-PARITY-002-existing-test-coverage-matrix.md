@@ -32,6 +32,11 @@
 | Dossier | ✅ gate SECONDARY | ✅ tabMapping | |
 | Pilot | ✅ gate SECONDARY | ✅ tabMapping | |
 
+**Column semantics (honest scope):** "Route host real-render" means the tab **component** renders as a real
+`property-<tab>-tab` surface in a route-shaped context — it proves component realness, **not** `Router.tsx`'s literal
+path→element binding (no test renders through the real app router; see WO-WB-PARITY-004 §3 "known limitation"). "Window
+host mapping" is the one host whose tab→component map is directly rendered-through (`tabMapping.test.tsx`).
+
 ## 3. Identified gap (single, real — not manufactured)
 
 The canonical **real-hosting gate** rendered only 5 of the 9 tabs as real surfaces (Forge/Atlas/Dais/Dossier/Pilot);
