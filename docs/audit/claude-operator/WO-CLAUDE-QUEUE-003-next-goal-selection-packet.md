@@ -5,6 +5,11 @@
 **Category:** Documentation (selection only)
 **Depends on:** WO-CLAUDE-QUEUE-002 (queue register)
 
+> **Governance (authority routing).** Per root `AGENTS.md` and `brain/packs/README.md`, the Brain/Cortex is the sole
+> sequencing authority. This "selection" is a **recommendation** for Brain/operator ratification — not a self-granted
+> authorization and not a bypass of `pnpm brain next`. In this run the operator explicitly authorized the recommended
+> goal before execution.
+
 ---
 
 ## 1. Selection

@@ -7,7 +7,14 @@
 
 **Authorization:** Operator authorized GOAL-TF-CLAUDE-OPERATOR-QUEUE-001. Allowed writes: `docs/audit/claude-operator/**`,
 `docs/audit/workbench-readiness/**`, `frontend/apps/os-shell/src/__tests__/workbench/**` (only if a selected goal needs
-tests). Read-only inspection elsewhere. AGENTS.md out-of-lane write under this authorization.
+tests). Read-only inspection elsewhere. These paths are **outside the default `AGENTS.md` write lane**; this write is
+permitted **only** because of the explicit operator authorization above (`AGENTS.md` allows out-of-lane writes with such
+authorization). No governance-surface files are touched.
+
+> **Governance (authority routing).** Per root `AGENTS.md` and `brain/packs/README.md`, the Brain/Cortex is the sole
+> authority for queue/sequencing/work-orders. This document and its sibling queue register are **non-authoritative
+> evidence/selection inputs** to that governed path — not a self-granted autonomous scheduling authority and not a bypass
+> of `pnpm brain next`.
 
 ---
 

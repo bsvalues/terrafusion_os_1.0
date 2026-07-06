@@ -7,10 +7,19 @@
 
 ---
 
+> **Governance (authority routing).** Per root `AGENTS.md` and `brain/packs/README.md`, the **Brain/Cortex is the sole
+> authority** for queue, sequencing, work orders, proof, review-diff, and commit-plan; agent-local autonomous queues /
+> separate governance are **not** permitted. This register is therefore a **non-authoritative evidence + selection
+> input** to that governed path — a *recommendation* the Brain/operator ratifies, **not** a self-granted scheduling
+> authority and **not** a bypass of `pnpm brain next`. "Non-overlapping" + "no courier" means: once a lane is ratified,
+> Claude Code executes its WOs without re-couriering each step — it does **not** mean Claude self-selects and
+> self-authorizes work from this file.
+
 ## 1. Purpose
 
-A ranked queue of work Claude Code may execute autonomously (no courier), each **non-overlapping** with Codex Backend OE
-and free of backend/tool-registry/runtime/PACS. Ranked by value ÷ risk. **No candidate is executed in this WO.**
+A ranked list of **candidate** non-overlapping lanes for the Brain/operator to select from — each disjoint from Codex
+Backend OE and free of backend/tool-registry/runtime/PACS. Ranked by value ÷ risk. **No candidate is executed in this WO,
+and selection is ratified through the governed Brain path, not this document.**
 
 ## 2. Ranked queue
 
