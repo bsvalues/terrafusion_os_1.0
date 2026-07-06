@@ -5,6 +5,13 @@
 **Category:** Documentation (evidence rollup; no code/test/registry/backend change in this WO)
 **Owner:** Claude Code (frontend honesty lane; non-colliding with Codex Backend OE)
 
+**Authorization:** The operator explicitly authorized the WORKBENCH-HONESTY-INSTRUMENTATION program and named its
+allowed write set — the four workbench tab components (`PropertyPilot/Clerk/Treasury/Audit.tsx`, plus Dossier under
+INSTR-001), `frontend/apps/os-shell/src/__tests__/workbench/**`, and `docs/audit/**`. Root `AGENTS.md` restricts the
+default agent write lane to `os-platform/core/**`, `tools/registry/**`, etc.; writing this rollup under `docs/audit/**`
+is outside that default lane and proceeds **only under that explicit operator authorization** (AGENTS.md permits
+out-of-scope writes with explicit approval). No governance-surface files were touched.
+
 ---
 
 ## 1. What this program did
@@ -34,9 +41,10 @@ synthetic/partial data source. No tab invokes a tool on mount; tool results are 
 
 **Net: 4/9 → 9/9.**
 
-For the three C-tabs (Clerk / Treasury / Audit) the exact predicate is
-`activeParcel?.parcelId === parcelId && !activeParcelLoading && !activeParcelError`, and the disclosure
-sentence is state-aware (never claims live loading while the badge reads `unavailable`).
+For the three C-tabs (Clerk / Treasury / Audit) the predicate, as written in code, is
+`evidenceLoaded = activeParcel?.parcelId === parcelId && !parcelLoading && !parcelError`, where `parcelLoading` and
+`parcelError` are local aliases bound to the `activeParcelLoading` and `activeParcelError` store flags respectively.
+The disclosure sentence is state-aware (never claims live loading while the badge reads `unavailable`).
 
 ## 3. PRs / merge commits
 
@@ -84,8 +92,8 @@ wording; and no tool invoked on mount. The C-tab contracts additionally assert t
    Clerk in #1210).
 6. **Prove the transition, not just the end state.** Honesty tests use `rerender` to prove the badge flips
    `unavailable → live`, guarding against a source memoized at mount (copilot).
-7. **No hardcoded ports in tests** — the unused `getEnv` mock (with a `localhost:5000` literal) was dropped
-   rather than parameterised, since no tool runs on mount (copilot).
+7. **No hardcoded ports in tests** — the unused `getEnv` mock (which embedded a hardcoded localhost port
+   literal) was dropped rather than parameterised, since no tool runs on mount (copilot).
 
 ## 6. Non-goals (explicitly NOT done — still open, out of this program's scope)
 
