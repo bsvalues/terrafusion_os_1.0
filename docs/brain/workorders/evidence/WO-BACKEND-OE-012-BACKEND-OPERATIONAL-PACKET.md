@@ -9,7 +9,7 @@ Mode: operational packet assembly
 
 ## Result
 
-RESULT: PASS_WITH_GAPS
+RESULT: PASS_WITH_GAP
 
 Backend Operational Excellence is now packaged as an operator packet. The backend is evidenced as
 implemented, build-clean, and operationally mapped, but this packet does not claim production
@@ -139,7 +139,8 @@ behavior. A future ADR may be required if a later WO proposes:
 
 | Role | Responsibility |
 |------|----------------|
-| Codex operator | Execute evidence/docs/governance WOs, preserve scope, validate, open/merge PRs when authorized, and stop at authority walls. |
+| Codex operator | Execute evidence/docs/governance WOs, preserve scope, validate, open/maintain PRs when authorized, and stop at authority walls. |
+| Human sync boundary | Merge PRs under the repo's branch/PR governance unless a specific owner-approved merge strategy applies. |
 | Owner | Authorize implementation, production, secrets, data access, migrations, CI wiring, Docker repair, and architecture decisions. |
 | Future release operator | Run release gate, use runbook, attach evidence, and refuse overclaims where gaps remain. |
 
