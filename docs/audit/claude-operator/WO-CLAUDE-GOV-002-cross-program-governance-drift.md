@@ -46,9 +46,13 @@ verified the fix is not merely present but correct:
 | `ACTIVE_PROGRAM_PLAYBOOK.md` | Backend OE `Status: CLOSED`; `Next executable WO: None - program closed; owner/WOE selects next lane` | ✅ |
 | `COMMAND_TO_PROGRAM_MAP.md` | `backend-excellence`/`backend-start`/`backend-status` → CLOSED at OE-013; OE-003 & OE-012 → CLOSED; OE-013 "CLOSING IN PR #1239"; note "no automatic next WO … owner/WOE must select"; `backend-start` carries "do not restart Backend OE chain" | ✅ |
 
-**DEFERRED CLAUDE GOVSYNC: CANCELLED — not needed.** The restart hazard is closed within #1239 itself. This WO closes as
-**"verified fixed by #1239"** pending that PR's merge to main. Claude will confirm on `main` once #1239 lands and take no
-further edit action on these surfaces.
+**DEFERRED CLAUDE GOVSYNC: CANCELLED — not needed.** The restart hazard is closed within #1239 itself. Claude took no
+edit action on these surfaces.
+
+**CONFIRMED ON MAIN:** #1239 MERGED `a244743` (2026-07-07 05:28Z). Re-verified `origin/main`: `ACTIVE_PROGRAM_PLAYBOOK`
+Backend OE `Status: CLOSED` / `Next executable WO: None`; `COMMAND_TO_PROGRAM_MAP` `backend-excellence` = `CLOSED at
+WO-BACKEND-OE-013`, OE-003 = `CLOSED`. **WO CLOSED — verified fixed by #1239.** The Backend Operational Excellence program
+is now fully closed on main; `/goal backend-excellence` and `/program-next` no longer route to merged work.
 
 ## 4. Return
 
