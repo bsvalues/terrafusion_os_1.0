@@ -206,8 +206,11 @@ describe('suiteTileArrayLaunch.contract — real shipped tile arrays through the
   // ── C. Array invariants (pure data) ────────────────────────────────────────────
   describe('array invariants', () => {
     const ALL = [...ATLAS_MODULES, ...DAIS_MODULES, ...DOSSIER_MODULES];
+    // Mirrors the canonical WorkbenchTabSlug union in src/contracts/workbench.ts (8 slugs, no 'pilot').
+    // SuiteModuleDef.workbenchTab is typed as WorkbenchTabSlug, so the compiler already constrains this;
+    // the runtime check additionally guards against `as`-casts / @ts-ignore drift.
     const KNOWN_TABS = new Set([
-      'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot',
+      'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier',
     ]);
 
     it('every tile declares a known launchMode', () => {
