@@ -137,6 +137,42 @@ Routing note:
 
 ---
 
+## Program 0A - Codex Operator Work Order Playbook
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Loop | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Program slug | `codex-operator-playbook` |
+| Status | ACTIVE UNTIL MERGED, THEN GOVERNING OPERATOR DOCTRINE |
+| Current WO | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` |
+
+### Purpose
+
+Make Codex the primary TerraFusion Work Order operator so the owner is no longer the courier between
+agents, PRs, reviews, checks, and merge readiness.
+
+### Deliverables
+
+- `docs/brain/workorders/operator/CODEX_OPERATOR_PLAYBOOK.md`
+- `docs/brain/workorders/goal-loop/GOAL_LOOP_OPERATOR_CONTRACT.md`
+- `docs/brain/workorders/operator/WORK_ORDER_LIFECYCLE.md`
+- `docs/brain/workorders/operator/AUTONOMOUS_CONTINUATION_RULES.md`
+- `docs/brain/workorders/operator/PR_REVIEW_CI_OPERATOR_RULES.md`
+- `docs/brain/workorders/operator/OWNER_DECISION_PACKET_TEMPLATE.md`
+- `docs/brain/workorders/operator/MERGE_AUTHORITY_MODEL.md`
+- `docs/brain/workorders/evidence/WO-CODEX-OPERATOR-PLAYBOOK-ROLLUP.md`
+- `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
+- `docs/brain/workorders/operator/README.md`
+
+### Stop Type
+
+`CODEX_OPERATOR_PLAYBOOK_ROLLUP_READY_FOR_PR`
+
+---
+
 ## Program 1 - Backend Operational Excellence
 
 | Field | Value |

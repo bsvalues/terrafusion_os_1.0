@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-05
+**Last Updated:** 2026-07-07
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -14,6 +14,7 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `codex-operator-playbook` | Codex Operator Work Order Playbook | WO-CODEX-OP-001 through WO-CODEX-OP-009 | NO | `once`, `program`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | NO | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
 | `program-next` | Master Playbook | Owner/WOE lane selection after Backend OE closeout | YES - Backend OE and Workbench evidence chains are closed | `once`, `program`, `evidence` |
