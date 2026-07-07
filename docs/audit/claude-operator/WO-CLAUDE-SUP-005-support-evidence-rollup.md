@@ -21,11 +21,14 @@ No edit to #1233, no branch update, no thread resolution, no backend/registry/pr
 | SUP-004 | Next Claude lane draft (suite tile-array contract) — DRAFT, unratified |
 | SUP-005 | This rollup |
 
-## 2. #1233 state (snapshot)
+## 2. #1233 state
 
-Green across all checks; MERGEABLE but **BEHIND by 1** and **2/2 review threads unresolved** (copilot docs-token nit +
-codex P1 humans-merge governance). Docs-only PR (`docs/brain/workorders/**`) → low main-race cost. All remaining actions
-are Codex/owner-owned; Claude cannot resolve the threads, update the branch, or merge.
+**TERMINAL — MERGED** at `7ed226bc` (2026-07-07). Codex/owner resolved both review threads (0/2 unresolved), advanced the
+branch, and it merged. The support diagnosis (SUP-002) and recommendation (SUP-003) held: the blockers were exactly the 2
+threads + 1-behind, all Codex/owner-owned; Claude did not touch #1233, its branch, or its threads at any point.
+
+_Prior snapshot (pre-merge): green across all checks; MERGEABLE but BEHIND by 1 and 2/2 threads unresolved (copilot
+docs-token nit + codex P1 humans-merge governance); docs-only PR → low main-race cost._
 
 ## 3. Codex-lane respect
 
@@ -41,5 +44,8 @@ are Codex/owner-owned; Claude cannot resolve the threads, update the branch, or 
 
 ## 5. Standing posture
 
-Claude Code stays in the support loop: watch #1233 to terminal, refresh these packets if state changes, and surface only
-on change or a true decision. No self-started product/backend work. Codex Backend OE remains priority.
+#1233 has reached terminal (MERGED). The watch objective is met. Per the owner's standing instruction, **this support
+draft (#1238) remains HELD** — the racing reason (avoid contending with #1233's merge window) is now moot, so #1238 is
+safe to un-hold whenever the owner chooses; Claude will not un-draft or merge it without an explicit go-ahead (humans-merge
+law). No self-started product/backend work. Next Codex Backend OE lane (WO-BACKEND-OE-013+, if any) remains Codex-owned;
+Claude re-enters the support loop when it appears.
