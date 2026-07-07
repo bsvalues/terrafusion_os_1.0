@@ -44,8 +44,11 @@ docs-token nit + codex P1 humans-merge governance); docs-only PR → low main-ra
 
 ## 5. Standing posture
 
-#1233 has reached terminal (MERGED). The watch objective is met. Per the owner's standing instruction, **this support
-draft (#1238) remains HELD** — the racing reason (avoid contending with #1233's merge window) is now moot, so #1238 is
-safe to un-hold whenever the owner chooses; Claude will not un-draft or merge it without an explicit go-ahead (humans-merge
-law). No self-started product/backend work. Next Codex Backend OE lane (WO-BACKEND-OE-013+, if any) remains Codex-owned;
-Claude re-enters the support loop when it appears.
+#1233 has reached terminal (MERGED). The watch objective is met. Per the owner's standing instruction, **this draft
+(#1238) remains HELD** — Claude will not un-draft or merge it without an explicit go-ahead (humans-merge law).
+
+**Lane transition:** `GOAL-TF-CLAUDE-SUPPORT-001` is CLOSED/COMPLETE. Claude Code has transitioned into the standing
+**Governance & Review Operator** lane — see `GOAL-TF-CLAUDE-GOVREVIEW-001-standing-lane-charter.md`. First WOs on that
+lane (`WO-CLAUDE-GOV-001`/`002`) support the next Codex closeout **#1239 (WO-BACKEND-OE-013)** and verify the
+cross-program governance drift it surfaced. #1238 now carries both the OE-012 support packets and the GOVREVIEW packets;
+revisit after OE-013 (#1239) merges.
