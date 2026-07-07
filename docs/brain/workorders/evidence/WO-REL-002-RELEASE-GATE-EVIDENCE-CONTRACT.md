@@ -6,6 +6,8 @@ Program: Release Engineering
 Goal: GOAL-TF-RELEASE-ENGINEERING-001
 Loop: LOOP-TF-RELEASE-ENGINEERING-001
 Mode: docs/governance evidence contract
+Current lane base: `55b53ad97fdf31bd2ac34bdaf13462b5d5206122`
+Backend OE evidence baseline: `a244743014b4b7731a2694db10bc2e9656876e55`
 
 ## Result
 
@@ -37,12 +39,19 @@ Minimum release-candidate fields:
 | Rollback evidence | Existing rollback source/procedure evidence and missing execution proof. |
 | Non-claims | Explicit boundaries that the release candidate does not prove. |
 
-The current baseline SHA for this contract is:
+The current Release Engineering lane base for this contract is:
+
+`55b53ad97fdf31bd2ac34bdaf13462b5d5206122`
+
+That SHA includes the merged Codex Operator Work Order Playbook and is the source revision used to
+create this Release Engineering evidence contract.
+
+The Backend OE evidence baseline referenced by this contract is:
 
 `a244743014b4b7731a2694db10bc2e9656876e55`
 
-That SHA is the Backend OE closeout baseline on `origin/main`. A future release candidate must record
-its own exact SHA; it must not silently inherit this baseline if main has moved.
+That SHA is the Backend OE closeout baseline on `origin/main`. A future release candidate must
+record its own exact SHA; it must not silently inherit either baseline if main has moved.
 
 ## Authoritative Backend OE Evidence
 
@@ -175,7 +184,9 @@ rollback mechanism, not proof that rollback has been executed or is safe for pro
 
 ### Verified Evidence
 
+- Release Engineering is started from `55b53ad97fdf31bd2ac34bdaf13462b5d5206122`.
 - Backend OE is closed as an operational baseline at `a244743014b4b7731a2694db10bc2e9656876e55`.
+- The Codex Operator Work Order Playbook is merged and governs the Release Engineering loop.
 - Canonical backend build baseline is recorded as `0 Warning(s)` and `0 Error(s)`.
 - Backend OE release gate, runbook, diagnostics map, operational packet, and evidence rollup exist.
 - Docker/Testcontainers dependency is classified as an integration environment prerequisite, not warning debt.
