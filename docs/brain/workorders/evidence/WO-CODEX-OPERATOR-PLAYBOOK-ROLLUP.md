@@ -12,6 +12,30 @@ RESULT: PASS_WITH_GAP
 The Codex Operator Playbook is defined as docs/governance doctrine. It establishes Codex as the
 primary Work Order operator and owner as the authority wall, not the courier.
 
+## Authorization and Scope
+
+Owner authorization for `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` explicitly allowed this
+docs/governance-only packet under `docs/brain/workorders/**`. This records the exception to the
+root default write lane for this Work Order only.
+
+Authorized scope:
+
+- work-order operator doctrine,
+- goal/loop operator contract,
+- lifecycle and continuation rules,
+- owner-decision packet format,
+- PR/review/CI operator rules,
+- merge authority model,
+- program/register/command routing integration,
+- evidence rollup.
+
+Out of scope:
+
+- runtime/backend/tools-sync implementation,
+- CI or deployment workflow changes,
+- county/PACS/live resources,
+- secrets or production systems.
+
 ## Files Changed
 
 - `docs/brain/workorders/operator/CODEX_OPERATOR_PLAYBOOK.md`

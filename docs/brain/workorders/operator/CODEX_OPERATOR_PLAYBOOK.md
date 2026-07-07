@@ -1,4 +1,4 @@
-# Codex Operator Playbook
+# Codex Operator Work Order Playbook
 
 Work order: WO-CODEX-OP-001 through WO-CODEX-OP-009
 Program: codex-operator-playbook
