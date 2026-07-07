@@ -11,7 +11,7 @@ Backend OE evidence baseline: `a244743014b4b7731a2694db10bc2e9656876e55`
 
 ## Result
 
-RESULT: PASS_WITH_GAP
+RESULT: PASS
 
 Release Engineering now has a canonical evidence contract for converting the closed Backend
 Operational Excellence baseline into a release-candidate decision. This contract maps Backend OE
@@ -20,6 +20,17 @@ the release SHA model, and separates PASS, HOLD, and FAIL decisions.
 
 This work order does not modify CI, deployment, runtime behavior, schema, migrations, GitHub Actions,
 Azure Pipelines, secrets, PACS/CAMA, county SQL, county runtime, or production systems.
+
+## Scope Authorization
+
+The owner selected Release Engineering as the next lane after Backend OE closeout and authorized
+`WO-REL-002` as a documentation/governance-only work order. This authorization permits the
+`docs/brain/workorders/**` release-engineering packet, program-register, active-playbook, and
+goal-loop routing updates in this PR.
+
+This authorization does not extend to runtime/backend/tools-sync implementation, CI or workflow
+changes, deployment behavior, branch protection, schema or migration execution, secrets, county
+runtime, PACS/CAMA, county SQL, production systems, or live resources.
 
 ## Release Candidate Definition
 
@@ -84,7 +95,7 @@ be used as supporting evidence, but they cannot replace required checks.
 | Release branch validation | `.github/workflows/release-validation.yml` / `🔵 Backend Build` | Required for release candidate branch | Build evidence for release branch. |
 | Release branch validation | `.github/workflows/release-validation.yml` / `🔵 Backend Tests` | Required unless formally held as environment-gated | Canonical backend test evidence; Docker/Testcontainers blockers must be dispositioned. |
 | Migration apply | `.github/workflows/migration-apply-gate.yml` / `Migration Apply Check` | Required when migration-relevant files change | Fast-pass is acceptable when no migration-relevant changes exist. |
-| Release lane guard | `.github/workflows/release-lane-guard.yml` / guard job | Required when workflow files change | Prevents rogue production workflow drift and unsafe auto-approve patterns. |
+| Release lane guard | `.github/workflows/release-lane-guard.yml` / `guard` | Required when workflow files change | Prevents rogue production workflow drift and unsafe auto-approve patterns. |
 | Work-order query | `node docs/brain/workorders/tools/wo-query.mjs --json` | Required for work-order docs/governance PRs | Proves work-order registry/query surface remains parseable. |
 | Diff hygiene | `git diff --check` | Required before PR/merge | Proves patch has no whitespace errors. |
 
@@ -111,7 +122,7 @@ be used as supporting evidence, but they cannot replace required checks.
 | Migration/rollback | OE-007 register, migration check result, and rollback evidence. | PASS for source-present/no-migration-change candidates; HOLD when apply/rollback execution proof is absent but no DB mutation is claimed; FAIL if migration safety is claimed without proof. |
 | Dais E2E | OE-008 plan and any future implementation evidence. | PASS only for claims covered by evidence; HOLD for planned-but-not-implemented slices; FAIL if Dais release-grade E2E is overclaimed. |
 | Runbook | Backend operational runbook. | PASS when current release packet references the runbook and escalation triggers. |
-| Diagnostics | OE-011 diagnostics map. | PASS_WITH_GAP when missing observability is carried; FAIL if production observability is claimed without runtime/platform proof. |
+| Diagnostics | OE-011 diagnostics map. | PASS when missing observability is explicitly carried as a non-claim or deferred gap; HOLD if the gap requires owner release disposition; FAIL if production observability is claimed without runtime/platform proof. |
 | Operational packet | OE-012 packet. | PASS when release packet references OE-012 boundaries and non-claims. |
 | Closeout | OE-013 closeout. | PASS when Backend OE remains closed and no closed-lane restart is implied. |
 
