@@ -162,6 +162,10 @@ agents, PRs, reviews, checks, and merge readiness.
 - `docs/brain/workorders/operator/OWNER_DECISION_PACKET_TEMPLATE.md`
 - `docs/brain/workorders/operator/MERGE_AUTHORITY_MODEL.md`
 - `docs/brain/workorders/evidence/WO-CODEX-OPERATOR-PLAYBOOK-ROLLUP.md`
+- `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
+- `docs/brain/workorders/operator/README.md`
 
 ### Stop Type
 

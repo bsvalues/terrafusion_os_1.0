@@ -13,6 +13,8 @@ Permanent doctrine:
   pattern into reusable TerraFusion operating doctrine.
 - [`CODEX_OPERATOR_PLAYBOOK.md`](CODEX_OPERATOR_PLAYBOOK.md) defines Codex as the primary Work Order
   operator and the owner as the authority wall, not the courier.
+- [`GOAL_LOOP_OPERATOR_CONTRACT.md`](../goal-loop/GOAL_LOOP_OPERATOR_CONTRACT.md) defines the
+  `/goal` + `/loop` contract that governs the operator chain.
 - [`WORK_ORDER_LIFECYCLE.md`](WORK_ORDER_LIFECYCLE.md) defines the canonical Work Order states,
   result classifier, and stop-type registry.
 - [`AUTONOMOUS_CONTINUATION_RULES.md`](AUTONOMOUS_CONTINUATION_RULES.md) defines same-risk automatic
