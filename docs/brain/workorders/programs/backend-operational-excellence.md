@@ -5,10 +5,10 @@
 | Program | P3 |
 | Goal | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` |
 | Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
-| Status | ACTIVE |
+| Status | CLOSED |
 | Owner | Operator (bsvalues@gmail.com) |
-| Last Updated | 2026-07-06 |
-| Next WO | `WO-BACKEND-OE-013` after `WO-BACKEND-OE-012` merges |
+| Last Updated | 2026-07-07 |
+| Next WO | Program closed; next recommended lane is Property Workbench |
 
 ---
 
@@ -87,7 +87,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-009` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-009-BACKEND-RELEASE-GATE-DEFINITION.md` |
 | `WO-BACKEND-OE-010` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-010-BACKEND-OPERATIONAL-RUNBOOK.md`; `docs/brain/workorders/runbooks/BACKEND_OPERATIONAL_RUNBOOK.md` |
 | `WO-BACKEND-OE-011` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-011-DIAGNOSTICS-OBSERVABILITY-MAP.md` |
-| `WO-BACKEND-OE-012` | READY FOR PR | `docs/brain/workorders/evidence/WO-BACKEND-OE-012-BACKEND-OPERATIONAL-PACKET.md` |
+| `WO-BACKEND-OE-012` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-012-BACKEND-OPERATIONAL-PACKET.md` |
+| `WO-BACKEND-OE-013` | CLOSED | `docs/brain/workorders/evidence/WO-BACKEND-OE-013-EVIDENCE-ROLLUP-PROGRAM-CLOSEOUT.md` |
 
 ## Remaining Work Order Chain
 
@@ -102,8 +103,8 @@ evidence, release gates, runbooks, diagnostics, and closeout evidence.
 | `WO-BACKEND-OE-009` | Backend Release Gate Definition | Governance/release checklist | OE-008 merged | CLOSED | OE-010 |
 | `WO-BACKEND-OE-010` | Backend Operational Runbook | Runbook creation | OE-009 merged | CLOSED | OE-011 |
 | `WO-BACKEND-OE-011` | Diagnostics and Observability Map | Evidence/docs | OE-010 merged | CLOSED | OE-012 |
-| `WO-BACKEND-OE-012` | Backend Operational Packet | Operational packet assembly | OE-011 merged | READY FOR PR | OE-013 |
-| `WO-BACKEND-OE-013` | Evidence Rollup and Program Closeout | Evidence rollup / closeout | OE-012 merged | QUEUED | Program close |
+| `WO-BACKEND-OE-012` | Backend Operational Packet | Operational packet assembly | OE-011 merged | CLOSED | OE-013 |
+| `WO-BACKEND-OE-013` | Evidence Rollup and Program Closeout | Evidence rollup / closeout | OE-012 merged | CLOSED | Program close |
 
 ```text
 WO-BACKEND-000
