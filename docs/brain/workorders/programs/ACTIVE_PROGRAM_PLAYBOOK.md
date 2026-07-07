@@ -131,8 +131,9 @@ Routing note:
 - `wo-query` currently reports an older LocalOps/Work Order Engine recommendation. Until the registry
   backing `wo-query` is refreshed, this mismatch is a routing reconciliation gate, not authority to
   run both lanes.
-- After merge and owner authorization, proceed to Program 1 / Backend Operational Excellence at
-  `WO-BACKEND-OE-003` unless the owner selects a different active program.
+- Backend Operational Excellence has since run through `WO-BACKEND-OE-013` and is closed. Do not
+  route back to `WO-BACKEND-OE-003`; the next lane now requires owner/WOE selection from the
+  remaining parked or follow-up programs.
 
 ---
 
@@ -143,14 +144,15 @@ Routing note:
 | Goal | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` |
 | Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
 | Program slug | `backend-operational-excellence` |
-| Status | ACTIVE |
-| Next executable WO | `WO-BACKEND-OE-003` |
+| Status | CLOSED |
+| Next executable WO | None - program closed; owner/WOE selects next lane |
 
 ### Current State
 
 Backend foundation is implemented and slice-verified. The canonical backend build is green with zero
-warnings. Warning burn-down is not active work. The remaining work is operational proof, environment
-classification, release gates, runbooks, and evidence.
+warnings. Backend OE is closed as an evidence-backed operational baseline, not as production-ready
+runtime certification. Remaining work is deferred into follow-up lanes such as release-gate
+automation, DevEx hook bootstrap, county runtime proof, or future product-lane execution.
 
 ### Completed Work Orders
 
@@ -160,6 +162,8 @@ classification, release gates, runbooks, and evidence.
 - `WO-BACKEND-OE-002` - Backend Build Warning Register.
 - `WO-BACKEND-OE-PLAYBOOK-REFRESH` - Full Backend OE chain.
 - `WO-MASTER-PLAYBOOK-001` / `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` - Master active program playbook.
+- `WO-BACKEND-OE-003` through `WO-BACKEND-OE-013` - Backend OE evidence, gates, runbook,
+  diagnostics, operational packet, and closeout.
 
 ### Current Facts
 
@@ -190,10 +194,10 @@ classification, release gates, runbooks, and evidence.
 
 ### Continuation Rule
 
-Backend OE may continue automatically after each docs/evidence WO merges if the next WO remains
-inside the Backend OE chain, same-risk, and does not require backend/runtime implementation, CI
-wiring, Docker/Testcontainers repair, secrets, county/PACS/live resources, migrations, deployment, or
-local hook bypass.
+Backend OE does not continue automatically after `WO-BACKEND-OE-013`. Any new backend work must be a
+new owner/WOE-selected lane, especially if it requires release-gate automation, implementation,
+Docker/Testcontainers repair, CI wiring, migrations, deployment, secrets, county/PACS/live resources,
+or local hook tooling repair.
 
 ---
 
@@ -361,12 +365,13 @@ Possible outcomes:
 | Goal | `GOAL-PROPERTY-WORKBENCH` |
 | Loop | `LOOP-PROPERTY-WORKBENCH` |
 | Program slug | `property-workbench` |
-| Status | FUTURE HIGH-VALUE PRODUCT LANE |
-| Next if selected | `WO-WORKBENCH-001` |
+| Status | CLOSED / EVIDENCE BASELINE COMPLETE |
+| Next if selected | No restart; owner must authorize a new Workbench phase |
 
-Rule: Do not start until owner selects it or WOE ranking selects it.
+Rule: Do not restart the closed Workbench evidence chain. Any future Workbench work must be a new
+phase selected by owner/WOE, not a rerun of `WO-WORKBENCH-001`.
 
-Future chain:
+Closed evidence chain:
 
 - `WO-WORKBENCH-001` - Workbench Reality Audit.
 - `WO-WORKBENCH-002` - Routing and Deep-Link Gate Audit.

@@ -109,18 +109,19 @@ security, migration/rollback, diagnostics, and deployment evidence as applicable
 
 ## Next Program Recommendation
 
-Recommended next lane: Property Workbench.
+Recommended next action: owner/WOE lane selection.
 
 Reason: Backend OE is now closed as an operational baseline. Remaining backend items are classified
-follow-up lanes rather than blockers to planning the next product/operator proof lane. Property
-Workbench should proceed only under its own goal/loop, beginning with evidence/discovery and without
-product behavior changes unless separately authorized.
+follow-up lanes rather than blockers to choosing the next governed program. Property Workbench is not
+recommended as an automatic restart target because its evidence baseline already closed in
+`WO-WORKBENCH-011`; any future Workbench work must be a new owner/WOE-selected phase.
 
 Alternate owner-selected lanes:
 
 - Release Engineering, if the priority is automating OE-009 release gates.
 - DevEx Hook Tooling, if repeated local Prettier/Vitest hook failures become the dominant operator blocker.
 - County Runtime, if the next priority is deployment/runtime proof under explicit production and data boundaries.
+- TerraPilot P16 design-only, only if the owner explicitly reopens the parked TerraPilot lane.
 
 ## Done Definition
 
