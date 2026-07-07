@@ -47,8 +47,13 @@ const mockNavigate = vi.fn();
 const { mockActivateModule } = vi.hoisted(() => ({ mockActivateModule: vi.fn() }));
 
 // The Phase-16 crash vector — stub it so the real SuiteModuleGrid evaluates safely and standalone
-// launches are observable. (Same module the deeplink tests mock via the '@/' alias.)
-vi.mock('@/orchestration/moduleActivation', () => ({
+// launches are observable. MUST use the SAME relative specifier SuiteModuleGrid resolves
+// (`../../orchestration/moduleActivation` from components/suites → src/orchestration/moduleActivation),
+// i.e. `../../../orchestration/moduleActivation` from here. The deeplink tests mock via the '@/' alias,
+// but they STUB SuiteModuleGrid, so their alias never had to intercept the real grid's relative import;
+// matching the proven relative pattern (see components/suites/__tests__/SuiteModuleGrid.test.tsx) is what
+// actually intercepts the real grid and prevents the real moduleActivation graph from loading (codex/copilot #1240).
+vi.mock('../../../orchestration/moduleActivation', () => ({
   activateModule: mockActivateModule,
   default: mockActivateModule,
 }));

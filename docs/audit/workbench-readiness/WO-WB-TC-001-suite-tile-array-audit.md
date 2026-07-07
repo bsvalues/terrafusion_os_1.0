@@ -41,6 +41,14 @@ Modules the deeplink tests import **unmocked** (`DaisWorkflowDraftPanel`, `Dossi
 the zustand draft stores) are eval-safe and left real. **No product refactor is required** — the arrays only needed an
 `export` keyword. The STOP condition ("arrays cannot be exported without a broader refactor") does not fire.
 
+**Correction (copilot #1240):** the `moduleActivation` mock MUST use the same **relative** specifier the real grid
+resolves (`../../../orchestration/moduleActivation` from `pages/suites/__tests__`), NOT the `@/` alias. The deeplink tests
+use `@/orchestration/moduleActivation`, but they **stub** `SuiteModuleGrid`, so their alias mock never had to intercept
+the real grid's relative import; because this contract keeps the grid **real**, an alias-vs-relative mismatch would let the
+real `moduleActivation` graph load (reintroducing the Phase-16 worker crash) and the spy would miss calls. The authoritative
+pattern is the grid's own test `components/suites/__tests__/SuiteModuleGrid.test.tsx` (`../../../orchestration/moduleActivation`).
+Fixed accordingly. All other mocks were already relative and resolve to the grid's modules.
+
 ## 4. Outcome
 
 Proceed: TC-002 adds `export` (3 lines, verified export-only); TC-003 writes the contract test at
