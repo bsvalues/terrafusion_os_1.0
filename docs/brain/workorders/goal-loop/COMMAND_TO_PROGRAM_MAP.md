@@ -16,27 +16,27 @@ resolves.
 |-----------------|---------|---------|----------|---------------------|
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | NO | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Master Playbook | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence` |
+| `program-next` | Master Playbook | Owner/WOE lane selection after Backend OE closeout | YES - Backend OE and Workbench evidence chains are closed | `once`, `program`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
-| `backend-excellence` | P3 | WO-BACKEND-OE-003 | NO | `once`, `program`, `evidence`, `discovery` |
-| `backend-start` | P3 | WO-BACKEND-OE-003 | NO | `program` |
-| `backend-status` | P3 | WO-BACKEND-OE-003 | NO | `evidence`, `discovery` |
-| `backend-next` | P3 | WO-BACKEND-OE-003 | NO | `once`, `evidence` |
+| `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
+| `backend-start` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - do not restart Backend OE chain | `program` |
+| `backend-status` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - status/evidence only | `evidence`, `discovery` |
+| `backend-next` | P3 | Owner/WOE lane selection after closeout | YES - no automatic backend continuation | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
 | `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence`, `discovery` |
 | `sync-status` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `evidence`, `discovery` |
 | `sync-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | YES — owner selection gated | `once`, `evidence` |
 | `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |
-| `property-workbench` | P4 | WO-WORKBENCH-001 | NO | `once`, `program`, `evidence`, `discovery` |
+| `property-workbench` | P4 | CLOSED at WO-WORKBENCH-011 | YES - do not restart closed Workbench evidence chain | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
 | `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-001 | YES — owner-gated follow-up | `evidence`, `discovery` |
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
-| `workbench-status` | P4 | WO-WORKBENCH-001 | YES — future lane, owner/WOE selection required | `evidence`, `discovery` |
+| `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
 | `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
@@ -110,21 +110,21 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 | WO-BACKEND-OE-001-S | Baseline generated residue classification | COMPLETE |
 | WO-BACKEND-OE-002 | Build Warning Register | CLOSED |
 | WO-BACKEND-OE-PLAYBOOK-REFRESH | Full Backend OE Work Order Playbook | CLOSED |
-| WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | NEXT |
-| WO-BACKEND-OE-004 | Health and Readiness Semantics Proof | QUEUED |
-| WO-BACKEND-OE-005 | Service Registry Runtime Validation | QUEUED |
-| WO-BACKEND-OE-006 | Security/Auth/County-Isolation Proof Matrix | QUEUED |
-| WO-BACKEND-OE-007 | Migration and Rollback Proof Register | QUEUED |
-| WO-BACKEND-OE-008 | Dais Workflow E2E Proof Expansion Plan | QUEUED |
-| WO-BACKEND-OE-009 | Backend Release Gate Definition | QUEUED |
-| WO-BACKEND-OE-010 | Backend Operational Runbook | QUEUED |
-| WO-BACKEND-OE-011 | Diagnostics and Observability Map | QUEUED |
-| WO-BACKEND-OE-012 | Backend Operational Packet | QUEUED |
-| WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | QUEUED |
+| WO-BACKEND-OE-003 | Integration Test Environment Dependency Register | CLOSED |
+| WO-BACKEND-OE-004 | Health and Readiness Semantics Proof | CLOSED |
+| WO-BACKEND-OE-005 | Service Registry Runtime Validation | CLOSED |
+| WO-BACKEND-OE-006 | Security/Auth/County-Isolation Proof Matrix | CLOSED |
+| WO-BACKEND-OE-007 | Migration and Rollback Proof Register | CLOSED |
+| WO-BACKEND-OE-008 | Dais Workflow E2E Proof Expansion Plan | CLOSED |
+| WO-BACKEND-OE-009 | Backend Release Gate Definition | CLOSED |
+| WO-BACKEND-OE-010 | Backend Operational Runbook | CLOSED |
+| WO-BACKEND-OE-011 | Diagnostics and Observability Map | CLOSED |
+| WO-BACKEND-OE-012 | Backend Operational Packet | CLOSED |
+| WO-BACKEND-OE-013 | Evidence Rollup and Program Closeout | CLOSING IN PR #1239 |
 
-No active stop walls at WO-BACKEND-OE-003. Stop walls begin if work requires production deployment,
-secrets, county data, PACS, live DB, schema migration apply, TerraPilot P16, or backend runtime
-mutation outside the active WO.
+Backend OE has no automatic next WO after OE-013. Owner/WOE must select any follow-up lane, especially
+if the work requires production deployment, secrets, county data, PACS, live DB, schema migration
+apply, TerraPilot P16, backend runtime mutation, CI wiring, or release-gate automation.
 
 ---
 
@@ -135,10 +135,11 @@ mutation outside the active WO.
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-WORKBENCH-001 | Parcel dossier data contract | **NEXT** |
-| (WOs 002–010) | Tab integration, empty states, owners, geom, etc. | QUEUED |
+| WO-WORKBENCH-001 through WO-WORKBENCH-010 | Workbench evidence baseline chain | CLOSED |
+| WO-WORKBENCH-011 | Evidence Rollup | CLOSED |
 
-No active stop walls at WO-WORKBENCH-001.
+Property Workbench is not a current executable restart target. Any future Workbench work requires a
+new owner/WOE-selected phase and must not rerun the closed evidence baseline chain.
 
 ---
 
