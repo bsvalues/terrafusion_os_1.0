@@ -31,15 +31,24 @@ already-recorded next lane.
 
 ## 3. Ownership + collision rule
 
-- **Codex owns the fix now.** codex's own thread says to sync the command surfaces "in the same closeout" (#1239). So the
-  playbook + command-map edits belong to #1239. Claude does **not** edit them in parallel — that would collide with the
-  Codex PR.
-- **Deferred Claude sync (if needed).** After #1239 merges, Claude re-verifies the three surfaces. If the closeout synced
-  them: this WO closes as "verified fixed by #1239." If they are still stale: Claude opens a docs-only governance-sync PR
-  (`GOAL-TF-CLAUDE-GOVREVIEW-001`, allowed surface) to set Backend OE → CLOSED and update the command map — the standing
-  Governance & Playbook Maintenance duty.
+- **Codex owned the fix.** codex's own thread said to sync the command surfaces "in the same closeout" (#1239). Claude did
+  **not** edit them in parallel (collision avoidance).
 - **Next-lane selection stays with the Brain.** Claude records the registered next lane (P5 TerraPilot) as evidence but
   does not self-route or self-start it.
+
+## 3a. Outcome — sync landed in #1239 and is CORRECT (verified at head `4bf0963`)
+
+Codex pushed a sync commit to #1239 (threads now 0/2 resolved) that added both flagged surfaces + a register. Claude
+verified the fix is not merely present but correct:
+
+| Surface | Post-fix state @ #1239 head | Correct? |
+|---------|-----------------------------|:--------:|
+| `ACTIVE_PROGRAM_PLAYBOOK.md` | Backend OE `Status: CLOSED`; `Next executable WO: None - program closed; owner/WOE selects next lane` | ✅ |
+| `COMMAND_TO_PROGRAM_MAP.md` | `backend-excellence`/`backend-start`/`backend-status` → CLOSED at OE-013; OE-003 & OE-012 → CLOSED; OE-013 "CLOSING IN PR #1239"; note "no automatic next WO … owner/WOE must select"; `backend-start` carries "do not restart Backend OE chain" | ✅ |
+
+**DEFERRED CLAUDE GOVSYNC: CANCELLED — not needed.** The restart hazard is closed within #1239 itself. This WO closes as
+**"verified fixed by #1239"** pending that PR's merge to main. Claude will confirm on `main` once #1239 lands and take no
+further edit action on these surfaces.
 
 ## 4. Return
 
