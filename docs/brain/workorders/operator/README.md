@@ -11,6 +11,18 @@ Permanent doctrine:
 
 - [`WORK_ORDER_OPERATOR_DOCTRINE.md`](WORK_ORDER_OPERATOR_DOCTRINE.md) promotes the proven operator
   pattern into reusable TerraFusion operating doctrine.
+- [`CODEX_OPERATOR_PLAYBOOK.md`](CODEX_OPERATOR_PLAYBOOK.md) defines Codex as the primary Work Order
+  operator and the owner as the authority wall, not the courier.
+- [`WORK_ORDER_LIFECYCLE.md`](WORK_ORDER_LIFECYCLE.md) defines the canonical Work Order states,
+  result classifier, and stop-type registry.
+- [`AUTONOMOUS_CONTINUATION_RULES.md`](AUTONOMOUS_CONTINUATION_RULES.md) defines same-risk automatic
+  continuation and mandatory stop conditions.
+- [`PR_REVIEW_CI_OPERATOR_RULES.md`](PR_REVIEW_CI_OPERATOR_RULES.md) defines PR, review, and CI
+  ownership after implementation.
+- [`OWNER_DECISION_PACKET_TEMPLATE.md`](OWNER_DECISION_PACKET_TEMPLATE.md) standardizes authority-wall
+  requests.
+- [`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md) defines merge authorization and post-merge
+  verification.
 
 ## Operator Role
 

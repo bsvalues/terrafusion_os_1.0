@@ -21,6 +21,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
+| [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Active | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | PR finalization / merge authority | Auto within docs/governance operator doctrine | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
@@ -164,3 +165,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-06 | Mapped backend diagnostics and observability signals and routed next to operational packet | WO-BACKEND-OE-011 |
 | 2026-07-06 | Assembled backend operational packet and routed next to program closeout | WO-BACKEND-OE-012 |
 | 2026-07-07 | Closed Backend Operational Excellence with evidence rollup and routed next action to owner/WOE lane selection | WO-BACKEND-OE-013 |
+| 2026-07-07 | Added Codex Operator Work Order Playbook doctrine, lifecycle, continuation, PR/CI, owner-decision, merge authority, and rollup evidence | WO-CODEX-OP-001..009 |

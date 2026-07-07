@@ -32,6 +32,28 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ## Program Commands
 
+### /goal codex-operator-playbook
+
+```
+Goal:     Make Codex the primary TerraFusion Work Order operator so the owner is the authority wall,
+          not the courier between agents, PRs, checks, reviews, and merge readiness.
+Program:  Codex Operator Work Order Playbook
+File:     operator/CODEX_OPERATOR_PLAYBOOK.md
+Success:  Operator doctrine, goal/loop contract, lifecycle, continuation rules, PR/CI rules,
+          owner-decision packet, merge model, register integration, and rollup evidence exist.
+```
+
+**Current state:** `WO-CODEX-OP-001` through `WO-CODEX-OP-009` are active as docs/governance-only
+operator doctrine.
+
+**Allowed loop modes:** `once`, `program`, `evidence`
+
+**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes, branch protection,
+hook bypass without owner authorization, merge without PR-specific authorization, production,
+deployment, secrets, county/PACS/SQL/live resources, and destructive operations.
+
+---
+
 ### /goal goal-loop-master-playbook
 
 ```
