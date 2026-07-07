@@ -92,6 +92,25 @@ Success:  Operator sees the next executable WO and the stop gates that block par
 
 ---
 
+### /goal release-engineering
+
+```
+Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
+          release evidence contracts without crossing into deployment or county runtime authority.
+Program:  Release Engineering
+File:     docs/brain/workorders/evidence/WO-REL-002-RELEASE-GATE-EVIDENCE-CONTRACT.md
+Success:  Release candidates have explicit SHA, required/advisory check mapping, Backend OE evidence
+          links, PASS/HOLD/FAIL decisions, rollback evidence requirements, and intentional non-claims.
+```
+
+**Current state:** `WO-REL-002` is active after Backend OE closeout. The lane is docs/governance only
+until an owner separately authorizes CI/workflow wiring, deployment, schema, secrets, county runtime,
+PACS/CAMA, live services, or production resources.
+
+**Allowed loop modes:** `once`, `evidence`, `discovery`
+
+---
+
 ### /goal benton-demo
 
 ```
