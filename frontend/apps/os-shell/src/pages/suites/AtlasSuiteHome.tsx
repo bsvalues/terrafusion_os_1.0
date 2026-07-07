@@ -29,7 +29,7 @@ const PROOF_PARCEL_ID = '119802030006001';
 const GIS_GEOMETRIES_AVAILABLE = 80084;
 const RING_JSON_GEOMETRIES_AVAILABLE = 80083;
 
-const ATLAS_MODULES: SuiteModuleDef[] = [
+export const ATLAS_MODULES: SuiteModuleDef[] = [
   { id: 'gis', label: 'TerraGIS', icon: Map, description: 'Partial GIS surface backed by live Benton parcel boundary data', launchMode: 'standalone', moduleId: 'atlas' },
   { id: 'parcel-lens', label: 'ParcelLens', icon: Search, description: 'Partial parcel detail surface for the canonical Benton proof parcel', launchMode: 'standalone', moduleId: 'atlas' },
   { id: 'layer-works', label: 'LayerWorks', icon: Layers, description: 'Partial layer truth for tax area, land class, flood, and zoning status', launchMode: 'standalone', moduleId: 'atlas' },
