@@ -66,8 +66,8 @@ Success:  Operator doctrine, goal/loop contract, lifecycle, continuation rules, 
           owner-decision packet, merge model, register integration, and rollup evidence exist.
 ```
 
-**Current state:** `WO-CODEX-OP-001` through `WO-CODEX-OP-009` are active as docs/governance-only
-operator doctrine.
+**Current state:** `WO-CODEX-OP-001` through `WO-CODEX-OP-009` are merged. The operator doctrine is
+now the governing model for subsequent owner-selected lanes.
 
 **Allowed loop modes:** `once`, `program`, `evidence`
 
@@ -87,9 +87,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is active until merged. After merge, the
-playbook governs continuation and routes next to Backend OE `WO-BACKEND-OE-003` unless the owner
-selects a different active program.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
+and the owner-selected active lane is Release Engineering at `WO-REL-002`.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -107,11 +106,30 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Backend OE is the next executable program, routed to `WO-BACKEND-OE-003`.
+**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-002`.
 
 **Command aliases:** `/program-status`, `/program-next`, `/program-stop`
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
+
+---
+
+### /goal release-engineering
+
+```
+Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
+          release evidence contracts without crossing into deployment or county runtime authority.
+Program:  Release Engineering
+File:     docs/brain/workorders/evidence/WO-REL-002-RELEASE-GATE-EVIDENCE-CONTRACT.md
+Success:  Release candidates have explicit SHA, required/advisory check mapping, Backend OE evidence
+          links, PASS/HOLD/FAIL decisions, rollback evidence requirements, and intentional non-claims.
+```
+
+**Current state:** `WO-REL-002` is active after Backend OE closeout and Codex Operator Playbook
+merge. The lane is docs/governance only until an owner separately authorizes CI/workflow wiring,
+deployment, schema, secrets, county runtime, PACS/CAMA, live services, or production resources.
+
+**Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
 ---
 
