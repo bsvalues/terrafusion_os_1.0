@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-07 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy)*
+*(Updated 2026-07-08 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-004 release tag/version evidence model)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|

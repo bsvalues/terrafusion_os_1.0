@@ -61,7 +61,7 @@ Every future tag/version proposal must include these fields:
 | Proposed version | `vYYYY.MM.DD.N` or semver-compatible owner-approved value | Must not imply production deployment by itself. |
 | Proposed tag | `tf-os/vYYYY.MM.DD.N` or owner-approved equivalent | Tag creation requires separate owner authorization. |
 | Evidence bundle path | Canonical release evidence packet path | Must link to the RC packet and Backend OE evidence. |
-| Rollback class | Docs/config/feature/dependency/migration/deployment/full-revert class | Must match rollback evidence. |
+| Rollback class | One of: Docs-only rollback, Config rollback, Feature-flag rollback, Dependency rollback, Migration rollback, Deployment rollback, Full revert | Must match the rollback evidence class names used by the release candidate packet. |
 | Owner decision | PASS, HOLD, or FAIL | PASS is evidence readiness only unless deployment is separately authorized. |
 
 ## Version Pattern
