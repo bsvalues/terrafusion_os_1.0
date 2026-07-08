@@ -47,7 +47,7 @@ owner can make a decision.
 
 ```text
 OWNER_DECISION:
-[APPROVED | HOLD | REJECTED]
+[APPROVED | DEFERRED | REJECTED]
 
 Rollback drill ID:
 [ROLLBACK-DRILL-ID]
@@ -71,7 +71,7 @@ County/PACS/live data involved:
 no
 
 Execution command or procedure:
-[exact documented command/procedure, or HOLD if not yet defined]
+[exact documented command/procedure, or TBD if not yet defined]
 
 Evidence packet:
 [path]

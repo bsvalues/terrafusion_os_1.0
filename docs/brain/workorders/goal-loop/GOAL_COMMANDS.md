@@ -120,7 +120,7 @@ Success:  Operator sees the next executable WO and the stop gates that block par
 Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
           release evidence contracts without crossing into deployment or county runtime authority.
 Program:  Release Engineering
-File:     docs/brain/workorders/evidence/WO-REL-006-RELEASE-ENGINEERING-EVIDENCE-ROLLUP.md
+File:     docs/brain/workorders/programs/release-engineering.md
 Success:  Release Engineering baseline has merged evidence links, validation summary, deferred risks,
           and next-lane recommendation.
 ```
