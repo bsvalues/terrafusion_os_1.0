@@ -14,6 +14,7 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `codex-operator-autonomy` | Codex Operator Autonomy | WO-OP-AUTO-000 through WO-OP-AUTO-012 | NO | `once`, `program`, `evidence` |
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | WO-CODEX-OP-001 through WO-CODEX-OP-009 | NO | `once`, `program`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | NO | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
