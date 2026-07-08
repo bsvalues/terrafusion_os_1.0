@@ -88,7 +88,7 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
 ```
 
 **Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
-and the owner-selected active lane is Release Engineering at `WO-REL-005`.
+and the owner-selected active lane is Release Engineering at `WO-REL-006`.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -106,7 +106,7 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-005`.
+**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-006`.
 
 **Command aliases:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -120,12 +120,12 @@ Success:  Operator sees the next executable WO and the stop gates that block par
 Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
           release evidence contracts without crossing into deployment or county runtime authority.
 Program:  Release Engineering
-File:     docs/brain/workorders/evidence/WO-REL-005-ROLLBACK-DRILL-AUTHORIZATION-PACKET.md
-Success:  Future rollback drills have explicit safe-environment proof requirements, authority points,
-          blocked boundaries, validation gates, and non-claims before execution is considered.
+File:     docs/brain/workorders/programs/release-engineering.md
+Success:  Release Engineering baseline has merged evidence links, validation summary, deferred risks,
+          and next-lane recommendation.
 ```
 
-**Current state:** `WO-REL-005` is next after the release tag/version evidence model lands. The lane
+**Current state:** `WO-REL-006` is next after the rollback drill authorization packet lands. The lane
 is docs/governance only until an owner separately authorizes CI/workflow wiring,
 deployment, schema, secrets, county runtime, PACS/CAMA, live services, or production resources.
 
