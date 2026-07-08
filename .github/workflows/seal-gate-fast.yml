@@ -232,7 +232,12 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        run: pnpm -C frontend run test:tier0
+        # Fast gate runs Vitest directly (test:tier0 === `vitest run`) and EXCLUDES the
+        # network/registry-variable npm-audit test (~3 min) so it never consumes the
+        # 30-min fast-gate budget. That dependency-audit coverage remains in the scheduled
+        # Security & Compliance Pipeline dependency scan. --slowTestThreshold=1000 surfaces
+        # future slow tests without raising this gate's timeout. (Fix for #1242.)
+        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000
 
       - name: IPC tests (blocking)
         id: ipc-tests
