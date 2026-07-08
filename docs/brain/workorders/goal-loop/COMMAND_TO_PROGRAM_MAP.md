@@ -18,9 +18,9 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Master Playbook | Release Engineering / WO-REL-003 | NO | `once`, `program`, `evidence` |
+| `program-next` | Master Playbook | Release Engineering / WO-REL-004 | NO | `once`, `program`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
-| `release-engineering` | Release Engineering | WO-REL-003 | NO | `once`, `program`, `evidence`, `discovery` |
+| `release-engineering` | Release Engineering | WO-REL-004 | NO | `once`, `program`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
