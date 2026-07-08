@@ -3,12 +3,19 @@
 Program: codex-operator-autonomy
 Goal: GOAL-TF-CODEX-OPERATOR-AUTONOMY-001
 Loop: LOOP-TF-CODEX-OPERATOR-AUTONOMY-001
-Status: active until merged, then governing operator baseline
+Status: active until merged, then operator autonomy baseline
 
 ## Mission
 
 Eliminate human courier mode. Codex is the TerraFusion Work Order operator. The human owner remains
 the authority gate for true authority walls.
+
+## Authorization Record
+
+This program is owner-authorized for docs/governance changes under `docs/brain/workorders/**`.
+That authorization is limited to Work Order operator autonomy doctrine, routing, playbooks, and
+evidence. It does not authorize runtime, backend, tools-sync, CI, deployment, county, PACS, secrets,
+or production changes.
 
 ## Success State
 

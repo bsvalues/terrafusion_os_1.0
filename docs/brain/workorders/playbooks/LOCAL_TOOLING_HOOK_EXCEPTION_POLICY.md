@@ -10,10 +10,15 @@ Work Order: WO-OP-AUTO-007
 Missing local Prettier or Vitest should not repeatedly stop docs/governance Work Orders when
 repository validation already passed and remote CI is authoritative.
 
-## Standing Exception
+## Owner-Authorized Exception
+
+This policy does not create a global automatic hook bypass. The default global rule remains:
+local hook bypass is an owner-decision stop unless the active goal/loop packet explicitly grants
+this exception for the current docs/governance Work Order.
 
 Codex may use `--no-verify` only when all are true:
 
+- the active goal/loop or owner packet has granted this local tooling exception,
 - the Work Order is docs/evidence/governance/runbook only,
 - changed files are inside the authorized scope,
 - `git diff --check` passed,

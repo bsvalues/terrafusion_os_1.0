@@ -26,7 +26,7 @@ Default for:
 
 Codex reports `MERGE_AUTH_REQUIRED` when the PR is clean, green, and in scope.
 
-## Mode B - Preauthorized Merge When Green
+## Mode B - Pre-authorized Merge When Green
 
 Allowed only when the active goal/loop explicitly grants it for docs/governance Work Orders and all
 are true:
