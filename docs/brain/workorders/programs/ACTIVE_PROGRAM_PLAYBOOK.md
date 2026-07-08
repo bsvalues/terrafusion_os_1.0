@@ -172,7 +172,51 @@ agents, PRs, reviews, checks, and merge readiness.
 
 ---
 
-## Program 0B - Release Engineering
+## Program 0B - Codex Operator Autonomy
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Loop | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Program slug | `codex-operator-autonomy` |
+| Status | GOVERNING AUTONOMY BASELINE |
+| Current WO | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` |
+
+### Purpose
+
+Eliminate human courier mode. Codex operates approved Work Order chains through validation, PR,
+review remediation, check monitoring, merge-readiness reporting, post-merge verification, and
+next-WO selection.
+
+### Deliverables
+
+- `docs/brain/workorders/evidence/WO-OP-AUTO-000-COURIER-FRICTION-AUDIT.md`
+- `docs/brain/workorders/programs/CODEX_OPERATOR_AUTHORITY_MATRIX.md`
+- `docs/brain/workorders/goal-loop/GOAL_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/LOOP_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/STOP_TYPE_CLASSIFIER.md`
+- `docs/brain/workorders/playbooks/CODEX_PR_LIFECYCLE_PLAYBOOK.md`
+- `docs/brain/workorders/playbooks/REVIEW_REMEDIATION_AUTONOMY.md`
+- `docs/brain/workorders/playbooks/LOCAL_TOOLING_HOOK_EXCEPTION_POLICY.md`
+- `docs/brain/workorders/playbooks/MERGE_AUTHORITY_MODEL.md`
+- `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md`
+- `docs/brain/workorders/evidence/CODEX_EVIDENCE_OUTPUT_STANDARD.md`
+- `docs/brain/workorders/evidence/WO-OP-AUTO-012-OPERATOR-AUTONOMY-ROLLUP.md`
+- `docs/brain/workorders/programs/codex-operator-autonomy.md`
+
+### Release Engineering Application
+
+Release Engineering is the active lane using this operator-autonomy model. Release Engineering may
+use the local-tooling exception, review-remediation autonomy, same-risk docs/governance branch
+updates, and next-WO selection rules defined here while it stays inside its approved scope.
+
+### Stop Type
+
+`OPERATOR_AUTONOMY_ROLLUP_READY_FOR_PR`
+
+---
+
+## Program 0C - Release Engineering
 
 | Field | Value |
 |-------|-------|
@@ -210,9 +254,9 @@ mutation.
 
 ### Stop Gates
 
-Stop on merge authorization, local hook bypass, CI/workflow changes, branch-protection changes,
-deployment, runtime code, schema/migrations, secrets, county runtime, PACS/CAMA, live services,
-or rollback execution claims without proof.
+Stop on CI/workflow changes, branch-protection changes, deployment, runtime code,
+schema/migrations, secrets, county runtime, PACS/CAMA, live services, or rollback execution claims
+without proof.
 
 ---
 

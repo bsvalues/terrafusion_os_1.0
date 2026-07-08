@@ -32,6 +32,29 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ## Program Commands
 
+### /goal codex-operator-autonomy
+
+```
+Goal:     Make Codex the active TerraFusion Work Order operator so the owner is no longer the
+          courier between ChatGPT, Codex, PRs, checks, reviews, and merge readiness.
+Program:  Codex Operator Autonomy
+File:     programs/codex-operator-autonomy.md
+Success:  Courier friction audit, authority matrix, goal/loop contracts, stop classifier, PR
+          lifecycle, review autonomy, hook exception, merge model, next-WO rule, evidence output
+          standard, Release Engineering application, and rollup exist.
+```
+
+**Current state:** `WO-OP-AUTO-000` through `WO-OP-AUTO-012` are active as docs/governance-only
+operator autonomy work.
+
+**Allowed loop modes:** `once`, `program`, `evidence`
+
+**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes, deployment, branch
+protection, county runtime, PACS, secrets, production resources, destructive operations outside exact
+repair authority, and merge without the applicable merge authority model.
+
+---
+
 ### /goal codex-operator-playbook
 
 ```

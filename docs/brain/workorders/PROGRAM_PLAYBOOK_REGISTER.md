@@ -17,10 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-07 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration)*
+*(Updated 2026-07-07 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
+| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Release Engineering lane active | Owner-authorized docs/governance scope under `docs/brain/workorders/**`; operator model governs same-risk continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, local hook bypass without active owner authorization, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Active | `WO-REL-002` | `WO-REL-003` | Auto only for docs/governance evidence contracts after owner-selected Release Engineering lane | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |
 | [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Closed | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | Release Engineering lane selected | Operator model governs future WOs | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
@@ -92,6 +93,7 @@ These actions require explicit operator authorization. The Brain and Claude do n
 - [P7 — AI / Brain / Operator System](programs/brain-operator-system.md)
 - [P8 — Azure / DevOps / County Runtime](programs/azure-county-runtime.md)
 - [P8-MGMT — Management Dashboard (roadmap Phase 8)](programs/p8-management-dashboard.md)
+- [Codex Operator Autonomy](programs/codex-operator-autonomy.md)
 - [Release Engineering](programs/release-engineering.md)
 
 ---
@@ -168,4 +170,5 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-06 | Assembled backend operational packet and routed next to program closeout | WO-BACKEND-OE-012 |
 | 2026-07-07 | Closed Backend Operational Excellence with evidence rollup and routed next action to owner/WOE lane selection | WO-BACKEND-OE-013 |
 | 2026-07-07 | Added Codex Operator Work Order Playbook doctrine, lifecycle, continuation, PR/CI, owner-decision, merge authority, and rollup evidence | WO-CODEX-OP-001..009 |
+| 2026-07-07 | Added Codex Operator Autonomy authority matrix, goal/loop contracts, stop classifier, PR lifecycle, hook exception, next-WO rule, evidence output standard, and rollup | WO-OP-AUTO-000..012 |
 | 2026-07-07 | Started Release Engineering lane, created release program playbook, and created release gate evidence contract | WO-REL-002 |
