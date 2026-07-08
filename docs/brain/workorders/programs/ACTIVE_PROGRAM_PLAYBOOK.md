@@ -223,9 +223,9 @@ updates, and next-WO selection rules defined here while it stays inside its appr
 | Goal | `GOAL-TF-RELEASE-ENGINEERING-001` |
 | Loop | `LOOP-TF-RELEASE-ENGINEERING-001` |
 | Program slug | `release-engineering` |
-| Status | ACTIVE |
-| Current WO | `WO-REL-005` |
-| Next WO | `WO-REL-006` |
+| Status | CLOSING |
+| Current WO | `WO-REL-006` |
+| Next WO | Owner-selected next lane |
 
 ### Purpose
 
@@ -239,7 +239,8 @@ mutation.
 - The Backend OE closeout evidence baseline is `a244743014b4b7731a2694db10bc2e9656876e55`.
 - The Codex Operator Work Order Playbook is merged at
   `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` and governs this lane.
-- Current work is `WO-REL-005 - Rollback Drill Authorization Packet`.
+- Current work is `WO-REL-006 - Release Engineering Evidence Rollup`.
+- Next recommended lane after closeout is DevEx Hook Tooling, owner-selection gated.
 
 ### Work Order Chain
 
