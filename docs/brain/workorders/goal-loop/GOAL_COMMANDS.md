@@ -88,7 +88,7 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
 ```
 
 **Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
-and the owner-selected active lane is Release Engineering at `WO-REL-006`.
+and the owner-selected active lane is Release Engineering at `WO-REL-006` closeout.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -106,7 +106,8 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-006`.
+**Current state:** Release Engineering is closing at `WO-REL-006`; next lane requires owner
+selection.
 
 **Command aliases:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -125,9 +126,9 @@ Success:  Release Engineering baseline has merged evidence links, validation sum
           and next-lane recommendation.
 ```
 
-**Current state:** `WO-REL-006` is next after the rollback drill authorization packet lands. The lane
-is docs/governance only until an owner separately authorizes CI/workflow wiring,
-deployment, schema, secrets, county runtime, PACS/CAMA, live services, or production resources.
+**Current state:** `WO-REL-006` closes the Release Engineering docs/governance baseline. After
+closeout, no Release Engineering continuation is automatic; the next recommended lane is DevEx Hook
+Tooling, owner-selection gated.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
