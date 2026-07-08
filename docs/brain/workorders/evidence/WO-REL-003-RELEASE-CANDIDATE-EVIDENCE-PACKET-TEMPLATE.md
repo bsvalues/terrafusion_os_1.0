@@ -97,9 +97,10 @@ Record the exact workflow/check name and final result.
 | `phase86-toolrunner` | yes | `[pass/hold/fail]` | `[url]` | Toolrunner invariant. |
 | `🔒 TerraFusion Seal Gate` | yes | `[pass/hold/fail]` | `[url]` | Constitutional seal gate. |
 | `🧪 Tier-1 UI Harness Validation` | yes | `[pass/hold/fail]` | `[url]` | Required UI harness gate. |
-| `Backend Build` or current backend build gate | yes | `[pass/hold/fail]` | `[url]` | Must preserve zero-warning posture or document warning disposition. |
-| `Backend Tests` or current backend test gate | yes | `[pass/hold/fail]` | `[url]` | Docker/Testcontainers blockers must be dispositioned. |
+| `🔵 Backend Build` | yes | `[pass/hold/fail]` | `[url]` | Must preserve zero-warning posture or document warning disposition. |
+| `🔵 Backend Tests` | yes | `[pass/hold/fail]` | `[url]` | Docker/Testcontainers blockers must be dispositioned. |
 | `Migration Apply Check` | conditional | `[pass/hold/fail/not applicable]` | `[url]` | Required when migration-relevant files change. |
+| `guard` (`release-lane-guard.yml`) | conditional | `[pass/hold/fail/not applicable]` | `[url]` | Required when workflow files change; candidate cannot PASS if workflow-drift guard evidence is missing. |
 | `git diff --check` | yes | `[pass/hold/fail]` | `[local evidence]` | Required for candidate packet hygiene. |
 | `node docs/brain/workorders/tools/wo-query.mjs --json` | yes | `[pass/hold/fail]` | `[local evidence]` | Required for work-order governance docs. |
 
