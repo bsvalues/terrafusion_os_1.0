@@ -173,6 +173,51 @@ agents, PRs, reviews, checks, and merge readiness.
 
 ---
 
+## Program 0B - Codex Operator Autonomy
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Loop | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Program slug | `codex-operator-autonomy` |
+| Status | ACTIVE UNTIL MERGED, THEN GOVERNING AUTONOMY BASELINE |
+| Current WO | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` |
+
+### Purpose
+
+Eliminate human courier mode. Codex operates approved Work Order chains through validation, PR,
+review remediation, check monitoring, merge-readiness reporting, post-merge verification, and
+next-WO selection.
+
+### Deliverables
+
+- `docs/brain/workorders/evidence/WO-OP-AUTO-000-COURIER-FRICTION-AUDIT.md`
+- `docs/brain/workorders/programs/CODEX_OPERATOR_AUTHORITY_MATRIX.md`
+- `docs/brain/workorders/goal-loop/GOAL_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/LOOP_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/STOP_TYPE_CLASSIFIER.md`
+- `docs/brain/workorders/playbooks/CODEX_PR_LIFECYCLE_PLAYBOOK.md`
+- `docs/brain/workorders/playbooks/REVIEW_REMEDIATION_AUTONOMY.md`
+- `docs/brain/workorders/playbooks/LOCAL_TOOLING_HOOK_EXCEPTION_POLICY.md`
+- `docs/brain/workorders/playbooks/MERGE_AUTHORITY_MODEL.md`
+- `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md`
+- `docs/brain/workorders/evidence/CODEX_EVIDENCE_OUTPUT_STANDARD.md`
+- `docs/brain/workorders/evidence/WO-OP-AUTO-012-OPERATOR-AUTONOMY-ROLLUP.md`
+- `docs/brain/workorders/programs/codex-operator-autonomy.md`
+
+### Release Engineering Application
+
+Release Engineering is the next lane intended to use this operator-autonomy model. PR #1243 remains a
+separate Release Engineering PR and is not modified by this program. After that PR merges, Release
+Engineering should use the local-tooling exception, review-remediation autonomy, and next-WO
+selection rules defined here.
+
+### Stop Type
+
+`OPERATOR_AUTONOMY_ROLLUP_READY_FOR_PR`
+
+---
+
 ## Program 1 - Backend Operational Excellence
 
 | Field | Value |

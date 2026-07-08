@@ -17,10 +17,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-07 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration)*
+*(Updated 2026-07-07 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
+| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Active until merged, then governing baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Return to active owner-selected lane after merge | Auto within docs/governance operator autonomy; local-tooling exception allowed when validation passed | Stop on merge authority unless pre-granted, branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Active | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | `TBD` | Auto within docs/governance operator doctrine; current PR stops at merge authority | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
@@ -91,6 +92,7 @@ These actions require explicit operator authorization. The Brain and Claude do n
 - [P7 — AI / Brain / Operator System](programs/brain-operator-system.md)
 - [P8 — Azure / DevOps / County Runtime](programs/azure-county-runtime.md)
 - [P8-MGMT — Management Dashboard (roadmap Phase 8)](programs/p8-management-dashboard.md)
+- [Codex Operator Autonomy](programs/codex-operator-autonomy.md)
 
 ---
 
@@ -166,3 +168,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-06 | Assembled backend operational packet and routed next to program closeout | WO-BACKEND-OE-012 |
 | 2026-07-07 | Closed Backend Operational Excellence with evidence rollup and routed next action to owner/WOE lane selection | WO-BACKEND-OE-013 |
 | 2026-07-07 | Added Codex Operator Work Order Playbook doctrine, lifecycle, continuation, PR/CI, owner-decision, merge authority, and rollup evidence | WO-CODEX-OP-001..009 |
+| 2026-07-07 | Added Codex Operator Autonomy authority matrix, goal/loop contracts, stop classifier, PR lifecycle, hook exception, next-WO rule, evidence output standard, and rollup | WO-OP-AUTO-000..012 |
