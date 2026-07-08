@@ -5,7 +5,7 @@
 **Loop:** `LOOP-TF-RELEASE-ENGINEERING-001`
 **Status:** Active
 **Selected after:** Backend Operational Excellence closeout
-**Current base:** `origin/main` at `55b53ad97fdf31bd2ac34bdaf13462b5d5206122`
+**Current base:** `origin/main` at `89e6e602b3c0e3ccc90c40ab0a372c2b16fdb55c`
 
 ---
 
@@ -25,6 +25,10 @@ Release Engineering defines the release decision contract. It does not deploy.
 - The Backend OE closeout baseline is `a244743014b4b7731a2694db10bc2e9656876e55`.
 - The Codex Operator Work Order Playbook is merged at
   `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` and governs this lane.
+- The Codex Operator Autonomy playbook is merged at
+  `91b0b3b1a1c6131a9c7c545e06a6f69e53ab61a0` and grants same-risk
+  docs/governance continuation for this lane.
+- `WO-REL-002` is merged at `89e6e602b3c0e3ccc90c40ab0a372c2b16fdb55c`.
 - Backend OE evidence exists for release gates, runbook, diagnostics, operational packet,
   migration/rollback source inventory, Dais E2E planning, security/auth/county proof, and closeout.
 - Release Engineering must reference Backend OE evidence instead of recreating it.
@@ -104,8 +108,8 @@ Default validation for docs/governance Release Engineering WOs:
 
 Current WO:
 
-`WO-REL-002 - Release Gate Checklist / Evidence Contract`
+`WO-REL-003 - Release Candidate Evidence Packet Template`
 
 Next recommended WO after merge:
 
-`WO-REL-003 - Release Candidate Evidence Packet Template`
+`WO-REL-004 - Release Tag / Version Evidence Model`
