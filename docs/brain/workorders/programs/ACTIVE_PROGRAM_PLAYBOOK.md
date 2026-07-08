@@ -224,8 +224,8 @@ updates, and next-WO selection rules defined here while it stays inside its appr
 | Loop | `LOOP-TF-RELEASE-ENGINEERING-001` |
 | Program slug | `release-engineering` |
 | Status | ACTIVE |
-| Current WO | `WO-REL-002` |
-| Next WO | `WO-REL-003` |
+| Current WO | `WO-REL-003` |
+| Next WO | `WO-REL-004` |
 
 ### Purpose
 
@@ -239,7 +239,7 @@ mutation.
 - The Backend OE closeout evidence baseline is `a244743014b4b7731a2694db10bc2e9656876e55`.
 - The Codex Operator Work Order Playbook is merged at
   `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` and governs this lane.
-- Current work is `WO-REL-002 - Release Gate Checklist / Evidence Contract`.
+- Current work is `WO-REL-003 - Release Candidate Evidence Packet Template`.
 
 ### Work Order Chain
 
