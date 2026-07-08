@@ -88,7 +88,7 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
 ```
 
 **Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
-and the owner-selected active lane is Release Engineering at `WO-REL-003`.
+and the owner-selected active lane is Release Engineering at `WO-REL-005`.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -106,7 +106,7 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-003`.
+**Current state:** Release Engineering is the owner-selected active lane, routed to `WO-REL-005`.
 
 **Command aliases:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -120,13 +120,13 @@ Success:  Operator sees the next executable WO and the stop gates that block par
 Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
           release evidence contracts without crossing into deployment or county runtime authority.
 Program:  Release Engineering
-File:     docs/brain/workorders/evidence/WO-REL-003-RELEASE-CANDIDATE-EVIDENCE-PACKET-TEMPLATE.md
-Success:  Release candidates have explicit SHA, required/advisory check mapping, Backend OE evidence
-          links, PASS/HOLD/FAIL decisions, rollback evidence requirements, and intentional non-claims.
+File:     docs/brain/workorders/evidence/WO-REL-005-ROLLBACK-DRILL-AUTHORIZATION-PACKET.md
+Success:  Future rollback drills have explicit safe-environment proof requirements, authority points,
+          blocked boundaries, validation gates, and non-claims before execution is considered.
 ```
 
-**Current state:** `WO-REL-003` is active after the release gate evidence contract merged. The next
-Release Engineering WO is `WO-REL-004`. The lane is docs/governance only until an owner separately authorizes CI/workflow wiring,
+**Current state:** `WO-REL-005` is next after the release tag/version evidence model lands. The lane
+is docs/governance only until an owner separately authorizes CI/workflow wiring,
 deployment, schema, secrets, county runtime, PACS/CAMA, live services, or production resources.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
