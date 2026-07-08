@@ -36,4 +36,3 @@ STOP_TYPE values must tell Codex whether to continue, remediate, or stop for own
 - Branch strategy conflicts are owner walls even when code quality is clean.
 
 STOP_TYPE: STOP_TYPE_CLASSIFIER_DEFINED
-

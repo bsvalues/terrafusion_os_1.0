@@ -65,4 +65,3 @@ A PR is merge-ready only when:
 - no owner authority wall remains except merge authority itself.
 
 STOP_TYPE: CODEX_PR_LIFECYCLE_PLAYBOOK_DEFINED
-

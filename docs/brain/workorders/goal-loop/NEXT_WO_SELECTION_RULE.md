@@ -45,4 +45,3 @@ Stop instead of selecting next work when:
 - canon conflicts.
 
 STOP_TYPE: NEXT_WO_SELECTION_RULE_DEFINED
-

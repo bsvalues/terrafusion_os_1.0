@@ -67,4 +67,3 @@ destructive actions unless the goal explicitly includes that authority and the a
 also permits it.
 
 STOP_TYPE: GOAL_CONTRACT_DEFINED
-

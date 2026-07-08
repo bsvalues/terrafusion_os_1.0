@@ -71,4 +71,3 @@ Codex must stop when:
 - local hook bypass is needed and not covered by standing exception.
 
 STOP_TYPE: LOOP_CONTRACT_DEFINED
-

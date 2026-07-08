@@ -46,4 +46,3 @@ For each review-remediation pass, report:
 - whether remote checks are green/acceptable.
 
 STOP_TYPE: REVIEW_REMEDIATION_AUTONOMY_DEFINED
-

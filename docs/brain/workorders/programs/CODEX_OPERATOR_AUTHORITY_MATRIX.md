@@ -84,4 +84,3 @@ Every use of this matrix must report:
 - next action and stop type.
 
 STOP_TYPE: OPERATOR_AUTHORITY_MATRIX_DEFINED
-

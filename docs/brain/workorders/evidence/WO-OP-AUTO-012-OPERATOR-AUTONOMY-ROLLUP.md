@@ -70,4 +70,3 @@ After this PR is merged, Codex should return to the active lane selected by the 
 this rollup, Release Engineering `WO-REL-002` remains at merge authority for PR #1243.
 
 STOP_TYPE: OPERATOR_AUTONOMY_ROLLUP_READY_FOR_PR
-

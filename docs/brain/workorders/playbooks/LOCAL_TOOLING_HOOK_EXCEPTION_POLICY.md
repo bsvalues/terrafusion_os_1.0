@@ -53,4 +53,3 @@ Each bypass record must include:
 - protected-scope change status.
 
 STOP_TYPE: LOCAL_TOOLING_HOOK_EXCEPTION_POLICY_DEFINED
-

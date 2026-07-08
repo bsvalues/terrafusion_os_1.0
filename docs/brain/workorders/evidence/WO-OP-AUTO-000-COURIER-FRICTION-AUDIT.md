@@ -60,4 +60,3 @@ This audit does not authorize runtime automation, a GitHub app, a scheduler, dir
 branch protection changes, or bypass of failed validation. It classifies process friction only.
 
 STOP_TYPE: COURIER_FRICTION_AUDIT_COMPLETE
-

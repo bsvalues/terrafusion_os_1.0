@@ -61,4 +61,3 @@ After any authorized merge, Codex reports:
 - next Work Order or next-lane recommendation.
 
 STOP_TYPE: MERGE_AUTHORITY_MODEL_DEFINED
-

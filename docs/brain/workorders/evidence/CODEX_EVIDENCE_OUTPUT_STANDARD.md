@@ -64,4 +64,3 @@ EXPLICITLY_OUT_OF_SCOPE:
 - Never claim merge, deployment, rollback, production readiness, or live integration without evidence.
 
 STOP_TYPE: CODEX_EVIDENCE_OUTPUT_STANDARD_DEFINED
-
