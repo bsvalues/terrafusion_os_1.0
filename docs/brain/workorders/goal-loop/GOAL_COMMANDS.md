@@ -109,7 +109,7 @@ Success:  Operator sees the next executable WO and the stop gates that block par
 **Current state:** Release Engineering is closing at `WO-REL-006`; next lane requires owner
 selection.
 
-**Command aliases:** `/program-status`, `/program-next`, `/program-stop`
+**Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 
@@ -130,7 +130,7 @@ Success:  Release Engineering baseline has merged evidence links, validation sum
 closeout, no Release Engineering continuation is automatic; the next recommended lane is DevEx Hook
 Tooling, owner-selection gated.
 
-**Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+**Allowed loop modes:** `once`, `evidence`, `discovery`
 
 ---
 

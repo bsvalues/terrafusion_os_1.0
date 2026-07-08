@@ -3,7 +3,7 @@
 **Program:** Release Engineering
 **Goal:** `GOAL-TF-RELEASE-ENGINEERING-001`
 **Loop:** `LOOP-TF-RELEASE-ENGINEERING-001`
-**Status:** Active
+**Status:** Closed at `WO-REL-006`
 **Selected after:** Backend Operational Excellence closeout
 **Current base:** `origin/main` at `8fe5de9a7349ad684e0d01cd32668b11037947b2`
 
