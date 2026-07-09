@@ -424,14 +424,29 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | FOLLOW-UP / NOT ACTIVE |
-| Candidate WO | `WO-DEVEX-HOOKS-001` |
+| Status | ACTIVE - docs/governance bootstrap contract |
+| Current WO | `WO-DEVEX-HOOKS-002` |
+| Next WO | `WO-DEVEX-HOOKS-003` |
+| Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
 
 Local hooks repeatedly fail because Prettier and Vitest are unavailable in the local tooling context.
 
 Rule: Do not mix this into Backend OE, Sync, TerraPilot, or runtime work.
+
+### Current Facts
+
+- `WO-DEVEX-HOOKS-001` completed the hook/tooling reality audit.
+- Active hooks route through `.husky`.
+- Clean worktrees are missing repo-local `prettier` and `vitest` binaries.
+- Hook-time install behavior and package-manager version drift require a design decision before hook
+  edits.
+
+### Next Work
+
+`WO-DEVEX-HOOKS-003 - Hook Determinism Design` should decide deterministic hook execution and
+bootstrap policy before any `.husky`, package manager, or CI changes.
 
 ---
 
