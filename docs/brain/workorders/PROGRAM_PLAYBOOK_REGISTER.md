@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-08 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-006 release engineering closeout)*
+*(Updated 2026-07-08 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-006 release engineering closeout; WO-DEVEX-HOOKS-002 bootstrap contract)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -27,7 +27,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
-| [DevEx Hook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-4---devex-hook-tooling) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Recommended next lane | `WO-DEVEX-HOOKS-001` | TBD | No auto | Owner authorization required |
+| [DevEx Hook Tooling](programs/devex-hook-tooling.md) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Active docs/governance design | `WO-DEVEX-HOOKS-002` | `WO-DEVEX-HOOKS-003` | Auto only through docs/governance design if same-risk and no hook/package edits are required | Stop on hook edits, package manager policy mutation, install commands, CI changes, runtime changes, branch protection, or protected resources |
 | [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Blocked | `WO-LOCAL-093` | TBD | No auto | Owner authorization required |
 | [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Closed evidence baseline | `WO-WORKBENCH-011` | New phase only if owner/WOE selects | No auto restart | Owner or WOE selection required |
@@ -176,3 +176,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-08 | Added release tag/version evidence model and routed Release Engineering next to rollback drill authorization packet | WO-REL-004 |
 | 2026-07-08 | Added rollback drill authorization packet and routed Release Engineering next to evidence rollup | WO-REL-005 |
 | 2026-07-08 | Closed Release Engineering docs/governance baseline and recommended DevEx Hook Tooling as the next owner-selected lane | WO-REL-006 |
+| 2026-07-08 | Added DevEx Hook Tooling bootstrap contract and routed next to hook determinism design | WO-DEVEX-HOOKS-002 |
