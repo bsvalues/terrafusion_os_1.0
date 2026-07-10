@@ -3,8 +3,8 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-07-05
-**Base:** `origin/main` at `0ba65618c68c5353834fd9b2a65ba69ae2ee8a72` or later
+**Last Updated:** 2026-07-07
+**Base:** `origin/main` at `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` or later
 
 ---
 
@@ -93,8 +93,8 @@ the current WO merges, Codex returns to the active `/goal` plus `/loop` chain au
 | Goal | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` |
 | Loop | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` |
 | Program slug | `goal-loop-master-playbook` |
-| Status | ACTIVE UNTIL MERGED, THEN GOVERNING BASELINE |
-| Current WO | `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` |
+| Status | GOVERNING BASELINE |
+| Current WO | Merged |
 
 ### Purpose
 
@@ -103,8 +103,7 @@ Create and keep current the active TerraFusion `/goal` plus `/loop` execution gr
 ### Current State
 
 - `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` created the active Goal/Loop execution playbook.
-- If this work order is not yet merged, finish it through PR using docs/governance-only scope.
-- After merge, this playbook governs continuation.
+- The playbook governs continuation.
 
 ### Authorized Files
 
@@ -134,6 +133,131 @@ Routing note:
 - Backend Operational Excellence has since run through `WO-BACKEND-OE-013` and is closed. Do not
   route back to `WO-BACKEND-OE-003`; the next lane now requires owner/WOE selection from the
   remaining parked or follow-up programs.
+
+---
+
+## Program 0A - Codex Operator Work Order Playbook
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Loop | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Program slug | `codex-operator-playbook` |
+| Status | GOVERNING OPERATOR DOCTRINE |
+| Current WO | Merged through `WO-CODEX-OP-009` |
+
+### Purpose
+
+Make Codex the primary TerraFusion Work Order operator so the owner is no longer the courier between
+agents, PRs, reviews, checks, and merge readiness.
+
+### Deliverables
+
+- `docs/brain/workorders/operator/CODEX_OPERATOR_PLAYBOOK.md`
+- `docs/brain/workorders/goal-loop/GOAL_LOOP_OPERATOR_CONTRACT.md`
+- `docs/brain/workorders/operator/WORK_ORDER_LIFECYCLE.md`
+- `docs/brain/workorders/operator/AUTONOMOUS_CONTINUATION_RULES.md`
+- `docs/brain/workorders/operator/PR_REVIEW_CI_OPERATOR_RULES.md`
+- `docs/brain/workorders/operator/OWNER_DECISION_PACKET_TEMPLATE.md`
+- `docs/brain/workorders/operator/MERGE_AUTHORITY_MODEL.md`
+- `docs/brain/workorders/evidence/WO-CODEX-OPERATOR-PLAYBOOK-ROLLUP.md`
+- `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
+- `docs/brain/workorders/operator/README.md`
+
+### Stop Type
+
+`CODEX_OPERATOR_PLAYBOOK_ROLLUP_READY_FOR_PR`
+
+---
+
+## Program 0B - Codex Operator Autonomy
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Loop | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` |
+| Program slug | `codex-operator-autonomy` |
+| Status | GOVERNING AUTONOMY BASELINE |
+| Current WO | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` |
+
+### Purpose
+
+Eliminate human courier mode. Codex operates approved Work Order chains through validation, PR,
+review remediation, check monitoring, merge-readiness reporting, post-merge verification, and
+next-WO selection.
+
+### Deliverables
+
+- `docs/brain/workorders/evidence/WO-OP-AUTO-000-COURIER-FRICTION-AUDIT.md`
+- `docs/brain/workorders/programs/CODEX_OPERATOR_AUTHORITY_MATRIX.md`
+- `docs/brain/workorders/goal-loop/GOAL_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/LOOP_CONTRACT.md`
+- `docs/brain/workorders/goal-loop/STOP_TYPE_CLASSIFIER.md`
+- `docs/brain/workorders/playbooks/CODEX_PR_LIFECYCLE_PLAYBOOK.md`
+- `docs/brain/workorders/playbooks/REVIEW_REMEDIATION_AUTONOMY.md`
+- `docs/brain/workorders/playbooks/LOCAL_TOOLING_HOOK_EXCEPTION_POLICY.md`
+- `docs/brain/workorders/playbooks/MERGE_AUTHORITY_MODEL.md`
+- `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md`
+- `docs/brain/workorders/evidence/CODEX_EVIDENCE_OUTPUT_STANDARD.md`
+- `docs/brain/workorders/evidence/WO-OP-AUTO-012-OPERATOR-AUTONOMY-ROLLUP.md`
+- `docs/brain/workorders/programs/codex-operator-autonomy.md`
+
+### Release Engineering Application
+
+Release Engineering is the active lane using this operator-autonomy model. Release Engineering may
+use the local-tooling exception, review-remediation autonomy, same-risk docs/governance branch
+updates, and next-WO selection rules defined here while it stays inside its approved scope.
+
+### Stop Type
+
+`OPERATOR_AUTONOMY_ROLLUP_READY_FOR_PR`
+
+---
+
+## Program 0C - Release Engineering
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-TF-RELEASE-ENGINEERING-001` |
+| Loop | `LOOP-TF-RELEASE-ENGINEERING-001` |
+| Program slug | `release-engineering` |
+| Status | CLOSING |
+| Current WO | `WO-REL-006` |
+| Next WO | Owner-selected next lane |
+
+### Purpose
+
+Convert completed operational baselines into releasable, recoverable, repeatable release evidence
+without crossing into deployment, production, county runtime, secrets, schema, or CI workflow
+mutation.
+
+### Current State
+
+- Backend Operational Excellence is closed at `WO-BACKEND-OE-013`.
+- The Backend OE closeout evidence baseline is `a244743014b4b7731a2694db10bc2e9656876e55`.
+- The Codex Operator Work Order Playbook is merged at
+  `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` and governs this lane.
+- Current work is `WO-REL-006 - Release Engineering Evidence Rollup`.
+- Next recommended lane after closeout is DevEx Hook Tooling, owner-selection gated.
+
+### Work Order Chain
+
+| WO | Mode | Purpose | Stop Type |
+|----|------|---------|-----------|
+| `WO-REL-001` | Read-only discovery | Inventory release/version/tag/rollback evidence and recommend smallest next release-engineering WO. | `RELEASE_ENGINEERING_DISCOVERY_COMPLETE` |
+| `WO-REL-002` | Docs/governance evidence contract | Define release gate checklist and evidence contract from Backend OE evidence. | `RELEASE_GATE_EVIDENCE_CONTRACT_READY_FOR_PR` |
+| `WO-REL-003` | Docs/template only | Create release candidate evidence packet template. | `RELEASE_CANDIDATE_EVIDENCE_TEMPLATE_READY_FOR_PR` |
+| `WO-REL-004` | Docs/governance only | Define release tag/version evidence model without creating tags or changing automation. | `RELEASE_TAG_VERSION_MODEL_READY_FOR_PR` |
+| `WO-REL-005` | Docs/governance only | Define rollback drill authorization packet and required proof for future safe-environment rollback execution. | `ROLLBACK_DRILL_AUTH_PACKET_READY_FOR_OWNER_DECISION` |
+| `WO-REL-006` | Evidence rollup | Close the Release Engineering docs/governance baseline and recommend next lane. | `RELEASE_ENGINEERING_BASELINE_CLOSED` |
+
+### Stop Gates
+
+Stop on CI/workflow changes, branch-protection changes, deployment, runtime code,
+schema/migrations, secrets, county runtime, PACS/CAMA, live services, or rollback execution claims
+without proof.
 
 ---
 
@@ -394,6 +518,7 @@ The command map must expose these operator commands:
 - `/program-status`
 - `/program-next`
 - `/program-stop`
+- `/release-engineering`
 - `/backend-start`
 - `/backend-status`
 - `/backend-next`

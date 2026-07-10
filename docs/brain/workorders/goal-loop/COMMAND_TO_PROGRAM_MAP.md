@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-05
+**Last Updated:** 2026-07-08
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -14,10 +14,13 @@ resolves.
 
 | Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
-| `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | NO | `once`, `evidence` |
+| `codex-operator-autonomy` | Codex Operator Autonomy | CLOSED at WO-OP-AUTO-012 | YES - governing autonomy baseline merged | `once`, `evidence` |
+| `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
+| `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Master Playbook | Owner/WOE lane selection after Backend OE closeout | YES - Backend OE and Workbench evidence chains are closed | `once`, `program`, `evidence` |
+| `program-next` | Master Playbook | DevEx Hook Tooling / WO-DEVEX-HOOKS-001 | YES - owner selection required | `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
+| `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
@@ -33,7 +36,7 @@ resolves.
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
-| `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-001 | YES — owner-gated follow-up | `evidence`, `discovery` |
+| `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-001 | YES — owner selection gated; recommended next after Release Engineering | `evidence`, `discovery` |
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |

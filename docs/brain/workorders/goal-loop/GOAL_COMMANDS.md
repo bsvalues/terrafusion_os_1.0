@@ -32,6 +32,51 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ## Program Commands
 
+### /goal codex-operator-autonomy
+
+```
+Goal:     Make Codex the active TerraFusion Work Order operator so the owner is no longer the
+          courier between ChatGPT, Codex, PRs, checks, reviews, and merge readiness.
+Program:  Codex Operator Autonomy
+File:     programs/codex-operator-autonomy.md
+Success:  Courier friction audit, authority matrix, goal/loop contracts, stop classifier, PR
+          lifecycle, review autonomy, hook exception, merge model, next-WO rule, evidence output
+          standard, Release Engineering application, and rollup exist.
+```
+
+**Current state:** `WO-OP-AUTO-000` through `WO-OP-AUTO-012` are active as docs/governance-only
+operator autonomy work.
+
+**Allowed loop modes:** `once`, `program`, `evidence`
+
+**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes, deployment, branch
+protection, county runtime, PACS, secrets, production resources, destructive operations outside exact
+repair authority, and merge without the applicable merge authority model.
+
+---
+
+### /goal codex-operator-playbook
+
+```
+Goal:     Make Codex the primary TerraFusion Work Order operator so the owner is the authority wall,
+          not the courier between agents, PRs, checks, reviews, and merge readiness.
+Program:  Codex Operator Work Order Playbook
+File:     operator/CODEX_OPERATOR_PLAYBOOK.md
+Success:  Operator doctrine, goal/loop contract, lifecycle, continuation rules, PR/CI rules,
+          owner-decision packet, merge model, register integration, and rollup evidence exist.
+```
+
+**Current state:** `WO-CODEX-OP-001` through `WO-CODEX-OP-009` are merged. The operator doctrine is
+now the governing model for subsequent owner-selected lanes.
+
+**Allowed loop modes:** `once`, `program`, `evidence`
+
+**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes, branch protection,
+hook bypass without owner authorization, merge without PR-specific authorization, production,
+deployment, secrets, county/PACS/SQL/live resources, and destructive operations.
+
+---
+
 ### /goal goal-loop-master-playbook
 
 ```
@@ -42,9 +87,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is active until merged. After merge, the
-playbook governs continuation and routes next to Backend OE `WO-BACKEND-OE-003` unless the owner
-selects a different active program.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
+and the owner-selected active lane is Release Engineering at `WO-REL-006` closeout.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -62,9 +106,29 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Backend OE is the next executable program, routed to `WO-BACKEND-OE-003`.
+**Current state:** Release Engineering is closing at `WO-REL-006`; next lane requires owner
+selection.
 
-**Command aliases:** `/program-status`, `/program-next`, `/program-stop`
+**Related commands:** `/program-status`, `/program-next`, `/program-stop`
+
+**Allowed loop modes:** `once`, `evidence`, `discovery`
+
+---
+
+### /goal release-engineering
+
+```
+Goal:     Convert closed operational baselines into releasable, recoverable, and repeatable
+          release evidence contracts without crossing into deployment or county runtime authority.
+Program:  Release Engineering
+File:     docs/brain/workorders/programs/release-engineering.md
+Success:  Release Engineering baseline has merged evidence links, validation summary, deferred risks,
+          and next-lane recommendation.
+```
+
+**Current state:** `WO-REL-006` closes the Release Engineering docs/governance baseline. After
+closeout, no Release Engineering continuation is automatic; the next recommended lane is DevEx Hook
+Tooling, owner-selection gated.
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 
