@@ -14,6 +14,11 @@ Define the local tooling bootstrap contract required to stop repeated hook bypas
 governance work, without editing hooks, package manager policy, CI, runtime code, or deployment
 behavior in this work order.
 
+Owner authorization selected the DevEx Hook Tooling lane after the Release Engineering closeout and
+authorized docs/governance evidence work only. This packet does not broaden the root `AGENTS.md`
+runtime/core write scope; it records the owner-selected governance lane and keeps all implementation
+changes blocked.
+
 ---
 
 ## Source Evidence
@@ -30,13 +35,18 @@ behavior in this work order.
 | Frontend dependencies in clean worktree | `frontend/node_modules` missing |
 | PATH `prettier` | missing |
 | PATH `vitest` | missing |
-| Repo-local `prettier` binary | `node_modules/.bin/prettier.cmd` missing |
-| Repo-local `vitest` binary | `node_modules/.bin/vitest.cmd` missing |
+| Repo-local `prettier` binary | `node_modules/.bin/prettier` missing; Windows `.cmd` shim also missing |
+| Repo-local `vitest` binary | `node_modules/.bin/vitest` missing; Windows `.cmd` shim also missing |
 | Package manager declaration | `packageManager: pnpm@9.0.0` |
 | Observed Codex pnpm | `pnpm@11.7.0` |
 
 The audit also showed that `npx --no-install` can resolve non-canonical versions from outside the
 repo-local dependency tree. That is useful as diagnosis, but not as bootstrap proof.
+
+This packet is also the Brain evidence anchor for the `WO-DEVEX-HOOKS-001` read-only audit facts. No
+standalone `WO-DEVEX-HOOKS-001` evidence file existed on `origin/main` when this contract was
+created; `WO-DEVEX-HOOKS-003` must either accept this packet as the source evidence or create a
+dedicated archival packet before any hook implementation work starts.
 
 ---
 
@@ -64,6 +74,7 @@ The local hook contract is:
 | `pre-push` may run `npm install --legacy-peer-deps` if `node_modules` is missing | Hook can mutate local dependency state during push | Decide whether to remove implicit install behavior or gate it behind explicit bootstrap |
 | `npx` can resolve non-repo versions | Tool checks can pass with non-canonical versions | Decide whether hooks may use `npx` only as a diagnostic fallback, never as proof |
 | `package.json` has legacy `husky.hooks` entries while `core.hooksPath` points to `.husky` | Multiple hook authorities are visible | Decide whether to document or clean legacy hook metadata in a future authorized WO |
+| `scripts/setup/setup-atlas-hooks.sh` sets `core.hooksPath` to `.githooks` | A bootstrap script can reactivate the legacy hook authority and conflict with the current `.husky` contract | Decide in `WO-DEVEX-HOOKS-003` whether the script is retired, updated, or explicitly unsupported |
 
 ---
 

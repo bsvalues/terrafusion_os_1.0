@@ -20,19 +20,23 @@ CI wiring, deployment, or county runtime work.
 
 ## Current Truth
 
-- Release Engineering closed at `WO-REL-006` with DevEx Hook Tooling recommended next.
-- `WO-DEVEX-HOOKS-001` completed a read-only hook/tooling reality audit.
+- Release Engineering is listed as `Closing` in the program register, with `WO-REL-006` recorded as
+  the closeout work order and DevEx Hook Tooling selected as the next lane.
+- `WO-DEVEX-HOOKS-001` completed a read-only hook/tooling reality audit; its source findings are
+  anchored in the `WO-DEVEX-HOOKS-002` evidence packet.
 - Active hooks are routed through `core.hooksPath=.husky`.
 - `.husky/pre-commit` and `.husky/pre-push` are active.
 - `.githooks/pre-commit` exists but is not active under current Git config.
 - Clean worktrees do not have root `node_modules` or `frontend/node_modules`.
 - `prettier` and `vitest` are not available on PATH.
-- Repo-local `node_modules/.bin/prettier.cmd` and `node_modules/.bin/vitest.cmd` are absent in clean
-  worktrees.
+- Repo-local `node_modules/.bin/prettier` and `node_modules/.bin/vitest` are absent in clean
+  worktrees; on Windows the corresponding `.cmd` shims are also absent.
 - `npx --no-install` can resolve non-canonical global/cache tool versions, which is not acceptable
   as release-grade local hook proof.
 - The current pre-push hook may attempt `npm install --legacy-peer-deps` when `node_modules` is
   missing; hook-time install mutation is not approved by this lane.
+- `scripts/setup/setup-atlas-hooks.sh` can set `core.hooksPath` to `.githooks`; that legacy hook
+  authority must be dispositioned before hook repair.
 
 ---
 
