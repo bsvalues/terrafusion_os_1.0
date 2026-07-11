@@ -175,20 +175,23 @@ jobs:
           fi
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # Frontend Fast Gate (lint + type-check + unit tests + build)
+  # Frontend Fast Gate — split (WO-CI-FASTGATE-003):
+  #   frontend-fast   = sharded unit tests only (matrix 1..3)
+  #   frontend-checks = lint + type-check + ipc + build + bundle (once)
+  # so no runner carries both a unit shard and the build. Seal Gate needs both.
   # ═══════════════════════════════════════════════════════════════════════════
   frontend-fast:
-    name: 🎨 Frontend Fast Gate (shard ${{ matrix.shard }}/3)
+    name: 🎨 Frontend Fast Gate (unit shard ${{ matrix.shard }}/3)
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 30
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
-    # WO-CI-FASTGATE-003: the os-shell Vitest suite (692 files / ~7970 tests) is too large to
-    # reliably finish in one 30-min job on contended runners (measured 8.5 min median, 28+ min tail;
-    # no single hanging test — dominated by per-file jsdom environment + collect overhead). Shard the
-    # unit tests across 3 parallel runners so each shard finishes with wide margin. The required
-    # 🔒 Seal Gate `needs: frontend-fast`, so ALL shards must pass — full coverage is still enforced.
-    # (🎨 Frontend Fast Gate is not itself a required context.)
+    # WO-CI-FASTGATE-003: the os-shell Vitest suite (692 files / ~7970 tests) is too large/variable to
+    # finish in one 30-min job on contended runners (8.5 min median, 30+ min tail; no single hanging
+    # test — dominated by per-file jsdom environment + collect overhead). This job runs ONLY the unit
+    # tests, sharded across 3 runners. The non-unit checks (lint/type-check/ipc/build/bundle) run once
+    # in the separate `frontend-checks` job, so no runner carries both a unit shard AND the build.
+    # The required 🔒 Seal Gate needs both jobs → all 3 shards + all checks must pass (full coverage).
     strategy:
       fail-fast: false
       matrix:
@@ -208,16 +211,47 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # WO-CI-FASTGATE-003: only the unit-test step is sharded; the non-unit steps below run
-      # once (shard 1) so build/bundle/lint/type-check are not redundantly repeated per shard.
+      - name: Unit tests (blocking, sharded)
+        id: unit-tests
+        # Vitest run (test:tier0 === `vitest run`), sharded across 3 runners (strategy.matrix above).
+        # EXCLUDES the network/registry-variable npm-audit test (covered by the scheduled Security &
+        # Compliance Pipeline scan); --slowTestThreshold=1000 surfaces future slow tests.
+        # Fixes #1242 / WO-CI-FASTGATE-003. (SHARD via env var, not inline ${{ }}, per shell-injection guard.)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --shard="$SHARD/3"
+
+  frontend-checks:
+    name: 🎨 Frontend Build & Checks
+    runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    needs: classify
+    if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
+    # WO-CI-FASTGATE-003: non-unit frontend checks (lint, type-check, ipc, build, bundle) run once here,
+    # separate from the sharded unit tests (frontend-fast), so no runner carries both a unit shard and
+    # the build. The required 🔒 Seal Gate needs both jobs.
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
+
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Lint (loud, temporary non-blocking)
         id: lint
-        if: matrix.shard == 1
         run: pnpm -C frontend run lint
         continue-on-error: true
 
       - name: Lint escape hatch (expires 2026-07-31)
-        if: matrix.shard == 1 && steps.lint.outcome == 'failure'
+        if: steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
@@ -231,7 +265,6 @@ jobs:
 
       - name: Type check (blocking)
         id: typecheck
-        if: matrix.shard == 1
         shell: bash
         run: |
           set -euo pipefail
@@ -244,44 +277,28 @@ jobs:
             exit 1
           fi
 
-      - name: Unit tests (blocking)
-        id: unit-tests
-        # Fast gate runs Vitest directly (test:tier0 === `vitest run`), SHARDED across 3 runners
-        # (see strategy.matrix above) so this large suite finishes with margin on contended runners.
-        # Still EXCLUDES the network/registry-variable npm-audit test (covered by the scheduled
-        # Security & Compliance Pipeline scan); --slowTestThreshold=1000 surfaces future slow tests.
-        # Fixes #1242 / WO-CI-FASTGATE-003. (SHARD via env var, not inline ${{ }}, per shell-injection guard.)
-        env:
-          SHARD: ${{ matrix.shard }}
-        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --shard="$SHARD/3"
-
       - name: IPC tests (blocking)
         id: ipc-tests
-        if: matrix.shard == 1
         run: pnpm -C frontend run test:ipc
 
       - name: Build (blocking)
         id: build
-        if: matrix.shard == 1
         run: pnpm -C frontend run build
 
       - name: Bundle Analysis (blocking - requires build)
         id: bundle-analysis
-        if: matrix.shard == 1
         run: pnpm -C frontend run test:unit -- apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
 
-      - name: Frontend Summary
-        # Only shard 1 runs all non-unit steps, so only it writes the complete summary table.
-        if: always() && matrix.shard == 1
+      - name: Frontend Checks Summary
+        if: always()
         shell: bash
         run: |
-          echo "## 🎨 Frontend Fast Gate" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎨 Frontend Build & Checks" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-07-31)' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ steps.unit-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ steps.build.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Bundle | ${{ steps.bundle-analysis.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
@@ -695,7 +712,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     if: always()
-    needs: [classify, frontend-fast, backend-fast, governance-fast]
+    needs: [classify, frontend-fast, frontend-checks, backend-fast, governance-fast]
 
     steps:
       - name: Check all gates
@@ -717,12 +734,22 @@ jobs:
             echo "✅ Classify: passed"
           fi
 
-          # Frontend (may be skipped)
+          # Frontend unit shards (may be skipped)
           case "${{ needs.frontend-fast.result }}" in
-            success) echo "✅ Frontend: passed" ;;
-            skipped) echo "⏭️ Frontend: skipped (no changes)" ;;
+            success) echo "✅ Frontend unit shards: passed" ;;
+            skipped) echo "⏭️ Frontend unit shards: skipped (no changes)" ;;
             *)
-              echo "❌ Frontend: FAILED"
+              echo "❌ Frontend unit shards: FAILED"
+              FAILED=1
+              ;;
+          esac
+
+          # Frontend build & checks (may be skipped)
+          case "${{ needs.frontend-checks.result }}" in
+            success) echo "✅ Frontend build & checks: passed" ;;
+            skipped) echo "⏭️ Frontend build & checks: skipped (no changes)" ;;
+            *)
+              echo "❌ Frontend build & checks: FAILED"
               FAILED=1
               ;;
           esac
@@ -762,9 +789,14 @@ jobs:
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Classify | ${{ needs.classify.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           case "${{ needs.frontend-fast.result }}" in
-            success) echo "| Frontend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
-            skipped) echo "| Frontend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
-            *) echo "| Frontend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+            success) echo "| Frontend unit shards | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend unit shards | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend unit shards | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+          case "${{ needs.frontend-checks.result }}" in
+            success) echo "| Frontend build & checks | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend build & checks | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend build & checks | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
           esac
           case "${{ needs.backend-fast.result }}" in
             success) echo "| Backend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
