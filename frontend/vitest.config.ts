@@ -1,3 +1,5 @@
+// WO-CI-FASTGATE-003: touching this vitest config (an authorized path) makes `classify` run the
+// now-sharded Frontend Fast Gate on this PR so the 3-way unit-test shard is validated before merge.
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vitest/config';
