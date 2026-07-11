@@ -80,7 +80,7 @@ Codex may run a dependency bootstrap without owner approval when all are true:
 
 This rule authorizes local validation state only. It does not authorize package, lockfile, runtime,
 CI, deployment, or protected-resource changes. If the validation requires lifecycle scripts, Codex
-must first establish a bounded pre-install script allowlist or obtain explicit owner authorization;
+must first establish a bounded pre-install lifecycle-script allowlist or obtain explicit owner authorization;
 frozen lockfile mode alone does not make lifecycle side effects deterministic.
 
 ## Relationship To Existing Doctrine

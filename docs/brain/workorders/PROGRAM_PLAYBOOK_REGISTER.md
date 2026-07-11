@@ -50,7 +50,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
 | Backend full solution tests depend on Docker/Testcontainers SQL Server lane | Backend release readiness / integration validation | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate criteria defined in WO-BACKEND-OE-009; operational runbook created in WO-BACKEND-OE-010 without Docker repair |
-| Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
+| Dependency-clean worktrees cannot resolve local Prettier/Vitest before explicit bootstrap | Local PR-finalization before bootstrap | Run the governed frozen bootstrap; unattended runs require `--ignore-scripts` and tracked mutation remains an authority wall |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
 
