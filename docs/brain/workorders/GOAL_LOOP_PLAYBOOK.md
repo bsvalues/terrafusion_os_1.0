@@ -14,7 +14,9 @@ operating commands. It is the command-level layer on top of WO-WOE-009.
 
 **Before this playbook:** The operator nominates one WO at a time from the register.  
 **After this playbook:** The operator states a program intent (`/goal`) and the execution mode
-(`/loop`), and the Brain selects the next unblocked WO from the correct program file.
+(`/loop`), then applies Brain doctrine and registered program state to select the next unblocked WO.
+This is an operator-executed governance contract, not a claim that `brain next` implements portfolio
+selection.
 
 ---
 
@@ -82,7 +84,11 @@ STOP_TYPE:     [NONE | AUTHORITY_WALL | FAILED_GATE | CANONICAL_CONFLICT | BLOCK
 
 ---
 
-## Current State (2026-06-30)
+## Historical State Snapshot (2026-06-30)
+
+The table below records the state when WO-WOE-010 was authored. Current routing truth lives in
+`PROGRAM_PLAYBOOK_REGISTER.md`, `WORK_ORDER_PROGRAM_QUEUE.md`, and
+`goal-loop/COMMAND_TO_PROGRAM_MAP.md`.
 
 | PR | WO | Status |
 |----|----|--------|

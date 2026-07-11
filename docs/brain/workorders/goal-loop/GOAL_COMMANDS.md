@@ -30,7 +30,12 @@ Combining `--loop` is shorthand for running `/loop <mode>` immediately after goa
 
 ---
 
-## Program Commands
+## Goal Selectors And Read-Only Aliases
+
+Entries named for a program are `/goal` selectors. Entries ending in `-status`, `-next`, or `-stop`
+are compatibility aliases for read-only routing or loop control; they are not separate program goals.
+Executable repository commands such as `corepack pnpm brain` and `corepack pnpm tf` are outside this
+operator-directive grammar and retain their own help surfaces.
 
 ### /goal codex-operator-autonomy
 
@@ -355,9 +360,25 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** WO-BRAIN-001 is next (QUEUED).
+**Current state:** BRAIN-001 through BRAIN-004 are complete. `WO-BRAIN-005 - Loop Engine Maturity
+Review` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+---
+
+### /goal portfolio-operator
+
+```
+Goal:     Select and activate the highest-priority dependency-cleared canonical program.
+Program:  Portfolio Operator
+File:     programs/portfolio-operator.md
+Success:  Program closeout advances directly into the next executable goal/loop without owner dispatch.
+```
+
+**Current state:** DevEx Hook Bootstrap is closed. Brain Operator is selected at WO-BRAIN-002.
+
+**Allowed loop modes:** `program`, `evidence`, `discovery`
 
 ---
 

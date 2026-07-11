@@ -18,10 +18,10 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Master Playbook | Owner/WOE lane selection after DevEx Hook Tooling closeout | YES - select next program from evidence | `once`, `evidence` |
+| `program-next` | Portfolio Operator | Brain Operator / WO-BRAIN-005 | NO - continue selected evidence/docs chain | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
-| `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
+| `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
 | `backend-start` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - do not restart Backend OE chain | `program` |
@@ -36,13 +36,13 @@ resolves.
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
-| `devex-hooks-status` | DevEx Hook Tooling | Closing at WO-DEVEX-HOOKS-006 | YES - bootstrap verified; next lane requires program selection | `evidence`, `discovery` |
+| `devex-hooks-status` | DevEx Hook Tooling | CLOSED at WO-DEVEX-HOOKS-006 | YES - return to portfolio loop | `evidence`, `discovery` |
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
-| `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
-| `brain-operator` | P7 | WO-BRAIN-001 | NO | `once`, `program`, `evidence`, `discovery` |
-| `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
+| `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
+| `brain-operator` | Brain Operator System | WO-BRAIN-005 | NO | `once`, `program`, `evidence`, `discovery` |
+| `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
 
@@ -205,10 +205,14 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-BRAIN-001 | Brain authority and capability audit | **NEXT** |
-| WO-BRAIN-002 through 009 | Domain packs, command vocab, goal/loop integration | QUEUED |
+| WO-BRAIN-001 | Brain authority and capability audit | COMPLETE - PR #1140 |
+| WO-BRAIN-002 | Domain pack completeness audit | COMPLETE |
+| WO-BRAIN-003 | Operator command vocabulary reconciliation | COMPLETE |
+| WO-BRAIN-004 | Goal engine maturity review | COMPLETE |
+| WO-BRAIN-005 | Loop engine maturity review | **CURRENT** |
+| WO-BRAIN-006 through 009 | Provenance, role, continuation, integration evidence | QUEUED |
 
-No active stop walls at WO-BRAIN-001.
+No active stop walls at WO-BRAIN-005.
 
 ---
 
