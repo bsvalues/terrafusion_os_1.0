@@ -89,6 +89,11 @@ Before a repaired hook can be called deterministic, a future authorized WO must 
 - pre-commit passes and fails on controlled synthetic cases;
 - pre-push strict mode passes and fails on controlled synthetic cases;
 - `TF_STRICT_PUSH=0` remains loud and cannot bypass bootstrap preflight;
+- any commit or push using `--no-verify` is recorded as a local-tooling exception and is not release
+  evidence;
+- authoritative validation comes from the remote PR checks required by branch protection, including
+  `governed-spine`, `phase85-tools`, `phase86-toolrunner`, `🔒 TerraFusion Seal Gate`, and
+  `🧪 Tier-1 UI Harness Validation`, plus any additional required merge gates reported by GitHub;
 - `.husky` remains the selected `core.hooksPath`;
 - no remote CI, branch-protection, or release gate was weakened.
 
