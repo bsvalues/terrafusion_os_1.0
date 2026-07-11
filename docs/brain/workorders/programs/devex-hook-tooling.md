@@ -3,8 +3,8 @@
 **Program:** DevEx Hook Tooling
 **Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
 **Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
-**Status:** Active - worktree hygiene classified; bootstrap verification owner-gated
-**Current base:** `origin/main` at `6e9833b8f2c79620dbbf667ce0833ec38694f23b`
+**Status:** Closing - bootstrap verification complete
+**Current base:** `origin/main` at `2b97106cf5895562b2eeb63fc219327e672a5797`
 
 ---
 
@@ -102,7 +102,7 @@ boundary:
 it while it still rewrites `core.hooksPath` to `.githooks`; its retirement or replacement belongs to
 the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
 
-## Required Next Decision
+## Program Closeout State
 
 `WO-DEVEX-HOOKS-004 - Hook Script Repair` implemented the approved policy in `.husky/pre-commit`,
 `.husky/pre-push`, and `scripts/setup/setup-atlas-hooks.sh`. It did not change packages, lockfiles,
@@ -111,5 +111,10 @@ CI, or product runtime.
 `WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` classified 54 registered worktrees without cleanup.
 Dirty, locked, detached, active-PR, no-PR, and stale-main ownership boundaries remain preserved.
 
-`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` is next. It requires an explicit clean-worktree
-dependency install and therefore remains owner-gated.
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` verified a clean-worktree frozen bootstrap,
+unchanged manifest and lockfile hashes, repository-local tool resolution, deterministic strict and
+non-strict hook behavior, and no hook-time install. The DevEx hook bootstrap baseline is complete
+when its evidence packet merges.
+
+The operator playbook now includes `FROZEN_BOOTSTRAP_AUTO_PROCEED`; future ordinary frozen installs
+in isolated validation worktrees are routine operations when all policy predicates hold.

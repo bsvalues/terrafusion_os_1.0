@@ -424,9 +424,9 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | ACTIVE - worktree hygiene classified; bootstrap verification owner-gated |
-| Current WO | `WO-DEVEX-HOOKS-005` |
-| Next WO | `WO-DEVEX-HOOKS-006` |
+| Status | CLOSING - bootstrap verification complete |
+| Current WO | `WO-DEVEX-HOOKS-006` |
+| Next WO | Owner/WOE lane selection after merge |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -458,8 +458,10 @@ lockfile, CI, or product-runtime changes.
 cleanup candidates, dirty/locked quarantines, and the stale local-main ownership conflict. It performs
 no cleanup.
 
-`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` is next and requires owner authority for an
-explicit clean-worktree dependency install.
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` proves the explicit clean-worktree frozen
+bootstrap, unchanged package/lockfile hashes, repository-local tool resolution, and deterministic
+hook behavior. After merge, the DevEx hook bootstrap baseline is closed and the next lane is selected
+from program evidence.
 
 ---
 

@@ -61,6 +61,25 @@ Codex must not ask the owner to relay routine state when the Work Order grants a
 - rerunning validation,
 - preparing merge-readiness reports.
 
+## Frozen Bootstrap Auto-Proceed
+
+`FROZEN_BOOTSTRAP_AUTO_PROCEED`
+
+Codex may run a dependency bootstrap without owner approval when all are true:
+
+- the active Work Order explicitly requires local validation;
+- execution occurs in a dedicated clean worktree;
+- the repository's declared package manager is used;
+- frozen-lockfile mode is enabled;
+- expected mutation is ignored local dependency state only;
+- package manifests and lockfiles are hashed before and after;
+- no scripts connect to production, county systems, PACS, secrets, or external operational
+  resources; and
+- any tracked mutation causes an immediate stop.
+
+This rule authorizes local validation state only. It does not authorize package, lockfile, runtime,
+CI, deployment, or protected-resource changes.
+
 ## Relationship To Existing Doctrine
 
 This playbook extends, not replaces:

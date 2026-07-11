@@ -253,13 +253,14 @@ status command.
 Goal:     Inspect local Prettier/Vitest hook tooling debt without mixing it into product lanes.
 Program:  DevEx Hook Tooling
 File:     programs/devex-hook-tooling.md
-Success:  Operator sees worktree hygiene as classified and WO-DEVEX-HOOKS-006 as an owner-gated
-          clean-worktree bootstrap verification packet.
+Success:  Operator sees the clean-worktree bootstrap as verified and ordinary frozen validation
+          installs governed by FROZEN_BOOTSTRAP_AUTO_PROCEED.
 ```
 
-**Current state:** `WO-DEVEX-HOOKS-005` classifies 54 worktrees without cleanup. Next is
-`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet`; dependency installation, lockfile mutation,
-and worktree cleanup remain owner-gated.
+**Current state:** `WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` verified the frozen bootstrap,
+unchanged manifests/lockfile, repo-local tool resolution, and deterministic hooks. Tracked dependency
+mutation and worktree cleanup remain owner-gated; ordinary policy-compliant frozen validation
+installs auto-proceed.
 
 **Command alias:** `/devex-hooks-status`
 
