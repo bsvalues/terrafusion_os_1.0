@@ -287,10 +287,13 @@ jobs:
 
       - name: Bundle Analysis (blocking - requires build)
         id: bundle-analysis
-        # Run vitest DIRECTLY on the single file. `pnpm run test:unit -- FILE` forwards `-- FILE`,
-        # which vitest treats as "no positional filter" and runs the WHOLE suite (~30 min). Calling
-        # the vitest binary with a positional path runs only this file. (WO-CI-FASTGATE-003)
-        run: pnpm -C frontend exec vitest run apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
+        # Run the post-build performance tests via the vitest binary with a positional path.
+        # The former `pnpm run test:unit -- apps/.../BundleAnalysis.test.ts` had two bugs: (a) that
+        # file no longer exists (only MemoryLeakDetection.test.tsx + PerformanceBenchmarks.test.tsx
+        # remain), and (b) `pnpm run … -- FILE` forwards `-- FILE`, which vitest treats as no
+        # positional filter → it silently ran the WHOLE 692-file suite (~30 min). Target the real
+        # performance dir directly. (WO-CI-FASTGATE-003; codex #1260)
+        run: pnpm -C frontend exec vitest run apps/os-shell/src/tests/performance/
 
       - name: Frontend Checks Summary
         if: always()
