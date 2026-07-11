@@ -424,14 +424,36 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | FOLLOW-UP / NOT ACTIVE |
-| Candidate WO | `WO-DEVEX-HOOKS-001` |
+| Status | ACTIVE - deterministic design complete; implementation owner-gated |
+| Current WO | `WO-DEVEX-HOOKS-003` |
+| Next WO | `WO-DEVEX-HOOKS-004` |
+| Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
 
 Local hooks repeatedly fail because Prettier and Vitest are unavailable in the local tooling context.
 
 Rule: Do not mix this into Backend OE, Sync, TerraPilot, or runtime work.
+
+### Current Facts
+
+- `WO-DEVEX-HOOKS-001` completed the hook/tooling reality audit.
+- Active hooks route through `.husky`.
+- Clean worktrees are missing repo-local `prettier` and `vitest` binaries.
+- `WO-DEVEX-HOOKS-003` resolved hook-time install and package-manager version drift policy; hook
+  edits remain blocked on the owner-gated implementation packet.
+
+### Deterministic Design
+
+`WO-DEVEX-HOOKS-003 - Hook Determinism Design` retains the pinned pnpm 9 contract, requires explicit
+frozen-lockfile bootstrap outside hooks, resolves tools through Corepack and repo-local dependencies,
+and prohibits implicit hook installs or silent missing-tool skips.
+
+### Next Work
+
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` requires explicit owner authorization for its exact
+implementation file set. Do not auto-continue from design into hook, setup-script, package, or CI
+changes.
 
 ---
 
