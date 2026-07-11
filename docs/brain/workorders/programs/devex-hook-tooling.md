@@ -3,8 +3,8 @@
 **Program:** DevEx Hook Tooling
 **Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
 **Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
-**Status:** Active - deterministic design complete; implementation owner-gated
-**Current base:** `origin/main` at `a4344f58c0d6d3270332a20984898058b7edda20`
+**Status:** Active - hook repair complete; worktree hygiene evidence next
+**Current base:** `origin/main` at `bba74f3227fa5e208cbd34e9bc4e581ff1e94404`
 
 ---
 
@@ -104,5 +104,9 @@ the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
 
 ## Required Next Decision
 
-`WO-DEVEX-HOOKS-004 - Hook Script Repair` is next, but it requires explicit owner authorization
-because it would edit hook/setup/package surfaces outside this docs/governance design scope.
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` implemented the approved policy in `.husky/pre-commit`,
+`.husky/pre-push`, and `scripts/setup/setup-atlas-hooks.sh`. It did not change packages, lockfiles,
+CI, or product runtime.
+
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` is next. It is evidence/register only and may
+classify stale worktree and branch cleanup candidates, but it must not remove them.

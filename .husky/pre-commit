@@ -6,6 +6,46 @@ fi
 
 echo "🔒 TERRAFUSION OS: Pre-commit Quality Gate"
 
+BOOTSTRAP_COMMAND="corepack pnpm install --frozen-lockfile"
+
+bootstrap_failure() {
+  echo "❌ Local hook dependencies are not ready: $1"
+  echo "   Run explicitly from the repository root:"
+  echo "   $BOOTSTRAP_COMMAND"
+  echo "   Hooks never install dependencies automatically."
+  exit 1
+}
+
+require_corepack_pnpm() {
+  command -v node >/dev/null 2>&1 || bootstrap_failure "node is unavailable"
+  command -v corepack >/dev/null 2>&1 || bootstrap_failure "corepack is unavailable"
+
+  EXPECTED_PNPM="$(node -p "require('./package.json').packageManager.split('@').pop()" 2>/dev/null)" || \
+    bootstrap_failure "package.json packageManager cannot be read"
+  ACTUAL_PNPM="$(corepack pnpm --version 2>/dev/null)" || \
+    bootstrap_failure "the repository-declared pnpm cannot be resolved"
+
+  if [ "$ACTUAL_PNPM" != "$EXPECTED_PNPM" ]; then
+    bootstrap_failure "pnpm version $ACTUAL_PNPM does not match the declared $EXPECTED_PNPM"
+  fi
+}
+
+require_local_tool() {
+  TOOL_NAME="$1"
+  if [ ! -f "node_modules/.bin/$TOOL_NAME" ] && [ ! -f "node_modules/.bin/$TOOL_NAME.cmd" ]; then
+    bootstrap_failure "repo-local $TOOL_NAME is unavailable"
+  fi
+}
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "❌ Unable to resolve the TerraFusion repository root."
+  exit 1
+}
+cd "$REPO_ROOT" || {
+  echo "❌ Unable to enter the TerraFusion repository root: $REPO_ROOT"
+  exit 1
+}
+
 # Gate 0: Lane check — refuse commits from wrong worktree
 # Normalize path format so C:/... and /c/... compare equivalently on Windows shells.
 canon_path() {
@@ -102,22 +142,26 @@ if [ -n "$STAGED_FILES" ]; then
 fi
 
 if [ "$RUN_UI_TOKEN_GATE" = "1" ]; then
-  if command -v pnpm >/dev/null 2>&1; then
-    echo "Running UI token gate for staged UI/package/runtime changes."
-    pnpm -s tdc:ui:tokens:check || exit 1
-  else
-    echo "pnpm not available - skipping UI token audit"
-  fi
+  require_corepack_pnpm
+  echo "Running UI token gate for staged UI/package/runtime changes."
+  corepack pnpm -s tdc:ui:tokens:check || exit 1
 else
   echo "Skipping UI token gate: no staged UI/package/runtime files."
 fi
 
 # Gate 2: lint-staged (ESLint + Prettier + dotnet format)
-if command -v npx >/dev/null 2>&1 && npx lint-staged --version >/dev/null 2>&1; then
+if [ -n "$STAGED_FILES" ]; then
+  require_corepack_pnpm
+  require_local_tool "lint-staged"
+  require_local_tool "prettier"
+  corepack pnpm exec lint-staged --version >/dev/null 2>&1 || \
+    bootstrap_failure "repo-local lint-staged cannot execute"
+  corepack pnpm exec prettier --version >/dev/null 2>&1 || \
+    bootstrap_failure "repo-local prettier cannot execute"
   echo "📝 Running lint-staged..."
-  npx lint-staged || exit 1
+  corepack pnpm exec lint-staged || exit 1
 else
-  echo "⚠️  lint-staged not available - skipping (run 'npm install' to enable)"
+  echo "Skipping lint-staged: no staged files."
 fi
 
 echo "✅ Quality gate passed - Government. Transcended."
