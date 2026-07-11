@@ -41,7 +41,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-export const DOSSIER_MODULES: SuiteModuleDef[] = [
+const DOSSIER_MODULES: SuiteModuleDef[] = [
   // Workbench-mode (parcel-scoped, opens Property Workbench)
   { id: 'documents', label: 'Document Manager', icon: FolderOpen, description: 'File repository with search, type filtering, custody chain', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'evidence', label: 'Evidence Viewer', icon: Shield, description: 'Chain-of-custody evidence registry and timeline', launchMode: 'workbench', workbenchTab: 'dossier' },

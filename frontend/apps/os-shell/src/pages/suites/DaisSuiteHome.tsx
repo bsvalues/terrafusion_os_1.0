@@ -78,7 +78,7 @@ const ROLE_LABELS: Record<AssessorStaffRole, string> = {
   assessor_leadership: 'Assessor Leadership',
 };
 
-export const DAIS_MODULES: SuiteModuleDef[] = [
+const DAIS_MODULES: SuiteModuleDef[] = [
   // Workbench-mode (parcel-scoped, opens Property Workbench)
   { id: 'certification', label: 'Certification', icon: CheckCircle2, description: 'Assessment roll certification workflow & progress', launchMode: 'workbench', workbenchTab: 'dais' },
   { id: 'appeals', label: 'Appeals', icon: Scale, description: 'BOE appeal tracking, scheduling, and outcomes', launchMode: 'workbench', workbenchTab: 'dais' },
