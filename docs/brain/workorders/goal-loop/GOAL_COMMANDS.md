@@ -355,9 +355,25 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** WO-BRAIN-001 is next (QUEUED).
+**Current state:** `WO-BRAIN-001` is complete in PR #1140. `WO-BRAIN-002 - Domain Pack Completeness
+Audit` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+---
+
+### /goal portfolio-operator
+
+```
+Goal:     Select and activate the highest-priority dependency-cleared canonical program.
+Program:  Portfolio Operator
+File:     programs/portfolio-operator.md
+Success:  Program closeout advances directly into the next executable goal/loop without owner dispatch.
+```
+
+**Current state:** DevEx Hook Bootstrap is closed. Brain Operator is selected at WO-BRAIN-002.
+
+**Allowed loop modes:** `program`, `evidence`, `discovery`
 
 ---
 

@@ -424,9 +424,9 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | CLOSING - bootstrap verification complete |
+| Status | CLOSED - bootstrap verification complete |
 | Current WO | `WO-DEVEX-HOOKS-006` |
-| Next WO | Owner/WOE lane selection after merge |
+| Next WO | Portfolio reconciliation |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -462,6 +462,24 @@ no cleanup.
 bootstrap, unchanged package/lockfile hashes, repository-local tool resolution, and deterministic
 hook behavior. After merge, the DevEx hook bootstrap baseline is closed and the next lane is selected
 from program evidence.
+
+---
+
+## Portfolio Selection - Brain Operator Activation
+
+| Field | Value |
+|-------|-------|
+| Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
+| Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
+| Selected program | Brain Operator System |
+| Active goal | `GOAL-BRAIN-OPERATOR-001` |
+| Active loop | `LOOP-BRAIN-OPERATOR-001` |
+| Current WO | `WO-BRAIN-002` |
+| Next WO | `WO-BRAIN-003` |
+
+Portfolio reconciliation excludes completed and walled lanes, then selects the lowest-risk
+dependency-cleared registered node. BRAIN-002 is selected because BRAIN-001 already merged and the
+remaining higher-ranked alternatives are R1+, stale, or authority-gated.
 
 ---
 
