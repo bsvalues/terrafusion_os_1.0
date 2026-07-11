@@ -22,6 +22,37 @@ fi
 echo "🏛️ TerraFusion OS Pre-Push Quality Gate Validation"
 echo "================================================="
 
+BOOTSTRAP_COMMAND="corepack pnpm install --frozen-lockfile"
+
+bootstrap_failure() {
+  echo "❌ Local hook dependencies are not ready: $1"
+  echo "   Run explicitly from the repository root:"
+  echo "   $BOOTSTRAP_COMMAND"
+  echo "   Hooks never install dependencies automatically."
+  exit 1
+}
+
+require_corepack_pnpm() {
+  command -v node >/dev/null 2>&1 || bootstrap_failure "node is unavailable"
+  command -v corepack >/dev/null 2>&1 || bootstrap_failure "corepack is unavailable"
+
+  EXPECTED_PNPM="$(node -p "require('./package.json').packageManager.split('@').pop()" 2>/dev/null)" || \
+    bootstrap_failure "package.json packageManager cannot be read"
+  ACTUAL_PNPM="$(corepack pnpm --version 2>/dev/null)" || \
+    bootstrap_failure "the repository-declared pnpm cannot be resolved"
+
+  if [ "$ACTUAL_PNPM" != "$EXPECTED_PNPM" ]; then
+    bootstrap_failure "pnpm version $ACTUAL_PNPM does not match the declared $EXPECTED_PNPM"
+  fi
+}
+
+require_local_tool() {
+  TOOL_NAME="$1"
+  if [ ! -f "node_modules/.bin/$TOOL_NAME" ] && [ ! -f "node_modules/.bin/$TOOL_NAME.cmd" ]; then
+    bootstrap_failure "repo-local $TOOL_NAME is unavailable"
+  fi
+}
+
 # Strictness mode: TF_STRICT_PUSH=1 fails on errors (default).
 # Set TF_STRICT_PUSH=0 explicitly to downgrade to warn-only.
 STRICT_MODE="${TF_STRICT_PUSH:-1}"
@@ -29,13 +60,8 @@ if [ "$STRICT_MODE" = "1" ]; then
   echo "🔒 STRICT MODE ENABLED (TF_STRICT_PUSH=1)"
 fi
 
-# Gate 0: Verify pnpm is available (machine determinism)
-command -v pnpm >/dev/null 2>&1 || {
-  echo "❌ pnpm is required for TerraFusion quality gates."
-  echo "   Install via: npm install -g pnpm"
-  echo "   Or via Corepack: corepack enable && corepack prepare pnpm@latest --activate"
-  exit 1
-}
+# Gate 0: Resolve the repository-declared pnpm through Corepack.
+require_corepack_pnpm
 
 # Gate 1: Verify root lockfile exists (single source of truth)
 if [ ! -f "pnpm-lock.yaml" ]; then
@@ -59,20 +85,15 @@ if [ -n "$UNTRACKED_GOVERNED" ]; then
   exit 1
 fi
 
-# Gate 3: Verify root deps exist (npm workspace for root, pnpm for frontend)
+# Gate 3: Verify root dependencies exist without mutating local state.
 if [ ! -d "node_modules" ]; then
-  echo "⚠️ Root node_modules not found. Installing..."
-  npm install --legacy-peer-deps || {
-    echo "❌ Failed to install root dependencies."
-    exit 1
-  }
+  bootstrap_failure "root node_modules is unavailable"
 fi
 
-# Gate 4: Verify vitest is available from root
-if ! npx vitest --version >/dev/null 2>&1; then
-  echo "❌ vitest not available. Run: npm install"
-  exit 1
-fi
+# Gate 4: Verify Vitest is repo-local and resolved through pnpm.
+require_local_tool "vitest"
+corepack pnpm exec vitest --version >/dev/null 2>&1 || \
+  bootstrap_failure "repo-local vitest cannot execute"
 
 echo "✅ Pre-flight checks passed"
 echo ""
@@ -95,28 +116,28 @@ run_gate() {
   fi
 }
 
-run_gate "🧪 Running unit tests..." npm run test:unit
+run_gate "🧪 Running unit tests..." corepack pnpm run test:unit
 
 echo ""
-run_gate "🔒 Running security audit..." npm run security:scan
+run_gate "🔒 Running security audit..." corepack pnpm run security:scan
 
 echo ""
-run_gate "📊 Running performance validation..." npm run performance:benchmark
+run_gate "📊 Running performance validation..." corepack pnpm run performance:benchmark
 
 echo ""
-run_gate "🤖 Validating AI agent coordination..." npm run ai-swarm:monitor
+run_gate "🤖 Validating AI agent coordination..." corepack pnpm run ai-swarm:monitor
 
 echo ""
-run_gate "🏛️ Government compliance validation..." npm run government:compliance
+run_gate "🏛️ Government compliance validation..." corepack pnpm run government:compliance
 
 echo ""
-run_gate "🏗️ Backend build verification..." npm run backend:build
+run_gate "🏗️ Backend build verification..." corepack pnpm run backend:build
 
 # Only run frontend build if frontend/ paths changed in this push
 FRONTEND_CHANGED="$(git diff --name-only HEAD @{upstream} 2>/dev/null | grep '^frontend/' || true)"
 if [ -n "$FRONTEND_CHANGED" ]; then
   echo ""
-  run_gate "🎨 Frontend build verification..." npm run frontend:build
+  run_gate "🎨 Frontend build verification..." corepack pnpm run frontend:build
 else
   echo ""
   echo "⏭️  Frontend unchanged — skipping frontend build"
@@ -127,4 +148,5 @@ echo "✅ Core quality gates passed! Government. Transcended."
 if [ "$STRICT_MODE" != "1" ]; then
   echo "⚠️  TF_STRICT_PUSH=0 was set explicitly — gates ran in warn-only mode."
   echo "    Default is strict; unset TF_STRICT_PUSH to restore default behavior."
+  echo "    This developer-local override is not release evidence."
 fi

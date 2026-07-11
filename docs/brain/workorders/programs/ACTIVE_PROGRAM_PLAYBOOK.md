@@ -424,9 +424,9 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | ACTIVE - deterministic design complete; implementation owner-gated |
-| Current WO | `WO-DEVEX-HOOKS-003` |
-| Next WO | `WO-DEVEX-HOOKS-004` |
+| Status | ACTIVE - hook repair complete; evidence/register next |
+| Current WO | `WO-DEVEX-HOOKS-004` |
+| Next WO | `WO-DEVEX-HOOKS-005` |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -451,9 +451,11 @@ and prohibits implicit hook installs or silent missing-tool skips.
 
 ### Next Work
 
-`WO-DEVEX-HOOKS-004 - Hook Script Repair` requires explicit owner authorization for its exact
-implementation file set. Do not auto-continue from design into hook, setup-script, package, or CI
-changes.
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` applies the deterministic policy without package,
+lockfile, CI, or product-runtime changes.
+
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` is the next evidence-only packet. It may classify
+stale worktrees and branch ownership, but no cleanup is authorized.
 
 ---
 

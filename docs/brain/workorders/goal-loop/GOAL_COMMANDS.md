@@ -253,13 +253,13 @@ status command.
 Goal:     Inspect local Prettier/Vitest hook tooling debt without mixing it into product lanes.
 Program:  DevEx Hook Tooling
 File:     programs/devex-hook-tooling.md
-Success:  Operator sees the deterministic hook design as complete and WO-DEVEX-HOOKS-004 as an
-          owner-gated implementation packet, not routine docs/governance continuation.
+Success:  Operator sees the deterministic hook repair as complete and WO-DEVEX-HOOKS-005 as an
+          evidence-only worktree hygiene register with no cleanup authority.
 ```
 
-**Current state:** `WO-DEVEX-HOOKS-003` defines the deterministic hook execution policy. Next is
-`WO-DEVEX-HOOKS-004 - Hook Script Repair`; exact `.husky`, setup-script, package, CI, runtime, and
-install scope remains owner-gated.
+**Current state:** `WO-DEVEX-HOOKS-004` implements deterministic hook execution without package,
+lockfile, CI, or product-runtime changes. Next is `WO-DEVEX-HOOKS-005 - Worktree Hygiene Register`;
+classification is allowed, but deletion and force cleanup remain owner-gated.
 
 **Command alias:** `/devex-hooks-status`
 
