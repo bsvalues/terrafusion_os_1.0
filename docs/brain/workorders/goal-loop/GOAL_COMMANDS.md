@@ -253,13 +253,13 @@ status command.
 Goal:     Inspect local Prettier/Vitest hook tooling debt without mixing it into product lanes.
 Program:  DevEx Hook Tooling
 File:     programs/devex-hook-tooling.md
-Success:  Operator sees WO-DEVEX-HOOKS-003 as the next docs/governance design packet and does not
-          edit hooks without owner authorization.
+Success:  Operator sees the deterministic hook design as complete and WO-DEVEX-HOOKS-004 as an
+          owner-gated implementation packet, not routine docs/governance continuation.
 ```
 
-**Current state:** `WO-DEVEX-HOOKS-002` defines the local tooling bootstrap contract. Next is
-`WO-DEVEX-HOOKS-003 - Hook Determinism Design`; `.husky`, package manager, CI, runtime, and install
-commands remain owner-gated.
+**Current state:** `WO-DEVEX-HOOKS-003` defines the deterministic hook execution policy. Next is
+`WO-DEVEX-HOOKS-004 - Hook Script Repair`; exact `.husky`, setup-script, package, CI, runtime, and
+install scope remains owner-gated.
 
 **Command alias:** `/devex-hooks-status`
 

@@ -3,8 +3,8 @@
 **Program:** DevEx Hook Tooling
 **Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
 **Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
-**Status:** Active - docs/governance bootstrap contract
-**Current base:** `origin/main` at `509bc0c4fd8741351aff4c1128af60da12f56fba`
+**Status:** Active - deterministic design complete; implementation owner-gated
+**Current base:** `origin/main` at `a4344f58c0d6d3270332a20984898058b7edda20`
 
 ---
 
@@ -82,16 +82,21 @@ The local tooling contract is:
 
 ---
 
+## Deterministic Design Decision
+
+`WO-DEVEX-HOOKS-003` selected this policy:
+
+- retain the declared `pnpm@9.0.0` contract;
+- use Corepack-mediated `pnpm exec` for repo-local hook tools;
+- bootstrap explicitly with `corepack pnpm install --frozen-lockfile`, never from a hook;
+- fail fast when dependencies are absent instead of installing or silently skipping gates;
+- keep strict push mode as the default;
+- retain `TF_STRICT_PUSH=0` only as a loud developer-local override that cannot bypass bootstrap
+  preflight or serve as release evidence;
+- keep `.husky` as the sole supported hook authority and retire the Atlas script that switches
+  authority to `.githooks`.
+
 ## Required Next Decision
 
-`WO-DEVEX-HOOKS-003` should decide the deterministic hook execution design:
-
-- whether the repo standardizes on `pnpm@9.0.0`, updates policy to pnpm 11, or documents a supported
-  bridge;
-- whether hooks should call `pnpm exec`, explicit `node_modules/.bin/*`, or a repo-owned wrapper;
-- whether missing dependencies fail with bootstrap instructions or trigger an approved explicit
-  bootstrap command;
-- whether `TF_STRICT_PUSH=0` remains a developer escape hatch or is replaced by a clearer docs-only
-  hook path.
-
-Implementation remains blocked until that design is owner-approved.
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` is next, but it requires explicit owner authorization
+because it would edit hook/setup/package surfaces outside this docs/governance design scope.
