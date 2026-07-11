@@ -180,7 +180,9 @@ jobs:
   frontend-fast:
     name: 🎨 Frontend Fast Gate
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
-    timeout-minutes: 30
+    # DIAGNOSTIC (WO-CI-FASTGATE-003, temporary): raised 30→50 so the suite completes
+    # instead of being cut, to identify the ~19-min silent block. REVERT before final fix.
+    timeout-minutes: 50
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
 
@@ -237,7 +239,10 @@ jobs:
         # 30-min fast-gate budget. That dependency-audit coverage remains in the scheduled
         # Security & Compliance Pipeline dependency scan. --slowTestThreshold=1000 surfaces
         # future slow tests without raising this gate's timeout. (Fix for #1242.)
-        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000
+        # DIAGNOSTIC (WO-CI-FASTGATE-003, temporary): --reporter=verbose prints each test live so
+        # the file whose tests crawl during the ~19-min silent block is named. retry/testTimeout
+        # left at config defaults so this reflects real conditions. REVERT with the timeout above.
+        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --reporter=verbose
 
       - name: IPC tests (blocking)
         id: ipc-tests
