@@ -1,9 +1,13 @@
 # WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet
 
-**Program:** DevEx Hook Tooling  
-**Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`  
-**Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`  
-**Base:** `2b97106cf5895562b2eeb63fc219327e672a5797`  
+**Program:** DevEx Hook Tooling
+
+**Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
+
+**Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
+
+**Base:** `2b97106cf5895562b2eeb63fc219327e672a5797`
+
 **Mode:** Isolated clean-worktree validation and evidence
 
 ## Verdict
