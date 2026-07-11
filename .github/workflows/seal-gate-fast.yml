@@ -175,7 +175,10 @@ jobs:
           fi
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # Frontend Fast Gate (lint + type-check + unit tests + build)
+  # Frontend Fast Gate — split (WO-CI-FASTGATE-003):
+  #   frontend-fast   = sharded unit tests only (matrix 1..3)
+  #   frontend-checks = lint + type-check + ipc + build + bundle (once)
+  # so no runner carries both a unit shard and the build. Seal Gate needs both.
   # ═══════════════════════════════════════════════════════════════════════════
   frontend-fast:
     name: 🎨 Frontend Fast Gate (unit shard ${{ matrix.shard }}/3)
@@ -731,12 +734,22 @@ jobs:
             echo "✅ Classify: passed"
           fi
 
-          # Frontend (may be skipped)
+          # Frontend unit shards (may be skipped)
           case "${{ needs.frontend-fast.result }}" in
-            success) echo "✅ Frontend: passed" ;;
-            skipped) echo "⏭️ Frontend: skipped (no changes)" ;;
+            success) echo "✅ Frontend unit shards: passed" ;;
+            skipped) echo "⏭️ Frontend unit shards: skipped (no changes)" ;;
             *)
-              echo "❌ Frontend: FAILED"
+              echo "❌ Frontend unit shards: FAILED"
+              FAILED=1
+              ;;
+          esac
+
+          # Frontend build & checks (may be skipped)
+          case "${{ needs.frontend-checks.result }}" in
+            success) echo "✅ Frontend build & checks: passed" ;;
+            skipped) echo "⏭️ Frontend build & checks: skipped (no changes)" ;;
+            *)
+              echo "❌ Frontend build & checks: FAILED"
               FAILED=1
               ;;
           esac
@@ -776,9 +789,14 @@ jobs:
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Classify | ${{ needs.classify.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           case "${{ needs.frontend-fast.result }}" in
-            success) echo "| Frontend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
-            skipped) echo "| Frontend | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
-            *) echo "| Frontend | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+            success) echo "| Frontend unit shards | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend unit shards | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend unit shards | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
+          esac
+          case "${{ needs.frontend-checks.result }}" in
+            success) echo "| Frontend build & checks | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
+            skipped) echo "| Frontend build & checks | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY ;;
+            *) echo "| Frontend build & checks | ❌ |" >> $GITHUB_STEP_SUMMARY ;;
           esac
           case "${{ needs.backend-fast.result }}" in
             success) echo "| Backend | ✅ |" >> $GITHUB_STEP_SUMMARY ;;
