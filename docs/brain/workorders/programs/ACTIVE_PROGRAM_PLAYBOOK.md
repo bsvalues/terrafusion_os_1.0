@@ -424,9 +424,9 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | ACTIVE - deterministic design complete; implementation owner-gated |
-| Current WO | `WO-DEVEX-HOOKS-003` |
-| Next WO | `WO-DEVEX-HOOKS-004` |
+| Status | CLOSING - bootstrap verification complete |
+| Current WO | `WO-DEVEX-HOOKS-006` |
+| Next WO | Owner/WOE lane selection after merge |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -451,9 +451,17 @@ and prohibits implicit hook installs or silent missing-tool skips.
 
 ### Next Work
 
-`WO-DEVEX-HOOKS-004 - Hook Script Repair` requires explicit owner authorization for its exact
-implementation file set. Do not auto-continue from design into hook, setup-script, package, or CI
-changes.
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` applies the deterministic policy without package,
+lockfile, CI, or product-runtime changes.
+
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` classifies registered worktrees, active PRs,
+cleanup candidates, dirty/locked quarantines, and the stale local-main ownership conflict. It performs
+no cleanup.
+
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` proves the explicit clean-worktree frozen
+bootstrap, unchanged package/lockfile hashes, repository-local tool resolution, and deterministic
+hook behavior. After merge, the DevEx hook bootstrap baseline is closed and the next lane is selected
+from program evidence.
 
 ---
 

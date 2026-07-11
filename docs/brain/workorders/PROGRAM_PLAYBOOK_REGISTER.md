@@ -17,7 +17,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-10 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-006 release engineering closeout; WO-DEVEX-HOOKS-003 determinism design)*
+*(Updated 2026-07-10 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-006 release engineering closeout; WO-DEVEX-HOOKS-006 bootstrap verification)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -27,7 +27,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
-| [DevEx Hook Tooling](programs/devex-hook-tooling.md) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Active - implementation owner-gated | `WO-DEVEX-HOOKS-003` | `WO-DEVEX-HOOKS-004` | No auto into implementation; design is complete | Stop for exact hook/setup/package file authorization, installs, CI changes, runtime changes, branch protection, or protected resources |
+| [DevEx Hook Tooling](programs/devex-hook-tooling.md) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Closing - bootstrap verified | `WO-DEVEX-HOOKS-006` | Owner/WOE lane selection | Frozen bootstrap auto-proceeds under operator policy | Stop on tracked dependency mutation, cleanup, CI/runtime changes, or protected resources |
 | [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Blocked | `WO-LOCAL-093` | TBD | No auto | Owner authorization required |
 | [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Closed evidence baseline | `WO-WORKBENCH-011` | New phase only if owner/WOE selects | No auto restart | Owner or WOE selection required |
@@ -50,7 +50,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
 | No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
 | Backend full solution tests depend on Docker/Testcontainers SQL Server lane | Backend release readiness / integration validation | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate criteria defined in WO-BACKEND-OE-009; operational runbook created in WO-BACKEND-OE-010 without Docker repair |
-| Local hook tooling cannot find Prettier/Vitest | All PR-finalization work | Local hook bypass authority wall; DevEx follow-up only |
+| Dependency-clean worktrees cannot resolve local Prettier/Vitest before explicit bootstrap | Local PR-finalization before bootstrap | Run the governed frozen bootstrap; unattended runs require `--ignore-scripts` and tracked mutation remains an authority wall |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
 | County production boundary packet requires explicit operator auth | WO-AZURE-006 | SW-01 + SW-09 |
 
@@ -178,3 +178,5 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-08 | Closed Release Engineering docs/governance baseline and recommended DevEx Hook Tooling as the next owner-selected lane | WO-REL-006 |
 | 2026-07-08 | Added DevEx Hook Tooling bootstrap contract and routed next to hook determinism design | WO-DEVEX-HOOKS-002 |
 | 2026-07-10 | Defined deterministic hook execution policy and routed implementation to explicit owner authorization | WO-DEVEX-HOOKS-003 |
+| 2026-07-10 | Repaired deterministic hooks without package/lockfile mutation and routed next to worktree hygiene evidence | WO-DEVEX-HOOKS-004 |
+| 2026-07-10 | Classified 54 worktrees without cleanup and routed next to clean-worktree bootstrap verification | WO-DEVEX-HOOKS-005 |

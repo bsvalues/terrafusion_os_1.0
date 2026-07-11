@@ -1,21 +1,9 @@
-#!/bin/bash
-# Configure Git to use Atlas pre-commit hooks
+#!/usr/bin/env sh
+# Retired by WO-DEVEX-HOOKS-004: .husky is the sole supported hook authority.
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-HOOKS_DIR="$REPO_ROOT/.githooks"
-
-echo "🔧 Setting up TerraFusion Atlas Git Hooks..."
-
-# Configure git to use custom hooks directory
-git config core.hooksPath "$HOOKS_DIR"
-
-# Make pre-commit hook executable
-chmod +x "$HOOKS_DIR/pre-commit"
-
-echo "✅ Git hooks configured!"
-echo ""
-echo "📋 Active hooks:"
-echo "  • Pre-commit: Atlas registration check"
-echo ""
-echo "💡 To bypass in emergencies: git commit --no-verify"
-echo "📖 Documentation: terrafusion-atlas/docs/DEVELOPER_GUIDE.md"
+echo "❌ scripts/setup/setup-atlas-hooks.sh is unsupported."
+echo "   It previously changed core.hooksPath to the legacy .githooks directory."
+echo "   TerraFusion hooks are managed through .husky and the root package contract."
+echo "   Bootstrap dependencies explicitly with:"
+echo "   corepack pnpm install --frozen-lockfile"
+exit 1

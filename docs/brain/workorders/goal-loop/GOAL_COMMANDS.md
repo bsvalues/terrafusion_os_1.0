@@ -253,13 +253,14 @@ status command.
 Goal:     Inspect local Prettier/Vitest hook tooling debt without mixing it into product lanes.
 Program:  DevEx Hook Tooling
 File:     programs/devex-hook-tooling.md
-Success:  Operator sees the deterministic hook design as complete and WO-DEVEX-HOOKS-004 as an
-          owner-gated implementation packet, not routine docs/governance continuation.
+Success:  Operator sees the clean-worktree bootstrap as verified and ordinary frozen validation
+          installs governed by FROZEN_BOOTSTRAP_AUTO_PROCEED.
 ```
 
-**Current state:** `WO-DEVEX-HOOKS-003` defines the deterministic hook execution policy. Next is
-`WO-DEVEX-HOOKS-004 - Hook Script Repair`; exact `.husky`, setup-script, package, CI, runtime, and
-install scope remains owner-gated.
+**Current state:** `WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` verified the frozen bootstrap,
+unchanged manifests/lockfile, repo-local tool resolution, and deterministic hooks. Tracked dependency
+mutation and worktree cleanup remain owner-gated; ordinary policy-compliant frozen validation
+installs auto-proceed.
 
 **Command alias:** `/devex-hooks-status`
 

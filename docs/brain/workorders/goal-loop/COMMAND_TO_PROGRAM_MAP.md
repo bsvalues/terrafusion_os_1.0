@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Master Playbook | DevEx Hook Tooling / WO-DEVEX-HOOKS-004 | YES - owner decision packet only; implementation not auto-authorized | `once`, `evidence` |
+| `program-next` | Master Playbook | Owner/WOE lane selection after DevEx Hook Tooling closeout | YES - select next program from evidence | `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
@@ -36,7 +36,7 @@ resolves.
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
-| `devex-hooks-status` | DevEx Hook Tooling | WO-DEVEX-HOOKS-004 | YES — determinism design complete; exact hook/setup/package implementation scope owner-gated | `evidence`, `discovery` |
+| `devex-hooks-status` | DevEx Hook Tooling | Closing at WO-DEVEX-HOOKS-006 | YES - bootstrap verified; next lane requires program selection | `evidence`, `discovery` |
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |

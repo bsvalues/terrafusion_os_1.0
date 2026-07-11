@@ -3,8 +3,8 @@
 **Program:** DevEx Hook Tooling
 **Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
 **Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
-**Status:** Active - deterministic design complete; implementation owner-gated
-**Current base:** `origin/main` at `a4344f58c0d6d3270332a20984898058b7edda20`
+**Status:** Closing - bootstrap verification complete
+**Current base:** `origin/main` at `2b97106cf5895562b2eeb63fc219327e672a5797`
 
 ---
 
@@ -27,16 +27,18 @@ CI wiring, deployment, or county runtime work.
 - Active hooks are routed through `core.hooksPath=.husky`.
 - `.husky/pre-commit` and `.husky/pre-push` are active.
 - `.githooks/pre-commit` exists but is not active under current Git config.
-- Clean worktrees do not have root `node_modules` or `frontend/node_modules`.
-- `prettier` and `vitest` are not available on PATH.
-- Repo-local `node_modules/.bin/prettier` and `node_modules/.bin/vitest` are absent in clean
-  worktrees; on Windows the corresponding `.cmd` shims are also absent.
+- Dependency-clean worktrees do not begin with root `node_modules`; hooks fail fast with the
+  governed bootstrap instruction until dependencies are explicitly installed.
+- `prettier` and `vitest` need not be globally available because repaired hooks resolve the
+  repository-local tools through Corepack and the pinned pnpm contract.
+- After governed frozen bootstrap, repo-local Prettier, lint-staged, and Vitest resolve in clean
+  worktrees, including their Windows `.cmd` shims.
 - `npx --no-install` can resolve non-canonical global/cache tool versions, which is not acceptable
   as release-grade local hook proof.
-- The current pre-push hook may attempt `npm install --legacy-peer-deps` when `node_modules` is
-  missing; hook-time install mutation is not approved by this lane.
-- `scripts/setup/setup-atlas-hooks.sh` can set `core.hooksPath` to `.githooks`; that legacy hook
-  authority must be dispositioned before hook repair.
+- The repaired pre-push hook never installs dependencies; missing local tooling is an explicit
+  bootstrap failure.
+- `scripts/setup/setup-atlas-hooks.sh` is retired and no longer changes hook authority away from
+  `.husky`.
 
 ---
 
@@ -98,11 +100,23 @@ boundary:
 - keep `.husky` as the sole supported hook authority and retire the Atlas script that switches
   authority to `.githooks`.
 
-`scripts/setup/setup-atlas-hooks.sh` is therefore an unsupported setup path. Operators must not run
-it while it still rewrites `core.hooksPath` to `.githooks`; its retirement or replacement belongs to
-the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
+`WO-DEVEX-HOOKS-004` completed that decision: `scripts/setup/setup-atlas-hooks.sh` is now a retired,
+unsupported setup path that exits nonzero and no longer rewrites `core.hooksPath`. `.husky` remains
+the sole supported hook authority.
 
-## Required Next Decision
+## Program Closeout State
 
-`WO-DEVEX-HOOKS-004 - Hook Script Repair` is next, but it requires explicit owner authorization
-because it would edit hook/setup/package surfaces outside this docs/governance design scope.
+`WO-DEVEX-HOOKS-004 - Hook Script Repair` implemented the approved policy in `.husky/pre-commit`,
+`.husky/pre-push`, and `scripts/setup/setup-atlas-hooks.sh`. It did not change packages, lockfiles,
+CI, or product runtime.
+
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` classified 54 registered worktrees without cleanup.
+Dirty, locked, detached, active-PR, no-PR, and stale-main ownership boundaries remain preserved.
+
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` verified a clean-worktree frozen bootstrap,
+unchanged manifest and lockfile hashes, repository-local tool resolution, deterministic strict and
+non-strict hook behavior, and no hook-time install. The DevEx hook bootstrap baseline is complete
+when its evidence packet merges.
+
+The operator playbook now includes `FROZEN_BOOTSTRAP_AUTO_PROCEED`; future ordinary frozen installs
+in isolated validation worktrees are routine operations when all policy predicates hold.
