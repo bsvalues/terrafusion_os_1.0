@@ -360,7 +360,7 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** BRAIN-001 through BRAIN-003 are complete. `WO-BRAIN-004 - Goal Engine Maturity
+**Current state:** BRAIN-001 through BRAIN-004 are complete. `WO-BRAIN-005 - Loop Engine Maturity
 Review` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
