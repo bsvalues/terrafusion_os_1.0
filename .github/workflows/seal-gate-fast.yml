@@ -208,13 +208,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # WO-CI-FASTGATE-003: only the unit-test step is sharded; the non-unit steps below run
+      # once (shard 1) so build/bundle/lint/type-check are not redundantly repeated per shard.
       - name: Lint (loud, temporary non-blocking)
         id: lint
+        if: matrix.shard == 1
         run: pnpm -C frontend run lint
         continue-on-error: true
 
       - name: Lint escape hatch (expires 2026-07-31)
-        if: steps.lint.outcome == 'failure'
+        if: matrix.shard == 1 && steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
@@ -228,6 +231,7 @@ jobs:
 
       - name: Type check (blocking)
         id: typecheck
+        if: matrix.shard == 1
         shell: bash
         run: |
           set -euo pipefail
@@ -253,18 +257,22 @@ jobs:
 
       - name: IPC tests (blocking)
         id: ipc-tests
+        if: matrix.shard == 1
         run: pnpm -C frontend run test:ipc
 
       - name: Build (blocking)
         id: build
+        if: matrix.shard == 1
         run: pnpm -C frontend run build
 
       - name: Bundle Analysis (blocking - requires build)
         id: bundle-analysis
+        if: matrix.shard == 1
         run: pnpm -C frontend run test:unit -- apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
 
       - name: Frontend Summary
-        if: always()
+        # Only shard 1 runs all non-unit steps, so only it writes the complete summary table.
+        if: always() && matrix.shard == 1
         shell: bash
         run: |
           echo "## 🎨 Frontend Fast Gate" >> $GITHUB_STEP_SUMMARY
