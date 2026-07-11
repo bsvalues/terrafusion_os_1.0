@@ -21,12 +21,12 @@ not install dependencies during hook execution.
 
 | Check | Result |
 |-------|--------|
-| Worktree | `C:/Users/bsval/.codex-worktrees/devex-hooks-006-bootstrap-verification` |
+| Worktree | `<HOME>/.codex-worktrees/devex-hooks-006-bootstrap-verification` |
 | Branch | `wo/devex-hooks-006-bootstrap-verification` |
 | Initial `HEAD` / `origin/main` | `2b97106cf5895562b2eeb63fc219327e672a5797` |
 | Initial status | Clean |
 | Package manager | `corepack pnpm`, repository-declared version `9.0.0` |
-| Bootstrap command | `corepack pnpm install --frozen-lockfile` |
+| Bootstrap command | `corepack pnpm install --frozen-lockfile` (explicitly owner-authorized; lifecycle scripts were not suppressed) |
 | Bootstrap result | PASS; lockfile resolution skipped because the lockfile was current |
 | Tracked mutation after bootstrap | None |
 | Hook-time install | None |
@@ -66,12 +66,17 @@ Windows repository-local command shims existed for all three tools under `node_m
 The synthetic runs replace gate command outcomes only; actual Corepack/pnpm and repository-local
 tool resolution were verified separately against the bootstrapped worktree.
 
+The owner-authorized bootstrap executed the repository's existing `prepare` lifecycle script, which
+ran `husky install`. No tracked file, manifest hash, lockfile hash, or effective `core.hooksPath`
+changed, but this run does not establish lifecycle scripts as safe for unattended auto-proceed.
+
 ## Standing Operator Policy
 
-`FROZEN_BOOTSTRAP_AUTO_PROCEED` is added to the Codex operator playbook. Ordinary frozen installs in
-dedicated validation worktrees are no longer owner stops when manifests and lockfiles are hashed,
-only ignored dependency state is expected, and protected resources are excluded. Any tracked change
-still causes an immediate stop.
+`FROZEN_BOOTSTRAP_AUTO_PROCEED` is added to the Codex operator playbook. Automatic frozen installs in
+dedicated validation worktrees must also use `--ignore-scripts`; script-enabled bootstrap requires a
+separate pre-install lifecycle-script allowlist or explicit owner authorization. Manifests and lockfiles are
+hashed, only ignored dependency state is expected, protected resources are excluded, and any tracked
+change still causes an immediate stop.
 
 ## Safety And Non-Claims
 
