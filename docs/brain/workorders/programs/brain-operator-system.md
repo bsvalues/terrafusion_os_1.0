@@ -1,9 +1,14 @@
 # P7 — AI / Brain / Operator System
 
-**Program:** P7  
-**Status:** QUEUED  
-**Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-06-30
+**Program:** Brain Operator System
+
+**Goal:** `GOAL-BRAIN-OPERATOR-001`
+
+**Loop:** `LOOP-BRAIN-OPERATOR-001`
+
+**Status:** ACTIVE at WO-BRAIN-002
+
+**Last Updated:** 2026-07-11
 
 ---
 
@@ -35,8 +40,8 @@ Operationalize the one-Brain model. TerraFusion Brain (Cortex) owns queue, seque
 
 | WO | Title | Status | Description |
 |----|-------|--------|-------------|
-| WO-BRAIN-001 | Brain authority and current capability audit | **NEXT** | What does the Brain currently do? What is documented vs. aspirational? |
-| WO-BRAIN-002 | Domain pack completeness audit | QUEUED | For each suite (Benton, Workbench, Forge), what domain knowledge is in the Brain? What's missing? |
+| WO-BRAIN-001 | Brain authority and current capability audit | COMPLETE | PR #1140; implemented vs. aspirational capability truth |
+| WO-BRAIN-002 | Domain pack completeness audit | **CURRENT** | Audit every registered pack, route, proof, and escalation boundary |
 | WO-BRAIN-003 | Operator command vocabulary cleanup | QUEUED | What commands does the operator currently use? Which are consistent? Which are ambiguous? |
 | WO-BRAIN-004 | Goal engine maturity review | QUEUED | Is the `/goal` system working as documented? Evidence vs aspiration? |
 | WO-BRAIN-005 | Loop engine maturity review | QUEUED | Is the `/loop` system working as documented? What's the real continuation contract? |
@@ -54,6 +59,78 @@ Operationalize the one-Brain model. TerraFusion Brain (Cortex) owns queue, seque
 **Outputs:**
 - `docs/brain/WO_BRAIN_001_CAPABILITY_AUDIT.md`
 
+## Executable Chain: WO-BRAIN-002 Through WO-BRAIN-009
+
+All nodes default to R0 discovery plus R1 evidence updates. They may continue automatically in this
+goal and loop. Stop before implementation, runtime behavior, CI, package/lockfile, protected data,
+secrets, deployment, or a new autonomous authority.
+
+### WO-BRAIN-002 - Domain Pack Completeness Audit
+
+- **Mode:** read-only inventory, then evidence/docs.
+- **Dependency:** BRAIN-001 complete.
+- **Deliverable:** `docs/brain/workorders/evidence/WO-BRAIN-002-DOMAIN-PACK-COMPLETENESS-AUDIT.md`.
+- **Validation:** pack paths, canon links, allowed/forbidden writes, routing, proof, and escalation
+  fields; `git diff --check`; `wo-query --json`.
+- **Next:** BRAIN-003.
+
+### WO-BRAIN-003 - Operator Command Vocabulary Reconciliation
+
+- **Mode:** docs/governance reconciliation.
+- **Dependency:** BRAIN-002.
+- **Deliverable:** canonical command inventory with duplicate, stale, ambiguous, and missing routes.
+- **Blocked:** executable CLI changes.
+- **Next:** BRAIN-004.
+
+### WO-BRAIN-004 - Goal Engine Maturity Review
+
+- **Mode:** read-only evidence plus docs.
+- **Dependency:** BRAIN-003.
+- **Deliverable:** documented-versus-operational `/goal` capability matrix.
+- **Blocked:** goal runtime implementation.
+- **Next:** BRAIN-005.
+
+### WO-BRAIN-005 - Loop Engine Maturity Review
+
+- **Mode:** read-only evidence plus docs.
+- **Dependency:** BRAIN-004.
+- **Deliverable:** continuation, recovery, wall, and merge-watch truth matrix.
+- **Blocked:** autonomous runner or scheduler implementation.
+- **Next:** BRAIN-006.
+
+### WO-BRAIN-006 - Memory And Provenance Integration Audit
+
+- **Mode:** read-only provenance audit plus docs.
+- **Dependency:** BRAIN-005.
+- **Deliverable:** source, freshness, ownership, mutation, and non-claim matrix.
+- **Blocked:** memory writes, ingestion, external stores, or secrets.
+- **Next:** BRAIN-007.
+
+### WO-BRAIN-007 - Agent Role And Stop-Gate Matrix
+
+- **Mode:** governance evidence.
+- **Dependency:** BRAIN-006.
+- **Deliverable:** agent authority, allowed actions, mandatory walls, and escalation matrix.
+- **Blocked:** granting new runtime or production authority.
+- **Next:** BRAIN-008.
+
+### WO-BRAIN-008 - Autonomous Continuation Rulebook Reconciliation
+
+- **Mode:** doctrine reconciliation.
+- **Dependency:** BRAIN-007.
+- **Deliverable:** one-Brain continuation rules reconciled with portfolio, WOE, and operator canon.
+- **Blocked:** runner, queue service, or autonomous mutation implementation.
+- **Next:** BRAIN-009.
+
+### WO-BRAIN-009 - Brain/WOE Integration Evidence Packet
+
+- **Mode:** read-only integration proof and closeout.
+- **Dependency:** BRAIN-008.
+- **Deliverable:** evidence that current query, scoring, routing, wall, and operator surfaces agree;
+  contradictions and implementation gaps remain explicit.
+- **Blocked:** rewiring `brain next`, schema changes, or runtime implementation.
+- **Next:** portfolio reconciliation.
+
 ---
 
 ## Dependency Chain
@@ -69,5 +146,6 @@ WO-BRAIN-009 is the integration gate — proves the Brain+WOE system is function
 
 ## Stop Conditions
 
-- If WO-BRAIN-001 finds the Brain authority docs are aspirational-only with no operational substance, update all docs to reflect reality before continuing
+- Stop if canon conflicts on one-Brain authority or a node requires implementation outside the
+  evidence/docs boundary.
 - Do not add Brain capabilities that expand autonomous action scope without operator approval

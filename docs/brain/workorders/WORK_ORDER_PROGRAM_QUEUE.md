@@ -13,8 +13,8 @@
 
 ## Active Goal
 
-`p8-management-dashboard` — make existing dashboard surfaces reachable on the Benton demo. **Build
-nothing new.** The gap is reachability/deployment, not construction.
+`brain-operator` - audit and reconcile one-Brain domain packs and operator governance. Current node:
+`WO-BRAIN-002 - Domain Pack Completeness Audit` (R0 discovery, then R1 evidence).
 
 ---
 
@@ -75,7 +75,9 @@ nothing new.** The gap is reachability/deployment, not construction.
 ### brain-operator  (`/goal brain-operator`)
 | WO | State |
 |----|-------|
-| WO-BRAIN-001+ | QUEUED |
+| WO-BRAIN-001 | DONE - PR #1140 |
+| WO-BRAIN-002 | **CURRENT** |
+| WO-BRAIN-003..009 | QUEUED evidence/docs chain |
 
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
@@ -97,7 +99,8 @@ nothing new.** The gap is reachability/deployment, not construction.
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Next safe lanes (unblocked):** work-order-engine (WOE-012→014, docs), brain-operator (WO-BRAIN-001).
+**Selected safe lane:** brain-operator at WO-BRAIN-002. WOE-012 and WOE-014 are complete; WOE-013
+remains an R2 UI soft wall.
 
 ---
 
