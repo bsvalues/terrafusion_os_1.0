@@ -160,12 +160,10 @@ if (!window.cancelAnimationFrame) {
 // unmocked fetches fail fast and deterministically. Tests that exercise fetch mock it themselves
 // (that per-test mock overrides this global). This changes no assertion — only makes the
 // already-failing unmocked path instant instead of runner-dependent.
-if (typeof globalThis.fetch !== 'function' || true) {
-  globalThis.fetch = vi.fn(() =>
-    Promise.reject(
-      new Error(
-        'fetch is not available in unit tests (WO-CI-FASTGATE-003 deterministic stub); mock it in your test if needed',
-      ),
+globalThis.fetch = vi.fn(() =>
+  Promise.reject(
+    new Error(
+      'fetch is not available in unit tests (WO-CI-FASTGATE-003 deterministic stub); mock it in your test if needed',
     ),
-  ) as unknown as typeof fetch;
-}
+  ),
+) as unknown as typeof fetch;
