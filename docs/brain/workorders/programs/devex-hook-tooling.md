@@ -84,7 +84,9 @@ The local tooling contract is:
 
 ## Deterministic Design Decision
 
-`WO-DEVEX-HOOKS-003` selected this policy:
+[`WO-DEVEX-HOOKS-003`](../evidence/WO-DEVEX-HOOKS-003-HOOK-DETERMINISM-DESIGN.md)
+selected this policy and records the detailed evidence, implementation contract, and authority
+boundary:
 
 - retain the declared `pnpm@9.0.0` contract;
 - use Corepack-mediated `pnpm exec` for repo-local hook tools;
@@ -95,6 +97,10 @@ The local tooling contract is:
   preflight or serve as release evidence;
 - keep `.husky` as the sole supported hook authority and retire the Atlas script that switches
   authority to `.githooks`.
+
+`scripts/setup/setup-atlas-hooks.sh` is therefore an unsupported setup path. Operators must not run
+it while it still rewrites `core.hooksPath` to `.githooks`; its retirement or replacement belongs to
+the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
 
 ## Required Next Decision
 
