@@ -71,6 +71,7 @@ Codex may run a dependency bootstrap without owner approval when all are true:
 - execution occurs in a dedicated clean worktree;
 - the repository's declared package manager is used;
 - frozen-lockfile mode is enabled;
+- lifecycle scripts are suppressed with `--ignore-scripts`;
 - expected mutation is ignored local dependency state only;
 - package manifests and lockfiles are hashed before and after;
 - no scripts connect to production, county systems, PACS, secrets, or external operational
@@ -78,7 +79,9 @@ Codex may run a dependency bootstrap without owner approval when all are true:
 - any tracked mutation causes an immediate stop.
 
 This rule authorizes local validation state only. It does not authorize package, lockfile, runtime,
-CI, deployment, or protected-resource changes.
+CI, deployment, or protected-resource changes. If the validation requires lifecycle scripts, Codex
+must first establish a bounded pre-install script allowlist or obtain explicit owner authorization;
+frozen lockfile mode alone does not make lifecycle side effects deterministic.
 
 ## Relationship To Existing Doctrine
 
