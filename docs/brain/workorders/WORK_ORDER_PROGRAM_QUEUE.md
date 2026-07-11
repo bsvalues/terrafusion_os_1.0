@@ -14,7 +14,7 @@
 ## Active Goal
 
 `brain-operator` - audit and reconcile one-Brain domain packs and operator governance. Current node:
-`WO-BRAIN-002 - Domain Pack Completeness Audit` (R0 discovery, then R1 evidence).
+`WO-BRAIN-003 - Operator Command Vocabulary Reconciliation` (R0 discovery, then R1 evidence).
 
 ---
 
@@ -76,8 +76,9 @@
 | WO | State |
 |----|-------|
 | WO-BRAIN-001 | DONE - PR #1140 |
-| WO-BRAIN-002 | **CURRENT** |
-| WO-BRAIN-003..009 | QUEUED evidence/docs chain |
+| WO-BRAIN-002 | DONE - pack completeness audited |
+| WO-BRAIN-003 | **CURRENT** |
+| WO-BRAIN-004..009 | QUEUED evidence/docs chain |
 
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
@@ -99,7 +100,7 @@
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane:** brain-operator at WO-BRAIN-002. WOE-012 and WOE-014 are complete; WOE-013
+**Selected safe lane:** brain-operator at WO-BRAIN-003. WOE-012 and WOE-014 are complete; WOE-013
 remains an R2 UI soft wall.
 
 ---

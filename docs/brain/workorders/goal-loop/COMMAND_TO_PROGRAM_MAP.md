@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | Brain Operator / WO-BRAIN-002 | NO - portfolio selected lowest-risk dependency-cleared lane | `program`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | Brain Operator / WO-BRAIN-003 | NO - continue selected evidence/docs chain | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
@@ -41,7 +41,7 @@ resolves.
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
-| `brain-operator` | Brain Operator System | WO-BRAIN-002 | NO | `once`, `program`, `evidence`, `discovery` |
+| `brain-operator` | Brain Operator System | WO-BRAIN-003 | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
 
 ---
@@ -206,10 +206,11 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 | WO | Title | Status |
 |----|-------|--------|
 | WO-BRAIN-001 | Brain authority and capability audit | COMPLETE - PR #1140 |
-| WO-BRAIN-002 | Domain pack completeness audit | **CURRENT** |
-| WO-BRAIN-003 through 009 | Command, goal/loop, provenance, role, continuation, integration evidence | QUEUED |
+| WO-BRAIN-002 | Domain pack completeness audit | COMPLETE |
+| WO-BRAIN-003 | Operator command vocabulary reconciliation | **CURRENT** |
+| WO-BRAIN-004 through 009 | Goal/loop, provenance, role, continuation, integration evidence | QUEUED |
 
-No active stop walls at WO-BRAIN-002.
+No active stop walls at WO-BRAIN-003.
 
 ---
 

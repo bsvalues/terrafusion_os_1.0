@@ -6,7 +6,7 @@
 
 **Loop:** `LOOP-BRAIN-OPERATOR-001`
 
-**Status:** ACTIVE at WO-BRAIN-002
+**Status:** ACTIVE at WO-BRAIN-003
 
 **Last Updated:** 2026-07-11
 
@@ -41,8 +41,8 @@ Operationalize the one-Brain model. TerraFusion Brain (Cortex) owns queue, seque
 | WO | Title | Status | Description |
 |----|-------|--------|-------------|
 | WO-BRAIN-001 | Brain authority and current capability audit | COMPLETE | PR #1140; implemented vs. aspirational capability truth |
-| WO-BRAIN-002 | Domain pack completeness audit | **CURRENT** | Audit every registered pack, route, proof, and escalation boundary |
-| WO-BRAIN-003 | Operator command vocabulary cleanup | QUEUED | What commands does the operator currently use? Which are consistent? Which are ambiguous? |
+| WO-BRAIN-002 | Domain pack completeness audit | COMPLETE | Eight packs structurally complete; routing gaps classified |
+| WO-BRAIN-003 | Operator command vocabulary cleanup | **CURRENT** | Reconcile duplicate, stale, ambiguous, and missing command routes |
 | WO-BRAIN-004 | Goal engine maturity review | QUEUED | Is the `/goal` system working as documented? Evidence vs aspiration? |
 | WO-BRAIN-005 | Loop engine maturity review | QUEUED | Is the `/loop` system working as documented? What's the real continuation contract? |
 | WO-BRAIN-006 | Memory/provenance integration | QUEUED | Is persistent memory (project_session_operating_state.md etc.) reliably loaded? Gaps? |
