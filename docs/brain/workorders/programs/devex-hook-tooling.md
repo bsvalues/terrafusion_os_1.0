@@ -100,9 +100,9 @@ boundary:
 - keep `.husky` as the sole supported hook authority and retire the Atlas script that switches
   authority to `.githooks`.
 
-`scripts/setup/setup-atlas-hooks.sh` is therefore an unsupported setup path. Operators must not run
-it while it still rewrites `core.hooksPath` to `.githooks`; its retirement or replacement belongs to
-the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
+`WO-DEVEX-HOOKS-004` completed that decision: `scripts/setup/setup-atlas-hooks.sh` is now a retired,
+unsupported setup path that exits nonzero and no longer rewrites `core.hooksPath`. `.husky` remains
+the sole supported hook authority.
 
 ## Program Closeout State
 
