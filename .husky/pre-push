@@ -53,6 +53,15 @@ require_local_tool() {
   fi
 }
 
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "❌ Unable to resolve the TerraFusion repository root."
+  exit 1
+}
+cd "$REPO_ROOT" || {
+  echo "❌ Unable to enter the TerraFusion repository root: $REPO_ROOT"
+  exit 1
+}
+
 # Strictness mode: TF_STRICT_PUSH=1 fails on errors (default).
 # Set TF_STRICT_PUSH=0 explicitly to downgrade to warn-only.
 STRICT_MODE="${TF_STRICT_PUSH:-1}"
@@ -100,17 +109,17 @@ echo ""
 
 # Helper: Run command, fail in strict mode or warn in dev mode
 run_gate() {
-  local name="$1"
+  GATE_NAME="$1"
   shift
-  echo "$name"
+  echo "$GATE_NAME"
   if "$@"; then
     return 0
   else
     if [ "$STRICT_MODE" = "1" ]; then
-      echo "❌ $name FAILED (strict mode)"
+      echo "❌ $GATE_NAME FAILED (strict mode)"
       exit 1
     else
-      echo "⚠️ $name failed (non-blocking in dev mode)"
+      echo "⚠️ $GATE_NAME failed (non-blocking in dev mode)"
       return 0
     fi
   fi

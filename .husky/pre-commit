@@ -37,6 +37,15 @@ require_local_tool() {
   fi
 }
 
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "❌ Unable to resolve the TerraFusion repository root."
+  exit 1
+}
+cd "$REPO_ROOT" || {
+  echo "❌ Unable to enter the TerraFusion repository root: $REPO_ROOT"
+  exit 1
+}
+
 # Gate 0: Lane check — refuse commits from wrong worktree
 # Normalize path format so C:/... and /c/... compare equivalently on Windows shells.
 canon_path() {

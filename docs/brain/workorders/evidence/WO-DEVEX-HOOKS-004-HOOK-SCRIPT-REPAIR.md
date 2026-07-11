@@ -70,7 +70,7 @@ resolution, non-strict push behavior, and legacy Atlas authority switching.
 
 ### GREEN
 
-After the minimal implementation and an additional explicit tool-version proof cycle, all 24
+After the minimal implementation and review-remediation proof cycles, all 27
 assertions passed:
 
 - missing dependency fail-fast behavior;
@@ -81,6 +81,9 @@ assertions passed:
 - strict push failure behavior;
 - non-strict developer override behavior and non-release-evidence label;
 - legacy Atlas setup retirement without `core.hooksPath` mutation;
+- commit/push invocation from nested working directories;
+- POSIX `sh` compatibility without `local` declarations;
+- executable Git index modes for both Husky hooks;
 - POSIX shell syntax for all three scripts.
 
 ---
@@ -89,7 +92,7 @@ assertions passed:
 
 | Validation | Result |
 |------------|--------|
-| Synthetic hook contract, 24 assertions | PASS |
+| Synthetic hook contract, 27 assertions | PASS |
 | `sh -n .husky/pre-commit` | PASS |
 | `sh -n .husky/pre-push` | PASS |
 | `sh -n scripts/setup/setup-atlas-hooks.sh` | PASS |
