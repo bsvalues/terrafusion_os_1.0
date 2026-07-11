@@ -178,13 +178,21 @@ jobs:
   # Frontend Fast Gate (lint + type-check + unit tests + build)
   # ═══════════════════════════════════════════════════════════════════════════
   frontend-fast:
-    name: 🎨 Frontend Fast Gate
+    name: 🎨 Frontend Fast Gate (shard ${{ matrix.shard }}/3)
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
-    # DIAGNOSTIC (WO-CI-FASTGATE-003, temporary): raised 30→50 so the suite completes
-    # instead of being cut, to identify the ~19-min silent block. REVERT before final fix.
-    timeout-minutes: 50
+    timeout-minutes: 30
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
+    # WO-CI-FASTGATE-003: the os-shell Vitest suite (692 files / ~7970 tests) is too large to
+    # reliably finish in one 30-min job on contended runners (measured 8.5 min median, 28+ min tail;
+    # no single hanging test — dominated by per-file jsdom environment + collect overhead). Shard the
+    # unit tests across 3 parallel runners so each shard finishes with wide margin. The required
+    # 🔒 Seal Gate `needs: frontend-fast`, so ALL shards must pass — full coverage is still enforced.
+    # (🎨 Frontend Fast Gate is not itself a required context.)
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -234,15 +242,14 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        # Fast gate runs Vitest directly (test:tier0 === `vitest run`) and EXCLUDES the
-        # network/registry-variable npm-audit test (~3 min) so it never consumes the
-        # 30-min fast-gate budget. That dependency-audit coverage remains in the scheduled
-        # Security & Compliance Pipeline dependency scan. --slowTestThreshold=1000 surfaces
-        # future slow tests without raising this gate's timeout. (Fix for #1242.)
-        # DIAGNOSTIC (WO-CI-FASTGATE-003, temporary): --reporter=verbose prints each test live so
-        # the file whose tests crawl during the ~19-min silent block is named. retry/testTimeout
-        # left at config defaults so this reflects real conditions. REVERT with the timeout above.
-        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --reporter=verbose
+        # Fast gate runs Vitest directly (test:tier0 === `vitest run`), SHARDED across 3 runners
+        # (see strategy.matrix above) so this large suite finishes with margin on contended runners.
+        # Still EXCLUDES the network/registry-variable npm-audit test (covered by the scheduled
+        # Security & Compliance Pipeline scan); --slowTestThreshold=1000 surfaces future slow tests.
+        # Fixes #1242 / WO-CI-FASTGATE-003. (SHARD via env var, not inline ${{ }}, per shell-injection guard.)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --shard="$SHARD/3"
 
       - name: IPC tests (blocking)
         id: ipc-tests
