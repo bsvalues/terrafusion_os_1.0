@@ -21,7 +21,7 @@ resolves.
 | `program-next` | Portfolio Operator | Brain Operator / WO-BRAIN-003 | NO - continue selected evidence/docs chain | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
-| `benton-demo` | P1 | WO-DEPLOY-BENTON-003B | YES — PR #1112 not merged | `once`, `merge-watch`, `evidence` |
+| `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
 | `backend-start` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - do not restart Backend OE chain | `program` |
@@ -40,9 +40,9 @@ resolves.
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
-| `work-order-engine` | P6 | WO-WOE-010 → WO-WOE-011 | NO (010 executing) | `once`, `program`, `evidence` |
-| `brain-operator` | Brain Operator System | WO-BRAIN-003 | NO | `once`, `program`, `evidence`, `discovery` |
-| `azure-county-runtime` | P8 | WO-AZURE-001 | NO | `once`, `evidence`, `discovery` |
+| `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
+| `brain-operator` | Brain Operator System | WO-BRAIN-004 | NO | `once`, `program`, `evidence`, `discovery` |
+| `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
 
@@ -207,10 +207,11 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 |----|-------|--------|
 | WO-BRAIN-001 | Brain authority and capability audit | COMPLETE - PR #1140 |
 | WO-BRAIN-002 | Domain pack completeness audit | COMPLETE |
-| WO-BRAIN-003 | Operator command vocabulary reconciliation | **CURRENT** |
-| WO-BRAIN-004 through 009 | Goal/loop, provenance, role, continuation, integration evidence | QUEUED |
+| WO-BRAIN-003 | Operator command vocabulary reconciliation | COMPLETE |
+| WO-BRAIN-004 | Goal engine maturity review | **CURRENT** |
+| WO-BRAIN-005 through 009 | Loop, provenance, role, continuation, integration evidence | QUEUED |
 
-No active stop walls at WO-BRAIN-003.
+No active stop walls at WO-BRAIN-004.
 
 ---
 
