@@ -151,3 +151,19 @@ if (!window.requestAnimationFrame) {
 if (!window.cancelAnimationFrame) {
   window.cancelAnimationFrame = (id) => window.clearTimeout(id);
 }
+
+// WO-CI-FASTGATE-003: deterministic default fetch.
+// Unmocked network calls otherwise depend on the CI runner's egress: a relative URL rejects
+// instantly, but an absolute URL to an unreachable host can HANG until the per-test timeout and,
+// with retry:2, balloon — which is what made one Frontend Fast Gate shard hang to the 30-min job
+// timeout on contended runners while sibling shards finished in ~4.5 min. Reject immediately so
+// unmocked fetches fail fast and deterministically. Tests that exercise fetch mock it themselves
+// (that per-test mock overrides this global). This changes no assertion — only makes the
+// already-failing unmocked path instant instead of runner-dependent.
+globalThis.fetch = vi.fn(() =>
+  Promise.reject(
+    new Error(
+      'fetch is not available in unit tests (WO-CI-FASTGATE-003 deterministic stub); mock it in your test if needed',
+    ),
+  ),
+) as unknown as typeof fetch;
