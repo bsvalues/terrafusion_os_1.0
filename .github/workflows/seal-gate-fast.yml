@@ -178,11 +178,21 @@ jobs:
   # Frontend Fast Gate (lint + type-check + unit tests + build)
   # ═══════════════════════════════════════════════════════════════════════════
   frontend-fast:
-    name: 🎨 Frontend Fast Gate
+    name: 🎨 Frontend Fast Gate (shard ${{ matrix.shard }}/3)
     runs-on: ${{ vars.BENTON_RUNNER == 'true' && fromJSON('["self-hosted", "benton", "linux-x64"]') || 'ubuntu-latest' }}
     timeout-minutes: 30
     needs: classify
     if: needs.classify.outputs.skip_frontend != 'true' && needs.classify.outputs.docs_only != 'true'
+    # WO-CI-FASTGATE-003: the os-shell Vitest suite (692 files / ~7970 tests) is too large to
+    # reliably finish in one 30-min job on contended runners (measured 8.5 min median, 28+ min tail;
+    # no single hanging test — dominated by per-file jsdom environment + collect overhead). Shard the
+    # unit tests across 3 parallel runners so each shard finishes with wide margin. The required
+    # 🔒 Seal Gate `needs: frontend-fast`, so ALL shards must pass — full coverage is still enforced.
+    # (🎨 Frontend Fast Gate is not itself a required context.)
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -198,13 +208,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # WO-CI-FASTGATE-003: only the unit-test step is sharded; the non-unit steps below run
+      # once (shard 1) so build/bundle/lint/type-check are not redundantly repeated per shard.
       - name: Lint (loud, temporary non-blocking)
         id: lint
+        if: matrix.shard == 1
         run: pnpm -C frontend run lint
         continue-on-error: true
 
       - name: Lint escape hatch (expires 2026-07-31)
-        if: steps.lint.outcome == 'failure'
+        if: matrix.shard == 1 && steps.lint.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
@@ -218,6 +231,7 @@ jobs:
 
       - name: Type check (blocking)
         id: typecheck
+        if: matrix.shard == 1
         shell: bash
         run: |
           set -euo pipefail
@@ -232,27 +246,33 @@ jobs:
 
       - name: Unit tests (blocking)
         id: unit-tests
-        # Fast gate runs Vitest directly (test:tier0 === `vitest run`) and EXCLUDES the
-        # network/registry-variable npm-audit test (~3 min) so it never consumes the
-        # 30-min fast-gate budget. That dependency-audit coverage remains in the scheduled
-        # Security & Compliance Pipeline dependency scan. --slowTestThreshold=1000 surfaces
-        # future slow tests without raising this gate's timeout. (Fix for #1242.)
-        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000
+        # Fast gate runs Vitest directly (test:tier0 === `vitest run`), SHARDED across 3 runners
+        # (see strategy.matrix above) so this large suite finishes with margin on contended runners.
+        # Still EXCLUDES the network/registry-variable npm-audit test (covered by the scheduled
+        # Security & Compliance Pipeline scan); --slowTestThreshold=1000 surfaces future slow tests.
+        # Fixes #1242 / WO-CI-FASTGATE-003. (SHARD via env var, not inline ${{ }}, per shell-injection guard.)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: pnpm -C frontend exec vitest run --exclude 'apps/os-shell/src/tests/security/DependencyVulnerabilities.test.ts' --slowTestThreshold=1000 --shard="$SHARD/3"
 
       - name: IPC tests (blocking)
         id: ipc-tests
+        if: matrix.shard == 1
         run: pnpm -C frontend run test:ipc
 
       - name: Build (blocking)
         id: build
+        if: matrix.shard == 1
         run: pnpm -C frontend run build
 
       - name: Bundle Analysis (blocking - requires build)
         id: bundle-analysis
+        if: matrix.shard == 1
         run: pnpm -C frontend run test:unit -- apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
 
       - name: Frontend Summary
-        if: always()
+        # Only shard 1 runs all non-unit steps, so only it writes the complete summary table.
+        if: always() && matrix.shard == 1
         shell: bash
         run: |
           echo "## 🎨 Frontend Fast Gate" >> $GITHUB_STEP_SUMMARY
