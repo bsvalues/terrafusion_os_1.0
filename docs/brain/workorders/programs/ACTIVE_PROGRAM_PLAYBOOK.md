@@ -440,8 +440,8 @@ Rule: Do not mix this into Backend OE, Sync, TerraPilot, or runtime work.
 - `WO-DEVEX-HOOKS-001` completed the hook/tooling reality audit.
 - Active hooks route through `.husky`.
 - Clean worktrees are missing repo-local `prettier` and `vitest` binaries.
-- Hook-time install behavior and package-manager version drift require a design decision before hook
-  edits.
+- `WO-DEVEX-HOOKS-003` resolved hook-time install and package-manager version drift policy; hook
+  edits remain blocked on the owner-gated implementation packet.
 
 ### Deterministic Design
 
