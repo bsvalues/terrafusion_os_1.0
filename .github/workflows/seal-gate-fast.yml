@@ -287,7 +287,10 @@ jobs:
 
       - name: Bundle Analysis (blocking - requires build)
         id: bundle-analysis
-        run: pnpm -C frontend run test:unit -- apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
+        # Run vitest DIRECTLY on the single file. `pnpm run test:unit -- FILE` forwards `-- FILE`,
+        # which vitest treats as "no positional filter" and runs the WHOLE suite (~30 min). Calling
+        # the vitest binary with a positional path runs only this file. (WO-CI-FASTGATE-003)
+        run: pnpm -C frontend exec vitest run apps/os-shell/src/tests/performance/BundleAnalysis.test.ts
 
       - name: Frontend Checks Summary
         if: always()
