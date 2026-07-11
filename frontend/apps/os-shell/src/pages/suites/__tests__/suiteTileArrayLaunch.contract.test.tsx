@@ -1,84 +1,50 @@
 /**
  * suiteTileArrayLaunch.contract.test.tsx
  *
- * Real Suite Tile-Array Launch Contract (GOAL-TF-WB-SUITE-TILE-CONTRACT-001)
- * =========================================================================
+ * Real Suite Tile-Array Contract (GOAL-TF-WB-SUITE-TILE-CONTRACT-001)
+ * ==================================================================
  *
- * Closes the residual gap flagged on the Phase-16 launch contract (codex #1237): that test proved the
- * SuiteModuleGrid ROUTING MECHANISM with synthetic fixtures, but nothing drove the REAL shipped tile
- * arrays (ATLAS_MODULES / DAIS_MODULES / DOSSIER_MODULES) through the REAL grid. This test does exactly
- * that — it imports the real, now-exported arrays and launches every tile through the real
- * SuiteModuleGrid.handleLaunch, so a launch-mode / workbenchTab / moduleId regression on a shipped tile
- * is caught.
+ * Locks the REAL shipped suite tile arrays (ATLAS_MODULES / DAIS_MODULES / DOSSIER_MODULES) as a
+ * DATA contract: which tiles exist, their launch mode, and their route/command identifiers — so a
+ * launch-mode / workbenchTab / moduleId regression on a shipped tile is caught.
  *
- * Three layers:
- *   A. Mechanism sweep — every real tile routes correctly for its DECLARED launchMode (workbench →
- *      /property/:parcelId/:workbenchTab; standalone → activateModule(moduleId, {source})).
- *   B. Intent lock — a curated set of representative tiles with HARDCODED expected behavior, so a
- *      mode/tab flip on a known tile (e.g. certification → standalone, or defense's tab dais → dossier)
- *      is caught even though layer A derives expectations from the tile itself.
- *   C. Array invariants — pure-data checks over all arrays (every workbench tile has a tab; every
- *      standalone resolves a module id; tabs are within the known workbench tab set).
+ * DESIGN (Option A, owner-approved 2026-07-11 — see WO-WB-TC-005):
+ *   The prior version imported the real suite-homes AND rendered the real SuiteModuleGrid ~40× (once
+ *   per real tile) to exercise handleLaunch. Under the full sharded Frontend Fast Gate, that repeated
+ *   real-grid rendering left an open worker handle that DETERMINISTICALLY hung one shard to the 30-min
+ *   timeout (orphan vitest/esbuild at kill), while sibling shards finished in ~4.5 min. The routing
+ *   MECHANISM (given a launchMode, the grid navigates / activates correctly) is already proven by the
+ *   Phase-16 synthetic-fixture test `launchSurfaceContractParcelWorkbench.contract.test.tsx`. So this
+ *   test drops the rendering entirely and asserts the real arrays as pure data — no render, no hang,
+ *   while preserving the real-array contract codex #1237 asked for.
  *
- * Import-safety (why the mock wall): importing a suite-home evaluates its whole module graph —
- * SuiteModuleGrid (→ orchestration/moduleActivation, the Phase-16 worker-crash vector), pilotApi, county
- * study/handoff services, panels, hooks. We reuse the PROVEN mock set from the sibling deeplink tests
- * (DaisSuiteHome.deeplink / DossierSuiteHome.deeplink) — but keep SuiteModuleGrid REAL (it is the unit
- * under test) and add the grid's own deps (propertyStore selector, useNavigate). Modules the deeplink
- * tests import unmocked (DaisWorkflowDraftPanel, DossierEvidenceDraftPanel, academy, the zustand draft
- * stores) are eval-safe and left real.
+ * Import-safety: reading the exported arrays still evaluates the suite-home module graph, including
+ * SuiteModuleGrid → orchestration/moduleActivation (the Phase-16 worker-crash vector) plus panels /
+ * services / hooks. The mocks below tame that evaluation (import-taming only — nothing is rendered).
  *
  * NOT PRODUCT CHANGE: the only product edit in this lane is adding `export` to the three arrays.
- * SCOPE NOTE: this locks each shipped tile's launch behavior; it does not assert which tiles SHOULD
- * exist (that is a product/roadmap decision).
  */
 import React from 'react';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
-import { SuiteModuleGrid, type SuiteModuleDef } from '../../../components/suites/SuiteModuleGrid';
+import { vi, describe, it, expect } from 'vitest';
+import type { SuiteModuleDef } from '../../../components/suites/SuiteModuleGrid';
 import { ATLAS_MODULES } from '../AtlasSuiteHome';
 import { DAIS_MODULES } from '../DaisSuiteHome';
 import { DOSSIER_MODULES } from '../DossierSuiteHome';
 
-// ── Mocks ───────────────────────────────────────────────────────────────────────
-const mockNavigate = vi.fn();
-const { mockActivateModule } = vi.hoisted(() => ({ mockActivateModule: vi.fn() }));
-
-// The Phase-16 crash vector — stub it so the real SuiteModuleGrid evaluates safely and standalone
-// launches are observable. MUST use the SAME relative specifier SuiteModuleGrid resolves
-// (`../../orchestration/moduleActivation` from components/suites → src/orchestration/moduleActivation),
-// i.e. `../../../orchestration/moduleActivation` from here. The deeplink tests mock via the '@/' alias,
-// but they STUB SuiteModuleGrid, so their alias never had to intercept the real grid's relative import;
-// matching the proven relative pattern (see components/suites/__tests__/SuiteModuleGrid.test.tsx) is what
-// actually intercepts the real grid and prevents the real moduleActivation graph from loading (codex/copilot #1240).
-vi.mock('../../../orchestration/moduleActivation', () => ({
-  activateModule: mockActivateModule,
-  default: mockActivateModule,
-}));
-
+// ── Import-taming mocks (nothing is rendered; these only keep the module eval safe) ──────────────
+// The Phase-16 crash vector: importing a suite-home pulls SuiteModuleGrid → orchestration/moduleActivation
+// whose real graph crashes the worker on eval. Mock it (relative specifier the real grid resolves).
+vi.mock('../../../orchestration/moduleActivation', () => ({ activateModule: vi.fn(), default: vi.fn() }));
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
-  return { ...actual, useNavigate: () => mockNavigate };
+  return { ...actual, useNavigate: () => vi.fn() };
 });
-
 vi.mock('lucide-react', () => {
   const Icon = (props: Record<string, unknown>) =>
     React.createElement('span', { 'data-slot': 'icon', ...props });
   return new Proxy({}, { get: () => Icon });
 });
-
-let mockActiveParcel: { parcelId: string; countyId?: string } | null = {
-  parcelId: 'R7f3a12',
-  countyId: 'benton',
-};
-vi.mock('../../../stores/propertyStore', () => ({
-  usePropertyStore: (selector: (s: { activeParcel: typeof mockActiveParcel }) => unknown) =>
-    selector({ activeParcel: mockActiveParcel }),
-}));
-
-// Heavy suite-home deps — mirror the proven deeplink mock set (import-taming only).
+vi.mock('../../../stores/propertyStore', () => ({ usePropertyStore: vi.fn() }));
 vi.mock('../../../api/pilotApi', () => ({ invokeTool: vi.fn() }));
 vi.mock('../../../services/countyStudyHandoffApi', () => ({ exceptionApi: {}, adjustmentSetApi: {} }));
 vi.mock('../../../components/workbench/ParcelContextBanner', () => ({ ParcelContextBanner: () => null }));
@@ -91,79 +57,36 @@ vi.mock('../../../components/dais/ManagementDashboardPanel', () => ({ default: (
 vi.mock('../../../components/dais/SupervisorFlagQueue', () => ({ default: () => null }));
 vi.mock('../useDaisSuiteStats', () => ({ useDaisSuiteStats: () => ({}) }));
 
-// ── Helpers ─────────────────────────────────────────────────────────────────────
-const PARCEL = 'R7f3a12'; // deliberately does NOT contain the countyId 'benton'
-
-function renderTile(tile: SuiteModuleDef) {
-  return render(
-    <MemoryRouter>
-      <SuiteModuleGrid modules={[tile]} />
-    </MemoryRouter>,
-  );
-}
-
-const SUITES: Array<[string, SuiteModuleDef[]]> = [
-  ['Atlas', ATLAS_MODULES],
-  ['Dais', DAIS_MODULES],
-  ['Dossier', DOSSIER_MODULES],
-];
-
+// ── Data under test ──────────────────────────────────────────────────────────────────────────────
 const bySuite: Record<string, SuiteModuleDef[]> = {
   Atlas: ATLAS_MODULES,
   Dais: DAIS_MODULES,
   Dossier: DOSSIER_MODULES,
 };
+const ALL: SuiteModuleDef[] = [...ATLAS_MODULES, ...DAIS_MODULES, ...DOSSIER_MODULES];
+// Canonical WorkbenchTabSlug union in src/contracts/workbench.ts (8 slugs, no 'pilot').
+const KNOWN_TABS = new Set(['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier']);
 
-// ── Tests ───────────────────────────────────────────────────────────────────────
-describe('suiteTileArrayLaunch.contract — real shipped tile arrays through the real SuiteModuleGrid', () => {
-  beforeEach(() => {
-    mockNavigate.mockClear();
-    mockActivateModule.mockClear();
-    mockActiveParcel = { parcelId: PARCEL, countyId: 'benton' };
-  });
-
-  afterEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-  });
-
-  // ── A. Mechanism sweep — every real tile routes per its declared mode ──────────
-  for (const [suite, modules] of SUITES) {
-    describe(`${suite} — every shipped tile launches per its declared mode`, () => {
-      for (const tile of modules) {
-        const label = `${tile.id} (${tile.launchMode}${tile.workbenchTab ? '/' + tile.workbenchTab : ''})`;
-        it(label, async () => {
-          const user = userEvent.setup();
-          renderTile(tile);
-          await user.click(screen.getByRole('button'));
-
-          if (tile.launchMode === 'workbench') {
-            expect(
-              tile.workbenchTab,
-              `${suite}/${tile.id} is workbench-mode but declares no workbenchTab`,
-            ).toBeTruthy();
-            expect(mockNavigate).toHaveBeenCalledTimes(1);
-            const dest = mockNavigate.mock.calls[0][0] as string;
-            expect(dest).toBe(`/property/${PARCEL}/${tile.workbenchTab}`);
-            expect(dest).not.toContain('undefined');
-            expect(dest).not.toContain('benton'); // countyId travels out-of-band, never in the path
-            expect(mockActivateModule).not.toHaveBeenCalled();
-          } else {
-            const expectedId = tile.moduleId ?? tile.id;
-            expect(expectedId).toBeTruthy();
-            expect(mockActivateModule).toHaveBeenCalledWith(
-              expectedId,
-              expect.objectContaining({ source: 'system' }),
-            );
-            expect(mockNavigate).not.toHaveBeenCalled();
-          }
+// ── Tests (pure data — no rendering) ───────────────────────────────────────────────────────────────
+describe('suiteTileArrayLaunch.contract — real shipped suite tile arrays (data contract)', () => {
+  // 1. Required tiles exist in the shipped arrays.
+  describe('required tiles are present', () => {
+    const REQUIRED: Record<string, string[]> = {
+      Dais: ['certification', 'appeals', 'calendar', 'terra-levy', 'management-dashboard'],
+      Dossier: ['documents', 'evidence', 'defense', 'chain', 'photos', 'search', 'terra-sync'],
+      Atlas: ['gis', 'parcel-lens', 'layer-works'],
+    };
+    for (const [suite, ids] of Object.entries(REQUIRED)) {
+      for (const id of ids) {
+        it(`${suite}/${id} exists`, () => {
+          expect(bySuite[suite].some((t) => t.id === id)).toBe(true);
         });
       }
-    });
-  }
+    }
+  });
 
-  // ── B. Intent lock — representative tiles keep their shipped launch behavior ────
-  describe('intent lock — representative tiles keep their shipped launch behavior', () => {
+  // 2. Intent lock — representative tiles keep their shipped launch mode + target (catches a flip).
+  describe('intent lock — representative tiles keep their launch mode + target', () => {
     type Case = { suite: string; id: string } & (
       | { mode: 'workbench'; tab: string }
       | { mode: 'standalone'; moduleId: string }
@@ -180,59 +103,46 @@ describe('suiteTileArrayLaunch.contract — real shipped tile arrays through the
       { suite: 'Atlas', id: 'gis', mode: 'standalone', moduleId: 'atlas' },
       { suite: 'Atlas', id: 'parcel-lens', mode: 'standalone', moduleId: 'atlas' },
     ];
-
     for (const c of CASES) {
-      it(`${c.suite}/${c.id} → ${c.mode}`, async () => {
+      const label = c.mode === 'workbench' ? `workbench/${c.tab}` : `standalone ${c.moduleId}`;
+      it(`${c.suite}/${c.id} → ${label}`, () => {
         const tile = bySuite[c.suite].find((t) => t.id === c.id);
         expect(tile, `${c.suite}/${c.id} no longer exists in the shipped array`).toBeTruthy();
-        const user = userEvent.setup();
-        renderTile(tile!);
-        await user.click(screen.getByRole('button'));
-
+        expect(tile!.launchMode).toBe(c.mode);
         if (c.mode === 'workbench') {
-          expect(mockNavigate).toHaveBeenCalledWith(`/property/${PARCEL}/${c.tab}`);
-          expect(mockActivateModule).not.toHaveBeenCalled();
+          expect(tile!.workbenchTab).toBe(c.tab);
         } else {
-          expect(mockActivateModule).toHaveBeenCalledWith(
-            c.moduleId,
-            expect.objectContaining({ source: 'system' }),
-          );
-          expect(mockNavigate).not.toHaveBeenCalled();
+          expect(tile!.moduleId ?? tile!.id).toBe(c.moduleId);
         }
       });
     }
   });
 
-  // ── C. Array invariants (pure data) ────────────────────────────────────────────
+  // 3. Array invariants over every shipped tile.
   describe('array invariants', () => {
-    const ALL = [...ATLAS_MODULES, ...DAIS_MODULES, ...DOSSIER_MODULES];
-    // Mirrors the canonical WorkbenchTabSlug union in src/contracts/workbench.ts (8 slugs, no 'pilot').
-    // SuiteModuleDef.workbenchTab is typed as WorkbenchTabSlug, so the compiler already constrains this;
-    // the runtime check additionally guards against `as`-casts / @ts-ignore drift.
-    const KNOWN_TABS = new Set([
-      'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier',
-    ]);
-
-    it('every tile declares a known launchMode', () => {
+    it('every tile declares a supported launchMode (workbench | standalone)', () => {
       const bad = ALL.filter((t) => t.launchMode !== 'workbench' && t.launchMode !== 'standalone');
-      expect(bad.map((t) => t.id)).toEqual([]);
-    });
-
-    it('every workbench tile declares a workbenchTab', () => {
-      const bad = ALL.filter((t) => t.launchMode === 'workbench' && !t.workbenchTab);
-      expect(bad.map((t) => t.id)).toEqual([]);
+      expect(bad.map((t) => `${t.id}:${t.launchMode}`)).toEqual([]);
     });
 
     it('every workbench tile targets a known workbench tab', () => {
       const bad = ALL.filter(
-        (t) => t.launchMode === 'workbench' && t.workbenchTab && !KNOWN_TABS.has(t.workbenchTab),
+        (t) => t.launchMode === 'workbench' && (!t.workbenchTab || !KNOWN_TABS.has(t.workbenchTab)),
       );
-      expect(bad.map((t) => `${t.id}:${t.workbenchTab}`)).toEqual([]);
+      expect(bad.map((t) => `${t.id}:${t.workbenchTab ?? 'MISSING'}`)).toEqual([]);
     });
 
     it('every standalone tile resolves a non-empty module id', () => {
       const bad = ALL.filter((t) => t.launchMode === 'standalone' && !(t.moduleId ?? t.id));
       expect(bad.map((t) => t.id)).toEqual([]);
+    });
+
+    it('tile ids are unique within each suite array', () => {
+      for (const [suite, arr] of Object.entries(bySuite)) {
+        const ids = arr.map((t) => t.id);
+        const dupes = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+        expect(dupes, `${suite} has duplicate tile ids`).toEqual([]);
+      }
     });
   });
 });
