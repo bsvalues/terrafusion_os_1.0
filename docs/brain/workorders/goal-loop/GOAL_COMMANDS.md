@@ -355,8 +355,8 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** `WO-BRAIN-001` is complete in PR #1140. `WO-BRAIN-002 - Domain Pack Completeness
-Audit` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
+**Current state:** BRAIN-001 and BRAIN-002 are complete. `WO-BRAIN-003 - Operator Command Vocabulary
+Reconciliation` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
