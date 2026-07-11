@@ -32,8 +32,15 @@ import { DAIS_MODULES } from '../DaisSuiteHome';
 import { DOSSIER_MODULES } from '../DossierSuiteHome';
 
 // ── Import-taming mocks (nothing is rendered; these only keep the module eval safe) ──────────────
-// The Phase-16 crash vector: importing a suite-home pulls SuiteModuleGrid → orchestration/moduleActivation
-// whose real graph crashes the worker on eval. Mock it (relative specifier the real grid resolves).
+// KEY: stub SuiteModuleGrid, exactly as the sibling deeplink tests (DaisSuiteHome.deeplink /
+// DossierSuiteHome.deeplink) do. This test reads the exported arrays but never renders the grid, so it
+// does not need the real grid — and stubbing it stops the suite-home import from loading the real
+// SuiteModuleGrid module and its heavy transitive graph. That real-grid load is what deterministically
+// hung a Frontend Fast Gate unit shard to the 30-min timeout even after all rendering was removed;
+// stubbing it matches the deeplink tests' proven hang-free import path. (`type SuiteModuleDef` is a
+// type-only import, unaffected by this mock.)
+vi.mock('../../../components/suites/SuiteModuleGrid', () => ({ SuiteModuleGrid: () => null }));
+// The Phase-16 crash vector: SuiteModuleGrid → orchestration/moduleActivation. Kept mocked defensively.
 vi.mock('../../../orchestration/moduleActivation', () => ({ activateModule: vi.fn(), default: vi.fn() }));
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
