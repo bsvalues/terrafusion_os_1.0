@@ -424,9 +424,9 @@ Stop type: `TERRAPILOT_P15_PARKED`
 | Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
 | Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
 | Program slug | `devex-hook-tooling` |
-| Status | ACTIVE - hook repair complete; evidence/register next |
-| Current WO | `WO-DEVEX-HOOKS-004` |
-| Next WO | `WO-DEVEX-HOOKS-005` |
+| Status | ACTIVE - worktree hygiene classified; bootstrap verification owner-gated |
+| Current WO | `WO-DEVEX-HOOKS-005` |
+| Next WO | `WO-DEVEX-HOOKS-006` |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -454,8 +454,12 @@ and prohibits implicit hook installs or silent missing-tool skips.
 `WO-DEVEX-HOOKS-004 - Hook Script Repair` applies the deterministic policy without package,
 lockfile, CI, or product-runtime changes.
 
-`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` is the next evidence-only packet. It may classify
-stale worktrees and branch ownership, but no cleanup is authorized.
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` classifies registered worktrees, active PRs,
+cleanup candidates, dirty/locked quarantines, and the stale local-main ownership conflict. It performs
+no cleanup.
+
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` is next and requires owner authority for an
+explicit clean-worktree dependency install.
 
 ---
 

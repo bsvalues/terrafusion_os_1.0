@@ -3,8 +3,8 @@
 **Program:** DevEx Hook Tooling
 **Goal:** `GOAL-DEVEX-HOOK-BOOTSTRAP`
 **Loop:** `LOOP-DEVEX-HOOK-BOOTSTRAP`
-**Status:** Active - hook repair complete; worktree hygiene evidence next
-**Current base:** `origin/main` at `bba74f3227fa5e208cbd34e9bc4e581ff1e94404`
+**Status:** Active - worktree hygiene classified; bootstrap verification owner-gated
+**Current base:** `origin/main` at `6e9833b8f2c79620dbbf667ce0833ec38694f23b`
 
 ---
 
@@ -108,5 +108,8 @@ the exact owner-authorized `WO-DEVEX-HOOKS-004` implementation scope.
 `.husky/pre-push`, and `scripts/setup/setup-atlas-hooks.sh`. It did not change packages, lockfiles,
 CI, or product runtime.
 
-`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` is next. It is evidence/register only and may
-classify stale worktree and branch cleanup candidates, but it must not remove them.
+`WO-DEVEX-HOOKS-005 - Worktree Hygiene Register` classified 54 registered worktrees without cleanup.
+Dirty, locked, detached, active-PR, no-PR, and stale-main ownership boundaries remain preserved.
+
+`WO-DEVEX-HOOKS-006 - Bootstrap Verification Packet` is next. It requires an explicit clean-worktree
+dependency install and therefore remains owner-gated.
