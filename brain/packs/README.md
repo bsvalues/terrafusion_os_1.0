@@ -135,13 +135,13 @@ pnpm brain proof --workorder WO-BRAIN-0013
 pnpm brain commit-plan --workorder WO-BRAIN-0013
 ```
 
-**`pnpm brain` does not exist in this repository.** Verified against `package.json` scripts and the
-`tools/bin` CLI surface — there is no `brain` script and no `bin/brain` entrypoint. The Brain concept
-(work-order + wave-planning + control-plane orchestration) is implemented through explicit scripts and
-the LocalOps CLI, **not** a single `pnpm brain` command. The real, canonical command surfaces are:
+**`pnpm brain` exists in this repository.** Root `package.json` maps it to
+`node scripts/brain/brain.mjs`; `corepack pnpm brain --help` is the verified command inventory. The
+Brain CLI and the explicit truth/LocalOps commands are complementary surfaces:
 
 | Intended Brain verb | Real command(s) in this repo |
 |---------------------|------------------------------|
+| Brain reason/enforce/judge/record | `corepack pnpm brain <verb>` -> `scripts/brain/brain.mjs` |
 | canon / governance check | `pnpm canon`, `pnpm canon:doctor`, `pnpm canon:gatefast`, `pnpm canon:ping` |
 | OS CLI | `pnpm tf` → `tools/bin/tf.mjs` |
 | work-order seeding | `pnpm truth:june10-seed-work-order-pack` |
@@ -152,8 +152,8 @@ the LocalOps CLI, **not** a single `pnpm brain` command. The real, canonical com
 | trace / evidence lookup | `pnpm run trace:query --correlation <id>` |
 | required core gates | `pnpm run type-check`, `node --test os-platform/core/tests/phase83-tools.test.mjs` |
 
-Because `pnpm brain review-diff / proof / commit-plan` are not available, no such commands were run.
-This scaffold is **documentation only** and changes no production code. The relevant verification is:
+The original pack scaffold did not execute mutating/evidence-writing Brain verbs. This scaffold is
+**documentation only** and changes no production code. The relevant verification is:
 
 - **Canon references resolve.** Every file cited in each pack's *Canon Sources* (and every relative
   `AGENTS.md` link) was verified to exist on disk.
@@ -171,8 +171,7 @@ without asking the human. It is a **file-backed manifest** (data only, no runtim
 - [`brain/router/path-router.yaml`](../router/path-router.yaml) — the route table (real paths
   authoritative; uncertain/anticipated paths flagged `candidate`).
 - [`brain/router/README.md`](../router/README.md) — how to resolve a path, risk-floor taxonomy, and
-  why v1 is manifest-first (no `pnpm brain` command — it does not exist; an executable resolver is a
-  deferred optional follow-up).
+  why v1 remains manifest-first even though the Brain CLI exists (it has no path-router verb).
 
 The router **points at** these packs; it is a lookup table, **not** a queue and **not** a second
 authority. One Brain, many packs.

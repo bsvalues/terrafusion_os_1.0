@@ -22,8 +22,8 @@ lookup table, nothing more.
 
 ## Why a manifest and not a `pnpm brain route` command
 
-`pnpm brain` **does not exist** in this repository (see `brain/packs/README.md` → *Verification Notes*).
-Rather than invent a command surface, v1 is **manifest-first**:
+`corepack pnpm brain` exists and resolves `scripts/brain/brain.mjs` (see `brain/packs/README.md` ->
+*Verification Notes*), but it has no path-router verb. V1 remains **manifest-first**:
 
 - The **consumer is the agent**, which reads files natively — so a YAML manifest is directly usable
   today with **zero new dependencies and no `package.json`/build/deploy changes**.
