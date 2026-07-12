@@ -32,7 +32,7 @@ Prerequisite: an active `/goal` (program) is selected. See
              - do the work (docs / read-only audit / scoped code per WO mode)
              - write the evidence doc
              - commit (force-add docs/data if gitignored; prettier-clean code first)
-5. PR      push (--no-verify if the pre-push snyk hook hangs), open PR, enable auto-merge (squash).
+5. PR      push through normal hooks, open PR, and enable the authorized merge mode.
 6. MERGE-WATCH (see /loop merge-watch):
              - resolve in-scope bot/review threads (GraphQL resolveReviewThread)
              - gh pr update-branch if BEHIND
@@ -91,8 +91,9 @@ OPERATOR_ACTION_REQUIRED: <exactly what the human must authorize, or NONE — ke
 - Work in an assigned worktree (e.g. `C:\Users\bsval\tf-worktrees\wo-benton-002a`); branch off
   `origin/main`. Never commit in the shared checkout `C:\Users\bsval\terrafusion_os_1.0`.
 - `docs/data/**` is gitignored → `git add -f`.
-- Pre-commit `lint-staged` and pre-push `snyk` hooks can hang → format/lint manually, then
-  `commit --no-verify` / `push --no-verify` (markdown-only or already-linted code).
+- Bootstrap dependencies explicitly in the isolated worktree when local validation requires them.
+  Normal hooks are the default. `--no-verify` is allowed only under an explicit bounded authority
+  exception; it is never inferred from a slow or missing local tool.
 - Branch protection has `required_conversation_resolution: true` → auto-merge will not fire while
   bot threads are unresolved. Resolve them (GraphQL `resolveReviewThread`); this is NOT a wall.
 - `BEHIND` main with auto-merge queued → `gh pr update-branch`.

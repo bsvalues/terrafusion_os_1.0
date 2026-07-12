@@ -31,7 +31,7 @@ Evaluate top-to-bottom; first matching row wins.
 | 8 | PR merged AND `/loop once` | **STOP** — name `NEXT_WO`, do not execute. |
 | 9 | Next WO is higher-risk than current | **STOP** — surface; request authorization for the higher risk class. |
 | 10 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
-| 11 | No unblocked WO remains in active program | **STOP** — program complete for this risk class; report next program option. |
+| 11 | No unblocked WO remains in active program | **PORTFOLIO RECONCILE** — select the next safe registered lane using `AUTONOMOUS_CONTINUATION_GATE.md`; stop only if all lanes are parked. |
 | 12 | None of the above | Continue the loop procedure. |
 
 ---

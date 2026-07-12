@@ -56,8 +56,8 @@ Continue through same-risk WOs in the active program until a terminal condition 
 **Stops at:**
 - authority wall (deployment, data mutation, secrets, new external service)
 - failed validation gate
-- merge wall requiring human review
-- PR requiring human merge decision
+- merge wall without an applicable preauthorized merge mode
+- PR requiring a human merge decision when merge authority is not already granted
 - dependency not yet satisfied (e.g., PR not merged)
 - conflicting canon between programs
 - scope expansion outside program boundary
@@ -105,7 +105,7 @@ are within the current WO's sovereignty. Stop at any human authority wall.
 - change CI pipeline configuration
 
 **Use when:** PRs are queued with auto-merge but CI needs minor repairs.  
-**Typical usage:** `after PR push → /loop merge-watch → surface result → operator decides to continue`
+**Typical usage:** `after PR push → /loop merge-watch → merge under applicable authority → continue`
 
 ---
 
