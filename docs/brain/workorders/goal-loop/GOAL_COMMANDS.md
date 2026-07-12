@@ -360,9 +360,11 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** BRAIN-001 through BRAIN-008 are complete (`WO-BRAIN-008` produced the canonical
-`CONTINUATION_RULEBOOK.md`). `WO-BRAIN-009 - Brain Operator integration evidence / closeout` is active
-under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
+**Current state:** BRAIN-001 through BRAIN-009 are complete. `WO-BRAIN-008` produced the canonical
+`CONTINUATION_RULEBOOK.md`; `WO-BRAIN-009` closed the Brain Operator **evidence baseline** as **PARTIAL /
+INTEGRATION GAP** (query + scoring are real but read a stale June-29 seed — see
+`evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md`). Next action: **portfolio reconciliation** — no
+lane preselected.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
@@ -377,7 +379,9 @@ File:     programs/portfolio-operator.md
 Success:  Program closeout advances directly into the next executable goal/loop without owner dispatch.
 ```
 
-**Current state:** DevEx Hook Bootstrap is closed. Brain Operator is selected at WO-BRAIN-009.
+**Current state:** DevEx Hook Bootstrap is closed. Brain Operator evidence baseline is complete at
+WO-BRAIN-009; the next action is portfolio reconciliation — select the next dependency-cleared lane (no
+lane preselected).
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

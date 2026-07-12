@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | Brain Operator / WO-BRAIN-008 | NO - continue selected evidence/docs chain | `program`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | Portfolio reconciliation — brain-operator baseline complete at WO-BRAIN-009; select the next dependency-cleared lane (none preselected) | NO | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
@@ -41,7 +41,7 @@ resolves.
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
-| `brain-operator` | Brain Operator System | WO-BRAIN-008 | NO | `once`, `program`, `evidence`, `discovery` |
+| `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
@@ -212,10 +212,12 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 | WO-BRAIN-005 | Loop engine maturity review | COMPLETE |
 | WO-BRAIN-006 | Memory and provenance integration audit | COMPLETE |
 | WO-BRAIN-007 | Agent role and stop-gate matrix | COMPLETE |
-| WO-BRAIN-008 | Autonomous continuation rulebook reconciliation | **CURRENT** |
-| WO-BRAIN-009 | Brain/WOE integration evidence and closeout | QUEUED |
+| WO-BRAIN-008 | Autonomous continuation rulebook reconciliation | COMPLETE |
+| WO-BRAIN-009 | Brain/WOE integration evidence and closeout | **COMPLETE (PARTIAL / INTEGRATION GAP)** |
 
-No active stop walls at WO-BRAIN-008.
+Brain Operator evidence baseline complete at WO-BRAIN-009 (see
+`evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md`). Next: **portfolio reconciliation** — no lane
+preselected.
 
 ---
 
