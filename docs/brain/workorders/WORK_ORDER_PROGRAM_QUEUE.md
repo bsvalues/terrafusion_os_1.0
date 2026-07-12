@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-`brain-operator` - audit and reconcile one-Brain domain packs and operator governance. Current node:
-`WO-BRAIN-009 - Brain Operator integration evidence / closeout`. (`WO-BRAIN-008` is complete — the
-continuation / portfolio / stop semantics are now canonical in
-[CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md).)
+`brain-operator` - **evidence baseline COMPLETE at `WO-BRAIN-009`** (PARTIAL / INTEGRATION GAP — see
+[evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md](evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md)).
+`WO-BRAIN-008` produced the canonical [CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md). **Next action:
+portfolio reconciliation** — the portfolio-operator selects the next dependency-cleared lane; **no lane is
+preselected here.**
 
 ---
 
@@ -85,7 +86,7 @@ continuation / portfolio / stop semantics are now canonical in
 | WO-BRAIN-006 | DONE - memory and provenance integration audited |
 | WO-BRAIN-007 | DONE - agent role and stop-gate matrix defined |
 | WO-BRAIN-008 | DONE - continuation rulebook reconciled (`CONTINUATION_RULEBOOK.md`) |
-| WO-BRAIN-009 | **CURRENT** - integration evidence / closeout |
+| WO-BRAIN-009 | DONE - integration evidence / closeout (PARTIAL / INTEGRATION GAP; baseline closed) |
 
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
@@ -107,7 +108,8 @@ continuation / portfolio / stop semantics are now canonical in
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane:** brain-operator at WO-BRAIN-008. WOE-012 and WOE-014 are complete; WOE-013
+**Selected safe lane:** brain-operator evidence baseline is COMPLETE at WO-BRAIN-009; next action is
+**portfolio reconciliation** (no lane preselected). WOE-012 and WOE-014 are complete; WOE-013
 remains an R2 UI soft wall.
 
 ---

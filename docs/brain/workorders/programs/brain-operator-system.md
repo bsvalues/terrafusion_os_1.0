@@ -6,9 +6,11 @@
 
 **Loop:** `LOOP-BRAIN-OPERATOR-001`
 
-**Status:** ACTIVE at WO-BRAIN-008
+**Status:** EVIDENCE BASELINE COMPLETE at WO-BRAIN-009 (PARTIAL / INTEGRATION GAP — see
+`evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md`). Next: **portfolio reconciliation** (no lane
+preselected).
 
-**Last Updated:** 2026-07-11
+**Last Updated:** 2026-07-12
 
 ---
 
@@ -47,8 +49,8 @@ Operationalize the one-Brain model. TerraFusion Brain (Cortex) owns queue, seque
 | WO-BRAIN-005 | Loop engine maturity review | COMPLETE | `/loop` is real operator procedure; no standalone scheduler is implemented |
 | WO-BRAIN-006 | Memory/provenance integration | COMPLETE | Repository memory exists but freshness and loading are environment-dependent |
 | WO-BRAIN-007 | Agent role and stop-gate policy | COMPLETE | Functional roles consolidated under one operator and root stop gates |
-| WO-BRAIN-008 | Autonomous continuation rulebook | **CURRENT** | When can the Brain/Codex proceed autonomously? When must it stop? Formal rulebook. |
-| WO-BRAIN-009 | Brain/WOE integration evidence packet | QUEUED | Prove the Brain can query the WO Engine, score next WOs, and present a plan to the operator |
+| WO-BRAIN-008 | Autonomous continuation rulebook | COMPLETE | Canonical `CONTINUATION_RULEBOOK.md` — scopes, portfolio reconciliation, wall parking, true-stop, live-vs-historical authority |
+| WO-BRAIN-009 | Brain/WOE integration evidence packet | **COMPLETE (PARTIAL / INTEGRATION GAP)** | Query + scoring are real/deterministic but read a stale June-29 representative seed, so output ≠ live graph; doctrine not wired to one live machine-readable source. Baseline closed honestly; live wiring deferred. |
 
 ---
 

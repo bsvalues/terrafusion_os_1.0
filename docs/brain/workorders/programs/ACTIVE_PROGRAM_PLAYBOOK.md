@@ -474,8 +474,8 @@ from program evidence.
 | Selected program | Brain Operator System |
 | Active goal | `GOAL-BRAIN-OPERATOR-001` |
 | Active loop | `LOOP-BRAIN-OPERATOR-001` |
-| Current WO | `WO-BRAIN-008` |
-| Next WO | `WO-BRAIN-009` |
+| Current WO | Brain Operator evidence baseline **COMPLETE at `WO-BRAIN-009`** (PARTIAL / INTEGRATION GAP) |
+| Next WO | **portfolio reconciliation** — select the next dependency-cleared lane (no lane preselected) |
 
 Portfolio reconciliation excludes completed and walled lanes, then selects the lowest-risk
 dependency-cleared registered node. BRAIN-002 completed the domain-pack audit with candidate-only
