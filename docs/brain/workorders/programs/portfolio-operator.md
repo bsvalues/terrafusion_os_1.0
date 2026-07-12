@@ -35,13 +35,15 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 
 ## Current Selection
 
-At `origin/main` `f83899b1d798089337a1b48561f2da57b660d4aa`, the lowest-risk executable node is
-`WO-BRAIN-002 - Domain Pack Completeness Audit`:
+At `origin/main` `017648d00b6de282b3b5c753058bde47045d9a9b`, the lowest-risk executable node is
+`WO-BRAIN-008 - Autonomous Continuation Rulebook Reconciliation` (R0 discovery, then R1 evidence):
 
-- DevEx Hook Bootstrap is complete through `WO-DEVEX-HOOKS-006`.
-- Work Order Engine WOE-012 and WOE-014 are complete; WOE-013 is an R2 UI soft wall.
-- `WO-BRAIN-001` is already complete in PR #1140.
-- Brain Operator BRAIN-002 is an R0 read-only audit with merged prerequisites and no active wall.
+- Brain Operator System has advanced through `WO-BRAIN-007`; `WO-BRAIN-001` … `WO-BRAIN-007` are all
+  complete (`WO-BRAIN-001` in PR #1140, `WO-BRAIN-005` in PR #1265, `WO-BRAIN-006` memory/provenance
+  audit and `WO-BRAIN-007` agent role/stop-gate matrix since). `WO-BRAIN-008` is the current
+  dependency-cleared node with merged prerequisites and no active wall.
+- DevEx Hook Bootstrap is complete through `WO-DEVEX-HOOKS-006`; Work Order Engine WOE-012 and WOE-014
+  are complete, WOE-013 is an R2 UI soft wall.
 - Deployment, county runtime, data mutation, TerraPilot promotion, runtime import, and product
   behavior lanes remain parked at explicit walls.
 
