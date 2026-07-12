@@ -14,7 +14,9 @@
 ## Active Goal
 
 `brain-operator` - audit and reconcile one-Brain domain packs and operator governance. Current node:
-`WO-BRAIN-008 - Autonomous Continuation Rulebook Reconciliation` (R0 discovery, then R1 evidence).
+`WO-BRAIN-009 - Brain Operator integration evidence / closeout`. (`WO-BRAIN-008` is complete — the
+continuation / portfolio / stop semantics are now canonical in
+[CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md).)
 
 ---
 
@@ -82,8 +84,8 @@
 | WO-BRAIN-005 | DONE - loop maturity reviewed |
 | WO-BRAIN-006 | DONE - memory and provenance integration audited |
 | WO-BRAIN-007 | DONE - agent role and stop-gate matrix defined |
-| WO-BRAIN-008 | **CURRENT** |
-| WO-BRAIN-009 | QUEUED integration evidence/closeout |
+| WO-BRAIN-008 | DONE - continuation rulebook reconciled (`CONTINUATION_RULEBOOK.md`) |
+| WO-BRAIN-009 | **CURRENT** - integration evidence / closeout |
 
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
@@ -112,6 +114,9 @@ remains an R2 UI soft wall.
 
 ## Operator Note
 
-Under `/loop program`, run same-risk unblocked WOs across the active program without returning to the
-human. Return only with a result block naming the wall. See
+Under `/loop program` (within-program scope), run same-risk unblocked WOs in the active program without
+returning to the human, and **STOP + surface the wall** when the active program hits one. Cross-program
+advance (park-and-advance) is the **portfolio-operator** program's job only. The live "current node / next
+WO" is **this queue**, not any `Current Selection` prose in `programs/*.md`. See
+[CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md) and
 [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md).
