@@ -65,6 +65,11 @@ Continue through same-risk WOs in the active program until a terminal condition 
 **Use when:** the operator wants autonomous progress through a defined program slice without stopping
 at every step.
 
+> **Scope (WO-BRAIN-008):** `/loop program` on a **regular** program is **within-program** — it stops at
+> that program's wall as listed above and does **not** silently jump to another program. Cross-program
+> **park-and-advance** happens **only** when the active program is the **portfolio-operator** program.
+> See [CONTINUATION_RULEBOOK.md](../CONTINUATION_RULEBOOK.md) §2.
+
 ---
 
 ### /loop evidence

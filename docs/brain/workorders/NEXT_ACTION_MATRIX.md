@@ -32,8 +32,12 @@ Evaluate top-to-bottom; first matching row wins.
 | 9 | Next WO is higher-risk than current | **STOP** — surface; request authorization for the higher risk class. |
 | 10 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
 | 11 | No unblocked WO remains AND loop is `/loop once`, `/loop evidence`, or `/loop discovery` | **STOP** — that mode's scope is complete; retain its existing stop semantics. Do **not** portfolio-reconcile. |
-| 12 | No unblocked WO remains in active program AND `/loop program` active | **PORTFOLIO RECONCILE** — select the next safe registered lane using `AUTONOMOUS_CONTINUATION_GATE.md`; stop only if all lanes are parked. |
-| 13 | None of the above | Continue the loop procedure. |
+| 12 | No unblocked WO remains (or next crosses a wall) in a **regular** program under `/loop program` (within-program scope) | **STOP** — surface the wall / queue-exhaustion. Do **not** auto-jump to another program. |
+| 13 | Active program is **portfolio-operator** AND its current lane walls or exhausts | **PORTFOLIO RECONCILE** — park the lane, select the next safe registered lane by Lane Priority (`AUTONOMOUS_CONTINUATION_GATE.md`); stop only at **ALL-LANES-PARKED**. |
+| 14 | None of the above | Continue the loop procedure. |
+
+Continuation / portfolio / stop scope is canonical in [CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md)
+(WO-BRAIN-008): row 12 = within-program STOP; row 13 = portfolio-operator-only cross-program advance.
 
 ---
 
@@ -78,7 +82,11 @@ See [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md).
 
 ---
 
-## Current Instantiation (2026-07-01)
+## Current Instantiation (2026-07-01) — historical snapshot
+
+> **Not live routing (CONTINUATION_RULEBOOK §7).** This table is a dated illustration of how the matrix
+> resolved on 2026-07-01. For the live current node / next WO, read
+> [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md) — not this snapshot.
 
 | Program | Next WO | Matrix row | Action |
 |---------|---------|-----------|--------|

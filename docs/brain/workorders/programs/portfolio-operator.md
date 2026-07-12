@@ -35,13 +35,17 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 
 ## Current Selection
 
-At `origin/main` `017648d00b6de282b3b5c753058bde47045d9a9b`, the lowest-risk executable node is
-`WO-BRAIN-008 - Autonomous Continuation Rulebook Reconciliation` (R0 discovery, then R1 evidence):
+> **Snapshot, not live routing (CONTINUATION_RULEBOOK §7).** This section records the selection at a point
+> in time. The authoritative live "current node / next WO" is
+> [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-- Brain Operator System has advanced through `WO-BRAIN-007`; `WO-BRAIN-001` … `WO-BRAIN-007` are all
-  complete (`WO-BRAIN-001` in PR #1140, `WO-BRAIN-005` in PR #1265, `WO-BRAIN-006` memory/provenance
-  audit and `WO-BRAIN-007` agent role/stop-gate matrix since). `WO-BRAIN-008` is the current
-  dependency-cleared node with merged prerequisites and no active wall.
+At `origin/main` `d0e8eb57bec3b34f5f52b68dd9b468c7ce3ab008`, the lowest-risk executable node is
+`WO-BRAIN-009 - Brain Operator integration evidence / closeout`:
+
+- Brain Operator System has advanced through `WO-BRAIN-008`; `WO-BRAIN-001` … `WO-BRAIN-008` are all
+  complete (`WO-BRAIN-001` in PR #1140, `WO-BRAIN-005` in PR #1265, `WO-BRAIN-008` produced the canonical
+  `CONTINUATION_RULEBOOK.md`). `WO-BRAIN-009` is the current dependency-cleared node with merged
+  prerequisites and no active wall.
 - DevEx Hook Bootstrap is complete through `WO-DEVEX-HOOKS-006`; Work Order Engine WOE-012 and WOE-014
   are complete, WOE-013 is an R2 UI soft wall.
 - Deployment, county runtime, data mutation, TerraPilot promotion, runtime import, and product

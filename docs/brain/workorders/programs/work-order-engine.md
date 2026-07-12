@@ -93,4 +93,6 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 
 ## Governing Rule
 
-The WO Engine is read-only by default. It discovers, queries, scores, and reports. It does not initiate code changes, deployments, or data mutations. The operator always makes the final call on which WO to execute next.
+The WO Engine is read-only by default. It discovers, queries, scores, and reports. It does not initiate code changes, deployments, or data mutations.
+
+> **Superseded (WO-BRAIN-008):** the earlier "the operator always makes the final call on which WO to execute next" is replaced by the continuation doctrine — **the human is the authority wall, not the per-WO dispatcher.** Safe, same-risk continuation inside the active scope is automatic; the human decides only at walls, risk-class increases, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts. See [CONTINUATION_RULEBOOK.md](../CONTINUATION_RULEBOOK.md) §6.

@@ -7,6 +7,12 @@
 **Builds on:** [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md) (within-program),
 [STOP_WALL_REGISTER.md](STOP_WALL_REGISTER.md), [NEXT_ACTION_MATRIX.md](NEXT_ACTION_MATRIX.md).
 
+> **Scope (WO-BRAIN-008):** this gate — park the walled lane and advance to the next safe lane — governs
+> the **portfolio scope only** (the **portfolio-operator** program). It is **not** what a regular
+> program's `/loop program` does; that stops at its wall. This document is the *procedure* for the
+> portfolio scope and defers to [CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md) for the scope
+> boundary. The example ledger below is a historical snapshot, not live routing (rulebook §7).
+
 ---
 
 ## 0. What This Adds
