@@ -360,8 +360,8 @@ File:     programs/brain-operator-system.md
 Success:  Brain authority is documented and evidence-backed; suites have domain packs, not their own brains.
 ```
 
-**Current state:** BRAIN-001 through BRAIN-004 are complete. `WO-BRAIN-005 - Loop Engine Maturity
-Review` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
+**Current state:** BRAIN-001 through BRAIN-005 are complete. `WO-BRAIN-006 - Memory And Provenance
+Integration Audit` is active under `GOAL-BRAIN-OPERATOR-001` and `LOOP-BRAIN-OPERATOR-001`.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
@@ -376,7 +376,7 @@ File:     programs/portfolio-operator.md
 Success:  Program closeout advances directly into the next executable goal/loop without owner dispatch.
 ```
 
-**Current state:** DevEx Hook Bootstrap is closed. Brain Operator is selected at WO-BRAIN-002.
+**Current state:** DevEx Hook Bootstrap is closed. Brain Operator is selected at WO-BRAIN-006.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

@@ -474,14 +474,15 @@ from program evidence.
 | Selected program | Brain Operator System |
 | Active goal | `GOAL-BRAIN-OPERATOR-001` |
 | Active loop | `LOOP-BRAIN-OPERATOR-001` |
-| Current WO | `WO-BRAIN-005` |
-| Next WO | `WO-BRAIN-006` |
+| Current WO | `WO-BRAIN-006` |
+| Next WO | `WO-BRAIN-007` |
 
 Portfolio reconciliation excludes completed and walled lanes, then selects the lowest-risk
 dependency-cleared registered node. BRAIN-002 completed the domain-pack audit with candidate-only
 ownership and risk-vocabulary gaps classified. BRAIN-003 reconciled command classes and stale
 routing. BRAIN-004 classified `/goal` as real operator doctrine without a standalone selector engine.
-BRAIN-005 now reviews loop maturity.
+BRAIN-005 classified `/loop` as real operator procedure without a standalone scheduler. BRAIN-006
+now audits memory and provenance integration.
 
 ---
 
