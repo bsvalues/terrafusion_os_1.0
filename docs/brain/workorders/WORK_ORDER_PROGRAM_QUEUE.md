@@ -71,8 +71,10 @@ continuation / portfolio / stop semantics are now canonical in
 | WO | State |
 |----|-------|
 | WO-WOE-001..010 | DONE |
-| **WO-WOE-011 Full Operator Playbook** | **THIS WO** |
-| WO-WOE-012 Autonomous Same-Risk Continuation Gate → 013 Program Queue UI/Report → 014 Cross-Program Dependency Graph | QUEUED |
+| WO-WOE-011 Full Operator Playbook | DONE |
+| WO-WOE-012 Autonomous Same-Risk Continuation Gate | DONE |
+| WO-WOE-013 Program Queue UI/Report | R2 UI SOFT WALL |
+| WO-WOE-014 Cross-Program Dependency Graph | DONE |
 
 ### brain-operator  (`/goal brain-operator`)
 | WO | State |
@@ -107,7 +109,7 @@ continuation / portfolio / stop semantics are now canonical in
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane:** brain-operator at WO-BRAIN-008. WOE-012 and WOE-014 are complete; WOE-013
+**Selected safe lane:** brain-operator at WO-BRAIN-009. WOE-012 and WOE-014 are complete; WOE-013
 remains an R2 UI soft wall.
 
 ---

@@ -53,8 +53,8 @@ human may authorize.
 
 Among programs with a safe, unblocked next WO, select in this order:
 
-1. **Lowest risk class first** — R0 (read-only audit/discovery) before R1 (docs) before R2 (scoped code).
-   Never select R3/R4 autonomously (those are walls).
+1. **Lowest risk class first** — use the canonical WOE R0-R5 execution model. Selection may identify
+   a higher-risk candidate, but it never grants missing authority to execute it.
 2. **Continuity** — prefer a lane that directly extends the finding just produced (e.g. after a
    Pilot-stub finding, the terrapilot-maturity lane). Continuity keeps evidence coherent.
 3. **Dependency readiness** — prefer lanes whose prerequisites are merged/done.

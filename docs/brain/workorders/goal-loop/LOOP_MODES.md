@@ -48,7 +48,8 @@ Continue through same-risk WOs in the active program until a terminal condition 
 
 **Continues while:**
 - next WO is in the same program
-- next WO risk class is equal to or lower than the current WO
+- next WO risk class is equal to or lower than the current WO, or the active goal/loop packet
+  explicitly authorizes the higher risk
 - no authority wall is in the next WO's sovereignty boundary
 - all dependencies of the next WO are satisfied (merged PRs, completed WOs)
 - no failed validation gate in the active chain
@@ -169,7 +170,8 @@ A loop may continue to the next WO only when ALL of the following are true:
 
 1. The current WO has a COMPLETED result with evidence
 2. The next WO is in the same active program (or explicitly cross-program and approved)
-3. The next WO's risk class is not higher than the current WO
+3. The next WO's risk class is not higher than the current WO, or the active goal/loop packet
+   explicitly authorizes the higher risk
 4. The next WO has no unresolved dependencies (no pending-merge PRs that the next WO requires)
 5. The next WO does not cross an authority wall
 6. No conflicting canon between the current and next WO's sovereignty boundaries
@@ -182,13 +184,12 @@ If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
 
 | Class | Examples |
 |-------|---------|
-| R0 — Read-only | Discovery, evidence collection, SQL SELECT |
-| R1 — Docs/registry | Markdown, evidence docs, WO register updates |
-| R2 — Config/tooling | appsettings, CI config, dev tool setup |
-| R3 — Code/backend | C# service, EF migration, API endpoint |
-| R4 — Deployment | Azure deploy, App Service config, production |
-| R5 — Data mutation | DELETE/UPDATE on production or demo DB |
-| R5 — Secrets | Credential rotation, key vault, secret injection |
+| R0 — Read-only | Discovery and evidence collection with no repository writes |
+| R1 — Docs/operator truth | Markdown, evidence, schemas, registers, playbooks |
+| R2 — Local developer tooling | Local bootstrap and dev-only tooling without product behavior |
+| R3 — CI/governance/tooling | Hooks, pipeline gates, policy configuration, branch hygiene |
+| R4 — Runtime/application | Backend, frontend, or OS-platform observable behavior |
+| R5 — Production/protected authority | Deploy, release, secrets, PACS, county SQL/data, security |
 
-`/loop program` may continue through same or lower risk. It must stop before crossing up a risk class
-that contains an authority wall.
+`/loop program` may continue through same or lower risk. A higher-risk node continues only when the
+active goal/loop packet explicitly grants that risk and no ungranted wall remains.

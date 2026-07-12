@@ -51,8 +51,8 @@ Under `/loop program` on a regular program, continue to the next WO only when AL
 
 1. the current WO has a COMPLETED result with evidence;
 2. the next WO is in the **same** active program;
-3. the next WO's risk class is **equal to or lower** than the current WO (R0 ≤ R1 ≤ R2; never auto-cross
-   into R3+/a wall — see [risk classes in LOOP_MODES.md](goal-loop/LOOP_MODES.md));
+3. the next WO's risk class is **equal to or lower** than the current WO, or the active goal/loop
+   packet explicitly authorizes the higher WOE R0-R5 execution class;
 4. all dependencies are satisfied (required PRs merged, prerequisite WOs done);
 5. the next WO crosses **no** authority wall (SW-01..SW-10);
 6. no conflicting canon and no failed out-of-scope validation gate.
@@ -70,7 +70,7 @@ If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
 1. RECORD  the wall/exhaustion in the Wall Ledger (WORK_ORDER_PROGRAM_QUEUE.md §Global Walls).
 2. PARK    the blocked WO (never cross the wall to stay busy).
 3. SELECT  the next lane by Lane Priority: lowest-risk-first → continuity → dependency-readiness →
-           register order — only lanes whose next WO is UNBLOCKED, SAME-RISK-OR-LOWER, crossing NO wall.
+           register order — only lanes whose next WO is UNBLOCKED and crosses NO ungranted wall.
 4. ADVANCE run that lane's within-program queue (§3).
 5. REPEAT  until no safe lane remains.
 6. STOP    at ALL-LANES-PARKED — the only legitimate full stop of a portfolio run.
@@ -84,8 +84,8 @@ this rulebook for the scope boundary.
 
 ## 5. How walls park lanes
 
-A wall (`SW-01..SW-10`, or any R3+/deploy/data/secret/runtime/CI/schema/product change) **parks the
-lane** — it is never crossed to keep working:
+A wall (`SW-01..SW-10`, or any ungranted R2-R5 tooling/runtime/production/protected change) **parks
+the lane** — it is never crossed to keep working:
 
 - **RECORD** it in the Wall Ledger: `program | parked WO | wall | one-line reason | evidence`.
 - **PARK** the blocked WO; do not downgrade the wall ("just a small edit") to enter it; do not invent a
@@ -105,13 +105,13 @@ lane** — it is never crossed to keep working:
 | Portfolio run: a lane walls | do **not** stop — park + advance |
 | Portfolio run: ALL lanes parked/exhausted | **STOP** — All-Lanes-Parked report |
 | Bounded mode reaches its scope boundary | **STOP** per that mode |
-| Human authority wall (R3+, deploy, data, secrets, PACS, county, new external service) | **STOP** — always |
+| Ungranted authority wall (R2-R5 tooling/runtime/production/protected action) | **STOP** — always |
 | Merge requires human authority not already granted | **STOP** |
 | Conflicting canon, or an honesty invariant would be violated | **STOP** |
 
 **The human is the authority wall, not the per-WO dispatcher.** Safe, same-risk continuation *inside the
 active scope* is automatic and must not prompt "what next?". The human decides only at walls, risk-class
-increases, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts. (This supersedes the older
+increases without prior authority, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts. (This supersedes the older
 "the operator always makes the final call on which WO to execute next" line in
 [work-order-engine.md](programs/work-order-engine.md), which predates the continuation gate.)
 
