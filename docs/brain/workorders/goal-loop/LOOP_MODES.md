@@ -48,7 +48,8 @@ Continue through same-risk WOs in the active program until a terminal condition 
 
 **Continues while:**
 - next WO is in the same program
-- next WO risk class is equal to or lower than the current WO
+- next WO risk class is equal to or lower than the current WO, or the active goal/loop packet
+  explicitly authorizes the higher risk
 - no authority wall is in the next WO's sovereignty boundary
 - all dependencies of the next WO are satisfied (merged PRs, completed WOs)
 - no failed validation gate in the active chain
@@ -164,7 +165,8 @@ A loop may continue to the next WO only when ALL of the following are true:
 
 1. The current WO has a COMPLETED result with evidence
 2. The next WO is in the same active program (or explicitly cross-program and approved)
-3. The next WO's risk class is not higher than the current WO
+3. The next WO's risk class is not higher than the current WO, or the active goal/loop packet
+   explicitly authorizes the higher risk
 4. The next WO has no unresolved dependencies (no pending-merge PRs that the next WO requires)
 5. The next WO does not cross an authority wall
 6. No conflicting canon between the current and next WO's sovereignty boundaries

@@ -69,8 +69,10 @@
 | WO | State |
 |----|-------|
 | WO-WOE-001..010 | DONE |
-| **WO-WOE-011 Full Operator Playbook** | **THIS WO** |
-| WO-WOE-012 Autonomous Same-Risk Continuation Gate → 013 Program Queue UI/Report → 014 Cross-Program Dependency Graph | QUEUED |
+| WO-WOE-011 Full Operator Playbook | DONE |
+| WO-WOE-012 Autonomous Same-Risk Continuation Gate | DONE |
+| WO-WOE-013 Program Queue UI/Report | R2 UI SOFT WALL |
+| WO-WOE-014 Cross-Program Dependency Graph | DONE |
 
 ### brain-operator  (`/goal brain-operator`)
 | WO | State |

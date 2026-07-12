@@ -29,7 +29,7 @@ Evaluate top-to-bottom; first matching row wins.
 | 6 | Open PR gates pending | Wait, re-check; do not block on it — start next WO if independent. |
 | 7 | PR merged AND `/loop program` active AND next WO same-risk + unblocked + in-register | **EXECUTE** next WO. Do not ask. |
 | 8 | PR merged AND `/loop once` | **STOP** — name `NEXT_WO`, do not execute. |
-| 9 | Next WO is higher-risk than current | **STOP** — surface; request authorization for the higher risk class. |
+| 9 | Next WO is higher-risk than current and the active goal/loop does not explicitly authorize it | **STOP** — surface; request authorization for the higher risk class. |
 | 10 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
 | 11 | No unblocked WO remains AND loop is `/loop once`, `/loop evidence`, or `/loop discovery` | **STOP** — that mode's scope is complete; retain its existing stop semantics. Do **not** portfolio-reconcile. |
 | 12 | No unblocked WO remains in active program AND `/loop program` active | **PORTFOLIO RECONCILE** — select the next safe registered lane using `AUTONOMOUS_CONTINUATION_GATE.md`; stop only if all lanes are parked. |
@@ -87,6 +87,6 @@ See [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md).
 | p8-management-dashboard | WO-P8-MGMT-004 (deployment authorization **packet** — docs, R1) | 7 | EXECUTE after #1125 merges |
 | p8-management-dashboard | *actual frontend deploy* | 1 (SW-01) | STOP — authorization packet only |
 | benton-data-quality | WO-DATA-BENTON-ADDR-001 (read-only audit, R0) | 7 | EXECUTE (no SW-02) |
-| benton-data-quality | WO-DATA-BENTON-DUPE-001B (delete rows, R4) | 1 (SW-02) | STOP — parked |
+| benton-data-quality | WO-DATA-BENTON-DUPE-001B (delete rows, R5) | 1 (SW-02) | STOP — parked |
 | benton-demo | WO-DEPLOY-BENTON-003D (smoke/evidence rollup, R0/R1) | 7 | EXECUTE only if authorized (touches live surface) |
 | work-order-engine | WO-WOE-012 (autonomous continuation gate, R1) | 7 | EXECUTE |
