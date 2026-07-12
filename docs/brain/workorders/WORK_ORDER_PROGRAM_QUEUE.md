@@ -14,7 +14,7 @@
 ## Active Goal
 
 `brain-operator` - audit and reconcile one-Brain domain packs and operator governance. Current node:
-`WO-BRAIN-008 - Autonomous Continuation Rulebook Reconciliation` (R0 discovery, then R1 evidence).
+`WO-BRAIN-009 - Brain/WOE Integration Evidence Packet` (R0 discovery, then R1 evidence).
 
 ---
 
@@ -82,8 +82,8 @@
 | WO-BRAIN-005 | DONE - loop maturity reviewed |
 | WO-BRAIN-006 | DONE - memory and provenance integration audited |
 | WO-BRAIN-007 | DONE - agent role and stop-gate matrix defined |
-| WO-BRAIN-008 | **CURRENT** |
-| WO-BRAIN-009 | QUEUED integration evidence/closeout |
+| WO-BRAIN-008 | DONE - autonomous continuation rulebook reconciled |
+| WO-BRAIN-009 | **CURRENT** - integration evidence/closeout |
 
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
@@ -105,7 +105,7 @@
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane:** brain-operator at WO-BRAIN-008. WOE-012 and WOE-014 are complete; WOE-013
+**Selected safe lane:** brain-operator at WO-BRAIN-009. WOE-012 and WOE-014 are complete; WOE-013
 remains an R2 UI soft wall.
 
 ---

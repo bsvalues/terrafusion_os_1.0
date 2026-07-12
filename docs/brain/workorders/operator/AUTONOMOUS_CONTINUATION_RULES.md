@@ -16,7 +16,7 @@ Codex may continue without asking the owner when all conditions are true:
 - validation passed or failures are repairable in scope,
 - review comments are fixable within authorized files,
 - PR branch updates are routine updates from `origin/main`,
-- no local hook bypass is needed,
+- no unapproved local hook bypass is needed,
 - no protected resource is implicated.
 
 ## Examples Of Routine Continuation
@@ -35,9 +35,9 @@ Codex must stop when the next action would require:
 - runtime expansion,
 - new files outside the authorized set,
 - destructive git or filesystem operations,
-- hook bypass,
+- hook bypass without an applicable explicit exception,
 - force push,
-- merge authority,
+- merge authority when no applicable merge mode is already granted,
 - production, county, PACS, SQL, live DB, or secrets access,
 - ambiguous or conflicting canon,
 - CI/release/deployment wiring,

@@ -66,10 +66,13 @@ Changed path: `packages/terrabuild/src/models/cost.ts`
 | Proof | `pnpm run type-check`, `pnpm canon:gatefast` |
 | Escalate | valuation methodology / CAMA single-writer boundary change |
 
-## Risk floors
+## Path risk floors (legacy router profile)
 
-The `risk_floor` is the **minimum** risk class for any change matching a route — a specific change can
-be higher (then escalate), never lower. The scale is aligned with the TerraPilot risk classes
+The `risk_floor` is the **minimum path severity** for any change matching a route — a specific change
+can be higher (then escalate), never lower. This R0-R3 profile predates and is **not interchangeable
+with** the canonical WOE R0-R5 execution-risk model in
+`docs/brain/workorders/schema/WORK_ORDER_DATA_MODEL.md`. The operator must apply both; the higher
+effective constraint wins. This profile is aligned with the TerraPilot risk classes
 (`read_only` / `write_low` / `write_high` / `irreversible`):
 
 | Floor | Meaning |

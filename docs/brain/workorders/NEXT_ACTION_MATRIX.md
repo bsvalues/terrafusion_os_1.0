@@ -43,13 +43,15 @@ Evaluate top-to-bottom; first matching row wins.
 ```
 R0  read-only discovery / evidence (no writes)
 R1  docs / registry / playbook authoring
-R2  scoped code change with tests, no runtime/behavior expansion
-R3  runtime behavior change (SW-09) — requires authorization
-R4  deploy / data mutation / secrets / go-live (SW-01..SW-04, SW-10) — always a wall
+R2  local developer tooling with no product/runtime behavior
+R3  CI/governance/tooling, hooks, or policy configuration
+R4  runtime/application behavior (SW-09 unless explicitly authorized)
+R5  production/security/protected data (SW-01..SW-04, SW-10)
 ```
 
-A loop that starts at R1 may run R1 and R0 WOs freely. It **stops** before the first R3/R4 WO and
-surfaces it. R2 continues only if the WO explicitly authorizes scoped code (as WO-P8-MGMT-003 did).
+A loop that starts at R1 may run R1 and R0 WOs freely. R2 through R5 require the active goal/loop to
+authorize that risk and must stop at every ungranted wall. Risk classification alone never grants
+execution authority.
 
 ---
 

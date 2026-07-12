@@ -6,7 +6,7 @@
 
 **Loop:** `LOOP-BRAIN-OPERATOR-001`
 
-**Status:** ACTIVE at WO-BRAIN-008
+**Status:** ACTIVE at WO-BRAIN-009
 
 **Last Updated:** 2026-07-11
 
@@ -47,8 +47,8 @@ Operationalize the one-Brain model. TerraFusion Brain (Cortex) owns queue, seque
 | WO-BRAIN-005 | Loop engine maturity review | COMPLETE | `/loop` is real operator procedure; no standalone scheduler is implemented |
 | WO-BRAIN-006 | Memory/provenance integration | COMPLETE | Repository memory exists but freshness and loading are environment-dependent |
 | WO-BRAIN-007 | Agent role and stop-gate policy | COMPLETE | Functional roles consolidated under one operator and root stop gates |
-| WO-BRAIN-008 | Autonomous continuation rulebook | **CURRENT** | When can the Brain/Codex proceed autonomously? When must it stop? Formal rulebook. |
-| WO-BRAIN-009 | Brain/WOE integration evidence packet | QUEUED | Prove the Brain can query the WO Engine, score next WOs, and present a plan to the operator |
+| WO-BRAIN-008 | Autonomous continuation rulebook | COMPLETE | Continuation, risk vocabulary, and preauthorized exceptions reconciled |
+| WO-BRAIN-009 | Brain/WOE integration evidence packet | **CURRENT** | Prove query, scoring, routing, walls, and operator surfaces agree |
 
 ---
 
