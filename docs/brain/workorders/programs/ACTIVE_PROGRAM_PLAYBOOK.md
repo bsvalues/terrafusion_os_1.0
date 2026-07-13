@@ -64,7 +64,7 @@ Codex may continue automatically from one Work Order to the next only when all a
 8. No backend/runtime implementation is required unless that program explicitly authorizes implementation.
 9. No secrets, county data, PACS, county SQL, production resources, migrations, deployment, or live
    services are implicated.
-10. No local hook bypass is required.
+10. No local hook bypass is required unless a bounded standing exception covers the exact action.
 
 Codex must stop for owner decision when any are true:
 
