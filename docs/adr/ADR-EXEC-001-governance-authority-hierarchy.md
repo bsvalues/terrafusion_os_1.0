@@ -1,6 +1,6 @@
 # ADR-EXEC-001: Governance Authority Hierarchy
 
-Status: Accepted by WO-MAO-001 reconciliation, pending merge  
+Status: Accepted by WO-MAO-001 reconciliation, pending merge
 Date: 2026-07-13
 
 ## Context

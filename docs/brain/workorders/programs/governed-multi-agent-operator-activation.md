@@ -1,10 +1,10 @@
 # Governed Multi-Agent Operator Activation
 
-**Program ID:** `PROGRAM-MAO-001`  
-**Goal:** `GOAL-MAO-001`  
-**Loop:** `LOOP-MAO-001`  
-**Status:** Active  
-**Current Work Order:** `WO-MAO-001`  
+**Program ID:** `PROGRAM-MAO-001`
+**Goal:** `GOAL-MAO-001`
+**Loop:** `LOOP-MAO-001`
+**Status:** Active
+**Current Work Order:** `WO-MAO-001`
 **Next Work Order:** `WO-MAO-002`
 
 ## Objective
@@ -104,4 +104,3 @@ worktree repair, implementation choices, authorized behavior, and next-WO select
 - exact changed-file scope review
 - Markdown/link inspection
 - required PR checks and zero unresolved review threads
-

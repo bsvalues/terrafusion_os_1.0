@@ -1,9 +1,9 @@
 # WO-MAO-001 Governance Reconciliation Evidence
 
-**Program:** `PROGRAM-MAO-001`  
-**Goal:** `GOAL-MAO-001`  
-**Loop:** `LOOP-MAO-001`  
-**Base:** `origin/main@63f959e07240e0159ce101cd4d76e814788aac44`  
+**Program:** `PROGRAM-MAO-001`
+**Goal:** `GOAL-MAO-001`
+**Loop:** `LOOP-MAO-001`
+**Base:** `origin/main@63f959e07240e0159ce101cd4d76e814788aac44`
 **Classification:** Governance reconciliation only
 
 ## Verdict
@@ -41,8 +41,8 @@ The source locations below refer to the audited base SHA before this reconciliat
 | F15 | `docs/brain/workorders/STOP_WALL_REGISTER.md:13-33,76-78` | Routine merge conflict and in-scope recovery could be misclassified as authority walls. | CLARIFY | Walls require unresolved new authority; routine conflict, review, validation, and approved repair are non-walls. |
 | F16 | `docs/brain/workorders/programs/work-order-engine.md:96-98` and `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md:15-20` | Operator final-call language and risk-up shorthand recreated founder routing. | SUPERSEDE | Live queue plus recorded authority selects the next dependency-cleared WO automatically. |
 
-**Mapped findings:** 16  
-**Unmapped findings:** 0  
+**Mapped findings:** 16
+**Unmapped findings:** 0
 **Conflict dispositions deferred:** 0
 
 ## Authority Hierarchy
