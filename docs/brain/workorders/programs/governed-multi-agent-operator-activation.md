@@ -87,8 +87,10 @@ dispatch is blocked and MAO-002 may use two disjoint path families in this canon
 
 A wall exists only when presently unresolved new owner authority is required. Production, live county,
 credentials, protected data, irreversible destruction, constitutional change, unresolved canon, and
-security exceptions remain protected. Failed tests, review comments, routine conflicts, approved
-worktree repair, implementation choices, authorized behavior, and next-WO selection are not walls.
+security exceptions remain protected. Recoverable in-scope test failures, review comments, routine
+conflicts, approved worktree repair, implementation choices, authorized behavior, and next-WO
+selection are not walls. A required validation failure that cannot be repaired in scope remains
+`SW-06` and stops that lane.
 
 ## Non-Goals
 

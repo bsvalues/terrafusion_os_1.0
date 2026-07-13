@@ -49,6 +49,8 @@ Create worktree from main
 - Agents should not create worktrees without a work order justification.
 - Completed worktrees may be removed after merge under an exact approved cleanup rule. Failed
   current-WO worktrees may be repaired without a new owner touch only when the path is exact, Git
-  worktree management is used, and any deleted branch is proven to have zero unique commits.
+  worktree management is used, and any deleted branch is proven to have zero unique commits relative
+  to a freshly fetched `origin/main`. Record the resolved `origin/main` SHA and branch-tip SHA, then
+  require `git log --oneline <origin-main-sha>..<branch>` to return no commits before deletion.
 - `git worktree list` should be checked periodically; >20 active worktrees is a warning sign.
 - `git worktree prune` should be run after removals.

@@ -40,7 +40,7 @@ merge authority.
 - `node docs/brain/workorders/tools/wo-query.mjs --json`
 - `corepack pnpm brain review-diff --workorder WO-MAO-001`
 - `node --test os-platform/core/tests/phase83-tools.test.mjs`
-- `corepack pnpm run type-check` when the isolated dependency graph is available
+- `corepack pnpm run type-check`
 
 ## Stop conditions
 
@@ -90,7 +90,8 @@ merge authority.
     "git diff --check",
     "node docs/brain/workorders/tools/wo-query.mjs --json",
     "corepack pnpm brain review-diff --workorder WO-MAO-001",
-    "node --test os-platform/core/tests/phase83-tools.test.mjs"
+    "node --test os-platform/core/tests/phase83-tools.test.mjs",
+    "corepack pnpm run type-check"
   ]
 }
 ```

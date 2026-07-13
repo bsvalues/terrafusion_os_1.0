@@ -38,7 +38,10 @@ No two agents may operate in the same mutable working tree. Each agent uses a de
 14. No `git push --force` (agents do not force-push).
 15. No deleting branches, tags, worktrees, or stashes without explicit authority. A standing
     current-WO repair rule is sufficient only for an exact failed worktree path and a branch proven to
-    have zero unique commits; tags, stashes, unrelated worktrees, and broad cleanup remain owner-only.
+    have zero unique commits relative to a freshly fetched `origin/main`. Before deletion, record the
+    resolved `origin/main` SHA and branch-tip SHA, and require
+    `git log --oneline <origin-main-sha>..<branch>` to return no commits. Tags, stashes, unrelated
+    worktrees, and broad cleanup remain owner-only.
 
 ### PR Boundary
 

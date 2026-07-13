@@ -88,7 +88,8 @@ this rulebook for the scope boundary.
 
 A wall (`SW-01..SW-10`) is a presently unresolved boundary requiring new authority. It **parks the
 lane** and is never crossed merely to keep working. Risk class alone is not a wall: R3, R4, or R5 work
-may proceed only when the active authority record explicitly grants that class, action, and system.
+may proceed only when the active authority record explicitly grants that class, systems, files, and
+actions.
 
 - **RECORD** it in the Wall Ledger: `program | parked WO | wall | one-line reason | evidence`.
 - **PARK** the blocked WO; do not downgrade the wall ("just a small edit") to enter it; do not invent a

@@ -28,9 +28,9 @@ Evaluate top-to-bottom; first matching row wins.
 | 5 | Open PR is `BEHIND` main, auto-merge queued | `gh pr update-branch`; keep watching. |
 | 6 | Open PR has unresolved bot/review threads blocking merge | Resolve in-scope threads (`resolveReviewThread`); keep watching. |
 | 7 | Open PR gates pending | Wait, re-check; do not block on it — start next WO if independent. |
-| 8 | PR merged AND `/loop program` active AND next WO is unblocked, in-register, and inside recorded authority | **EXECUTE** next WO. Do not ask. |
+| 8 | PR merged AND `/loop program` active AND next WO is in the same active program, unblocked, in-register, and inside recorded authority | **EXECUTE** next WO. Cross-program advancement requires portfolio-operator row 1. Do not ask. |
 | 9 | PR merged AND `/loop once` | **STOP** — name `NEXT_WO`, do not execute. |
-| 10 | Next WO exceeds the current authority ceiling | **STOP** — request only the missing risk/system/action authority. A higher numeric risk already granted by the active record is not a new wall. |
+| 10 | Next WO exceeds the current authority ceiling | **STOP** — request only the missing risk/system/file/action authority. A higher numeric risk already granted by the active record is not a new wall. |
 | 11 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
 | 12 | No unblocked WO remains AND loop is `/loop once`, `/loop evidence`, or `/loop discovery` | **STOP** — that mode's scope is complete; retain its existing stop semantics. Do **not** portfolio-reconcile. |
 | 13 | No unblocked WO remains (or next crosses a wall) in a **regular** program under `/loop program` (within-program scope) | **STOP** — surface the wall / queue-exhaustion. Do **not** auto-jump to another program. |

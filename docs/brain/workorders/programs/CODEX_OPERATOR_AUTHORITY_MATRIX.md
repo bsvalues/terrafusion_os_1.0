@@ -17,8 +17,8 @@ The owner is the authority wall. The owner is not the courier for routine execut
 ### AUTO-PROCEED
 
 Codex may proceed automatically when the active Work Order, `/goal`, and `/loop` already authorize
-the work. A numeric risk increase is allowed only when the recorded authority explicitly covers the
-new class, systems, files, and actions:
+the work. A numeric risk increase is allowed only when an active, unexpired, non-revoked authority
+grant explicitly covers the new class, systems, files, and actions:
 
 - create a dedicated clean worktree and branch for the assigned Work Order,
 - edit files inside the approved scope,

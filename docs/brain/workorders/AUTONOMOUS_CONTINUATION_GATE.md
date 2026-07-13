@@ -54,7 +54,8 @@ human may authorize.
 Among programs with a safe, unblocked next WO, select in this order:
 
 1. **Lowest risk class first** — use the canonical R0-R5 ordering as a priority, not as authority.
-   Select R3-R5 only when the active authority record explicitly grants the class and systems.
+   Select R3-R5 only when the active authority record explicitly grants the class, systems, files, and
+   actions.
 2. **Continuity** — prefer a lane that directly extends the finding just produced (e.g. after a
    Pilot-stub finding, the terrapilot-maturity lane). Continuity keeps evidence coherent.
 3. **Dependency readiness** — prefer lanes whose prerequisites are merged/done.

@@ -168,7 +168,8 @@ Halt the current loop and emit a full result block with the stop reason.
 A loop may continue to the next WO only when ALL of the following are true:
 
 1. The current WO has a COMPLETED result with evidence
-2. The next WO is in the same active program (or explicitly cross-program and approved)
+2. The next WO is in the same active program; cross-program advancement is selected only while the
+   active loop is the portfolio-operator program
 3. The next WO's risk class, systems, files, and actions are already authorized
 4. The next WO has no unresolved dependencies (no pending-merge PRs that the next WO requires)
 5. The next WO does not cross an authority wall
@@ -183,7 +184,7 @@ If an item is unknown, perform bounded read-only source and live-state discovery
 
 | Class | Examples |
 |-------|---------|
-| R0 — Read-only | Discovery, evidence collection, SQL SELECT |
+| R0 — Read-only | Discovery and evidence collection from non-protected local sources; never PACS, county SQL, or protected county data |
 | R1 — Docs/registry | Markdown, evidence docs, WO register updates |
 | R2 — Local developer tooling | Read-only scripts, local bootstrap, dev-only examples |
 | R3 — CI/governance/tooling | Pipeline gates, hooks, policy config, branch hygiene |
@@ -191,4 +192,5 @@ If an item is unknown, perform bounded read-only source and live-state discovery
 | R5 — Production/security/protected data | Release, deployment, secrets, PACS, county SQL, county data |
 
 `/loop program` may continue through any class explicitly granted by the active authority record. It
-must stop before an ungranted risk, system, or action boundary; R4 and R5 are never inferred.
+must stop before an ungranted risk, system, file, or action boundary. PACS, county SQL, protected
+county data, R4, and R5 are never inferred, including for read-only work.
