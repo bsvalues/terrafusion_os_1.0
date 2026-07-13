@@ -1,7 +1,7 @@
 # Next Action Matrix
 
-**Version:** 1.0
-**Date:** 2026-07-01
+**Version:** 1.1
+**Date:** 2026-07-13
 **Authority:** WO-WOE-011
 **Classification:** Operator Doctrine — deterministic "what to do next"
 
@@ -21,40 +21,43 @@ Evaluate top-to-bottom; first matching row wins.
 
 | # | Condition | Action |
 |---|-----------|--------|
-| 1 | Active WO's next step crosses a stop wall (SW-01..SW-10) | **STOP** at that wall. Emit `AUTHORITY_WALL`/`CANONICAL_CONFLICT`. `OPERATOR_ACTION_REQUIRED` set. |
-| 2 | A gate failed and the failure is **outside** current WO scope | **STOP** — `FAILED_GATE` (SW-06). |
-| 3 | A gate failed **inside** current WO scope | **RECOVER** — fix within scope (`/loop recovery`); not a wall. |
-| 4 | Open PR is `BEHIND` main, auto-merge queued | `gh pr update-branch`; keep watching. |
-| 5 | Open PR has unresolved bot/review threads blocking merge | Resolve in-scope threads (`resolveReviewThread`); keep watching. |
-| 6 | Open PR gates pending | Wait, re-check; do not block on it — start next WO if independent. |
-| 7 | PR merged AND `/loop program` active AND next WO same-risk + unblocked + in-register | **EXECUTE** next WO. Do not ask. |
-| 8 | PR merged AND `/loop once` | **STOP** — name `NEXT_WO`, do not execute. |
-| 9 | Next WO is higher-risk than current | **STOP** — surface; request authorization for the higher risk class. |
-| 10 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
-| 11 | No unblocked WO remains AND loop is `/loop once`, `/loop evidence`, or `/loop discovery` | **STOP** — that mode's scope is complete; retain its existing stop semantics. Do **not** portfolio-reconcile. |
-| 12 | No unblocked WO remains (or next crosses a wall) in a **regular** program under `/loop program` (within-program scope) | **STOP** — surface the wall / queue-exhaustion. Do **not** auto-jump to another program. |
-| 13 | Active program is **portfolio-operator** AND its current lane walls or exhausts | **PORTFOLIO RECONCILE** — park the lane, select the next safe registered lane by Lane Priority (`AUTONOMOUS_CONTINUATION_GATE.md`); stop only at **ALL-LANES-PARKED**. |
+| 1 | Active program is **portfolio-operator** AND its current lane walls or exhausts | **PORTFOLIO RECONCILE** — park the lane, select the next authorized registered lane by Lane Priority (`AUTONOMOUS_CONTINUATION_GATE.md`); stop only at **ALL-LANES-PARKED**. |
+| 2 | Active WO's next step crosses an unresolved stop wall (SW-01..SW-10) in a regular program | **STOP** at that wall. Emit `AUTHORITY_WALL`/`CANONICAL_CONFLICT`. `OPERATOR_ACTION_REQUIRED` set. |
+| 3 | A gate failed and the failure is **outside** current WO scope | **STOP** — `FAILED_GATE` (SW-06). |
+| 4 | A gate failed **inside** current WO scope | **RECOVER** — fix within scope (`/loop recovery`); not a wall. |
+| 5 | Open PR is `BEHIND` main, auto-merge queued | `gh pr update-branch`; keep watching. |
+| 6 | Open PR has unresolved bot/review threads blocking merge | Resolve in-scope threads (`resolveReviewThread`); keep watching. |
+| 7 | Open PR gates pending | Wait, re-check; do not block on it — start next WO if independent. |
+| 8 | PR merged AND `/loop program` active AND next WO is unblocked, in-register, and inside recorded authority | **EXECUTE** next WO. Do not ask. |
+| 9 | PR merged AND `/loop once` | **STOP** — name `NEXT_WO`, do not execute. |
+| 10 | Next WO exceeds the current authority ceiling | **STOP** — request only the missing risk/system/action authority. A higher numeric risk already granted by the active record is not a new wall. |
+| 11 | Next WO not in register | **STOP** — do not invent. Propose adding it to the register (docs WO). |
+| 12 | No unblocked WO remains AND loop is `/loop once`, `/loop evidence`, or `/loop discovery` | **STOP** — that mode's scope is complete; retain its existing stop semantics. Do **not** portfolio-reconcile. |
+| 13 | No unblocked WO remains (or next crosses a wall) in a **regular** program under `/loop program` (within-program scope) | **STOP** — surface the wall / queue-exhaustion. Do **not** auto-jump to another program. |
 | 14 | None of the above | Continue the loop procedure. |
 
 Continuation / portfolio / stop scope is canonical in [CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md)
-(WO-BRAIN-008): row 12 = within-program STOP; row 13 = portfolio-operator-only cross-program advance.
+(WO-BRAIN-008, reconciled by WO-MAO-001): row 13 = within-program STOP; row 1 =
+portfolio-operator-only cross-program advance.
 
 ---
 
 ## Risk-Class Continuation Rule
 
-`/loop program` continues only to **equal-or-lower** risk. Risk classes (low → high):
+Risk classes use the canonical Work Order data model (low → high):
 
 ```
 R0  read-only discovery / evidence (no writes)
 R1  docs / registry / playbook authoring
-R2  scoped code change with tests, no runtime/behavior expansion
-R3  runtime behavior change (SW-09) — requires authorization
-R4  deploy / data mutation / secrets / go-live (SW-01..SW-04, SW-10) — always a wall
+R2  local developer tooling
+R3  CI / governance / hooks / policy tooling
+R4  runtime or application behavior
+R5  production / security / secrets / protected data / release / deployment
 ```
 
-A loop that starts at R1 may run R1 and R0 WOs freely. It **stops** before the first R3/R4 WO and
-surfaces it. R2 continues only if the WO explicitly authorizes scoped code (as WO-P8-MGMT-003 did).
+A loop continues only inside the risk ceiling and systems explicitly recorded by its Goal, Loop, and
+Work Orders. A numeric increase is allowed when that authority was already granted; otherwise it is a
+true wall. R4 and R5 are never entered by implication.
 
 ---
 

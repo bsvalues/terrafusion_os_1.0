@@ -30,14 +30,15 @@ Codex must use:
 - review threads,
 - remote checks,
 - local validation,
-- explicit owner decisions already granted in the current loop.
+- durable owner decisions linked by the active Goal/Loop/Work Order, including their scope, expiry,
+  and revocation state.
 
 ## Stop Conditions
 
 Stop instead of selecting next work when:
 
 - the next Work Order is not declared,
-- the next Work Order increases risk,
+- the next Work Order exceeds the recorded risk, system, file, or action authority,
 - scope expands,
 - validation is blocked,
 - merge authority is missing,

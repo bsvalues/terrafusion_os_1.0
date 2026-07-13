@@ -48,7 +48,7 @@ validation + evidence
   ↓
 PR / merge / stop gate
   ↓
-loop continues only if same-risk and no authority wall
+loop continues only inside recorded authority and across no unresolved authority wall
 ```
 
 ---

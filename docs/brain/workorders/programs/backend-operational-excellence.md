@@ -646,7 +646,7 @@ Codex may proceed from one Backend OE evidence/doc WO to the next only when:
 - Review threads are resolved.
 - No backend/runtime code changes are required.
 - No secrets, county data, PACS, live DB, or live county resources are touched.
-- Next WO is same or lower risk.
+- Next WO remains inside the recorded risk, system, file, and action authority.
 - Next WO is already defined in this playbook.
 
 Codex must stop for owner decision when:

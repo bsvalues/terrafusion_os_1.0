@@ -25,7 +25,7 @@ Prerequisite: an active `/goal` (program) is selected. See
 2. SELECT  first WO whose dependencies are satisfied and status != DONE.
 3. CLASSIFY
              - is it in-register?            (no → stop, do not invent)
-             - is it same-risk or lower?     (no → stop, surface)
+             - is it inside recorded authority? (no → stop, surface)
              - does any SW-01..SW-10 wall sit in its boundary? (yes → stop at that wall)
 4. EXECUTE the WO within its sovereignty boundary:
              - branch off origin/main (worktree; never mutate the shared checkout's git)
@@ -39,7 +39,7 @@ Prerequisite: an active `/goal` (program) is selected. See
              - wait for gates green → auto-merge fires
 7. CONTINUE
              - /loop once     → stop here, name NEXT_WO, do not execute it
-             - /loop program  → go to step 1 for the next same-risk WO
+             - /loop program  → go to step 1 for the next authorized WO
              - wall reached   → stop, emit AUTHORITY_WALL / CANONICAL_CONFLICT / FAILED_GATE
 8. REPORT  emit the result block (below).
 ```
@@ -51,7 +51,7 @@ Prerequisite: an active `/goal` (program) is selected. See
 | Mode | Executes WOs? | Commits/PRs? | Continues past first WO? | Stops at |
 |------|---------------|--------------|--------------------------|----------|
 | `/loop once` | 1 | yes | no | after 1 WO or a wall |
-| `/loop program` | many | yes | yes (same-risk) | first wall |
+| `/loop program` | many | yes | yes (inside recorded authority) | first unresolved wall |
 | `/loop merge-watch` | no new work | resolves PR blockers, merges | yes (after merges) | wall or empty PR queue |
 | `/loop discovery` | no (read-only) | no | yes | wall or discovery complete |
 | `/loop evidence` | no (docs only) | yes (evidence docs) | yes | wall or evidence complete |

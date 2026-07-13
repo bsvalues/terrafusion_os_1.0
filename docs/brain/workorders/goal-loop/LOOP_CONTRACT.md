@@ -18,7 +18,7 @@ Every `/loop` packet must define:
 - parent goal,
 - current Work Order selection rule,
 - next Work Order selection rule,
-- same-risk continuation rule,
+- recorded-authority continuation rule,
 - validation cadence,
 - evidence cadence,
 - PR/check/review monitoring rule,
@@ -45,13 +45,13 @@ The loop does not own:
 - permission to mutate blocked systems,
 - authority to merge unless the merge model explicitly grants it.
 
-## Same-Risk Continuation Rule
+## Recorded-Authority Continuation Rule
 
 Codex may continue automatically when all are true:
 
 - the current Work Order is complete or merged as required,
 - the next Work Order is declared in the current loop,
-- the next Work Order is same or lower risk,
+- the next Work Order's risk class, systems, files, and actions are inside the active authority record,
 - the next Work Order stays inside the authorized file surface,
 - validation passed or any failure is remediable within scope,
 - no protected system boundary appears,

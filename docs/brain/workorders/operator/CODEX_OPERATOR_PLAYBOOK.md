@@ -29,7 +29,7 @@ Codex owns the execution path from Work Order intake through merge-readiness rep
 9. Update branches from `origin/main` when routine branch-protection strictness requires it.
 10. Report merge readiness only when checks are green or acceptable, review threads are resolved, and
     scope is clean.
-11. Continue to the next same-risk Work Order when the active `/goal` plus `/loop` permits it.
+11. Continue to the next Work Order inside recorded authority when the active `/goal` plus `/loop` permits it.
 12. Stop only for true owner authority walls.
 
 ## Owner Authority Walls
@@ -38,12 +38,12 @@ Codex must stop when the next action requires:
 
 - merge authorization when no explicit merge authorization exists for the PR,
 - secrets, credentials, Key Vault, county data, PACS, county SQL, live DB, or production resources,
-- destructive operations,
+- destructive operations not covered by an exact approved recovery rule,
 - production deployment or county runtime activation,
 - schema migration creation or apply/update,
 - CI, branch protection, hook, release, or deployment behavior changes outside the active Work Order,
 - runtime/backend/frontend/tools-sync implementation outside the active scope,
-- force push or hook bypass,
+- force push or hook bypass not already covered by an explicit bounded authority rule,
 - review remediation outside authorized files,
 - conflicting canon or architectural decision.
 

@@ -6,7 +6,7 @@
 
 ## Principle
 
-No two agents may operate in the same mutable working tree. Each agent uses a dedicated git worktree tied to exactly one work order. The shared/main working tree (`C:\Users\bsval\terrafusion_os_1.0`) is reserved for human-controlled merge operations.
+No two agents may operate in the same mutable working tree. Each agent uses a dedicated git worktree tied to exactly one work order. The shared/main working tree (`C:\Users\bsval\terrafusion_os_1.0`) is reserved for human-controlled synchronization; authorized operator merges occur through the protected remote PR boundary.
 
 ## Rules (20)
 
@@ -26,7 +26,7 @@ No two agents may operate in the same mutable working tree. Each agent uses a de
 5. Worktrees live outside the main repo directory (e.g., `C:\Users\bsval\tf-<wo-id>`).
 6. No agent may create worktrees inside the main repo tree.
 7. Create worktrees from clean main: `git worktree add ../tf-<wo-id> -b <branch-name> origin/main`.
-8. Completed worktrees are removed after merge, with human approval.
+8. Completed worktrees are removed after merge under recorded cleanup authority.
 
 ### Forbidden Operations (without human approval)
 
@@ -36,13 +36,16 @@ No two agents may operate in the same mutable working tree. Each agent uses a de
 12. No broad stash (`git stash` without file-specific scope).
 13. No `git add -A` or `git add .` (use explicit file paths).
 14. No `git push --force` (agents do not force-push).
-15. No deleting branches, tags, worktrees, or stashes without human approval.
+15. No deleting branches, tags, worktrees, or stashes without explicit authority. A standing
+    current-WO repair rule is sufficient only for an exact failed worktree path and a branch proven to
+    have zero unique commits; tags, stashes, unrelated worktrees, and broad cleanup remain owner-only.
 
 ### PR Boundary
 
 16. PR is the sync boundary between agent work and main.
-17. Agents open draft PRs; humans promote to ready-for-review.
-18. Agents do not merge their own PRs unless explicitly told to.
+17. Agents may open draft or ready PRs when the active Work Order permits.
+18. Agents may merge only under recorded authority and the canonical merge conditions; otherwise the
+    owner merges.
 
 ### Stale Plan Doctrine
 

@@ -13,14 +13,14 @@
 
 Once a `/goal` is selected and a `/loop` mode is active, the operator runs the program playbook
 until it hits a real wall. It does **not** return to the human after every safe Work Order to ask
-"what next?". Asking after a same-risk, unblocked, in-register WO is a defect, not caution.
+"what next?". Asking after an authorized, unblocked, in-register WO is a defect, not caution.
 
 The operator:
 
 1. reads the [Program Playbook Register](PROGRAM_PLAYBOOK_REGISTER.md)
 2. selects the active `/goal` (program)
 3. runs `/loop` in the allowed mode
-4. executes same-risk unblocked WOs
+4. executes authorized unblocked WOs
 5. opens / monitors / merges PRs when allowed
 6. continues to the next legal WO
 7. stops **only** at a true authority wall
@@ -34,7 +34,7 @@ The operator proceeds to the next WO automatically when **every** condition is t
 
 - the next WO is a node in the [Program Playbook Register](PROGRAM_PLAYBOOK_REGISTER.md) (not invented)
 - it is in the **active program** (for `/loop program`)
-- its risk class is **equal to or lower** than the WO just completed
+- its risk class, systems, files, and actions are inside the active recorded authority
 - its dependencies are satisfied (prerequisite WOs done, prerequisite PRs merged)
 - **no** stop wall (SW-01..SW-10) sits in its sovereignty boundary
 - **no** failed gate outside scope blocks the chain
@@ -60,7 +60,7 @@ Reaching a wall is success. Emit the result block (see
 
 | Thought | Reality |
 |---------|---------|
-| "Let me check what the user wants next." | If the next WO is same-risk + unblocked + in-register, execute it. |
+| "Let me check what the user wants next." | If the next WO is authorized + unblocked + in-register, execute it. |
 | "That was one WO, I'll report and stop." | `/loop program` continues until a wall. `/loop once` stops; `program` does not. |
 | "This is basically a new dashboard." | Build nothing that already exists. Gaps are reachability/evidence, not construction. |
 | "I'll just deploy it since the fix is ready." | Deploy is SW-01. Produce the authorization packet; do not deploy. |

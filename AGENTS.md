@@ -16,12 +16,24 @@ when a human must approve.
 
 ### Authority hierarchy (higher wins on conflict)
 
+The canonical hierarchy and enforcement-drift rule are defined by
+`docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md`:
+
 1. **TerraFusion Constitution** — `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (TF-052)
-2. **Brain / Cortex** — OS-level queue, sequencing, work orders, risk, proof, review-diff, commit-plan
-3. **Domain knowledge packs** — `brain/packs/**`
-4. **Directory-local `AGENTS.md` files** — nearest-scope overrides
-5. **Existing implementation patterns**
-6. **Agent judgment**
+2. **Canonical Brain rules and ratified governance ADRs** — queue, sequencing, risk, proof, and authority semantics
+3. **Recorded owner authority** — active Goal, Loop, and Work Order grants, bounded by the higher layers
+4. **Operator and Goal/Loop doctrine** — execution and continuation procedure
+5. **Domain knowledge packs** — `brain/packs/**`
+6. **Branch/worktree policy and root `AGENTS.md`** — repository-wide defaults
+7. **Directory-local `AGENTS.md` files** — path-specific rules within the higher authority boundary
+8. **Program playbooks** — approved execution graphs within higher authority
+9. **Work Orders** — bounded packets; they carry owner authority only when linked to an active grant
+10. **Implementation patterns and agent judgment**
+
+Mechanical enforcement is not a prose authority tier, but it is an execution interlock. Agents never
+bypass branch protection, required checks, or policy configuration because prose claims an action is
+allowed. A doctrine/enforcement mismatch is a governance incident: the stricter effective control wins
+until an authorized reconciliation lands.
 
 ### Rules for agents
 
@@ -29,19 +41,28 @@ when a human must approve.
   `brain/packs/README.md` for the domain→path map), then read any nearer `AGENTS.md`.
 - **Preserve one-Brain governance.** Do **not** create a second brain or a suite-local queue.
 - **Do not create separate suite brains** or suite-local autonomous governance.
+- **One Brain does not mean one worker.** Dependency-cleared Work Orders may execute concurrently in
+  isolated worktrees when their path, contract, and environment reservations do not conflict.
 - Route work through Brain **work orders, review-diff, proof, and commit-plan**.
 - Respect each pack's **Forbidden Writes** and **Escalation Triggers**; never write across a
   write-lane boundary you do not own.
 
-### Human approval triggers (always stop and ask)
+### True authority walls (stop only when new authority is required)
 
-1. Constitutional decision (changing TF-052 / canon)
-2. Destructive operation (delete, redact, irreversible)
-3. Product behavior change
-4. Branch / merge strategy
-5. Production deployment authorization
-6. Conflicting canon (two sources disagree)
-7. Credentials / secrets
+A true authority wall is a presently unresolved boundary that requires new owner authority. Stop for:
+
+1. Constitutional decision (changing TF-052 or constitutional canon)
+2. Destructive or irreversible action not already covered by an exact approved recovery procedure
+3. Product behavior outside the active Work Order or not already explicitly authorized
+4. Branch/merge strategy conflict or missing merge authority; routine branch updates and authorized
+   merges are not new strategy decisions
+5. Production deployment or live county authorization
+6. Canon conflict that remains unresolved after applying ADR-EXEC-001 and bounded source inspection
+7. Credentials, secrets, protected security policy, PACS, county SQL, or county data
+
+Failed tests, review comments, routine merge-conflict remediation, approved worktree recovery,
+in-scope implementation choices, already-authorized product behavior, next-WO selection, and routine
+PR/check remediation are not authority walls.
 
 ## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021)
 
@@ -54,7 +75,8 @@ The shared/main working tree is for human-controlled sync only.
 - Before the first write, every agent runs and reports: `pwd`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git status --short`. If toplevel = main repo root and the agent was not explicitly assigned there, **STOP** and create a worktree.
 - If foreign staged or unstaged files are present, **STOP** and report.
 - No `git reset --hard` / `git clean` / force checkout / broad stash / `git add -A` without human approval.
-- PR is the sync boundary. Agents open draft PRs; humans merge.
+- PR is the sync boundary. Agents may open draft or ready PRs and may merge only when recorded merge
+  authority and all canonical merge conditions apply; otherwise the owner merges.
 - If a recovery plan's assumptions diverge from current repo state, the plan is stale — do not execute it.
 - If the shared checkout state is uncertain, **quarantine** it (do not clean/recover).
 

@@ -30,6 +30,10 @@ Every `/goal` packet must define:
 - continuation policy,
 - stop conditions.
 
+Reusable authority records must also name their effective point, expiry or terminal condition,
+revocation triggers, eligible PR or PR class, and evidence/rollback requirements. Recorded authority
+persists across sessions until it expires, completes, is revoked, or is superseded.
+
 ## Goal Responsibilities
 
 The goal owns:
@@ -58,7 +62,7 @@ When Codex selects or resumes a goal, it must report:
 - known blockers,
 - active stop walls,
 - allowed loop modes,
-- whether same-risk continuation is enabled.
+- whether continuation inside the recorded authority ceiling is enabled.
 
 ## Non-Claims
 

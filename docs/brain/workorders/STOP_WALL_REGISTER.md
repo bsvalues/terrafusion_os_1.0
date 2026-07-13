@@ -10,13 +10,14 @@
 
 ## Purpose
 
-A **stop wall** is an authority boundary the operator (`/loop`) must not cross without explicit
-operator authorization. **Reaching a stop wall is correct behavior, not a failure** — the operator
-surfaces the wall with evidence and waits. Everything that is *not* a stop wall and is same-risk +
-unblocked continues automatically (see [GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md)).
+A **stop wall** is a presently unresolved authority boundary that requires new owner authority.
+**Reaching a stop wall is correct behavior, not a failure** — the operator surfaces the wall with
+evidence and waits. Work already covered by a recorded authority grant is not a wall; authorized,
+unblocked work continues automatically (see
+[GOAL_LOOP_AUTONOMY_RULES.md](GOAL_LOOP_AUTONOMY_RULES.md)).
 
 **The human is the authority wall, not the dispatcher.** The operator does not ask "what next?" for
-same-risk unblocked work; it only stops here.
+authorized unblocked work; it only stops when new authority is required.
 
 ---
 
@@ -25,7 +26,7 @@ same-risk unblocked work; it only stops here.
 | Wall | Name | Trigger |
 |------|------|---------|
 | **SW-01** | Deployment / cloud resource / public reachability | Create/modify cloud resources, deploy, or make a surface publicly reachable |
-| **SW-02** | Data mutation / delete / cleanup / migration | Any write/update/delete/truncate/reload/migration beyond an explicitly authorized migration |
+| **SW-02** | Data mutation / delete / cleanup / migration | Any write/update/delete/truncate/reload/migration or destructive cleanup beyond an exact recorded authorization |
 | **SW-03** | Secrets / credentials | Read, write, rotate, or inject secrets, keys, JWT/HMAC signers, DB passwords, Key Vault |
 | **SW-04** | Production launch / county go-live / public release | Promote to production, enable a county, widen public release |
 | **SW-05** | Conflicting canon / unclear authority | Two authoritative docs contradict and cannot be resolved by reading them |
@@ -104,6 +105,12 @@ Reached → `WALL: SW-10`. Name the policy and the intended change; wait for aut
 - **Unresolved bot review threads blocking `required_conversation_resolution`** → resolve in-scope
   bot/review threads (GraphQL `resolveReviewThread`) and let auto-merge fire
 - Branch BEHIND main with auto-merge queued → `gh pr update-branch` and continue
+- Failed tests caused by the current WO → repair within scope and rerun
+- Routine merge conflicts resolvable without product or governance judgment → update and validate
+- Failed current-WO worktree recovery covered by an exact approved procedure → repair and continue
+- Implementation choices inside an authorized Work Order → choose, validate, and record
+- Product behavior explicitly authorized by the active Work Order → implement within scope
+- Next-WO selection from the active registered Goal/Loop → select and continue
 
 ---
 
