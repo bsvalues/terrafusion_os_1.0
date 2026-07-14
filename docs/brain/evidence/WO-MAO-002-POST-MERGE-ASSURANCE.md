@@ -43,6 +43,11 @@ zero unresolved review threads at merge, disjoint reservations, and no falsely r
 reservation claim. The #1280 reviewer additionally confirmed that the merge tree matched its exact
 pre-merge head.
 
+After both authorized merge slots were consumed, Codex recorded completion on issue #1276 and removed
+the paired operational repository variables together. That release ended the live pilot reservations
+while preserving issue #1276 as the durable owner-authority record. The checked-in policy returned to
+its inactive fail-closed posture for non-pilot work.
+
 ## Metrics
 
 | Measure | Result |
