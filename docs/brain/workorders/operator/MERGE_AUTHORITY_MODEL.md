@@ -34,9 +34,11 @@ Goal/Loop/Work Order. Every merge requires:
 
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. The first grant is
 limited to MAO-002's two exact pilot PRs and activates only after dispatch, reservation, exact PR,
-exact final head SHA, path scope, implementation operator, independent reviewer, and expiry fields
-are registered in `.governance/mao-002-pilot-merge-authority.json` and the required `governed-spine`
-pilot interlock passes.
+exact final head SHA, path scope, two implementation operators, independent reviewer, and expiry fields
+are registered in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable, its manifest binds
+to the checked-in inactive `.governance/mao-002-pilot-merge-authority.json` policy, and the required
+`governed-spine` pilot interlock passes. The external manifest is the only activation source; editing
+the checked-in policy cannot activate Mode B.
 
 ## Mode C: Auto-Merge Armed
 
@@ -70,9 +72,12 @@ operator merges stop until restoration is ratified.
 Restoration evidence must include the incident record, rollback PR/SHA, validation results, corrected
 scope and reservation evidence, required-check proof, and the owner restoration decision.
 
-For MAO-002, the machine interlock fails a registered pilot PR when suspension is active. Because the
-authority record contains exactly two PR slots and validates each current head against a declared
-final SHA, the grant cannot be reused by a third PR or a later review-fix SHA without re-registration.
+For MAO-002, the machine interlock fails a registered pilot PR when suspension is active. The
+checked-in policy recognizes MAO-002 branches/labels and fails them while no active external manifest
+exists. Because the external manifest contains exactly two PR slots and validates each current head
+against a declared final SHA, the grant cannot be reused by a third PR or a later review-fix SHA
+without updating the repository variable and rerunning the required check. Updating that variable
+does not change `main` or either pilot head, so strict up-to-date protection remains satisfiable.
 
 ## Post-Merge Verification
 

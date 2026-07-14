@@ -16,7 +16,7 @@ merge authority.
 ## Allowed files
 
 - `AGENTS.md`
-- `CANON_INDEX.md`
+- `docs/brain/workorders/CANON_INDEX.md`
 - `.governance/main.protection.json`
 - `.governance/owner-decisions.json`
 - `.governance/mao-002-pilot-merge-authority.json`
@@ -71,7 +71,8 @@ merge authority.
 - [ ] one canonical `R0` through `R5` vocabulary remains;
 - [ ] portfolio reconciliation is reachable in `NEXT_ACTION_MATRIX.md`;
 - [ ] operator merge is bounded, revocable, and not portfolio-wide;
-- [ ] operator merge remains inactive until the two MAO-002 PRs and their final SHAs are registered;
+- [ ] operator merge remains inactive until the owner-managed repository-variable manifest registers
+      the two MAO-002 PRs and their final SHAs without modifying `main` or either pilot branch;
 - [ ] `governed-spine` mechanically fails a registered pilot PR on suspension, SHA mismatch, or scope drift;
 - [ ] the branch-protection canon and drift verifier cover every invariant claimed by `AGENTS.md`;
 - [ ] machine scope review confirms all changed files are allowed; any unrelated global baseline
@@ -87,7 +88,7 @@ merge authority.
   "suite": "OS_CORE",
   "allowed_files": [
     "AGENTS.md",
-    "CANON_INDEX.md",
+    "docs/brain/workorders/CANON_INDEX.md",
     ".governance/main.protection.json",
     ".governance/owner-decisions.json",
     ".governance/mao-002-pilot-merge-authority.json",

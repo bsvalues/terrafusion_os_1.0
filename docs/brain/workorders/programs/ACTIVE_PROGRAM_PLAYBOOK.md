@@ -130,9 +130,11 @@ reviewer cannot be the implementation operator or William.
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** Mode B authority for the pilot is not
 portfolio-wide. It may attach only after the two exact PRs, final head SHAs, path scopes,
 implementation operators, independent reviewer, assurance evidence path, and expiry are registered
-in `.governance/mao-002-pilot-merge-authority.json`. The already-required `governed-spine` context
-fails a registered pilot PR on inactive/suspended/expired authority, SHA mismatch, identity conflict,
-or path drift. Any suspension trigger in the canonical merge model immediately revokes the grant.
+in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable and bound to the checked-in inactive
+policy hash. The already-required `governed-spine` context recognizes the pilot branch/label and fails
+on missing/inactive/suspended/expired authority, SHA or policy mismatch, identity conflict, or path
+drift. Any suspension trigger in the canonical merge model immediately revokes the grant. The
+external manifest avoids changing either the strict base or the exact pilot head during activation.
 
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 may instead use two disjoint path families in this repository.

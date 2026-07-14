@@ -19,8 +19,9 @@
 [`docs/brain/evidence/WO-MAO-000-proof.md`](../evidence/WO-MAO-000-proof.md). `WO-MAO-001` is the
 active governance-reconciliation Work Order and `WO-MAO-002` is the next dependency-cleared node
 after merge. Operator merge is ratified but inactive. The pilot is limited to two disjoint dispatch
-packets and two exact PRs registered by final SHA in the required governed-spine interlock; it does
-not claim to prove reservation enforcement.
+packets and two exact PRs registered by final SHA in the visible
+`MAO_002_PILOT_AUTHORITY_JSON` repository variable and checked by the required governed-spine
+interlock; it does not claim to prove reservation enforcement.
 
 ---
 

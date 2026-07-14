@@ -40,7 +40,7 @@
       ],
       "authorized_files": [
         "AGENTS.md",
-        "CANON_INDEX.md",
+        "docs/brain/workorders/CANON_INDEX.md",
         ".governance/main.protection.json",
         ".governance/owner-decisions.json",
         ".governance/mao-002-pilot-merge-authority.json",

@@ -79,15 +79,22 @@ MAO-001 ratifies the bounded, revocable Mode B model. It does not grant portfoli
 authority and remains Mode A itself. The first pilot grant becomes effective only after MAO-002
 records its two exact dispatch packets, reservations, PR identities, exact final head SHAs, allowed
 path sets, implementation operators, independent reviewer, and expiry in
-`.governance/mao-002-pilot-merge-authority.json`. The existing required `governed-spine` check must
-validate that record for each exact pilot PR.
+the visible GitHub Actions repository variable `MAO_002_PILOT_AUTHORITY_JSON`. That active manifest
+must bind to the SHA-256 of the checked-in inactive
+`.governance/mao-002-pilot-merge-authority.json` policy. The existing required `governed-spine` check
+must validate the manifest for each exact pilot PR. Changing the external manifest does not move
+`main` or either pilot branch, so the exact head can be registered and rechecked under strict
+up-to-date branch protection without a self-referential commit.
 
 Any suspension trigger immediately revokes the pilot grant. Restoration requires incident evidence,
 normal-PR containment or rollback, verified `main`, corrected controls, and explicit ratification.
 
-The machine record has exactly two slots. A registered pilot PR fails closed when authority is not
-active, suspension is active, the registered final SHA differs, scope exceeds its path list, reviewer
-independence is invalid, or the grant is expired. No third PR can inherit the grant.
+The machine manifest has exactly two slots. A pilot-labeled or `codex/mao-002-*` PR fails closed when
+the external manifest is absent, authority is not active, suspension is active, the registered final
+SHA differs, the policy hash differs, scope exceeds its path list, either implementation operator is
+missing, reviewer independence is invalid, or the grant is expired. The owner is immutably William,
+and the reviewer cannot be William or either implementation operator. No third PR can inherit the
+grant.
 
 ## Reservation Boundary
 

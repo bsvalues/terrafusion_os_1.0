@@ -65,10 +65,14 @@ authority, suite-boundary authority, or permission to modify runtime behavior.
 
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
 
-Activation occurs only in MAO-002 after the two exact pilot PRs, final head SHAs, scopes,
-implementation operators, independent reviewer, and expiry are registered in
-`.governance/mao-002-pilot-merge-authority.json`, and the existing required `governed-spine` check
-passes its pilot interlock. MAO-001 itself remains Mode A and requires owner merge authority.
+Activation occurs only in MAO-002 after the two exact pilot PRs, final head SHAs, scopes, two
+implementation operators, independent reviewer, and expiry are registered in the visible GitHub
+Actions repository variable `MAO_002_PILOT_AUTHORITY_JSON`. The manifest must bind to the SHA-256 of
+the checked-in inactive policy `.governance/mao-002-pilot-merge-authority.json`, and the existing
+required `governed-spine` check must pass its pilot interlock. Because the activation manifest is
+external to `main` and the pilot branches, exact final-SHA registration does not create a
+self-referential commit or move the strict branch-protection base. MAO-001 itself remains Mode A and
+requires owner merge authority.
 
 ## Authority Records
 

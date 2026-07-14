@@ -78,7 +78,10 @@ The canonical model defines:
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. A future MAO-002
 grant is limited to two exact pilot PRs and activates only after their dispatch packets, reservations,
 final head SHAs, scopes, implementation operators, independent reviewer, and expiry are registered in
-the machine authority file and the existing required `governed-spine` interlock passes.
+the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable, the manifest matches the checked-in
+inactive policy SHA-256, and the existing required `governed-spine` interlock passes. This external
+activation source changes neither `main` nor the pilot branch, eliminating the strict-protection
+self-reference that a checked-in exact-head record would create.
 
 Automatic suspension occurs if unauthorized scope, a reservation collision, a required-gate bypass,
 material scope expansion, protected-boundary access, or false evidence reaches `main`. Restoration
@@ -93,8 +96,9 @@ resolution, disabled force pushes, and disabled deletions. The drift verifier no
 shape and compares every field. The API does not expose a literal `require_pull_request` field; the
 verifier derives it from the presence of `required_pull_request_reviews` and records that mapping.
 
-The existing required `governed-spine` check now invokes the MAO-002 pilot interlock. Its authority
-record is inactive in MAO-001, so no operator merge is enabled by this PR.
+The existing required `governed-spine` check now invokes the MAO-002 pilot interlock. Its checked-in
+policy is inactive in MAO-001, and the external activation variable is not created by this PR, so no
+operator merge is enabled here.
 
 Two mechanical capabilities are intentionally not claimed:
 

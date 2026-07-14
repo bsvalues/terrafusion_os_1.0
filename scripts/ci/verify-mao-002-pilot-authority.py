@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import datetime as dt
 import fnmatch
+import hashlib
 import json
 import os
 import sys
@@ -23,6 +24,7 @@ AUTHORITY_PATH = Path(
         ".governance/mao-002-pilot-merge-authority.json",
     )
 )
+ACTIVATION_ENV = "TF_MAO_002_AUTHORITY_JSON"
 
 
 def fail(message: str) -> None:
@@ -41,6 +43,43 @@ def load_json(path: Path) -> dict:
     return value
 
 
+def policy_sha256(path: Path) -> str:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as exc:
+        fail(f"cannot hash {path}: {exc}")
+
+
+def load_effective_record() -> tuple[dict, str]:
+    policy = load_json(AUTHORITY_PATH)
+    validate_record(policy)
+    if policy.get("status") != "inactive":
+        fail("checked-in pilot policy must remain inactive")
+
+    raw = os.environ.get(ACTIVATION_ENV, "").strip()
+    if not raw:
+        return policy, f"checked-in inactive policy sha256={policy_sha256(AUTHORITY_PATH)}"
+    try:
+        record = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        fail(f"{ACTIVATION_ENV} is not valid JSON: {exc}")
+    if not isinstance(record, dict):
+        fail(f"{ACTIVATION_ENV} must contain a JSON object")
+    validate_record(record)
+    expected_policy_sha = policy_sha256(AUTHORITY_PATH)
+    if record.get("policy_sha256") != expected_policy_sha:
+        fail(
+            "activation policy_sha256 does not match the checked-in inactive policy: "
+            f"registered={record.get('policy_sha256')} live={expected_policy_sha}"
+        )
+    activation_sha = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    return (
+        record,
+        "GitHub Actions repository variable "
+        f"activation_sha256={activation_sha} policy_sha256={expected_policy_sha}",
+    )
+
+
 def validate_record(record: dict) -> None:
     if record.get("schema_version") != 1:
         fail("schema_version must be 1")
@@ -50,6 +89,20 @@ def validate_record(record: dict) -> None:
         fail("work_order must be WO-MAO-002")
     if record.get("merge_mode") != "B":
         fail("merge_mode must be B")
+    if record.get("activation_source") != "github-actions-repository-variable":
+        fail("activation_source must be github-actions-repository-variable")
+    if record.get("activation_variable") != "MAO_002_PILOT_AUTHORITY_JSON":
+        fail("activation_variable must be MAO_002_PILOT_AUTHORITY_JSON")
+    if record.get("pilot_label") != "mao-002-pilot":
+        fail("pilot_label must remain mao-002-pilot")
+    if record.get("pilot_branch_glob") != "codex/mao-002-*":
+        fail("pilot_branch_glob must remain codex/mao-002-*")
+    if record.get("owner") != "William":
+        fail("owner must remain William")
+    if record.get("required_implementation_operator_count") != 2:
+        fail("required_implementation_operator_count must remain exactly 2")
+    if record.get("disallowed_reviewers") != ["William"]:
+        fail("disallowed_reviewers must remain exactly [William]")
     if record.get("status") not in {"inactive", "active", "suspended", "expired"}:
         fail("status must be inactive, active, suspended, or expired")
     if record.get("max_merged_prs") != 2:
@@ -64,7 +117,7 @@ def validate_record(record: dict) -> None:
     }:
         fail("pilot slots must be lane-a and lane-b")
 
-    if record.get("status") != "active":
+    if record.get("status") == "inactive":
         return
 
     numbers = []
@@ -87,15 +140,21 @@ def validate_record(record: dict) -> None:
         fail("active pilot PR numbers must be unique")
 
     reviewer = record.get("independent_reviewer")
-    owner = record.get("owner")
     operators = record.get("implementation_operators")
     if not isinstance(reviewer, str) or not reviewer.strip():
         fail("active authority requires a named independent_reviewer")
-    if not isinstance(operators, list) or not all(
-        isinstance(operator, str) and operator for operator in operators
+    required_operator_count = record["required_implementation_operator_count"]
+    if (
+        not isinstance(operators, list)
+        or len(operators) != required_operator_count
+        or not all(isinstance(operator, str) and operator.strip() for operator in operators)
+        or len({operator.casefold() for operator in operators}) != required_operator_count
     ):
-        fail("implementation_operators must be a list of named identities")
-    disallowed_reviewers = {str(owner).casefold(), *(op.casefold() for op in operators)}
+        fail(f"implementation_operators must contain exactly {required_operator_count} unique identities")
+    disallowed_reviewers = {
+        *(identity.casefold() for identity in record["disallowed_reviewers"]),
+        *(op.casefold() for op in operators),
+    }
     if reviewer.casefold() in disallowed_reviewers:
         fail("independent_reviewer must differ from owner and implementation operators")
     if not record.get("post_merge_assurance_evidence"):
@@ -111,8 +170,10 @@ def validate_record(record: dict) -> None:
     now = dt.datetime.now(dt.timezone.utc)
     if expiration.tzinfo is None:
         expiration = expiration.replace(tzinfo=dt.timezone.utc)
-    if expiration <= now:
+    if record.get("status") == "active" and expiration <= now:
         fail("pilot authority is expired")
+    if record.get("status") == "expired" and expiration > now:
+        fail("expired authority must have an expires_at value in the past")
 
 
 def changed_files(repo: str, pr_number: int) -> list[str]:
@@ -154,26 +215,42 @@ def changed_files(repo: str, pr_number: int) -> list[str]:
 
 
 def main() -> None:
-    record = load_json(AUTHORITY_PATH)
-    validate_record(record)
+    record, source = load_effective_record()
 
     pr_text = os.environ.get("TF_PR_NUMBER", "").strip()
     head_sha = os.environ.get("TF_PR_HEAD_SHA", "").strip()
+    head_ref = os.environ.get("TF_PR_HEAD_REF", "").strip()
     repo = os.environ.get("TF_REPO", "").strip()
     if not pr_text:
-        print("MAO-002 pilot authority: PASS - non-PR event")
+        print(f"MAO-002 pilot authority: PASS - non-PR event ({source})")
         return
     try:
         pr_number = int(pr_text)
     except ValueError:
         fail("TF_PR_NUMBER must be an integer")
 
+    labels_raw = os.environ.get("TF_PR_LABELS_JSON", "[]")
+    try:
+        labels = json.loads(labels_raw)
+    except json.JSONDecodeError as exc:
+        fail(f"TF_PR_LABELS_JSON is not valid JSON: {exc}")
+    if not isinstance(labels, list) or not all(isinstance(label, str) for label in labels):
+        fail("TF_PR_LABELS_JSON must contain a JSON string array")
+    is_pilot_candidate = record["pilot_label"] in labels or fnmatch.fnmatchcase(
+        head_ref, record["pilot_branch_glob"]
+    )
+
     slot = next(
         (item for item in record["pilot_prs"] if item.get("number") == pr_number),
         None,
     )
     if slot is None:
-        if record.get("status") in {"active", "suspended"}:
+        if is_pilot_candidate:
+            fail(
+                f"pilot candidate PR #{pr_number} ({head_ref or 'no head ref'}) is not registered "
+                f"in an active exact-SHA manifest"
+            )
+        if record.get("status") in {"active", "suspended", "expired"}:
             files = changed_files(repo, pr_number)
             pilot_patterns = [
                 pattern
@@ -190,9 +267,14 @@ def main() -> None:
                     f"unregistered PR #{pr_number} overlaps active pilot scope: "
                     + ", ".join(sorted(overlap))
                 )
-        print(f"MAO-002 pilot authority: PASS - PR #{pr_number} is not a registered pilot PR")
+        print(
+            f"MAO-002 pilot authority: PASS - PR #{pr_number} is not a registered pilot PR "
+            f"({source})"
+        )
         return
 
+    if not is_pilot_candidate:
+        fail(f"registered pilot PR #{pr_number} lacks the required pilot label or branch identity")
     if record.get("status") != "active":
         fail(f"registered pilot PR #{pr_number} has authority status {record.get('status')}")
     if (record.get("suspension") or {}).get("active"):
@@ -220,7 +302,7 @@ def main() -> None:
 
     print(
         f"MAO-002 pilot authority: PASS - PR #{pr_number} head {head_sha} "
-        f"matches registered scope ({len(files)} files)"
+        f"matches registered scope ({len(files)} files; {source})"
     )
 
 

@@ -2,7 +2,8 @@
 
 > **PATH CANON NOTE**
 > Exact repository/path identity and controlling-document membership are recorded in
-> `CANON_INDEX.md`. A repository name or authoritative-sounding document is not sufficient by itself.
+> `docs/brain/workorders/CANON_INDEX.md`. A repository name or authoritative-sounding document is not
+> sufficient by itself.
 
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.
