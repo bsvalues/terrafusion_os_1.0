@@ -8,9 +8,9 @@
 
 | Field | Observed value |
 |-------|----------------|
-| Worktree | `C:\Users\bsval\.codex-worktrees\mao-002-r2-mutable-lane-b-proof` |
+| Worktree | `<CODEX_WORKTREE_ROOT>/mao-002-r2-mutable-lane-b-proof` |
 | Branch | `codex/mao-002-r2-mutable-lane-b-proof` |
-| Git toplevel | `C:/Users/bsval/.codex-worktrees/mao-002-r2-mutable-lane-b-proof` |
+| Git toplevel | `<CODEX_WORKTREE_ROOT>/mao-002-r2-mutable-lane-b-proof` |
 | `HEAD` | `9986f5b4e4ffea1d10e3c9915745c0f280612639` |
 | Local `origin/main` | `9986f5b4e4ffea1d10e3c9915745c0f280612639` |
 | Initial status | Clean |
@@ -25,7 +25,7 @@ R2's exclusive write reservation is exactly:
 - `docs/brain/evidence/WO-MAO-002-R2-MUTABLE-LANE-B-PROOF.md`
 
 R1 was concurrently assigned its own isolated lane at
-`C:\Users\bsval\.codex-worktrees\mao-002-r1-hook-runtime-repair` on branch
+`<CODEX_WORKTREE_ROOT>/mao-002-r1-hook-runtime-repair` on branch
 `codex/mao-002-r1-hook-runtime-repair`, also based at
 `9986f5b4e4ffea1d10e3c9915745c0f280612639`. During R2 execution, Git's worktree registry contained
 both R1 and R2 worktrees. R2 did not write in R1's worktree, inspect or modify R1's reserved artifact,
@@ -47,6 +47,13 @@ The independent read-only agents recorded for this bounded proof are:
 Hume, Carson, Euler, R1, and R2 form the five-agent native worker-plane evidence set. R1 and R2
 complete that proof only after both isolated mutable-lane files validate and the root operator
 collects both results. This R2 artifact alone is not completion evidence for the full worker plane.
+
+Durable provenance:
+
+- [read-only child result record](WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md)
+- [R1 hook-runtime child result](WO-MAO-002-R1-HOOK-RUNTIME-REPAIR.md)
+- [R2 mutable-lane child result](WO-MAO-002-R2-MUTABLE-LANE-B-PROOF.md)
+- [root-operator collection and handoff](WO-MAO-002-WORKER-PLANE-REPAIR.md)
 
 ## Non-Claims And Pending Work
 

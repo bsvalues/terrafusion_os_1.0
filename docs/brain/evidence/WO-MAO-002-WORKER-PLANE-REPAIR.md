@@ -8,17 +8,22 @@
 
 ## Native Worker Evidence
 
-| Agent | Native ID | Mode | Result |
+| Agent | Native ID | Mode | Result and evidence |
 | --- | --- | --- | --- |
-| Hume | `019f6186-96fb-7ae0-ab49-bd0b3c4a136e` | Independent read-only | Completed |
-| Carson | `019f6186-ad96-7a40-ba14-5d820ab8bb1c` | Independent read-only | Completed |
-| Euler | `019f619f-4192-7a13-aaf8-a36688b24425` | Independent read-only post-repair verifier | PASS |
-| R1 / Nietzsche | `019f61a9-060c-7af3-9289-c99dd7dd48c1` | Isolated mutable lane | PASS |
-| R2 / Ramanujan | `019f61a9-2dc0-74a1-b2ac-d84970992161` | Isolated mutable lane | PASS |
+| Hume | `019f6186-96fb-7ae0-ab49-bd0b3c4a136e` | Independent read-only | [Completed](WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md#hume---tracked-repository-hook-audit) |
+| Carson | `019f6186-ad96-7a40-ba14-5d820ab8bb1c` | Independent read-only | [Completed](WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md#carson---user-global-configuration-audit) |
+| Euler | `019f619f-4192-7a13-aaf8-a36688b24425` | Independent read-only post-repair verifier | [PASS](WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md#euler---post-repair-read-only-verification) |
+| R1 / Nietzsche | `019f61a9-060c-7af3-9289-c99dd7dd48c1` | Isolated mutable lane | [PASS](WO-MAO-002-R1-HOOK-RUNTIME-REPAIR.md) |
+| R2 / Ramanujan | `019f61a9-2dc0-74a1-b2ac-d84970992161` | Isolated mutable lane | [PASS](WO-MAO-002-R2-MUTABLE-LANE-B-PROOF.md) |
 
 R1 and R2 ran concurrently from separate clean worktrees and branches at the same base. Their write
 reservations were single-file, disjoint, and under `docs/brain/evidence/`. Neither worker wrote in
 the dirty shared checkout or the other worker's worktree.
+
+The root operator collected the five native results at `2026-07-14T18:02:40Z`. Original completion
+timestamps for Hume, Carson, and Euler remain `UNKNOWN` because the native completion notifications
+did not expose timestamps; the [durable read-only result record](WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md)
+preserves that limitation rather than inferring history.
 
 ## Hook Runtime Result
 

@@ -24,11 +24,13 @@ The pre-pilot repair prerequisite is complete:
 
 - [R1 hook runtime repair](../../evidence/WO-MAO-002-R1-HOOK-RUNTIME-REPAIR.md)
 - [R2 isolated mutable lane proof](../../evidence/WO-MAO-002-R2-MUTABLE-LANE-B-PROOF.md)
+- [read-only child result record](../../evidence/WO-MAO-002-R0-READ-ONLY-CHILD-RESULTS.md)
 - [worker-plane repair rollup](../../evidence/WO-MAO-002-WORKER-PLANE-REPAIR.md)
 
-Five native agents completed bounded proof: three independent read-only agents and two concurrent
-mutable agents in separate clean worktrees with disjoint single-file reservations. This proof clears
-the worker-plane prerequisite but is not counted as either MAO-002 pilot PR.
+The linked child records and root collection rollup establish five native bounded completions: three
+independent read-only agents and two concurrent mutable agents in separate clean worktrees with
+disjoint single-file reservations. This proof clears the worker-plane prerequisite but is not counted
+as either MAO-002 pilot PR.
 
 ## Objective
 

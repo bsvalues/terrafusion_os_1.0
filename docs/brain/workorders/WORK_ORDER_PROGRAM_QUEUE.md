@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-13
-**Authority:** WO-MAO-001A
+**Date:** 2026-07-14
+**Authority:** WO-MAO-002
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,11 +15,10 @@
 
 `governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
 
-`WO-MAO-000` and `WO-MAO-001` are complete. `WO-MAO-001A` is the active correction before pilot
-launch. Operator merge is ratified but inactive. MAO-001A separates the stable one-time owner envelope
-in `MAO_002_PILOT_BOOTSTRAP_JSON` from Codex-maintained PR, SHA, path, reservation, and assurance
-state in `MAO_002_PILOT_EXECUTION_JSON`. `WO-MAO-002` is next only after this correction merges and
-the owner grants the bootstrap envelope once; it does not claim to prove full reservation enforcement.
+`WO-MAO-000`, `WO-MAO-001`, and `WO-MAO-001A` are complete. Issue #1276 grants the one-time
+MAO-002 bootstrap envelope, and the worker-plane repair evidence satisfies issue #1277's pre-pilot
+prerequisite. `WO-MAO-002` is active. Codex maintains PR, SHA, path, reservation, and assurance state
+in `MAO_002_PILOT_EXECUTION_JSON`; the pilot does not claim full reservation enforcement.
 
 ---
 
@@ -30,8 +29,8 @@ the owner grants the bootstrap envelope once; it does not claim to prove full re
 |----|-------|-------|
 | WO-MAO-000 Doctrine Conflict Audit | DONE | Full read-only contradiction matrix and historical denominator persisted in governed evidence |
 | WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification | DONE | PR #1273 merged at `b936904b76a1593d12e524434e94872f2e9a78fe` |
-| **WO-MAO-001A Separate Owner Bootstrap Authority from Operator Execution State** | **ACTIVE** | Mode A governance correction; pilot must not launch under the combined variable contract |
-| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | One owner envelope; Codex-maintained exact PR/SHA/scope/reservation state; independent assurance; required governed-spine interlock |
+| WO-MAO-001A Separate Owner Bootstrap Authority from Operator Execution State | DONE | PR #1274 merged; split owner/bootstrap and operator/execution contract is canonical |
+| **WO-MAO-002 Minimal Two-Lane Pilot** | **ACTIVE** | Issue #1276 owner envelope; Codex-maintained exact PR/SHA/scope/reservation state; independent assurance; required governed-spine interlock |
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | QUEUED | Must reject an intentional overlapping reservation |
 | WO-MAO-004 Executable Graph / Parallel Wave Planner | QUEUED | Dependency and conflict-aware dispatch waves |
 | WO-MAO-005 Evidence-Informed Agent Playbooks | QUEUED | Rules must cite pilot/enforcement evidence |

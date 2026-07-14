@@ -10,9 +10,9 @@
 
 | Field | Observed value |
 | --- | --- |
-| Worktree | `C:\Users\bsval\.codex-worktrees\mao-002-r1-hook-runtime-repair` |
+| Worktree | `<CODEX_WORKTREE_ROOT>/mao-002-r1-hook-runtime-repair` |
 | Branch | `codex/mao-002-r1-hook-runtime-repair` |
-| Repository root | `C:/Users/bsval/.codex-worktrees/mao-002-r1-hook-runtime-repair` |
+| Repository root | `<CODEX_WORKTREE_ROOT>/mao-002-r1-hook-runtime-repair` |
 | `HEAD` | `9986f5b4e4ffea1d10e3c9915745c0f280612639` |
 | `origin/main` | `9986f5b4e4ffea1d10e3c9915745c0f280612639` |
 | Initial status | Clean; `git status --short` returned no entries |
@@ -23,13 +23,27 @@ repository write. This worker did not operate in the shared checkout.
 ## Repair State Observed
 
 The repair itself occurred before this evidence lane. R1 made no user-global configuration or plugin
-cache changes. Read-only inspection found:
+cache changes.
 
-1. `C:\Users\bsval\.codex\config.toml` sets
+Before repair, issue #1277 recorded ordinary tool calls failing with
+`PreToolUse hook returned unsupported permissionDecision:allow` and nonzero `PreToolUse`,
+`PostToolUse`, and `Stop` hook exits. Source inspection identified
+`<CODEX_HOME>/plugins/cache/claude-plugins-official/agentforce-adlc/0.9.0/shared/hooks/scripts/guardrails.py`
+as the producer: its `PreToolUse` responses emitted the unsupported
+`hookSpecificOutput.permissionDecision` values. The incompatible Agentforce plugin was quarantined
+by setting its existing plugin registration to `enabled = false`; its guardrail source was not
+rewritten or silently bypassed. Ralph Loop, Security Guidance, and Semgrep remained enabled, and
+their Windows command resolution was corrected with explicit Git Bash `commandWindows` entries.
+The corresponding trusted fingerprints were recalculated for the selected Windows handlers, so
+Codex continued to enforce trust rather than accepting untrusted hook substitutions.
+
+Post-repair read-only inspection found:
+
+1. `<CODEX_HOME>/config.toml` sets
    `[plugins."agentforce-adlc@claude-plugins-official"]` to `enabled = false`.
 2. The Ralph Loop `1.0.0`, Security Guidance `2.0.6`, and Semgrep `2.1.2` hook manifests each contain
    explicit `commandWindows` commands that invoke
-   `C:\Program Files\Git\bin\bash.exe` rather than relying on Windows command resolution.
+   `<GIT_FOR_WINDOWS>/bin/bash.exe` rather than relying on Windows command resolution.
 3. The trusted hook hashes in `config.toml` match the `currentHash` values returned by the installed
    Codex app-server for every discovered synchronous Ralph, Security Guidance, and Semgrep hook.
 4. Agentforce was absent from the app-server hook inventory for this worktree.
@@ -38,9 +52,9 @@ The repaired manifest paths are:
 
 | Plugin | Manifest |
 | --- | --- |
-| Ralph Loop | `C:\Users\bsval\.codex\plugins\cache\claude-plugins-official\ralph-loop\1.0.0\hooks\hooks.json` |
-| Security Guidance | `C:\Users\bsval\.codex\plugins\cache\claude-plugins-official\security-guidance\2.0.6\hooks\hooks.json` |
-| Semgrep | `C:\Users\bsval\.codex\plugins\cache\claude-plugins-official\semgrep\2.1.2\hooks\hooks.json` |
+| Ralph Loop | `<CODEX_HOME>/plugins/cache/claude-plugins-official/ralph-loop/1.0.0/hooks/hooks.json` |
+| Security Guidance | `<CODEX_HOME>/plugins/cache/claude-plugins-official/security-guidance/2.0.6/hooks/hooks.json` |
+| Semgrep | `<CODEX_HOME>/plugins/cache/claude-plugins-official/semgrep/2.1.2/hooks/hooks.json` |
 
 ## Codex Discovery And Fingerprints
 
@@ -88,7 +102,7 @@ worktree:
 | Hook | Safety condition | Result |
 | --- | --- | --- |
 | Ralph Stop | `.claude/ralph-loop.local.md` was absent, so the hook had no active loop state to mutate | Exit `0` |
-| Security Guidance PostToolUse | Benign Bash payload with `SECURITY_GUIDANCE_DISABLE=1`; exercised Git Bash, the Python selector shim, and the Python hook's disabled path | Exit `0`; emitted skipped metrics |
+| Security Guidance PostToolUse | Transport-smoke only: benign payload with `SECURITY_GUIDANCE_DISABLE=1` exercised Git Bash, the Python selector shim, and the disabled path | Exit `0`; emitted skipped metrics; enabled-hook semantics not claimed |
 | Semgrep PreToolUse | Empty JSON payload through Git Bash and the Windows hook binary | Exit `0`; emitted `{}` |
 
 `git status --short` remained empty after these direct checks.
