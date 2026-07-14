@@ -32,6 +32,10 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+def normalize_identity(value: str) -> str:
+    return value.strip().casefold()
+
+
 def load_json(path: Path) -> dict:
     try:
         with path.open("r", encoding="utf-8") as handle:
@@ -105,6 +109,18 @@ def validate_record(record: dict) -> None:
         fail("disallowed_reviewers must remain exactly [William]")
     if record.get("status") not in {"inactive", "active", "suspended", "expired"}:
         fail("status must be inactive, active, suspended, or expired")
+    suspension = record.get("suspension")
+    if not isinstance(suspension, dict) or not isinstance(suspension.get("active"), bool):
+        fail("suspension must be an object with a boolean active field")
+    suspension_reason = suspension.get("reason")
+    if suspension_reason is not None and (
+        not isinstance(suspension_reason, str) or not suspension_reason.strip()
+    ):
+        fail("suspension.reason must be null or a non-empty string")
+    if suspension["active"] and suspension_reason is None:
+        fail("active suspension requires a reason")
+    if record.get("status") == "suspended" and not suspension["active"]:
+        fail("suspended authority requires suspension.active=true")
     if record.get("max_merged_prs") != 2:
         fail("max_merged_prs must remain exactly 2")
 
@@ -144,18 +160,24 @@ def validate_record(record: dict) -> None:
     if not isinstance(reviewer, str) or not reviewer.strip():
         fail("active authority requires a named independent_reviewer")
     required_operator_count = record["required_implementation_operator_count"]
+    normalized_operators = (
+        [normalize_identity(operator) for operator in operators]
+        if isinstance(operators, list)
+        and all(isinstance(operator, str) for operator in operators)
+        else []
+    )
     if (
         not isinstance(operators, list)
         or len(operators) != required_operator_count
         or not all(isinstance(operator, str) and operator.strip() for operator in operators)
-        or len({operator.casefold() for operator in operators}) != required_operator_count
+        or len(set(normalized_operators)) != required_operator_count
     ):
         fail(f"implementation_operators must contain exactly {required_operator_count} unique identities")
     disallowed_reviewers = {
-        *(identity.casefold() for identity in record["disallowed_reviewers"]),
-        *(op.casefold() for op in operators),
+        *(normalize_identity(identity) for identity in record["disallowed_reviewers"]),
+        *normalized_operators,
     }
-    if reviewer.casefold() in disallowed_reviewers:
+    if normalize_identity(reviewer) in disallowed_reviewers:
         fail("independent_reviewer must differ from owner and implementation operators")
     if not record.get("post_merge_assurance_evidence"):
         fail("active authority requires a post_merge_assurance_evidence path")
@@ -176,13 +198,30 @@ def validate_record(record: dict) -> None:
         fail("expired authority must have an expires_at value in the past")
 
 
+def extract_changed_paths(items: list, source: str) -> list[str]:
+    paths: list[str] = []
+    for item in items:
+        if isinstance(item, str):
+            paths.append(item)
+            continue
+        if not isinstance(item, dict) or not isinstance(item.get("filename"), str):
+            fail(f"{source} must contain path strings or GitHub file-change objects")
+        paths.append(item["filename"])
+        previous = item.get("previous_filename")
+        if previous is not None:
+            if not isinstance(previous, str) or not previous:
+                fail(f"{source} previous_filename values must be non-empty strings")
+            paths.append(previous)
+    return list(dict.fromkeys(paths))
+
+
 def changed_files(repo: str, pr_number: int) -> list[str]:
     fixture = os.environ.get("TF_MAO_002_CHANGED_FILES_JSON")
     if fixture is not None:
         value = json.loads(fixture)
-        if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
-            fail("TF_MAO_002_CHANGED_FILES_JSON must be a JSON string array")
-        return value
+        if not isinstance(value, list):
+            fail("TF_MAO_002_CHANGED_FILES_JSON must be a JSON array")
+        return extract_changed_paths(value, "TF_MAO_002_CHANGED_FILES_JSON")
 
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -207,7 +246,7 @@ def changed_files(repo: str, pr_number: int) -> list[str]:
             fail(f"cannot inspect PR #{pr_number} files: {exc}")
         if not isinstance(batch, list):
             fail(f"unexpected GitHub files response for PR #{pr_number}")
-        files.extend(item.get("filename") for item in batch if item.get("filename"))
+        files.extend(extract_changed_paths(batch, f"GitHub files response for PR #{pr_number}"))
         if len(batch) < 100:
             break
         page += 1
@@ -277,10 +316,10 @@ def main() -> None:
         fail(f"registered pilot PR #{pr_number} lacks the required pilot label or branch identity")
     if record.get("status") != "active":
         fail(f"registered pilot PR #{pr_number} has authority status {record.get('status')}")
-    if (record.get("suspension") or {}).get("active"):
+    if record["suspension"]["active"]:
         fail(
             f"registered pilot authority is suspended: "
-            f"{(record.get('suspension') or {}).get('reason') or 'no reason recorded'}"
+            f"{record['suspension']['reason']}"
         )
     if repo != slot.get("repository"):
         fail(f"repository mismatch for PR #{pr_number}: registered={slot.get('repository')} live={repo}")

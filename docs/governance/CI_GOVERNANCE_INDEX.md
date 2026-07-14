@@ -66,8 +66,10 @@ For a registered pilot PR, the required check fails closed on:
 - activation-policy SHA mismatch;
 - final-SHA mismatch after a review fix or branch update;
 - repository mismatch;
-- scope outside the registered path set;
-- missing implementation operators or a reviewer who is William or either operator;
+- scope outside the registered path set, including either side of a renamed path;
+- missing or malformed suspension state;
+- missing implementation operators, duplicate normalized operator identities, or a normalized reviewer
+  identity matching William or either operator;
 - an authority record with anything other than two unique PR slots.
 
 The exact two-slot manifest and expiry prevent grant reuse. Review-fix or branch-update SHAs require

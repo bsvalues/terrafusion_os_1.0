@@ -98,7 +98,10 @@ verifier derives it from the presence of `required_pull_request_reviews` and rec
 
 The existing required `governed-spine` check now invokes the MAO-002 pilot interlock. Its checked-in
 policy is inactive in MAO-001, and the external activation variable is not created by this PR, so no
-operator merge is enabled here.
+operator merge is enabled here. Identity comparisons normalize surrounding whitespace and case before
+enforcing operator uniqueness and reviewer independence. The suspension object and its boolean state
+are mandatory. Scope checks inspect both `filename` and `previous_filename`, so renames cannot move a
+path into or out of the pilot reservation without evaluation.
 
 Two mechanical capabilities are intentionally not claimed:
 
@@ -128,6 +131,8 @@ These are capability dependencies, not unresolved contradictions in the amended 
 | `node docs/brain/workorders/tools/wo-query.mjs --json` | PASS; JSON parsed |
 | `corepack pnpm run type-check` | PASS after governed frozen bootstrap |
 | `node --test os-platform/core/tests/phase83-tools.test.mjs` | PASS; 56 tests |
+| `python scripts/ci/__tests__/mao-002-pilot-authority.test.py` | PASS; 18 fail-closed cases |
+| `node scripts/repo-shape-guard.mjs` | PASS; 85 visible / 85 allowlisted root entries |
 | Frozen bootstrap invariants | PASS; package hash, lock hash, and tracked status unchanged; lifecycle scripts suppressed |
 | `corepack pnpm brain review-diff --workorder WO-MAO-001` | Scope PASS: all changed files are allowed. Overall command remains BLOCKED by the pre-existing global write-lane validator finding seven unchanged `treasury` suite entries. |
 

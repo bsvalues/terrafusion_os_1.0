@@ -93,8 +93,9 @@ The machine manifest has exactly two slots. A pilot-labeled or `codex/mao-002-*`
 the external manifest is absent, authority is not active, suspension is active, the registered final
 SHA differs, the policy hash differs, scope exceeds its path list, either implementation operator is
 missing, reviewer independence is invalid, or the grant is expired. The owner is immutably William,
-and the reviewer cannot be William or either implementation operator. No third PR can inherit the
-grant.
+and normalized identity comparison prevents surrounding whitespace or case from making William or an
+implementation operator appear independent. Suspension is a required typed manifest field. Scope
+evaluation includes both the destination and source path of a rename. No third PR can inherit the grant.
 
 ## Reservation Boundary
 

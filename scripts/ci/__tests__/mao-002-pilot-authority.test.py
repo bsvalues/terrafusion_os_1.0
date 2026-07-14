@@ -171,6 +171,27 @@ class PilotAuthorityTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("exactly 2 unique identities", result.stdout)
 
+    def test_operator_identity_whitespace_cannot_fake_uniqueness(self):
+        record = active_record()
+        record["implementation_operators"] = ["codex-lane-a", " codex-lane-a "]
+        result = self.run_gate(record)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("exactly 2 unique identities", result.stdout)
+
+    def test_reviewer_identity_whitespace_cannot_bypass_owner_exclusion(self):
+        record = active_record()
+        record["independent_reviewer"] = " William "
+        result = self.run_gate(record)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("independent_reviewer", result.stdout)
+
+    def test_suspension_object_is_required(self):
+        record = active_record()
+        del record["suspension"]
+        result = self.run_gate(record)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("suspension must be an object", result.stdout)
+
     def test_activation_must_bind_to_checked_in_policy(self):
         record = active_record()
         record["policy_sha256"] = "0" * 64
@@ -182,6 +203,36 @@ class PilotAuthorityTest(unittest.TestCase):
         result = self.run_gate(active_record(), pr=3000, head_ref="codex/unrelated")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("overlaps active pilot scope", result.stdout)
+
+    def test_registered_pr_rename_source_must_be_in_scope(self):
+        result = self.run_gate(
+            active_record(),
+            files=[
+                {
+                    "filename": "docs/pilot-a/result.md",
+                    "previous_filename": "backend/Program.cs",
+                }
+            ],
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("scope drift", result.stdout)
+        self.assertIn("backend/Program.cs", result.stdout)
+
+    def test_unregistered_pr_rename_source_overlap_fails(self):
+        result = self.run_gate(
+            active_record(),
+            pr=3000,
+            head_ref="codex/unrelated",
+            files=[
+                {
+                    "filename": "docs/unrelated/result.md",
+                    "previous_filename": "docs/pilot-a/result.md",
+                }
+            ],
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("overlaps active pilot scope", result.stdout)
+        self.assertIn("docs/pilot-a/result.md", result.stdout)
 
     def test_unregistered_unrelated_pr_remains_mode_a(self):
         result = self.run_gate(
