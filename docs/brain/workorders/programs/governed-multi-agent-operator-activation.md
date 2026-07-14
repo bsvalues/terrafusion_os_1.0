@@ -4,8 +4,8 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-002`
-**Next Work Order:** `WO-MAO-003`
+**Current Work Order:** `WO-MAO-003`
+**Next Work Order:** `WO-MAO-004`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -31,6 +31,18 @@ The linked child records and root collection rollup establish five native bounde
 independent read-only agents and two concurrent mutable agents in separate clean worktrees with
 disjoint single-file reservations. This proof clears the worker-plane prerequisite but is not counted
 as either MAO-002 pilot PR.
+
+## Pilot Completion Evidence
+
+`WO-MAO-002` completed with PR #1281 merged at
+`405677e151955b48d3e5f8abd269238736d2ab74` and PR #1280 merged at
+`4f68ba4c689f100eb822f18bdb07a5c5b082a660`. The canonical
+[post-merge assurance](../../evidence/WO-MAO-002-POST-MERGE-ASSURANCE.md) records exact heads,
+reservations, independent reviews, checks, cycle times, founder touches, rollback class, and protected
+scope proof. The pilot had zero founder queue-routing touches after the one-time bootstrap grant.
+
+The pilot deliberately did not test overlapping reservations. `WO-MAO-003` is now active and must
+mechanically reject an intentional overlap before the program advances.
 
 ## Objective
 

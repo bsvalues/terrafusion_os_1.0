@@ -381,8 +381,9 @@ Success:  The MAO program advances through falsifiable pilot, reservation enforc
           playbook, rollout, and evidence gates without crossing protected boundaries.
 ```
 
-**Current state:** `WO-MAO-002` is active. `WO-MAO-003` is next and owns the dispatch/reservation
-contract plus mechanical collision gate.
+**Current state:** `WO-MAO-002` is complete with independent post-merge assurance. `WO-MAO-003` is
+active and owns the dispatch/reservation contract plus mechanical collision gate; `WO-MAO-004` is
+next.
 
 **Mode B:** The canonical
 [Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)
