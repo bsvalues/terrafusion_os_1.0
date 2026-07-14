@@ -211,10 +211,39 @@ def static_pattern_prefix(pattern: str) -> str:
     return pattern[: min(wildcard_positions)] if wildcard_positions else pattern
 
 
+def contains_wildcard(pattern: str) -> bool:
+    return any(token in pattern for token in "*?[")
+
+
 def roots_overlap(left: str, right: str) -> bool:
     left = left.rstrip("/")
     right = right.rstrip("/")
     return left == right or left.startswith(right + "/") or right.startswith(left + "/")
+
+
+def path_is_within_prefix(path: str, prefix: str) -> bool:
+    path = path.rstrip("/")
+    prefix = prefix.rstrip("/")
+    return path == prefix or path.startswith(prefix + "/")
+
+
+def reservation_patterns_overlap(left: str, right: str) -> bool:
+    left = left.rstrip("/")
+    right = right.rstrip("/")
+    if not contains_wildcard(left) and not contains_wildcard(right):
+        return roots_overlap(left, right)
+
+    left_static = static_pattern_prefix(left)
+    right_static = static_pattern_prefix(right)
+    left_root = left_static.rstrip("/")
+    right_root = right_static.rstrip("/")
+    if not left_root or not right_root:
+        return True
+    return (
+        roots_overlap(left_root, right_root)
+        or (not right_static.endswith("/") and left_root.startswith(right_root))
+        or (not left_static.endswith("/") and right_root.startswith(left_root))
+    )
 
 
 def validate_execution(execution: dict, bootstrap: dict, bootstrap_raw: str, policy: dict) -> None:
@@ -296,15 +325,18 @@ def validate_execution(execution: dict, bootstrap: dict, bootstrap_raw: str, pol
             root = static_pattern_prefix(normalized)
             if not root or ".." in Path(root).parts:
                 fail(f"PR #{number} contains an unsafe allowed path pattern")
-            if not any(root.startswith(prefix) for prefix in bootstrap["allowed_path_prefixes"]):
+            if not any(
+                path_is_within_prefix(root, prefix)
+                for prefix in bootstrap["allowed_path_prefixes"]
+            ):
                 fail(f"PR #{number} allowed path exceeds owner bootstrap")
-            roots.append((slot["slot"], root.rstrip("/")))
+            roots.append((slot["slot"], normalized.rstrip("/")))
         numbers.append(number)
     if len(set(numbers)) != len(numbers):
         fail("operator execution pilot PR numbers must be unique")
-    for index, (slot, root) in enumerate(roots):
-        for other_slot, other_root in roots[index + 1 :]:
-            if slot != other_slot and roots_overlap(root, other_root):
+    for index, (slot, pattern) in enumerate(roots):
+        for other_slot, other_pattern in roots[index + 1 :]:
+            if slot != other_slot and reservation_patterns_overlap(pattern, other_pattern):
                 fail(f"pilot path reservations overlap between {slot} and {other_slot}")
 
 

@@ -292,6 +292,17 @@ class PilotAuthorityTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("allowed path exceeds", result.stdout)
 
+    def test_execution_path_must_respect_bootstrap_segment_boundary(self):
+        def narrow(record):
+            record["allowed_path_prefixes"] = ["docs/pilot-a"]
+
+        def escape(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-abuse/**"]
+
+        result = self.run_gate(mutate_bootstrap=narrow, mutate_execution=escape)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("allowed path exceeds", result.stdout)
+
     def test_reservation_id_is_required(self):
         def remove(record):
             del record["pilot_prs"][0]["reservation_id"]
@@ -313,6 +324,50 @@ class PilotAuthorityTest(unittest.TestCase):
             record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a-other/**"]
 
         result = self.run_gate(mutate_execution=siblings)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_exact_path_equality_overlaps(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/shared/result.md"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/shared/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_exact_descendant_overlaps(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/shared"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/shared/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_wildcard_and_exact_overlap_fails_closed(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-*/**"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_wildcard_and_wildcard_overlap_fails_closed(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-*/**"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a*/**"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_clearly_disjoint_exact_reservations_pass(self):
+        def disjoint(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-a/result.md"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-b/result.md"]
+
+        result = self.run_gate(mutate_execution=disjoint)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_unregistered_pr_cannot_use_pilot_scope(self):
