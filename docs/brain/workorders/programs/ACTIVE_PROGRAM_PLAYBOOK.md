@@ -96,8 +96,8 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-001A` |
-| Next WO | `WO-MAO-002` |
+| Current WO | `WO-MAO-002` |
+| Next WO | `WO-MAO-003` |
 
 ### Purpose
 
@@ -128,13 +128,13 @@ bounded scope, operator-merge behavior, and automatic next-action selection. It 
 reservation enforcement. Each pilot PR requires a separate read-only assurance-agent scope check; the
 reviewer cannot be the implementation operator or William.
 
-**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** Mode B authority for the pilot is not
-portfolio-wide. One owner bootstrap envelope sets the operator, assurance identity, repository/path
-and risk ceilings, merge limit, expiry, and suspension conditions in
-`MAO_002_PILOT_BOOTSTRAP_JSON`. Codex maintains the two exact PRs, current head SHAs, scopes,
-reservations, remediation revisions, and assurance state in `MAO_002_PILOT_EXECUTION_JSON`. The
-required `governed-spine` context validates both records and their digest binding. A head change never
-requires William to refresh PR/SHA state; Codex updates the execution record and reruns the check.
+**OPERATOR-MERGE AUTHORITY IS BOUNDED TO THE AUTHORIZED PILOT.** Issue #1276 grants the one-time
+owner bootstrap envelope. Codex sets `MAO_002_PILOT_BOOTSTRAP_JSON` and maintains the two exact PRs,
+current head SHAs, scopes, reservations, remediation revisions, and assurance state in
+`MAO_002_PILOT_EXECUTION_JSON`. The Mode B interlock becomes active for the two pilot PRs only when
+both records are present and valid. The required `governed-spine` context validates both records and
+their digest binding. A head change never requires William to refresh PR/SHA state; Codex updates the
+execution record and reruns the check.
 
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 may instead use two disjoint path families in this repository.

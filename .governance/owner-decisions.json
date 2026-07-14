@@ -99,7 +99,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-001A",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R5-manual-governance-amendment",
       "effective_base_sha": "b936904b76a1593d12e524434e94872f2e9a78fe",
       "terminal_condition": "The WO-MAO-001A PR is merged, closed without merge, or this decision is explicitly revoked",
@@ -141,7 +141,48 @@
         "protected-boundary access",
         "conflicting owner decision"
       ],
-      "decision_basis": "Owner directed WO-MAO-001A to remove per-PR execution-state maintenance from the owner role before MAO-002 launches"
+      "decision_basis": "Owner directed WO-MAO-001A to remove per-PR execution-state maintenance from the owner role before MAO-002 launches",
+      "completion": {
+        "merged_pr": 1274,
+        "merge_commit": "48b7bc2a97b6222aa5f9901ef3dde6ae1d5067bb"
+      }
+    },
+    {
+      "id": "OWNER-MAO-002-PILOT-BOOTSTRAP-20260714",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-002",
+      "status": "active",
+      "authority_class": "R2-bounded-pilot-bootstrap",
+      "effective_base_sha": "9986f5b4e4ffea1d10e3c9915745c0f280612639",
+      "terminal_condition": "Two eligible MAO-002 pilot PRs merge, the grant expires at 2026-07-21T23:59:59Z, or a suspension condition activates",
+      "authorized_actions": [
+        "select and dispatch two dependency-cleared non-conflicting docs-scoped pilot Work Orders",
+        "maintain exact pilot PR numbers, head SHAs, allowed paths, reservations, operators, reviewer, and assurance evidence",
+        "set and refresh MAO_002_PILOT_BOOTSTRAP_JSON and MAO_002_PILOT_EXECUTION_JSON",
+        "remediate reviews and CI within the bounded docs scope",
+        "merge at most two eligible pilot PRs under the checked-in Mode B interlock",
+        "verify post-merge state and continue automatically to WO-MAO-003"
+      ],
+      "authorized_files": ["docs/**"],
+      "explicitly_denied": [
+        "production, deployment, credentials, secrets, PACS, county SQL, or county-data authority",
+        "runtime, backend, frontend, suite, package, lockfile, CI, or product behavior changes",
+        "owner maintenance of mutable pilot execution state",
+        "more than two pilot merges",
+        "mechanical reservation-enforcement completion claims before WO-MAO-003"
+      ],
+      "merge_mode": "B-bounded-operator-merge",
+      "revocation_triggers": [
+        "unauthorized-scope",
+        "reservation-collision",
+        "required-gate-bypass",
+        "protected-boundary-access",
+        "false-completion-evidence",
+        "expiration"
+      ],
+      "decision_basis": "Owner issue #1276 grants one bounded MAO-002 pilot envelope and assigns changing execution state to Codex"
     }
   ]
 }
