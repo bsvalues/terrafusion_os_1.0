@@ -122,7 +122,8 @@ No slot was created or modified by this packet.
 - `docs/data/WO_DEPLOY_BENTON_003B_APP_SERVICE_PREFLIGHT.md` contains the original runtime, settings,
   firewall, health, build, and stop-wall inventory.
 - `docs/data/WO_DEPLOY_BENTON_003C_APP_SERVICE_DEPLOYMENT.md` records the provisioned demo App Service,
-  protected configuration, PostgreSQL connection, startup corrections, and successful health smoke.
+  undisclosed JWT/HMAC App Service settings, the artifact-bundled PostgreSQL connection-string gap,
+  startup corrections, and successful health smoke.
 - `docs/data/WO_P8_MGMT_005_AZURE_FRONTEND_REACHABILITY_DEPLOYMENT.md` records the later same-origin UI
   deployment and the remaining authentication wall.
 - `docs/brain/workorders/programs/azure-county-runtime.md` still says no App Service exists. That fact
