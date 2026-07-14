@@ -135,9 +135,9 @@ These are capability dependencies, not unresolved contradictions in the amended 
 | `corepack pnpm run type-check` | PASS after governed frozen bootstrap |
 | `node --test os-platform/core/tests/phase83-tools.test.mjs` | PASS; 56 tests |
 | `python scripts/ci/__tests__/mao-002-pilot-authority.test.py` | PASS; 18 fail-closed cases |
-| `node scripts/repo-shape-guard.mjs` | PASS; 85 visible / 85 allowlisted root entries |
+| `node scripts/repo-shape-guard.mjs` | PASS; 86 visible / 86 allowlisted root entries |
 | Frozen bootstrap invariants | PASS; package hash, lock hash, and tracked status unchanged; lifecycle scripts suppressed |
-| `corepack pnpm brain review-diff --workorder WO-MAO-001` | Scope PASS: all changed files are allowed. Overall command remains BLOCKED by the pre-existing global write-lane validator finding seven unchanged `treasury` suite entries. |
+| `corepack pnpm brain review-diff --workorder WO-MAO-001` | The intended 13-file review-remediation set is allowed. The local command returns BLOCK because it also inventories the known untracked `.tf-ci-diagnostics/agents-vs-canon-diff.txt` residue; that generated file is not staged or represented as passing. The global write-lane baseline remains unchanged. |
 
 No `tools/registry/**` file differs from `origin/main`; the write-lane baseline defect is not amended,
 excluded, or represented as passing by this Work Order.
