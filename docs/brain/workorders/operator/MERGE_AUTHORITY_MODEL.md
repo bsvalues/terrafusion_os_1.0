@@ -32,15 +32,17 @@ Goal/Loop/Work Order. Every merge requires:
 - evidence and rollback are complete;
 - no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
 
-**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001A preserves Mode A while correcting
-the activation contract. A one-time owner envelope in `MAO_002_PILOT_BOOTSTRAP_JSON` authorizes the
-operator identity, assurance identity, repository and path boundaries, risk ceiling, at most two
-pilot merges, expiry, and suspension conditions. It never contains PR numbers, head SHAs, reservation
-records, or remediation state. Codex maintains those changing fields in
-`MAO_002_PILOT_EXECUTION_JSON`, which is cryptographically bound to the owner envelope and must remain
-inside all of its ceilings. Both variables bind to the checked-in inactive
-`.governance/mao-002-pilot-merge-authority.json` policy, and `governed-spine` must pass. Editing the
-checked-in policy or operator execution state cannot create or broaden the owner grant.
+**THE GENERAL MODE B DOCTRINE IS RATIFIED, AND THE MAO-002 BOUNDED OWNER ENVELOPE IS ACTIVE.** Owner
+issue [#1276](https://github.com/bsvalues/terrafusion_os_1.0/issues/1276) activates only the bounded
+MAO-002 grant for at most two docs-scoped pilot PRs; Mode A remains mandatory outside that grant.
+Operator merge for a specific pilot PR remains fail-closed and inactive until both
+`MAO_002_PILOT_BOOTSTRAP_JSON` and `MAO_002_PILOT_EXECUTION_JSON` validate together for the exact PR,
+current head SHA, repository, allowed scope, and reservation records, with every other Mode B
+condition satisfied. The [checked-in policy](../../../../.governance/mao-002-pilot-merge-authority.json)
+intentionally remains `status: "inactive"` because a static policy ceiling cannot self-authorize.
+Active authority comes only from the issue #1276 owner envelope plus the Codex-maintained operator
+execution record, cryptographically bound to the envelope and policy and validated by
+`governed-spine`. Editing the policy or execution record cannot create or broaden the owner grant.
 
 ## Mode C: Auto-Merge Armed
 
