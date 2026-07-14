@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-08
+**Last Updated:** 2026-07-14
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -42,6 +42,7 @@ resolves.
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
 | `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
+| `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | WO-MAO-002 (ACTIVE); next WO-MAO-003 | NO - bounded docs-only pilot; Mode B fails closed without issue #1276 and paired exact execution state | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
@@ -218,6 +219,29 @@ No active stop walls at WO-WOE-011 (after 010 merges).
 Brain Operator evidence baseline complete at WO-BRAIN-009 (see
 `evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md`). Next: **portfolio reconciliation** — no lane
 preselected.
+
+---
+
+### /goal governed-multi-agent-operator → Governed Multi-Agent Operator Activation
+
+**File:** [programs/governed-multi-agent-operator-activation.md](../programs/governed-multi-agent-operator-activation.md)
+**Goal / loop:** `GOAL-MAO-001` / `LOOP-MAO-001`
+**Current / next:** `WO-MAO-002` is active; `WO-MAO-003` is next.
+
+| WO | Title | Status |
+|----|-------|--------|
+| WO-MAO-000 | Doctrine Conflict Audit | COMPLETE |
+| WO-MAO-001 | Governance Reconciliation and Operator-Merge Ratification | COMPLETE |
+| WO-MAO-001A | Separate Owner Bootstrap Authority from Operator Execution State | COMPLETE |
+| WO-MAO-002 | Minimal Two-Lane Pilot | **ACTIVE** |
+| WO-MAO-003 | Dispatch/Reservation Contract + Mechanical Gate | **NEXT** |
+
+[Mode B](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge) is preauthorized
+operator merge under recorded, revocable, exact-scope authority. For MAO-002 it is bounded by the
+one-time owner envelope in issue #1276 and remains fail-closed unless the paired GitHub repository
+variables `MAO_002_PILOT_BOOTSTRAP_JSON` and exact `MAO_002_PILOT_EXECUTION_JSON` agree with the
+checked-in [pilot policy](../../../../.governance/mao-002-pilot-merge-authority.json) and current pilot
+state. This route grants no runtime, product, production, credential, county, or county-data authority.
 
 ---
 
