@@ -1,5 +1,7 @@
 # /loop Mode Definitions
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Authority:** WO-WOE-010  
 **Classification:** Operator Doctrine
 

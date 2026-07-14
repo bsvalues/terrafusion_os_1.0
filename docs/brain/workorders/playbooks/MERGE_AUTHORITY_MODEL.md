@@ -1,5 +1,7 @@
 # Merge Authority Playbook Pointer
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 Program: codex-operator-autonomy
 Original Work Order: WO-OP-AUTO-008
 Status: Procedural pointer; semantic rules superseded by WO-MAO-001

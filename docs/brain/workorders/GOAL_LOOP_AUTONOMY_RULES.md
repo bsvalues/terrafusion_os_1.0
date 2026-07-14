@@ -1,5 +1,7 @@
 # Goal/Loop Autonomy Rules
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
 **Date:** 2026-07-01
 **Authority:** WO-WOE-011

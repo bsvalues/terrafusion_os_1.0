@@ -38,29 +38,61 @@ with open(sys.argv[1], "r", encoding="utf-8") as f:
 with open(sys.argv[2], "r", encoding="utf-8") as f:
     agents = f.read()
 
-expected_enforce = str(bool(canon.get("enforce_admins"))).lower()
-expected_checks = canon.get("required_checks", [])
+def canon_enabled(key):
+    value = canon.get(key) or {}
+    return bool(value.get("enabled")) if isinstance(value, dict) else bool(value)
 
-m_enf = re.search(r"enforce_admins\s*:\s*(true|false)", agents, re.IGNORECASE)
-found_enf = m_enf.group(1).lower() if m_enf else None
+expected = {
+    "require_pull_request": bool(canon.get("require_pull_request")),
+    "strict": bool((canon.get("required_status_checks") or {}).get("strict")),
+    "required_approving_review_count": (
+        canon.get("required_pull_request_reviews") or {}
+    ).get("required_approving_review_count"),
+    "enforce_admins": canon_enabled("enforce_admins"),
+    "required_conversation_resolution": canon_enabled(
+        "required_conversation_resolution"
+    ),
+    "allow_force_pushes": canon_enabled("allow_force_pushes"),
+    "allow_deletions": canon_enabled("allow_deletions"),
+}
+expected_checks = (canon.get("required_status_checks") or {}).get("contexts", [])
+
+def find_bool(name):
+    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(true|false)\s*$", agents, re.IGNORECASE | re.MULTILINE)
+    return None if not match else match.group(1).lower() == "true"
+
+def find_int(name):
+    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(\d+)\s*$", agents, re.IGNORECASE | re.MULTILINE)
+    return None if not match else int(match.group(1))
 
 checks = []
-sec = re.search(r"required_checks\s*:\s*\n(?P<body>(?:\s*-\s*.+\n)+)", agents, re.IGNORECASE)
+sec = re.search(r"contexts\s*:\s*\n(?P<body>(?:\s*-\s*.+\n)+)", agents, re.IGNORECASE)
 if sec:
     body = sec.group("body")
     for line in body.splitlines():
         mm = re.match(r"\s*-\s*(.+?)\s*$", line)
         if mm:
-            checks.append(mm.group(1))
+            checks.append(mm.group(1).strip("\"'"))
 
 diffs = []
-if found_enf is None:
-    diffs.append("AGENTS.md missing explicit 'enforce_admins: true|false' line.")
-elif found_enf != expected_enforce:
-    diffs.append(f"enforce_admins mismatch: canon={expected_enforce} AGENTS.md={found_enf}")
+found = {
+    "require_pull_request": find_bool("require_pull_request"),
+    "strict": find_bool("strict"),
+    "required_approving_review_count": find_int("required_approving_review_count"),
+    "enforce_admins": find_bool("enforce_admins"),
+    "required_conversation_resolution": find_bool("required_conversation_resolution"),
+    "allow_force_pushes": find_bool("allow_force_pushes"),
+    "allow_deletions": find_bool("allow_deletions"),
+}
+
+for key, expected_value in expected.items():
+    if found[key] is None:
+        diffs.append(f"AGENTS.md missing explicit '{key}' value.")
+    elif found[key] != expected_value:
+        diffs.append(f"{key} mismatch: canon={expected_value} AGENTS.md={found[key]}")
 
 if not checks:
-    diffs.append("AGENTS.md missing explicit required_checks block (required_checks: \\n  - ...).")
+    diffs.append("AGENTS.md missing explicit required_status_checks contexts block.")
 else:
     cset = set(expected_checks)
     aset = set(checks)

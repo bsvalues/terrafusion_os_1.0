@@ -7,6 +7,16 @@
 **Current Work Order:** `WO-MAO-001`
 **Next Work Order:** `WO-MAO-002`
 
+**Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
+
+## Owner Authorization Record
+
+`OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` in `.governance/owner-decisions.json` is the owner-authorized
+packet for this exact amendment set. It is limited to findings `F01` through `F16`, WO-MAO-001's
+enumerated files/actions, and PR #1273's lifecycle. It is not general R5 authority, production or
+credentials authority, permission to change suite boundaries, or permission to change runtime,
+backend, frontend, or product behavior. The amendment does not self-authorize.
+
 ## Objective
 
 Make governed parallel execution the default TerraFusion operating mode while preserving one Brain,
@@ -63,13 +73,21 @@ The reviewer is neither the implementation operator nor William.
 
 ## Pilot Merge Authority
 
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
+
 MAO-001 ratifies the bounded, revocable Mode B model. It does not grant portfolio-wide merge
-authority. The first pilot grant becomes effective only after MAO-002 records its two exact dispatch
-packets, reservations, and PR identities. It covers only those two PRs and requires every condition in
-the canonical [merge authority model](../operator/MERGE_AUTHORITY_MODEL.md).
+authority and remains Mode A itself. The first pilot grant becomes effective only after MAO-002
+records its two exact dispatch packets, reservations, PR identities, exact final head SHAs, allowed
+path sets, implementation operators, independent reviewer, and expiry in
+`.governance/mao-002-pilot-merge-authority.json`. The existing required `governed-spine` check must
+validate that record for each exact pilot PR.
 
 Any suspension trigger immediately revokes the pilot grant. Restoration requires incident evidence,
 normal-PR containment or rollback, verified `main`, corrected controls, and explicit ratification.
+
+The machine record has exactly two slots. A registered pilot PR fails closed when authority is not
+active, suspension is active, the registered final SHA differs, scope exceeds its path list, reviewer
+independence is invalid, or the grant is expired. No third PR can inherit the grant.
 
 ## Reservation Boundary
 

@@ -1,5 +1,7 @@
 # P3 — Backend Operational Excellence
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 | Field | Value |
 |-------|-------|
 | Program | P3 |

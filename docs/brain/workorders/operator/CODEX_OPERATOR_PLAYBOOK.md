@@ -1,5 +1,7 @@
 # Codex Operator Work Order Playbook
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 Work order: WO-CODEX-OP-001 through WO-CODEX-OP-009
 Program: codex-operator-playbook
 Goal: GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001

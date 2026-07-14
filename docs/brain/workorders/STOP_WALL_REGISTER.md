@@ -1,5 +1,7 @@
 # Stop Wall Register (Canonical)
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 2.0
 **Date:** 2026-07-01
 **Authority:** WO-WOE-011

@@ -105,13 +105,15 @@ Make governed parallel execution the default without creating competing Brains. 
 queue, sequencing, reservations, risk, proof, review-diff, and commit-plan; isolated workers execute
 dependency-cleared Work Orders whose path, contract, and environment reservations do not conflict.
 
+Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md).
+
 ### Work Order Chain
 
 | Work Order | Mode | Required outcome |
 |------------|------|------------------|
-| `WO-MAO-000` | read-only audit | Source-cited contradiction matrix and historical denominator |
-| `WO-MAO-001` | governance reconciliation | Authority hierarchy, true-wall doctrine, and bounded operator-merge model |
-| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, exact dispatch packets, independent read-only post-merge checks |
+| `WO-MAO-000` | read-only audit | Persisted source-cited contradiction matrix and historical denominator |
+| `WO-MAO-001` | governance reconciliation | Exact bounded R5 owner authorization, replacement hierarchy, complete protection canon, and inactive operator-merge model |
+| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, exact PR/final-SHA authority records, required governed-spine interlock, and independent read-only post-merge checks |
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
 | `WO-MAO-004` | planner implementation | Dependency-cleared executable set and conflict-free parallel waves |
 | `WO-MAO-005` | evidence-informed playbooks | Worker and assurance playbooks grounded in pilot and gate evidence |
@@ -125,9 +127,12 @@ bounded scope, operator-merge behavior, and automatic next-action selection. It 
 reservation enforcement. Each pilot PR requires a separate read-only assurance-agent scope check; the
 reviewer cannot be the implementation operator or William.
 
-Mode B merge authority for the pilot is not portfolio-wide. It may attach only to the two exact PRs
-named by the future MAO-002 dispatch packets after their reservations are recorded. Any suspension
-trigger in the canonical merge model immediately revokes that bounded grant.
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** Mode B authority for the pilot is not
+portfolio-wide. It may attach only after the two exact PRs, final head SHAs, path scopes,
+implementation operators, independent reviewer, assurance evidence path, and expiry are registered
+in `.governance/mao-002-pilot-merge-authority.json`. The already-required `governed-spine` context
+fails a registered pilot PR on inactive/suspended/expired authority, SHA mismatch, identity conflict,
+or path drift. Any suspension trigger in the canonical merge model immediately revokes the grant.
 
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 may instead use two disjoint path families in this repository.

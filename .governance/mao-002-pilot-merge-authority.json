@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "program": "PROGRAM-MAO-001",
+  "work_order": "WO-MAO-002",
+  "merge_mode": "B",
+  "status": "inactive",
+  "suspension": {
+    "active": false,
+    "reason": null
+  },
+  "owner": "William",
+  "implementation_operators": [],
+  "independent_reviewer": null,
+  "expires_at": null,
+  "max_merged_prs": 2,
+  "post_merge_assurance_evidence": null,
+  "pilot_prs": [
+    {
+      "slot": "lane-a",
+      "repository": "bsvalues/terrafusion_os_1.0",
+      "number": null,
+      "head_sha": null,
+      "allowed_paths": []
+    },
+    {
+      "slot": "lane-b",
+      "repository": "bsvalues/terrafusion_os_1.0",
+      "number": null,
+      "head_sha": null,
+      "allowed_paths": []
+    }
+  ]
+}

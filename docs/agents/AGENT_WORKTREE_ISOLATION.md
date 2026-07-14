@@ -1,5 +1,7 @@
 # Agent Worktree Isolation Policy
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Status:** MANDATORY  
 **Work Order:** WO-BRAIN-0021  
 **Effective:** 2026-06-13

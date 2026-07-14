@@ -8,6 +8,9 @@ Loop: LOOP-MAO-001
 This file is the single semantic source for merge authority. Playbooks may describe the procedure but
 must not redefine these modes.
 
+Source audit: [`WO-MAO-000`](../../evidence/WO-MAO-000-proof.md). Owner authority is valid only when
+recorded in `.governance/owner-decisions.json` or a canonically indexed successor register.
+
 ## Default Rule: Mode A
 
 The owner merges unless recorded authority grants Mode B or Mode C. Mode A is mandatory for
@@ -29,8 +32,11 @@ Goal/Loop/Work Order. Every merge requires:
 - evidence and rollback are complete;
 - no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
 
-MAO-001 ratifies this model but does not enable portfolio-wide operator merge. The first grant is
-limited to MAO-002's two exact pilot PRs after their dispatch packets and reservations exist.
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. The first grant is
+limited to MAO-002's two exact pilot PRs and activates only after dispatch, reservation, exact PR,
+exact final head SHA, path scope, implementation operator, independent reviewer, and expiry fields
+are registered in `.governance/mao-002-pilot-merge-authority.json` and the required `governed-spine`
+pilot interlock passes.
 
 ## Mode C: Auto-Merge Armed
 
@@ -63,6 +69,10 @@ operator merges stop until restoration is ratified.
 
 Restoration evidence must include the incident record, rollback PR/SHA, validation results, corrected
 scope and reservation evidence, required-check proof, and the owner restoration decision.
+
+For MAO-002, the machine interlock fails a registered pilot PR when suspension is active. Because the
+authority record contains exactly two PR slots and validates each current head against a declared
+final SHA, the grant cannot be reused by a third PR or a later review-fix SHA without re-registration.
 
 ## Post-Merge Verification
 

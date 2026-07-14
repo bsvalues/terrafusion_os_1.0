@@ -6,6 +6,8 @@
 **Base:** `origin/main@63f959e07240e0159ce101cd4d76e814788aac44`
 **Classification:** Governance reconciliation only
 
+**Persisted audit input:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
+
 ## Verdict
 
 The 16 WO-MAO-000 findings are reconciled to one semantic model:
@@ -20,7 +22,9 @@ The 16 WO-MAO-000 findings are reconciled to one semantic model:
 
 ## Amendment Matrix
 
-The source locations below refer to the audited base SHA before this reconciliation.
+The source locations below refer to the audited base SHA before this reconciliation. The exact
+controlling text, historical denominator, and audit completion fields are persisted in the linked
+WO-MAO-000 proof; every row below maps directly to the same finding ID there.
 
 | ID | Audited source | Finding | Disposition | Concrete amendment |
 |----|----------------|---------|-------------|--------------------|
@@ -32,7 +36,7 @@ The source locations below refer to the audited base SHA before this reconciliat
 | F06 | `docs/agents/AGENT_WORKTREE_ISOLATION.md:28-45` | Every failed-worktree or zero-unique branch cleanup required a fresh human touch. | NARROW | Exact current-WO failed-path repair is allowed under a recorded procedure; other deletion remains protected. |
 | F07 | `docs/brain/workorders/GOAL_LOOP_AUTONOMY_RULES.md:33-42` | Equal-or-lower numeric risk controlled continuation even when explicit authority differed. | SUPERSEDE | Continuation uses recorded risk, system, file, and action authority. |
 | F08 | `docs/brain/workorders/NEXT_ACTION_MATRIX.md:44-57` and `docs/brain/workorders/schema/WORK_ORDER_DATA_MODEL.md:57-66` | Active matrix used an incompatible `R0`-`R4` vocabulary. | SUPERSEDE | All active continuation documents use the canonical `R0`-`R5` model. |
-| F09 | `docs/brain/workorders/NEXT_ACTION_MATRIX.md:24-36` | First-match wall row made portfolio reconciliation unreachable. | REORDER | Portfolio reconciliation is evaluated before the regular-program wall stop. |
+| F09 | `docs/brain/workorders/NEXT_ACTION_MATRIX.md:20-36` | First-match wall row made portfolio reconciliation unreachable. | SUPERSEDE | The former ordering is superseded so portfolio reconciliation is evaluated before the regular-program wall stop. |
 | F10 | `docs/brain/workorders/operator/MERGE_AUTHORITY_MODEL.md:1-42` and `docs/brain/workorders/playbooks/MERGE_AUTHORITY_MODEL.md:1-63` | Two active merge models carried incompatible defaults and scope. | SUPERSEDE | Operator model is canonical; playbook copy is a pointer only. |
 | F11 | `docs/brain/workorders/goal-loop/GOAL_CONTRACT.md:16-31` | Authority records had no required expiry, revocation, PR class, or persistence semantics. | CLARIFY | Goal contract records effective point, terminal condition, revocation triggers, eligible PR class, evidence, and rollback. |
 | F12 | `brain/packs/README.md:17-39` | One-Brain doctrine could be practiced as one worker despite only prohibiting competing governance. | CLARIFY | Pack and root canon state one Brain is one governance authority, not one worker process. |
@@ -51,14 +55,13 @@ The source locations below refer to the audited base SHA before this reconciliat
 In descending semantic authority:
 
 1. Constitution;
-2. canonical Brain rules and accepted ADRs;
-3. recorded owner authority;
-4. operator and Goal/Loop doctrine;
-5. domain packs;
-6. root and branch-level `AGENTS.md`;
-7. directory-local `AGENTS.md`;
-8. program playbooks and Work Orders inside their parent authority;
-9. implementation patterns and agent judgment.
+2. ratified owner decisions in the canonical decision register;
+3. canonical Brain and root operating governance;
+4. active program and Work Order authority inside exact scope/duration;
+5. directory-local `AGENTS.md` restrictions that may narrow but never broaden;
+6. active playbooks and runbooks;
+7. implementation patterns;
+8. agent judgment.
 
 Mechanical enforcement is an execution interlock, not a prose tier. When enforcement is stricter, it
 blocks until reconciliation. When prose is stricter, the operator follows prose and opens a governed
@@ -72,10 +75,10 @@ The canonical model defines:
 - Mode B: recorded bounded authority for one PR, exact batch, or bounded PR class;
 - Mode C: auto-merge under an applicable Mode B grant and repository policy.
 
-MAO-001 does not create portfolio-wide merge authority. It ratifies a future MAO-002 grant limited to
-the two exact pilot PRs after dispatch packets and reservations exist. Required conditions include
-scope, clear reservations, required checks, zero unresolved threads, clean merge state, evidence,
-rollback, and no protected boundary.
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. A future MAO-002
+grant is limited to two exact pilot PRs and activates only after their dispatch packets, reservations,
+final head SHAs, scopes, implementation operators, independent reviewer, and expiry are registered in
+the machine authority file and the existing required `governed-spine` interlock passes.
 
 Automatic suspension occurs if unauthorized scope, a reservation collision, a required-gate bypass,
 material scope expansion, protected-boundary access, or false evidence reaches `main`. Restoration
@@ -84,9 +87,14 @@ corrected controls, and explicit ratification.
 
 ## Mechanical Protection Status
 
-`.governance/main.protection.json` remains unchanged. It requires a PR, strict up-to-date checks,
-administrator enforcement, and the canonical check contexts. It does not prescribe a human-only merge
-actor, so the bounded operator model does not require a branch-protection change.
+`.governance/main.protection.json` now records every claimed invariant: required PR, strict up-to-date
+status checks, all five contexts, zero approving reviews, administrator enforcement, conversation
+resolution, disabled force pushes, and disabled deletions. The drift verifier normalizes the live API
+shape and compares every field. The API does not expose a literal `require_pull_request` field; the
+verifier derives it from the presence of `required_pull_request_reviews` and records that mapping.
+
+The existing required `governed-spine` check now invokes the MAO-002 pilot interlock. Its authority
+record is inactive in MAO-001, so no operator merge is enabled by this PR.
 
 Two mechanical capabilities are intentionally not claimed:
 
@@ -100,7 +108,10 @@ These are capability dependencies, not unresolved contradictions in the amended 
 ## Safety Posture
 
 - Runtime/backend/frontend/product changes: none.
-- CI/workflow/branch-protection changes: none.
+- CI/workflow behavior: one fail-closed pilot authority step added to the already-required
+  `governed-spine` check; no product build/deployment behavior changed.
+- Branch protection settings: not weakened or modified live; the canon snapshot and drift coverage
+  now represent the existing live invariants completely.
 - Production, credentials, secrets, PACS, county SQL, and county data: untouched.
 - Shared checkout: untouched.
 - Portfolio-wide operator merge: not authorized.

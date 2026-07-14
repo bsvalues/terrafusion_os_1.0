@@ -1,5 +1,9 @@
 # TerraFusion OS  Agent Operating Rules (Core Governance)
 
+> **PATH CANON NOTE**
+> Exact repository/path identity and controlling-document membership are recorded in
+> `CANON_INDEX.md`. A repository name or authoritative-sounding document is not sufficient by itself.
+
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.
 
@@ -16,19 +20,26 @@ when a human must approve.
 
 ### Authority hierarchy (higher wins on conflict)
 
-The canonical hierarchy and enforcement-drift rule are defined by
-`docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md`:
+This is the single active hierarchy. It replaces the six-level recovery-era hierarchy audited in
+[`WO-MAO-000`](docs/brain/evidence/WO-MAO-000-proof.md) and is controlled by
+[`ADR-EXEC-001`](docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md):
 
 1. **TerraFusion Constitution** — `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (TF-052)
-2. **Canonical Brain rules and ratified governance ADRs** — queue, sequencing, risk, proof, and authority semantics
-3. **Recorded owner authority** — active Goal, Loop, and Work Order grants, bounded by the higher layers
-4. **Operator and Goal/Loop doctrine** — execution and continuation procedure
-5. **Domain knowledge packs** — `brain/packs/**`
-6. **Branch/worktree policy and root `AGENTS.md`** — repository-wide defaults
-7. **Directory-local `AGENTS.md` files** — path-specific rules within the higher authority boundary
-8. **Program playbooks** — approved execution graphs within higher authority
-9. **Work Orders** — bounded packets; they carry owner authority only when linked to an active grant
-10. **Implementation patterns and agent judgment**
+2. **Ratified owner decisions** — active, unexpired, non-revoked entries in the canonical decision
+   register `.governance/owner-decisions.json`
+3. **Canonical Brain and root operating governance** — queue, sequencing, risk, proof, authority,
+   root `AGENTS.md`, and ratified governance ADRs
+4. **Active program and Work Order authority** — only within the exact scope, actions, systems, and
+   duration granted by levels 1-3
+5. **Directory-local `AGENTS.md` restrictions** — subtree restrictions that may narrow but never
+   broaden levels 1-4
+6. **Active playbooks and runbooks** — procedures that implement, but never redefine, higher authority
+7. **Existing implementation patterns**
+8. **Agent judgment** — last resort within all higher boundaries
+
+A directory-local `AGENTS.md` may narrow authority inside its subtree. It may not broaden an owner
+grant, contradict the Constitution or active root governance, or redefine the queue. Resolve any
+conflict through ADR-EXEC-001; "nearest file wins" is not authority to broaden scope.
 
 Mechanical enforcement is not a prose authority tier, but it is an execution interlock. Agents never
 bypass branch protection, required checks, or policy configuration because prose claims an action is
@@ -158,13 +169,21 @@ main:
 ### Branch Protection Canon (Machine Readable)
 
 ```yaml
+require_pull_request: true
+required_status_checks:
+  strict: true
+  contexts:
+    - governed-spine
+    - phase85-tools
+    - phase86-toolrunner
+    - 🔒 TerraFusion Seal Gate
+    - 🧪 Tier-1 UI Harness Validation
+required_pull_request_reviews:
+  required_approving_review_count: 0
 enforce_admins: true
-required_checks:
-  - governed-spine
-  - phase85-tools
-  - phase86-toolrunner
-  - 🔒 TerraFusion Seal Gate
-  - 🧪 Tier-1 UI Harness Validation
+required_conversation_resolution: true
+allow_force_pushes: false
+allow_deletions: false
 ```
 
 **Solo Dev Governance:**
@@ -192,6 +211,8 @@ These are the **enforced invariants** for `main` branch. Any deviation is a gove
 | Require up-to-date | **true** | No merge race conditions |
 | Include admins | **true** | Cannot bypass own gates |
 | Allow force push | **false** | Immutable history |
+| Allow deletion | **false** | Protected branch cannot be deleted |
+| Resolve conversations | **true** | Review remediation must be complete |
 
 **Drift Detection (periodic audit):**
 
@@ -204,6 +225,9 @@ gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .tmp/main.pr
 # Verify invariants
 jq '.required_pull_request_reviews.required_approving_review_count == 0' .tmp/main.protection.current.json
 jq '.enforce_admins.enabled == true' .tmp/main.protection.current.json
+jq '.allow_force_pushes.enabled == false' .tmp/main.protection.current.json
+jq '.allow_deletions.enabled == false' .tmp/main.protection.current.json
+jq '.required_conversation_resolution.enabled == true' .tmp/main.protection.current.json
 jq '.required_status_checks.contexts | contains(["governed-spine","phase85-tools","phase86-toolrunner","🔒 TerraFusion Seal Gate","🧪 Tier-1 UI Harness Validation"])' .tmp/main.protection.current.json
 
 # Raw diff (no dependencies)
@@ -221,7 +245,7 @@ git diff --no-index .tmp/main.protection.canon.norm.json .tmp/main.protection.cu
 - Link to the PR that authorized the change
 - Update "Last verified" date below
 
-**Last verified:** 2026-02-18 (Phase 51.0 canonical reconciliation)
+**Last verified:** 2026-07-13 (WO-MAO-001 live API and canon reconciliation)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:

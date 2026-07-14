@@ -15,9 +15,12 @@
 
 `governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
 
-`WO-MAO-000` is complete. `WO-MAO-001` is the active governance-reconciliation Work Order and
-`WO-MAO-002` is the next dependency-cleared node after merge. The pilot is limited to two disjoint
-dispatch packets and two exact PRs; it does not claim to prove reservation enforcement.
+`WO-MAO-000` is complete and persisted at
+[`docs/brain/evidence/WO-MAO-000-proof.md`](../evidence/WO-MAO-000-proof.md). `WO-MAO-001` is the
+active governance-reconciliation Work Order and `WO-MAO-002` is the next dependency-cleared node
+after merge. Operator merge is ratified but inactive. The pilot is limited to two disjoint dispatch
+packets and two exact PRs registered by final SHA in the required governed-spine interlock; it does
+not claim to prove reservation enforcement.
 
 ---
 
@@ -26,9 +29,9 @@ dispatch packets and two exact PRs; it does not claim to prove reservation enfor
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
 |----|-------|-------|
-| WO-MAO-000 Doctrine Conflict Audit | DONE | Read-only contradiction matrix and historical denominator captured |
-| **WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification** | **ACTIVE** | Governance-only reconciliation; bounded merge model ratification |
-| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | Two disjoint WOs; independent read-only post-merge reviewer; exact pilot PR merge grants only |
+| WO-MAO-000 Doctrine Conflict Audit | DONE | Full read-only contradiction matrix and historical denominator persisted in governed evidence |
+| **WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification** | **ACTIVE** | Owner-authorized exact R5 governance amendment; Mode A merge; bounded operator model ratified but inactive |
+| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | Two disjoint WOs; exact PR/final-SHA authority slots; independent read-only post-merge reviewer; required governed-spine interlock |
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | QUEUED | Must reject an intentional overlapping reservation |
 | WO-MAO-004 Executable Graph / Parallel Wave Planner | QUEUED | Dependency and conflict-aware dispatch waves |
 | WO-MAO-005 Evidence-Informed Agent Playbooks | QUEUED | Rules must cite pilot/enforcement evidence |

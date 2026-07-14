@@ -1,5 +1,7 @@
 # Work Order Operator Doctrine
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This doctrine promotes the proven TerraFusion Work Order Operator pattern into reusable operating

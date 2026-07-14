@@ -1,5 +1,7 @@
 # Codex Operator Authority Matrix
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 Program: codex-operator-autonomy
 Goal: GOAL-TF-CODEX-OPERATOR-AUTONOMY-001
 Loop: LOOP-TF-CODEX-OPERATOR-AUTONOMY-001

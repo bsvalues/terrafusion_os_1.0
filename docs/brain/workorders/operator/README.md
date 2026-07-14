@@ -1,5 +1,7 @@
 # Work Order Operator Packet
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This packet defines how Codex uses the TerraFusion Work Order Engine as an operator doctrine.
@@ -23,6 +25,8 @@ Permanent doctrine:
   ownership after implementation.
 - [`OWNER_DECISION_PACKET_TEMPLATE.md`](OWNER_DECISION_PACKET_TEMPLATE.md) standardizes authority-wall
   requests.
+- [`.governance/owner-decisions.json`](../../../../.governance/owner-decisions.json) is the canonical
+  machine-readable register for ratified owner grants, expiry, revocation, and exact boundaries.
 - [`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md) defines merge authorization and post-merge
   verification.
 

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "register": "TerraFusion canonical owner decision register",
+  "decisions": [
+    {
+      "id": "OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-001",
+      "status": "active",
+      "authority_class": "R5-manual-governance-amendment",
+      "effective_base_sha": "63f959e07240e0159ce101cd4d76e814788aac44",
+      "terminal_condition": "PR #1273 is merged, closed without merge, or this decision is explicitly revoked",
+      "authorized_findings": [
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08",
+        "F09",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16"
+      ],
+      "authorized_actions": [
+        "persist WO-MAO-000 evidence",
+        "reconcile governance hierarchy and operator doctrine",
+        "record bounded operator-merge policy",
+        "complete branch-protection canon and drift validation",
+        "add an inactive machine-enforced MAO-002 pilot interlock",
+        "update canon and program indexes"
+      ],
+      "authorized_files": [
+        "AGENTS.md",
+        "CANON_INDEX.md",
+        ".governance/main.protection.json",
+        ".governance/owner-decisions.json",
+        ".governance/mao-002-pilot-merge-authority.json",
+        ".github/workflows/core-governance-gates.yml",
+        "brain/packs/README.md",
+        "docs/adr/**",
+        "docs/agents/**",
+        "docs/branching/**",
+        "docs/brain/evidence/WO-MAO-000-proof.md",
+        "docs/brain/workorders/**",
+        "docs/governance/CI_GOVERNANCE_INDEX.md",
+        "scripts/ci/verify-agents-doc-against-protection-canon.sh",
+        "scripts/ci/verify-branch-protection-against-canon.sh",
+        "scripts/ci/verify-mao-002-pilot-authority.py",
+        "scripts/ci/__tests__/governance-canon-scripts.test.sh",
+        "scripts/ci/__tests__/mao-002-pilot-authority.test.py"
+      ],
+      "explicitly_denied": [
+        "general R5 authority",
+        "production or deployment authority",
+        "credentials or secrets authority",
+        "PACS, county SQL, county data, or protected-data authority",
+        "suite-boundary changes",
+        "runtime, backend, frontend, or product behavior changes",
+        "portfolio-wide operator merge"
+      ],
+      "merge_mode": "A-owner-merge-required",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or findings",
+        "required-gate bypass",
+        "protected-boundary access",
+        "conflicting owner decision"
+      ],
+      "evidence": "docs/brain/evidence/WO-MAO-000-proof.md"
+    }
+  ]
+}

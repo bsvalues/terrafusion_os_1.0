@@ -1,5 +1,7 @@
 # TerraFusion Goal/Loop Program Playbook
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0  
 **Date:** 2026-06-30  
 **Authority:** TerraFusion Brain / WO-WOE-010  

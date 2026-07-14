@@ -40,11 +40,12 @@ where work routes, what proof is required, and when a human must approve.
 
 ## Authority hierarchy
 
-The full hierarchy is canonical in
-[`ADR-EXEC-001`](../../docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md). Domain packs sit below
-the Constitution, canonical Brain rules, recorded owner authority, and operator/Goal/Loop doctrine;
-they sit above path-local guidance and implementation judgment. Packs route work but never grant
-authority that the active Goal, Loop, or Work Order does not contain.
+The single active hierarchy is canonical in
+[`ADR-EXEC-001`](../../docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md) and is grounded in the
+persisted [`WO-MAO-000` source audit](../../docs/brain/evidence/WO-MAO-000-proof.md). Packs are domain
+knowledge inside canonical Brain/root governance; they do not form a separate authority tier. A pack
+or directory-local `AGENTS.md` may narrow writes within its subtree, but may never broaden a recorded
+grant, contradict the Constitution or active root governance, or create a suite-local queue.
 
 Mechanical enforcement remains an execution interlock. If a pack or doctrine disagrees with an
 enforced gate, do not bypass the gate; report and reconcile the drift through a governed change.

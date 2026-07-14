@@ -1,5 +1,7 @@
 # Codex Autonomous Continuation Rules
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 Work order: WO-CODEX-OP-004
 Program: codex-operator-playbook
 

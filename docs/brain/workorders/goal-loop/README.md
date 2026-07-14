@@ -1,5 +1,7 @@
 # Work Order Engine Goal + Loop Integration
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This packet connects the Work Order registry and read-only query output to TerraFusion's Goal + Loop

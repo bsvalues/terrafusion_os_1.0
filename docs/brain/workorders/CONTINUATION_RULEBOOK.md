@@ -1,5 +1,7 @@
 # Autonomous Continuation Rulebook (Canonical)
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.1
 **Date:** 2026-07-13
 **Authority:** WO-BRAIN-008, reconciled by WO-MAO-001

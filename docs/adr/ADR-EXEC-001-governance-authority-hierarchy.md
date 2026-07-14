@@ -3,6 +3,8 @@
 Status: Accepted by WO-MAO-001 reconciliation, pending merge
 Date: 2026-07-13
 
+Source audit: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../brain/evidence/WO-MAO-000-proof.md).
+
 ## Context
 
 TerraFusion has constitutional canon, Brain rules, operator doctrine, Goal/Loop contracts, Work
@@ -14,26 +16,25 @@ turned routine execution into repeated owner routing.
 
 When two governance documents disagree, apply this semantic authority order:
 
-1. **TerraFusion Constitution.** TF-052 and ratified constitutional canon.
-2. **Canonical Brain rules and ratified governance ADRs.** Queue, sequencing, risk vocabulary,
-   authority walls, proof, and cross-program semantics.
-3. **Recorded owner authority.** An active Goal, Loop, and Work Order may grant bounded execution,
-   product, branch, or merge authority, but cannot override levels 1-2.
-4. **Operator doctrine and canonical Goal/Loop rules.** Execution, continuation, review, evidence, and
-   stop procedure. A document must declare itself canonical for the semantics it owns.
-5. **Domain knowledge packs.** Path ownership, forbidden writes, routing, and required proof.
-6. **Branch/worktree policy and root `AGENTS.md`.** Repository-wide operating defaults.
-7. **Directory-local `AGENTS.md`.** Path-specific specialization that cannot exceed levels 1-6.
-8. **Program playbooks.** Approved execution graphs and procedures that implement, but do not
-   redefine, higher authority.
-9. **Work Orders.** Specific execution packets bounded by their parent Goal, Loop, program, and owner
-   grant. A Work Order carries level-3 authority only when it cites an active recorded owner grant;
-   otherwise it cannot override higher defaults by calling itself authorized.
-10. **Existing implementation patterns and agent judgment.** Last-resort execution choices only.
+1. **TerraFusion Constitution.** TF-052 at
+   `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` and ratified constitutional canon.
+2. **Ratified owner decisions in the canonical decision register.** Only active, unexpired,
+   non-revoked entries in `.governance/owner-decisions.json` carry this authority.
+3. **Canonical Brain and root operating governance.** Queue, sequencing, risk vocabulary, authority
+   walls, proof, root `AGENTS.md`, and ratified governance ADRs.
+4. **Active program and Work Order authority.** A bounded packet may grant execution, product,
+   branch, or merge actions only within the files, systems, actions, risk, and duration recorded by
+   levels 1-3.
+5. **Directory-local `AGENTS.md` restrictions.** A local file may narrow authority inside its subtree.
+   It may not broaden a grant or contradict levels 1-4.
+6. **Active playbooks and runbooks.** Procedures that implement but never redefine higher authority.
+7. **Existing implementation patterns.** Use only when higher authority leaves an implementation
+   choice open.
+8. **Agent judgment.** Last-resort execution choices inside all higher boundaries.
 
-An active Work Order is more specific than a default procedure but is not independently higher than
-the Constitution, canonical Brain rules, or a conflicting recorded owner decision. It grants only the
-files, systems, risk classes, actions, and duration named by its linked authority record.
+This order explicitly supersedes the older six-level hierarchy in the audited base. There is no
+second active hierarchy. A "nearest-scope override" means a narrower restriction, not permission to
+broaden authority. Conflicts involving directory-local instructions resolve through this ADR.
 
 ## Mechanical Enforcement
 
@@ -47,9 +48,27 @@ Mechanical enforcement is not a semantic authority tier. It is the execution int
 - doctrine and enforcement changes must land together when the Work Order authorizes both;
 - otherwise the exact mechanical change is deferred and no success claim may imply it already exists.
 
-For `main`, `.governance/main.protection.json` currently requires PR-based integration, admin
-enforcement, and the five canonical checks. It does not designate the merge actor. Ratified operator
-merge therefore does not weaken branch protection or alter the snapshot.
+For `main`, `.governance/main.protection.json` records PR integration, strict status checks, the five
+canonical contexts, zero approving reviews, admin enforcement, conversation resolution, and disabled
+force-push/deletion. GitHub exposes "require PR" through the presence of
+`required_pull_request_reviews`; the normalized canon records the derived boolean explicitly. The
+drift verifier compares every claimed invariant. Branch protection does not designate the merge actor.
+
+## MAO-001 Owner Authorization
+
+The owner decision `OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` in the canonical decision register is the
+authorization for this exact amendment. It is limited to the 16 source-cited WO-MAO-000 findings and
+the WO-MAO-001 file/action scope. It is not general R5 authority, production authority, credentials
+authority, suite-boundary authority, or permission to modify runtime behavior.
+
+## Staged Operator-Merge Activation
+
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
+
+Activation occurs only in MAO-002 after the two exact pilot PRs, final head SHAs, scopes,
+implementation operators, independent reviewer, and expiry are registered in
+`.governance/mao-002-pilot-merge-authority.json`, and the existing required `governed-spine` check
+passes its pilot interlock. MAO-001 itself remains Mode A and requires owner merge authority.
 
 ## Authority Records
 
