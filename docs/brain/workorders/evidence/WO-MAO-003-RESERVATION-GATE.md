@@ -16,6 +16,7 @@ second queue.
 | Explicit release restores pass | `released-reservation.json` and `test_passes_after_explicit_release` |
 | Reciprocal handoff restores pass | `reciprocal-handoff.json` and `test_passes_after_reciprocal_handoff` |
 | One-sided handoff fails closed | `test_one_sided_handoff_fails_closed` |
+| Handoff cannot broaden exact scope to subtree | `test_exact_source_cannot_handoff_broader_subtree` |
 | Stale reservations keep blocking | `test_stale_reservation_still_blocks` |
 | Renewal recovers stale state | `test_renewal_recovers_stale_state_without_releasing` |
 | Unregistered work cannot cross a reservation | `test_unregistered_pr_cannot_cross_active_reservation` |

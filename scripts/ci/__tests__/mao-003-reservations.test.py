@@ -55,6 +55,14 @@ class ReservationGateTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("reciprocal handoff", result.stdout)
 
+    def test_exact_source_cannot_handoff_broader_subtree(self):
+        def broaden_target(values):
+            values[0]["body"] = values[0]["body"].replace('"value":"docs/pilot/shared","scope":"subtree"', '"value":"docs/pilot/shared/b.md","scope":"exact"')
+            values[1]["body"] = values[1]["body"].replace('"scope":"exact"', '"scope":"subtree"')
+        result = self.run_fixture("reciprocal-handoff.json", 2002, "b" * 40, broaden_target)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("reciprocal handoff", result.stdout)
+
     def test_stale_reservation_still_blocks(self):
         def make_stale(values):
             values[0]["body"] = values[0]["body"].replace("2026-07-14T12:00:00Z", "2026-07-01T12:00:00Z")

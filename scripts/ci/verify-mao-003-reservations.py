@@ -380,11 +380,18 @@ def valid_handoff(source: Reservation, reservations: dict[str, Reservation]) -> 
     if source.status != "handed_off" or not source.handoff_to:
         return False
     target = reservations.get(source.handoff_to)
+    if source.kind == "path" and target:
+        resource_is_same_or_narrower = path_covers(source, target.value) and (
+            source.scope == "subtree" or target.scope == "exact"
+        )
+    else:
+        resource_is_same_or_narrower = bool(target and source.value == target.value)
     return bool(
         target and target.status == "active" and target.handoff_from == source.id
         and target.handoff_from_pr == source.assignment_pr
         and target.handoff_from_head_sha is not None
-        and source.kind == target.kind and (source.value == target.value or (source.kind == "path" and source.scope == "subtree" and path_covers(source, target.value)))
+        and source.kind == target.kind
+        and resource_is_same_or_narrower
     )
 
 
