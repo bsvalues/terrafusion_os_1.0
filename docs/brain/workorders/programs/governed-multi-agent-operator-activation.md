@@ -4,18 +4,31 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-001A`
-**Next Work Order:** `WO-MAO-002`
+**Current Work Order:** `WO-MAO-002`
+**Next Work Order:** `WO-MAO-003`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
 ## Owner Authorization Record
 
-`OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` is completed with PR #1273. The active correction decision is
-`OWNER-MAO-001A-AUTHORITY-STATE-SEPARATION` in `.governance/owner-decisions.json`. It authorizes only
-the split authority-state contract and its exact files/actions. It does not activate MAO-002, grant
-general R5 authority, authorize production or credentials, change suite boundaries, or permit runtime,
-backend, frontend, package, lockfile, or product behavior changes.
+`OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` is completed with PR #1273, and
+`OWNER-MAO-001A-AUTHORITY-STATE-SEPARATION` is completed with PR #1274. Issue #1276 records the
+one-time MAO-002 owner bootstrap envelope; Codex owns the changing pilot execution state. Issue #1277
+authorizes and records the bounded hook-runtime and native worker-plane repair. These records do not
+grant general R5 authority, authorize production or credentials, change suite boundaries, or permit
+runtime, backend, frontend, package, lockfile, or product behavior changes.
+
+## Worker-Plane Repair Evidence
+
+The pre-pilot repair prerequisite is complete:
+
+- [R1 hook runtime repair](../../evidence/WO-MAO-002-R1-HOOK-RUNTIME-REPAIR.md)
+- [R2 isolated mutable lane proof](../../evidence/WO-MAO-002-R2-MUTABLE-LANE-B-PROOF.md)
+- [worker-plane repair rollup](../../evidence/WO-MAO-002-WORKER-PLANE-REPAIR.md)
+
+Five native agents completed bounded proof: three independent read-only agents and two concurrent
+mutable agents in separate clean worktrees with disjoint single-file reservations. This proof clears
+the worker-plane prerequisite but is not counted as either MAO-002 pilot PR.
 
 ## Objective
 
