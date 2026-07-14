@@ -1,5 +1,7 @@
 {
   "branch": "main",
+  "last_verified": "2026-07-14",
+  "authorized_by_pr": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1273",
   "require_pull_request": true,
   "required_status_checks": {
     "strict": true,

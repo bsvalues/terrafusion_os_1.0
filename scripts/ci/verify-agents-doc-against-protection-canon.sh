@@ -38,6 +38,17 @@ with open(sys.argv[1], "r", encoding="utf-8") as f:
 with open(sys.argv[2], "r", encoding="utf-8") as f:
     agents = f.read()
 
+canon_block = re.search(
+    r"^### Branch Protection Canon \(Machine Readable\)\s*$\s*"
+    r"```yaml\s*(?P<body>.*?)^```\s*$",
+    agents,
+    re.IGNORECASE | re.MULTILINE | re.DOTALL,
+)
+if not canon_block:
+    print("FAIL: AGENTS.md is missing the machine-readable branch-protection canon block.")
+    raise SystemExit(1)
+agents_canon = canon_block.group("body")
+
 def canon_enabled(key):
     value = canon.get(key) or {}
     return bool(value.get("enabled")) if isinstance(value, dict) else bool(value)
@@ -58,15 +69,15 @@ expected = {
 expected_checks = (canon.get("required_status_checks") or {}).get("contexts", [])
 
 def find_bool(name):
-    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(true|false)\s*$", agents, re.IGNORECASE | re.MULTILINE)
+    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(true|false)\s*$", agents_canon, re.IGNORECASE | re.MULTILINE)
     return None if not match else match.group(1).lower() == "true"
 
 def find_int(name):
-    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(\d+)\s*$", agents, re.IGNORECASE | re.MULTILINE)
+    match = re.search(rf"^\s*{re.escape(name)}\s*:\s*(\d+)\s*$", agents_canon, re.IGNORECASE | re.MULTILINE)
     return None if not match else int(match.group(1))
 
 checks = []
-sec = re.search(r"contexts\s*:\s*\n(?P<body>(?:\s*-\s*.+\n)+)", agents, re.IGNORECASE)
+sec = re.search(r"contexts\s*:\s*\n(?P<body>(?:\s*-\s*.+\n)+)", agents_canon, re.IGNORECASE)
 if sec:
     body = sec.group("body")
     for line in body.splitlines():

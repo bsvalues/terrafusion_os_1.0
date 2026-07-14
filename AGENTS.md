@@ -151,22 +151,9 @@ The following status checks are **required** on `main` branch:
 
 ### Branch Protection Settings (GitHub)
 
-```
-main:
-  required_status_checks:
-    strict: true
-    contexts:
-      - "governed-spine"
-      - "phase85-tools"
-      - "phase86-toolrunner"
-      - "🔒 TerraFusion Seal Gate"
-      - "🧪 Tier-1 UI Harness Validation"
-  enforce_admins: true
-  require_pull_request: true
-  required_pull_request_reviews:
-    required_approving_review_count: 0  # Solo dev: CI = Constitutional Review
-  restrictions: null
-```
+The machine-readable canon block below is the sole inline branch-protection settings source. The
+normalized repository snapshot is `.governance/main.protection.json`; do not maintain a second YAML
+example here.
 
 ### Branch Protection Canon (Machine Readable)
 
@@ -247,7 +234,7 @@ git diff --no-index .tmp/main.protection.canon.norm.json .tmp/main.protection.cu
 - Link to the PR that authorized the change
 - Update "Last verified" date below
 
-**Last verified:** 2026-07-13 (WO-MAO-001 live API and canon reconciliation)
+**Last verified:** 2026-07-14 ([PR #1273](https://github.com/bsvalues/terrafusion_os_1.0/pull/1273), WO-MAO-001 live API and canon reconciliation)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:

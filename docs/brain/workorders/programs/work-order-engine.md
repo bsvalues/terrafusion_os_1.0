@@ -2,6 +2,7 @@
 
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+
 **Program:** P6  
 **Status:** ACTIVE  
 **Owner:** Operator (bsvalues@gmail.com)  

@@ -28,6 +28,11 @@ cat > "$tmp/.governance/main.protection.json" <<'JSON'
 JSON
 
 cat > "$tmp/AGENTS.md" <<'MD'
+require_pull_request: false
+
+### Branch Protection Canon (Machine Readable)
+
+```yaml
 require_pull_request: true
 required_status_checks:
   strict: true
@@ -40,6 +45,7 @@ enforce_admins: true
 required_conversation_resolution: true
 allow_force_pushes: false
 allow_deletions: false
+```
 MD
 
 mkdir -p "$tmp/scripts/ci"
@@ -54,6 +60,9 @@ chmod +x "$tmp/scripts/ci/verify-branch-protection-against-canon.sh"
 )
 
 cat > "$tmp/AGENTS.md" <<'MD'
+### Branch Protection Canon (Machine Readable)
+
+```yaml
 require_pull_request: true
 required_status_checks:
   strict: true
@@ -65,6 +74,7 @@ enforce_admins: false
 required_conversation_resolution: true
 allow_force_pushes: false
 allow_deletions: false
+```
 MD
 
 (

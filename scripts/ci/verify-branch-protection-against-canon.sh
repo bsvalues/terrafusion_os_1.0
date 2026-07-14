@@ -158,15 +158,7 @@ with open(sys.argv[2], "r", encoding="utf-8") as f:
 
 diffs = []
 
-for key in (
-    "require_pull_request",
-    "required_status_checks_strict",
-    "required_approving_review_count",
-    "enforce_admins",
-    "required_conversation_resolution",
-    "allow_force_pushes",
-    "allow_deletions",
-):
+for key in sorted((set(canon) | set(live)) - {"branch", "required_checks"}):
     if canon.get(key) != live.get(key):
         diffs.append(f"{key}: canon={canon.get(key)} live={live.get(key)}")
 

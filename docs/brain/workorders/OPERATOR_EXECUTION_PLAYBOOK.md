@@ -2,6 +2,7 @@
 
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+
 **Version:** 1.0
 **Date:** 2026-07-01
 **Authority:** WO-WOE-011
@@ -111,7 +112,7 @@ OPERATOR_ACTION_REQUIRED: <exactly what the human must authorize, or NONE — ke
 → WO-P8-MGMT-001 discovery → PR #1122 (auto-merge)
 → WO-P8-MGMT-002 reachability proof → PR #1123 (auto-merge)
 → WO-P8-MGMT-003 conformance fix → PR #1125 (auto-merge)
-→ NEXT_WO: WO-P8-MGMT-004 (deployment authorization PACKET — docs, same-risk)
+→ NEXT_WO: WO-P8-MGMT-004 (deployment authorization PACKET — docs, inside recorded authority)
 → then WALL: SW-01 at actual frontend deployment → stop, OPERATOR_ACTION_REQUIRED
 ```
 
