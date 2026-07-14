@@ -370,6 +370,35 @@ lane preselected.
 
 ---
 
+### /goal governed-multi-agent-operator
+
+```
+Goal:     GOAL-MAO-001 - Activate governed parallel execution under one Brain and bounded authority.
+Program:  PROGRAM-MAO-001 - Governed Multi-Agent Operator Activation
+File:     programs/governed-multi-agent-operator-activation.md
+Loop:     LOOP-MAO-001
+Success:  The MAO program advances through falsifiable pilot, reservation enforcement, planning,
+          playbook, rollout, and evidence gates without crossing protected boundaries.
+```
+
+**Current state:** `WO-MAO-002` is active. `WO-MAO-003` is next and owns the dispatch/reservation
+contract plus mechanical collision gate.
+
+**Mode B:** The canonical
+[Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)
+defines Mode B as preauthorized operator merge under recorded, revocable, exact-scope authority. For
+MAO-002, issue #1276 bounds that authority to the pilot envelope. `MAO_002_PILOT_BOOTSTRAP_JSON` and
+`MAO_002_PILOT_EXECUTION_JSON` are paired GitHub repository variables bound to the checked-in
+[MAO-002 pilot policy](../../../../.governance/mao-002-pilot-merge-authority.json); eligibility fails
+closed when the records, policy, or current pilot state do not agree.
+
+**Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+
+**Blocked:** This selector grants no runtime, product, production, credential, county, or county-data
+authority.
+
+---
+
 ### /goal portfolio-operator
 
 ```

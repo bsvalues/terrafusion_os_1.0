@@ -236,10 +236,12 @@ preselected.
 | WO-MAO-002 | Minimal Two-Lane Pilot | **ACTIVE** |
 | WO-MAO-003 | Dispatch/Reservation Contract + Mechanical Gate | **NEXT** |
 
-Mode B is bounded by the one-time owner envelope in issue #1276 and remains fail-closed unless the
-paired `MAO_002_PILOT_BOOTSTRAP_JSON` and exact `MAO_002_PILOT_EXECUTION_JSON` records agree with the
-checked-in policy and current pilot state. This route grants no runtime, product, production,
-credential, county, or county-data authority.
+[Mode B](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge) is preauthorized
+operator merge under recorded, revocable, exact-scope authority. For MAO-002 it is bounded by the
+one-time owner envelope in issue #1276 and remains fail-closed unless the paired GitHub repository
+variables `MAO_002_PILOT_BOOTSTRAP_JSON` and exact `MAO_002_PILOT_EXECUTION_JSON` agree with the
+checked-in [pilot policy](../../../../.governance/mao-002-pilot-merge-authority.json) and current pilot
+state. This route grants no runtime, product, production, credential, county, or county-data authority.
 
 ---
 
