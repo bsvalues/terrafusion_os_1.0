@@ -192,6 +192,58 @@
         "evidence": "docs/brain/evidence/WO-MAO-002-POST-MERGE-ASSURANCE.md",
         "operational_variables_released": true
       }
+    },
+    {
+      "id": "OWNER-MAO-003-R3-RESERVATION-GATE-20260714",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-003",
+      "status": "active",
+      "authority_class": "R3-bounded-governance-gate",
+      "effective_base_sha": "c46c19735f836907bdbd64755f2d0737105af7f3",
+      "terminal_condition": "One exact-scope WO-MAO-003 PR merges, closes without merge, or this decision is revoked",
+      "authorized_actions": [
+        "define deterministic path, contract, and environment reservation records",
+        "derive active reservations from governed open PR assignment state without creating a second queue",
+        "enforce lifecycle, stale recovery, explicit release, reciprocal handoff, and collision rejection",
+        "wire the MAO-003 verifier into the existing governed-spine required context",
+        "prove intentional overlap rejection and pass after release or valid handoff",
+        "create, review, validate, and perform one bounded Mode B squash merge for the exact MAO-003 scope",
+        "verify origin/main and route to WO-MAO-004 without granting WO-MAO-004 merge authority"
+      ],
+      "authorized_files": [
+        ".governance/mao-reservation-policy.json",
+        ".governance/owner-decisions.json",
+        ".github/workflows/core-governance-gates.yml",
+        "scripts/ci/verify-mao-003-reservations.py",
+        "scripts/ci/__tests__/mao-003-reservations.test.py",
+        "scripts/ci/__tests__/fixtures/mao-003/**",
+        "docs/brain/workorders/active/WO-MAO-003-dispatch-reservation-enforcement.md",
+        "docs/brain/workorders/schema/worker-assignment.schema.json",
+        "docs/brain/workorders/schema/reservation.schema.json",
+        "docs/brain/workorders/schema/MAO_DISPATCH_RESERVATION_CONTRACT.md",
+        "docs/brain/workorders/evidence/WO-MAO-003-RESERVATION-GATE.md",
+        "docs/brain/workorders/CANON_INDEX.md",
+        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md",
+        "docs/governance/CI_GOVERNANCE_INDEX.md"
+      ],
+      "explicitly_denied": [
+        "runtime, backend, frontend, product, package, lockfile, or tools-sync changes",
+        "production, deployment, county, PACS, SQL, credential, secret, or protected-data access",
+        "portfolio-wide operator merge authority",
+        "force push or required-gate bypass",
+        "merge authority for WO-MAO-004"
+      ],
+      "merge_mode": "B-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-gate bypass",
+        "protected-boundary access",
+        "reservation gate fails to reject the intentional overlap",
+        "conflicting owner decision"
+      ],
+      "decision_basis": "Issue #1283 and owner decision OWNER-MAO-003-R3-RESERVATION-GATE-20260714"
     }
   ]
 }

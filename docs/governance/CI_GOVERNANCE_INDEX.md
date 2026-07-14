@@ -33,6 +33,7 @@ protection canon.
 | [`verify-agents-doc-against-protection-canon.sh`](../../scripts/ci/verify-agents-doc-against-protection-canon.sh) | Detects prose/canon invariant drift |
 | [`.governance/mao-002-pilot-merge-authority.json`](../../.governance/mao-002-pilot-merge-authority.json) | Inactive MAO-002 ceiling and split owner/operator state contract |
 | [`verify-mao-002-pilot-authority.py`](../../scripts/ci/verify-mao-002-pilot-authority.py) | Split-envelope exact-PR/SHA/scope/reservation interlock inside required `governed-spine` |
+| [`verify-mao-003-reservations.py`](../../scripts/ci/verify-mao-003-reservations.py) | Open-PR assignment, lifecycle, handoff, stale-state, and reservation-collision enforcement inside required `governed-spine` |
 
 ## API Normalization
 
@@ -99,6 +100,7 @@ reservation enforcement remains MAO-003 scope.
 ```bash
 bash scripts/ci/__tests__/governance-canon-scripts.test.sh
 python scripts/ci/__tests__/mao-002-pilot-authority.test.py
+python scripts/ci/__tests__/mao-003-reservations.test.py
 bash scripts/ci/verify-agents-doc-against-protection-canon.sh
 
 # Requires repository/token access and compares current live protection.

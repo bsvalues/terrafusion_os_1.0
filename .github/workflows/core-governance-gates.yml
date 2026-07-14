@@ -6,6 +6,7 @@ concurrency:
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   push:
     branches: [main]
 
@@ -65,6 +66,17 @@ jobs:
           TF_MAO_002_EXECUTION_JSON: ${{ vars.MAO_002_PILOT_EXECUTION_JSON }}
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/ci/verify-mao-002-pilot-authority.py
+      - name: Test MAO-003 reservation gate
+        if: needs.changes.outputs.core == 'true'
+        run: python3 scripts/ci/__tests__/mao-003-reservations.test.py
+      - name: Verify MAO-003 reservations
+        if: github.event_name == 'pull_request'
+        env:
+          TF_REPO: ${{ github.repository }}
+          TF_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TF_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/ci/verify-mao-003-reservations.py
       - name: No core governance changes
         if: needs.changes.outputs.core != 'true'
         run: echo "No core governance surface changes — governed-spine satisfied."

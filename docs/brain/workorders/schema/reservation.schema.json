@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/reservation.schema.json",
+  "title": "TerraFusion MAO Reservation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "value", "scope", "status", "reserved_at"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]+$" },
+    "kind": { "enum": ["path", "contract", "environment"] },
+    "value": { "type": "string", "minLength": 1 },
+    "scope": { "enum": ["exact", "subtree"] },
+    "status": { "enum": ["active", "released", "handed_off"] },
+    "reserved_at": { "type": "string", "format": "date-time" },
+    "renewed_at": { "type": "string", "format": "date-time" },
+    "released_at": { "type": "string", "format": "date-time" },
+    "release_reason": { "type": "string", "minLength": 1 },
+    "handoff_to": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]+$" },
+    "handoff_from": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]+$" },
+    "handoff_from_pr": { "type": "integer", "minimum": 1 },
+    "handoff_from_head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "kind": { "enum": ["contract", "environment"] } }
+      },
+      "then": { "properties": { "scope": { "const": "exact" } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "released" } } },
+      "then": { "required": ["released_at", "release_reason"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "handed_off" } } },
+      "then": { "required": ["handoff_to"] }
+    },
+    {
+      "if": { "required": ["handoff_from"] },
+      "then": { "required": ["handoff_from_pr", "handoff_from_head_sha"] }
+    }
+  ]
+}
