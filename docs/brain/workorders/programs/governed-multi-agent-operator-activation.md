@@ -4,8 +4,8 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-002`
-**Next Work Order:** `WO-MAO-003`
+**Current Work Order:** `WO-MAO-003`
+**Next Work Order:** `WO-MAO-004`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -31,6 +31,18 @@ The linked child records and root collection rollup establish five native bounde
 independent read-only agents and two concurrent mutable agents in separate clean worktrees with
 disjoint single-file reservations. This proof clears the worker-plane prerequisite but is not counted
 as either MAO-002 pilot PR.
+
+## Pilot Completion Evidence
+
+`WO-MAO-002` completed with PR #1281 merged at
+`405677e151955b48d3e5f8abd269238736d2ab74` and PR #1280 merged at
+`4f68ba4c689f100eb822f18bdb07a5c5b082a660`. The canonical
+[post-merge assurance](../../evidence/WO-MAO-002-POST-MERGE-ASSURANCE.md) records exact heads,
+reservations, independent reviews, checks, cycle times, founder touches, rollback class, and protected
+scope proof. The pilot had zero founder queue-routing touches after the one-time bootstrap grant.
+
+The pilot deliberately did not test overlapping reservations. `WO-MAO-003` is now active and must
+mechanically reject an intentional overlap before the program advances.
 
 ## Objective
 
@@ -87,30 +99,23 @@ It does not prove reservation enforcement. MAO-003 owns that proof.
 Each pilot PR receives a post-merge scope check from a separate read-only assurance-agent instance.
 The reviewer is neither the implementation operator nor William.
 
-## Pilot Merge Authority
+## Pilot Merge Authority Completion
 
-**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
+**GENERAL MODE B IS RATIFIED; THE MAO-002 GRANT IS COMPLETE AND INACTIVE.**
 
-MAO-001 ratified the bounded, revocable Mode B model. MAO-001A corrects its operational boundary.
-The owner grants one bootstrap envelope containing the authorized operator and assurance identities,
-repository set, path ceiling, risk ceiling, maximum two pilot merges, expiry, and suspension state.
-Codex translates that grant into `MAO_002_PILOT_BOOTSTRAP_JSON`; William does not type variable JSON.
-Codex then owns `MAO_002_PILOT_EXECUTION_JSON`, including dispatch packets, reservations, PR numbers,
-exact current head SHAs, allowed paths, implementation identities, assurance evidence, and revision.
-Review fixes and branch updates require Codex to refresh only the execution record and rerun the gate.
-The execution record is bound to the exact bootstrap digest and both records bind to the checked-in
-inactive `.governance/mao-002-pilot-merge-authority.json` policy. The required `governed-spine` check
-rejects any execution field outside the owner envelope.
+MAO-001 ratified the bounded, revocable Mode B model, and MAO-001A corrected its operational boundary.
+Issue #1276 supplied one owner bootstrap envelope; Codex translated it into the bootstrap variable and
+owned the separate execution variable. Both authorized PRs merged, independent assurance passed, and
+Codex removed both operational variables together after recording completion. William did not
+maintain PR numbers, head SHAs, reservations, or variable JSON.
 
-Any suspension trigger immediately revokes the pilot grant. Restoration requires incident evidence,
-normal-PR containment or rollback, verified `main`, corrected controls, and explicit ratification.
+The checked-in `.governance/mao-002-pilot-merge-authority.json` policy remains inactive and fail-closed.
+Issue #1276 remains the durable authority record, not an active grant. A future Mode B lane requires a
+new applicable recorded grant and cannot inherit MAO-002 authority.
 
-The operator execution record has exactly two slots. A pilot-labeled or `codex/mao-002-*` PR fails
-closed when either split record is absent, the owner envelope is not active, either record is
-suspended, digests differ, the current head differs, scope or risk exceeds the envelope, reservations
-are missing or overlap, reviewer independence is invalid, or the grant is expired. Owner fields are
-forbidden in execution state and execution fields are forbidden in the owner envelope. Scope
-evaluation includes both sides of a rename. No third PR can inherit the grant.
+During MAO-002, the execution record had exactly two slots and the gate failed closed on absent or
+mismatched records, suspension, head drift, scope or risk expansion, reservation overlap, reviewer
+identity failure, expiry, and both sides of a rename. No third PR can inherit the completed grant.
 
 ## Reservation Boundary
 

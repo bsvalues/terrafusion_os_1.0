@@ -381,16 +381,15 @@ Success:  The MAO program advances through falsifiable pilot, reservation enforc
           playbook, rollout, and evidence gates without crossing protected boundaries.
 ```
 
-**Current state:** `WO-MAO-002` is active. `WO-MAO-003` is next and owns the dispatch/reservation
-contract plus mechanical collision gate.
+**Current state:** `WO-MAO-002` is complete with independent post-merge assurance. `WO-MAO-003` is
+active and owns the dispatch/reservation contract plus mechanical collision gate; `WO-MAO-004` is
+next.
 
 **Mode B:** The canonical
 [Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)
-defines Mode B as preauthorized operator merge under recorded, revocable, exact-scope authority. For
-MAO-002, issue #1276 bounds that authority to the pilot envelope. `MAO_002_PILOT_BOOTSTRAP_JSON` and
-`MAO_002_PILOT_EXECUTION_JSON` are paired GitHub repository variables bound to the checked-in
-[MAO-002 pilot policy](../../../../.governance/mao-002-pilot-merge-authority.json); eligibility fails
-closed when the records, policy, or current pilot state do not agree.
+defines Mode B as preauthorized operator merge under recorded, revocable, exact-scope authority.
+MAO-002 consumed its two-PR issue #1276 grant and released the paired operational variables after
+post-merge assurance. The completed pilot grant creates no continuing Mode B authority.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
