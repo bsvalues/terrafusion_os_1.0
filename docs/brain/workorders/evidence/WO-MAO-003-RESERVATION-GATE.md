@@ -14,6 +14,7 @@ second queue.
 | Intentional overlap is rejected | `intentional-overlap.json` and `test_intentional_overlap_identifies_both_owners` |
 | Conflict identifies WO, PR, repository, path | Exact assertions in the intentional-overlap test |
 | Explicit release restores pass | `released-reservation.json` and `test_passes_after_explicit_release` |
+| Release time cannot predate or postdate the effective reservation window | `test_release_cannot_precede_reservation` and `test_release_cannot_be_in_the_future` |
 | Reciprocal handoff restores pass | `reciprocal-handoff.json` and `test_passes_after_reciprocal_handoff` |
 | One-sided handoff fails closed | `test_one_sided_handoff_fails_closed` |
 | Handoff cannot broaden exact scope to subtree | `test_exact_source_cannot_handoff_broader_subtree` |

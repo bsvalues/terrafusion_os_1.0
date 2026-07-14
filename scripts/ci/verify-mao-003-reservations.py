@@ -237,11 +237,19 @@ def validate_reservation(raw: object, assignment: dict, index: int, policy: dict
     if kind != "path" and scope != "exact":
         fail(f"{source} contract/environment scope must be exact")
     value = normalize_path(raw.get("value"), f"{source}.value") if kind == "path" else normalize_identifier(raw.get("value"), f"{source}.value")
-    timestamp = parse_time(raw.get("renewed_at", raw.get("reserved_at")), source)
+    reserved_at = parse_time(raw.get("reserved_at"), f"{source}.reserved_at")
+    renewed_at = parse_time(raw.get("renewed_at"), f"{source}.renewed_at") if raw.get("renewed_at") else None
+    if renewed_at is not None and renewed_at < reserved_at:
+        fail(f"{source}.renewed_at cannot precede reserved_at")
+    timestamp = renewed_at or reserved_at
     if timestamp > now + dt.timedelta(minutes=5):
         fail(f"{source} timestamp cannot be in the future")
     if status == "released":
-        parse_time(raw.get("released_at"), f"{source}.released_at")
+        released_at = parse_time(raw.get("released_at"), f"{source}.released_at")
+        if released_at < timestamp:
+            fail(f"{source}.released_at cannot precede the reservation timestamp")
+        if released_at > now:
+            fail(f"{source}.released_at cannot be in the future")
         if not isinstance(raw.get("release_reason"), str) or not raw["release_reason"].strip():
             fail(f"{source} released state requires release_reason")
     if status == "handed_off" and not raw.get("handoff_to"):

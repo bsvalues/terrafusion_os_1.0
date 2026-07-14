@@ -26,7 +26,9 @@ assignment state for that PR, between these markers:
    to credentials, production, county systems, or an environment itself.
 7. A reservation becomes stale 72 hours after `renewed_at` or `reserved_at`. Stale reservations keep
    blocking until renewed, explicitly released, or handed off.
-8. Release requires `released_at` and `release_reason` and preserves the record as evidence.
+8. Release requires `released_at` and `release_reason`, preserves the record as evidence, and is valid
+   only when `released_at` is not earlier than the effective reservation timestamp and not later than
+   the gate's current time.
 9. Handoff requires a source in `handed_off` state naming the target reservation and an active target
    naming the source PR and exact source head with the same or narrower resource. Closed source PR
    evidence is fetched directly and remains valid; a one-sided or head-drifted handoff fails closed.

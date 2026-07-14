@@ -43,6 +43,20 @@ class ReservationGateTest(unittest.TestCase):
         result = self.run_fixture("released-reservation.json", 2002, "b" * 40)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_release_cannot_precede_reservation(self):
+        def release_before_reservation(values):
+            values[0]["body"] = values[0]["body"].replace('"released_at":"2026-07-14T13:00:00Z"', '"released_at":"2020-01-01T00:00:00Z"')
+        result = self.run_fixture("released-reservation.json", 2002, "b" * 40, release_before_reservation)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("cannot precede the reservation timestamp", result.stdout)
+
+    def test_release_cannot_be_in_the_future(self):
+        def release_in_future(values):
+            values[0]["body"] = values[0]["body"].replace('"released_at":"2026-07-14T13:00:00Z"', '"released_at":"2099-01-01T00:00:00Z"')
+        result = self.run_fixture("released-reservation.json", 2002, "b" * 40, release_in_future)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("cannot be in the future", result.stdout)
+
     def test_passes_after_reciprocal_handoff(self):
         result = self.run_fixture("reciprocal-handoff.json", 2002, "b" * 40)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
