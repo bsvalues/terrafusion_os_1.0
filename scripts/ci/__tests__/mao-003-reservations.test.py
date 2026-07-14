@@ -94,6 +94,13 @@ class ReservationGateTest(unittest.TestCase):
         result = self.run_fixture("intentional-overlap.json", 2003, "c" * 40, add_unrelated)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_unrelated_pr_does_not_validate_released_lanes_scope(self):
+        def add_unrelated_and_restore_source_files(values):
+            values[0]["changed_files"] = ["docs/pilot/shared/a.md"]
+            values.append({"number": 2003, "repository": "bsvalues/terrafusion_os_1.0", "head_sha": "c" * 40, "body": "", "changed_files": ["docs/unrelated/c.md"]})
+        result = self.run_fixture("released-reservation.json", 2003, "c" * 40, add_unrelated_and_restore_source_files)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_existing_holder_also_fails_while_collision_remains(self):
         def make_lower_pr_later(values):
             values[0]["body"] = values[0]["body"].replace("2026-07-14T12:00:00Z", "2026-07-14T12:01:00Z")
@@ -114,6 +121,15 @@ class ReservationGateTest(unittest.TestCase):
         result = self.run_fixture("first-reservation.json", 2001, "a" * 40, invalid_wo)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("schema pattern", result.stdout)
+
+    def test_raw_dot_and_empty_path_segments_fail_closed(self):
+        for invalid in ["docs/./pilot/shared", "docs//pilot/shared", "docs/../pilot/shared"]:
+            with self.subTest(path=invalid):
+                def change_path(values, replacement=invalid):
+                    values[0]["body"] = values[0]["body"].replace('"value":"docs/pilot/shared"', f'"value":"{replacement}"')
+                result = self.run_fixture("first-reservation.json", 2001, "a" * 40, change_path)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("unsafe path segment", result.stdout)
 
     def test_contract_reservations_collide_exactly(self):
         def convert_to_contract(values):

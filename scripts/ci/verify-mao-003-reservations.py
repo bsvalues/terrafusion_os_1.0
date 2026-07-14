@@ -153,6 +153,9 @@ def normalize_path(value: object, source: str) -> str:
         fail(f"{source} must be a non-empty repository-relative path")
     if value.startswith(("/", "\\")) or "\\" in value or any(token in value for token in "*?["):
         fail(f"{source} must be a normalized repository-relative path without globs")
+    raw_parts = value.split("/")
+    if any(part in {"", ".", ".."} for part in raw_parts):
+        fail(f"{source} contains an unsafe path segment")
     path = PurePosixPath(value)
     if any(part in {"", ".", ".."} for part in path.parts):
         fail(f"{source} contains an unsafe path segment")
@@ -461,7 +464,7 @@ def main() -> None:
     blocking_reservations = [reservation for reservation in all_reservations if reservation.assignment_state == "open" and blocking(reservation, reservation_map)]
 
     for assignment in assignments:
-        if assignment.state != "open":
+        if assignment.state != "open" or assignment.pr != current_pr:
             continue
         active_paths = [reservation for reservation in assignment.reservations if blocking(reservation, reservation_map) and reservation.kind == "path"]
         uncovered = [path for path in assignment.changed_files if not any(path_covers(reservation, path) for reservation in active_paths)]
