@@ -48,10 +48,16 @@ Cortex answers with a verdict, not a boolean — *governed acceleration*:
 `Proceed` · `Proceed with constraints` · `Escalate` · `Defer` · `Block` · `Recover`.
 See `brain classify` / `brain review-diff`. Modes: see [`CORTEX_MODES.md`](CORTEX_MODES.md).
 
-## Source priority (what wins)
-Cortex prefers higher authority and treats old docs as context, not law. See
-[`canon/source-priority.json`](canon/source-priority.json). Order:
-`AGENT_ENTRYPOINT → canon → architecture specs → active ADRs → current release → graph → old docs → archive`.
+## Source discovery priority (where Cortex looks first)
+
+[`canon/source-priority.json`](canon/source-priority.json) is a lookup order for source discovery and
+context gathering. It is not an authority hierarchy and does not decide which source wins a conflict.
+Semantic precedence is controlled by root [`CANON_INDEX.md`](../../CANON_INDEX.md) and
+[`ADR-EXEC-001`](../adr/ADR-EXEC-001-governance-authority-hierarchy.md).
+
+Cortex searches entrypoints and canonical material before older context so it can find governing
+sources efficiently. If discovered sources conflict, Cortex applies the controlling authority order
+rather than the discovery order.
 
 ## Naming note
 "Cortex" is the **system identity**; the implementation lives under `docs/brain/` + `scripts/brain/`

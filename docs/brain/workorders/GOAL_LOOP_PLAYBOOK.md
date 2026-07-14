@@ -1,5 +1,7 @@
 # TerraFusion Goal/Loop Program Playbook
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0  
 **Date:** 2026-06-30  
 **Authority:** TerraFusion Brain / WO-WOE-010  
@@ -48,7 +50,7 @@ validation + evidence
   ↓
 PR / merge / stop gate
   ↓
-loop continues only if same-risk and no authority wall
+loop continues only inside recorded authority and across no unresolved authority wall
 ```
 
 ---

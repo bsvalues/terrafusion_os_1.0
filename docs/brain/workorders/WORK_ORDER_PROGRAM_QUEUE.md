@@ -13,15 +13,31 @@
 
 ## Active Goal
 
-`brain-operator` - **evidence baseline COMPLETE at `WO-BRAIN-009`** (PARTIAL / INTEGRATION GAP — see
-[evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md](evidence/WO-BRAIN-009-BRAIN-WOE-INTEGRATION-EVIDENCE.md)).
-`WO-BRAIN-008` produced the canonical [CONTINUATION_RULEBOOK.md](CONTINUATION_RULEBOOK.md). **Next action:
-portfolio reconciliation** — the portfolio-operator selects the next dependency-cleared lane; **no lane is
-preselected here.**
+`governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
+
+`WO-MAO-000` is complete and persisted at
+[`docs/brain/evidence/WO-MAO-000-proof.md`](../evidence/WO-MAO-000-proof.md). `WO-MAO-001` is the
+active governance-reconciliation Work Order and `WO-MAO-002` is the next dependency-cleared node
+after merge. Operator merge is ratified but inactive. The pilot is limited to two disjoint dispatch
+packets and two exact PRs registered by final SHA in the visible
+`MAO_002_PILOT_AUTHORITY_JSON` repository variable and checked by the required governed-spine
+interlock; it does not claim to prove reservation enforcement.
 
 ---
 
 ## Program Queues
+
+### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
+| WO | State | Notes |
+|----|-------|-------|
+| WO-MAO-000 Doctrine Conflict Audit | DONE | Full read-only contradiction matrix and historical denominator persisted in governed evidence |
+| **WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification** | **ACTIVE** | Owner-authorized exact R5 governance amendment; Mode A merge; bounded operator model ratified but inactive |
+| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | Two disjoint WOs; exact PR/final-SHA authority slots; independent read-only post-merge reviewer; required governed-spine interlock |
+| WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | QUEUED | Must reject an intentional overlapping reservation |
+| WO-MAO-004 Executable Graph / Parallel Wave Planner | QUEUED | Dependency and conflict-aware dispatch waves |
+| WO-MAO-005 Evidence-Informed Agent Playbooks | QUEUED | Rules must cite pilot/enforcement evidence |
+| WO-MAO-006 Portfolio Rollout | QUEUED | Expand only after pilot and mechanical gate evidence |
+| WO-MAO-007 Evidence Rollup and Canon Closeout | QUEUED | Measures founder touches, concurrency, cycle time, and violations |
 
 ### p8-management-dashboard  (`/goal p8-management-dashboard`)
 | WO | State | PR | Notes |
@@ -116,7 +132,7 @@ remains an R2 UI soft wall.
 
 ## Operator Note
 
-Under `/loop program` (within-program scope), run same-risk unblocked WOs in the active program without
+Under `/loop program` (within-program scope), run dependency-cleared WOs inside recorded authority without
 returning to the human, and **STOP + surface the wall** when the active program hits one. Cross-program
 advance (park-and-advance) is the **portfolio-operator** program's job only. The live "current node / next
 WO" is **this queue**, not any `Current Selection` prose in `programs/*.md`. See

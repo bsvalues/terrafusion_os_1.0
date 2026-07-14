@@ -47,8 +47,28 @@ with open(path, "r", encoding="utf-8") as f:
 
 out = {
     "branch": canon.get("branch", "main"),
-    "enforce_admins": bool(canon.get("enforce_admins")),
-    "required_checks": sorted(list(dict.fromkeys(canon.get("required_checks", [])))),
+    "require_pull_request": bool(canon.get("require_pull_request")),
+    "required_status_checks_strict": bool(
+        (canon.get("required_status_checks") or {}).get("strict")
+    ),
+    "required_checks": sorted(
+        list(
+            dict.fromkeys(
+                (canon.get("required_status_checks") or {}).get("contexts", [])
+            )
+        )
+    ),
+    "required_approving_review_count": (
+        canon.get("required_pull_request_reviews") or {}
+    ).get("required_approving_review_count"),
+    "enforce_admins": bool((canon.get("enforce_admins") or {}).get("enabled")),
+    "required_conversation_resolution": bool(
+        (canon.get("required_conversation_resolution") or {}).get("enabled")
+    ),
+    "allow_force_pushes": bool(
+        (canon.get("allow_force_pushes") or {}).get("enabled")
+    ),
+    "allow_deletions": bool((canon.get("allow_deletions") or {}).get("enabled")),
 }
 print(json.dumps(out, indent=2, ensure_ascii=False))
 PY
@@ -106,8 +126,23 @@ contexts = sorted(
 
 out = {
     "branch": branch,
+    # GitHub represents "require PR" by the presence of this protection object.
+    "require_pull_request": data.get("required_pull_request_reviews") is not None,
+    "required_status_checks_strict": bool(req.get("strict", False)),
     "enforce_admins": enforce_admins,
     "required_checks": contexts,
+    "required_approving_review_count": (
+        data.get("required_pull_request_reviews") or {}
+    ).get("required_approving_review_count"),
+    "required_conversation_resolution": bool(
+        (data.get("required_conversation_resolution") or {}).get("enabled", False)
+    ),
+    "allow_force_pushes": bool(
+        (data.get("allow_force_pushes") or {}).get("enabled", False)
+    ),
+    "allow_deletions": bool(
+        (data.get("allow_deletions") or {}).get("enabled", False)
+    ),
 }
 print(json.dumps(out, indent=2, ensure_ascii=False))
 PY
@@ -123,10 +158,9 @@ with open(sys.argv[2], "r", encoding="utf-8") as f:
 
 diffs = []
 
-if canon.get("enforce_admins") != live.get("enforce_admins"):
-    diffs.append(
-        f"enforce_admins: canon={canon.get('enforce_admins')} live={live.get('enforce_admins')}"
-    )
+for key in sorted((set(canon) | set(live)) - {"branch", "required_checks"}):
+    if canon.get(key) != live.get(key):
+        diffs.append(f"{key}: canon={canon.get(key)} live={live.get(key)}")
 
 cset = set(canon.get("required_checks", []))
 lset = set(live.get("required_checks", []))

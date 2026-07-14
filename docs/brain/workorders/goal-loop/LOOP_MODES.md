@@ -1,5 +1,7 @@
 # /loop Mode Definitions
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Authority:** WO-WOE-010  
 **Classification:** Operator Doctrine
 
@@ -7,9 +9,9 @@
 
 ## What /loop Does
 
-`/loop` owns repeated execution inside an approved risk boundary. It selects the next unblocked WO
-from the active program and runs it. It continues only if the next WO is same-risk and no authority
-wall is crossed.
+`/loop` owns repeated execution inside an approved authority boundary. It selects the next unblocked
+WO from the active program and runs it. It continues only if the next WO's risk, systems, files, and
+actions are already authorized and no unresolved authority wall is crossed.
 
 `/loop` never expands scope beyond the active WO. It stops and reports when a wall is reached.
 
@@ -44,11 +46,11 @@ a full result block.
 
 ### /loop program
 
-Continue through same-risk WOs in the active program until a terminal condition is reached.
+Continue through authorized WOs in the active program until a terminal condition is reached.
 
 **Continues while:**
 - next WO is in the same program
-- next WO risk class is equal to or lower than the current WO
+- next WO remains within the risk ceiling and systems recorded by the active Goal, Loop, and WO chain
 - no authority wall is in the next WO's sovereignty boundary
 - all dependencies of the next WO are satisfied (merged PRs, completed WOs)
 - no failed validation gate in the active chain
@@ -168,13 +170,15 @@ Halt the current loop and emit a full result block with the stop reason.
 A loop may continue to the next WO only when ALL of the following are true:
 
 1. The current WO has a COMPLETED result with evidence
-2. The next WO is in the same active program (or explicitly cross-program and approved)
-3. The next WO's risk class is not higher than the current WO
+2. The next WO is in the same active program; cross-program advancement is selected only while the
+   active loop is the portfolio-operator program
+3. The next WO's risk class, systems, files, and actions are already authorized
 4. The next WO has no unresolved dependencies (no pending-merge PRs that the next WO requires)
 5. The next WO does not cross an authority wall
 6. No conflicting canon between the current and next WO's sovereignty boundaries
 
-If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
+If an item is unknown, perform bounded read-only source and live-state discovery first. Downgrade to
+`/loop once` or `/loop stop` only if a material authority uncertainty remains.
 
 ---
 
@@ -182,13 +186,13 @@ If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
 
 | Class | Examples |
 |-------|---------|
-| R0 — Read-only | Discovery, evidence collection, SQL SELECT |
+| R0 — Read-only | Discovery and evidence collection from non-protected local sources; never PACS, county SQL, or protected county data |
 | R1 — Docs/registry | Markdown, evidence docs, WO register updates |
-| R2 — Config/tooling | appsettings, CI config, dev tool setup |
-| R3 — Code/backend | C# service, EF migration, API endpoint |
-| R4 — Deployment | Azure deploy, App Service config, production |
-| R5 — Data mutation | DELETE/UPDATE on production or demo DB |
-| R5 — Secrets | Credential rotation, key vault, secret injection |
+| R2 — Local developer tooling | Read-only scripts, local bootstrap, dev-only examples |
+| R3 — CI/governance/tooling | Pipeline gates, hooks, policy config, branch hygiene |
+| R4 — Runtime/application behavior | Backend, frontend, and OS-platform behavior changes |
+| R5 — Production/security/protected data | Release, deployment, secrets, PACS, county SQL, county data |
 
-`/loop program` may continue through same or lower risk. It must stop before crossing up a risk class
-that contains an authority wall.
+`/loop program` may continue through any class explicitly granted by the active authority record. It
+must stop before an ungranted risk, system, file, or action boundary. PACS, county SQL, protected
+county data, R4, and R5 are never inferred, including for read-only work.

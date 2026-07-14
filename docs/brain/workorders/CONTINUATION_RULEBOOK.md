@@ -1,8 +1,10 @@
 # Autonomous Continuation Rulebook (Canonical)
 
-**Version:** 1.0
-**Date:** 2026-07-12
-**Authority:** WO-BRAIN-008 — Autonomous Continuation Rulebook Reconciliation
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+**Version:** 1.1
+**Date:** 2026-07-13
+**Authority:** WO-BRAIN-008, reconciled by WO-MAO-001
 **Classification:** Operator Doctrine — the single source of truth for continuation, portfolio
 reconciliation, wall parking, true-stop, and file authority.
 
@@ -20,7 +22,7 @@ reconciliation, wall parking, true-stop, and file authority.
 ## 1. Why this exists
 
 Two prior doctrines diverged. WOE-011 / LOOP_MODES made `/loop program` run a **single program's**
-same-risk queue and **STOP at its first wall**. WOE-012 / AUTONOMOUS_CONTINUATION_GATE made the operator
+authorized queue and **STOP at its first wall**. WOE-012 / AUTONOMOUS_CONTINUATION_GATE made the operator
 **cross programs** on a wall — park the lane and advance to the next safe lane, stopping only when every
 lane is parked. Read literally, one says "stop at the wall" and the other says "advance past it." This
 rulebook removes the ambiguity by defining **scopes**: the same wall means STOP in one scope and
@@ -51,13 +53,14 @@ Under `/loop program` on a regular program, continue to the next WO only when AL
 
 1. the current WO has a COMPLETED result with evidence;
 2. the next WO is in the **same** active program;
-3. the next WO's risk class is **equal to or lower** than the current WO (R0 ≤ R1 ≤ R2; never auto-cross
-   into R3+/a wall — see [risk classes in LOOP_MODES.md](goal-loop/LOOP_MODES.md));
+3. the next WO's risk class, systems, files, and actions remain inside the authority ceiling explicitly
+   recorded by the active Goal, Loop, and Work Order chain;
 4. all dependencies are satisfied (required PRs merged, prerequisite WOs done);
 5. the next WO crosses **no** authority wall (SW-01..SW-10);
 6. no conflicting canon and no failed out-of-scope validation gate.
 
-If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
+If an item is unknown, first perform bounded read-only source discovery and live-state inspection.
+Downgrade to `/loop once` or `/loop stop` only when the uncertainty remains material after that lookup.
 
 ---
 
@@ -70,7 +73,8 @@ If any item is uncertain, downgrade to `/loop once` or `/loop stop`.
 1. RECORD  the wall/exhaustion in the Wall Ledger (WORK_ORDER_PROGRAM_QUEUE.md §Global Walls).
 2. PARK    the blocked WO (never cross the wall to stay busy).
 3. SELECT  the next lane by Lane Priority: lowest-risk-first → continuity → dependency-readiness →
-           register order — only lanes whose next WO is UNBLOCKED, SAME-RISK-OR-LOWER, crossing NO wall.
+           register order — only lanes whose next WO is UNBLOCKED, inside recorded authority, and
+           crossing NO unresolved wall.
 4. ADVANCE run that lane's within-program queue (§3).
 5. REPEAT  until no safe lane remains.
 6. STOP    at ALL-LANES-PARKED — the only legitimate full stop of a portfolio run.
@@ -84,8 +88,10 @@ this rulebook for the scope boundary.
 
 ## 5. How walls park lanes
 
-A wall (`SW-01..SW-10`, or any R3+/deploy/data/secret/runtime/CI/schema/product change) **parks the
-lane** — it is never crossed to keep working:
+A wall (`SW-01..SW-10`) is a presently unresolved boundary requiring new authority. It **parks the
+lane** and is never crossed merely to keep working. Risk class alone is not a wall: R3, R4, or R5 work
+may proceed only when the active authority record explicitly grants that class, systems, files, and
+actions.
 
 - **RECORD** it in the Wall Ledger: `program | parked WO | wall | one-line reason | evidence`.
 - **PARK** the blocked WO; do not downgrade the wall ("just a small edit") to enter it; do not invent a
@@ -105,13 +111,14 @@ lane** — it is never crossed to keep working:
 | Portfolio run: a lane walls | do **not** stop — park + advance |
 | Portfolio run: ALL lanes parked/exhausted | **STOP** — All-Lanes-Parked report |
 | Bounded mode reaches its scope boundary | **STOP** per that mode |
-| Human authority wall (R3+, deploy, data, secrets, PACS, county, new external service) | **STOP** — always |
+| R3-R5 action requires authority not present in the active record | **STOP** — request the missing authority |
 | Merge requires human authority not already granted | **STOP** |
 | Conflicting canon, or an honesty invariant would be violated | **STOP** |
 
-**The human is the authority wall, not the per-WO dispatcher.** Safe, same-risk continuation *inside the
-active scope* is automatic and must not prompt "what next?". The human decides only at walls, risk-class
-increases, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts. (This supersedes the older
+**The human is the authority wall, not the per-WO dispatcher.** Safe continuation *inside the recorded
+authority boundary* is automatic and must not prompt "what next?". The human decides only when new
+authority is required, at ALL-LANES-PARKED, at merge-authority gaps, or at unresolved canon conflicts.
+(This supersedes the older
 "the operator always makes the final call on which WO to execute next" line in
 [work-order-engine.md](programs/work-order-engine.md), which predates the continuation gate.)
 
@@ -145,7 +152,7 @@ from a `Current Selection` line.
 | `/loop program` "stops at authority wall" | LOOP_MODES.md | True for **within-program** scope; in **portfolio** scope the wall parks-and-advances (§2, §5). |
 | Operator crosses programs on a wall, stopping only at all-lanes-parked | AUTONOMOUS_CONTINUATION_GATE.md | Applies to the **portfolio-operator** program only, not every `/loop program` (§2, §4). |
 | Row 1 "next step crosses a wall → STOP"; row 12 portfolio-reconcile | NEXT_ACTION_MATRIX.md | Row 1 is within-program STOP; portfolio-reconcile fires only when the **active program is portfolio-operator** (§2). |
-| "The operator always makes the final call on which WO to execute next" | work-order-engine.md | Superseded — human is the authority wall, safe same-risk continuation is automatic (§6). |
+| "The operator always makes the final call on which WO to execute next" | work-order-engine.md | Superseded — the human is the authority wall, and continuation inside recorded authority is automatic (§6). |
 | `Current Selection` / `Current Instantiation` prose | programs/*.md, NEXT_ACTION_MATRIX.md | Historical snapshots, not live routing (§7). |
 
 ---
@@ -155,6 +162,7 @@ from a `Current Selection` line.
 | Date | Change | WO |
 |------|--------|----|
 | 2026-07-12 | Continuation rulebook authored; reconciles WOE-010/011/012 + matrix + WO-engine into one canonical scope/stop/routing model | WO-BRAIN-008 |
+| 2026-07-13 | Replaced same-risk shorthand with recorded-authority semantics; added bounded unknown lookup and true-wall definition | WO-MAO-001 |
 
 ---
 

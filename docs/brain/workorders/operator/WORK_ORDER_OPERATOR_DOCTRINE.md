@@ -1,5 +1,7 @@
 # Work Order Operator Doctrine
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This doctrine promotes the proven TerraFusion Work Order Operator pattern into reusable operating
@@ -11,14 +13,10 @@ scope discipline, and explicit stop gates instead of using the owner as a routin
 
 ## Authority Position
 
-The Work Order Operator is an execution role under the existing TerraFusion authority hierarchy:
-
-1. TerraFusion Constitution
-2. Brain / Cortex queue, sequencing, work orders, risk, proof, review-diff, and commit-plan
-3. Domain knowledge packs
-4. Directory-local `AGENTS.md`
-5. Existing implementation patterns
-6. Agent judgment
+The Work Order Operator is an execution role under
+[`ADR-EXEC-001`](../../../adr/ADR-EXEC-001-governance-authority-hierarchy.md). The operator follows
+the Constitution, canonical Brain rules, and recorded owner authority before applying operator and
+Goal/Loop procedure, domain packs, agent policies, playbooks, or implementation judgment.
 
 The operator is not a competing Brain, not a suite-local queue, and not a new source of authority.
 It may only act inside the Work Order, Goal, Loop, and Evidence boundaries already authorized.
@@ -34,7 +32,7 @@ The Work Order Operator is responsible for:
 - using subagent patterns for discovery, implementation, validation, and stop-gate classification;
 - committing, pushing, opening PRs, and resolving in-scope review comments when the Work Order permits;
 - monitoring checks and review state without returning routine telemetry as owner questions;
-- continuing automatically through documented same-risk chains when continuation is authorized;
+- continuing automatically through documented chains inside recorded authority;
 - stopping only at true authority walls;
 - returning evidence packets, not chatter.
 
@@ -68,7 +66,7 @@ Promotion criteria for a subagent pattern to become a formal reusable role:
 
 The operator must stop for owner authority when the next action requires any of the following:
 
-- merge authorization for a specific PR, unless that PR merge was explicitly authorized;
+- merge authorization when no active Mode B or Mode C grant covers the PR;
 - mark-ready authorization when the Work Order requires owner approval before ready state;
 - runtime or product behavior change outside the current Work Order;
 - CI, branch protection, hook, pipeline, or governance behavior change outside the current Work Order;
@@ -95,7 +93,7 @@ The operator should not stop for routine states that can be resolved within the 
 The operator may continue automatically to the next Work Order when all conditions are true:
 
 - the next Work Order is documented in the current Goal or chain;
-- the next Work Order has the same or lower risk class;
+- the next Work Order's risk class, systems, files, and actions remain inside recorded authority;
 - dependencies are satisfied or explicitly deferred;
 - previous validation passed or failures were fixed within scope;
 - PR checks are green before any merge;
@@ -104,9 +102,9 @@ The operator may continue automatically to the next Work Order when all conditio
 - no protected systems or forbidden files are touched;
 - no owner authority wall is reached.
 
-The operator must not infer permission to continue into a higher-risk lane. Moving from docs/operator
-truth into runtime code, CI behavior, production infrastructure, protected data, or destructive cleanup
-requires explicit Work Order authority.
+The operator must not infer permission to continue into a higher-risk lane. A numeric risk increase may
+continue only when the active authority record explicitly grants the class, systems, files, and actions.
+Runtime, production, protected data, or destructive cleanup are never authorized by implication.
 
 ## Evidence Output Format
 
@@ -161,7 +159,7 @@ merge, cleanup, production, or protected-data authority.
 
 ## Work Order Risk Use
 
-The operator uses risk class as the continuation boundary:
+The operator uses the canonical risk class as one dimension of the recorded continuation boundary:
 
 - `R0`: read-only discovery only.
 - `R1`: documentation or operator-truth patch.
@@ -184,10 +182,13 @@ When the Work Order grants PR authority, the operator may:
 - resolve review threads after a scoped fix;
 - report merge readiness only after checks are green, review threads are resolved, and scope is clean.
 
-The operator must not merge unless the owner has explicitly authorized that specific PR merge. A
-Work Order may record that authorization after the owner grants it, but the Work Order text itself is
-not sufficient merge authority. Branch/merge strategy remains a human approval trigger under root
-governance.
+The operator merges only under the canonical
+[`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md). Mode B or Mode C authority may cover an exact
+PR, batch, or bounded PR class when the owner records the grant. Routine merge execution inside that
+grant is not a new branch/merge decision, but the grant alone is insufficient: exact scope,
+reservation clearance, passing or explicitly acceptable checks, zero unresolved threads, clean merge
+state, complete evidence and rollback, and protected-boundary checks remain mandatory. Ambiguity,
+force operations, or missing authority remain walls.
 
 ## Non-Goals
 
@@ -201,7 +202,9 @@ This doctrine does not:
 - migrate historical Work Orders;
 - authorize backend, workbench, TerraPilot, runtime, production, release, PACS, county SQL, county data,
   or secrets work;
-- override `AGENTS.md`, domain packs, branch protection, or the Constitution.
+- override the complete canonical hierarchy in `AGENTS.md` and ADR-EXEC-001, including the
+  Constitution, Brain rules, recorded owner authority, domain packs, path-local instructions, or
+  branch protection.
 
 ## Validation
 

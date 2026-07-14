@@ -1,5 +1,11 @@
 # TerraFusion OS  Agent Operating Rules (Core Governance)
 
+> **PATH CANON NOTE**
+> Exact repository/path identity and controlling-document membership begin at root
+> `CANON_INDEX.md`. Its `docs/brain/workorders/CANON_INDEX.md` child is a subordinate Work Order
+> governance register. A repository name or authoritative-sounding document is not sufficient by
+> itself.
+
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.
 
@@ -16,12 +22,31 @@ when a human must approve.
 
 ### Authority hierarchy (higher wins on conflict)
 
+This is the single active hierarchy. It replaces the six-level recovery-era hierarchy audited in
+[`WO-MAO-000`](docs/brain/evidence/WO-MAO-000-proof.md) and is controlled by
+[`ADR-EXEC-001`](docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md):
+
 1. **TerraFusion Constitution** — `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (TF-052)
-2. **Brain / Cortex** — OS-level queue, sequencing, work orders, risk, proof, review-diff, commit-plan
-3. **Domain knowledge packs** — `brain/packs/**`
-4. **Directory-local `AGENTS.md` files** — nearest-scope overrides
-5. **Existing implementation patterns**
-6. **Agent judgment**
+2. **Ratified owner decisions** — active, unexpired, non-revoked entries in the canonical decision
+   register `.governance/owner-decisions.json`
+3. **Canonical Brain and root operating governance** — queue, sequencing, risk, proof, authority,
+   root `AGENTS.md`, and ratified governance ADRs
+4. **Active program and Work Order authority** — only within the exact scope, actions, systems, and
+   duration granted by levels 1-3
+5. **Directory-local `AGENTS.md` restrictions** — subtree restrictions that may narrow but never
+   broaden levels 1-4
+6. **Active playbooks and runbooks** — procedures that implement, but never redefine, higher authority
+7. **Existing implementation patterns**
+8. **Agent judgment** — last resort within all higher boundaries
+
+A directory-local `AGENTS.md` may narrow authority inside its subtree. It may not broaden an owner
+grant, contradict the Constitution or active root governance, or redefine the queue. Resolve any
+conflict through ADR-EXEC-001; "nearest file wins" is not authority to broaden scope.
+
+Mechanical enforcement is not a prose authority tier, but it is an execution interlock. Agents never
+bypass branch protection, required checks, or policy configuration because prose claims an action is
+allowed. A doctrine/enforcement mismatch is a governance incident: the stricter effective control wins
+until an authorized reconciliation lands.
 
 ### Rules for agents
 
@@ -29,19 +54,28 @@ when a human must approve.
   `brain/packs/README.md` for the domain→path map), then read any nearer `AGENTS.md`.
 - **Preserve one-Brain governance.** Do **not** create a second brain or a suite-local queue.
 - **Do not create separate suite brains** or suite-local autonomous governance.
+- **One Brain does not mean one worker.** Dependency-cleared Work Orders may execute concurrently in
+  isolated worktrees when their path, contract, and environment reservations do not conflict.
 - Route work through Brain **work orders, review-diff, proof, and commit-plan**.
 - Respect each pack's **Forbidden Writes** and **Escalation Triggers**; never write across a
   write-lane boundary you do not own.
 
-### Human approval triggers (always stop and ask)
+### True authority walls (stop only when new authority is required)
 
-1. Constitutional decision (changing TF-052 / canon)
-2. Destructive operation (delete, redact, irreversible)
-3. Product behavior change
-4. Branch / merge strategy
-5. Production deployment authorization
-6. Conflicting canon (two sources disagree)
-7. Credentials / secrets
+A true authority wall is a presently unresolved boundary that requires new owner authority. Stop for:
+
+1. Constitutional decision (changing TF-052 or constitutional canon)
+2. Destructive or irreversible action not already covered by an exact approved recovery procedure
+3. Product behavior outside the active Work Order or not already explicitly authorized
+4. Branch/merge strategy conflict or missing merge authority; routine branch updates and authorized
+   merges are not new strategy decisions
+5. Production deployment or live county authorization
+6. Canon conflict that remains unresolved after applying ADR-EXEC-001 and bounded source inspection
+7. Credentials, secrets, protected security policy, PACS, county SQL, or county data
+
+Failed tests, review comments, routine merge-conflict remediation, approved worktree recovery,
+in-scope implementation choices, already-authorized product behavior, next-WO selection, and routine
+PR/check remediation are not authority walls.
 
 ## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021)
 
@@ -54,7 +88,8 @@ The shared/main working tree is for human-controlled sync only.
 - Before the first write, every agent runs and reports: `pwd`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git status --short`. If toplevel = main repo root and the agent was not explicitly assigned there, **STOP** and create a worktree.
 - If foreign staged or unstaged files are present, **STOP** and report.
 - No `git reset --hard` / `git clean` / force checkout / broad stash / `git add -A` without human approval.
-- PR is the sync boundary. Agents open draft PRs; humans merge.
+- PR is the sync boundary. Agents may open draft or ready PRs and may merge only when recorded merge
+  authority and all canonical merge conditions apply; otherwise the owner merges.
 - If a recovery plan's assumptions diverge from current repo state, the plan is stale — do not execute it.
 - If the shared checkout state is uncertain, **quarantine** it (do not clean/recover).
 
@@ -116,33 +151,28 @@ The following status checks are **required** on `main` branch:
 
 ### Branch Protection Settings (GitHub)
 
-```
-main:
-  required_status_checks:
-    strict: true
-    contexts:
-      - "governed-spine"
-      - "phase85-tools"
-      - "phase86-toolrunner"
-      - "🔒 TerraFusion Seal Gate"
-      - "🧪 Tier-1 UI Harness Validation"
-  enforce_admins: true
-  require_pull_request: true
-  required_pull_request_reviews:
-    required_approving_review_count: 0  # Solo dev: CI = Constitutional Review
-  restrictions: null
-```
+The machine-readable canon block below is the sole inline branch-protection settings source. The
+normalized repository snapshot is `.governance/main.protection.json`; do not maintain a second YAML
+example here.
 
 ### Branch Protection Canon (Machine Readable)
 
 ```yaml
+require_pull_request: true
+required_status_checks:
+  strict: true
+  contexts:
+    - governed-spine
+    - phase85-tools
+    - phase86-toolrunner
+    - 🔒 TerraFusion Seal Gate
+    - 🧪 Tier-1 UI Harness Validation
+required_pull_request_reviews:
+  required_approving_review_count: 0
 enforce_admins: true
-required_checks:
-  - governed-spine
-  - phase85-tools
-  - phase86-toolrunner
-  - 🔒 TerraFusion Seal Gate
-  - 🧪 Tier-1 UI Harness Validation
+required_conversation_resolution: true
+allow_force_pushes: false
+allow_deletions: false
 ```
 
 **Solo Dev Governance:**
@@ -170,6 +200,8 @@ These are the **enforced invariants** for `main` branch. Any deviation is a gove
 | Require up-to-date | **true** | No merge race conditions |
 | Include admins | **true** | Cannot bypass own gates |
 | Allow force push | **false** | Immutable history |
+| Allow deletion | **false** | Protected branch cannot be deleted |
+| Resolve conversations | **true** | Review remediation must be complete |
 
 **Drift Detection (periodic audit):**
 
@@ -182,6 +214,9 @@ gh api repos/bsvalues/terrafusion_os_1.0/branches/main/protection > .tmp/main.pr
 # Verify invariants
 jq '.required_pull_request_reviews.required_approving_review_count == 0' .tmp/main.protection.current.json
 jq '.enforce_admins.enabled == true' .tmp/main.protection.current.json
+jq '.allow_force_pushes.enabled == false' .tmp/main.protection.current.json
+jq '.allow_deletions.enabled == false' .tmp/main.protection.current.json
+jq '.required_conversation_resolution.enabled == true' .tmp/main.protection.current.json
 jq '.required_status_checks.contexts | contains(["governed-spine","phase85-tools","phase86-toolrunner","🔒 TerraFusion Seal Gate","🧪 Tier-1 UI Harness Validation"])' .tmp/main.protection.current.json
 
 # Raw diff (no dependencies)
@@ -199,7 +234,7 @@ git diff --no-index .tmp/main.protection.canon.norm.json .tmp/main.protection.cu
 - Link to the PR that authorized the change
 - Update "Last verified" date below
 
-**Last verified:** 2026-02-18 (Phase 51.0 canonical reconciliation)
+**Last verified:** 2026-07-14 ([PR #1273](https://github.com/bsvalues/terrafusion_os_1.0/pull/1273), WO-MAO-001 live API and canon reconciliation)
 
 ## TOOL GOVERNANCE RULES
 - ToolRegistry must resolve the manifest path canonically (relative to ToolRegistry) and allow env override only:

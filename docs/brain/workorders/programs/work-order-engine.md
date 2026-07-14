@@ -1,5 +1,8 @@
 # P6 — Work Order Engine
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+
 **Program:** P6  
 **Status:** ACTIVE  
 **Owner:** Operator (bsvalues@gmail.com)  
@@ -95,4 +98,4 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 
 The WO Engine is read-only by default. It discovers, queries, scores, and reports. It does not initiate code changes, deployments, or data mutations.
 
-> **Superseded (WO-BRAIN-008):** the earlier "the operator always makes the final call on which WO to execute next" is replaced by the continuation doctrine — **the human is the authority wall, not the per-WO dispatcher.** Safe, same-risk continuation inside the active scope is automatic; the human decides only at walls, risk-class increases, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts. See [CONTINUATION_RULEBOOK.md](../CONTINUATION_RULEBOOK.md) §6.
+> **Superseded (WO-BRAIN-008; reconciled by WO-MAO-001):** the earlier "the operator always makes the final call on which WO to execute next" is replaced by the continuation doctrine — **the human is the authority wall, not the per-WO dispatcher.** Continuation inside the active recorded risk, system, file, and action authority is automatic. Undeclared next work, validation that cannot be repaired in scope, scope or protected-system crossings, missing merge authority, ALL-LANES-PARKED, and unresolved canon still stop under [NEXT_WO_SELECTION_RULE.md](../goal-loop/NEXT_WO_SELECTION_RULE.md) and [CONTINUATION_RULEBOOK.md](../CONTINUATION_RULEBOOK.md) §6.

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "program": "PROGRAM-MAO-001",
+  "work_order": "WO-MAO-002",
+  "merge_mode": "B",
+  "activation_source": "github-actions-repository-variable",
+  "activation_variable": "MAO_002_PILOT_AUTHORITY_JSON",
+  "pilot_label": "mao-002-pilot",
+  "pilot_branch_glob": "codex/mao-002-*",
+  "status": "inactive",
+  "suspension": {
+    "active": false,
+    "reason": null
+  },
+  "owner": "William",
+  "required_implementation_operator_count": 2,
+  "disallowed_reviewers": ["William"],
+  "implementation_operators": [],
+  "independent_reviewer": null,
+  "expires_at": null,
+  "max_merged_prs": 2,
+  "post_merge_assurance_evidence": null,
+  "pilot_prs": [
+    {
+      "slot": "lane-a",
+      "repository": "bsvalues/terrafusion_os_1.0",
+      "number": null,
+      "head_sha": null,
+      "allowed_paths": []
+    },
+    {
+      "slot": "lane-b",
+      "repository": "bsvalues/terrafusion_os_1.0",
+      "number": null,
+      "head_sha": null,
+      "allowed_paths": []
+    }
+  ]
+}

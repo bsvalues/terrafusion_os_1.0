@@ -1,109 +1,109 @@
 # TerraFusion CI Governance Index
 
-**Version:** 1.0  
-**Stable Release:** `v1.4.0-ci-stable`  
-**Last Updated:** 2026-01-30
 
----
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+**Version:** 2.0
+**Last Updated:** 2026-07-13
+**Authority:** `docs/brain/workorders/CANON_INDEX.md`, `.governance/main.protection.json`, and live GitHub branch protection
 
-## Quick Reference
+## Current Required Posture
 
-This is the canonical starting point for anyone touching CI workflows.
+| Invariant | Canonical value |
+|-----------|-----------------|
+| Require pull request | `true` |
+| Require up-to-date status checks | `true` |
+| Required checks | `governed-spine`, `phase85-tools`, `phase86-toolrunner`, `🔒 TerraFusion Seal Gate`, `🧪 Tier-1 UI Harness Validation` |
+| Required approving reviews | `0` |
+| Include administrators | `true` |
+| Conversation resolution | `true` |
+| Allow force push | `false` |
+| Allow deletion | `false` |
 
-### Current Posture
+The earlier `v1.4.0-ci-stable` "SEAL only" posture is historical and is not the current branch
+protection canon.
 
-| Property | Value |
-|----------|-------|
-| Required checks | `🔒 SEAL` only |
-| Heavy workflows | Informational (not blocking) |
-| Queue protection | Concurrency + cancel-in-progress |
-| Dependency PRs | Fast-lane routing |
-| Invariant enforcement | Drift tests |
+## Canonical Files
 
----
+| File | Purpose |
+|------|---------|
+| [`.governance/main.protection.json`](../../.governance/main.protection.json) | Normalized machine-readable protection invariants |
+| [`AGENTS.md`](../../AGENTS.md) | Human-readable branch-protection and governance-outage doctrine |
+| [`core-governance-gates.yml`](../../.github/workflows/core-governance-gates.yml) | Required governed-spine, phase85, and phase86 contexts |
+| [`verify-branch-protection-against-canon.sh`](../../scripts/ci/verify-branch-protection-against-canon.sh) | Compares live protection with every claimed canon field |
+| [`verify-agents-doc-against-protection-canon.sh`](../../scripts/ci/verify-agents-doc-against-protection-canon.sh) | Detects prose/canon invariant drift |
+| [`.governance/mao-002-pilot-merge-authority.json`](../../.governance/mao-002-pilot-merge-authority.json) | Inactive MAO-002 policy and external-activation contract |
+| [`verify-mao-002-pilot-authority.py`](../../scripts/ci/verify-mao-002-pilot-authority.py) | Pilot exact-PR/SHA/scope/suspension interlock inside required `governed-spine` |
 
-## Key Documents
+## API Normalization
 
-| Document | Purpose |
-|----------|---------|
-| [CI_WORKFLOW_LIFECYCLE_POLICY.md](CI_WORKFLOW_LIFECYCLE_POLICY.md) | Workflow classes, promotion/demotion rules, trigger scoping |
-| [SEAL_ONLY_REQUIRED_CHECK_POLICY.md](SEAL_ONLY_REQUIRED_CHECK_POLICY.md) | Policy rationale and configuration |
-| [AUTONOMY_V1_GOVERNANCE_CONTRACT.md](../../AUTONOMY_V1_GOVERNANCE_CONTRACT.md) | Autonomy v1 operational guarantees |
-| [🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md](../../🏆_PHASE_4D_DEPENDENCY_CONVERGENCE_ACHIEVEMENT_🏆.md) | Achievement log with merge statistics |
-| [required-check-drift.test.ts](../../tests/governance/required-check-drift.test.ts) | Hard invariant tests |
+GitHub's branch-protection response does not contain a literal `require_pull_request` boolean. The
+drift verifier derives it from the presence of `required_pull_request_reviews`. All other values map
+directly to their live API fields:
 
----
+- `required_status_checks.strict`
+- `required_status_checks.contexts` and `checks[].context`
+- `required_pull_request_reviews.required_approving_review_count`
+- `enforce_admins.enabled`
+- `required_conversation_resolution.enabled`
+- `allow_force_pushes.enabled`
+- `allow_deletions.enabled`
 
-## Key Workflows
+No unsupported invariant is claimed as drift-detectable.
 
-| Workflow | Role | Required? |
-|----------|------|-----------|
-| [seal-gate-fast.yml](../../.github/workflows/seal-gate-fast.yml) | Fast gate (~90s), scope/build/lint | ✅ Yes |
-| [deps-fast-lane.yml](../../.github/workflows/deps-fast-lane.yml) | Dependency PR validation | Runs automatically |
-| [autonomy-pr-lane.yml](../../.github/workflows/autonomy-pr-lane.yml) | Tier 0 autonomous patching (opens PRs) | ❌ Informational |
-| [terrafusion-gate-enforcement.yml](../../.github/workflows/terrafusion-gate-enforcement.yml) | Integration gates (E/F) | ❌ Informational |
-| [ci-cd-pipeline.yml](../../.github/workflows/ci-cd-pipeline.yml) | Full CI/CD | ❌ Informational |
-| [nightly.yml](../../.github/workflows/nightly.yml) | Heavy checks (E2E, security scans) | ❌ Nightly only |
-| [perf-skill-audit.yml](../../.github/workflows/perf-skill-audit.yml) | Vercel performance audit | ❌ Nightly + Manual |
+## MAO-002 Pilot Interlock
 
----
+The pilot check is part of the already-required `governed-spine` context; it is not an advisory new
+status. The checked-in policy is `inactive` during MAO-001. A later activation uses the visible
+GitHub Actions repository variable `MAO_002_PILOT_AUTHORITY_JSON` to register exactly two PRs, exact
+final head SHAs, disjoint allowed paths, two implementation operators, a separate read-only reviewer,
+post-merge assurance evidence, expiry, and the SHA-256 of the checked-in policy. The external manifest
+does not modify `main` or either pilot branch, so exact head binding remains compatible with strict
+up-to-date protection.
 
-## Invariants (Tested)
+For a registered pilot PR, the required check fails closed on:
 
-These are enforced by `tests/governance/required-check-drift.test.ts`:
+- missing, inactive, suspended, or expired external authority for a pilot branch/label;
+- activation-policy SHA mismatch;
+- final-SHA mismatch after a review fix or branch update;
+- repository mismatch;
+- scope outside the registered path set, including either side of a renamed path;
+- missing or malformed suspension state;
+- missing implementation operators, duplicate normalized operator identities, or a normalized reviewer
+  identity matching William or either operator;
+- an authority record with anything other than two unique PR slots.
 
-1. **Only SEAL is required** — Gate E/F cannot be added to required checks
-2. **SEAL has no path filters** — Cannot be bypassed by `paths:` or `paths-ignore:`
-3. **SEAL triggers on PR + push** — Covers all merge paths
+The exact two-slot manifest and expiry prevent grant reuse. Review-fix or branch-update SHAs require
+an external manifest update and required-check rerun, not a branch commit. Reservation collision
+enforcement remains MAO-003 scope and is not claimed by this pilot interlock.
 
-Run the tests:
+### Non-self-referential activation sequence
+
+1. Create the two pilot PRs on `codex/mao-002-*` branches and apply the `mao-002-pilot` label. The
+   inactive policy makes `governed-spine` fail closed at this point.
+2. After review remediation settles both final heads, create a full activation manifest containing the
+   two exact PR numbers, repositories, head SHAs, path scopes, two unique implementation operators,
+   independent reviewer, evidence path, suspension state, and expiry.
+3. Set `policy_sha256` to the SHA-256 of the checked-in inactive policy and publish the manifest in the
+   visible repository variable `MAO_002_PILOT_AUTHORITY_JSON` under the recorded owner authority.
+4. Rerun the failed `governed-spine` jobs. The check logs both the activation-manifest and policy
+   digests and validates the unchanged pilot heads. No commit, base update, or force operation is
+   created by activation.
+5. Any later branch update or review-fix commit invalidates the registered head. Update the external
+   manifest and rerun the required job for that new exact SHA.
+6. Suspension sets the external manifest status to `suspended`, cancels any queued auto-merge, and
+   reruns the required job so the affected pilot checks fail closed.
+
+## Verification
+
 ```bash
-pnpm vitest run tests/governance/required-check-drift.test.ts
+bash scripts/ci/__tests__/governance-canon-scripts.test.sh
+python scripts/ci/__tests__/mao-002-pilot-authority.test.py
+bash scripts/ci/verify-agents-doc-against-protection-canon.sh
+
+# Requires repository/token access and compares current live protection.
+TF_REPO=bsvalues/terrafusion_os_1.0 \
+GH_TOKEN="$GH_TOKEN" \
+bash scripts/ci/verify-branch-protection-against-canon.sh
 ```
 
----
-
-## Phase History
-
-| Phase | Date | Achievement |
-|-------|------|-------------|
-| **4C** | 2026-01-29 | `v1.4.0-ci-stable` released with deps-fast-lane |
-| **4D** | 2026-01-30 | 27 → 0 PRs merged, 156-run queue cleared |
-| **4E** | 2026-01-30 | Concurrency + actor guards added |
-| **4F** | 2026-01-30 | SEAL unskippable assertions added |
-| **4G** | 2026-01-30 | Performance Skill Audit lane (informational) |
-| **4M6** | 2026-01-30 | Autonomy v1: determinism, proofs, rollback contracts |
-| **4M7** | 2026-01-30 | Autonomy v1 merged to main with governance contract |
-
----
-
-## Verification Commands
-
-```powershell
-# Unit tests pass
-pnpm test:unit
-
-# No open PRs stuck
-gh pr list --state open
-
-# Queue health
-gh run list --limit 20 --json status,name --jq 'group_by(.status)|map({status:.[0].status,count:length})'
-
-# Branch protection check
-gh api repos/{owner}/{repo}/branches/main/protection --jq '.required_status_checks.checks[].context'
-```
-
----
-
-## Modification Procedure
-
-Before changing any CI workflow:
-
-1. **Read this index** — understand current invariants
-2. **Check drift tests** — run `pnpm vitest run tests/governance/`
-3. **Respect concurrency groups** — use `${{ github.workflow }}-${{ github.ref }}`
-4. **Update documentation** — keep this index current
-
----
-
-**Government. Transcended. Governed.**
+Any mismatch is a governance incident. Do not weaken or bypass a required check to preserve flow.

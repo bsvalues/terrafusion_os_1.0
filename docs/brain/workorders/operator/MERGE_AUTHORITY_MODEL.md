@@ -1,42 +1,88 @@
-# Merge Authority Model
+# Merge Authority Model (Canonical)
 
-Work order: WO-CODEX-OP-007
-Program: codex-operator-playbook
+Work order: WO-MAO-001
+Program: governed-multi-agent-operator-activation
+Goal: GOAL-MAO-001
+Loop: LOOP-MAO-001
 
-## Default Rule
+This file is the single semantic source for merge authority. Playbooks may describe the procedure but
+must not redefine these modes.
 
-Codex does not merge unless explicit owner authorization exists for that PR.
+Source audit: [`WO-MAO-000`](../../evidence/WO-MAO-000-proof.md). Owner authority is valid only when
+recorded in `.governance/owner-decisions.json` or a canonically indexed successor register.
 
-Merge authority may be granted as:
+## Default Rule: Mode A
 
-- a single PR merge authorization,
-- a batch merge authorization listing exact PRs and order,
-- a quiet-window branch strategy authorization,
-- a program packet that explicitly grants merge conditions for named PRs.
+The owner merges unless recorded authority grants Mode B or Mode C. Mode A is mandatory for
+constitutional changes, production/deployment, protected security policy, secrets, PACS, county SQL,
+county data, destructive operations, and any PR outside a bounded operator grant.
 
-## Required Merge Conditions
+## Mode B: Preauthorized Operator Merge
 
-Even when authorized, Codex may merge only when:
+The owner may grant operator merge for one PR, an exact PR batch, or a bounded PR class in a recorded
+Goal/Loop/Work Order. Every merge requires:
 
-- PR is open,
-- PR is non-draft,
-- merge state is clean or mergeable under repo policy,
-- required checks are green or explicitly acceptable,
-- unresolved review threads are zero,
-- changed files match authorized scope,
-- no forbidden runtime/CI/deployment/schema/protected-resource files changed,
-- merge method follows repo policy,
-- branch/merge strategy authority is still valid.
+- authority record is active and identifies the eligible PR or bounded class;
+- PR is open and non-draft;
+- changed files match the exact Work Order scope;
+- no active path, contract, repository, or environment reservation conflicts;
+- required checks pass or have an explicitly documented acceptable neutral/skipped result;
+- unresolved review threads are zero;
+- merge state is clean and the merge method follows repository policy;
+- evidence and rollback are complete;
+- no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
+
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. The first grant is
+limited to MAO-002's two exact pilot PRs and activates only after dispatch, reservation, exact PR,
+exact final head SHA, path scope, two implementation operators, independent reviewer, and expiry fields
+are registered in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable, its manifest binds
+to the checked-in inactive `.governance/mao-002-pilot-merge-authority.json` policy, and the required
+`governed-spine` pilot interlock passes. The external manifest is the only activation source; editing
+the checked-in policy cannot activate Mode B.
+
+## Mode C: Auto-Merge Armed
+
+Mode C is Mode B with repository auto-merge enabled. It is permitted only when the recorded grant
+allows auto-merge, branch protection supports it, and every Mode B condition remains true. Auto-merge
+does not bypass checks, review resolution, up-to-date requirements, or reservations.
+
+## Automatic Suspension
+
+Operator merge authority suspends immediately when any of these reaches `main` or is discovered in an
+eligible merge:
+
+- unauthorized path or material scope expansion;
+- reservation collision;
+- required gate bypass or misclassification;
+- protected production, credential, county-data, PACS, destructive, or security boundary crossing;
+- falsely represented evidence or rollback.
+
+Suspension applies to the affected grant and any broader grant that depends on the failed control. New
+operator merges stop until restoration is ratified.
+
+## Suspension Response and Restoration
+
+1. Suspend operator merge authority.
+2. Contain or revert through a normal protected PR; do not rewrite `main`.
+3. Verify and record the post-rollback `origin/main` SHA.
+4. Produce incident and root-cause evidence, including the offending diff and reservation history.
+5. Correct the doctrine or mechanical control and prove the correction.
+6. Restore authority only through explicit owner ratification.
+
+Restoration evidence must include the incident record, rollback PR/SHA, validation results, corrected
+scope and reservation evidence, required-check proof, and the owner restoration decision.
+
+For MAO-002, the machine interlock fails a registered pilot PR when suspension is active. The
+checked-in policy recognizes MAO-002 branches/labels and fails them while no active external manifest
+exists. Because the external manifest contains exactly two PR slots and validates each current head
+against a declared final SHA, the grant cannot be reused by a third PR or a later review-fix SHA
+without updating the repository variable and rerunning the required check. Updating that variable
+does not change `main` or either pilot head, so strict up-to-date protection remains satisfiable.
 
 ## Post-Merge Verification
 
-After merge, Codex must:
+After every authorized merge, the operator fetches `origin/main`, records the merge commit, verifies
+the expected and forbidden file sets, confirms applicable validation, and proceeds only when the active
+Loop permits continuation.
 
-- fetch `origin/main`,
-- record merge commit,
-- verify expected files exist on `origin/main`,
-- verify no forbidden files landed,
-- run or confirm applicable post-merge validation,
-- continue only if the active loop permits it.
-
-STOP_TYPE: MERGE_AUTHORITY_MODEL_DEFINED
+STOP_TYPE: MERGE_AUTHORITY_MODEL_RATIFIED

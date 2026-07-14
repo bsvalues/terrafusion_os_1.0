@@ -1,5 +1,7 @@
 # Next Work Order Selection Rule
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 Program: codex-operator-autonomy
 Goal: GOAL-TF-CODEX-OPERATOR-AUTONOMY-001
 Loop: LOOP-TF-CODEX-OPERATOR-AUTONOMY-001
@@ -30,14 +32,15 @@ Codex must use:
 - review threads,
 - remote checks,
 - local validation,
-- explicit owner decisions already granted in the current loop.
+- durable owner decisions linked by the active Goal/Loop/Work Order, including their scope, expiry,
+  and revocation state.
 
 ## Stop Conditions
 
 Stop instead of selecting next work when:
 
 - the next Work Order is not declared,
-- the next Work Order increases risk,
+- the next Work Order exceeds the recorded risk, system, file, or action authority,
 - scope expands,
 - validation is blocked,
 - merge authority is missing,

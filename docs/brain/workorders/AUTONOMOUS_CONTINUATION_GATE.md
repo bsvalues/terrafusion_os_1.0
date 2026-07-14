@@ -1,5 +1,7 @@
-# Autonomous Same-Risk Continuation Gate
+# Autonomous Authorized-Continuation Gate
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
 **Date:** 2026-07-01
 **Authority:** WO-WOE-012
@@ -17,7 +19,7 @@
 
 ## 0. What This Adds
 
-WOE-011 made the operator run **within** a program's same-risk queue until a wall. WOE-012 makes the
+WOE-011 made the operator run **within** a program's authorized queue until a wall. WOE-012 makes the
 operator **cross programs**: when the active program hits a wall or exhausts its safe queue, the
 operator **records the wall, parks the blocked WO, and advances to the next safe unblocked lane** —
 without asking the human to choose. The human is the authority wall, not the dispatcher.
@@ -37,7 +39,7 @@ On any program reaching a terminal condition (`WALL` or `QUEUE_EXHAUSTED`):
 1. RECORD   append the wall/exhaustion to the Wall Ledger (§3) with WO id, wall, evidence.
 2. PARK     mark the blocked WO parked (do not attempt to cross the wall to stay busy).
 3. SELECT   choose the next lane by Lane Priority (§2):
-              - only programs whose next WO is UNBLOCKED and SAME-RISK-OR-LOWER and crosses NO wall.
+              - only programs whose next WO is UNBLOCKED, inside recorded authority, and crosses NO wall.
 4. ADVANCE  set that program as active; run its queue (WOE-011 within-program loop).
 5. REPEAT   until no safe lane remains.
 6. TERMINATE when every program is walled/exhausted → emit the All-Lanes-Parked report (§4) and stop.
@@ -53,8 +55,9 @@ human may authorize.
 
 Among programs with a safe, unblocked next WO, select in this order:
 
-1. **Lowest risk class first** — R0 (read-only audit/discovery) before R1 (docs) before R2 (scoped code).
-   Never select R3/R4 autonomously (those are walls).
+1. **Lowest risk class first** — use the canonical R0-R5 ordering as a priority, not as authority.
+   Select R3-R5 only when the active authority record explicitly grants the class, systems, files, and
+   actions.
 2. **Continuity** — prefer a lane that directly extends the finding just produced (e.g. after a
    Pilot-stub finding, the terrapilot-maturity lane). Continuity keeps evidence coherent.
 3. **Dependency readiness** — prefer lanes whose prerequisites are merged/done.

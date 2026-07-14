@@ -1,5 +1,8 @@
 # Operator Execution Playbook
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+
 **Version:** 1.0
 **Date:** 2026-07-01
 **Authority:** WO-WOE-011
@@ -25,7 +28,7 @@ Prerequisite: an active `/goal` (program) is selected. See
 2. SELECT  first WO whose dependencies are satisfied and status != DONE.
 3. CLASSIFY
              - is it in-register?            (no → stop, do not invent)
-             - is it same-risk or lower?     (no → stop, surface)
+             - is it inside recorded authority? (no → stop, surface)
              - does any SW-01..SW-10 wall sit in its boundary? (yes → stop at that wall)
 4. EXECUTE the WO within its sovereignty boundary:
              - branch off origin/main (worktree; never mutate the shared checkout's git)
@@ -39,7 +42,7 @@ Prerequisite: an active `/goal` (program) is selected. See
              - wait for gates green → auto-merge fires
 7. CONTINUE
              - /loop once     → stop here, name NEXT_WO, do not execute it
-             - /loop program  → go to step 1 for the next same-risk WO
+             - /loop program  → go to step 1 for the next authorized WO
              - wall reached   → stop, emit AUTHORITY_WALL / CANONICAL_CONFLICT / FAILED_GATE
 8. REPORT  emit the result block (below).
 ```
@@ -51,7 +54,7 @@ Prerequisite: an active `/goal` (program) is selected. See
 | Mode | Executes WOs? | Commits/PRs? | Continues past first WO? | Stops at |
 |------|---------------|--------------|--------------------------|----------|
 | `/loop once` | 1 | yes | no | after 1 WO or a wall |
-| `/loop program` | many | yes | yes (same-risk) | first wall |
+| `/loop program` | many | yes | yes (inside recorded authority) | first unresolved wall |
 | `/loop merge-watch` | no new work | resolves PR blockers, merges | yes (after merges) | wall or empty PR queue |
 | `/loop discovery` | no (read-only) | no | yes | wall or discovery complete |
 | `/loop evidence` | no (docs only) | yes (evidence docs) | yes | wall or evidence complete |
@@ -109,7 +112,7 @@ OPERATOR_ACTION_REQUIRED: <exactly what the human must authorize, or NONE — ke
 → WO-P8-MGMT-001 discovery → PR #1122 (auto-merge)
 → WO-P8-MGMT-002 reachability proof → PR #1123 (auto-merge)
 → WO-P8-MGMT-003 conformance fix → PR #1125 (auto-merge)
-→ NEXT_WO: WO-P8-MGMT-004 (deployment authorization PACKET — docs, same-risk)
+→ NEXT_WO: WO-P8-MGMT-004 (deployment authorization PACKET — docs, inside recorded authority)
 → then WALL: SW-01 at actual frontend deployment → stop, OPERATOR_ACTION_REQUIRED
 ```
 

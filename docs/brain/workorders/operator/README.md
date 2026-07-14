@@ -1,5 +1,7 @@
 # Work Order Operator Packet
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This packet defines how Codex uses the TerraFusion Work Order Engine as an operator doctrine.
@@ -17,12 +19,14 @@ Permanent doctrine:
   `/goal` + `/loop` contract that governs the operator chain.
 - [`WORK_ORDER_LIFECYCLE.md`](WORK_ORDER_LIFECYCLE.md) defines the canonical Work Order states,
   result classifier, and stop-type registry.
-- [`AUTONOMOUS_CONTINUATION_RULES.md`](AUTONOMOUS_CONTINUATION_RULES.md) defines same-risk automatic
+- [`AUTONOMOUS_CONTINUATION_RULES.md`](AUTONOMOUS_CONTINUATION_RULES.md) defines recorded-authority
   continuation and mandatory stop conditions.
 - [`PR_REVIEW_CI_OPERATOR_RULES.md`](PR_REVIEW_CI_OPERATOR_RULES.md) defines PR, review, and CI
   ownership after implementation.
 - [`OWNER_DECISION_PACKET_TEMPLATE.md`](OWNER_DECISION_PACKET_TEMPLATE.md) standardizes authority-wall
   requests.
+- [`.governance/owner-decisions.json`](../../../../.governance/owner-decisions.json) is the canonical
+  machine-readable register for ratified owner grants, expiry, revocation, and exact boundaries.
 - [`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md) defines merge authorization and post-merge
   verification.
 
@@ -34,8 +38,8 @@ The Work Order Operator is responsible for:
 - classifying the active Work Order risk class;
 - executing only inside the Work Order authority boundary;
 - committing, opening PRs, and resolving in-scope review comments;
-- stopping for merge unless the human explicitly authorizes that specific PR merge;
-- continuing to the next same-risk Work Order when the chain explicitly permits it;
+- stopping for merge unless a recorded Mode B or Mode C grant covers the PR;
+- continuing to the next authorized Work Order when the chain explicitly permits it;
 - stopping at true authority walls.
 
 The operator is not a second Brain and must not create suite-local queues.
@@ -58,7 +62,7 @@ Subagents are execution patterns, not independent governance authorities.
 The operator may continue automatically when all of these are true:
 
 - the next Work Order is documented in the current chain;
-- the next Work Order has the same or lower risk class;
+- the next Work Order remains inside the active recorded authority;
 - previous validation passed or failures were fixed within scope;
 - branch protection is green before merge;
 - review comments are resolvable within approved files/systems;
@@ -66,8 +70,7 @@ The operator may continue automatically when all of these are true:
 - no explicit human gate is reached.
 
 Routine PR creation, green checks, and merge readiness are not stop gates when the chain grants that
-authority. Merge itself remains a human authority wall unless the human explicitly authorizes that
-specific PR merge.
+authority. Merge is a wall only when the canonical merge model has no active grant covering the PR.
 
 ## Stop Rules
 
@@ -95,8 +98,10 @@ The operator may report merge readiness only when all conditions hold:
 - no protected systems or forbidden paths changed;
 - no admin override is required.
 
-The operator must not merge from this packet alone. Merge requires explicit human authorization for
-the specific PR. If any condition fails, classify the blocker instead of asking for merge.
+The operator must not infer merge authority from this packet alone. Merge requires an active Mode B or
+Mode C grant under [MERGE_AUTHORITY_MODEL.md](MERGE_AUTHORITY_MODEL.md); that grant may cover one PR,
+an explicitly bounded batch, or a bounded PR class. If no grant applies, request owner authority once.
+If any readiness condition fails, classify the blocker instead of asking for merge.
 
 ## Review Comment Handling
 

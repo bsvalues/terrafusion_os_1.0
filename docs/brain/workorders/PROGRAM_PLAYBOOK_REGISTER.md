@@ -1,5 +1,7 @@
 # TerraFusion Program Playbook Register
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
 **Date:** 2026-06-30
 **Authority:** TerraFusion Brain / WO-WOE-009
@@ -17,11 +19,12 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-10 — WO-BACKEND-OE-013; WO-CODEX-OP-008 register integration; WO-OP-AUTO-012 operator autonomy; WO-REL-006 release engineering closeout; WO-DEVEX-HOOKS-006 bootstrap verification)*
+*(Updated 2026-07-13 — PROGRAM-MAO-001 assurance remediation and inactive pilot interlock)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Release Engineering lane active | Owner-authorized docs/governance scope under `docs/brain/workorders/**`; operator model governs same-risk continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, local hook bypass without active owner authorization, destructive operations, or conflicting canon |
+| [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Active; operator merge ratified but inactive | `WO-MAO-001` | `WO-MAO-002` | Continue inside recorded program, file, action, and risk authority | MAO-001 is Mode A; MAO-002 activates only after the visible repository-variable manifest binds two exact PRs/final SHAs/scopes/two operators/reviewer/expiry to the inactive policy and the governed-spine interlock passes |
+| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Release Engineering lane active | Owner-authorized docs/governance scope under `docs/brain/workorders/**`; operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, local hook bypass without active owner authorization, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closing | `WO-REL-006` | Owner-selected next lane | Auto only through Release Engineering closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |
 | [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Closed | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | Release Engineering lane selected | Operator model governs future WOs | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
@@ -96,13 +99,14 @@ These actions require explicit operator authorization. The Brain and Claude do n
 - [P8-MGMT — Management Dashboard (roadmap Phase 8)](programs/p8-management-dashboard.md)
 - [Codex Operator Autonomy](programs/codex-operator-autonomy.md)
 - [Release Engineering](programs/release-engineering.md)
+- [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md)
 
 ---
 
 ## Operator Doctrine Layer (WO-WOE-011)
 
 The operator doctrine makes the agent the **operator** (not the human as dispatcher). It runs the
-active program's same-risk unblocked WOs until a true wall.
+active program's dependency-cleared WOs inside recorded authority until a true wall.
 
 | File | Purpose |
 |------|---------|
@@ -181,3 +185,4 @@ The command layer binds this register to `/goal` and `/loop` operating commands.
 | 2026-07-10 | Defined deterministic hook execution policy and routed implementation to explicit owner authorization | WO-DEVEX-HOOKS-003 |
 | 2026-07-10 | Repaired deterministic hooks without package/lockfile mutation and routed next to worktree hygiene evidence | WO-DEVEX-HOOKS-004 |
 | 2026-07-10 | Classified 54 worktrees without cleanup and routed next to clean-worktree bootstrap verification | WO-DEVEX-HOOKS-005 |
+| 2026-07-13 | Registered PROGRAM-MAO-001, reconciled authority semantics, and routed the two-lane pilot | WO-MAO-001 |

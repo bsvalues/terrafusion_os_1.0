@@ -1,5 +1,7 @@
 # Work Order Engine Goal + Loop Integration
 
+
+> **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 ## Purpose
 
 This packet connects the Work Order registry and read-only query output to TerraFusion's Goal + Loop
@@ -27,7 +29,7 @@ execution by itself.
 goal intent
   -> work-order registry records
   -> read-only query/scoring
-  -> operator selects or confirms next WO
+  -> operator selects the next dependency-cleared WO inside recorded authority
   -> loop executes within WO authority
   -> validation and PR evidence
   -> registry/evidence update in a later governed packet
@@ -55,7 +57,9 @@ A Goal + Loop may consume query output only after confirming:
 - the recommended WO's allowed systems match the current chain;
 - stop conditions are compatible with the current operator authority.
 
-If any item is uncertain, the loop must downgrade to discovery or stop with a classified blocker.
+If any item is uncertain, the loop first performs bounded read-only canon lookup and live-state
+inspection. It downgrades to discovery or stops with a classified blocker only when material
+uncertainty remains after that lookup.
 
 ## Status Semantics
 

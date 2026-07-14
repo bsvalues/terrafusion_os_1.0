@@ -39,9 +39,10 @@ no stop gate is hit:
 7. Open a PR.
 8. Resolve review comments inside the authorized scope.
 9. Update from `origin/main` if behind.
-10. Prepare the PR for owner merge authorization when checks are green/acceptable, review threads are
-    resolved, changed files remain in authorized scope, and no global stop gate is hit.
-11. Merge only when the owner has explicitly authorized that merge under the active Work Order.
+10. Prepare the PR for merge when checks are green/acceptable, review threads are resolved, changed
+    files remain in authorized scope, and no global stop gate is hit.
+11. Merge only when the canonical merge model records Mode B or Mode C authority; otherwise request
+    owner merge authority once.
 12. Verify `origin/main` after merge.
 13. Continue to the next Work Order in the same `/goal` plus `/loop` if allowed.
 
@@ -58,31 +59,85 @@ Codex may continue automatically from one Work Order to the next only when all a
 3. Review threads are resolved.
 4. The next Work Order is already defined in this playbook.
 5. The next Work Order is in the same `/goal` and `/loop`.
-6. The next Work Order is same or lower risk.
+6. The next Work Order's risk, files, systems, and actions are inside recorded authority.
 7. The next Work Order stays inside the authorized file scope.
 8. No backend/runtime implementation is required unless that program explicitly authorizes implementation.
 9. No secrets, county data, PACS, county SQL, production resources, migrations, deployment, or live
    services are implicated.
-10. No local hook bypass is required.
+10. No local hook bypass is required unless a bounded standing exception covers the exact action.
 
 Codex must stop for owner decision when any are true:
 
-1. A local hook bypass is required.
+1. A local hook bypass is required and no bounded standing exception covers it.
 2. A review thread requires files outside the current authorized scope.
-3. Backend/runtime code change is required.
+3. Backend/runtime code change is required outside the active authority record.
 4. `tools/sync` runtime implementation is required outside the selected Sync chain.
-5. Gate modification is required.
-6. CI/release wiring is required.
+5. Gate modification is required outside the active authority record.
+6. CI/release wiring is required outside the active authority record.
 7. Docker/Testcontainers repair is required.
 8. Migration/schema change is required.
 9. Secrets, county data, PACS, county SQL, live services, or production resources are implicated.
 10. TerraPilot promotion or live integration is proposed.
 11. Sovereign runtime import is proposed.
-12. Property Workbench product behavior change is proposed.
-13. Worktree is dirty, unsafe, timed out, locked, or incomplete.
+12. Property Workbench product behavior change is proposed outside an authorized Work Order.
+13. Worktree is dirty, unsafe, timed out, locked, or incomplete and no exact approved repair procedure covers it.
 
-Local hook failures are authority walls, not new Work Orders. After a hook bypass is authorized and
-the current WO merges, Codex returns to the active `/goal` plus `/loop` chain automatically.
+Local hook failures are authority walls only when no bounded standing exception applies. After a hook
+bypass is authorized and the current WO merges, Codex returns to the active `/goal` plus `/loop` chain
+automatically.
+
+---
+
+## Program MAO - Governed Multi-Agent Operator Activation
+
+| Field | Value |
+|-------|-------|
+| Goal | `GOAL-MAO-001` |
+| Loop | `LOOP-MAO-001` |
+| Program slug | `governed-multi-agent-operator-activation` |
+| Status | ACTIVE |
+| Current WO | `WO-MAO-001` |
+| Next WO | `WO-MAO-002` |
+
+### Purpose
+
+Make governed parallel execution the default without creating competing Brains. The one Brain owns
+queue, sequencing, reservations, risk, proof, review-diff, and commit-plan; isolated workers execute
+dependency-cleared Work Orders whose path, contract, and environment reservations do not conflict.
+
+Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md).
+
+### Work Order Chain
+
+| Work Order | Mode | Required outcome |
+|------------|------|------------------|
+| `WO-MAO-000` | read-only audit | Persisted source-cited contradiction matrix and historical denominator |
+| `WO-MAO-001` | governance reconciliation | Exact bounded R5 owner authorization, replacement hierarchy, complete protection canon, and inactive operator-merge model |
+| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, exact PR/final-SHA authority records, required governed-spine interlock, and independent read-only post-merge checks |
+| `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
+| `WO-MAO-004` | planner implementation | Dependency-cleared executable set and conflict-free parallel waves |
+| `WO-MAO-005` | evidence-informed playbooks | Worker and assurance playbooks grounded in pilot and gate evidence |
+| `WO-MAO-006` | portfolio rollout | Governed concurrency budget and cross-repo allocation |
+| `WO-MAO-007` | evidence rollup | Founder touches, concurrency, cycle time, violations, and closeout |
+
+### Pilot Boundary
+
+`WO-MAO-002` may falsify automatic continuation, zero-founder routing, isolated-worktree discipline,
+bounded scope, operator-merge behavior, and automatic next-action selection. It does **not** prove
+reservation enforcement. Each pilot PR requires a separate read-only assurance-agent scope check; the
+reviewer cannot be the implementation operator or William.
+
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** Mode B authority for the pilot is not
+portfolio-wide. It may attach only after the two exact PRs, final head SHAs, path scopes,
+implementation operators, independent reviewer, assurance evidence path, and expiry are registered
+in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable and bound to the checked-in inactive
+policy hash. The already-required `governed-spine` context recognizes the pilot branch/label and fails
+on missing/inactive/suspended/expired authority, SHA or policy mismatch, identity conflict, or path
+drift. Any suspension trigger in the canonical merge model immediately revokes the grant. The
+external manifest avoids changing either the strict base or the exact pilot head during activation.
+
+Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
+canonical repository path. MAO-002 may instead use two disjoint path families in this repository.
 
 ---
 
@@ -207,7 +262,7 @@ next-WO selection.
 ### Release Engineering Application
 
 Release Engineering is the active lane using this operator-autonomy model. Release Engineering may
-use the local-tooling exception, review-remediation autonomy, same-risk docs/governance branch
+use the local-tooling exception, review-remediation autonomy, authorized docs/governance branch
 updates, and next-WO selection rules defined here while it stays inside its approved scope.
 
 ### Stop Type

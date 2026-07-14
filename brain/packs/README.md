@@ -40,14 +40,19 @@ where work routes, what proof is required, and when a human must approve.
 
 ## Authority hierarchy
 
-When two sources of guidance conflict, the higher one wins:
+The single active hierarchy is canonical in
+[`ADR-EXEC-001`](../../docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md) and is grounded in the
+persisted [`WO-MAO-000` source audit](../../docs/brain/evidence/WO-MAO-000-proof.md). Packs are domain
+knowledge inside canonical Brain/root governance; they do not form a separate authority tier. A pack
+or directory-local `AGENTS.md` may narrow writes within its subtree, but may never broaden a recorded
+grant, contradict the Constitution or active root governance, or create a suite-local queue.
 
-1. **TerraFusion Constitution** — `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md` (TF-052)
-2. **Brain / Cortex** — OS-level queue, sequencing, work orders, risk, proof, review-diff, commit-plan
-3. **Domain knowledge packs** — this directory (`brain/packs/**`)
-4. **Directory-local `AGENTS.md` files** — nearest-scope overrides for a path
-5. **Existing implementation patterns** — match the surrounding code
-6. **Agent judgment** — last resort, and only within the bounds set above
+Mechanical enforcement remains an execution interlock. If a pack or doctrine disagrees with an
+enforced gate, do not bypass the gate; report and reconcile the drift through a governed change.
+
+One Brain is one governance and sequencing authority, not one worker process. Multiple workers may
+execute dependency-cleared Work Orders concurrently when each has an isolated worktree and their path,
+contract, and environment reservations do not conflict.
 
 ## The packs
 
@@ -124,6 +129,9 @@ not as one clean directory per suite. Because of that, per-suite `AGENTS.md` fil
 3. Route work through Brain **work orders, review-diff, proof, and commit-plan**.
 4. Respect the domain's **Forbidden Writes** and **Escalation Triggers**. When in doubt, escalate to the
    human — do not guess across a write-lane boundary.
+5. Do not allocate a cross-repository worker from a repo name or assumed path. The allocation must cite
+   a committed `PATH_CANON_REGISTER.md`; until that register exists on the active base, cross-repo
+   allocation is blocked and the verified in-repo path map above is the only usable routing evidence.
 
 ## Verification Notes
 
