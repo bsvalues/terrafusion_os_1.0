@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Fail-closed MAO-002 pilot merge-authority interlock.
+"""Fail-closed MAO-002 pilot authority and execution-state interlock.
 
-The check is dormant until the canonical authority record is activated. Once active, it binds the
-two registered pilot PRs to exact head SHAs and allowed path sets. It does not grant merge authority;
-it mechanically verifies predicates of the already-recorded owner grant.
+The owner bootstrap envelope is stable for the pilot lifetime. Codex maintains the separate
+execution record as PR numbers, exact heads, scopes, reservations, and assurance state change.
 """
 
 from __future__ import annotations
@@ -17,13 +16,15 @@ import urllib.request
 from pathlib import Path
 
 
-AUTHORITY_PATH = Path(
+POLICY_PATH = Path(
     os.environ.get(
-        "TF_MAO_002_AUTHORITY_PATH",
+        "TF_MAO_002_POLICY_PATH",
         ".governance/mao-002-pilot-merge-authority.json",
     )
 )
-ACTIVATION_ENV = "TF_MAO_002_AUTHORITY_JSON"
+BOOTSTRAP_ENV = "TF_MAO_002_BOOTSTRAP_JSON"
+EXECUTION_ENV = "TF_MAO_002_EXECUTION_JSON"
+RISK_ORDER = {f"R{level}": level for level in range(6)}
 
 
 def fail(message: str) -> None:
@@ -46,155 +47,287 @@ def load_json(path: Path) -> dict:
     return value
 
 
-def policy_sha256(path: Path) -> str:
+def parse_json_env(name: str, raw: str) -> dict:
     try:
-        return hashlib.sha256(path.read_bytes()).hexdigest()
+        value = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        fail(f"{name} is not valid JSON: {exc}")
+    if not isinstance(value, dict):
+        fail(f"{name} must contain a JSON object")
+    return value
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def file_sha256(path: Path) -> str:
+    try:
+        return sha256_bytes(path.read_bytes())
     except OSError as exc:
         fail(f"cannot hash {path}: {exc}")
 
 
-def load_effective_record() -> tuple[dict, str]:
-    policy = load_json(AUTHORITY_PATH)
-    validate_record(policy)
-    if policy.get("status") != "inactive":
-        fail("checked-in pilot policy must remain inactive")
+def validate_suspension(value: object, source: str) -> None:
+    if not isinstance(value, dict) or not isinstance(value.get("active"), bool):
+        fail(f"{source}.suspension must be an object with a boolean active field")
+    reason = value.get("reason")
+    if reason is not None and (not isinstance(reason, str) or not reason.strip()):
+        fail(f"{source}.suspension.reason must be null or a non-empty string")
+    if value["active"] and reason is None:
+        fail(f"{source} active suspension requires a reason")
 
-    raw = os.environ.get(ACTIVATION_ENV, "").strip()
-    if not raw:
-        return policy, f"checked-in inactive policy sha256={policy_sha256(AUTHORITY_PATH)}"
+
+def validate_policy(policy: dict) -> None:
+    expected = {
+        "schema_version": 2,
+        "program": "PROGRAM-MAO-001",
+        "work_order": "WO-MAO-002",
+        "merge_mode": "B",
+        "activation_source": "split-github-actions-repository-variables",
+        "bootstrap_variable": "MAO_002_PILOT_BOOTSTRAP_JSON",
+        "execution_variable": "MAO_002_PILOT_EXECUTION_JSON",
+        "pilot_label": "mao-002-pilot",
+        "pilot_branch_glob": "codex/mao-002-*",
+        "status": "inactive",
+        "owner": "William",
+        "operator_identity": "codex-portfolio-operator",
+        "assurance_identity": "claude-assurance",
+        "required_implementation_operator_count": 2,
+        "max_merged_prs": 2,
+        "maximum_risk_class": "R2",
+        "allowed_repositories": ["bsvalues/terrafusion_os_1.0"],
+        "allowed_path_prefixes": ["docs/"],
+        "disallowed_reviewers": ["William"],
+    }
+    for key, value in expected.items():
+        if policy.get(key) != value:
+            fail(f"checked-in policy {key} must remain {value!r}")
+    if not policy.get("owner_envelope_fields") or not policy.get("operator_execution_fields"):
+        fail("checked-in policy must declare owner and operator field ownership")
+    if not policy.get("suspension_conditions"):
+        fail("checked-in policy must declare suspension conditions")
+
+
+def validate_identity_list(value: object, count: int, source: str) -> list[str]:
+    if not isinstance(value, list) or len(value) != count:
+        fail(f"{source} must contain exactly {count} unique identities")
+    if not all(isinstance(identity, str) and identity.strip() for identity in value):
+        fail(f"{source} must contain exactly {count} unique identities")
+    normalized = [normalize_identity(identity) for identity in value]
+    if len(set(normalized)) != count:
+        fail(f"{source} must contain exactly {count} unique identities")
+    return normalized
+
+
+def validate_prefixes(value: object, source: str) -> list[str]:
+    if not isinstance(value, list) or not value:
+        fail(f"{source} must be a non-empty list")
+    prefixes = []
+    for prefix in value:
+        if (
+            not isinstance(prefix, str)
+            or not prefix
+            or prefix.startswith(("/", "\\"))
+            or ".." in Path(prefix).parts
+        ):
+            fail(f"{source} contains an unsafe path prefix")
+        prefixes.append(prefix.replace("\\", "/"))
+    return prefixes
+
+
+def parse_expiration(value: object, source: str) -> dt.datetime:
+    if not isinstance(value, str) or not value:
+        fail(f"{source} requires expires_at")
     try:
-        record = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        fail(f"{ACTIVATION_ENV} is not valid JSON: {exc}")
-    if not isinstance(record, dict):
-        fail(f"{ACTIVATION_ENV} must contain a JSON object")
-    validate_record(record)
-    expected_policy_sha = policy_sha256(AUTHORITY_PATH)
-    if record.get("policy_sha256") != expected_policy_sha:
-        fail(
-            "activation policy_sha256 does not match the checked-in inactive policy: "
-            f"registered={record.get('policy_sha256')} live={expected_policy_sha}"
-        )
-    activation_sha = hashlib.sha256(raw.encode("utf-8")).hexdigest()
-    return (
-        record,
-        "GitHub Actions repository variable "
-        f"activation_sha256={activation_sha} policy_sha256={expected_policy_sha}",
-    )
+        expiration = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        fail(f"{source}.expires_at must be an ISO-8601 timestamp")
+    if expiration.tzinfo is None:
+        expiration = expiration.replace(tzinfo=dt.timezone.utc)
+    return expiration
 
 
-def validate_record(record: dict) -> None:
-    if record.get("schema_version") != 1:
-        fail("schema_version must be 1")
-    if record.get("program") != "PROGRAM-MAO-001":
-        fail("program must be PROGRAM-MAO-001")
-    if record.get("work_order") != "WO-MAO-002":
-        fail("work_order must be WO-MAO-002")
-    if record.get("merge_mode") != "B":
-        fail("merge_mode must be B")
-    if record.get("activation_source") != "github-actions-repository-variable":
-        fail("activation_source must be github-actions-repository-variable")
-    if record.get("activation_variable") != "MAO_002_PILOT_AUTHORITY_JSON":
-        fail("activation_variable must be MAO_002_PILOT_AUTHORITY_JSON")
-    if record.get("pilot_label") != "mao-002-pilot":
-        fail("pilot_label must remain mao-002-pilot")
-    if record.get("pilot_branch_glob") != "codex/mao-002-*":
-        fail("pilot_branch_glob must remain codex/mao-002-*")
-    if record.get("owner") != "William":
-        fail("owner must remain William")
-    if record.get("required_implementation_operator_count") != 2:
-        fail("required_implementation_operator_count must remain exactly 2")
-    if record.get("disallowed_reviewers") != ["William"]:
-        fail("disallowed_reviewers must remain exactly [William]")
-    if record.get("status") not in {"inactive", "active", "suspended", "expired"}:
-        fail("status must be inactive, active, suspended, or expired")
-    suspension = record.get("suspension")
-    if not isinstance(suspension, dict) or not isinstance(suspension.get("active"), bool):
-        fail("suspension must be an object with a boolean active field")
-    suspension_reason = suspension.get("reason")
-    if suspension_reason is not None and (
-        not isinstance(suspension_reason, str) or not suspension_reason.strip()
+def validate_bootstrap(bootstrap: dict, policy: dict) -> None:
+    forbidden_execution_fields = {
+        "revision",
+        "updated_at",
+        "bootstrap_sha256",
+        "implementation_operators",
+        "independent_reviewer",
+        "post_merge_assurance_evidence",
+        "pilot_prs",
+    }
+    present = sorted(forbidden_execution_fields & bootstrap.keys())
+    if present:
+        fail("owner bootstrap contains operator execution fields: " + ", ".join(present))
+    expected = {
+        "schema_version": 1,
+        "program": policy["program"],
+        "work_order": policy["work_order"],
+        "merge_mode": policy["merge_mode"],
+        "owner": policy["owner"],
+        "operator_identity": policy["operator_identity"],
+        "assurance_identity": policy["assurance_identity"],
+        "max_merged_prs": policy["max_merged_prs"],
+    }
+    for key, value in expected.items():
+        if bootstrap.get(key) != value:
+            fail(f"owner bootstrap {key} must remain {value!r}")
+    authority_id = bootstrap.get("authority_id")
+    if not isinstance(authority_id, str) or not authority_id.strip():
+        fail("owner bootstrap requires authority_id")
+    if bootstrap.get("policy_sha256") != file_sha256(POLICY_PATH):
+        fail("owner bootstrap policy_sha256 does not match the checked-in policy")
+    if bootstrap.get("status") not in {"active", "suspended", "expired"}:
+        fail("owner bootstrap status must be active, suspended, or expired")
+    validate_suspension(bootstrap.get("suspension"), "owner bootstrap")
+    if bootstrap["status"] == "suspended" and not bootstrap["suspension"]["active"]:
+        fail("suspended owner bootstrap requires suspension.active=true")
+    repositories = bootstrap.get("repositories")
+    if not isinstance(repositories, list) or not repositories:
+        fail("owner bootstrap requires repositories")
+    if any(repository not in policy["allowed_repositories"] for repository in repositories):
+        fail("owner bootstrap repository exceeds checked-in policy")
+    prefixes = validate_prefixes(bootstrap.get("allowed_path_prefixes"), "owner bootstrap allowed_path_prefixes")
+    if any(
+        not any(prefix.startswith(ceiling) for ceiling in policy["allowed_path_prefixes"])
+        for prefix in prefixes
     ):
-        fail("suspension.reason must be null or a non-empty string")
-    if suspension["active"] and suspension_reason is None:
-        fail("active suspension requires a reason")
-    if record.get("status") == "suspended" and not suspension["active"]:
-        fail("suspended authority requires suspension.active=true")
-    if record.get("max_merged_prs") != 2:
-        fail("max_merged_prs must remain exactly 2")
+        fail("owner bootstrap path prefix exceeds checked-in policy")
+    risk = bootstrap.get("risk_ceiling")
+    if risk not in RISK_ORDER or RISK_ORDER[risk] > RISK_ORDER[policy["maximum_risk_class"]]:
+        fail("owner bootstrap risk_ceiling exceeds checked-in policy")
+    expiration = parse_expiration(bootstrap.get("expires_at"), "owner bootstrap")
+    now = dt.datetime.now(dt.timezone.utc)
+    if bootstrap["status"] == "active" and expiration <= now:
+        fail("owner bootstrap is expired")
+    if bootstrap["status"] == "expired" and expiration > now:
+        fail("expired owner bootstrap must have expires_at in the past")
 
-    slots = record.get("pilot_prs")
-    if not isinstance(slots, list) or len(slots) != 2:
-        fail("pilot_prs must contain exactly two slots")
-    if {slot.get("slot") for slot in slots if isinstance(slot, dict)} != {
-        "lane-a",
-        "lane-b",
-    }:
-        fail("pilot slots must be lane-a and lane-b")
 
-    if record.get("status") == "inactive":
-        return
+def static_pattern_prefix(pattern: str) -> str:
+    wildcard_positions = [position for token in "*?[" if (position := pattern.find(token)) >= 0]
+    return pattern[: min(wildcard_positions)] if wildcard_positions else pattern
+
+
+def roots_overlap(left: str, right: str) -> bool:
+    left = left.rstrip("/")
+    right = right.rstrip("/")
+    return left == right or left.startswith(right + "/") or right.startswith(left + "/")
+
+
+def validate_execution(execution: dict, bootstrap: dict, bootstrap_raw: str, policy: dict) -> None:
+    forbidden_owner_fields = {
+        "status",
+        "owner",
+        "repositories",
+        "risk_ceiling",
+        "allowed_path_prefixes",
+        "max_merged_prs",
+        "expires_at",
+        "policy_sha256",
+        "merge_mode",
+    }
+    present = sorted(forbidden_owner_fields & execution.keys())
+    if present:
+        fail("operator execution contains owner envelope fields: " + ", ".join(present))
+    expected = {
+        "schema_version": 1,
+        "program": policy["program"],
+        "work_order": policy["work_order"],
+        "authority_id": bootstrap["authority_id"],
+        "operator_identity": bootstrap["operator_identity"],
+        "independent_reviewer": bootstrap["assurance_identity"],
+        "bootstrap_sha256": sha256_bytes(bootstrap_raw.encode("utf-8")),
+    }
+    for key, value in expected.items():
+        if execution.get(key) != value:
+            fail(f"operator execution {key} must remain {value!r}")
+    if not isinstance(execution.get("revision"), int) or execution["revision"] <= 0:
+        fail("operator execution revision must be a positive integer")
+    if not isinstance(execution.get("updated_at"), str) or not execution["updated_at"]:
+        fail("operator execution requires updated_at")
+    validate_suspension(execution.get("suspension"), "operator execution")
+    normalized_operators = validate_identity_list(
+        execution.get("implementation_operators"),
+        policy["required_implementation_operator_count"],
+        "implementation_operators",
+    )
+    reviewer = normalize_identity(execution["independent_reviewer"])
+    disallowed = {
+        normalize_identity(identity) for identity in policy["disallowed_reviewers"]
+    } | set(normalized_operators)
+    if reviewer in disallowed:
+        fail("independent_reviewer must differ from owner and implementation operators")
+    evidence = execution.get("post_merge_assurance_evidence")
+    if not isinstance(evidence, str) or not evidence.startswith("docs/"):
+        fail("operator execution requires a docs/ post_merge_assurance_evidence path")
+
+    slots = execution.get("pilot_prs")
+    if not isinstance(slots, list) or len(slots) != bootstrap["max_merged_prs"]:
+        fail("operator execution must contain exactly two pilot PR slots")
+    if {slot.get("slot") for slot in slots if isinstance(slot, dict)} != {"lane-a", "lane-b"}:
+        fail("operator execution slots must be lane-a and lane-b")
 
     numbers = []
+    roots: list[tuple[str, str]] = []
     for slot in slots:
         number = slot.get("number")
         sha = slot.get("head_sha")
         paths = slot.get("allowed_paths")
+        repository = slot.get("repository")
+        risk = slot.get("risk_class")
+        reservation_id = slot.get("reservation_id")
         if not isinstance(number, int) or number <= 0:
-            fail("active pilot slots require positive integer PR numbers")
-        if not isinstance(sha, str) or len(sha) != 40:
-            fail(f"PR #{number} requires an exact 40-character final head SHA")
-        if not isinstance(paths, list) or not paths or not all(
-            isinstance(path, str) and path for path in paths
-        ):
+            fail("operator execution pilot slots require positive integer PR numbers")
+        if not isinstance(sha, str) or len(sha) != 40 or any(c not in "0123456789abcdef" for c in sha):
+            fail(f"PR #{number} requires an exact lowercase 40-character head SHA")
+        if repository not in bootstrap["repositories"]:
+            fail(f"PR #{number} repository exceeds owner bootstrap")
+        if risk not in RISK_ORDER or RISK_ORDER[risk] > RISK_ORDER[bootstrap["risk_ceiling"]]:
+            fail(f"PR #{number} risk_class exceeds owner bootstrap")
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
+            fail(f"PR #{number} requires a reservation_id")
+        if not isinstance(paths, list) or not paths or not all(isinstance(path, str) and path for path in paths):
             fail(f"PR #{number} requires a non-empty allowed_paths list")
-        if not isinstance(slot.get("repository"), str) or not slot.get("repository"):
-            fail(f"PR #{number} requires an exact repository")
+        for pattern in paths:
+            normalized = pattern.replace("\\", "/")
+            root = static_pattern_prefix(normalized)
+            if not root or ".." in Path(root).parts:
+                fail(f"PR #{number} contains an unsafe allowed path pattern")
+            if not any(root.startswith(prefix) for prefix in bootstrap["allowed_path_prefixes"]):
+                fail(f"PR #{number} allowed path exceeds owner bootstrap")
+            roots.append((slot["slot"], root.rstrip("/")))
         numbers.append(number)
-    if len(set(numbers)) != 2:
-        fail("active pilot PR numbers must be unique")
+    if len(set(numbers)) != len(numbers):
+        fail("operator execution pilot PR numbers must be unique")
+    for index, (slot, root) in enumerate(roots):
+        for other_slot, other_root in roots[index + 1 :]:
+            if slot != other_slot and roots_overlap(root, other_root):
+                fail(f"pilot path reservations overlap between {slot} and {other_slot}")
 
-    reviewer = record.get("independent_reviewer")
-    operators = record.get("implementation_operators")
-    if not isinstance(reviewer, str) or not reviewer.strip():
-        fail("active authority requires a named independent_reviewer")
-    required_operator_count = record["required_implementation_operator_count"]
-    normalized_operators = (
-        [normalize_identity(operator) for operator in operators]
-        if isinstance(operators, list)
-        and all(isinstance(operator, str) for operator in operators)
-        else []
+
+def load_effective_records() -> tuple[dict, dict | None, str]:
+    policy = load_json(POLICY_PATH)
+    validate_policy(policy)
+    bootstrap_raw = os.environ.get(BOOTSTRAP_ENV, "").strip()
+    execution_raw = os.environ.get(EXECUTION_ENV, "").strip()
+    if not bootstrap_raw and not execution_raw:
+        return policy, None, f"checked-in inactive policy sha256={file_sha256(POLICY_PATH)}"
+    if not bootstrap_raw or not execution_raw:
+        fail("owner bootstrap and operator execution variables must be present together")
+    bootstrap = parse_json_env(BOOTSTRAP_ENV, bootstrap_raw)
+    execution = parse_json_env(EXECUTION_ENV, execution_raw)
+    validate_bootstrap(bootstrap, policy)
+    validate_execution(execution, bootstrap, bootstrap_raw, policy)
+    source = (
+        "split repository variables "
+        f"bootstrap_sha256={sha256_bytes(bootstrap_raw.encode('utf-8'))} "
+        f"execution_sha256={sha256_bytes(execution_raw.encode('utf-8'))} "
+        f"policy_sha256={file_sha256(POLICY_PATH)}"
     )
-    if (
-        not isinstance(operators, list)
-        or len(operators) != required_operator_count
-        or not all(isinstance(operator, str) and operator.strip() for operator in operators)
-        or len(set(normalized_operators)) != required_operator_count
-    ):
-        fail(f"implementation_operators must contain exactly {required_operator_count} unique identities")
-    disallowed_reviewers = {
-        *(normalize_identity(identity) for identity in record["disallowed_reviewers"]),
-        *normalized_operators,
-    }
-    if normalize_identity(reviewer) in disallowed_reviewers:
-        fail("independent_reviewer must differ from owner and implementation operators")
-    if not record.get("post_merge_assurance_evidence"):
-        fail("active authority requires a post_merge_assurance_evidence path")
-
-    expires_at = record.get("expires_at")
-    if not isinstance(expires_at, str) or not expires_at:
-        fail("active authority requires expires_at")
-    try:
-        expiration = dt.datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
-    except ValueError:
-        fail("expires_at must be an ISO-8601 timestamp")
-    now = dt.datetime.now(dt.timezone.utc)
-    if expiration.tzinfo is None:
-        expiration = expiration.replace(tzinfo=dt.timezone.utc)
-    if record.get("status") == "active" and expiration <= now:
-        fail("pilot authority is expired")
-    if record.get("status") == "expired" and expiration > now:
-        fail("expired authority must have an expires_at value in the past")
+    return policy, execution, source
 
 
 def extract_changed_paths(items: list, source: str) -> list[str]:
@@ -221,11 +354,9 @@ def changed_files(repo: str, pr_number: int) -> list[str]:
         if not isinstance(value, list):
             fail("TF_MAO_002_CHANGED_FILES_JSON must be a JSON array")
         return extract_changed_paths(value, "TF_MAO_002_CHANGED_FILES_JSON")
-
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
         fail("GH_TOKEN/GITHUB_TOKEN is required to inspect registered pilot PR scope")
-
     files: list[str] = []
     page = 1
     while True:
@@ -241,7 +372,7 @@ def changed_files(repo: str, pr_number: int) -> list[str]:
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
                 batch = json.load(response)
-        except Exception as exc:  # network/API failure must fail closed for a registered pilot PR
+        except Exception as exc:
             fail(f"cannot inspect PR #{pr_number} files: {exc}")
         if not isinstance(batch, list):
             fail(f"unexpected GitHub files response for PR #{pr_number}")
@@ -253,8 +384,7 @@ def changed_files(repo: str, pr_number: int) -> list[str]:
 
 
 def main() -> None:
-    record, source = load_effective_record()
-
+    policy, execution, source = load_effective_records()
     pr_text = os.environ.get("TF_PR_NUMBER", "").strip()
     head_sha = os.environ.get("TF_PR_HEAD_SHA", "").strip()
     head_ref = os.environ.get("TF_PR_HEAD_REF", "").strip()
@@ -266,7 +396,6 @@ def main() -> None:
         pr_number = int(pr_text)
     except ValueError:
         fail("TF_PR_NUMBER must be an integer")
-
     labels_raw = os.environ.get("TF_PR_LABELS_JSON", "[]")
     try:
         labels = json.loads(labels_raw)
@@ -274,57 +403,39 @@ def main() -> None:
         fail(f"TF_PR_LABELS_JSON is not valid JSON: {exc}")
     if not isinstance(labels, list) or not all(isinstance(label, str) for label in labels):
         fail("TF_PR_LABELS_JSON must contain a JSON string array")
-    is_pilot_candidate = record["pilot_label"] in labels or fnmatch.fnmatchcase(
-        head_ref, record["pilot_branch_glob"]
+    is_pilot_candidate = policy["pilot_label"] in labels or fnmatch.fnmatchcase(
+        head_ref, policy["pilot_branch_glob"]
     )
-
-    slot = next(
-        (item for item in record["pilot_prs"] if item.get("number") == pr_number),
-        None,
-    )
+    slots = execution.get("pilot_prs", []) if execution else []
+    slot = next((item for item in slots if item.get("number") == pr_number), None)
     if slot is None:
         if is_pilot_candidate:
-            fail(
-                f"pilot candidate PR #{pr_number} ({head_ref or 'no head ref'}) is not registered "
-                f"in an active exact-SHA manifest"
-            )
-        if record.get("status") in {"active", "suspended", "expired"}:
+            fail(f"pilot candidate PR #{pr_number} is not registered in operator execution state")
+        if execution:
             files = changed_files(repo, pr_number)
-            pilot_patterns = [
-                pattern
-                for item in record["pilot_prs"]
-                for pattern in (item.get("allowed_paths") or [])
-            ]
+            pilot_patterns = [pattern for item in slots for pattern in item["allowed_paths"]]
             overlap = [
                 path
                 for path in files
                 if any(fnmatch.fnmatchcase(path, pattern) for pattern in pilot_patterns)
             ]
             if overlap:
-                fail(
-                    f"unregistered PR #{pr_number} overlaps active pilot scope: "
-                    + ", ".join(sorted(overlap))
-                )
-        print(
-            f"MAO-002 pilot authority: PASS - PR #{pr_number} is not a registered pilot PR "
-            f"({source})"
-        )
+                fail(f"unregistered PR #{pr_number} overlaps active pilot scope: " + ", ".join(sorted(overlap)))
+        print(f"MAO-002 pilot authority: PASS - PR #{pr_number} is not a registered pilot PR ({source})")
         return
-
     if not is_pilot_candidate:
         fail(f"registered pilot PR #{pr_number} lacks the required pilot label or branch identity")
-    if record.get("status") != "active":
-        fail(f"registered pilot PR #{pr_number} has authority status {record.get('status')}")
-    if record["suspension"]["active"]:
-        fail(
-            f"registered pilot authority is suspended: "
-            f"{record['suspension']['reason']}"
-        )
-    if repo != slot.get("repository"):
-        fail(f"repository mismatch for PR #{pr_number}: registered={slot.get('repository')} live={repo}")
-    if head_sha != slot.get("head_sha"):
-        fail(f"final SHA mismatch for PR #{pr_number}: registered={slot.get('head_sha')} live={head_sha}")
-
+    bootstrap = parse_json_env(BOOTSTRAP_ENV, os.environ[BOOTSTRAP_ENV])
+    if bootstrap["suspension"]["active"]:
+        fail(f"owner bootstrap is suspended: {bootstrap['suspension']['reason']}")
+    if bootstrap["status"] != "active":
+        fail(f"registered pilot PR #{pr_number} has owner bootstrap status {bootstrap['status']}")
+    if execution["suspension"]["active"]:
+        fail(f"operator execution is suspended: {execution['suspension']['reason']}")
+    if repo != slot["repository"]:
+        fail(f"repository mismatch for PR #{pr_number}: registered={slot['repository']} live={repo}")
+    if head_sha != slot["head_sha"]:
+        fail(f"head SHA mismatch for PR #{pr_number}: registered={slot['head_sha']} live={head_sha}")
     files = changed_files(repo, pr_number)
     if not files:
         fail(f"registered pilot PR #{pr_number} has no changed files")
@@ -334,13 +445,10 @@ def main() -> None:
         if not any(fnmatch.fnmatchcase(path, pattern) for pattern in slot["allowed_paths"])
     ]
     if outside:
-        fail(
-            f"scope drift for PR #{pr_number}; outside allowed paths: " + ", ".join(sorted(outside))
-        )
-
+        fail(f"scope drift for PR #{pr_number}; outside allowed paths: " + ", ".join(sorted(outside)))
     print(
-        f"MAO-002 pilot authority: PASS - PR #{pr_number} head {head_sha} "
-        f"matches registered scope ({len(files)} files; {source})"
+        f"MAO-002 pilot authority: PASS - PR #{pr_number} head {head_sha} matches "
+        f"operator execution revision {execution['revision']} ({len(files)} files; {source})"
     )
 
 

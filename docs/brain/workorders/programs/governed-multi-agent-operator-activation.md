@@ -4,18 +4,18 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-001`
+**Current Work Order:** `WO-MAO-001A`
 **Next Work Order:** `WO-MAO-002`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
 ## Owner Authorization Record
 
-`OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` in `.governance/owner-decisions.json` is the owner-authorized
-packet for this exact amendment set. It is limited to findings `F01` through `F16`, WO-MAO-001's
-enumerated files/actions, and PR #1273's lifecycle. It is not general R5 authority, production or
-credentials authority, permission to change suite boundaries, or permission to change runtime,
-backend, frontend, or product behavior. The amendment does not self-authorize.
+`OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` is completed with PR #1273. The active correction decision is
+`OWNER-MAO-001A-AUTHORITY-STATE-SEPARATION` in `.governance/owner-decisions.json`. It authorizes only
+the split authority-state contract and its exact files/actions. It does not activate MAO-002, grant
+general R5 authority, authorize production or credentials, change suite boundaries, or permit runtime,
+backend, frontend, package, lockfile, or product behavior changes.
 
 ## Objective
 
@@ -47,7 +47,8 @@ Unknown historical founder-touch data remains `UNKNOWN`; it is never inferred.
 |------------|---------|------------|---------------------|
 | `WO-MAO-000` | Audit governance contradictions and capture the pre-pilot denominator. | None | Source-cited matrix and historical metrics |
 | `WO-MAO-001` | Reconcile authority semantics and ratify bounded operator merge. | MAO-000 | ADR, amended canon, evidence matrix |
-| `WO-MAO-002` | Run a minimal, falsifiable two-lane pilot. | MAO-001 merged | Two dispatches, two PRs, independent post-merge checks |
+| `WO-MAO-001A` | Separate one-time owner bootstrap authority from mutable operator execution state. | MAO-001 merged | Split schemas, interlock tests, owner/operator responsibility proof |
+| `WO-MAO-002` | Run a minimal, falsifiable two-lane pilot. | MAO-001A merged and owner envelope granted once | Two dispatches, two PRs, independent post-merge checks |
 | `WO-MAO-003` | Define reservations and enforce collisions mechanically. | MAO-002 evidence | Mechanical gate rejects intentional overlap and passes after release |
 | `WO-MAO-004` | Compute executable nodes and conflict-free parallel waves. | MAO-003 merged | Deterministic planner evidence |
 | `WO-MAO-005` | Create evidence-informed worker and assurance playbooks. | MAO-004 merged | Rules cite pilot, gate, or controlling doctrine |
@@ -75,27 +76,26 @@ The reviewer is neither the implementation operator nor William.
 
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
 
-MAO-001 ratifies the bounded, revocable Mode B model. It does not grant portfolio-wide merge
-authority and remains Mode A itself. The first pilot grant becomes effective only after MAO-002
-records its two exact dispatch packets, reservations, PR identities, exact final head SHAs, allowed
-path sets, implementation operators, independent reviewer, and expiry in
-the visible GitHub Actions repository variable `MAO_002_PILOT_AUTHORITY_JSON`. That active manifest
-must bind to the SHA-256 of the checked-in inactive
-`.governance/mao-002-pilot-merge-authority.json` policy. The existing required `governed-spine` check
-must validate the manifest for each exact pilot PR. Changing the external manifest does not move
-`main` or either pilot branch, so the exact head can be registered and rechecked under strict
-up-to-date branch protection without a self-referential commit.
+MAO-001 ratified the bounded, revocable Mode B model. MAO-001A corrects its operational boundary.
+The owner grants one bootstrap envelope containing the authorized operator and assurance identities,
+repository set, path ceiling, risk ceiling, maximum two pilot merges, expiry, and suspension state.
+Codex translates that grant into `MAO_002_PILOT_BOOTSTRAP_JSON`; William does not type variable JSON.
+Codex then owns `MAO_002_PILOT_EXECUTION_JSON`, including dispatch packets, reservations, PR numbers,
+exact current head SHAs, allowed paths, implementation identities, assurance evidence, and revision.
+Review fixes and branch updates require Codex to refresh only the execution record and rerun the gate.
+The execution record is bound to the exact bootstrap digest and both records bind to the checked-in
+inactive `.governance/mao-002-pilot-merge-authority.json` policy. The required `governed-spine` check
+rejects any execution field outside the owner envelope.
 
 Any suspension trigger immediately revokes the pilot grant. Restoration requires incident evidence,
 normal-PR containment or rollback, verified `main`, corrected controls, and explicit ratification.
 
-The machine manifest has exactly two slots. A pilot-labeled or `codex/mao-002-*` PR fails closed when
-the external manifest is absent, authority is not active, suspension is active, the registered final
-SHA differs, the policy hash differs, scope exceeds its path list, either implementation operator is
-missing, reviewer independence is invalid, or the grant is expired. The owner is immutably William,
-and normalized identity comparison prevents surrounding whitespace or case from making William or an
-implementation operator appear independent. Suspension is a required typed manifest field. Scope
-evaluation includes both the destination and source path of a rename. No third PR can inherit the grant.
+The operator execution record has exactly two slots. A pilot-labeled or `codex/mao-002-*` PR fails
+closed when either split record is absent, the owner envelope is not active, either record is
+suspended, digests differ, the current head differs, scope or risk exceeds the envelope, reservations
+are missing or overlap, reviewer independence is invalid, or the grant is expired. Owner fields are
+forbidden in execution state and execution fields are forbidden in the owner envelope. Scope
+evaluation includes both sides of a rename. No third PR can inherit the grant.
 
 ## Reservation Boundary
 

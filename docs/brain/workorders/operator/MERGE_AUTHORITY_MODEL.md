@@ -32,13 +32,15 @@ Goal/Loop/Work Order. Every merge requires:
 - evidence and rollback are complete;
 - no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
 
-**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001 remains Mode A. The first grant is
-limited to MAO-002's two exact pilot PRs and activates only after dispatch, reservation, exact PR,
-exact final head SHA, path scope, two implementation operators, independent reviewer, and expiry fields
-are registered in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable, its manifest binds
-to the checked-in inactive `.governance/mao-002-pilot-merge-authority.json` policy, and the required
-`governed-spine` pilot interlock passes. The external manifest is the only activation source; editing
-the checked-in policy cannot activate Mode B.
+**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** MAO-001A preserves Mode A while correcting
+the activation contract. A one-time owner envelope in `MAO_002_PILOT_BOOTSTRAP_JSON` authorizes the
+operator identity, assurance identity, repository and path boundaries, risk ceiling, at most two
+pilot merges, expiry, and suspension conditions. It never contains PR numbers, head SHAs, reservation
+records, or remediation state. Codex maintains those changing fields in
+`MAO_002_PILOT_EXECUTION_JSON`, which is cryptographically bound to the owner envelope and must remain
+inside all of its ceilings. Both variables bind to the checked-in inactive
+`.governance/mao-002-pilot-merge-authority.json` policy, and `governed-spine` must pass. Editing the
+checked-in policy or operator execution state cannot create or broaden the owner grant.
 
 ## Mode C: Auto-Merge Armed
 
@@ -72,12 +74,13 @@ operator merges stop until restoration is ratified.
 Restoration evidence must include the incident record, rollback PR/SHA, validation results, corrected
 scope and reservation evidence, required-check proof, and the owner restoration decision.
 
-For MAO-002, the machine interlock fails a registered pilot PR when suspension is active. The
-checked-in policy recognizes MAO-002 branches/labels and fails them while no active external manifest
-exists. Because the external manifest contains exactly two PR slots and validates each current head
-against a declared final SHA, the grant cannot be reused by a third PR or a later review-fix SHA
-without updating the repository variable and rerunning the required check. Updating that variable
-does not change `main` or either pilot head, so strict up-to-date protection remains satisfiable.
+For MAO-002, the machine interlock fails a registered pilot PR when either the owner envelope or
+operator execution state is absent, expired, suspended, mismatched, or outside policy. The execution
+record contains exactly two PR slots and validates each current head. Codex may revise that record
+after review fixes, branch updates, assurance changes, or reservation updates without changing the
+owner envelope. A third PR, higher risk, different repository, or broader path cannot inherit the
+grant. Variable updates do not change `main` or either pilot head, so strict up-to-date protection
+remains satisfiable.
 
 ## Post-Merge Verification
 

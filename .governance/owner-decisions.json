@@ -8,7 +8,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-001",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R5-manual-governance-amendment",
       "effective_base_sha": "63f959e07240e0159ce101cd4d76e814788aac44",
       "terminal_condition": "PR #1273 is merged, closed without merge, or this decision is explicitly revoked",
@@ -87,7 +87,61 @@
         "conflicting owner decision"
       ],
       "evidence": "docs/brain/evidence/WO-MAO-000-proof.md",
-      "review_remediation_basis": "PR #1273 review 4690754850 at exact head 6851f6360dc1f10bfdc9a3da3e126502a6dac2ef"
+      "review_remediation_basis": "PR #1273 review 4690754850 at exact head 6851f6360dc1f10bfdc9a3da3e126502a6dac2ef",
+      "completion": {
+        "merged_pr": 1273,
+        "merge_commit": "b936904b76a1593d12e524434e94872f2e9a78fe"
+      }
+    },
+    {
+      "id": "OWNER-MAO-001A-AUTHORITY-STATE-SEPARATION",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-001A",
+      "status": "active",
+      "authority_class": "R5-manual-governance-amendment",
+      "effective_base_sha": "b936904b76a1593d12e524434e94872f2e9a78fe",
+      "terminal_condition": "The WO-MAO-001A PR is merged, closed without merge, or this decision is explicitly revoked",
+      "authorized_actions": [
+        "separate owner bootstrap authority from operator execution state",
+        "replace the combined MAO_002_PILOT_AUTHORITY_JSON contract with split bootstrap and execution variables",
+        "allow Codex to maintain pilot PR numbers, exact head SHAs, path scopes, reservations, and remediation revisions inside an owner-approved envelope",
+        "preserve fail-closed pilot gating, exact-head assurance, suspension, and Mode A activation boundaries",
+        "update canon and program routing before MAO-002 launches"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        ".governance/mao-002-pilot-merge-authority.json",
+        ".github/workflows/core-governance-gates.yml",
+        "docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md",
+        "docs/brain/workorders/CANON_INDEX.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-MAO-001A-authority-state-separation.md",
+        "docs/brain/workorders/evidence/WO-MAO-001A-AUTHORITY-STATE-SEPARATION.md",
+        "docs/brain/workorders/operator/MERGE_AUTHORITY_MODEL.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md",
+        "docs/governance/CI_GOVERNANCE_INDEX.md",
+        "scripts/ci/verify-mao-002-pilot-authority.py",
+        "scripts/ci/__tests__/mao-002-pilot-authority.test.py"
+      ],
+      "explicitly_denied": [
+        "activate the MAO-002 pilot without a separate one-time owner bootstrap grant",
+        "owner maintenance of pilot PR numbers, head SHAs, reservations, or execution JSON",
+        "general R5 or portfolio-wide merge authority",
+        "production, deployment, credentials, secrets, PACS, county SQL, or county-data authority",
+        "runtime, backend, frontend, suite, package, lockfile, or product behavior changes"
+      ],
+      "merge_mode": "A-owner-merge-required",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-gate bypass",
+        "protected-boundary access",
+        "conflicting owner decision"
+      ],
+      "decision_basis": "Owner directed WO-MAO-001A to remove per-PR execution-state maintenance from the owner role before MAO-002 launches"
     }
   ]
 }

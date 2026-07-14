@@ -96,7 +96,7 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-001` |
+| Current WO | `WO-MAO-001A` |
 | Next WO | `WO-MAO-002` |
 
 ### Purpose
@@ -113,7 +113,8 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 |------------|------|------------------|
 | `WO-MAO-000` | read-only audit | Persisted source-cited contradiction matrix and historical denominator |
 | `WO-MAO-001` | governance reconciliation | Exact bounded R5 owner authorization, replacement hierarchy, complete protection canon, and inactive operator-merge model |
-| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, exact PR/final-SHA authority records, required governed-spine interlock, and independent read-only post-merge checks |
+| `WO-MAO-001A` | governance correction | One-time owner envelope separated from Codex-maintained PR/SHA/scope/reservation execution state |
+| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
 | `WO-MAO-004` | planner implementation | Dependency-cleared executable set and conflict-free parallel waves |
 | `WO-MAO-005` | evidence-informed playbooks | Worker and assurance playbooks grounded in pilot and gate evidence |
@@ -128,13 +129,12 @@ reservation enforcement. Each pilot PR requires a separate read-only assurance-a
 reviewer cannot be the implementation operator or William.
 
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.** Mode B authority for the pilot is not
-portfolio-wide. It may attach only after the two exact PRs, final head SHAs, path scopes,
-implementation operators, independent reviewer, assurance evidence path, and expiry are registered
-in the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable and bound to the checked-in inactive
-policy hash. The already-required `governed-spine` context recognizes the pilot branch/label and fails
-on missing/inactive/suspended/expired authority, SHA or policy mismatch, identity conflict, or path
-drift. Any suspension trigger in the canonical merge model immediately revokes the grant. The
-external manifest avoids changing either the strict base or the exact pilot head during activation.
+portfolio-wide. One owner bootstrap envelope sets the operator, assurance identity, repository/path
+and risk ceilings, merge limit, expiry, and suspension conditions in
+`MAO_002_PILOT_BOOTSTRAP_JSON`. Codex maintains the two exact PRs, current head SHAs, scopes,
+reservations, remediation revisions, and assurance state in `MAO_002_PILOT_EXECUTION_JSON`. The
+required `governed-spine` context validates both records and their digest binding. A head change never
+requires William to refresh PR/SHA state; Codex updates the execution record and reruns the check.
 
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 may instead use two disjoint path families in this repository.

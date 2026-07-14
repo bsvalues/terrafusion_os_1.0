@@ -1,6 +1,6 @@
 # ADR-EXEC-001: Governance Authority Hierarchy
 
-Status: Accepted by WO-MAO-001 reconciliation, pending merge
+Status: Accepted and active; merged by PR #1273
 Date: 2026-07-13
 
 Source audit: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../brain/evidence/WO-MAO-000-proof.md).
@@ -69,14 +69,15 @@ authority, suite-boundary authority, or permission to modify runtime behavior.
 
 **OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
 
-Activation occurs only in MAO-002 after the two exact pilot PRs, final head SHAs, scopes, two
-implementation operators, independent reviewer, and expiry are registered in the visible GitHub
-Actions repository variable `MAO_002_PILOT_AUTHORITY_JSON`. The manifest must bind to the SHA-256 of
-the checked-in inactive policy `.governance/mao-002-pilot-merge-authority.json`, and the existing
-required `governed-spine` check must pass its pilot interlock. Because the activation manifest is
-external to `main` and the pilot branches, exact final-SHA registration does not create a
-self-referential commit or move the strict branch-protection base. MAO-001 itself remains Mode A and
-requires owner merge authority.
+WO-MAO-001A separates the one-time owner envelope from mutable pilot execution state. The owner
+envelope is published once in `MAO_002_PILOT_BOOTSTRAP_JSON` and defines the operator, assurance
+identity, repository set, path ceiling, risk ceiling, merge count, expiry, and suspension state.
+Codex publishes and refreshes `MAO_002_PILOT_EXECUTION_JSON` with the two PR numbers, exact current
+head SHAs, path scopes, reservations, implementation operators, and assurance evidence. Both records
+bind to the checked-in inactive policy `.governance/mao-002-pilot-merge-authority.json`, and the
+required `governed-spine` check validates the execution record is inside the owner envelope. A pilot
+head change requires only an operator execution-state revision and check rerun, not another owner
+decision. MAO-001A remains Mode A and does not itself activate the pilot.
 
 ## Authority Records
 
