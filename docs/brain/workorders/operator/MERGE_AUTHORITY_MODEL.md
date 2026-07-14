@@ -32,17 +32,18 @@ Goal/Loop/Work Order. Every merge requires:
 - evidence and rollback are complete;
 - no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
 
-**THE GENERAL MODE B DOCTRINE IS RATIFIED, AND THE MAO-002 BOUNDED OWNER ENVELOPE IS ACTIVE.** Owner
-issue [#1276](https://github.com/bsvalues/terrafusion_os_1.0/issues/1276) activates only the bounded
-MAO-002 grant for at most two docs-scoped pilot PRs; Mode A remains mandatory outside that grant.
-Operator merge for a specific pilot PR remains fail-closed and inactive until both
-`MAO_002_PILOT_BOOTSTRAP_JSON` and `MAO_002_PILOT_EXECUTION_JSON` validate together for the exact PR,
-current head SHA, repository, allowed scope, and reservation records, with every other Mode B
-condition satisfied. The [checked-in policy](../../../../.governance/mao-002-pilot-merge-authority.json)
-intentionally remains `status: "inactive"` because a static policy ceiling cannot self-authorize.
-Active authority comes only from the issue #1276 owner envelope plus the Codex-maintained operator
-execution record, cryptographically bound to the envelope and policy and validated by
-`governed-spine`. Editing the policy or execution record cannot create or broaden the owner grant.
+**THE GENERAL MODE B DOCTRINE IS RATIFIED; THE MAO-002 BOUNDED OWNER ENVELOPE IS CONSUMED AND
+INACTIVE.** Owner issue [#1276](https://github.com/bsvalues/terrafusion_os_1.0/issues/1276) authorized
+at most two docs-scoped pilot PRs. Both slots were consumed by PRs #1281 and #1280, independent
+post-merge assurance passed, and the paired operational repository variables were removed together
+to release their reservations. Mode A remains mandatory outside another applicable recorded grant.
+
+During the pilot, operator merge remained fail-closed until `MAO_002_PILOT_BOOTSTRAP_JSON` and
+`MAO_002_PILOT_EXECUTION_JSON` validated together for the exact PR, head SHA, repository, allowed
+scope, and reservations. The
+[checked-in policy](../../../../.governance/mao-002-pilot-merge-authority.json) remains
+`status: "inactive"`; a static policy ceiling cannot self-authorize, and the completed pilot does not
+create continuing Mode B authority.
 
 ## Mode C: Auto-Merge Armed
 
@@ -76,13 +77,13 @@ operator merges stop until restoration is ratified.
 Restoration evidence must include the incident record, rollback PR/SHA, validation results, corrected
 scope and reservation evidence, required-check proof, and the owner restoration decision.
 
-For MAO-002, the machine interlock fails a registered pilot PR when either the owner envelope or
-operator execution state is absent, expired, suspended, mismatched, or outside policy. The execution
-record contains exactly two PR slots and validates each current head. Codex may revise that record
-after review fixes, branch updates, assurance changes, or reservation updates without changing the
-owner envelope. A third PR, higher risk, different repository, or broader path cannot inherit the
-grant. Variable updates do not change `main` or either pilot head, so strict up-to-date protection
-remains satisfiable.
+For MAO-002, the machine interlock failed a registered pilot PR when either the owner envelope or
+operator execution state was absent, expired, suspended, mismatched, or outside policy. The execution
+record contained exactly two PR slots and validated each current head. Codex revised that record after
+review fixes, branch updates, assurance changes, and reservation updates without changing the owner
+envelope. No third PR, higher risk, different repository, or broader path can inherit the completed
+grant. Removing the paired operational variables after both merges returned the interlock to its
+checked-in inactive posture.
 
 ## Post-Merge Verification
 

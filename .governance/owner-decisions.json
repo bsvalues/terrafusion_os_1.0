@@ -153,7 +153,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-002",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R2-bounded-pilot-bootstrap",
       "effective_base_sha": "9986f5b4e4ffea1d10e3c9915745c0f280612639",
       "terminal_condition": "Two eligible MAO-002 pilot PRs merge, the grant expires at 2026-07-21T23:59:59Z, or a suspension condition activates",
@@ -182,7 +182,16 @@
         "false-completion-evidence",
         "expiration"
       ],
-      "decision_basis": "Owner issue #1276 grants one bounded MAO-002 pilot envelope and assigns changing execution state to Codex"
+      "decision_basis": "Owner issue #1276 grants one bounded MAO-002 pilot envelope and assigns changing execution state to Codex",
+      "completion": {
+        "merged_prs": [1281, 1280],
+        "merge_commits": [
+          "405677e151955b48d3e5f8abd269238736d2ab74",
+          "4f68ba4c689f100eb822f18bdb07a5c5b082a660"
+        ],
+        "evidence": "docs/brain/evidence/WO-MAO-002-POST-MERGE-ASSURANCE.md",
+        "operational_variables_released": true
+      }
     }
   ]
 }
