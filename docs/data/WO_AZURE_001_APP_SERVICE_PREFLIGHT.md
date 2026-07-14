@@ -71,8 +71,13 @@ This WO neither reads nor validates their values.
 ## Identity And Secret-Storage Requirements
 
 The intended end state is a managed identity with Key Vault references and least-privilege database
-credentials. Current evidence proves protected configuration was injected without publishing values,
-but it does not prove:
+credentials. Current evidence does not prove that end state. It records JWT and Workbench HMAC values
+as undisclosed App Service settings, but it also records that a real PostgreSQL connection string was
+bundled into `appsettings.BentonCounty.local.json` in the deployed publish output to work around
+configuration-source ordering. The committed evidence does not reveal the value, but embedding a live
+connection string in a deployment artifact is a material secret-storage gap.
+
+Current evidence does not prove:
 
 - a system- or user-assigned managed identity is enabled;
 - Key Vault access uses RBAC with the minimum required role;
@@ -80,8 +85,11 @@ but it does not prove:
 - the application database principal is distinct from an administrative principal;
 - secret rotation and revocation have been rehearsed.
 
-These are inventory questions for WO-AZURE-002. They are not permission to inspect or change the live
-resource.
+WO-AZURE-002 must inventory this artifact-bundled connection string explicitly and define its protected
+replacement. Removing it, correcting configuration precedence, rotating the affected credential, and
+redeploying are runtime/security operations that require a separately authorized follow-on Work Order.
+This packet is not permission to inspect the artifact, read the value, rotate credentials, or change
+the live resource.
 
 ## Network And PostgreSQL Requirements
 
