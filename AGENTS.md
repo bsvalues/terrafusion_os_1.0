@@ -1,9 +1,10 @@
 # TerraFusion OS  Agent Operating Rules (Core Governance)
 
 > **PATH CANON NOTE**
-> Exact repository/path identity and controlling-document membership are recorded in
-> `docs/brain/workorders/CANON_INDEX.md`. A repository name or authoritative-sounding document is not
-> sufficient by itself.
+> Exact repository/path identity and controlling-document membership begin at root
+> `CANON_INDEX.md`. Its `docs/brain/workorders/CANON_INDEX.md` child is a subordinate Work Order
+> governance register. A repository name or authoritative-sounding document is not sufficient by
+> itself.
 
 ## PRIME DIRECTIVE
 Do not destabilize the Core Governance Surface.

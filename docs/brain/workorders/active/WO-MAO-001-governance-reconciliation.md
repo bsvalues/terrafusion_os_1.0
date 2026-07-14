@@ -9,19 +9,23 @@
 
 ## Objective
 
-Convert the 16 source-cited WO-MAO-000 findings into one governance reconciliation, ratify the true
+Convert the 19 source-cited WO-MAO-000 findings into one governance reconciliation, ratify the true
 authority-wall doctrine, and define bounded revocable operator merge without enabling portfolio-wide
 merge authority.
 
 ## Allowed files
 
 - `AGENTS.md`
+- `AGENT_OPERATING_MODEL.md`
+- `CANON_INDEX.md`
 - `docs/brain/workorders/CANON_INDEX.md`
 - `.governance/main.protection.json`
 - `.governance/owner-decisions.json`
 - `.governance/mao-002-pilot-merge-authority.json`
 - `.github/workflows/core-governance-gates.yml` (pilot gate wiring only)
 - `brain/packs/README.md`
+- `docs/brain/BRAIN_AUTHORITY.md`
+- `docs/brain/canon/source-priority.json`
 - `docs/adr/**`
 - `docs/agents/**`
 - `docs/branching/**`
@@ -33,6 +37,7 @@ merge authority.
 - `scripts/ci/verify-mao-002-pilot-authority.py`
 - `scripts/ci/__tests__/governance-canon-scripts.test.sh`
 - `scripts/ci/__tests__/mao-002-pilot-authority.test.py`
+- `scripts/quarantine/keep-list.json`
 
 ## Forbidden files
 
@@ -64,7 +69,7 @@ merge authority.
 
 ## Acceptance criteria
 
-- [ ] all 16 audit findings map to an amendment or no-change disposition;
+- [ ] all 19 audit findings map to an amendment or no-change disposition;
 - [ ] the full WO-MAO-000 audit is persisted at `docs/brain/evidence/WO-MAO-000-proof.md`;
 - [ ] the root hierarchy is replaced, not supplemented, and directory-local rules cannot broaden it;
 - [ ] the exact bounded R5 owner decision is recorded without granting general R5 authority;
@@ -88,12 +93,16 @@ merge authority.
   "suite": "OS_CORE",
   "allowed_files": [
     "AGENTS.md",
+    "AGENT_OPERATING_MODEL.md",
+    "CANON_INDEX.md",
     "docs/brain/workorders/CANON_INDEX.md",
     ".governance/main.protection.json",
     ".governance/owner-decisions.json",
     ".governance/mao-002-pilot-merge-authority.json",
     ".github/workflows/core-governance-gates.yml",
     "brain/packs/README.md",
+    "docs/brain/BRAIN_AUTHORITY.md",
+    "docs/brain/canon/source-priority.json",
     "docs/adr/**",
     "docs/agents/**",
     "docs/branching/**",
@@ -104,7 +113,8 @@ merge authority.
     "scripts/ci/verify-branch-protection-against-canon.sh",
     "scripts/ci/verify-mao-002-pilot-authority.py",
     "scripts/ci/__tests__/governance-canon-scripts.test.sh",
-    "scripts/ci/__tests__/mao-002-pilot-authority.test.py"
+    "scripts/ci/__tests__/mao-002-pilot-authority.test.py",
+    "scripts/quarantine/keep-list.json"
   ],
   "forbidden_patterns": [
     "backend/**",

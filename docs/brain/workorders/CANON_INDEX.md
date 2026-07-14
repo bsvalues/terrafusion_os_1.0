@@ -1,9 +1,11 @@
 # TerraFusion Governance Canon Index
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
+> **Parent index:** root [`CANON_INDEX.md`](../../../CANON_INDEX.md)
 
-This index identifies controlling governance documents. A file becomes controlling only through its
-ratified authority and membership here; an authoritative title alone does not grant authority.
+This subordinate register identifies Work Order governance documents. It cannot redefine the root
+authority precedence. A file becomes controlling only through ratified authority and membership in
+the root canon or its delegated register; an authoritative title alone does not grant authority.
 
 ## Authority Order
 
@@ -27,6 +29,9 @@ playbooks/runbooks, implementation patterns, then agent judgment.
 | Branch protection | [`.governance/main.protection.json`](../../../.governance/main.protection.json) | Normalized live-protection invariants checked by required governance tooling |
 | MAO-002 pilot authority | [`.governance/mao-002-pilot-merge-authority.json`](../../../.governance/mao-002-pilot-merge-authority.json) | Inactive machine policy; active exact-PR/SHA manifest is read from the visible `MAO_002_PILOT_AUTHORITY_JSON` repository variable |
 | MAO program | [`governed-multi-agent-operator-activation.md`](programs/governed-multi-agent-operator-activation.md) | Active program graph; does not create portfolio-wide merge authority |
+| Work Order / PR boundary | [`WORKORDER_PR_BOUNDARY.md`](../../branching/WORKORDER_PR_BOUNDARY.md) | One WO per PR; dependency/reservation scheduling replaces global serialization |
+| Cortex source discovery | [`BRAIN_AUTHORITY.md`](../BRAIN_AUTHORITY.md) and [`source-priority.json`](../canon/source-priority.json) | Discovery order only; root canon and ADR-EXEC-001 decide authority conflicts |
+| Legacy agent model | [`AGENT_OPERATING_MODEL.md`](../../../AGENT_OPERATING_MODEL.md) | Superseded Phase 33A dispatch model; only the no-colliding-builders invariant remains active |
 
 ## Evidence, Not Authority
 

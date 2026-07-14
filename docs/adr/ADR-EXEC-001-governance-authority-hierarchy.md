@@ -36,6 +36,10 @@ This order explicitly supersedes the older six-level hierarchy in the audited ba
 second active hierarchy. A "nearest-scope override" means a narrower restriction, not permission to
 broaden authority. Conflicts involving directory-local instructions resolve through this ADR.
 
+The Cortex sequence in `docs/brain/canon/source-priority.json` is source-discovery order only. It can
+guide where an operator looks first, but it cannot reorder this authority hierarchy or resolve a
+conflict.
+
 ## Mechanical Enforcement
 
 Mechanical enforcement is not a semantic authority tier. It is the execution interlock:
@@ -57,7 +61,7 @@ drift verifier compares every claimed invariant. Branch protection does not desi
 ## MAO-001 Owner Authorization
 
 The owner decision `OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT` in the canonical decision register is the
-authorization for this exact amendment. It is limited to the 16 source-cited WO-MAO-000 findings and
+authorization for this exact amendment. It is limited to the 19 source-cited WO-MAO-000 findings and
 the WO-MAO-001 file/action scope. It is not general R5 authority, production authority, credentials
 authority, suite-boundary authority, or permission to modify runtime behavior.
 

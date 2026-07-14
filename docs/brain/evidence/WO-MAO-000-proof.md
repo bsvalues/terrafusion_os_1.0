@@ -11,9 +11,20 @@ WO-MAO-000.
 **FILE_LINE_CITATIONS_COMPLETE:** `YES`
 **TRUE_AUTHORITY_WALL:** `NONE`
 
-## Sources Reviewed
+## Audit Snapshots And Provenance
 
-The line references in this proof are immutable references to the base SHA above.
+The primary source snapshot is
+`63f959e07240e0159ce101cd4d76e814788aac44`. Every `file:line` citation in the contradiction matrix
+resolves against that Git object, not against the later working tree. Presence of all 19 cited
+governance surfaces at that snapshot was mechanically verified with `git cat-file -e`.
+
+The exact-head assurance snapshot
+`6851f6360dc1f10bfdc9a3da3e126502a6dac2ef` and GitHub review `4690754850` identified three omitted
+base-era conflicts, now recorded as F17-F19. That later review is provenance for discovering the
+omissions; it is not substituted for the base source text. Merged-PR timestamps are separately drawn
+from live GitHub metadata as stated in the Historical Baseline.
+
+## Sources Reviewed
 
 - `AGENTS.md`
 - `docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md`
@@ -30,6 +41,10 @@ The line references in this proof are immutable references to the base SHA above
 - `docs/brain/workorders/programs/work-order-engine.md`
 - `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md`
 - `brain/packs/README.md`
+- `docs/branching/WORKORDER_PR_BOUNDARY.md`
+- `docs/brain/BRAIN_AUTHORITY.md`
+- `docs/brain/canon/source-priority.json`
+- `AGENT_OPERATING_MODEL.md`
 - merged pull-request metadata for PRs `#1256` through `#1272` where listed below
 
 ## Full Contradiction Matrix
@@ -52,8 +67,11 @@ The line references in this proof are immutable references to the base SHA above
 | F14 | `docs/brain/workorders/goal-loop/README.md:48-58` | `A Goal + Loop may consume query output only after confirming:`<br>`- the registry source is known;`<br>`- the scoring policy source is known;`<br>`- the authority risk class is explicit;`<br>`- the recommended WO has no hard exclusions;`<br>`- dependencies are satisfied or waived in evidence;`<br>`- the recommended WO's allowed systems match the current chain;`<br>`- stop conditions are compatible with the current operator authority.`<br>`If any item is uncertain, the loop must downgrade to discovery or stop with a classified blocker.` | Goal/Loop preflight doctrine | Any unknown can trigger immediate escalation instead of bounded source lookup. | Perform canon lookup and read-only live inspection first; stop only on material residual uncertainty. | Premature stop rule | `NARROW` |
 | F15 | `docs/brain/workorders/STOP_WALL_REGISTER.md:13-16,76-78` | `A **stop wall** is an authority boundary the operator (/loop) must not cross without explicit operator authorization.`<br>`Reaching a stop wall is correct behavior, not a failure — the operator surfaces the wall with evidence and waits.`<br>`SW-07 — Branch / merge strategy conflict`<br>`Blocked: force-push to a shared branch, rebase rewriting commits already in review, merge-method ambiguity, branch deletion other WOs may depend on.` | Stop-wall doctrine | Routine conflicts and approved in-scope repair can be labeled authority walls even when the method is already recorded. | A wall requires presently unresolved new authority; recoverable in-scope failures and approved repair remain operator work. | Over-broad wall interpretation | `CLARIFY` |
 | F16 | `docs/brain/workorders/programs/work-order-engine.md:96-98`; `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md:15-20` | WOE: `The WO Engine is read-only by default. It discovers, queries, scores, and reports. It does not initiate code changes, deployments, or data mutations.` The supersession note says the human decides at `walls, risk-class increases, ALL-LANES-PARKED, merge-authority gaps, or canon conflicts`.<br>Selection rule: `If the loop is complete, produce a next-lane recommendation from evidence.` and `Stop only if no approved loop remains or a stop gate appears.` | WOE and next-WO doctrine | Stale final-call/next-lane language can recreate founder routing or allow selection without complete authority. | Live queue plus recorded authority selects dependency-cleared work; cross-program selection remains portfolio-operator-only. | Stale routing semantics | `SUPERSEDE` |
+| F17 | `docs/branching/WORKORDER_PR_BOUNDARY.md:11-13,25-50` | `An agent must not start WO-N+1 until WO-N is either merged or explicitly deferred by the human.`<br>`No work order may skip ahead. Each work order's acceptance criteria must be met before the next begins.` | Mandatory Work Order / PR policy | A point-in-time DB/Sync queue mechanically reads as global serialization and freezes unrelated dependency-cleared lanes. | Preserve one WO per PR and the declared DB/Sync dependencies while scheduling all other work by dependency and non-conflicting reservation. | Global serialization conflict | `SUPERSEDE` |
+| F18 | `docs/brain/BRAIN_AUTHORITY.md:51-54`; `docs/brain/canon/source-priority.json:1-40` | `## Source priority (what wins)`<br>`Cortex prefers higher authority`<br>JSON: `What wins when sources conflict. Higher = more authoritative.` | Cortex source-order doctrine | A discovery chain operates as a second authority hierarchy beside root governance and ADR-EXEC-001. | Source order controls lookup only; root canon and ADR-EXEC-001 alone resolve authority conflicts. | Competing authority ordering | `SUPERSEDE` |
+| F19 | `AGENT_OPERATING_MODEL.md:25-46,73-100,104-119` | Permanent Claude/Copilot ownership tables; `Every sprint item uses this card. No card = no coding.`; hard task-card ownership rules; Phase 33A.4 agent assignments. | Root legacy operating model | Recovery-era agent names and task cards compete with active Brain Work Orders and can be practiced as global one-worker dispatch. | Supersede task-card and agent-name authority while preserving exclusive ownership of overlapping file, contract, and environment reservations. | Legacy dispatch authority conflict | `SUPERSEDE` |
 
-**Conflict count:** 16
+**Conflict count:** 19
 **Unmapped findings:** 0
 **Disposition vocabulary:** `KEEP`, `CLARIFY`, `NARROW`, `SUPERSEDE`, `RETIRE`.
 
@@ -136,14 +154,14 @@ metadata alone.
 ```text
 RESULT: PASS
 WORK_ORDER: WO-MAO-000
-SOURCES_REVIEWED: 15 governance/canon surfaces plus 15 merged-PR records
-CONFLICTS_FOUND: 16
+SOURCES_REVIEWED: 19 governance/canon surfaces plus 15 merged-PR records
+CONFLICTS_FOUND: 19
 FILE_LINE_CITATIONS_COMPLETE: YES
 FALSE_WALL_RULES: F02,F03,F04,F05,F06,F09,F14,F15,F16
 RULES_TO_KEEP: one Brain; isolated worktrees; PR/check enforcement; protected boundaries; fail-closed gates
 RULES_TO_CLARIFY: F11,F12,F15
 RULES_TO_NARROW: F02,F03,F06,F13,F14
-RULES_TO_SUPERSEDE: F01,F04,F05,F07,F08,F09,F10,F16
+RULES_TO_SUPERSEDE: F01,F04,F05,F07,F08,F09,F10,F16,F17,F18,F19
 RULES_TO_RETIRE: duplicate controlling merge-policy semantics in F10
 OPERATOR_MERGE_CURRENT_RULES: human-only root/branch prose plus conflicting explicit-grant and Mode B/C documents
 OPERATOR_MERGE_PROPOSED_ENABLEMENT: ratified but inactive until exact MAO-002 pilot registration and mechanical gate
@@ -152,6 +170,6 @@ BASELINE_WOS_REVIEWED: 15 merged PR/WO slices
 BASELINE_MEDIAN_CYCLE_TIME: 2.2 minutes from PR open to merge
 BASELINE_FOUNDER_TOUCHES: UNKNOWN
 BASELINE_DATA_GAPS: dispatch times and owner-intervention history are not represented in PR metadata
-PROPOSED_WO_MAO_001_INPUT: reconcile all 16 findings, persist authority, stage operator merge, add mechanical pilot interlock
+PROPOSED_WO_MAO_001_INPUT: reconcile all 19 findings, persist authority, stage operator merge, add mechanical pilot interlock
 TRUE_AUTHORITY_WALL: NONE
 ```

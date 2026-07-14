@@ -10,7 +10,7 @@
 
 ## Verdict
 
-The 16 WO-MAO-000 findings are reconciled to one semantic model:
+The 19 WO-MAO-000 findings are reconciled to one semantic model:
 
 - authority is explicit, recorded, bounded, persistent, and revocable;
 - a true wall requires presently unresolved new authority;
@@ -44,8 +44,11 @@ WO-MAO-000 proof; every row below maps directly to the same finding ID there.
 | F14 | `docs/brain/workorders/goal-loop/README.md:48-58` | Any uncertain preflight field could cause immediate downgrade or stop without bounded lookup. | NARROW | Canon lookup and read-only live inspection precede any stop; only material residual uncertainty blocks. |
 | F15 | `docs/brain/workorders/STOP_WALL_REGISTER.md:13-33,76-78` | Routine merge conflict and in-scope recovery could be misclassified as authority walls. | CLARIFY | Walls require unresolved new authority; routine conflict, review, validation, and approved repair are non-walls. |
 | F16 | `docs/brain/workorders/programs/work-order-engine.md:96-98` and `docs/brain/workorders/goal-loop/NEXT_WO_SELECTION_RULE.md:15-20` | Operator final-call language and risk-up shorthand recreated founder routing. | SUPERSEDE | Live queue plus recorded authority selects the next dependency-cleared WO automatically. |
+| F17 | `docs/branching/WORKORDER_PR_BOUNDARY.md:11-13,25-50` | A point-in-time DB/Sync queue imposed global WO serialization. | SUPERSEDE | The policy now preserves one WO per PR and declared DB/Sync dependencies while allowing dependency-cleared, reservation-safe parallel lanes. |
+| F18 | `docs/brain/BRAIN_AUTHORITY.md:51-54` and `docs/brain/canon/source-priority.json:1-40` | Cortex source lookup acted as a competing authority ordering. | SUPERSEDE | Cortex source priority is discovery-only; root `CANON_INDEX.md` and ADR-EXEC-001 control conflict precedence. |
+| F19 | `AGENT_OPERATING_MODEL.md:25-46,73-100,104-119` | Copilot-era task-card and fixed agent ownership competed with Work Order dispatch. | SUPERSEDE | The legacy model is superseded for dispatch while preserving exclusive ownership of overlapping file, contract, and environment reservations. |
 
-**Mapped findings:** 16
+**Mapped findings:** 19
 **Unmapped findings:** 0
 **Conflict dispositions deferred:** 0
 

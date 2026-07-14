@@ -1,42 +1,55 @@
 {
-  "_note": "What wins when sources conflict. Higher = more authoritative. Old docs are CONTEXT, not law. Cortex must never let a lower-priority source override a higher one.",
+  "classification": "source-discovery-priority-only",
+  "authority_precedence": [
+    "CANON_INDEX.md",
+    "docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md"
+  ],
+  "_note": "Lookup order for Cortex source discovery only. This file does not decide authority conflicts. Apply the root canon index and ADR-EXEC-001 when sources disagree.",
   "priority": [
     {
       "rank": 1,
       "source": ".github/AGENT_ENTRYPOINT.md",
-      "weight": "law (agent bootloader)"
+      "weight": "discovery tier 1 (agent entrypoint)"
     },
     {
       "rank": 2,
       "source": "docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md",
-      "weight": "law (TF-052)"
+      "weight": "discovery tier 2 (constitutional source)"
     },
     {
       "rank": 3,
       "source": "docs/brain/canon/*.json",
-      "weight": "machine digest of law"
+      "weight": "discovery tier 3 (machine-readable canon)"
     },
     {
       "rank": 4,
       "source": "docs/architecture/specs/terrafusion/**",
-      "weight": "specs (write-lanes v3.1 etc.)"
+      "weight": "discovery tier 4 (architecture specifications)"
     },
     {
       "rank": 5,
       "source": "docs/brain/memory/decisions-adr.md (active ADRs)",
-      "weight": "accepted decisions"
+      "weight": "discovery tier 5 (decision records)"
     },
     {
       "rank": 6,
       "source": "docs/brain/memory/release-gates.md + canon/current-release.json",
-      "weight": "current release truth"
+      "weight": "discovery tier 6 (current release evidence)"
     },
-    { "rank": 7, "source": "graphify-out/**", "weight": "graph evidence" },
-    { "rank": 8, "source": "other docs/**", "weight": "context, not law" },
+    {
+      "rank": 7,
+      "source": "graphify-out/**",
+      "weight": "discovery tier 7 (graph evidence)"
+    },
+    {
+      "rank": 8,
+      "source": "other docs/**",
+      "weight": "discovery tier 8 (document context)"
+    },
     {
       "rank": 9,
       "source": "**/ARCHIVE/**",
-      "weight": "historical only — never cite as authority"
+      "weight": "discovery tier 9 (historical context only)"
     }
   ]
 }
