@@ -25,6 +25,7 @@ second queue.
 | Unrelated lanes do not inherit released-lane scope failures | `test_unrelated_pr_does_not_validate_released_lanes_scope` |
 | No later event can bypass a live collision | Both participants fail on recheck; unrelated PR test passes |
 | Checked-in schemas are executable | Lowercase reservation ID and malformed Work Order schema tests |
+| Reservation IDs are unique across open PRs | `test_reservation_ids_are_unique_across_open_prs` |
 | Raw dot/empty path segments fail closed | `test_raw_dot_and_empty_path_segments_fail_closed` |
 | Contract/environment resources collide exactly | Dedicated contract and environment tests |
 | Rename protection | GitHub file discovery includes both names and `test_rename_previous_path_must_also_be_reserved` |

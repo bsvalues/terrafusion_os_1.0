@@ -123,6 +123,13 @@ class ReservationGateTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("schema pattern", result.stdout)
 
+    def test_reservation_ids_are_unique_across_open_prs(self):
+        def duplicate_id(values):
+            values[1]["body"] = values[1]["body"].replace('"id":"RES-B"', '"id":"RES-A"')
+        result = self.run_fixture("intentional-overlap.json", 2002, "b" * 40, duplicate_id)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("globally unique", result.stdout)
+
     def test_schema_rejects_invalid_work_order(self):
         def invalid_wo(values):
             values[0]["body"] = values[0]["body"].replace('"work_order":"WO-MAO-TEST-A"', '"work_order":"WO- "')
