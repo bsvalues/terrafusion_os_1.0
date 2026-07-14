@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-01
-**Authority:** WO-WOE-011
+**Date:** 2026-07-13
+**Authority:** WO-MAO-001A
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,13 +15,11 @@
 
 `governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
 
-`WO-MAO-000` is complete and persisted at
-[`docs/brain/evidence/WO-MAO-000-proof.md`](../evidence/WO-MAO-000-proof.md). `WO-MAO-001` is the
-active governance-reconciliation Work Order and `WO-MAO-002` is the next dependency-cleared node
-after merge. Operator merge is ratified but inactive. The pilot is limited to two disjoint dispatch
-packets and two exact PRs registered by final SHA in the visible
-`MAO_002_PILOT_AUTHORITY_JSON` repository variable and checked by the required governed-spine
-interlock; it does not claim to prove reservation enforcement.
+`WO-MAO-000` and `WO-MAO-001` are complete. `WO-MAO-001A` is the active correction before pilot
+launch. Operator merge is ratified but inactive. MAO-001A separates the stable one-time owner envelope
+in `MAO_002_PILOT_BOOTSTRAP_JSON` from Codex-maintained PR, SHA, path, reservation, and assurance
+state in `MAO_002_PILOT_EXECUTION_JSON`. `WO-MAO-002` is next only after this correction merges and
+the owner grants the bootstrap envelope once; it does not claim to prove full reservation enforcement.
 
 ---
 
@@ -31,8 +29,9 @@ interlock; it does not claim to prove reservation enforcement.
 | WO | State | Notes |
 |----|-------|-------|
 | WO-MAO-000 Doctrine Conflict Audit | DONE | Full read-only contradiction matrix and historical denominator persisted in governed evidence |
-| **WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification** | **ACTIVE** | Owner-authorized exact R5 governance amendment; Mode A merge; bounded operator model ratified but inactive |
-| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | Two disjoint WOs; exact PR/final-SHA authority slots; independent read-only post-merge reviewer; required governed-spine interlock |
+| WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification | DONE | PR #1273 merged at `b936904b76a1593d12e524434e94872f2e9a78fe` |
+| **WO-MAO-001A Separate Owner Bootstrap Authority from Operator Execution State** | **ACTIVE** | Mode A governance correction; pilot must not launch under the combined variable contract |
+| WO-MAO-002 Minimal Two-Lane Pilot | NEXT | One owner envelope; Codex-maintained exact PR/SHA/scope/reservation state; independent assurance; required governed-spine interlock |
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | QUEUED | Must reject an intentional overlapping reservation |
 | WO-MAO-004 Executable Graph / Parallel Wave Planner | QUEUED | Dependency and conflict-aware dispatch waves |
 | WO-MAO-005 Evidence-Informed Agent Playbooks | QUEUED | Rules must cite pilot/enforcement evidence |

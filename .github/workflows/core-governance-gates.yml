@@ -61,7 +61,8 @@ jobs:
           TF_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           TF_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           TF_PR_LABELS_JSON: ${{ toJSON(github.event.pull_request.labels.*.name) }}
-          TF_MAO_002_AUTHORITY_JSON: ${{ vars.MAO_002_PILOT_AUTHORITY_JSON }}
+          TF_MAO_002_BOOTSTRAP_JSON: ${{ vars.MAO_002_PILOT_BOOTSTRAP_JSON }}
+          TF_MAO_002_EXECUTION_JSON: ${{ vars.MAO_002_PILOT_EXECUTION_JSON }}
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/ci/verify-mao-002-pilot-authority.py
       - name: No core governance changes

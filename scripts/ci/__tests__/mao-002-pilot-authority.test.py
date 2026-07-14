@@ -12,35 +12,53 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "scripts" / "ci" / "verify-mao-002-pilot-authority.py"
+POLICY = ROOT / ".governance" / "mao-002-pilot-merge-authority.json"
 
 
-def active_record():
+def bootstrap_record(policy_path: Path):
     future = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=2)).isoformat()
     return {
         "schema_version": 1,
+        "authority_id": "OWNER-MAO-002-PILOT-BOOTSTRAP-001",
         "program": "PROGRAM-MAO-001",
         "work_order": "WO-MAO-002",
         "merge_mode": "B",
-        "activation_source": "github-actions-repository-variable",
-        "activation_variable": "MAO_002_PILOT_AUTHORITY_JSON",
-        "pilot_label": "mao-002-pilot",
-        "pilot_branch_glob": "codex/mao-002-*",
         "status": "active",
-        "suspension": {"active": False, "reason": None},
         "owner": "William",
-        "required_implementation_operator_count": 2,
-        "disallowed_reviewers": ["William"],
-        "implementation_operators": ["codex-lane-a", "codex-lane-b"],
-        "independent_reviewer": "assurance-agent",
-        "expires_at": future,
+        "operator_identity": "codex-portfolio-operator",
+        "assurance_identity": "claude-assurance",
+        "repositories": ["bsvalues/terrafusion_os_1.0"],
+        "risk_ceiling": "R2",
+        "allowed_path_prefixes": ["docs/"],
         "max_merged_prs": 2,
+        "expires_at": future,
+        "suspension": {"active": False, "reason": None},
+        "policy_sha256": hashlib.sha256(policy_path.read_bytes()).hexdigest(),
+    }
+
+
+def execution_record(bootstrap_raw: str):
+    return {
+        "schema_version": 1,
+        "authority_id": "OWNER-MAO-002-PILOT-BOOTSTRAP-001",
+        "program": "PROGRAM-MAO-001",
+        "work_order": "WO-MAO-002",
+        "operator_identity": "codex-portfolio-operator",
+        "revision": 1,
+        "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "bootstrap_sha256": hashlib.sha256(bootstrap_raw.encode("utf-8")).hexdigest(),
+        "implementation_operators": ["codex-lane-a", "codex-lane-b"],
+        "independent_reviewer": "claude-assurance",
         "post_merge_assurance_evidence": "docs/brain/evidence/WO-MAO-002-assurance.md",
+        "suspension": {"active": False, "reason": None},
         "pilot_prs": [
             {
                 "slot": "lane-a",
                 "repository": "bsvalues/terrafusion_os_1.0",
                 "number": 2001,
                 "head_sha": "a" * 40,
+                "risk_class": "R1",
+                "reservation_id": "MAO-002-LANE-A",
                 "allowed_paths": ["docs/pilot-a/**"],
             },
             {
@@ -48,31 +66,22 @@ def active_record():
                 "repository": "bsvalues/terrafusion_os_1.0",
                 "number": 2002,
                 "head_sha": "b" * 40,
+                "risk_class": "R1",
+                "reservation_id": "MAO-002-LANE-B",
                 "allowed_paths": ["docs/pilot-b/**"],
             },
         ],
     }
 
 
-def inactive_policy():
-    record = active_record()
-    record["status"] = "inactive"
-    record["implementation_operators"] = []
-    record["independent_reviewer"] = None
-    record["expires_at"] = None
-    record["post_merge_assurance_evidence"] = None
-    for slot in record["pilot_prs"]:
-        slot["number"] = None
-        slot["head_sha"] = None
-        slot["allowed_paths"] = []
-    return record
-
-
 class PilotAuthorityTest(unittest.TestCase):
     def run_gate(
         self,
-        record,
         *,
+        bootstrap=True,
+        execution=True,
+        mutate_bootstrap=None,
+        mutate_execution=None,
         pr=2001,
         sha="a" * 40,
         files=None,
@@ -80,13 +89,22 @@ class PilotAuthorityTest(unittest.TestCase):
         labels=None,
     ):
         with tempfile.TemporaryDirectory() as temp:
-            authority = Path(temp) / "authority.json"
-            authority.write_text(json.dumps(inactive_policy()), encoding="utf-8")
+            policy = Path(temp) / "policy.json"
+            policy.write_bytes(POLICY.read_bytes())
+            bootstrap_value = bootstrap_record(policy)
+            if mutate_bootstrap:
+                mutate_bootstrap(bootstrap_value)
+            bootstrap_raw = json.dumps(bootstrap_value, separators=(",", ":"))
+            execution_value = execution_record(bootstrap_raw)
+            if mutate_execution:
+                mutate_execution(execution_value)
+
             env = os.environ.copy()
-            env.pop("TF_MAO_002_AUTHORITY_JSON", None)
+            env.pop("TF_MAO_002_BOOTSTRAP_JSON", None)
+            env.pop("TF_MAO_002_EXECUTION_JSON", None)
             env.update(
                 {
-                    "TF_MAO_002_AUTHORITY_PATH": str(authority),
+                    "TF_MAO_002_POLICY_PATH": str(policy),
                     "TF_PR_NUMBER": str(pr),
                     "TF_PR_HEAD_SHA": sha,
                     "TF_PR_HEAD_REF": head_ref,
@@ -97,12 +115,12 @@ class PilotAuthorityTest(unittest.TestCase):
                     ),
                 }
             )
-            if record is not None:
-                activation = copy.deepcopy(record)
-                activation.setdefault(
-                    "policy_sha256", hashlib.sha256(authority.read_bytes()).hexdigest()
+            if bootstrap:
+                env["TF_MAO_002_BOOTSTRAP_JSON"] = bootstrap_raw
+            if execution:
+                env["TF_MAO_002_EXECUTION_JSON"] = json.dumps(
+                    execution_value, separators=(",", ":")
                 )
-                env["TF_MAO_002_AUTHORITY_JSON"] = json.dumps(activation)
             return subprocess.run(
                 [sys.executable, str(SCRIPT)],
                 env=env,
@@ -112,107 +130,259 @@ class PilotAuthorityTest(unittest.TestCase):
             )
 
     def test_matching_registered_pr_passes(self):
-        result = self.run_gate(active_record())
+        result = self.run_gate()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("matches registered scope", result.stdout)
+        self.assertIn("operator execution revision 1", result.stdout)
 
-    def test_pilot_branch_fails_while_policy_is_inactive(self):
-        result = self.run_gate(None)
+    def test_operator_can_refresh_head_without_changing_bootstrap(self):
+        def refresh(record):
+            record["revision"] = 2
+            record["pilot_prs"][0]["head_sha"] = "c" * 40
+
+        result = self.run_gate(mutate_execution=refresh, sha="c" * 40)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("revision 2", result.stdout)
+
+    def test_operator_can_register_new_pr_without_changing_bootstrap(self):
+        def refresh(record):
+            record["revision"] = 2
+            record["pilot_prs"][0]["number"] = 2101
+
+        result = self.run_gate(mutate_execution=refresh, pr=2101)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_pilot_branch_fails_without_split_variables(self):
+        result = self.run_gate(bootstrap=False, execution=False)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("not registered", result.stdout)
 
-    def test_nonpilot_pr_passes_while_policy_is_inactive(self):
-        result = self.run_gate(None, head_ref="codex/unrelated")
+    def test_nonpilot_pr_passes_without_split_variables(self):
+        result = self.run_gate(
+            bootstrap=False, execution=False, head_ref="codex/unrelated"
+        )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("checked-in inactive policy", result.stdout)
 
-    def test_final_sha_mismatch_fails(self):
-        result = self.run_gate(active_record(), sha="c" * 40)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("final SHA mismatch", result.stdout)
+    def test_bootstrap_and_execution_must_be_present_together(self):
+        for bootstrap, execution in ((True, False), (False, True)):
+            with self.subTest(bootstrap=bootstrap, execution=execution):
+                result = self.run_gate(bootstrap=bootstrap, execution=execution)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("must be present together", result.stdout)
 
-    def test_suspension_fails_closed(self):
-        record = active_record()
-        record["suspension"] = {"active": True, "reason": "scope incident"}
-        result = self.run_gate(record)
+    def test_head_sha_mismatch_fails(self):
+        result = self.run_gate(sha="c" * 40)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("suspended", result.stdout)
+        self.assertIn("head SHA mismatch", result.stdout)
+
+    def test_owner_bootstrap_suspension_fails_closed(self):
+        def suspend(record):
+            record["status"] = "suspended"
+            record["suspension"] = {"active": True, "reason": "owner suspension"}
+
+        result = self.run_gate(mutate_bootstrap=suspend)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("owner bootstrap is suspended", result.stdout)
+
+    def test_expired_owner_bootstrap_fails_closed(self):
+        def expire(record):
+            record["expires_at"] = (
+                dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=1)
+            ).isoformat()
+
+        result = self.run_gate(mutate_bootstrap=expire)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("owner bootstrap is expired", result.stdout)
+
+    def test_operator_execution_suspension_fails_closed(self):
+        def suspend(record):
+            record["suspension"] = {"active": True, "reason": "scope incident"}
+
+        result = self.run_gate(mutate_execution=suspend)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("operator execution is suspended", result.stdout)
 
     def test_scope_drift_fails(self):
-        result = self.run_gate(active_record(), files=["backend/Program.cs"])
+        result = self.run_gate(files=["backend/Program.cs"])
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("scope drift", result.stdout)
 
-    def test_reviewer_must_be_independent(self):
-        record = active_record()
-        record["independent_reviewer"] = "codex-lane-a"
-        result = self.run_gate(record)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("independent_reviewer", result.stdout)
+    def test_owner_bootstrap_cannot_contain_execution_state(self):
+        def add_execution_state(record):
+            record["pilot_prs"] = []
 
-    def test_reviewer_cannot_be_william(self):
-        record = active_record()
-        record["independent_reviewer"] = "William"
-        result = self.run_gate(record)
+        result = self.run_gate(mutate_bootstrap=add_execution_state)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("contains operator execution fields", result.stdout)
+
+    def test_execution_cannot_expand_owner_envelope(self):
+        def add_owner_state(record):
+            record["risk_ceiling"] = "R5"
+
+        result = self.run_gate(mutate_execution=add_owner_state)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("contains owner envelope fields", result.stdout)
+
+    def test_reviewer_must_equal_bootstrap_assurance_identity(self):
+        def change_reviewer(record):
+            record["independent_reviewer"] = "codex-lane-a"
+
+        result = self.run_gate(mutate_execution=change_reviewer)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("independent_reviewer", result.stdout)
 
     def test_owner_is_immutable(self):
-        record = active_record()
-        record["owner"] = "not-william"
-        result = self.run_gate(record)
+        result = self.run_gate(
+            mutate_bootstrap=lambda record: record.update(owner="not-william")
+        )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("owner must remain William", result.stdout)
+        self.assertIn("owner bootstrap owner", result.stdout)
 
     def test_two_implementation_operators_are_required(self):
-        record = active_record()
-        record["implementation_operators"] = []
-        result = self.run_gate(record)
+        result = self.run_gate(
+            mutate_execution=lambda record: record.update(implementation_operators=[])
+        )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("exactly 2 unique identities", result.stdout)
 
     def test_operator_identity_whitespace_cannot_fake_uniqueness(self):
-        record = active_record()
-        record["implementation_operators"] = ["codex-lane-a", " codex-lane-a "]
-        result = self.run_gate(record)
+        def duplicate(record):
+            record["implementation_operators"] = ["codex-lane-a", " codex-lane-a "]
+
+        result = self.run_gate(mutate_execution=duplicate)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("exactly 2 unique identities", result.stdout)
 
-    def test_reviewer_identity_whitespace_cannot_bypass_owner_exclusion(self):
-        record = active_record()
-        record["independent_reviewer"] = " William "
-        result = self.run_gate(record)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("independent_reviewer", result.stdout)
-
-    def test_suspension_object_is_required(self):
-        record = active_record()
-        del record["suspension"]
-        result = self.run_gate(record)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("suspension must be an object", result.stdout)
-
-    def test_activation_must_bind_to_checked_in_policy(self):
-        record = active_record()
-        record["policy_sha256"] = "0" * 64
-        result = self.run_gate(record)
+    def test_bootstrap_must_bind_to_checked_in_policy(self):
+        result = self.run_gate(
+            mutate_bootstrap=lambda record: record.update(policy_sha256="0" * 64)
+        )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("policy_sha256", result.stdout)
 
+    def test_execution_must_bind_to_exact_bootstrap(self):
+        def break_binding(record):
+            record["bootstrap_sha256"] = "0" * 64
+
+        result = self.run_gate(mutate_execution=break_binding)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("bootstrap_sha256", result.stdout)
+
+    def test_bootstrap_repository_cannot_exceed_policy(self):
+        def expand(record):
+            record["repositories"] = ["bsvalues/another-repo"]
+
+        result = self.run_gate(mutate_bootstrap=expand)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("repository exceeds", result.stdout)
+
+    def test_execution_risk_cannot_exceed_bootstrap(self):
+        def expand(record):
+            record["pilot_prs"][0]["risk_class"] = "R3"
+
+        result = self.run_gate(mutate_execution=expand)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("risk_class exceeds", result.stdout)
+
+    def test_execution_path_cannot_exceed_bootstrap(self):
+        def expand(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["backend/**"]
+
+        result = self.run_gate(mutate_execution=expand)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("allowed path exceeds", result.stdout)
+
+    def test_execution_path_must_respect_bootstrap_segment_boundary(self):
+        def narrow(record):
+            record["allowed_path_prefixes"] = ["docs/pilot-a"]
+
+        def escape(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-abuse/**"]
+
+        result = self.run_gate(mutate_bootstrap=narrow, mutate_execution=escape)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("allowed path exceeds", result.stdout)
+
+    def test_reservation_id_is_required(self):
+        def remove(record):
+            del record["pilot_prs"][0]["reservation_id"]
+
+        result = self.run_gate(mutate_execution=remove)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("reservation_id", result.stdout)
+
+    def test_obvious_pilot_path_overlap_fails(self):
+        def overlap(record):
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a/subtree/**"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_similarly_named_sibling_paths_do_not_overlap(self):
+        def siblings(record):
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a-other/**"]
+
+        result = self.run_gate(mutate_execution=siblings)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_exact_path_equality_overlaps(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/shared/result.md"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/shared/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_exact_descendant_overlaps(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/shared"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/shared/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_wildcard_and_exact_overlap_fails_closed(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-*/**"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a/result.md"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_wildcard_and_wildcard_overlap_fails_closed(self):
+        def overlap(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-*/**"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-a*/**"]
+
+        result = self.run_gate(mutate_execution=overlap)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("path reservations overlap", result.stdout)
+
+    def test_clearly_disjoint_exact_reservations_pass(self):
+        def disjoint(record):
+            record["pilot_prs"][0]["allowed_paths"] = ["docs/pilot-a/result.md"]
+            record["pilot_prs"][1]["allowed_paths"] = ["docs/pilot-b/result.md"]
+
+        result = self.run_gate(mutate_execution=disjoint)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_unregistered_pr_cannot_use_pilot_scope(self):
-        result = self.run_gate(active_record(), pr=3000, head_ref="codex/unrelated")
+        result = self.run_gate(pr=3000, head_ref="codex/unrelated")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("overlaps active pilot scope", result.stdout)
 
     def test_registered_pr_rename_source_must_be_in_scope(self):
         result = self.run_gate(
-            active_record(),
             files=[
                 {
                     "filename": "docs/pilot-a/result.md",
                     "previous_filename": "backend/Program.cs",
                 }
-            ],
+            ]
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("scope drift", result.stdout)
@@ -220,7 +390,6 @@ class PilotAuthorityTest(unittest.TestCase):
 
     def test_unregistered_pr_rename_source_overlap_fails(self):
         result = self.run_gate(
-            active_record(),
             pr=3000,
             head_ref="codex/unrelated",
             files=[
@@ -232,11 +401,9 @@ class PilotAuthorityTest(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("overlaps active pilot scope", result.stdout)
-        self.assertIn("docs/pilot-a/result.md", result.stdout)
 
     def test_unregistered_unrelated_pr_remains_mode_a(self):
         result = self.run_gate(
-            active_record(),
             pr=3000,
             files=["docs/unrelated/result.md"],
             head_ref="codex/unrelated",
