@@ -21,14 +21,14 @@ playbooks/runbooks, implementation patterns, then agent judgment.
 |---------|--------------------|---------------------|
 | Constitution | [`TERRAFUSION_SUITE_CONSTITUTION_v1.md`](../../architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md) | Highest authority; TF-052 |
 | Governance precedence | [`ADR-EXEC-001`](../../adr/ADR-EXEC-001-governance-authority-hierarchy.md) | Active after PR #1273; replaces the audited six-level hierarchy |
-| Owner decisions | [`.governance/owner-decisions.json`](../../../.governance/owner-decisions.json) | Machine-readable active/expiry/revocation register; MAO-001A correction authority is exact and bounded |
+| Owner decisions | [`.governance/owner-decisions.json`](../../../.governance/owner-decisions.json) | Machine-readable active/expiry/revocation register; MAO-001A is complete and the bounded MAO-002 bootstrap is active |
 | Root agent governance | [`AGENTS.md`](../../../AGENTS.md) | Repository-wide operating defaults and protected boundaries |
 | Brain/domain governance | [`brain/packs/README.md`](../../../brain/packs/README.md) | One Brain, many knowledge packs, many isolated workers |
 | Program register | [`PROGRAM_PLAYBOOK_REGISTER.md`](PROGRAM_PLAYBOOK_REGISTER.md) | Active program/Goal/Loop/WO routing |
-| Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; operator merge inactive until an exact grant activates |
+| Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; MAO-002 Mode B is bounded by the active owner envelope and exact execution record |
 | Branch protection | [`.governance/main.protection.json`](../../../.governance/main.protection.json) | Normalized live-protection invariants checked by required governance tooling |
-| MAO-001A correction | [`WO-MAO-001A-authority-state-separation.md`](active/WO-MAO-001A-authority-state-separation.md) | Active Mode A Work Order; separates owner authority from mutable operator state before pilot launch |
-| MAO-002 pilot authority | [`.governance/mao-002-pilot-merge-authority.json`](../../../.governance/mao-002-pilot-merge-authority.json) | Inactive machine policy; one-time owner envelope and Codex-maintained execution state are read from separate visible repository variables |
+| MAO-001A correction | [`WO-MAO-001A-authority-state-separation.md`](active/WO-MAO-001A-authority-state-separation.md) | Completed with PR #1274; separates owner authority from mutable operator state |
+| MAO-002 pilot authority | [`.governance/mao-002-pilot-merge-authority.json`](../../../.governance/mao-002-pilot-merge-authority.json) | Checked-in fail-closed policy; issue #1276 grants the active owner envelope and Codex maintains exact execution state in the paired repository variables |
 | MAO program | [`governed-multi-agent-operator-activation.md`](programs/governed-multi-agent-operator-activation.md) | Active program graph; does not create portfolio-wide merge authority |
 | Work Order / PR boundary | [`WORKORDER_PR_BOUNDARY.md`](../../branching/WORKORDER_PR_BOUNDARY.md) | One WO per PR; dependency/reservation scheduling replaces global serialization |
 | Cortex source discovery | [`BRAIN_AUTHORITY.md`](../BRAIN_AUTHORITY.md) and [`source-priority.json`](../canon/source-priority.json) | Discovery order only; root canon and ADR-EXEC-001 decide authority conflicts |
