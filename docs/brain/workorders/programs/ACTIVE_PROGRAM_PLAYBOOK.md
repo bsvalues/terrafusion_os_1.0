@@ -141,12 +141,11 @@ closed the grant as completed. A future Mode B activation requires a new recorde
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 therefore used two disjoint path families in this repository.
 
-MAO-003 is complete in PR #1284 and its owner decision is recorded as completed. MAO-004 is the only
-active MAO implementation/merge authority and owns the read-only executable graph and bounded
-parallel-wave planner. MAO-005 is next. The proposed PROGRAM-MAO-001 continuation envelope is
-inactive until one separate owner ratification; if ratified, it removes per-PR owner gating for
-eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and all protected-boundary
-denials.
+MAO-003 is complete in PR #1284, and MAO-004 is complete in PR #1286. Their owner decisions are
+recorded as completed. The ratified `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is the only
+active MAO continuation authority: MAO-005 is current and MAO-006 is next. It removes per-PR owner
+gating only for eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and every
+protected-boundary denial.
 
 ---
 
