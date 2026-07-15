@@ -96,8 +96,8 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-004` |
-| Next WO | `WO-MAO-005` |
+| Current WO | `WO-MAO-005` |
+| Next WO | `WO-MAO-006` |
 
 ### Purpose
 
@@ -116,8 +116,8 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 | `WO-MAO-001A` | governance correction | One-time owner envelope separated from Codex-maintained PR/SHA/scope/reservation execution state |
 | `WO-MAO-002` | two-lane pilot | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
-| `WO-MAO-004` | planner implementation | Dependency-cleared executable set and conflict-free parallel waves |
-| `WO-MAO-005` | evidence-informed playbooks | Worker and assurance playbooks grounded in pilot and gate evidence |
+| `WO-MAO-004` | planner implementation | COMPLETE - dependency-cleared executable set and conflict-free parallel waves |
+| `WO-MAO-005` | evidence-informed playbooks | ACTIVE - worker and assurance playbooks grounded in pilot, gate, planner, and canon evidence |
 | `WO-MAO-006` | portfolio rollout | Governed concurrency budget and cross-repo allocation |
 | `WO-MAO-007` | evidence rollup | Founder touches, concurrency, cycle time, violations, and closeout |
 
@@ -141,12 +141,11 @@ closed the grant as completed. A future Mode B activation requires a new recorde
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 therefore used two disjoint path families in this repository.
 
-MAO-003 is complete in PR #1284 and its owner decision is recorded as completed. MAO-004 is the only
-active MAO implementation/merge authority and owns the read-only executable graph and bounded
-parallel-wave planner. MAO-005 is next. The proposed PROGRAM-MAO-001 continuation envelope is
-inactive until one separate owner ratification; if ratified, it removes per-PR owner gating for
-eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and all protected-boundary
-denials.
+MAO-003 is complete in PR #1284, and MAO-004 is complete in PR #1286. Their owner decisions are
+recorded as completed. The ratified `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is the only
+active MAO continuation authority: MAO-005 is current and MAO-006 is next. It removes per-PR owner
+gating only for eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and every
+protected-boundary denial.
 
 ---
 

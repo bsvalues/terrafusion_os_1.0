@@ -19,11 +19,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-14 — MAO-003 complete; MAO-004 planner active)*
+*(Updated 2026-07-15 — MAO-004 complete; MAO-005 playbooks active)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Active; MAO-003 mechanical reservation gate complete | `WO-MAO-004` | `WO-MAO-005` | Compute the read-only executable graph; then ratify one bounded MAO-005..007 continuation envelope rather than per-PR grants | Stop on protected boundary, failed required gate, unresolved collision, scope expansion, assurance failure, or conflicting authority |
+| [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Active; MAO-004 planner complete and R3 continuation envelope active | `WO-MAO-005` | `WO-MAO-006` | Continue automatically through MAO-007 under the ratified exact-file envelope and Mode B controls | Stop on any recorded revocation trigger or new protected boundary |
 | [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Release Engineering lane active | Owner-authorized docs/governance scope under `docs/brain/workorders/**`; operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, local hook bypass without active owner authorization, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closing | `WO-REL-006` | Owner-selected next lane | Auto only through Release Engineering closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |
 | [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Closed | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | Release Engineering lane selected | Operator model governs future WOs | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |

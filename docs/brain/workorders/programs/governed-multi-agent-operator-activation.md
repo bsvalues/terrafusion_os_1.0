@@ -4,8 +4,8 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-004`
-**Next Work Order:** `WO-MAO-005`
+**Current Work Order:** `WO-MAO-005`
+**Next Work Order:** `WO-MAO-006`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -17,6 +17,11 @@ one-time MAO-002 owner bootstrap envelope; Codex owns the changing pilot executi
 authorizes and records the bounded hook-runtime and native worker-plane repair. These records do not
 grant general R5 authority, authorize production or credentials, change suite boundaries, or permit
 runtime, backend, frontend, package, lockfile, or product behavior changes.
+
+`OWNER-MAO-004-R3-WAVE-PLANNER-20260714` completed with PR #1286 and merge commit
+`4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. The owner then ratified
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which is the active bounded authority for
+MAO-005 through MAO-007.
 
 ## Worker-Plane Repair Evidence
 
@@ -145,18 +150,18 @@ state, create PRs, merge, or grant authority. Stale active reservations remain b
 lane does not freeze unrelated ready work. Cross-repository planning remains blocked until canonical
 path identity exists.
 
-## Proposed Program Continuation Envelope
+## Active Program Continuation Envelope
 
-`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is recorded as **proposed and inactive**. It is the
-single next owner decision requested by the `PER_PR_OWNER_GATING_MUST_END` directive and covers
-MAO-005 through MAO-007 under a bounded, revocable R3 ceiling. It assigns mutable PR, SHA, worktree,
-reservation, worker, remediation, and assurance state to Codex and fails closed on scope expansion,
-protected boundaries, failed checks, unresolved review, assurance failure, reservation collision,
-or conflicting authority.
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is **active** on base
+`4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. It covers MAO-005 through MAO-007 under a bounded,
+revocable R3 ceiling. It assigns mutable PR, SHA, worktree, reservation, worker, remediation, and
+assurance state to Codex and fails closed on scope expansion, protected boundaries, failed checks,
+unresolved review, assurance failure, reservation collision, stale reservation, conflicting
+authority, false evidence, or expiration.
 
-The proposal grants nothing until separately ratified. It preserves explicit denials for runtime,
-production, county, PACS, SQL, credentials, secrets, destructive actions, and unrestricted portfolio
-authority. Once ratified, it replaces per-PR owner gating for eligible remaining MAO Work Orders.
+The envelope replaces per-PR owner gating only for eligible remaining MAO Work Orders. It preserves
+explicit denials for runtime, production, county, PACS, SQL, credentials, secrets, destructive
+actions, and unrestricted portfolio authority. MAO-005 is current and MAO-006 is next.
 
 ## Cross-Repository Boundary
 
