@@ -1,0 +1,17 @@
+[
+  {
+    "number": 2001,
+    "repository": "bsvalues/terrafusion_os_1.0",
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "state": "closed",
+    "changed_files": [],
+    "body": "<!-- TF-MAO-WORKER-ASSIGNMENT:BEGIN -->\n{\"schema_version\":1,\"repository\":\"bsvalues/terrafusion_os_1.0\",\"work_order\":\"WO-MAO-TEST-A\",\"pull_request\":2001,\"head_sha\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"worker\":\"codex-a\",\"risk_class\":\"R1\",\"updated_at\":\"2026-07-14T14:00:00Z\",\"reservations\":[{\"id\":\"RES-A\",\"kind\":\"path\",\"value\":\"docs/pilot/shared\",\"scope\":\"subtree\",\"status\":\"handed_off\",\"reserved_at\":\"2026-07-14T12:00:00Z\",\"handoff_to\":\"RES-B\"}]}\n<!-- TF-MAO-WORKER-ASSIGNMENT:END -->"
+  },
+  {
+    "number": 2002,
+    "repository": "bsvalues/terrafusion_os_1.0",
+    "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "changed_files": ["docs/pilot/shared/b.md"],
+    "body": "<!-- TF-MAO-WORKER-ASSIGNMENT:BEGIN -->\n{\"schema_version\":1,\"repository\":\"bsvalues/terrafusion_os_1.0\",\"work_order\":\"WO-MAO-TEST-B\",\"pull_request\":2002,\"head_sha\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"worker\":\"codex-b\",\"risk_class\":\"R1\",\"updated_at\":\"2026-07-14T14:01:00Z\",\"reservations\":[{\"id\":\"RES-B\",\"kind\":\"path\",\"value\":\"docs/pilot/shared/b.md\",\"scope\":\"exact\",\"status\":\"active\",\"reserved_at\":\"2026-07-14T14:01:00Z\",\"handoff_from\":\"RES-A\",\"handoff_from_pr\":2001,\"handoff_from_head_sha\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}]}\n<!-- TF-MAO-WORKER-ASSIGNMENT:END -->"
+  }
+]

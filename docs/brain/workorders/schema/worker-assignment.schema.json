@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/worker-assignment.schema.json",
+  "title": "TerraFusion MAO Worker Assignment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repository",
+    "work_order",
+    "pull_request",
+    "head_sha",
+    "worker",
+    "risk_class",
+    "updated_at",
+    "reservations"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "repository": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+    "work_order": { "type": "string", "pattern": "^WO-[A-Z0-9]+-[A-Z0-9-]+$" },
+    "pull_request": { "type": "integer", "minimum": 1 },
+    "head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "worker": { "type": "string", "minLength": 1 },
+    "risk_class": { "enum": ["R0", "R1", "R2", "R3", "R4", "R5"] },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "reservations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "reservation.schema.json" }
+    }
+  }
+}

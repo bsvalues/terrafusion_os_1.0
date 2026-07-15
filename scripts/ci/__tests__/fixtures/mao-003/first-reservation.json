@@ -1,0 +1,9 @@
+[
+  {
+    "number": 2001,
+    "repository": "bsvalues/terrafusion_os_1.0",
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "changed_files": ["docs/pilot/shared/a.md"],
+    "body": "<!-- TF-MAO-WORKER-ASSIGNMENT:BEGIN -->\n{\"schema_version\":1,\"repository\":\"bsvalues/terrafusion_os_1.0\",\"work_order\":\"WO-MAO-TEST-A\",\"pull_request\":2001,\"head_sha\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"worker\":\"codex-a\",\"risk_class\":\"R1\",\"updated_at\":\"2026-07-14T12:00:00Z\",\"reservations\":[{\"id\":\"RES-A\",\"kind\":\"path\",\"value\":\"docs/pilot/shared\",\"scope\":\"subtree\",\"status\":\"active\",\"reserved_at\":\"2026-07-14T12:00:00Z\"}]}\n<!-- TF-MAO-WORKER-ASSIGNMENT:END -->"
+  }
+]

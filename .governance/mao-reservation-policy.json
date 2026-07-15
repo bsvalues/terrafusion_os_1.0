@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "program": "PROGRAM-MAO-001",
+  "work_order": "WO-MAO-003",
+  "status": "active",
+  "repository": "bsvalues/terrafusion_os_1.0",
+  "assignment_marker_begin": "<!-- TF-MAO-WORKER-ASSIGNMENT:BEGIN -->",
+  "assignment_marker_end": "<!-- TF-MAO-WORKER-ASSIGNMENT:END -->",
+  "registration_mode": "protected-conflict",
+  "collision_rule": "any-current-participant-fails",
+  "stale_after_hours": 72,
+  "stale_reservations_block": true,
+  "fail_closed_on_malformed_manifest": true,
+  "allowed_risk_classes": ["R0", "R1", "R2", "R3"],
+  "reservation_kinds": ["path", "contract", "environment"],
+  "path_scopes": ["exact", "subtree"],
+  "reservation_states": ["active", "released", "handed_off"]
+}

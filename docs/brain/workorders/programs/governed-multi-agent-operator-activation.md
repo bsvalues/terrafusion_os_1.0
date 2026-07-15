@@ -123,6 +123,14 @@ MAO-002 uses an auditable interim reservation ledger but deliberately disjoint p
 mechanical overlap enforcement and red-team it with an intentional collision that identifies the
 conflicting Work Order, PR, repository, and path.
 
+MAO-003 implements that boundary through the canonical
+[`MAO Dispatch and Reservation Contract`](../schema/MAO_DISPATCH_RESERVATION_CONTRACT.md), checked-in
+JSON schemas, and the required `governed-spine` verifier. Mutable assignment state lives in the
+governed PR body, not an owner-maintained variable or a second queue. Any checked PR participating in
+an overlap fails until explicit release or reciprocal handoff; unrelated lanes continue. Stale
+reservations remain blocking. The program may route to MAO-004 only after the exact-scope MAO-003 PR
+merges.
+
 ## Cross-Repository Boundary
 
 Cross-repository workers require a committed `PATH_CANON_REGISTER.md` that establishes exact canonical
