@@ -349,7 +349,8 @@
         "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
         "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
         "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
-        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md"
+        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
       ],
       "explicitly_denied": [
         "runtime, backend, frontend, product, package, lockfile, tools-sync, CI, workflow, branch-protection, or deployment changes",
@@ -375,6 +376,15 @@
         "reservations and worktrees",
         "worker and assurance identities",
         "remediation revisions and merge-ready state"
+      ],
+      "amendments": [
+        {
+          "id": "OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE-AMENDMENT-001",
+          "effective_at": "2026-07-15",
+          "authorized_file": "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "scope": "canonical PROGRAM-MAO-001 authority and complete/current/next transition assertions through WO-MAO-007",
+          "explicitly_denied": "planner behavior and every existing protected boundary remain unchanged"
+        }
       ],
       "decision_basis": "Owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE ratified the exact WO-MAO-004 proposal and directive PER_PR_OWNER_GATING_MUST_END"
     }

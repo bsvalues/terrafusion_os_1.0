@@ -528,24 +528,24 @@ describe('wo-wave-plan', () => {
     );
     assert.deepEqual(
       activeAuthorities.map(decision => decision.work_order),
-      ['WO-MAO-004']
+      ['WO-MAO-005 through WO-MAO-007']
     );
 
     const queue = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md'),
       'utf8'
     );
-    assert.match(queue, /WO-MAO-003[^\n]*DONE/);
-    assert.match(queue, /WO-MAO-004[^\n]*ACTIVE/);
-    assert.match(queue, /WO-MAO-005[^\n]*NEXT/);
+    assert.match(queue, /WO-MAO-004[^\n]*DONE/);
+    assert.match(queue, /WO-MAO-005[^\n]*ACTIVE/);
+    assert.match(queue, /WO-MAO-006[^\n]*NEXT/);
 
     const commandMap = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md'),
       'utf8'
     );
-    assert.match(commandMap, /Current \/ next:\*\* `WO-MAO-004` is active; `WO-MAO-005` is next/);
-    assert.match(commandMap, /WO-MAO-003[^\n]*COMPLETE/);
-    assert.match(commandMap, /WO-MAO-004[^\n]*ACTIVE/);
-    assert.match(commandMap, /WO-MAO-005[^\n]*NEXT/);
+    assert.match(commandMap, /Current \/ next:\*\* `WO-MAO-005` is active; `WO-MAO-006` is next/);
+    assert.match(commandMap, /WO-MAO-004[^\n]*COMPLETE/);
+    assert.match(commandMap, /WO-MAO-005[^\n]*ACTIVE/);
+    assert.match(commandMap, /WO-MAO-006[^\n]*NEXT/);
   });
 });
