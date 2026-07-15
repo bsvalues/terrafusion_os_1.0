@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-15 - PROGRAM-MAO-001 closed with measured gaps at WO-MAO-007)*
+*(Updated 2026-07-15 - P8-MGMT-004 packet complete; deployment parked at SW-01)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -40,7 +40,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop | `WO-PORTFOLIO-001` | portfolio reconciliation (brain-operator baseline complete; no lane preselected) | Auto-select dependency-cleared canonical nodes | Stop only when backlog is empty/blocked/protected, strategy conflicts, or canon cannot select |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active | `WO-AZURE-001` | `WO-AZURE-006` boundary | No auto deploy | Stop on Azure/deployment/county production boundary |
-| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Active | `WO-P8-MGMT-004` | deploy at SW-01 | No auto deploy | Stop on deployment authorization |
+| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Packet complete; deployment parked | `WO-P8-MGMT-004` complete | `WO-P8-MGMT-005` at SW-01 or portfolio reconciliation | Park blocked deployment and continue portfolio selection | Stop P8 on deployment authorization; do not freeze unrelated lanes |
 
 **Active program graph:** [TerraFusion Active Goal/Loop Execution Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 

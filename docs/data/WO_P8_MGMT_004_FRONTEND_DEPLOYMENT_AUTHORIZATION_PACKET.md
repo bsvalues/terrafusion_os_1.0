@@ -1,156 +1,214 @@
-# WO-P8-MGMT-004 — Frontend Deployment Authorization Packet
+# WO-P8-MGMT-004 - Frontend Deployment Authorization Packet
 
 **Work Order:** WO-P8-MGMT-004
-**Program:** P8-MGMT — Management Dashboard (roadmap Phase 8)
-**Date:** 2026-07-01
-**Mode:** Planning / authorization packet only. **No deployment, no provisioning, no secrets, no runtime change.**
-**Status:** COMPLETE — packet ready for operator decision
-**Authority Boundary:** This document stops at SW-01. It does NOT deploy. It is the pre-authorization
-review the operator reads before authorizing WO-P8-MGMT-005 (frontend deployment execution).
+**Program:** P8-MGMT - Management Dashboard (roadmap Phase 8)
+**Date:** 2026-07-15 reconciliation of the 2026-07-01 packet
+**Base:** `origin/main` at `a80ae07e6d2384dd9761d9995b84a53d1067c19e`
+**Mode:** Planning / authorization packet only. **No deployment, provisioning, secrets, or runtime change.**
+**Status:** COMPLETE - packet reconciled; deployment remains parked at SW-01
+**Authority Boundary:** This document stops at SW-01. It does not deploy. It is the review an
+operator reads before authorizing WO-P8-MGMT-005 (frontend deployment execution).
 
 ---
 
 ## 0. Purpose
 
-WO-P8-MGMT-002 proved the existing dashboards render live Azure demo data from a local frontend.
-WO-P8-MGMT-003 made the API-base convention single-config clean (`syncDoctrine.ts` now rides the
-proxy). This packet is everything an operator needs to decide **whether and how** to make the
-frontend reachable on the Benton demo — without crossing SW-01 here.
+WO-P8-MGMT-002 proved that the existing dashboards could render Azure demo data from a local
+frontend on July 1, 2026. WO-P8-MGMT-003 made the API-base convention single-config clean for local
+Vite proxying. This packet defines what an operator needs to decide whether and how to make the
+frontend reachable on the Benton demo without crossing SW-01 here.
 
-**Build nothing new.** The surfaces exist. This is a deployment/reachability decision.
-
----
-
-## 1. What Is Being Deployed
-
-The `frontend/apps/os-shell` SPA (Vite build → `native-shell/ui/dist`), served so these existing
-routes are reachable against the live Azure API:
-
-| Route | Surface | Data source (anonymous, live today) |
-|-------|---------|-------------------------------------|
-| `/workbench/sync-doctrine` | Sync Doctrine Console | `/api/sync/doctrine/state` (200, real) |
-| `/workbench/sync-readiness` | Sync Readiness Console | probe-on-click |
-| `/dais` | Assessor Management Dashboard | Dais endpoints (auth) → honest `unavailable` when absent |
-
-No new components. No backend change. The API (`app-terrafusion-benton-demo`) is already deployed
-(WO-DEPLOY-BENTON-003C).
+**Build nothing new.** The surfaces exist. This is a deployment/reachability decision. The prior
+Azure observations are historical evidence; this reconciliation did not re-probe any live resource
+and does not claim current Azure state.
 
 ---
 
-## 2. Two Deployment Options (operator picks)
+## 1. What Would Be Deployed
 
-### Option A — Same-origin: API serves the SPA (recommended)
-The .NET API already serves static files from `native-shell/ui/dist`. Build the SPA and include it
-in the API deploy so the SPA and API share one origin.
+The `frontend/apps/os-shell` SPA (Vite build to `native-shell/ui/dist`), served so these existing
+routes are reachable against the selected API environment:
 
-| Property | Value |
-|----------|-------|
-| `VITE_API_URL` | **unset** — relative `/api` resolves same-origin (per `apiBase.ts` Invariant B) |
-| CORS | none needed (same origin) |
-| Reachability | `https://app-terrafusion-benton-demo.azurewebsites.net/` serves the SPA |
-| Build | `cd frontend && npm run build` → outputs to `../native-shell/ui/dist`; include in API publish |
-| Pro | Simplest; no CORS; no second resource; matches the intended production model |
-| Con | Couples SPA + API deploy cadence |
+| Route | Surface | Expected source behavior |
+|-------|---------|--------------------------|
+| `/workbench/sync-doctrine` | Sync Doctrine Console | Relative `/api/sync/doctrine/state`; values must trace to the response used in deployment proof |
+| `/workbench/sync-readiness` | Sync Readiness Console | Probe-on-click; no automatic claim without an operator probe |
+| `/dais` | Assessor Management Dashboard | Authenticated Dais endpoints or honest `unavailable` / aggregate-fallback disclosure |
 
-### Option B — Separate static host (Azure Static Web App / Storage) proxied to the API
-Host the SPA separately; point it at the API.
-
-| Property | Value |
-|----------|-------|
-| `VITE_API_URL` | `https://app-terrafusion-benton-demo.azurewebsites.net` (origin) — single config works post-003 |
-| CORS | API must add the static host origin to `AllowedOrigins` (SW-10 — auth/security posture) |
-| Reachability | a second public URL |
-| Pro | Independent deploy cadence |
-| Con | New cloud resource (SW-01), CORS change (SW-10), second surface to secure |
-
-**Recommendation: Option A.** No CORS, no new resource, no `VITE_API_URL` — the cleanest crossing of
-SW-01 with the least additional surface. Option B additionally trips SW-10 (CORS) and a second SW-01
-(new resource).
+No new component or backend behavior is authorized by this packet.
 
 ---
 
-## 3. Settings & Secrets Required (names only — no values)
+## 2. Two Deployment Options
 
-For **Option A** (same-origin), the SPA needs **no new runtime settings** beyond what the API already
-has. Build-time env for the frontend:
+### Option A - Same-origin: API serves the SPA (recommended)
 
-| Key | Value | Secret? |
-|-----|-------|---------|
-| `VITE_API_URL` | *(unset for same-origin)* | no |
-| `VITE_USE_MOCK_DATA` | `false` | no |
-| `VITE_DATA_MODE` | `live` | no |
-| `VITE_MAPBOX_TOKEN` | *(optional; Atlas map — omit to disable map)* | yes if set |
+The .NET API already contains static-file and SPA-fallback behavior for `native-shell/ui/dist`.
+Build the SPA and include it in the API artifact so the SPA and API share one origin.
 
-The demo currently runs with `VITE_DEV_PREVIEW_BYPASS_AUTH=true` for local preview. For a **public**
-deploy, auth posture is an **SW-10 decision** (see §5) — do NOT ship dev auth-bypass to a public
-surface without an explicit auth decision.
+| Property | Contract |
+|----------|----------|
+| Browser API base | Relative `/api`; `VITE_API_URL` omitted for the browser build |
+| CORS | No new browser cross-origin API access required |
+| Build output | `native-shell/ui/dist`, included in the API deployment artifact |
+| Benefit | Matches the current canonical client and avoids a second public origin |
+| Cost | Couples SPA and API release cadence; artifact assembly and deep-link fallback require proof |
 
-No DB passwords, JWT/HMAC keys, or connection strings are introduced by the frontend deploy — those
-already live in the API's App Settings (WO-DEPLOY-BENTON-003C). **This packet exposes no secret values.**
+### Option B - Separate static host with explicit path proxy
+
+Host the SPA separately only if its hosting layer also routes `/api`, `/hubs`, `/health`, `/ops`,
+and `/levy` to the API. WebSocket routing must be preserved for `/hubs` where used.
+
+| Property | Contract |
+|----------|----------|
+| Browser API base | Still relative `/api`; current browser `apiBase` ignores `VITE_API_URL` |
+| Routing | Static host, gateway, or reverse proxy must forward backend paths |
+| CORS | Required only if a separately authorized implementation introduces direct cross-origin calls |
+| Benefit | Independent SPA release cadence |
+| Cost | New cloud/routing surface, additional failure modes, and explicit SW-01 authorization |
+
+`VITE_API_URL=<api-origin>` is sufficient for the **local Vite proxy**, but it is not a runtime
+redirect for an already-built browser bundle. A plain static host with no path proxy is therefore
+**HOLD**. Changing browser clients to direct absolute API URLs is a separate implementation and
+security review, not part of WO-P8-MGMT-005 as currently defined.
+
+**Recommendation: Option A.** It matches the current source contract and has the smallest public
+surface. Option B is eligible only after its route design is explicit.
 
 ---
 
-## 4. Health / Readiness Expectations For The Served SPA
+## 3. Setting And Secret Names
+
+Values are deliberately omitted. The selected deployment must disposition only the applicable names.
+
+### Frontend build posture
+
+- `VITE_API_URL` - local Vite proxy target; omit for same-origin browser serving.
+- `VITE_USE_MOCK_DATA`
+- `VITE_DATA_MODE`
+- `VITE_ALLOW_NON_LIVE_MODE`
+- `VITE_DEV_PREVIEW_BYPASS_AUTH`
+- `VITE_ENFORCE_AUTH_IN_DEV`
+- `VITE_COUNTY_ID`
+- `VITE_COUNTY_NAME`
+- `VITE_APP_ENV`
+- `VITE_MAPBOX_TOKEN` - optional secret-bearing feature setting if the selected surface requires it.
+
+### API / host posture
+
+- `ASPNETCORE_ENVIRONMENT`
+- `Cors__AllowedOrigins__<index>` (equivalent to `Cors:AllowedOrigins`)
+- `JwtSettings__SecretKey`
+- `JwtSettings__Issuer`
+- `JwtSettings__Audience`
+- `JwtSettings__ExpirationMinutes`
+- `DefaultCounty__Id`
+- `DefaultCounty__Code`
+
+The selected secret provider must supply secret values. This packet does not read or authorize any
+value. A public or production-like host must not depend on the development-only
+`/api/auth/dev-token` endpoint. Any change from the recorded auth posture triggers SW-10.
+
+---
+
+## 4. Health And Readiness Expectations
 
 | Check | Expectation |
 |-------|-------------|
-| `GET /` | 200, serves `index.html` (SPA shell) |
-| SPA deep-link (`/workbench/sync-doctrine`) | 200 via SPA fallback (API static-file middleware must serve `index.html` for unknown non-`/api` routes) |
-| `GET /api/sync/doctrine/state` | 200 (already live, anonymous) |
-| `GET /api/system/health` | 200, honest `Degraded` (ModuleLoader absent on Azure — expected) |
-| Console render | OPERATIONAL, `tf_parcel 84,418`, `tf_sale 90,386` (live, not fixtures) |
+| `GET /` | 200 and the expected `index.html` artifact |
+| SPA deep links | `/dais`, `/workbench/sync-doctrine`, and `/workbench/sync-readiness` return the SPA rather than 404 |
+| Static assets | Load without path-base, CSP, or mixed-content failures |
+| `GET /healthz` | Liveness only; proves process routability, not dependency readiness |
+| `GET /healthz/ready` | Capture result but preserve the Backend OE caveat: the current predicate does not prove PACS readiness because the PACS tag does not match the selected readiness tag |
+| Relative API routes | Resolve through the selected same-origin or proxy contract |
+| Console render | Values trace to captured API evidence; unavailable dependencies are disclosed |
 
-**Gap to verify during execution (not now):** confirm the API's static-file/SPA-fallback middleware
-serves `index.html` for client routes on Azure (locally this is Vite's job; in production it is the
-API's). This is the main deployment risk and belongs in WO-P8-MGMT-005 smoke steps.
-
----
-
-## 5. Honesty Gate (must hold on the deployed surface)
-
-- Source badges present; `unavailable`/`partial` shown where data/auth missing (verified WO-002).
-- No fabricated numbers; no stale `89,247`; no stub agent counts; no randomized metrics.
-- The four UI guardrail dashboards (AISwarmDashboard, AIAgentMonitoringDashboard, EliteAIDashboard,
-  TerraFusionEliteRealtimeDashboard) remain guardrails — they must not start emitting counts.
-- `syncDoctrine` numbers trace to live `/api/sync/doctrine/state` (post-003 conformance).
+The static SPA has no independent server-side health endpoint. Its proof is document, asset, deep-link,
+and bounded API delivery. Feature health endpoints must not be substituted for platform readiness.
 
 ---
 
-## 6. Stop Walls Crossed By Actual Deployment (why this packet stops here)
+## 5. Honesty Gate
+
+- Source badges remain present and `unavailable` / `partial` appears where data or auth is missing.
+- No fabricated numbers, stale `89,247` count, stub agent counts, or randomized metrics appear.
+- Guardrail dashboards remain guardrails; they do not start emitting unsupported counts.
+- Dais aggregate fallback is not labeled as Dais-native evidence.
+- Sync Doctrine values trace to the API response captured for the validation.
+- Auth failures remain visible; a missing production auth flow is not hidden by preview bypass.
+- Health and readiness claims use the semantics in section 4.
+
+---
+
+## 6. Decision And Stop Walls
+
+| Decision | Conditions |
+|----------|------------|
+| **PASS TO AUTHORIZATION** | Host option, exact artifact SHA, resource, config names, auth posture, validation plan, and rollback target are explicit |
+| **HOLD** | Routing, auth, readiness, rollback, current live state, or setting ownership is unresolved |
+| **FAIL** | Scope requires secret disclosure, unauthorized cloud/data mutation, mock data presented as live, production/county launch, or unapproved client behavior changes |
 
 | Wall | Triggered by | This packet |
 |------|--------------|-------------|
-| **SW-01** | Building + publishing the SPA to the public App Service; making routes publicly reachable | **NOT crossed** — packet only |
-| **SW-10** | Option B CORS allow-list change; OR shipping a real auth posture instead of dev bypass | **NOT crossed** — flagged for decision |
-| **SW-04** | Promoting this demo to county-facing production | **NOT crossed** — out of scope |
+| **SW-01** | Publishing the SPA, changing a cloud resource, or making routes publicly reachable | **NOT crossed** - packet only |
+| **SW-10** | Changing auth policy, shipping preview bypass as public auth posture, or introducing direct cross-origin auth behavior | **NOT crossed** - requires an explicit decision if applicable |
+| **SW-04** | Promoting the demo to county-facing production | **NOT crossed** - out of scope |
 
-Actual deployment = **WO-P8-MGMT-005**, which requires explicit operator authorization referencing
-SW-01 (and an auth-posture decision under SW-10 if the surface is public).
-
----
-
-## 7. Exact Authorization The Operator Must Give
-
-To proceed to WO-P8-MGMT-005 (execution), the operator states:
-
-1. **Option A or Option B** (recommend A).
-2. **Auth posture** for the public surface (SW-10): keep it demo-gated / behind a login / IP-restricted?
-   Do NOT ship `VITE_DEV_PREVIEW_BYPASS_AUTH=true` to an open public URL without saying so explicitly.
-3. **"authorized, go"** for SW-01 (frontend deploy to the Benton demo).
-
-Until then the operator loop stops here.
+Current decision: **HOLD AT SW-01**. Completion of this packet is not deployment authorization.
 
 ---
 
-## 8. Evidence / Provenance
+## 7. Rollback And Evidence Requirements
 
-- Reachability proof: `docs/data/WO_P8_MGMT_002_REACHABILITY_PROOF.md`
-- Conformance fix (single-config): `docs/data/WO_P8_MGMT_003_SYNC_DOCTRINE_CONFORMANCE.md` (PR #1125)
-- API-base contract: `frontend/apps/os-shell/src/lib/apiBase.ts` (Invariant B — same-origin needs no `VITE_API_URL`)
-- Build target: `frontend/vite.config.ts` (`outDir: ../native-shell/ui/dist`)
-- Live API: `app-terrafusion-benton-demo.azurewebsites.net` (WO-DEPLOY-BENTON-003C)
+Any later deployment authorization must name:
+
+- the immutable frontend/API artifact or commit SHA;
+- the prior known-good artifact or slot;
+- the exact host and environment boundary;
+- configuration names changed, without recording secret values;
+- the rollback action and authorized executor;
+- liveness, SPA route, static asset, API route, auth, honesty, and log checks;
+- stop criteria and evidence location.
+
+This is rollback planning only. No slot swap, artifact deployment, restart, or configuration rollback
+was executed.
 
 ---
 
-**WO-P8-MGMT-004: COMPLETE.** Next legal action is **WO-P8-MGMT-005 (frontend deployment execution)**
-— **STOP: SW-01** (and SW-10 auth posture). Requires explicit operator authorization.
+## 8. Exact Authorization Required
+
+A sufficient bounded decision for WO-P8-MGMT-005 must identify the exact environment, resource,
+artifact SHA, host option, allowed configuration-name changes, validation plan, rollback target, and
+any auth-posture change:
+
+```text
+OWNER_DECISION: APPROVED
+WORK_ORDER: WO-P8-MGMT-005 - Frontend Deployment Execution
+AUTHORIZE: Deploy the specified Management Dashboard artifact SHA to the specified non-production
+Azure resource using the selected host option, with only the listed configuration names, validation
+steps, and rollback target.
+BOUNDARY: SW-01 only; no county production launch, data mutation, PACS/county SQL access, secret
+disclosure, DNS widening, or auth-policy change unless separately enumerated and authorized.
+```
+
+---
+
+## 9. Evidence And Non-Claims
+
+- Scope: `docs/data/WO_P8_MGMT_001_MANAGEMENT_DASHBOARD_SCOPE_PACKET.md`
+- Historical reachability: `docs/data/WO_P8_MGMT_002_REACHABILITY_PROOF.md`
+- Client conformance: `docs/data/WO_P8_MGMT_003_SYNC_DOCTRINE_CONFORMANCE.md`
+- API-base source: `frontend/apps/os-shell/src/lib/apiBase.ts`
+- Build/host source: `frontend/vite.config.ts`, `backend/src/TerraFusion.API/Program.cs`
+- Health semantics: `docs/brain/workorders/evidence/WO-BACKEND-OE-004-HEALTH-READINESS-SEMANTICS-PROOF.md`
+- Security boundary: `docs/brain/workorders/evidence/WO-BACKEND-OE-006-SECURITY-AUTH-COUNTY-ISOLATION-PROOF-MATRIX.md`
+
+This packet does not claim current Azure reachability, production readiness, county readiness,
+PACS-gated readiness, complete security proof, rollback execution proof, or permission to deploy.
+No frontend, backend, runtime, CI, cloud, DNS, secret, county, or PACS state changed.
+
+---
+
+**WO-P8-MGMT-004: COMPLETE.** Next P8 action is **WO-P8-MGMT-005**, parked at **SW-01** (and
+SW-10 if auth posture changes). Portfolio Operator may continue to another dependency-cleared lane
+without treating the parked deployment as a portfolio-wide stop.
