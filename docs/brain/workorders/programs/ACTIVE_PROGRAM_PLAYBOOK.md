@@ -95,9 +95,9 @@ automatically.
 | Goal | `GOAL-MAO-001` |
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
-| Status | ACTIVE |
-| Current WO | `WO-MAO-006` |
-| Next WO | `WO-MAO-007` |
+| Status | CLOSED - PASS_WITH_GAPS |
+| Current WO | `WO-MAO-007` complete |
+| Next WO | Portfolio reconciliation |
 
 ### Purpose
 
@@ -118,8 +118,8 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
 | `WO-MAO-004` | planner implementation | COMPLETE - dependency-cleared executable set and conflict-free parallel waves |
 | `WO-MAO-005` | evidence-informed playbooks | COMPLETE - PR #1287 merged bounded worker, assurance, monitoring, retry, and operator rules |
-| `WO-MAO-006` | portfolio rollout | ACTIVE - bounded concurrency, allocation, status, cross-repo prerequisites, and recovery evidence |
-| `WO-MAO-007` | evidence rollup | NEXT - founder touches, concurrency, cycle time, violations, and closeout |
+| `WO-MAO-006` | portfolio rollout | COMPLETE - PR #1288 |
+| `WO-MAO-007` | evidence rollup | COMPLETE - PASS_WITH_GAPS; authority consumed |
 
 ### Pilot Boundary
 
@@ -141,11 +141,11 @@ closed the grant as completed. A future Mode B activation requires a new recorde
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 therefore used two disjoint path families in this repository.
 
-MAO-003 is complete in PR #1284, and MAO-004 is complete in PR #1286. Their owner decisions are
-recorded as completed. The ratified `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is the only
-active MAO continuation authority: MAO-006 is current and MAO-007 is next. It removes per-PR owner
-gating only for eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and every
-protected-boundary denial.
+MAO-003 is complete in PR #1284, MAO-004 in PR #1286, MAO-005 in PR #1287, and MAO-006 in PR #1288.
+WO-MAO-007 closes the program as `PASS_WITH_GAPS`. The ratified
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` removed per-PR owner gating for eligible MAO-005
+through MAO-007 work and is completed and consumed at closeout. No MAO execution authority survives;
+the next route is Portfolio Operator reconciliation.
 
 ---
 

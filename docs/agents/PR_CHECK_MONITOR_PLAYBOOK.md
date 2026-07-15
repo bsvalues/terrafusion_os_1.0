@@ -3,6 +3,7 @@
 **Program:** `PROGRAM-MAO-001`
 **Work Order:** `WO-MAO-005`
 **Mode:** read-only monitoring and routing
+**Status:** completed reusable baseline; execution requires a new applicable active authority
 
 The monitor watches current remote truth; it does not merge, dismiss reviews, bypass checks, or
 reinterpret branch protection.
@@ -30,4 +31,4 @@ required input and is never inferred from check success.
 If `main` advances, update only under the recorded branch strategy and rerun the full head-bound
 gate. The monitor cannot convert a stale result into a passing result.
 
-STOP_TYPE: PR_CHECK_MONITOR_PLAYBOOK_ACTIVE
+STOP_TYPE: PR_CHECK_MONITOR_PLAYBOOK_BASELINE_COMPLETE

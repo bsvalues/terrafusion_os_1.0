@@ -3,9 +3,9 @@
 **Program ID:** `PROGRAM-MAO-001`
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
-**Status:** Active
-**Current Work Order:** `WO-MAO-006`
-**Next Work Order:** `WO-MAO-007`
+**Status:** Closed - PASS_WITH_GAPS
+**Current Work Order:** `WO-MAO-007` complete
+**Next Work Order:** Portfolio reconciliation
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -20,8 +20,8 @@ runtime, backend, frontend, package, lockfile, or product behavior changes.
 
 `OWNER-MAO-004-R3-WAVE-PLANNER-20260714` completed with PR #1286 and merge commit
 `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. The owner then ratified
-`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which is the active bounded authority for
-MAO-005 through MAO-007.
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which supplied bounded authority for MAO-005
+through MAO-007 and is completed and consumed at closeout.
 
 ## Worker-Plane Repair Evidence
 
@@ -86,8 +86,8 @@ Unknown historical founder-touch data remains `UNKNOWN`; it is never inferred.
 | `WO-MAO-003` | Define reservations and enforce collisions mechanically. | MAO-002 evidence | Mechanical gate rejects intentional overlap and passes after release |
 | `WO-MAO-004` | Compute executable nodes and conflict-free parallel waves. | MAO-003 merged | Deterministic planner evidence |
 | `WO-MAO-005` | Create evidence-informed worker and assurance playbooks. | MAO-004 merged | COMPLETE - PR #1287 |
-| `WO-MAO-006` | Roll the proven model across the portfolio. | MAO-005 merged | ACTIVE - allocation, concurrency, incident, and rollback evidence |
-| `WO-MAO-007` | Close the program based on measured outcomes. | MAO-006 merged | NEXT - final metrics and canon closeout |
+| `WO-MAO-006` | Roll the proven model across the portfolio. | MAO-005 merged | COMPLETE - PR #1288 |
+| `WO-MAO-007` | Close the program based on measured outcomes. | MAO-006 merged | COMPLETE - PASS_WITH_GAPS |
 
 ## MAO-002 Pilot Contract
 
@@ -150,18 +150,19 @@ state, create PRs, merge, or grant authority. Stale active reservations remain b
 lane does not freeze unrelated ready work. Cross-repository planning remains blocked until canonical
 path identity exists.
 
-## Active Program Continuation Envelope
+## Completed Program Continuation Envelope
 
-`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is **active** on base
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` was activated on base
 `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. It covers MAO-005 through MAO-007 under a bounded,
 revocable R3 ceiling. It assigns mutable PR, SHA, worktree, reservation, worker, remediation, and
 assurance state to Codex and fails closed on scope expansion, protected boundaries, failed checks,
 unresolved review, assurance failure, reservation collision, stale reservation, conflicting
 authority, false evidence, or expiration.
 
-The envelope replaces per-PR owner gating only for eligible remaining MAO Work Orders. It preserves
+The envelope replaced per-PR owner gating only for eligible remaining MAO Work Orders. It preserved
 explicit denials for runtime, production, county, PACS, SQL, credentials, secrets, destructive
-actions, and unrestricted portfolio authority. MAO-006 is current and MAO-007 is next.
+actions, and unrestricted portfolio authority. It is completed and consumed by WO-MAO-007. No future
+work inherits it; the program routes to Portfolio Operator reconciliation.
 
 ## Cross-Repository Boundary
 

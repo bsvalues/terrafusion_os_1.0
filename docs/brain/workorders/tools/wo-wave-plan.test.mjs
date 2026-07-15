@@ -519,33 +519,120 @@ describe('wo-wave-plan', () => {
     assert.equal(forward, reverse);
   });
 
-  it('records one active MAO authority and the complete/current/next transition', () => {
+  it('records MAO program closeout and consumes the continuation authority', () => {
     const decisions = JSON.parse(
       fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
     );
     const activeAuthorities = decisions.decisions.filter(
       decision => decision.program === 'PROGRAM-MAO-001' && decision.status === 'active'
     );
-    assert.deepEqual(
-      activeAuthorities.map(decision => decision.work_order),
-      ['WO-MAO-005 through WO-MAO-007']
+    assert.deepEqual(activeAuthorities, []);
+
+    const envelope = decisions.decisions.find(
+      decision => decision.id === 'OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE'
     );
+    assert.equal(envelope.status, 'completed');
+    assert.equal(envelope.completion.terminal_work_order, 'WO-MAO-007');
+    assert.equal(envelope.completion.merged_pr, 1289);
+    assert.equal(envelope.completion.authority_consumed, true);
+    assert.match(envelope.completion.evidence, /WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT/);
 
     const queue = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md'),
       'utf8'
     );
     assert.match(queue, /WO-MAO-005[^\n]*DONE/);
-    assert.match(queue, /WO-MAO-006[^\n]*ACTIVE/);
-    assert.match(queue, /WO-MAO-007[^\n]*NEXT/);
+    assert.match(queue, /WO-MAO-006[^\n]*DONE/);
+    assert.match(queue, /WO-MAO-007[^\n]*DONE/);
 
     const commandMap = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md'),
       'utf8'
     );
-    assert.match(commandMap, /Current \/ next:\*\* `WO-MAO-006` is active; `WO-MAO-007` is next/);
+    assert.match(commandMap, /PROGRAM-MAO-001 is closed at `WO-MAO-007`/);
     assert.match(commandMap, /WO-MAO-005[^\n]*COMPLETE/);
-    assert.match(commandMap, /WO-MAO-006[^\n]*ACTIVE/);
-    assert.match(commandMap, /WO-MAO-007[^\n]*NEXT/);
+    assert.match(commandMap, /WO-MAO-006[^\n]*COMPLETE/);
+    assert.match(commandMap, /WO-MAO-007[^\n]*COMPLETE - PASS_WITH_GAPS/);
+
+    const register = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md'),
+      'utf8'
+    );
+    const canonIndex = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/CANON_INDEX.md'),
+      'utf8'
+    );
+    const activePlaybook = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md'),
+      'utf8'
+    );
+    const program = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/programs/governed-multi-agent-operator-activation.md'),
+      'utf8'
+    );
+    const goalCommands = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/goal-loop/GOAL_COMMANDS.md'),
+      'utf8'
+    );
+    const maoGoal = goalCommands.match(
+      /### \/goal governed-multi-agent-operator([\s\S]*?)(?:\n---|$)/
+    )?.[1];
+    assert.ok(maoGoal);
+    assert.match(register, /Closed - PASS_WITH_GAPS/);
+    assert.match(canonIndex, /Completed and closed at WO-MAO-007 with PASS_WITH_GAPS/);
+    assert.doesNotMatch(canonIndex, /MAO program[^\n]*Active program graph/);
+    assert.match(activePlaybook, /\| Status \| CLOSED - PASS_WITH_GAPS \|/);
+    assert.match(program, /\*\*Status:\*\* Closed - PASS_WITH_GAPS/);
+    assert.match(maoGoal, /Use `\/goal portfolio-operator`/);
+    assert.match(maoGoal, /\*\*Allowed loop modes:\*\* `once`, `evidence`, `discovery`/);
+    assert.doesNotMatch(maoGoal, /\*\*Allowed loop modes:\*\*[^\n]*`program`/);
+
+    const closeoutPacket = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/active/WO-MAO-007-evidence-rollup-canon-closeout.md'),
+      'utf8'
+    );
+    const closeoutEvidence = fs.readFileSync(
+      path.join(
+        root,
+        'docs/brain/workorders/evidence/WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT.md'
+      ),
+      'utf8'
+    );
+    assert.match(closeoutPacket, /CLOSED - PASS_WITH_GAPS/);
+    assert.match(closeoutPacket, /No MAO-008 exists, no MAO authority survives/);
+    assert.match(closeoutEvidence, /Founder touches per merged Work Order/);
+    assert.match(closeoutEvidence, /Sustained concurrent mutable lanes/);
+    assert.match(closeoutEvidence, /Median Work Order cycle time before \/ after/);
+    assert.match(closeoutEvidence, /Reservation violations reaching `main`/);
+    assert.match(closeoutEvidence, /Unauthorized-scope merges/);
+    assert.match(closeoutEvidence, /Operator-merge suspension \/ restoration/);
+    assert.match(closeoutEvidence, /Automatic next-wave selection/);
+
+    const playbooks = [
+      'CODEX_MULTI_AGENT_ORCHESTRATOR_PLAYBOOK.md',
+      'CLAUDE_CROSS_REPO_SUITE_WORKER_PLAYBOOK.md',
+      'INDEPENDENT_ASSURANCE_AGENT_PLAYBOOK.md',
+      'PR_CHECK_MONITOR_PLAYBOOK.md',
+      'AGENT_FAILURE_RETRY_REASSIGNMENT_PLAYBOOK.md',
+      'MULTI_AGENT_OPERATOR_BRIEF.md',
+    ];
+    for (const playbook of playbooks) {
+      const content = fs.readFileSync(path.join(root, 'docs/agents', playbook), 'utf8');
+      assert.match(content, /completed reusable baseline/);
+      assert.match(content, /BASELINE_COMPLETE/);
+    }
+
+    const closeoutSurfaces = [
+      queue,
+      commandMap,
+      canonIndex,
+      register,
+      activePlaybook,
+      program,
+      maoGoal,
+    ].join('\n');
+    assert.doesNotMatch(closeoutSurfaces, /WO-MAO-008/);
+    assert.doesNotMatch(closeoutSurfaces, /WO-MAO-006[^\n]*(?:ACTIVE|NEXT)/);
+    assert.doesNotMatch(closeoutSurfaces, /WO-MAO-007[^\n]*(?:ACTIVE|NEXT)/);
   });
 });

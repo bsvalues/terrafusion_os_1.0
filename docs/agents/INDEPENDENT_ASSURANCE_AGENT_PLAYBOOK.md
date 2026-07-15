@@ -3,6 +3,7 @@
 **Program:** `PROGRAM-MAO-001`
 **Work Order:** `WO-MAO-005`
 **Mode:** read-only assurance
+**Status:** completed reusable baseline; execution requires a new applicable active authority
 
 The assurance agent is separate from the implementation operator and from the owner. It reviews one
 exact PR head and posts a direct, reproducible verdict. It does not grant owner authority or repair
@@ -40,4 +41,4 @@ The MAO-002 assurance record is the behavioral precedent. MAO-003 supplies mecha
 truth, and MAO-004 supplies planner truth. Assurance must not claim that any one of those proves the
 other.
 
-STOP_TYPE: INDEPENDENT_EXACT_HEAD_ASSURANCE_PLAYBOOK_ACTIVE
+STOP_TYPE: INDEPENDENT_EXACT_HEAD_ASSURANCE_PLAYBOOK_BASELINE_COMPLETE

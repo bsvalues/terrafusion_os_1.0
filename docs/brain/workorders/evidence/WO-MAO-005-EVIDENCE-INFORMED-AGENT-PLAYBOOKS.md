@@ -10,13 +10,16 @@
 MAO-004 is complete through PR #1286 and merge commit
 `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. The owner ratified the exact continuation-envelope
 proposal on that base. At activation, the register made the envelope active, MAO-005 current, and
-MAO-006 next. No per-PR owner grant is required for eligible MAO-005 through MAO-007 work.
+MAO-006 next. No per-PR owner grant was required for eligible MAO-005 through MAO-007 work.
 
 MAO-005 completed through PR #1287 at exact head
 `3ac224136a162440ea8376c15213c9e46a135fbe` and merge commit
 `d08dd16ebfde5bd96ee3830a0eb9bff91cce74b8`. The PR changed 16 authorized files,
 retained 16 collision-free exact-path reservations, passed independent exact-head assurance and
 required checks, and merged with zero unresolved review threads.
+
+The completed playbooks remain reusable governance baselines, but the MAO continuation envelope is
+consumed at WO-MAO-007 closeout. Future execution requires a new applicable active authority.
 
 ## Evidence-to-Rule Traceability
 

@@ -6,7 +6,7 @@
 **Base:** `d08dd16ebfde5bd96ee3830a0eb9bff91cce74b8`
 **Risk:** `R3`
 **Merge mode:** `B-bounded-program-envelope`
-**Status:** In progress
+**Status:** Complete
 
 ## Objective
 
@@ -19,10 +19,13 @@ cadence, and incident/rollback procedure required for measured closeout.
 
 - PR #1287 closed WO-MAO-005 at exact head `3ac224136a162440ea8376c15213c9e46a135fbe`
   and merge commit `d08dd16ebfde5bd96ee3830a0eb9bff91cce74b8`.
-- `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` remains the only active MAO authority.
+- `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` remained the only active MAO authority through
+  the closeout PR.
 - Amendment 001 durably authorizes the transition regression through WO-MAO-007 without changing
   planner behavior.
-- WO-MAO-005 is complete; WO-MAO-006 is active; WO-MAO-007 is next.
+- PR #1288 closed WO-MAO-006 at exact head `a21e2f28a65329f549c1519c3b41d242504ca48f`
+  and merge commit `906976589a32f9da99cb566458da3207ca789590`.
+- WO-MAO-005 and WO-MAO-006 are complete; WO-MAO-007 performs the terminal closeout.
 
 ## Rollout Boundary
 
@@ -54,4 +57,4 @@ cadence, and incident/rollback procedure required for measured closeout.
 - exact authorized-file scope, reservation gate, independent exact-head assurance, required remote
   checks, and zero unresolved threads
 
-STOP_TYPE: MAO_006_PORTFOLIO_ROLLOUT_READY
+STOP_TYPE: MAO_006_PORTFOLIO_ROLLOUT_COMPLETE

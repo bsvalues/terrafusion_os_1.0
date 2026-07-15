@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-15
-**Authority:** WO-MAO-006
+**Authority:** WO-MAO-007
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,14 +13,15 @@
 
 ## Active Goal
 
-`governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
+No PROGRAM-MAO-001 goal remains active after this atomic closeout. The next route is a fresh
+Portfolio Operator reconciliation; no product lane is preselected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
 touches after bootstrap. PR #1284 then proved mechanical path, contract, and environment reservation
 enforcement. PR #1286 added the read-only executable graph and parallel-wave planner. The ratified
-R3 continuation envelope closed `WO-MAO-005` in PR #1287, makes `WO-MAO-006` active, and makes
-`WO-MAO-007` next.
+R3 continuation envelope closed `WO-MAO-005` in PR #1287 and `WO-MAO-006` in PR #1288. WO-MAO-007
+closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected merge.
 
 ---
 
@@ -36,8 +37,8 @@ R3 continuation envelope closed `WO-MAO-005` in PR #1287, makes `WO-MAO-006` act
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | DONE | PR #1284 merged; intentional overlap rejected and release/handoff recovery proved |
 | WO-MAO-004 Executable Graph / Parallel Wave Planner | DONE | PR #1286 merged; pure planner computes dependency-cleared, reservation-safe bounded waves |
 | WO-MAO-005 Evidence-Informed Agent Playbooks | DONE | PR #1287 merged six evidence-grounded playbooks plus durable transition assertions |
-| **WO-MAO-006 Portfolio Rollout** | **ACTIVE** | Record bounded allocation, concurrency, cross-repo prerequisites, status, and recovery truth |
-| **WO-MAO-007 Evidence Rollup and Canon Closeout** | **NEXT** | Measure founder touches, concurrency, cycle time, violations, and program outcome |
+| WO-MAO-006 Portfolio Rollout | DONE | PR #1288 merged bounded allocation, concurrency, cross-repo prerequisites, status, and recovery truth |
+| WO-MAO-007 Evidence Rollup and Canon Closeout | DONE | Program closed PASS_WITH_GAPS; authority consumed; next route is portfolio reconciliation |
 
 ### p8-management-dashboard  (`/goal p8-management-dashboard`)
 | WO | State | PR | Notes |

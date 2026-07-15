@@ -381,18 +381,19 @@ Success:  The MAO program advances through falsifiable pilot, reservation enforc
           playbook, rollout, and evidence gates without crossing protected boundaries.
 ```
 
-**Current state:** `WO-MAO-005` completed in PR #1287. `WO-MAO-006` is active and records the
-bounded portfolio rollout contract and evidence; `WO-MAO-007` is next.
+**Current state:** PROGRAM-MAO-001 is closed at `WO-MAO-007` as `PASS_WITH_GAPS`. PR #1288 closed
+WO-MAO-006. The continuation envelope is completed and consumed when the closeout transition merges.
+Use `/goal portfolio-operator` for the next live reconciliation; no lane is preselected here.
 
 **Mode B:** The canonical
 [Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)
 defines Mode B as preauthorized operator merge under recorded, revocable, exact-scope authority.
 MAO-002 consumed its two-PR issue #1276 grant and released the paired operational variables after
 post-merge assurance. The owner has ratified
-`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which now supplies bounded, revocable Mode B
-authority for eligible MAO-005 through MAO-007 work without per-PR owner routing.
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which supplied bounded, revocable Mode B authority
+for eligible MAO-005 through MAO-007 work without per-PR owner routing and is now consumed.
 
-**Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
+**Allowed loop modes:** `once`, `evidence`, `discovery`
 
 **Blocked:** This selector grants no runtime, product, production, credential, county, or county-data
 authority.
