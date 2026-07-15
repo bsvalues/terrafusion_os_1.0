@@ -98,12 +98,6 @@ Full local proof wall:
 | `corepack pnpm install --frozen-lockfile` in isolated worktree | PASS; ignored dependency state only |
 | `package.json` SHA-256 before/after | unchanged: `AE1B423C71421A30983D06D8F303E4B556E674F3551CBB226CF1F33AB500C0D6` |
 | `pnpm-lock.yaml` SHA-256 before/after | unchanged: `D23687DD59C77E400D392DC99BB3F12308761377368D686528868C22615489A0` |
-
-`brain review-diff` and `brain commit-plan` were also invoked with both `WO-MAO-004` and the full
-active-packet basename. The current Brain helper only resolves its legacy numeric filename form, so
-it reported the MAO packet as not found and could not enforce packet scope. The exact 15-file scope
-was instead checked directly and by independent review. This is a tooling limitation, not a passing
-Brain-scope claim.
 | `corepack pnpm run type-check` | PASS |
 | `node --test os-platform/core/tests/phase83-tools.test.mjs` | PASS; 56 tests |
 | `python scripts/ci/__tests__/mao-003-reservations.test.py` | PASS; 22 tests |
@@ -112,6 +106,12 @@ Brain-scope claim.
 | `git diff --check` | PASS |
 | `node docs/brain/workorders/tools/wo-query.mjs --json` | PASS |
 | `node docs/brain/workorders/tools/wo-wave-plan.mjs --json` | PASS, fail-closed seed result |
+
+`brain review-diff` and `brain commit-plan` were also invoked with both `WO-MAO-004` and the full
+active-packet basename. The current Brain helper only resolves its legacy numeric filename form, so
+it reported the MAO packet as not found and could not enforce packet scope. The exact 15-file scope
+was instead checked directly and by independent review. This is a tooling limitation, not a passing
+Brain-scope claim.
 
 ## Honest Limitation
 
