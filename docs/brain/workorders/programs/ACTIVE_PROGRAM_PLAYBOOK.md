@@ -96,8 +96,8 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-003` |
-| Next WO | `WO-MAO-004` |
+| Current WO | `WO-MAO-004` |
+| Next WO | `WO-MAO-005` |
 
 ### Purpose
 
@@ -140,6 +140,13 @@ closed the grant as completed. A future Mode B activation requires a new recorde
 
 Cross-repository dispatch is blocked until a committed `PATH_CANON_REGISTER.md` identifies the exact
 canonical repository path. MAO-002 therefore used two disjoint path families in this repository.
+
+MAO-003 is complete in PR #1284 and its owner decision is recorded as completed. MAO-004 is the only
+active MAO implementation/merge authority and owns the read-only executable graph and bounded
+parallel-wave planner. MAO-005 is next. The proposed PROGRAM-MAO-001 continuation envelope is
+inactive until one separate owner ratification; if ratified, it removes per-PR owner gating for
+eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and all protected-boundary
+denials.
 
 ---
 

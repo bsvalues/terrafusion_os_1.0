@@ -4,8 +4,8 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-003`
-**Next Work Order:** `WO-MAO-004`
+**Current Work Order:** `WO-MAO-004`
+**Next Work Order:** `WO-MAO-005`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -41,8 +41,10 @@ as either MAO-002 pilot PR.
 reservations, independent reviews, checks, cycle times, founder touches, rollback class, and protected
 scope proof. The pilot had zero founder queue-routing touches after the one-time bootstrap grant.
 
-The pilot deliberately did not test overlapping reservations. `WO-MAO-003` is now active and must
-mechanically reject an intentional overlap before the program advances.
+The pilot deliberately did not test overlapping reservations. `WO-MAO-003` closed that gap in PR
+#1284, which mechanically rejected an intentional overlap and proved recovery after explicit release
+or reciprocal handoff. `WO-MAO-004` now owns the deterministic executable graph and parallel-wave
+planner.
 
 ## Objective
 
@@ -130,6 +132,31 @@ governed PR body, not an owner-maintained variable or a second queue. Any checke
 an overlap fails until explicit release or reciprocal handoff; unrelated lanes continue. Stale
 reservations remain blocking. The program may route to MAO-004 only after the exact-scope MAO-003 PR
 merges.
+
+## Executable Graph Boundary
+
+`WO-MAO-004` consumes the canonical Work Order registry, scoring rules, explicit repository-bound
+candidate claims, and governed active reservations. It emits a deterministic read-only plan with the
+initial executable set, projected dependency-unlock waves, worker-budget utilization, and an
+explanation for every selected or excluded node.
+
+The planner does not infer reservations from allowed-file globs, dispatch workers, mutate assignment
+state, create PRs, merge, or grant authority. Stale active reservations remain blocking. A blocked
+lane does not freeze unrelated ready work. Cross-repository planning remains blocked until canonical
+path identity exists.
+
+## Proposed Program Continuation Envelope
+
+`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is recorded as **proposed and inactive**. It is the
+single next owner decision requested by the `PER_PR_OWNER_GATING_MUST_END` directive and covers
+MAO-005 through MAO-007 under a bounded, revocable R3 ceiling. It assigns mutable PR, SHA, worktree,
+reservation, worker, remediation, and assurance state to Codex and fails closed on scope expansion,
+protected boundaries, failed checks, unresolved review, assurance failure, reservation collision,
+or conflicting authority.
+
+The proposal grants nothing until separately ratified. It preserves explicit denials for runtime,
+production, county, PACS, SQL, credentials, secrets, destructive actions, and unrestricted portfolio
+authority. Once ratified, it replaces per-PR owner gating for eligible remaining MAO Work Orders.
 
 ## Cross-Repository Boundary
 

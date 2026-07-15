@@ -6,7 +6,7 @@
 **Base:** `c46c19735f836907bdbd64755f2d0737105af7f3`
 **Risk:** `R3`
 **Merge mode:** bounded `B`
-**Status:** In progress
+**Status:** Complete
 
 ## Objective
 
@@ -26,9 +26,10 @@ open governed PRs and does not create another queue.
 
 ## Authority
 
-`OWNER-MAO-003-R3-RESERVATION-GATE-20260714` authorizes only the files listed in
-`.governance/owner-decisions.json`, one exact-scope Mode B merge, and post-merge routing to
-`WO-MAO-004`. It grants no runtime, production, protected-data, force-push, or MAO-004 merge authority.
+`OWNER-MAO-003-R3-RESERVATION-GATE-20260714` is completed. PR #1284 merged exact head
+`dd268976b93893dbaa731f6eb117491d68d30d11` as
+`5660f153b810b2c25b04c59b5cfa4e8fa74ae7ed`; completion evidence is recorded in
+[`WO-MAO-003-RESERVATION-GATE.md`](../evidence/WO-MAO-003-RESERVATION-GATE.md).
 
 ## Validation
 
@@ -40,4 +41,4 @@ open governed PRs and does not create another queue.
 - `node docs/brain/workorders/tools/wo-query.mjs --json`
 - exact-scope review, independent assurance, required remote checks, zero unresolved threads
 
-STOP_TYPE: MAO_003_RESERVATION_GATE_READY_FOR_VALIDATION
+STOP_TYPE: MAO_003_RESERVATION_GATE_COMPLETE

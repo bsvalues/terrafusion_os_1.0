@@ -199,7 +199,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-003",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-governance-gate",
       "effective_base_sha": "c46c19735f836907bdbd64755f2d0737105af7f3",
       "terminal_condition": "One exact-scope WO-MAO-003 PR merges, closes without merge, or this decision is revoked",
@@ -243,7 +243,132 @@
         "reservation gate fails to reject the intentional overlap",
         "conflicting owner decision"
       ],
-      "decision_basis": "Issue #1283 and owner decision OWNER-MAO-003-R3-RESERVATION-GATE-20260714"
+      "decision_basis": "Issue #1283 and owner decision OWNER-MAO-003-R3-RESERVATION-GATE-20260714",
+      "completion": {
+        "merged_pr": 1284,
+        "exact_merged_head": "dd268976b93893dbaa731f6eb117491d68d30d11",
+        "merge_commit": "5660f153b810b2c25b04c59b5cfa4e8fa74ae7ed",
+        "evidence": "docs/brain/workorders/evidence/WO-MAO-003-RESERVATION-GATE.md"
+      }
+    },
+    {
+      "id": "OWNER-MAO-004-R3-WAVE-PLANNER-20260714",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-004",
+      "status": "active",
+      "authority_class": "R3-bounded-governance-planner",
+      "effective_base_sha": "5660f153b810b2c25b04c59b5cfa4e8fa74ae7ed",
+      "terminal_condition": "One exact-scope WO-MAO-004 PR merges, closes without merge, or this decision is revoked",
+      "authorized_actions": [
+        "atomically record MAO-003 completion and activate MAO-004",
+        "implement a deterministic read-only executable graph and conflict-free parallel-wave planner",
+        "add planner schema, unit tests, adversarial tests, active Work Order, and evidence",
+        "prepare an inactive durable PROGRAM-MAO-001 continuation envelope for separate owner ratification",
+        "validate, review, assure, and perform one bounded exact-scope Mode B squash merge",
+        "verify origin/main and route to MAO-005 without activating the proposed continuation envelope"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-MAO-003-dispatch-reservation-enforcement.md",
+        "docs/brain/workorders/tools/wo-query.mjs",
+        "docs/brain/workorders/tools/wo-query.test.mjs",
+        "docs/brain/workorders/tools/wo-wave-plan.mjs",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+        "docs/brain/workorders/schema/parallel-wave-plan.schema.json",
+        "docs/brain/workorders/active/WO-MAO-004-executable-graph-parallel-wave-planner.md",
+        "docs/brain/workorders/evidence/WO-MAO-004-EXECUTABLE-GRAPH-PARALLEL-WAVE-PLANNER.md",
+        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "planner dispatch, PR creation, merge execution, or repository mutation",
+        "a second queue or competing Brain",
+        "runtime, backend, frontend, product, package, lockfile, tools-sync, os-platform/core/pilot, CI, workflow, or branch-protection changes",
+        "production, deployment, county, PACS, SQL, credential, secret, protected-data, or live-resource access",
+        "cross-repository allocation before canonical path identity exists",
+        "force push, destructive cleanup, required-gate bypass, portfolio-wide merge authority, or MAO-005 implementation authority"
+      ],
+      "merge_mode": "B-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-gate or exact-head assurance failure",
+        "protected-boundary access",
+        "unresolved reservation collision",
+        "conflicting owner decision"
+      ],
+      "decision_basis": "Issue #1285 and owner decision OWNER-MAO-004-R3-WAVE-PLANNER-20260714"
+    },
+    {
+      "id": "OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE",
+      "program": "PROGRAM-MAO-001",
+      "goal": "GOAL-MAO-001",
+      "loop": "LOOP-MAO-001",
+      "work_order": "WO-MAO-005 through WO-MAO-007",
+      "status": "proposed",
+      "authority_class": "R3-bounded-program-continuation",
+      "activation_condition": "A separate owner decision ratifies this exact envelope after WO-MAO-004 merges",
+      "expires_at": "2026-10-12T23:59:59Z",
+      "terminal_condition": "WO-MAO-007 merges, 2026-10-12T23:59:59Z is reached, a suspension trigger activates, or the owner revokes it",
+      "authorized_actions": [
+        "select conflict-free MAO-005 through MAO-007 waves from the executable planner",
+        "create isolated worktrees and maintain Work Order, PR, exact-head, worker, reservation, and assurance execution state",
+        "dispatch, remediate, update, exact-head assure, and Mode B merge eligible Work Orders within the R3 ceiling",
+        "continue automatically between dependency-cleared Work Orders without per-PR owner approval",
+        "suspend automatically and fail closed when any revocation trigger activates"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "docs/agents/CODEX_MULTI_AGENT_ORCHESTRATOR_PLAYBOOK.md",
+        "docs/agents/CLAUDE_CROSS_REPO_SUITE_WORKER_PLAYBOOK.md",
+        "docs/agents/INDEPENDENT_ASSURANCE_AGENT_PLAYBOOK.md",
+        "docs/agents/PR_CHECK_MONITOR_PLAYBOOK.md",
+        "docs/agents/AGENT_FAILURE_RETRY_REASSIGNMENT_PLAYBOOK.md",
+        "docs/agents/MULTI_AGENT_OPERATOR_BRIEF.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-MAO-005-evidence-informed-agent-playbooks.md",
+        "docs/brain/workorders/active/WO-MAO-006-portfolio-rollout.md",
+        "docs/brain/workorders/active/WO-MAO-007-evidence-rollup-canon-closeout.md",
+        "docs/brain/workorders/evidence/WO-MAO-005-EVIDENCE-INFORMED-AGENT-PLAYBOOKS.md",
+        "docs/brain/workorders/evidence/WO-MAO-006-PORTFOLIO-ROLLOUT.md",
+        "docs/brain/workorders/evidence/WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/governed-multi-agent-operator-activation.md"
+      ],
+      "explicitly_denied": [
+        "runtime, backend, frontend, product, package, lockfile, tools-sync, CI, workflow, branch-protection, or deployment changes",
+        "TerraFusion Constitution, AGENTS.md, CANON_INDEX.md, ADR-EXEC-001, existing docs/adr policy, existing mandatory docs/agents policy, Brain authority hierarchy, or domain-pack changes",
+        "production, county, PACS, SQL, credential, secret, protected-data, or live-resource access",
+        "destructive action, force push, required-gate bypass, cross-repository allocation without canonical path identity, or portfolio-wide unrestricted authority"
+      ],
+      "merge_mode": "B-bounded-program-envelope",
+      "revocation_triggers": [
+        "scope expansion outside the ratified envelope",
+        "protected-boundary access",
+        "failed required check",
+        "unresolved review thread",
+        "exact-head assurance failure",
+        "reservation collision or stale reservation",
+        "conflicting authority",
+        "false completion evidence",
+        "expiration"
+      ],
+      "operator_owned_state": [
+        "Work Order and PR numbers",
+        "exact head SHAs",
+        "reservations and worktrees",
+        "worker and assurance identities",
+        "remediation revisions and merge-ready state"
+      ],
+      "decision_basis": "Owner directive PER_PR_OWNER_GATING_MUST_END; proposal only until separately ratified"
     }
   ]
 }
