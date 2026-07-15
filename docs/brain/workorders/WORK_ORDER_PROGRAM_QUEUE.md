@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-14
+**Date:** 2026-07-15
 **Authority:** WO-MAO-006
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 

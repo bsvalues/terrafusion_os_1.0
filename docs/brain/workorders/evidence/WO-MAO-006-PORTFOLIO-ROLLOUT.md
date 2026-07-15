@@ -23,9 +23,10 @@ it did not fail a required PR check and does not justify reverting the merge.
 | Read-only assurance | Separate role | It does not mutate a worktree and is not counted as a mutable slot. |
 | Spare mutable capacity | Not dispatchable | The envelope authorizes MAO-005 through MAO-007 only, not unrelated portfolio work. |
 
-Three concurrent read-only analyses independently inspected allocation, concurrency/cross-repository
-constraints, and operations/rollback. They modified no files. Their conclusions converged on the
-same one-Brain, R3, same-repository, fail-closed boundary.
+Three concurrent read-only research passes informed allocation, concurrency/cross-repository, and
+operations/rollback drafting. They modified no files. No durable task/result artifact was retained,
+so they are not counted as independent assurance or reproducible program evidence. The formal
+exact-head assurance required before merge remains a separate control.
 
 ## Live Planner And Query Truth
 
