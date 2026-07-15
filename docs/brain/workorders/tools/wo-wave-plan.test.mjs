@@ -558,6 +558,10 @@ describe('wo-wave-plan', () => {
       path.join(root, 'docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md'),
       'utf8'
     );
+    const canonIndex = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/CANON_INDEX.md'),
+      'utf8'
+    );
     const activePlaybook = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md'),
       'utf8'
@@ -575,6 +579,8 @@ describe('wo-wave-plan', () => {
     )?.[1];
     assert.ok(maoGoal);
     assert.match(register, /Closed - PASS_WITH_GAPS/);
+    assert.match(canonIndex, /Completed and closed at WO-MAO-007 with PASS_WITH_GAPS/);
+    assert.doesNotMatch(canonIndex, /MAO program[^\n]*Active program graph/);
     assert.match(activePlaybook, /\| Status \| CLOSED - PASS_WITH_GAPS \|/);
     assert.match(program, /\*\*Status:\*\* Closed - PASS_WITH_GAPS/);
     assert.match(maoGoal, /Use `\/goal portfolio-operator`/);
@@ -616,9 +622,15 @@ describe('wo-wave-plan', () => {
       assert.match(content, /BASELINE_COMPLETE/);
     }
 
-    const closeoutSurfaces = [queue, commandMap, register, activePlaybook, program, maoGoal].join(
-      '\n'
-    );
+    const closeoutSurfaces = [
+      queue,
+      commandMap,
+      canonIndex,
+      register,
+      activePlaybook,
+      program,
+      maoGoal,
+    ].join('\n');
     assert.doesNotMatch(closeoutSurfaces, /WO-MAO-008/);
     assert.doesNotMatch(closeoutSurfaces, /WO-MAO-006[^\n]*(?:ACTIVE|NEXT)/);
     assert.doesNotMatch(closeoutSurfaces, /WO-MAO-007[^\n]*(?:ACTIVE|NEXT)/);

@@ -338,6 +338,7 @@
         "docs/agents/PR_CHECK_MONITOR_PLAYBOOK.md",
         "docs/agents/AGENT_FAILURE_RETRY_REASSIGNMENT_PLAYBOOK.md",
         "docs/agents/MULTI_AGENT_OPERATOR_BRIEF.md",
+        "docs/brain/workorders/CANON_INDEX.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/active/WO-MAO-005-evidence-informed-agent-playbooks.md",
@@ -354,7 +355,7 @@
       ],
       "explicitly_denied": [
         "runtime, backend, frontend, product, package, lockfile, tools-sync, CI, workflow, branch-protection, or deployment changes",
-        "TerraFusion Constitution, AGENTS.md, CANON_INDEX.md, ADR-EXEC-001, existing docs/adr policy, existing mandatory docs/agents policy, Brain authority hierarchy, or domain-pack changes",
+        "TerraFusion Constitution, AGENTS.md, root CANON_INDEX.md, ADR-EXEC-001, existing docs/adr policy, existing mandatory docs/agents policy, Brain authority hierarchy, or domain-pack changes; Amendment 002 permits only the subordinate Work Order CANON_INDEX MAO status reconciliation",
         "production, county, PACS, SQL, credential, secret, protected-data, or live-resource access",
         "destructive action, force push, required-gate bypass, cross-repository allocation without canonical path identity, or portfolio-wide unrestricted authority"
       ],
@@ -384,6 +385,14 @@
           "authorized_file": "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "scope": "canonical PROGRAM-MAO-001 authority and complete/current/next transition assertions through WO-MAO-007",
           "explicitly_denied": "planner behavior and every existing protected boundary remain unchanged"
+        },
+        {
+          "id": "OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE-AMENDMENT-002",
+          "effective_at": "2026-07-15",
+          "authorized_file": "docs/brain/workorders/CANON_INDEX.md",
+          "scope": "PR #1289 closeout reconciliation only: replace the stale active PROGRAM-MAO-001 status and align the closeout assertion",
+          "consumed_by_pr": 1289,
+          "explicitly_denied": "every other CANON_INDEX change, canon hierarchy change, successor-program authority, MAO-008 authority, and existing protected boundary remain unchanged"
         }
       ],
       "decision_basis": "Owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE ratified the exact WO-MAO-004 proposal and directive PER_PR_OWNER_GATING_MUST_END",
