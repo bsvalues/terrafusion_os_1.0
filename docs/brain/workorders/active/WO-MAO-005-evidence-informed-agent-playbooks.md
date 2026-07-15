@@ -6,7 +6,7 @@
 **Base:** `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`
 **Risk:** `R3`
 **Merge mode:** `B-bounded-program-envelope`
-**Status:** In progress
+**Status:** Complete
 
 ## Objective
 
@@ -20,7 +20,17 @@ canon and one-Brain authority.
   and merge commit `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`.
 - Owner decision `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` ratifies the exact proposal on
   that base and is the only active MAO continuation authority.
-- WO-MAO-005 is active; WO-MAO-006 is next.
+- At activation, WO-MAO-005 became active and WO-MAO-006 became next.
+
+## Completion
+
+- PR #1287 merged exact head `3ac224136a162440ea8376c15213c9e46a135fbe` as merge commit
+  `d08dd16ebfde5bd96ee3830a0eb9bff91cce74b8`.
+- The durable transition-test amendment added the canonical MAO-005 through MAO-007 assertions
+  without changing planner behavior.
+- Independent exact-head assurance passed, all review threads were resolved, required checks passed,
+  and the 16 exact reservations remained collision-free.
+- WO-MAO-005 is complete; WO-MAO-006 is active; WO-MAO-007 is next.
 
 ## Completion Contract
 

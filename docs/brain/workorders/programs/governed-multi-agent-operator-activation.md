@@ -4,8 +4,8 @@
 **Goal:** `GOAL-MAO-001`
 **Loop:** `LOOP-MAO-001`
 **Status:** Active
-**Current Work Order:** `WO-MAO-005`
-**Next Work Order:** `WO-MAO-006`
+**Current Work Order:** `WO-MAO-006`
+**Next Work Order:** `WO-MAO-007`
 
 **Source audit:** [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO-000-proof.md)
 
@@ -85,9 +85,9 @@ Unknown historical founder-touch data remains `UNKNOWN`; it is never inferred.
 | `WO-MAO-002` | Run a minimal, falsifiable two-lane pilot. | MAO-001A merged and owner envelope granted once | Two dispatches, two PRs, independent post-merge checks |
 | `WO-MAO-003` | Define reservations and enforce collisions mechanically. | MAO-002 evidence | Mechanical gate rejects intentional overlap and passes after release |
 | `WO-MAO-004` | Compute executable nodes and conflict-free parallel waves. | MAO-003 merged | Deterministic planner evidence |
-| `WO-MAO-005` | Create evidence-informed worker and assurance playbooks. | MAO-004 merged | Rules cite pilot, gate, or controlling doctrine |
-| `WO-MAO-006` | Roll the proven model across the portfolio. | MAO-005 merged | Allocation, concurrency, incident, and rollback evidence |
-| `WO-MAO-007` | Close the program based on measured outcomes. | MAO-006 merged | Final metrics and canon closeout |
+| `WO-MAO-005` | Create evidence-informed worker and assurance playbooks. | MAO-004 merged | COMPLETE - PR #1287 |
+| `WO-MAO-006` | Roll the proven model across the portfolio. | MAO-005 merged | ACTIVE - allocation, concurrency, incident, and rollback evidence |
+| `WO-MAO-007` | Close the program based on measured outcomes. | MAO-006 merged | NEXT - final metrics and canon closeout |
 
 ## MAO-002 Pilot Contract
 
@@ -161,7 +161,7 @@ authority, false evidence, or expiration.
 
 The envelope replaces per-PR owner gating only for eligible remaining MAO Work Orders. It preserves
 explicit denials for runtime, production, county, PACS, SQL, credentials, secrets, destructive
-actions, and unrestricted portfolio authority. MAO-005 is current and MAO-006 is next.
+actions, and unrestricted portfolio authority. MAO-006 is current and MAO-007 is next.
 
 ## Cross-Repository Boundary
 

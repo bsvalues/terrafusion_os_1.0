@@ -9,8 +9,14 @@
 
 MAO-004 is complete through PR #1286 and merge commit
 `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`. The owner ratified the exact continuation-envelope
-proposal on that base. The register now makes the envelope active, MAO-005 current, and MAO-006 next.
-No per-PR owner grant is required for eligible MAO-005 through MAO-007 work.
+proposal on that base. At activation, the register made the envelope active, MAO-005 current, and
+MAO-006 next. No per-PR owner grant is required for eligible MAO-005 through MAO-007 work.
+
+MAO-005 completed through PR #1287 at exact head
+`3ac224136a162440ea8376c15213c9e46a135fbe` and merge commit
+`d08dd16ebfde5bd96ee3830a0eb9bff91cce74b8`. The PR changed 16 authorized files,
+retained 16 collision-free exact-path reservations, passed independent exact-head assurance and
+required checks, and merged with zero unresolved review threads.
 
 ## Evidence-to-Rule Traceability
 
@@ -21,7 +27,7 @@ No per-PR owner grant is required for eligible MAO-005 through MAO-007 work.
 | Independent assurance | MAO-002 assurance | Separate read-only exact-head verdict; any head change invalidates it. |
 | PR check monitor | MAO-002 remediation | Remote truth is head-bound; required failures are not bypassed or reclassified. |
 | Failure/retry/reassignment | MAO-003 lifecycle | Stale/colliding claims require release, renewal, or reciprocal handoff; retries do not route around gates. |
-| Operator brief | MAO-004 planner | Start all eligible conflict-free work; a blocked lane does not freeze unrelated lanes. |
+| Operator brief | MAO-004 planner | Start only planner-selected eligible work within the authorized worker budget; a blocked lane does not freeze unrelated lanes. |
 
 ## Honest Claims
 

@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-14
-**Authority:** WO-MAO-005
+**Authority:** WO-MAO-006
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -19,7 +19,8 @@
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
 touches after bootstrap. PR #1284 then proved mechanical path, contract, and environment reservation
 enforcement. PR #1286 added the read-only executable graph and parallel-wave planner. The ratified
-R3 continuation envelope makes `WO-MAO-005` active and `WO-MAO-006` next.
+R3 continuation envelope closed `WO-MAO-005` in PR #1287, makes `WO-MAO-006` active, and makes
+`WO-MAO-007` next.
 
 ---
 
@@ -34,9 +35,9 @@ R3 continuation envelope makes `WO-MAO-005` active and `WO-MAO-006` next.
 | WO-MAO-002 Minimal Two-Lane Pilot | DONE | PRs #1281 and #1280 merged; independent post-merge assurance PASS; evidence persisted |
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | DONE | PR #1284 merged; intentional overlap rejected and release/handoff recovery proved |
 | WO-MAO-004 Executable Graph / Parallel Wave Planner | DONE | PR #1286 merged; pure planner computes dependency-cleared, reservation-safe bounded waves |
-| **WO-MAO-005 Evidence-Informed Agent Playbooks** | **ACTIVE** | Rules cite pilot, reservation-gate, planner evidence, and controlling doctrine |
-| **WO-MAO-006 Portfolio Rollout** | **NEXT** | Apply the proven model under the ratified R3 continuation envelope |
-| WO-MAO-007 Evidence Rollup and Canon Closeout | QUEUED | Measures founder touches, concurrency, cycle time, and violations |
+| WO-MAO-005 Evidence-Informed Agent Playbooks | DONE | PR #1287 merged six evidence-grounded playbooks plus durable transition assertions |
+| **WO-MAO-006 Portfolio Rollout** | **ACTIVE** | Record bounded allocation, concurrency, cross-repo prerequisites, status, and recovery truth |
+| **WO-MAO-007 Evidence Rollup and Canon Closeout** | **NEXT** | Measure founder touches, concurrency, cycle time, violations, and program outcome |
 
 ### p8-management-dashboard  (`/goal p8-management-dashboard`)
 | WO | State | PR | Notes |
