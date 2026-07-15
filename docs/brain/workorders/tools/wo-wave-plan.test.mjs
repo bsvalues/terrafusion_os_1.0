@@ -277,12 +277,46 @@ describe('wo-wave-plan', () => {
     const plan = planWaves(registry(records), rules, options);
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-023').reasons[0],
-      /protected-path-reservation:backend/
+      /protected-allowed-file:backend/
     );
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-024').reasons[0],
       /protected-resource-reservation:environment:production/
     );
+  });
+
+  it('reconciles path claims with declared scope and blocks denied CI/deployment declarations', () => {
+    const records = [
+      record('WO-TEST-025', { allowedFiles: ['docs/safe/**'] }),
+      record('WO-TEST-026', { allowedFiles: ['.github/actions/**'] }),
+      record('WO-TEST-027', { allowedFiles: ['scripts/deploy/**'] }),
+    ];
+    const options = optionsFor(records);
+    options.reservations.candidateReservations['WO-TEST-025'][0].value = 'docs/outside/**';
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.match(
+      plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-025').reasons[0],
+      /outside declared allowedFiles/
+    );
+    assert.match(
+      plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-026').reasons[0],
+      /protected-allowed-file:\.github\/actions/
+    );
+    assert.match(
+      plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-027').reasons[0],
+      /protected-allowed-file:scripts\/deploy/
+    );
+  });
+
+  it('fails closed on stale candidate reservations', () => {
+    const records = [record('WO-TEST-028')];
+    const options = optionsFor(records);
+    options.reservations.candidateReservations['WO-TEST-028'][0].stale = true;
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.equal(plan.waves.length, 0);
+    assert.match(plan.excludedWorkOrders[0].reasons[0], /candidate reservation.*is stale/);
   });
 
   it('chooses a maximum-cardinality set instead of a priority-only greedy set', () => {
@@ -389,6 +423,15 @@ describe('wo-wave-plan', () => {
         .reasons.includes('invalid-work-order-id')
     );
     assert.deepEqual(plan.initialExecutableSet, ['WO-TEST-079B']);
+
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/parallel-wave-plan.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    assert.equal(validate(plan), true, JSON.stringify(validate.errors));
   });
 
   it('enforces one global search-node limit across projected waves', () => {

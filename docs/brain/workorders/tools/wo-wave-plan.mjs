@@ -31,17 +31,25 @@ const NONBLOCKING_RESERVATION_STATUSES = new Set(['released', 'handed_off']);
 const PATH_META = /[*?[\]]/;
 const WORK_ORDER_ID = /^WO-[A-Z0-9]+-[A-Z0-9-]+$/;
 const PROTECTED_PATH_RESERVATIONS = [
-  { kind: 'path', value: '.github/workflows', scope: 'subtree' },
+  { kind: 'path', value: '.github', scope: 'subtree' },
+  { kind: 'path', value: 'applications', scope: 'subtree' },
   { kind: 'path', value: 'backend', scope: 'subtree' },
+  { kind: 'path', value: 'deploy', scope: 'subtree' },
+  { kind: 'path', value: 'deployment', scope: 'subtree' },
+  { kind: 'path', value: 'docker', scope: 'subtree' },
   { kind: 'path', value: 'frontend', scope: 'subtree' },
+  { kind: 'path', value: 'infra', scope: 'subtree' },
+  { kind: 'path', value: 'infrastructure', scope: 'subtree' },
   { kind: 'path', value: 'os-platform/core/pilot', scope: 'subtree' },
+  { kind: 'path', value: 'packages', scope: 'subtree' },
+  { kind: 'path', value: 'scripts/deploy', scope: 'subtree' },
   { kind: 'path', value: 'tools/sync', scope: 'subtree' },
   { kind: 'path', value: 'package.json', scope: 'exact' },
   { kind: 'path', value: 'pnpm-lock.yaml', scope: 'exact' },
   { kind: 'path', value: 'package-lock.json', scope: 'exact' },
   { kind: 'path', value: 'yarn.lock', scope: 'exact' },
 ];
-const PROTECTED_RESOURCE = /production|prod|county|pacs|secret|credential|live/;
+const PROTECTED_RESOURCE = /production|prod|county|pacs|secret|credential|live|sql|database|deploy/;
 
 function readOptionValue(argv, index, optionName) {
   const value = argv[index + 1];
@@ -228,6 +236,27 @@ function protectedReservationReason(reservation) {
   return null;
 }
 
+function allowedPathReservations(record) {
+  if (!Array.isArray(record.allowedFiles)) {
+    throw new Error(`${record.id}.allowedFiles must be an array`);
+  }
+  return record.allowedFiles.map((value, index) => {
+    const normalized = normalizePath(value, `${record.id}.allowedFiles[${index}]`);
+    return { kind: 'path', ...normalized };
+  });
+}
+
+function reservationWithinAllowedPath(reservation, allowedPath) {
+  if (reservation.kind !== 'path') return true;
+  if (allowedPath.scope === 'exact') {
+    return reservation.scope === 'exact' && reservation.value === allowedPath.value;
+  }
+  return (
+    reservation.value === allowedPath.value ||
+    reservation.value.startsWith(`${allowedPath.value}/`)
+  );
+}
+
 function blockingReservation(reservation) {
   return BLOCKING_RESERVATION_STATUSES.has(reservation.status);
 }
@@ -236,7 +265,7 @@ function reservationKey(reservation) {
   return [reservation.kind, reservation.value, reservation.scope, reservation.status].join(':');
 }
 
-function candidateReservations(record, reservationInput) {
+function candidateReservations(record, reservationInput, allowedPaths) {
   const repository = normalizeIdentifier(reservationInput?.repository, 'reservations.repository');
   const declared = reservationInput?.candidateReservations?.[record.id] ?? [];
   if (!Array.isArray(declared) || declared.length === 0) {
@@ -254,6 +283,9 @@ function candidateReservations(record, reservationInput) {
     if (reservation.status !== 'active') {
       throw new Error(`${record.id} candidate reservation ${reservation.id} must be active`);
     }
+    if (reservation.stale) {
+      throw new Error(`${record.id} candidate reservation ${reservation.id} is stale`);
+    }
     if (reservation.repository !== repository) {
       throw new Error(
         `${record.id} candidate reservation ${reservation.id} repository does not match ${repository}`
@@ -262,6 +294,14 @@ function candidateReservations(record, reservationInput) {
     if (reservation.workOrderId !== record.id) {
       throw new Error(
         `${record.id} candidate reservation ${reservation.id} is bound to ${reservation.workOrderId}`
+      );
+    }
+    if (
+      reservation.kind === 'path' &&
+      !allowedPaths.some(allowedPath => reservationWithinAllowedPath(reservation, allowedPath))
+    ) {
+      throw new Error(
+        `${record.id} candidate reservation ${reservation.id} is outside declared allowedFiles`
       );
     }
   }
@@ -431,6 +471,15 @@ function planWaves(registry, rules, options = {}) {
     }
   }
   const records = registry.records ?? [];
+  if (!Array.isArray(records)) throw new Error('registry.records must be an array');
+  for (const [index, record] of records.entries()) {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) {
+      throw new Error(`registry record ${index} must be an object`);
+    }
+    if (typeof record.id !== 'string' || !record.id.trim()) {
+      throw new Error(`registry record ${index} requires a non-empty string Work Order ID`);
+    }
+  }
   const ids = records.map(record => record.id);
   if (new Set(ids).size !== ids.length)
     throw new Error('registry contains duplicate Work Order IDs');
@@ -479,7 +528,23 @@ function planWaves(registry, rules, options = {}) {
 
     let reservations;
     try {
-      reservations = candidateReservations(record, reservationInput);
+      const allowedPaths = allowedPathReservations(record);
+      const protectedAllowedPath = allowedPaths
+        .map(protectedReservationReason)
+        .find(Boolean);
+      if (protectedAllowedPath) {
+        const reason = protectedAllowedPath.replace(
+          'protected-path-reservation:',
+          'protected-allowed-file:'
+        );
+        excluded.push({
+          workOrderId: record.id,
+          reasons: [reason],
+          explanation: `Excluded: ${reason}.`,
+        });
+        continue;
+      }
+      reservations = candidateReservations(record, reservationInput, allowedPaths);
     } catch (error) {
       const reason = `invalid-reservation:${error instanceof Error ? error.message : String(error)}`;
       excluded.push({

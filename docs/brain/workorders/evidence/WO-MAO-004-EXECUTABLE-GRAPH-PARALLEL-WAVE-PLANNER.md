@@ -75,6 +75,10 @@ The schema is `parallel-wave-plan.schema.json`.
 | Duplicate ID and dependency contradiction rejection | PASS |
 | Dependency cycle isolation | PASS |
 | Unsupported path-glob rejection | PASS |
+| Declared-file scope and reservation-claim reconciliation | PASS |
+| CI/deployment/product protected-boundary rejection | PASS |
+| Stale candidate reservation rejection | PASS |
+| Malformed-ID diagnostic output schema validity | PASS |
 | Missing explicit reservation claims rejected | PASS |
 | Proposed records not dispatched | PASS |
 | Byte stability and no input mutation | PASS |
@@ -84,7 +88,7 @@ Focused command:
 
 ```text
 node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs
-35 tests passed; 0 failed; 0 skipped.
+37 tests passed; 0 failed; 0 skipped.
 ```
 
 Full local proof wall:
