@@ -155,7 +155,11 @@ function hardExclusions(record, authority) {
   if (dependencyReadiness(record) < 1) exclusions.push("dependency-not-cleared");
 
   const allowedText = JSON.stringify(record.allowedSystems ?? []);
-  if (/secret|credential|PACS|county SQL|production deployment|release|destructive/i.test(allowedText)) {
+  if (
+    /secret|credential|PACS|county|production|deploy|release|destructive|runtime|backend|frontend|tools.?sync|CI|workflow|branch.?protection/i.test(
+      allowedText,
+    )
+  ) {
     exclusions.push("protected-system-required");
   }
 

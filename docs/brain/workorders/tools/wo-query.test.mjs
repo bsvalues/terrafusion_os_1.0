@@ -171,7 +171,7 @@ describe("wo-query scoring", () => {
       status: "ready",
       riskClass: "R1",
       dependencies: [],
-      allowedSystems: [{ name: "Production deployment" }],
+      allowedSystems: [{ name: "Production" }],
     };
     const result = scoreRecord(record, rules, "R3");
     assert.equal(result.verdict, "blocked");

@@ -29,6 +29,19 @@ const PROJECTED_COMPLETION_STATUSES = new Set(['complete', 'merged', 'superseded
 const BLOCKING_RESERVATION_STATUSES = new Set(['active']);
 const NONBLOCKING_RESERVATION_STATUSES = new Set(['released', 'handed_off']);
 const PATH_META = /[*?[\]]/;
+const WORK_ORDER_ID = /^WO-[A-Z0-9]+-[A-Z0-9-]+$/;
+const PROTECTED_PATH_RESERVATIONS = [
+  { kind: 'path', value: '.github/workflows', scope: 'subtree' },
+  { kind: 'path', value: 'backend', scope: 'subtree' },
+  { kind: 'path', value: 'frontend', scope: 'subtree' },
+  { kind: 'path', value: 'os-platform/core/pilot', scope: 'subtree' },
+  { kind: 'path', value: 'tools/sync', scope: 'subtree' },
+  { kind: 'path', value: 'package.json', scope: 'exact' },
+  { kind: 'path', value: 'pnpm-lock.yaml', scope: 'exact' },
+  { kind: 'path', value: 'package-lock.json', scope: 'exact' },
+  { kind: 'path', value: 'yarn.lock', scope: 'exact' },
+];
+const PROTECTED_RESOURCE = /production|prod|county|pacs|secret|credential|live/;
 
 function readOptionValue(argv, index, optionName) {
   const value = argv[index + 1];
@@ -200,6 +213,21 @@ function reservationsOverlap(left, right) {
   return reservationCovers(left, right.value) || reservationCovers(right, left.value);
 }
 
+function protectedReservationReason(reservation) {
+  if (
+    reservation.kind === 'path' &&
+    PROTECTED_PATH_RESERVATIONS.some(protectedPath =>
+      reservationsOverlap(reservation, protectedPath)
+    )
+  ) {
+    return `protected-path-reservation:${reservation.value}`;
+  }
+  if (reservation.kind !== 'path' && PROTECTED_RESOURCE.test(reservation.value)) {
+    return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
+  }
+  return null;
+}
+
 function blockingReservation(reservation) {
   return BLOCKING_RESERVATION_STATUSES.has(reservation.status);
 }
@@ -350,11 +378,12 @@ function dependencyContradictions(record, recordById) {
     if (dependency.id === record.id) reasons.push(`self-dependency:${dependency.id}`);
     const referenced = recordById.get(dependency.id);
     if (!referenced) {
-      reasons.push(`missing-dependency:${dependency.id}`);
+      if (dependency.status !== 'waived') reasons.push(`missing-dependency:${dependency.id}`);
       continue;
     }
     if (
       SATISFIED_DEPENDENCY_STATUSES.has(dependency.status) &&
+      dependency.status !== 'waived' &&
       !PROJECTED_COMPLETION_STATUSES.has(referenced.status)
     ) {
       reasons.push(`dependency-state-contradiction:${dependency.id}`);
@@ -424,6 +453,7 @@ function planWaves(registry, rules, options = {}) {
       ...staticExclusions(record, rules, authority),
       ...dependencyContradictions(record, recordById),
     ];
+    if (!WORK_ORDER_ID.test(record.id)) reasons.push('invalid-work-order-id');
     if (record.status !== 'ready' || reasons.length > 0) {
       const normalizedReasons =
         reasons.length > 0
@@ -456,6 +486,15 @@ function planWaves(registry, rules, options = {}) {
         workOrderId: record.id,
         reasons: [reason],
         explanation: `Excluded: ${reason}.`,
+      });
+      continue;
+    }
+    const protectedReason = reservations.map(protectedReservationReason).find(Boolean);
+    if (protectedReason) {
+      excluded.push({
+        workOrderId: record.id,
+        reasons: [protectedReason],
+        explanation: `Excluded: ${protectedReason}.`,
       });
       continue;
     }

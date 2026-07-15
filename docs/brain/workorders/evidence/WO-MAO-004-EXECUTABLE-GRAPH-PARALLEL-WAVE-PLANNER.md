@@ -84,7 +84,7 @@ Focused command:
 
 ```text
 node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs
-32 tests passed; 0 failed; 0 skipped.
+35 tests passed; 0 failed; 0 skipped.
 ```
 
 Full local proof wall:

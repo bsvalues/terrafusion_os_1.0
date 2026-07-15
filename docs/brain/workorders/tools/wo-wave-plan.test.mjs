@@ -265,6 +265,26 @@ describe('wo-wave-plan', () => {
     assert.match(invalidPullRequestPlan.excludedWorkOrders[0].reasons[0], /positive integer/);
   });
 
+  it('rejects protected path and environment reservations regardless of declared risk', () => {
+    const records = [
+      record('WO-TEST-023', { riskClass: 'R1', allowedFiles: ['backend/**'] }),
+      record('WO-TEST-024', { riskClass: 'R1' }),
+    ];
+    const options = optionsFor(records);
+    options.reservations.candidateReservations['WO-TEST-024'] = [
+      { id: 'PROD', kind: 'environment', value: 'production', scope: 'exact' },
+    ];
+    const plan = planWaves(registry(records), rules, options);
+    assert.match(
+      plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-023').reasons[0],
+      /protected-path-reservation:backend/
+    );
+    assert.match(
+      plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-024').reasons[0],
+      /protected-resource-reservation:environment:production/
+    );
+  });
+
   it('chooses a maximum-cardinality set instead of a priority-only greedy set', () => {
     const records = [record('WO-TEST-030'), record('WO-TEST-031'), record('WO-TEST-032')];
     const reservations = {
@@ -348,6 +368,27 @@ describe('wo-wave-plan', () => {
     assert.ok(
       orphanPlan.excludedWorkOrders[0].reasons.includes('missing-dependency:WO-MISSING-001')
     );
+  });
+
+  it('treats an explicit waiver as cleared without requiring predecessor completion', () => {
+    const records = [
+      record('WO-TEST-078', { status: 'blocked' }),
+      record('WO-TEST-079', { dependencies: [{ id: 'WO-TEST-078', status: 'waived' }] }),
+      record('WO-TEST-079A', { dependencies: [{ id: 'WO-MISSING-079', status: 'waived' }] }),
+    ];
+    const plan = planWaves(registry(records), rules, optionsFor(records));
+    assert.deepEqual(plan.initialExecutableSet, ['WO-TEST-079', 'WO-TEST-079A']);
+  });
+
+  it('excludes malformed Work Order IDs without freezing valid work', () => {
+    const records = [record('BAD'), record('WO-TEST-079B')];
+    const plan = planWaves(registry(records), rules, optionsFor(records));
+    assert.ok(
+      plan.excludedWorkOrders
+        .find(item => item.workOrderId === 'BAD')
+        .reasons.includes('invalid-work-order-id')
+    );
+    assert.deepEqual(plan.initialExecutableSet, ['WO-TEST-079B']);
   });
 
   it('enforces one global search-node limit across projected waves', () => {
