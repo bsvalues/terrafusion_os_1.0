@@ -2,6 +2,7 @@
 
 **Program:** `PROGRAM-MAO-001`
 **Work Order:** `WO-MAO-005`
+**Status:** completed reusable baseline; execution requires a new applicable active authority
 
 Retries and reassignments preserve authority, worktree isolation, reservations, and evidence. They
 do not create broader authority.
@@ -29,4 +30,4 @@ do not create broader authority.
 A blocked lane does not freeze unrelated conflict-free waves. The orchestrator may continue other
 eligible nodes while this lane remains safely contained.
 
-STOP_TYPE: AGENT_RETRY_REASSIGNMENT_PLAYBOOK_ACTIVE
+STOP_TYPE: AGENT_RETRY_REASSIGNMENT_PLAYBOOK_BASELINE_COMPLETE

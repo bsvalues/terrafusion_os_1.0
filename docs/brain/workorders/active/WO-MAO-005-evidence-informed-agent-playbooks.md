@@ -18,8 +18,8 @@ canon and one-Brain authority.
 
 - PR #1286 closed WO-MAO-004 at exact head `4ac0c8ea4afcb99264eed84056d480ec356bde98`
   and merge commit `4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9`.
-- Owner decision `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` ratifies the exact proposal on
-  that base and is the only active MAO continuation authority.
+- Owner decision `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` ratified the exact proposal on
+  that base and was the only MAO continuation authority through program closeout.
 - At activation, WO-MAO-005 became active and WO-MAO-006 became next.
 
 ## Completion
@@ -30,7 +30,7 @@ canon and one-Brain authority.
   without changing planner behavior.
 - Independent exact-head assurance passed, all review threads were resolved, required checks passed,
   and the 16 exact reservations remained collision-free.
-- WO-MAO-005 is complete; WO-MAO-006 is active; WO-MAO-007 is next.
+- WO-MAO-005, WO-MAO-006, and WO-MAO-007 are complete; the program is closed with documented gaps.
 
 ## Completion Contract
 
@@ -52,4 +52,4 @@ canon and one-Brain authority.
 - exact authorized-file scope, reservation gate, independent exact-head assurance, required remote
   checks, and zero unresolved threads
 
-STOP_TYPE: MAO_005_EVIDENCE_INFORMED_AGENT_PLAYBOOKS_READY
+STOP_TYPE: MAO_005_EVIDENCE_INFORMED_AGENT_PLAYBOOKS_COMPLETE

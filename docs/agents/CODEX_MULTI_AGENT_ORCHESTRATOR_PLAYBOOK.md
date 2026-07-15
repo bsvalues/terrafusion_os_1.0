@@ -3,7 +3,7 @@
 **Program:** `PROGRAM-MAO-001`
 **Work Order:** `WO-MAO-005`
 **Authority:** `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`
-**Status:** subordinate operating playbook
+**Status:** completed reusable baseline; execution requires a new applicable active authority
 
 This playbook operationalizes existing TerraFusion doctrine. It does not create a second Brain,
 expand authority, or replace the Constitution, root `AGENTS.md`, the canonical Merge Authority
@@ -57,4 +57,4 @@ state, remediation revisions, or routine next-wave routing.
 Use a normal protected revert PR for merged governance changes. Preserve incident, reservation, and
 assurance evidence. Never rewrite `main`.
 
-STOP_TYPE: CODEX_MULTI_AGENT_ORCHESTRATOR_PLAYBOOK_ACTIVE
+STOP_TYPE: CODEX_MULTI_AGENT_ORCHESTRATOR_PLAYBOOK_BASELINE_COMPLETE

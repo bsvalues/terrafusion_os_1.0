@@ -122,7 +122,10 @@ back the valid merge solely for that upload failure.
 
 ## Next
 
-WO-MAO-007 will roll up measured outcomes, classify remaining gaps, complete or suspend the active
-envelope based on evidence, and close the program without inventing a next-wave capability.
+PR #1288 merged exact head `a21e2f28a65329f549c1519c3b41d242504ca48f` as merge commit
+`906976589a32f9da99cb566458da3207ca789590`. Required checks passed, the exact-path reservation gate
+passed, all review feedback was remediated, exact-head assurance passed, and zero unresolved review
+threads remained. WO-MAO-007 rolls up the measured outcomes and closes the program without inventing
+a next-wave capability.
 
 STOP_TYPE: MAO_006_PORTFOLIO_ROLLOUT_EVIDENCE_COMPLETE

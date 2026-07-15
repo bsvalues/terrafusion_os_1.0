@@ -2,7 +2,7 @@
 
 **Program:** `PROGRAM-MAO-001`
 **Work Order:** `WO-MAO-005`
-**Status:** subordinate worker playbook
+**Status:** completed reusable baseline; execution requires a new applicable active authority
 
 Claude Code may execute a bounded suite Work Order only after Codex supplies a canonical repository
 identity, active authority, exact reservation claims, dependency proof, and an isolated worktree.
@@ -44,4 +44,4 @@ bootstrap. MAO-003 proves reservation collision and recovery semantics. MAO-004 
 selection from governed inputs. None of those records authorizes cross-repository work without
 canonical path identity or protected-boundary access.
 
-STOP_TYPE: CLAUDE_CROSS_REPO_WORKER_PLAYBOOK_ACTIVE
+STOP_TYPE: CLAUDE_CROSS_REPO_WORKER_PLAYBOOK_BASELINE_COMPLETE

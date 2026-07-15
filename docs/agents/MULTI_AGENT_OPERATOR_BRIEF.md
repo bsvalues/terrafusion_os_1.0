@@ -1,5 +1,7 @@
 # Multi-Agent Operator Brief
 
+**Status:** completed reusable baseline; execution requires a new applicable active authority
+
 ## Default
 
 Start only planner-selected eligible Work Orders, up to the maximum safe conflict-free wave within
@@ -36,4 +38,4 @@ operator state, not owner tasks.
 - MAO-004: deterministic conflict-free wave planning.
 - MAO-005: these subordinate, evidence-informed operating playbooks.
 
-STOP_TYPE: MULTI_AGENT_OPERATOR_BRIEF_ACTIVE
+STOP_TYPE: MULTI_AGENT_OPERATOR_BRIEF_BASELINE_COMPLETE

@@ -316,7 +316,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-005 through WO-MAO-007",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-program-continuation",
       "activation_condition": "Ratified by owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE after WO-MAO-004 merged",
       "effective_base_sha": "4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9",
@@ -386,7 +386,15 @@
           "explicitly_denied": "planner behavior and every existing protected boundary remain unchanged"
         }
       ],
-      "decision_basis": "Owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE ratified the exact WO-MAO-004 proposal and directive PER_PR_OWNER_GATING_MUST_END"
+      "decision_basis": "Owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE ratified the exact WO-MAO-004 proposal and directive PER_PR_OWNER_GATING_MUST_END",
+      "completion": {
+        "terminal_work_order": "WO-MAO-007",
+        "effective_on_merge": true,
+        "terminal_condition_satisfied": "The exact-scope WO-MAO-007 closeout PR carrying this record merged to main",
+        "authority_consumed": true,
+        "evidence": "docs/brain/workorders/evidence/WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT.md",
+        "merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR"
+      }
     }
   ]
 }

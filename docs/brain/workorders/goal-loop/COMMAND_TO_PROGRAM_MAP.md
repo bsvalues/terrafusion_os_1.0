@@ -42,7 +42,7 @@ resolves.
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
 | `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
-| `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | WO-MAO-006 (ACTIVE); next WO-MAO-007 | NO - ratified R3 continuation envelope covers eligible MAO-005 through MAO-007 work | `once`, `program`, `evidence`, `discovery` |
+| `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | CLOSED at WO-MAO-007; next portfolio reconciliation | YES - status/evidence only; continuation envelope consumed | `once`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
@@ -226,7 +226,7 @@ preselected.
 
 **File:** [programs/governed-multi-agent-operator-activation.md](../programs/governed-multi-agent-operator-activation.md)
 **Goal / loop:** `GOAL-MAO-001` / `LOOP-MAO-001`
-**Current / next:** `WO-MAO-006` is active; `WO-MAO-007` is next.
+**Current / next:** PROGRAM-MAO-001 is closed at `WO-MAO-007`; route to `/goal portfolio-operator`.
 
 | WO | Title | Status |
 |----|-------|--------|
@@ -237,14 +237,13 @@ preselected.
 | WO-MAO-003 | Dispatch/Reservation Contract + Mechanical Gate | COMPLETE |
 | WO-MAO-004 | Executable Graph / Parallel Wave Planner | COMPLETE |
 | WO-MAO-005 | Evidence-Informed Agent Playbooks | COMPLETE |
-| WO-MAO-006 | Portfolio Rollout | **ACTIVE** |
-| WO-MAO-007 | Evidence Rollup and Canon Closeout | **NEXT** |
+| WO-MAO-006 | Portfolio Rollout | COMPLETE |
+| WO-MAO-007 | Evidence Rollup and Canon Closeout | COMPLETE - PASS_WITH_GAPS |
 
-[Mode B](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge) is preauthorized
-operator merge under recorded, revocable, exact-scope authority. The active
-`OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` covers eligible MAO-005 through MAO-007 work and
-assigns mutable execution state to Codex. This route grants no runtime, product, production,
-credential, county, or county-data authority.
+[Mode B](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge) governed the
+eligible MAO-005 through MAO-007 merges. That exact-scope envelope is completed and consumed at
+closeout. The selector is now status/evidence-only and grants no runtime, product, production,
+credential, county, county-data, or future MAO execution authority.
 
 ---
 
