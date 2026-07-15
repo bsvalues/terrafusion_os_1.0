@@ -154,10 +154,9 @@ function hardExclusions(record, authority) {
   if (riskRank(record.riskClass) > riskRank(authority)) exclusions.push("risk-exceeds-authority");
   if (dependencyReadiness(record) < 1) exclusions.push("dependency-not-cleared");
 
-  const blockedText = JSON.stringify(record.blockedSystems ?? []);
   const allowedText = JSON.stringify(record.allowedSystems ?? []);
-  if (/secret|credential|PACS|county SQL|production deployment|release|destructive/i.test(`${blockedText} ${allowedText}`)) {
-    if (riskRank(record.riskClass) >= riskRank("R3")) exclusions.push("protected-system-required");
+  if (/secret|credential|PACS|county SQL|production deployment|release|destructive/i.test(allowedText)) {
+    exclusions.push("protected-system-required");
   }
 
   if (record.status === "unknown") exclusions.push("ambiguous-state");
@@ -284,7 +283,11 @@ function compareByTieBreaker(a, b, tieBreaker, recordById, activeLane) {
 
 function compareCandidates(a, b, rules, recordById, activeLane) {
   if (b.score !== a.score) return b.score - a.score;
-  const tieBreakers = Array.isArray(rules.tieBreakers) ? rules.tieBreakers : [];
+  const tieBreakers = Array.isArray(rules.tieBreakers)
+    ? [...rules.tieBreakers].sort(
+        (left, right) => left.order - right.order || left.id.localeCompare(right.id),
+      )
+    : [];
   for (const tieBreaker of tieBreakers) {
     const result = compareByTieBreaker(a, b, tieBreaker, recordById, activeLane);
     if (result !== 0) return result;
@@ -368,7 +371,16 @@ function printText(summary) {
 }
 
 export {
+  ACTIVE_STATUSES,
+  BLOCKED_STATUSES,
+  COMPLETED_STATUSES,
+  RISK_ORDER,
+  SELECTABLE_STATUSES,
+  TERMINAL_STATUSES,
+  compareCandidates,
   parseArgs,
+  recommendationText,
+  riskRank,
   summarize,
   scoreRecord,
   verdictFor,

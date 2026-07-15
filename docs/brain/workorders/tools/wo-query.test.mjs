@@ -163,6 +163,21 @@ describe("wo-query scoring", () => {
     assert.ok(result.hardExclusions.includes("risk-exceeds-authority"));
   });
 
+  it("blocks protected allowed systems even when the record understates risk", () => {
+    const record = {
+      id: "WO-TEST-009-PROTECTED",
+      title: "Underclassified production work",
+      program: "Test",
+      status: "ready",
+      riskClass: "R1",
+      dependencies: [],
+      allowedSystems: [{ name: "Production deployment" }],
+    };
+    const result = scoreRecord(record, rules, "R3");
+    assert.equal(result.verdict, "blocked");
+    assert.ok(result.hardExclusions.includes("protected-system-required"));
+  });
+
   it("reports blocked work orders without counting terminal or active records", () => {
     const registry = {
       schemaVersion: "0.1.0",
@@ -219,5 +234,33 @@ describe("wo-query scoring", () => {
     const summary = summarize(registry, rules, "R2");
     assert.equal(summary.activeLane, "Active");
     assert.equal(summary.nextRecommendedWorkOrder.workOrderId, "WO-TEST-015-B");
+  });
+
+  it("uses tie-breaker order fields instead of input array order", () => {
+    const reversedRules = { ...rules, tieBreakers: [...rules.tieBreakers].reverse() };
+    const registry = {
+      schemaVersion: "0.1.0",
+      generatedBy: "test",
+      records: [
+        {
+          id: "WO-TEST-017-B",
+          title: "B",
+          program: "Test",
+          status: "ready",
+          riskClass: "R2",
+          dependencies: [],
+        },
+        {
+          id: "WO-TEST-018-A",
+          title: "A",
+          program: "Test",
+          status: "ready",
+          riskClass: "R1",
+          dependencies: [],
+        },
+      ],
+    };
+    const summary = summarize(registry, reversedRules, "R2");
+    assert.equal(summary.nextRecommendedWorkOrder.workOrderId, "WO-TEST-018-A");
   });
 });

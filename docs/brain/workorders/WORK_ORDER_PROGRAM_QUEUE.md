@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-14
-**Authority:** WO-MAO-003
+**Authority:** WO-MAO-004
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,10 +15,10 @@
 
 `governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
 
-`WO-MAO-000` through `WO-MAO-002` are complete. The two-lane pilot merged PRs #1281 and #1280,
+`WO-MAO-000` through `WO-MAO-003` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
-touches after bootstrap. `WO-MAO-003` is active and owns mechanical reservation enforcement; the
-disjoint pilot did not claim that proof.
+touches after bootstrap. PR #1284 then proved mechanical path, contract, and environment reservation
+enforcement. `WO-MAO-004` is active and owns the read-only executable graph and parallel-wave planner.
 
 ---
 
@@ -31,9 +31,9 @@ disjoint pilot did not claim that proof.
 | WO-MAO-001 Governance Reconciliation and Operator-Merge Ratification | DONE | PR #1273 merged at `b936904b76a1593d12e524434e94872f2e9a78fe` |
 | WO-MAO-001A Separate Owner Bootstrap Authority from Operator Execution State | DONE | PR #1274 merged; split owner/bootstrap and operator/execution contract is canonical |
 | WO-MAO-002 Minimal Two-Lane Pilot | DONE | PRs #1281 and #1280 merged; independent post-merge assurance PASS; evidence persisted |
-| **WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate** | **ACTIVE** | Must reject an intentional overlapping reservation and pass after explicit release or handoff |
-| WO-MAO-004 Executable Graph / Parallel Wave Planner | QUEUED | Dependency and conflict-aware dispatch waves |
-| WO-MAO-005 Evidence-Informed Agent Playbooks | QUEUED | Rules must cite pilot/enforcement evidence |
+| WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | DONE | PR #1284 merged; intentional overlap rejected and release/handoff recovery proved |
+| **WO-MAO-004 Executable Graph / Parallel Wave Planner** | **ACTIVE** | Pure planner computes dependency-cleared, reservation-safe bounded waves |
+| **WO-MAO-005 Evidence-Informed Agent Playbooks** | **NEXT** | Rules must cite pilot, reservation-gate, and planner evidence |
 | WO-MAO-006 Portfolio Rollout | QUEUED | Expand only after pilot and mechanical gate evidence |
 | WO-MAO-007 Evidence Rollup and Canon Closeout | QUEUED | Measures founder touches, concurrency, cycle time, and violations |
 

@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://terrafusion.local/schemas/parallel-wave-plan.schema.json",
+  "title": "TerraFusion Parallel Work Order Wave Plan",
+  "description": "Read-only deterministic plan. This artifact does not dispatch workers or grant authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "authority",
+    "registry",
+    "budget",
+    "semantics",
+    "initialExecutableSet",
+    "waves",
+    "excludedWorkOrders"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "mode": { "const": "read-only" },
+    "authority": { "enum": ["R0", "R1", "R2", "R3", "R4", "R5"] },
+    "registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "generatedBy", "recordCount"],
+      "properties": {
+        "schemaVersion": { "type": ["string", "null"] },
+        "generatedBy": { "type": ["string", "null"] },
+        "recordCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxWorkers", "searchNodeLimit", "searchNodesVisited"],
+      "properties": {
+        "maxWorkers": { "type": "integer", "minimum": 1 },
+        "searchNodeLimit": { "type": "integer", "minimum": 1 },
+        "searchNodesVisited": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dependencyProjection",
+        "reservationConflict",
+        "staleReservationBehavior",
+        "sideEffects"
+      ],
+      "properties": {
+        "dependencyProjection": { "type": "string", "minLength": 1 },
+        "reservationConflict": { "type": "string", "minLength": 1 },
+        "staleReservationBehavior": { "type": "string", "minLength": 1 },
+        "sideEffects": { "const": "none" }
+      }
+    },
+    "initialExecutableSet": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^WO-" }
+    },
+    "waves": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/wave" }
+    },
+    "excludedWorkOrders": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/excludedWorkOrder" }
+    }
+  },
+  "$defs": {
+    "reservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "value",
+        "scope",
+        "status",
+        "stale",
+        "handoffValid",
+        "workOrderId",
+        "pullRequest",
+        "repository"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["path", "contract", "environment"] },
+        "value": { "type": "string", "minLength": 1 },
+        "scope": { "enum": ["exact", "subtree"] },
+        "status": { "enum": ["active", "released", "handed_off"] },
+        "stale": { "type": "boolean" },
+        "handoffValid": { "type": "boolean" },
+        "workOrderId": { "type": ["string", "null"] },
+        "pullRequest": { "type": ["integer", "null"], "minimum": 1 },
+        "repository": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "enum": ["contract", "environment"] } },
+            "required": ["kind"]
+          },
+          "then": { "properties": { "scope": { "const": "exact" } } }
+        }
+      ]
+    },
+    "plannedWorkOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workOrderId",
+        "score",
+        "riskClass",
+        "reservations",
+        "explanation"
+      ],
+      "properties": {
+        "workOrderId": { "type": "string", "pattern": "^WO-" },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "riskClass": { "enum": ["R0", "R1", "R2", "R3", "R4", "R5"] },
+        "reservations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/reservation" },
+              {
+                "properties": {
+                  "status": { "const": "active" },
+                  "workOrderId": { "type": "string", "pattern": "^WO-" },
+                  "repository": { "type": "string", "minLength": 1 }
+                }
+              }
+            ]
+          }
+        },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "wave": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wave",
+        "workOrders",
+        "workerBudget",
+        "utilization",
+        "dependencyAssumption"
+      ],
+      "properties": {
+        "wave": { "type": "integer", "minimum": 1 },
+        "workOrders": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/plannedWorkOrder" }
+        },
+        "workerBudget": { "type": "integer", "minimum": 1 },
+        "utilization": { "type": "integer", "minimum": 1 },
+        "dependencyAssumption": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "left", "right", "leftWorkOrder", "rightWorkOrder"],
+      "properties": {
+        "kind": { "enum": ["path", "contract", "environment"] },
+        "left": { "type": "string" },
+        "right": { "type": "string" },
+        "leftWorkOrder": { "type": "string" },
+        "rightWorkOrder": { "type": "string" }
+      }
+    },
+    "excludedWorkOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workOrderId", "reasons", "explanation"],
+      "properties": {
+        "workOrderId": { "type": "string", "pattern": "^WO-" },
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/conflict" }
+        },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

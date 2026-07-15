@@ -42,7 +42,7 @@ resolves.
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
 | `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
-| `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | WO-MAO-003 (ACTIVE); next WO-MAO-004 | NO - mechanical reservation enforcement and intentional-overlap proof remain bounded by the active WO | `once`, `program`, `evidence`, `discovery` |
+| `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | WO-MAO-004 (ACTIVE); next WO-MAO-005 | NO - read-only executable graph and reservation-safe parallel-wave planning are inside the active R3 grant | `once`, `program`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
 
 ---
@@ -226,7 +226,7 @@ preselected.
 
 **File:** [programs/governed-multi-agent-operator-activation.md](../programs/governed-multi-agent-operator-activation.md)
 **Goal / loop:** `GOAL-MAO-001` / `LOOP-MAO-001`
-**Current / next:** `WO-MAO-003` is active; `WO-MAO-004` is next.
+**Current / next:** `WO-MAO-004` is active; `WO-MAO-005` is next.
 
 | WO | Title | Status |
 |----|-------|--------|
@@ -234,8 +234,9 @@ preselected.
 | WO-MAO-001 | Governance Reconciliation and Operator-Merge Ratification | COMPLETE |
 | WO-MAO-001A | Separate Owner Bootstrap Authority from Operator Execution State | COMPLETE |
 | WO-MAO-002 | Minimal Two-Lane Pilot | COMPLETE |
-| WO-MAO-003 | Dispatch/Reservation Contract + Mechanical Gate | **ACTIVE** |
-| WO-MAO-004 | Executable Graph / Parallel Wave Planner | **NEXT** |
+| WO-MAO-003 | Dispatch/Reservation Contract + Mechanical Gate | COMPLETE |
+| WO-MAO-004 | Executable Graph / Parallel Wave Planner | **ACTIVE** |
+| WO-MAO-005 | Evidence-Informed Agent Playbooks | **NEXT** |
 
 [Mode B](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge) is preauthorized
 operator merge under recorded, revocable, exact-scope authority. MAO-002 consumed its two-PR grant;
