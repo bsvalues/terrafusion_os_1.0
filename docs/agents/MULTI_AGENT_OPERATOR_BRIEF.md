@@ -2,9 +2,10 @@
 
 ## Default
 
-Start every Work Order whose dependencies are satisfied, authority is active, risk is within the
-recorded ceiling, and path, contract, repository, and environment reservations do not conflict.
-A blocked lane does not freeze unrelated lanes.
+Start only planner-selected eligible Work Orders, up to the maximum safe conflict-free wave within
+the planner's authorized worker budget. Dependencies must be satisfied, authority active, risk
+within the recorded ceiling, and path, contract, repository, and environment reservations
+conflict-free. A blocked lane does not freeze unrelated lanes.
 
 ## One Brain, Multiple Workers
 

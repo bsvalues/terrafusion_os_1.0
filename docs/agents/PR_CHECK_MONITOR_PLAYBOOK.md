@@ -22,8 +22,10 @@ required input and is never inferred from check success.
    and new exact-head assurance.
 5. Retry only when canon permits and the result is transient. Never bypass a required security scan
    or other required gate.
-6. Report merge-ready only when the PR is non-draft, clean, reservation-safe, required checks are
-   green or canonically acceptable, unresolved threads are zero, and exact-head assurance passes.
+6. Report merge-ready only when authority is active, applicable, unexpired, and non-revoked; the
+   Work Order remains within its risk ceiling and permits the requested merge mode; and the PR is
+   non-draft, clean, reservation-safe, green or canonically acceptable on required checks, at zero
+   unresolved threads, and passing exact-head assurance.
 
 If `main` advances, update only under the recorded branch strategy and rerun the full head-bound
 gate. The monitor cannot convert a stale result into a passing result.

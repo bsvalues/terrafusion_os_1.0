@@ -16,7 +16,10 @@ Before writing, the worker must confirm:
 - the Work Order and risk are inside an active owner envelope;
 - the repository, path, contract, and environment claims are explicit and collision-free;
 - the relevant domain pack and nearest `AGENTS.md` were read;
-- `pwd`, branch, toplevel, status, `HEAD`, and `origin/main` prove a clean isolated worktree;
+- `pwd`, branch, toplevel, status, `HEAD`, and `origin/main` establish clean checkout state but do
+  not prove exclusive worktree use;
+- an active reservation binds both the current worker identity and worktree identity to the
+  permitted claims before the environment is treated as isolated;
 - no protected production, county, PACS, SQL, credential, secret, or live-resource boundary is
   implied.
 
