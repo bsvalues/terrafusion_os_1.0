@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-14
-**Authority:** WO-MAO-004
+**Authority:** WO-MAO-005
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,10 +15,11 @@
 
 `governed-multi-agent-operator-activation` - `GOAL-MAO-001` / `LOOP-MAO-001`.
 
-`WO-MAO-000` through `WO-MAO-003` are complete. The two-lane pilot merged PRs #1281 and #1280,
+`WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
 touches after bootstrap. PR #1284 then proved mechanical path, contract, and environment reservation
-enforcement. `WO-MAO-004` is active and owns the read-only executable graph and parallel-wave planner.
+enforcement. PR #1286 added the read-only executable graph and parallel-wave planner. The ratified
+R3 continuation envelope makes `WO-MAO-005` active and `WO-MAO-006` next.
 
 ---
 
@@ -32,9 +33,9 @@ enforcement. `WO-MAO-004` is active and owns the read-only executable graph and 
 | WO-MAO-001A Separate Owner Bootstrap Authority from Operator Execution State | DONE | PR #1274 merged; split owner/bootstrap and operator/execution contract is canonical |
 | WO-MAO-002 Minimal Two-Lane Pilot | DONE | PRs #1281 and #1280 merged; independent post-merge assurance PASS; evidence persisted |
 | WO-MAO-003 Dispatch/Reservation Contract + Mechanical Gate | DONE | PR #1284 merged; intentional overlap rejected and release/handoff recovery proved |
-| **WO-MAO-004 Executable Graph / Parallel Wave Planner** | **ACTIVE** | Pure planner computes dependency-cleared, reservation-safe bounded waves |
-| **WO-MAO-005 Evidence-Informed Agent Playbooks** | **NEXT** | Rules must cite pilot, reservation-gate, and planner evidence |
-| WO-MAO-006 Portfolio Rollout | QUEUED | Expand only after pilot and mechanical gate evidence |
+| WO-MAO-004 Executable Graph / Parallel Wave Planner | DONE | PR #1286 merged; pure planner computes dependency-cleared, reservation-safe bounded waves |
+| **WO-MAO-005 Evidence-Informed Agent Playbooks** | **ACTIVE** | Rules cite pilot, reservation-gate, planner evidence, and controlling doctrine |
+| **WO-MAO-006 Portfolio Rollout** | **NEXT** | Apply the proven model under the ratified R3 continuation envelope |
 | WO-MAO-007 Evidence Rollup and Canon Closeout | QUEUED | Measures founder touches, concurrency, cycle time, and violations |
 
 ### p8-management-dashboard  (`/goal p8-management-dashboard`)

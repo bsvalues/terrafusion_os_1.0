@@ -257,7 +257,7 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-004",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-governance-planner",
       "effective_base_sha": "5660f153b810b2c25b04c59b5cfa4e8fa74ae7ed",
       "terminal_condition": "One exact-scope WO-MAO-004 PR merges, closes without merge, or this decision is revoked",
@@ -302,7 +302,13 @@
         "unresolved reservation collision",
         "conflicting owner decision"
       ],
-      "decision_basis": "Issue #1285 and owner decision OWNER-MAO-004-R3-WAVE-PLANNER-20260714"
+      "decision_basis": "Issue #1285 and owner decision OWNER-MAO-004-R3-WAVE-PLANNER-20260714",
+      "completion": {
+        "merged_pr": 1286,
+        "exact_merged_head": "4ac0c8ea4afcb99264eed84056d480ec356bde98",
+        "merge_commit": "4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9",
+        "evidence": "docs/brain/workorders/evidence/WO-MAO-004-EXECUTABLE-GRAPH-PARALLEL-WAVE-PLANNER.md"
+      }
     },
     {
       "id": "OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE",
@@ -310,9 +316,11 @@
       "goal": "GOAL-MAO-001",
       "loop": "LOOP-MAO-001",
       "work_order": "WO-MAO-005 through WO-MAO-007",
-      "status": "proposed",
+      "status": "active",
       "authority_class": "R3-bounded-program-continuation",
-      "activation_condition": "A separate owner decision ratifies this exact envelope after WO-MAO-004 merges",
+      "activation_condition": "Ratified by owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE after WO-MAO-004 merged",
+      "effective_base_sha": "4b3c38a8eed9858ed72cc27ffcbd9c0d8456b7c9",
+      "activated_at": "2026-07-15",
       "expires_at": "2026-10-12T23:59:59Z",
       "terminal_condition": "WO-MAO-007 merges, 2026-10-12T23:59:59Z is reached, a suspension trigger activates, or the owner revokes it",
       "authorized_actions": [
@@ -368,7 +376,7 @@
         "worker and assurance identities",
         "remediation revisions and merge-ready state"
       ],
-      "decision_basis": "Owner directive PER_PR_OWNER_GATING_MUST_END; proposal only until separately ratified"
+      "decision_basis": "Owner decision OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE ratified the exact WO-MAO-004 proposal and directive PER_PR_OWNER_GATING_MUST_END"
     }
   ]
 }

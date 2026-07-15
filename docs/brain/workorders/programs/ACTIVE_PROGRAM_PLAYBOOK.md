@@ -96,8 +96,8 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-004` |
-| Next WO | `WO-MAO-005` |
+| Current WO | `WO-MAO-005` |
+| Next WO | `WO-MAO-006` |
 
 ### Purpose
 
@@ -116,8 +116,8 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 | `WO-MAO-001A` | governance correction | One-time owner envelope separated from Codex-maintained PR/SHA/scope/reservation execution state |
 | `WO-MAO-002` | two-lane pilot | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
-| `WO-MAO-004` | planner implementation | Dependency-cleared executable set and conflict-free parallel waves |
-| `WO-MAO-005` | evidence-informed playbooks | Worker and assurance playbooks grounded in pilot and gate evidence |
+| `WO-MAO-004` | planner implementation | COMPLETE - dependency-cleared executable set and conflict-free parallel waves |
+| `WO-MAO-005` | evidence-informed playbooks | ACTIVE - worker and assurance playbooks grounded in pilot, gate, planner, and canon evidence |
 | `WO-MAO-006` | portfolio rollout | Governed concurrency budget and cross-repo allocation |
 | `WO-MAO-007` | evidence rollup | Founder touches, concurrency, cycle time, violations, and closeout |
 
