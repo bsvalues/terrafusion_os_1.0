@@ -535,17 +535,17 @@ describe('wo-wave-plan', () => {
       path.join(root, 'docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md'),
       'utf8'
     );
-    assert.match(queue, /WO-MAO-004[^\n]*DONE/);
-    assert.match(queue, /WO-MAO-005[^\n]*ACTIVE/);
-    assert.match(queue, /WO-MAO-006[^\n]*NEXT/);
+    assert.match(queue, /WO-MAO-005[^\n]*DONE/);
+    assert.match(queue, /WO-MAO-006[^\n]*ACTIVE/);
+    assert.match(queue, /WO-MAO-007[^\n]*NEXT/);
 
     const commandMap = fs.readFileSync(
       path.join(root, 'docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md'),
       'utf8'
     );
-    assert.match(commandMap, /Current \/ next:\*\* `WO-MAO-005` is active; `WO-MAO-006` is next/);
-    assert.match(commandMap, /WO-MAO-004[^\n]*COMPLETE/);
-    assert.match(commandMap, /WO-MAO-005[^\n]*ACTIVE/);
-    assert.match(commandMap, /WO-MAO-006[^\n]*NEXT/);
+    assert.match(commandMap, /Current \/ next:\*\* `WO-MAO-006` is active; `WO-MAO-007` is next/);
+    assert.match(commandMap, /WO-MAO-005[^\n]*COMPLETE/);
+    assert.match(commandMap, /WO-MAO-006[^\n]*ACTIVE/);
+    assert.match(commandMap, /WO-MAO-007[^\n]*NEXT/);
   });
 });

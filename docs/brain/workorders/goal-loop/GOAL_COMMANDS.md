@@ -381,8 +381,8 @@ Success:  The MAO program advances through falsifiable pilot, reservation enforc
           playbook, rollout, and evidence gates without crossing protected boundaries.
 ```
 
-**Current state:** `WO-MAO-004` completed in PR #1286. `WO-MAO-005` is active and creates
-evidence-informed subordinate agent playbooks; `WO-MAO-006` is next.
+**Current state:** `WO-MAO-005` completed in PR #1287. `WO-MAO-006` is active and records the
+bounded portfolio rollout contract and evidence; `WO-MAO-007` is next.
 
 **Mode B:** The canonical
 [Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)

@@ -96,8 +96,8 @@ automatically.
 | Loop | `LOOP-MAO-001` |
 | Program slug | `governed-multi-agent-operator-activation` |
 | Status | ACTIVE |
-| Current WO | `WO-MAO-005` |
-| Next WO | `WO-MAO-006` |
+| Current WO | `WO-MAO-006` |
+| Next WO | `WO-MAO-007` |
 
 ### Purpose
 
@@ -117,9 +117,9 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 | `WO-MAO-002` | two-lane pilot | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
 | `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
 | `WO-MAO-004` | planner implementation | COMPLETE - dependency-cleared executable set and conflict-free parallel waves |
-| `WO-MAO-005` | evidence-informed playbooks | ACTIVE - worker and assurance playbooks grounded in pilot, gate, planner, and canon evidence |
-| `WO-MAO-006` | portfolio rollout | Governed concurrency budget and cross-repo allocation |
-| `WO-MAO-007` | evidence rollup | Founder touches, concurrency, cycle time, violations, and closeout |
+| `WO-MAO-005` | evidence-informed playbooks | COMPLETE - PR #1287 merged bounded worker, assurance, monitoring, retry, and operator rules |
+| `WO-MAO-006` | portfolio rollout | ACTIVE - bounded concurrency, allocation, status, cross-repo prerequisites, and recovery evidence |
+| `WO-MAO-007` | evidence rollup | NEXT - founder touches, concurrency, cycle time, violations, and closeout |
 
 ### Pilot Boundary
 
@@ -143,7 +143,7 @@ canonical repository path. MAO-002 therefore used two disjoint path families in 
 
 MAO-003 is complete in PR #1284, and MAO-004 is complete in PR #1286. Their owner decisions are
 recorded as completed. The ratified `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is the only
-active MAO continuation authority: MAO-005 is current and MAO-006 is next. It removes per-PR owner
+active MAO continuation authority: MAO-006 is current and MAO-007 is next. It removes per-PR owner
 gating only for eligible MAO-005 through MAO-007 work while preserving the R3 ceiling and every
 protected-boundary denial.
 
