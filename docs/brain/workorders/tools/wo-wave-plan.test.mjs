@@ -533,6 +533,7 @@ describe('wo-wave-plan', () => {
     );
     assert.equal(envelope.status, 'completed');
     assert.equal(envelope.completion.terminal_work_order, 'WO-MAO-007');
+    assert.equal(envelope.completion.merged_pr, 1289);
     assert.equal(envelope.completion.authority_consumed, true);
     assert.match(envelope.completion.evidence, /WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT/);
 

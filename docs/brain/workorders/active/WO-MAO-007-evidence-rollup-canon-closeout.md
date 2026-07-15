@@ -18,7 +18,8 @@ unknowns, and route back to portfolio reconciliation without inventing an execut
 
 - PR #1288 closed WO-MAO-006 at exact head `a21e2f28a65329f549c1519c3b41d242504ca48f`
   and merge commit `906976589a32f9da99cb566458da3207ca789590`.
-- This packet marks WO-MAO-006 and WO-MAO-007 complete and PROGRAM-MAO-001 closed.
+- PR #1289 carries this packet and marks WO-MAO-006 and WO-MAO-007 complete and PROGRAM-MAO-001
+  closed when protected merge succeeds.
 - `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE` is completed and consumed when the exact-scope
   PR carrying this atomic transition merges to `main`.
 - No MAO-008 exists, no MAO authority survives, and no unrelated program is preselected.

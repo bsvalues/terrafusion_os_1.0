@@ -22,8 +22,8 @@
 
 Support PRs #1278 and #1279 established worker-plane and routing prerequisites. Their cycle data is
 reported separately from the two pilot implementation PRs. The final WO-MAO-007 PR head and squash
-merge commit are intentionally supplied by GitHub and post-merge verification, not predicted inside
-its own candidate commit.
+merge commit for PR #1289 are intentionally supplied by GitHub and post-merge verification, not
+predicted inside its own candidate commit.
 
 ## Required Measures
 
