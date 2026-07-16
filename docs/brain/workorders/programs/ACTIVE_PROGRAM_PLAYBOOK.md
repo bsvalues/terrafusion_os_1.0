@@ -269,9 +269,8 @@ next-WO selection.
 
 ### Release Engineering Application
 
-Release Engineering is the active lane using this operator-autonomy model. Release Engineering may
-use the local-tooling exception, review-remediation autonomy, authorized docs/governance branch
-updates, and next-WO selection rules defined here while it stays inside its approved scope.
+Release Engineering used this operator-autonomy model and closed at WO-REL-006. The capability
+remains governing doctrine; it does not keep Release Engineering active after closeout.
 
 ### Stop Type
 
@@ -286,9 +285,9 @@ updates, and next-WO selection rules defined here while it stays inside its appr
 | Goal | `GOAL-TF-RELEASE-ENGINEERING-001` |
 | Loop | `LOOP-TF-RELEASE-ENGINEERING-001` |
 | Program slug | `release-engineering` |
-| Status | CLOSING |
-| Current WO | `WO-REL-006` |
-| Next WO | Owner-selected next lane |
+| Status | CLOSED |
+| Current WO | `WO-REL-006` complete |
+| Next WO | Portfolio reconciliation |
 
 ### Purpose
 
@@ -302,8 +301,8 @@ mutation.
 - The Backend OE closeout evidence baseline is `a244743014b4b7731a2694db10bc2e9656876e55`.
 - The Codex Operator Work Order Playbook is merged at
   `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` and governs this lane.
-- Current work is `WO-REL-006 - Release Engineering Evidence Rollup`.
-- Next recommended lane after closeout is DevEx Hook Tooling, owner-selection gated.
+- `WO-REL-006 - Release Engineering Evidence Rollup` is complete.
+- DevEx Hook Bootstrap subsequently closed at `WO-DEVEX-HOOKS-006`.
 
 ### Work Order Chain
 
@@ -528,26 +527,22 @@ from program evidence.
 
 ---
 
-## Portfolio Selection - Brain Operator Activation
+## Portfolio Selection - Current Reconciliation
 
 | Field | Value |
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Brain Operator System |
-| Active goal | `GOAL-BRAIN-OPERATOR-001` |
-| Active loop | `LOOP-BRAIN-OPERATOR-001` |
-| Current WO | Brain Operator evidence baseline **COMPLETE at `WO-BRAIN-009`** (PARTIAL / INTEGRATION GAP) |
-| Next WO | **portfolio reconciliation** — select the next dependency-cleared lane (no lane preselected) |
+| Selected program | None - all registered lanes parked or closed |
+| Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
+| Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
+| Current WO | `WO-PORTFOLIO-002` complete on protected merge |
+| Next WO | None inside current authority; `ALL_LANES_PARKED` |
 
-Portfolio reconciliation excludes completed and walled lanes, then selects the lowest-risk
-dependency-cleared registered node. BRAIN-002 completed the domain-pack audit with candidate-only
-ownership and risk-vocabulary gaps classified. BRAIN-003 reconciled command classes and stale
-routing. BRAIN-004 classified `/goal` as real operator doctrine without a standalone selector engine.
-BRAIN-005 classified `/loop` as real operator procedure without a standalone scheduler. BRAIN-006
-classified memory/provenance as repository-backed but stale and environment-dependent. BRAIN-007
-consolidated agent roles and stop gates without granting new authority. BRAIN-008 now reconciles
-autonomous continuation doctrine.
+WO-PORTFOLIO-002 excludes completed baselines and verifies that the Benton Data Quality audit,
+rollup, credentialed verification, and duplicate cleanup records are already merged. Remaining nodes
+require deployment, runtime, county, credentials, import, promotion, or new program authority. No
+deployment lane is preselected.
 
 ---
 

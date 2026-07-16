@@ -19,13 +19,13 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-15 - WOE-013 report complete on merge; return to portfolio reconciliation)*
+*(Updated 2026-07-15 - WO-PORTFOLIO-002 current-state reconciliation)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
 | [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Closed - PASS_WITH_GAPS; continuation envelope completed and consumed | `WO-MAO-007` complete | Portfolio reconciliation | No MAO continuation authority survives closeout | Future execution requires new applicable authority; protected boundaries remain denied |
-| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Release Engineering lane active | Owner-authorized docs/governance scope under `docs/brain/workorders/**`; operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, local hook bypass without active owner authorization, destructive operations, or conflicting canon |
-| [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closing | `WO-REL-006` | Owner-selected next lane | Auto only through Release Engineering closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |
+| [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Portfolio reconciliation | Operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
+| [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closed | `WO-REL-006` complete | Portfolio reconciliation | No automatic Release Engineering successor after closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |
 | [Codex Operator Work Order Playbook](operator/CODEX_OPERATOR_PLAYBOOK.md) | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` | Closed | `WO-CODEX-OP-001` through `WO-CODEX-OP-009` | Release Engineering lane selected | Operator model governs future WOs | Stop on hook bypass, merge authorization, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Backend Operational Excellence](programs/backend-operational-excellence.md) | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` | Closed | `WO-BACKEND-OE-013` | Owner/WOE lane selection | No auto after closeout | Owner/WOE selects next lane; stop on implementation, infra repair outside standing repair rules, secrets, protected data, or non-docs hook bypass |
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Owner-selection gated | `WO-SYNC-132` | `WO-SYNC-133` | Auto only after owner selects Sync | Stop on Gate 14, forbidden content scan shape, live data, or cross-lane implementation |
@@ -35,9 +35,9 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Closed evidence baseline | `WO-WORKBENCH-011` | New phase only if owner/WOE selects | No auto restart | Owner or WOE selection required |
 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
-| [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Active | `WO-DATA-BENTON-DUPE-001B` | `WO-DATA-BENTON-ADDR-001` | Evidence-only until mutation auth | Stop on data mutation |
-| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Complete on WO-WOE-013 protected merge | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
-| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop | `WO-PORTFOLIO-001` | portfolio reconciliation (brain-operator baseline complete; no lane preselected) | Auto-select dependency-cleared canonical nodes | Stop only when backlog is empty/blocked/protected, strategy conflicts, or canon cannot select |
+| [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Safe audit queue exhausted | Audits, rollup, credentialed verification, and duplicate cleanup complete | New bounded remediation WO only | No automatic continuation | Stop on data mutation, credentials, PACS, sync, or production claims |
+| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Closed at WO-WOE-013 / PR #1291 | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
+| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop; all lanes parked | `WO-PORTFOLIO-002` complete on merge | Owner may reopen one or more recorded walls | Auto-select only dependency-cleared canonical nodes | `ALL_LANES_PARKED`; stop until applicable authority reopens a lane |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active | `WO-AZURE-001` | `WO-AZURE-006` boundary | No auto deploy | Stop on Azure/deployment/county production boundary |
 | [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Packet complete; deployment parked | `WO-P8-MGMT-004` complete | `WO-P8-MGMT-005` at SW-01 or portfolio reconciliation | Park blocked deployment and continue portfolio selection | Stop P8 on deployment authorization; do not freeze unrelated lanes |
@@ -46,13 +46,15 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ---
 
-## Known Blockers (as of 2026-06-30)
+## Known Blockers (as of 2026-07-15)
 
 | Blocker | Blocking | Stop Wall |
 |---------|---------|-----------|
-| PR #1112 auto-merge pending (WO-CONFIG-BENTON-001) | WO-DEPLOY-BENTON-003B | — |
-| WO-DATA-BENTON-DUPE-001B requires data mutation authorization | WO-DATA-BENTON-DUPE-001B | SW-02 |
-| No Azure App Service environment provisioned | WO-DEPLOY-BENTON-003B, WO-AZURE-001 | — |
+| Live deployment / smoke authority is not active | WO-DEPLOY-BENTON-003D, WO-P8-MGMT-005 | SW-01 / SW-04 |
+| New Benton backfill, entitlement mutation, sync, or PACS follow-up needs a bounded packet | Benton Data Quality remediation | SW-02 / SW-03 / SW-08 |
+| Sovereign Sync implementation has not been owner-selected | WO-SYNC-132 | Recorded owner-selection gate |
+| Local OMEN runtime repair remains blocked | WO-LOCAL-093 | SW-09 |
+| Runtime import disposition remains owner-gated | WO-CORE-1 | SW-05 / sovereign boundary |
 | Backend full solution tests depend on Docker/Testcontainers SQL Server lane | Backend release readiness / integration validation | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate criteria defined in WO-BACKEND-OE-009; operational runbook created in WO-BACKEND-OE-010 without Docker repair |
 | Dependency-clean worktrees cannot resolve local Prettier/Vitest before explicit bootstrap | Local PR-finalization before bootstrap | Run the governed frozen bootstrap; unattended runs require `--ignore-scripts` and tracked mutation remains an authority wall |
 | Production deployment NOT authorized | All P1 WOs after 003D | SW-01 |
