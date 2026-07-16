@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-15
-**Authority:** WO-PORTFOLIO-002
+**Date:** 2026-07-16
+**Authority:** WO-AZURE-002
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-Portfolio Operator reconciled the live queue after WO-WOE-013 merged in PR #1291 at
-`14221dbda0e4a916ef4ea2937b1ca82623ead39b`. WO-AZURE-002 is the highest-priority
-dependency-cleared node: documentation of setting key names, source classes, storage posture, and
-ownership only. Deployment is not preselected.
+Portfolio Operator reconciled the live queue in PR #1292 at
+`09f3cb847a503f23b9e64f479c09b9d53cdd04aa`. WO-AZURE-002 completes the committed-evidence
+inventory of setting key names, source classes, storage posture, and ownership. WO-AZURE-003 is the
+next dependency-cleared documentation node. Slot inspection, creation, configuration, swap, and
+deployment are not selected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -115,8 +116,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 |----|-------|-------|
 | WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
-| WO-AZURE-002 App settings and secret inventory | NEXT (R1 docs/evidence) | Key names and ownership only; no values or live inspection |
-| WO-AZURE-003 Deployment slot strategy | QUEUED (R1 docs) | After WO-AZURE-002; no slot creation or mutation |
+| WO-AZURE-002 App settings and secret inventory | DONE ON MERGE | Key names, source classes, storage posture, ownership, and protected gaps; no values or live inspection |
+| WO-AZURE-003 Deployment slot strategy | NEXT (R1 docs) | Policy from committed evidence only; no slot inspection, creation, configuration, swap, or deployment |
 | WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
 | WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
 | WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
@@ -138,9 +139,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | live evidence, credentials, deployment, and county boundary; WO-AZURE-002/003 docs remain safe | `programs/azure-county-runtime.md` |
 
-**Portfolio result:** WO-PORTFOLIO-002 reconciles the stale queue after WOE-013 protected merge and
-selects **WO-AZURE-002** as a bounded R1 docs/evidence node. The selection grants no live Azure,
-secret, configuration, deployment, or county-production authority.
+**Portfolio result:** PR #1292 selects the Azure committed-evidence lane. WO-AZURE-002 completes the
+bounded configuration-name and ownership inventory and routes **WO-AZURE-003** as the next R1
+documentation node. No live Azure, secret, configuration, slot, deployment, or county-production
+authority is granted.
 
 ---
 
