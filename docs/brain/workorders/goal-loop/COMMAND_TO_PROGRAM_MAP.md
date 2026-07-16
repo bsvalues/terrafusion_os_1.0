@@ -192,10 +192,15 @@ owner-authorized runtime promotion WO.
 |----|-------|--------|
 | WO-WOE-001–008 | Registry, scoring, query, goal/loop | DONE/MERGED |
 | WO-WOE-009 | Program Playbook Register | CLOSED — PR #1114 |
-| WO-WOE-010 | Goal/Loop Program Playbook Binding | **EXECUTING** (this WO) |
-| WO-WOE-011 | Operator dashboard / next-WO report | QUEUED |
+| WO-WOE-010 | Goal/Loop Program Playbook Binding | CLOSED |
+| WO-WOE-011 | Full Goal/Loop Operator Playbook | CLOSED |
+| WO-WOE-012 | Autonomous Same-Risk Continuation Gate | CLOSED |
+| WO-WOE-014 | Cross-Program Dependency Graph | DONE |
+| WO-WOE-013 | Program Queue Report | **COMPLETE ON PROTECTED MERGE** |
 
-No active stop walls at WO-WOE-011 (after 010 merges).
+After WO-WOE-013 protected merge, the Work Order Engine baseline is closed and routing returns to
+Portfolio Operator reconciliation. The report remains advisory and does not preselect an executable
+lane.
 
 ---
 
