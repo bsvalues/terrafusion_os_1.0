@@ -13,9 +13,10 @@
 
 ## Active Goal
 
-Portfolio Operator selected `p8-management-dashboard` from the dependency-cleared R1 backlog after
-PROGRAM-MAO-001 closeout. `WO-P8-MGMT-004` is complete in this transition and actual deployment is
-parked at SW-01. The next route is Portfolio Operator reconciliation; no deployment is preselected.
+Portfolio Operator completed `WO-P8-MGMT-004`, parked deployment at SW-01, and reconciled the
+remaining portfolio. Owner authority then selected bounded `WO-WOE-013` implementation. The
+read-only Program Queue Report is complete in this transition; after protected merge the Work Order
+Engine baseline is closed and routing returns to Portfolio Operator reconciliation.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -89,9 +90,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ### work-order-engine  (`/goal work-order-engine`)
 | WO | State |
 |----|-------|
-| WO-WOE-001..010 | DONE |
-| **WO-WOE-011 Full Operator Playbook** | **THIS WO** |
-| WO-WOE-012 Autonomous Same-Risk Continuation Gate → 013 Program Queue UI/Report → 014 Cross-Program Dependency Graph | QUEUED |
+| WO-WOE-001..012 | DONE |
+| WO-WOE-014 Cross-Program Dependency Graph | DONE |
+| **WO-WOE-013 Program Queue Report** | **COMPLETE ON MERGE** - deterministic read-only Markdown report; no frontend route |
 
 ### brain-operator  (`/goal brain-operator`)
 | WO | State |
@@ -126,9 +127,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane result:** P8-MGMT-004 is complete and its deployment successor is parked at
-SW-01. Next action is **portfolio reconciliation** with no deployment preselected. WOE-012 and
-WOE-014 are complete; WOE-013 remains an R2 UI soft wall.
+**Selected bounded lane result:** WOE-013 is complete in this transition. It renders the existing
+registry query as an advisory Markdown report and preserves live-queue provenance. After protected
+merge, next action is **portfolio reconciliation** with no deployment or protected lane preselected.
 
 ---
 

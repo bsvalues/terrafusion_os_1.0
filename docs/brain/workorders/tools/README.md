@@ -1,4 +1,4 @@
-# Work Order Query Tool
+# Work Order Query and Report Tools
 
 `wo-query.mjs` is the first read-only query tool for the TerraFusion Work Order Engine.
 
@@ -37,9 +37,27 @@ Text output is designed for operators. JSON output is designed for future Goal +
 
 The recommendation is advisory. It does not authorize execution, merge, deployment, protected data access, or destructive cleanup.
 
+## Queue Report
+
+`wo-report.mjs` renders the query result as deterministic Markdown on stdout. It adds provenance,
+ranked-candidate, blocked-record, and completed-record sections without writing a report file or
+mutating registry state.
+
+The report deliberately distinguishes its registry projection from live routing. The canonical
+current node remains `WORK_ORDER_PROGRAM_QUEUE.md`, interpreted under `CONTINUATION_RULEBOOK.md` and
+the active authority record.
+
+```powershell
+node docs/brain/workorders/tools/wo-report.mjs
+node docs/brain/workorders/tools/wo-report.mjs --authority R1
+node docs/brain/workorders/tools/wo-report.mjs > .tmp/work-order-report.md
+```
+
 ## Validation
 
 ```powershell
 node --test docs/brain/workorders/tools/wo-query.test.mjs
+node --test docs/brain/workorders/tools/wo-report.test.mjs
 node docs/brain/workorders/tools/wo-query.mjs --json
+node docs/brain/workorders/tools/wo-report.mjs
 ```

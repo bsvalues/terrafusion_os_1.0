@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-15 - P8-MGMT-004 packet complete; deployment parked at SW-01)*
+*(Updated 2026-07-15 - WOE-013 report complete on merge; return to portfolio reconciliation)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -36,7 +36,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Closed evidence baseline | `WO-WORKBENCH-011` | New phase only if owner/WOE selects | No auto restart | Owner or WOE selection required |
 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Active | `WO-DATA-BENTON-DUPE-001B` | `WO-DATA-BENTON-ADDR-001` | Evidence-only until mutation auth | Stop on data mutation |
-| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Active | `WO-WOE-012` | `WO-WOE-013` | Auto within WOE docs/governance | Stop on schema/tooling scope expansion |
+| [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Complete on WO-WOE-013 protected merge | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
 | [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop | `WO-PORTFOLIO-001` | portfolio reconciliation (brain-operator baseline complete; no lane preselected) | Auto-select dependency-cleared canonical nodes | Stop only when backlog is empty/blocked/protected, strategy conflicts, or canon cannot select |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active | `WO-AZURE-001` | `WO-AZURE-006` boundary | No auto deploy | Stop on Azure/deployment/county production boundary |
