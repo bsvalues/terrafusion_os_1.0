@@ -536,13 +536,14 @@ from program evidence.
 | Selected program | Azure / DevOps / County Runtime |
 | Active goal | `/goal azure-county-runtime` |
 | Active loop | `/loop evidence` |
-| Current WO | `WO-AZURE-002` complete on protected merge |
-| Next WO | `WO-AZURE-003 - Deployment slot strategy` (R1 docs/evidence only) |
+| Current WO | `WO-AZURE-003 - Deployment slot strategy` complete on protected merge |
+| Next WO | Portfolio reconciliation; Azure live-evidence successors remain blocked |
 
-PR #1292 reconciles the completed baselines and selects the Azure committed-evidence lane.
-WO-AZURE-002 inventories key names, source classes, storage posture, ownership, and protected gaps
-without values or live access. WO-AZURE-003 may define slot policy from committed evidence only.
-Live Azure, secret values, slot/resource mutation, deployment, and county production remain blocked.
+PR #1292 selected the Azure committed-evidence lane and PR #1293 completed its configuration
+inventory. WO-AZURE-003 selects a blue/green slot policy without live access or mutation. After its
+protected merge, portfolio reconciliation resumes because WO-AZURE-004/005 require authorized live
+evidence. Live Azure, secret values, slot/resource mutation, deployment, and county production remain
+blocked.
 
 ---
 

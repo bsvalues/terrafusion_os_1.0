@@ -92,8 +92,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. PR #1292 selected the Azure
-committed-evidence lane; WO-AZURE-002 routes WO-AZURE-003 as the next bounded documentation node.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The Azure committed-evidence lane
+closes its safe slice at WO-AZURE-003 and routes back to portfolio reconciliation.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -111,9 +111,9 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** WO-AZURE-002 completes committed-evidence configuration-key and ownership
-documentation. WO-AZURE-003 is next for slot policy only. No live slot, deployment, or Azure action
-is selected.
+**Current state:** WO-AZURE-003 defines the slot policy from committed evidence. After protected merge,
+portfolio reconciliation selects another dependency-cleared lane. No live slot, deployment, or Azure
+action is selected.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -428,9 +428,9 @@ File:     programs/azure-county-runtime.md
 Success:  Azure App Service requirements documented; slot strategy defined; rollback runbook exists. No county-facing production boundary until authorized.
 ```
 
-**Current state:** WO-AZURE-002 is complete on protected merge. WO-AZURE-003 is next and may define
-deployment-slot strategy from committed evidence only. It may not inspect, create, configure, swap,
-or deploy a slot.
+**Current state:** WO-AZURE-003 is complete on protected merge. WO-AZURE-004/005 remain blocked on
+authorized live-smoke evidence, so the safe Azure lane returns to portfolio reconciliation. No slot
+inspection, creation, configuration, swap, or deployment is authorized.
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 **Blocked loop modes:** `program` until explicit deploy authorization (WO-AZURE-006 is an authority wall)

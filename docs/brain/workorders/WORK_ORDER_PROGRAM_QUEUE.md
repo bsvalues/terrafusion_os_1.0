@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-16
-**Authority:** WO-AZURE-002
+**Authority:** WO-AZURE-003
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,11 @@
 
 ## Active Goal
 
-Portfolio Operator reconciled the live queue in PR #1292 at
-`09f3cb847a503f23b9e64f479c09b9d53cdd04aa`. WO-AZURE-002 completes the committed-evidence
-inventory of setting key names, source classes, storage posture, and ownership. WO-AZURE-003 is the
-next dependency-cleared documentation node. Slot inspection, creation, configuration, swap, and
-deployment are not selected.
+Portfolio Operator selected the Azure committed-evidence lane in PR #1292. PR #1293 completed the
+configuration-name and ownership inventory at `5f7ffb764daf20c341ab415e47fd3228b66ab5cd`.
+WO-AZURE-003 defines the slot strategy without live Azure access or mutation. On merge, the safe Azure
+documentation slice is exhausted and portfolio reconciliation resumes; blocked live-Azure work is
+not selected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -116,8 +116,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 |----|-------|-------|
 | WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
-| WO-AZURE-002 App settings and secret inventory | DONE ON MERGE | Key names, source classes, storage posture, ownership, and protected gaps; no values or live inspection |
-| WO-AZURE-003 Deployment slot strategy | NEXT (R1 docs) | Policy from committed evidence only; no slot inspection, creation, configuration, swap, or deployment |
+| WO-AZURE-002 App settings and secret inventory | DONE | PR #1293; key names, source classes, storage posture, ownership, and protected gaps |
+| WO-AZURE-003 Deployment slot strategy | DONE ON MERGE | Blue/green policy from committed evidence only; no slot inspection, creation, configuration, swap, or deployment |
 | WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
 | WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
 | WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
@@ -137,12 +137,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | sovereign-sync-workbook-tooling | WO-SYNC-132 implementation | SW-05 / recorded owner-selection gate | no active program authority | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | local-omen-runtime-repair | WO-LOCAL-093 | SW-09 | runtime diagnosis/repair authority required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
-| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | live evidence, credentials, deployment, and county boundary; WO-AZURE-002/003 docs remain safe | `programs/azure-county-runtime.md` |
+| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result:** PR #1292 selects the Azure committed-evidence lane. WO-AZURE-002 completes the
-bounded configuration-name and ownership inventory and routes **WO-AZURE-003** as the next R1
-documentation node. No live Azure, secret, configuration, slot, deployment, or county-production
-authority is granted.
+**Portfolio result:** WO-AZURE-003 completes the bounded Azure committed-evidence lane. After protected
+merge, portfolio reconciliation must select another dependency-cleared program. No live Azure,
+secret, configuration, slot, deployment, or county-production authority is granted.
 
 ---
 

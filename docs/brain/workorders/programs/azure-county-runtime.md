@@ -45,8 +45,8 @@ Keep GitHub, Azure, Azure DevOps, TerraFusion Azure, and county Azure from becom
 | WO | Title | Status | Blocker |
 |----|-------|--------|---------|
 | WO-AZURE-001 | Azure App Service preflight, Benton demo | COMPLETE | PR #1275; committed evidence only |
-| WO-AZURE-002 | App settings and secret inventory | COMPLETE ON MERGE | Committed-evidence inventory; no values or live inspection |
-| WO-AZURE-003 | Deployment slot strategy | **NEXT** | Documentation only; no slot inspection, creation, configuration, swap, or deployment |
+| WO-AZURE-002 | App settings and secret inventory | COMPLETE | PR #1293; committed-evidence inventory only |
+| WO-AZURE-003 | Deployment slot strategy | COMPLETE ON MERGE | Blue/green policy from committed evidence; no live Azure action |
 | WO-AZURE-004 | Observability and log capture | BLOCKED | After authorized 003D smoke |
 | WO-AZURE-005 | Rollback and restart runbook | BLOCKED | After authorized 003D smoke |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED | **Requires explicit operator authorization** |
@@ -82,6 +82,12 @@ claim managed identity, Key Vault, least-privilege principal, rotation, or count
 ## WO-AZURE-003 Definition
 
 **Goal:** Define the slot strategy: production slot (never for demo), staging slot (non-production smoke target), blue/green vs. rolling deployment decision.
+
+**Result:** `docs/data/WO_AZURE_003_DEPLOYMENT_SLOT_STRATEGY.md` selects a blue/green App Service slot
+model for future Benton demo promotion, classifies slot roles and configuration, and defines smoke,
+promotion, and rollback gates. It records that no staging slot or swap behavior is proven. The safe
+Azure docs lane is exhausted after merge; WO-AZURE-004/005 remain blocked on authorized live-smoke
+evidence and portfolio reconciliation selects the next dependency-cleared program.
 
 ---
 
