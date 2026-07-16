@@ -3,7 +3,7 @@
 **Program:** P8  
 **Status:** ACTIVE  
 **Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-07-15
+**Last Updated:** 2026-07-16
 
 ---
 
@@ -45,8 +45,8 @@ Keep GitHub, Azure, Azure DevOps, TerraFusion Azure, and county Azure from becom
 | WO | Title | Status | Blocker |
 |----|-------|--------|---------|
 | WO-AZURE-001 | Azure App Service preflight, Benton demo | COMPLETE | PR #1275; committed evidence only |
-| WO-AZURE-002 | App settings and secret inventory | **NEXT** | Key names, source classes, storage posture, and ownership only |
-| WO-AZURE-003 | Deployment slot strategy | QUEUED | After 002; docs only |
+| WO-AZURE-002 | App settings and secret inventory | COMPLETE ON MERGE | Committed-evidence inventory; no values or live inspection |
+| WO-AZURE-003 | Deployment slot strategy | **NEXT** | Documentation only; no slot inspection, creation, configuration, swap, or deployment |
 | WO-AZURE-004 | Observability and log capture | BLOCKED | After authorized 003D smoke |
 | WO-AZURE-005 | Rollback and restart runbook | BLOCKED | After authorized 003D smoke |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED | **Requires explicit operator authorization** |
@@ -72,6 +72,10 @@ Keep GitHub, Azure, Azure DevOps, TerraFusion Azure, and county Azure from becom
 ## WO-AZURE-002 Definition
 
 **Goal:** Produce the complete app settings and secrets inventory for the Benton demo deployment. For each required key: what is it, where does the value come from, how is it stored (Key Vault reference, App Setting, connection string), and who owns the secret.
+
+**Result:** `docs/data/WO_AZURE_002_APP_SETTINGS_SECRET_INVENTORY.md` records the required key names,
+source classes, current storage evidence, ownership, and protected remediation gaps. It does not
+claim managed identity, Key Vault, least-privilege principal, rotation, or county-production proof.
 
 ---
 

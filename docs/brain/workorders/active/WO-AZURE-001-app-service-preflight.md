@@ -10,7 +10,7 @@
 
 **Risk:** R1 documentation and evidence reconciliation
 
-**Status:** Active
+**Status:** Complete - merged in PR #1275
 
 ## Objective
 

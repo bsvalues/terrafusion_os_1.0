@@ -3,8 +3,8 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-07-07
-**Base:** `origin/main` at `55b53ad97fdf31bd2ac34bdaf13462b5d5206122` or later
+**Last Updated:** 2026-07-16
+**Base:** `origin/main` at `09f3cb847a503f23b9e64f479c09b9d53cdd04aa` or later
 
 ---
 
@@ -536,13 +536,13 @@ from program evidence.
 | Selected program | Azure / DevOps / County Runtime |
 | Active goal | `/goal azure-county-runtime` |
 | Active loop | `/loop evidence` |
-| Current WO | `WO-PORTFOLIO-002` complete on protected merge |
-| Next WO | `WO-AZURE-002 - App settings and secret inventory` (R1 docs/evidence only) |
+| Current WO | `WO-AZURE-002` complete on protected merge |
+| Next WO | `WO-AZURE-003 - Deployment slot strategy` (R1 docs/evidence only) |
 
-WO-PORTFOLIO-002 excludes completed baselines and verifies that the Benton Data Quality audit,
-rollup, credentialed verification, and duplicate cleanup records are already merged. PR #1275 proves
-WO-AZURE-001 complete and routes a safe committed-evidence inventory to WO-AZURE-002. Live Azure,
-secret values, mutation, deployment, and county production remain blocked.
+PR #1292 reconciles the completed baselines and selects the Azure committed-evidence lane.
+WO-AZURE-002 inventories key names, source classes, storage posture, ownership, and protected gaps
+without values or live access. WO-AZURE-003 may define slot policy from committed evidence only.
+Live Azure, secret values, slot/resource mutation, deployment, and county production remain blocked.
 
 ---
 

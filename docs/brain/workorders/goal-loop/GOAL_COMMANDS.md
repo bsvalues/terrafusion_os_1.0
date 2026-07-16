@@ -92,8 +92,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. WO-PORTFOLIO-002 selects
-WO-AZURE-002 as the next bounded docs/evidence node after Work Order Engine closeout.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. PR #1292 selected the Azure
+committed-evidence lane; WO-AZURE-002 routes WO-AZURE-003 as the next bounded documentation node.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -111,8 +111,9 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Portfolio reconciliation selects WO-AZURE-002 for committed-evidence
-configuration-key and ownership documentation. No deployment or live Azure action is selected.
+**Current state:** WO-AZURE-002 completes committed-evidence configuration-key and ownership
+documentation. WO-AZURE-003 is next for slot policy only. No live slot, deployment, or Azure action
+is selected.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -427,7 +428,9 @@ File:     programs/azure-county-runtime.md
 Success:  Azure App Service requirements documented; slot strategy defined; rollback runbook exists. No county-facing production boundary until authorized.
 ```
 
-**Current state:** WO-AZURE-001 is next. Parallel to WO-DEPLOY-BENTON-003B but depends on P1 preflight clearing.
+**Current state:** WO-AZURE-002 is complete on protected merge. WO-AZURE-003 is next and may define
+deployment-slot strategy from committed evidence only. It may not inspect, create, configure, swap,
+or deploy a slot.
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 **Blocked loop modes:** `program` until explicit deploy authorization (WO-AZURE-006 is an authority wall)
