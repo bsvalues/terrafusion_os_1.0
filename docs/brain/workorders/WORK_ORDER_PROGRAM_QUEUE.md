@@ -13,8 +13,9 @@
 
 ## Active Goal
 
-No PROGRAM-MAO-001 goal remains active after this atomic closeout. The next route is a fresh
-Portfolio Operator reconciliation; no product lane is preselected.
+Portfolio Operator selected `p8-management-dashboard` from the dependency-cleared R1 backlog after
+PROGRAM-MAO-001 closeout. `WO-P8-MGMT-004` is complete in this transition and actual deployment is
+parked at SW-01. The next route is Portfolio Operator reconciliation; no deployment is preselected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -46,8 +47,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-P8-MGMT-001 Discovery & Scope Packet | DONE | #1122 merged | Both dashboards already exist |
 | WO-P8-MGMT-002 Local os-shell vs Azure proof | DONE | #1123 queued/merged | Reachability proven |
 | WO-P8-MGMT-003 Sync Doctrine client conformance | DONE | #1125 queued on CI | Single-config now works |
-| **WO-P8-MGMT-004 Frontend Deployment Authorization Packet** | **NEXT** | — | Docs/packet only (R1). NOT deployment |
-| *actual frontend deployment* | WALL | — | **SW-01** — needs authorization |
+| **WO-P8-MGMT-004 Frontend Deployment Authorization Packet** | **DONE** | this PR | Packet records host/config/health/honesty/rollback decision contract; no deployment |
+| WO-P8-MGMT-005 Frontend Deployment Execution | WALL | — | **SW-01** - needs authorization |
 
 ### benton-demo  (`/goal benton-demo`)
 | WO | State | Notes |
@@ -125,9 +126,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 
-**Selected safe lane:** brain-operator evidence baseline is COMPLETE at WO-BRAIN-009; next action is
-**portfolio reconciliation** (no lane preselected). WOE-012 and WOE-014 are complete; WOE-013
-remains an R2 UI soft wall.
+**Selected safe lane result:** P8-MGMT-004 is complete and its deployment successor is parked at
+SW-01. Next action is **portfolio reconciliation** with no deployment preselected. WOE-012 and
+WOE-014 are complete; WOE-013 remains an R2 UI soft wall.
 
 ---
 
