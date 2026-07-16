@@ -4,9 +4,9 @@
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 
 **Program:** P6  
-**Status:** ACTIVE  
+**Status:** COMPLETE ON WO-WOE-013 PROTECTED MERGE
 **Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-06-30
+**Last Updated:** 2026-07-15
 
 ---
 
@@ -34,20 +34,20 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 
 | WO | Title | Status | Evidence |
 |----|-------|--------|---------|
-| WO-WOE-001 | Work Order System Discovery | **DONE/IN FLIGHT** | `docs/brain/workorders/active/WO-0001-*.md` and related |
-| WO-WOE-002 | Work Order Data Model | **DONE/IN FLIGHT** | Codex WO data model commits |
-| WO-WOE-003 | Work Order Registry Seed | **DONE/IN FLIGHT** | WO registry seeded |
-| WO-WOE-004 | Next-WO Scoring Rules | **DONE/IN FLIGHT** | Scoring rules defined |
-| WO-WOE-005 | Read-Only WO Query Tool | **DONE/IN FLIGHT** | Tool available in Brain |
-| WO-WOE-006 | Goal + Loop Integration | **DONE/IN FLIGHT** | PR #1108 merged (docs/brain WOs connect to goal loop) |
-| WO-WOE-007 | Operator Packet / README integration | **MERGE WATCH** | PR #1110 `docs(brain): define work order operator packet` |
+| WO-WOE-001 | Work Order System Discovery | **DONE** | `docs/brain/workorders/active/WO-0001-*.md` and related |
+| WO-WOE-002 | Work Order Data Model | **DONE** | Codex WO data model commits |
+| WO-WOE-003 | Work Order Registry Seed | **DONE** | WO registry seeded |
+| WO-WOE-004 | Next-WO Scoring Rules | **DONE** | Scoring rules defined |
+| WO-WOE-005 | Read-Only WO Query Tool | **DONE** | Tool available in Brain |
+| WO-WOE-006 | Goal + Loop Integration | **DONE** | PR #1108 merged (docs/brain WOs connect to goal loop) |
+| WO-WOE-007 | Operator Packet / README integration | **DONE** | PR #1110 `docs(brain): define work order operator packet` |
 | WO-WOE-008 | Evidence Rollup | **DONE** | PR #1111 merged, commit `150df914f` |
 | WO-WOE-009 | Full Program Playbook Register | **CLOSED** | PR #1114 |
 | WO-WOE-010 | Goal/Loop Program Playbook Binding | **CLOSED** | PR #1117 |
 | WO-WOE-011 | Full Goal/Loop Operator Playbook | **CLOSED** | PR #1130 |
 | WO-WOE-012 | Autonomous Same-Risk Continuation Gate | **CLOSED** | PR #1138 |
-| WO-WOE-013 | Program Queue UI / Report | **SOFT WALL** | "UI" is frontend code (R2) — requires authorization |
-| WO-WOE-014 | Cross-Program Dependency Graph | **EXECUTING** | This PR — authorization→unblocks map |
+| WO-WOE-013 | Program Queue UI / Report | **COMPLETE ON MERGE** | Read-only Markdown report CLI + tests; no frontend route |
+| WO-WOE-014 | Cross-Program Dependency Graph | **DONE** | Canonical authorization-to-unblocks map |
 
 ---
 
@@ -84,13 +84,30 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 
 ---
 
+## WO-WOE-013 Definition
+
+**Goal:** Render the existing query result as an operator-readable report without creating a second
+routing authority or mutating registry state.
+
+**Outputs:**
+- `docs/brain/workorders/tools/wo-report.mjs`
+- `docs/brain/workorders/tools/wo-report.test.mjs`
+- `docs/brain/workorders/evidence/WO-WOE-013-PROGRAM-QUEUE-REPORT.md`
+
+**Boundary:** The report is advisory. `WORK_ORDER_PROGRAM_QUEUE.md` remains the live current-state
+source and `CONTINUATION_RULEBOOK.md` remains the continuation authority. Registry reconciliation is
+not part of this Work Order.
+
+---
+
 ## Dependency Chain
 
 ```
-001-008 (done/in-flight) → 009 (THIS) → 010 → 011
+001-008 → 009 → 010 → 011 → 012 → 014 → 013
 ```
 
-010 and 011 require 009 to be stable (programs defined + statused).
+WO-WOE-013 closes the registered baseline after the continuation gate and dependency graph are
+available. The next route after protected merge is Portfolio Operator reconciliation.
 
 ---
 

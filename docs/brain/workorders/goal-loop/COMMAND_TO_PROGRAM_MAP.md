@@ -40,7 +40,7 @@ resolves.
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
-| `work-order-engine` | P6 | WO-WOE-013 | YES - R2 Program Queue UI soft wall; WOE-012/014 complete | `once`, `evidence` |
+| `work-order-engine` | P6 | CLOSED at WO-WOE-013 on protected merge; next portfolio reconciliation | YES - report baseline complete; no successor preselected | `once`, `evidence`, `discovery` |
 | `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
 | `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | CLOSED at WO-MAO-007; next portfolio reconciliation | YES - status/evidence only; continuation envelope consumed | `once`, `evidence`, `discovery` |
 | `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
