@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-16
-**Authority:** WO-AZURE-003
+**Authority:** WO-PORTFOLIO-003
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,13 @@
 
 ## Active Goal
 
-Portfolio Operator selected the Azure committed-evidence lane in PR #1292. PR #1293 completed the
-configuration-name and ownership inventory at `5f7ffb764daf20c341ab415e47fd3228b66ab5cd`.
-WO-AZURE-003 defines the slot strategy without live Azure access or mutation. On merge, the safe Azure
-documentation slice is exhausted and portfolio reconciliation resumes; blocked live-Azure work is
-not selected.
+WO-PORTFOLIO-003 reconciles the graph after WO-AZURE-003 merged at
+`9a6f8aceb66f5203aa235aed2ea0560e646699a5`. The safe Azure documentation slice is exhausted, and no
+remaining registered node is both dependency-cleared and inside existing authority.
+
+Portfolio state is `ALL_LANES_PARKED`. This is not an owner engineering-dispatch request. The
+operator resumes automatically when a canonical Work Order is admitted or an applicable recorded
+grant clears one of the walls below.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -90,7 +92,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 |----|-------|-------|
 | WO-TERRAPILOT-P1 Tool Maturity Matrix | DONE/PARTIAL | — |
-| WO-TERRAPILOT-P2 Promotion Protocol → P3 Handler Parity → P4 Stub Disclosure → P5 First Real Backend Tool → P6 Evidence Rollup | NEXT/QUEUED | Green contract ≠ live integration |
+| WO-TERRAPILOT-P2 through P15 | DONE / parked baseline | Green contract does not claim live integration |
+| WO-TERRAPILOT-P16 | PARKED | Design/runtime promotion boundary requires explicit authority |
 
 ### work-order-engine  (`/goal work-order-engine`)
 | WO | State |
@@ -126,7 +129,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-15 by WO-PORTFOLIO-002 reconciliation)*
+*(Updated 2026-07-16 by WO-PORTFOLIO-003 reconciliation)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
@@ -139,9 +142,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result:** WO-AZURE-003 completes the bounded Azure committed-evidence lane. After protected
-merge, portfolio reconciliation must select another dependency-cleared program. No live Azure,
-secret, configuration, slot, deployment, or county-production authority is granted.
+**Portfolio result:** `ALL_LANES_PARKED`. No live Azure, secret, configuration, slot, deployment,
+county-production, runtime-repair, product-promotion, protected-data, or sovereign-import authority
+is granted. The operator does not invent a successor or ask the owner to choose routine engineering;
+it resumes when the canonical graph contains an executable node.
 
 ---
 

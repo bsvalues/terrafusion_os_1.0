@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Governing portfolio continuation baseline
+**Status:** Governing portfolio continuation baseline - all registered lanes parked
 
 ## Purpose
 
@@ -39,12 +39,13 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, WO-PORTFOLIO-002 selected
-`WO-AZURE-002 - App settings and secret inventory` as the highest-priority dependency-cleared node.
-PR #1275 completed WO-AZURE-001 and routes configuration key-name, source-class, storage-posture, and
-ownership documentation to WO-AZURE-002 without live Azure or secret access.
+At `origin/main` `9a6f8aceb66f5203aa235aed2ea0560e646699a5`, WO-PORTFOLIO-003 found no
+registered node that is both dependency-cleared and inside existing authority. The Azure safe
+evidence slice is complete; every remaining node is completed or parked at a recorded protected
+boundary.
 
-No deployment lane is preselected. The live result is recorded in
-[`WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md).
+No deployment or runtime lane is preselected. The live result is recorded in
+[`WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md).
+The operator resumes when a canonical node is admitted or an applicable grant clears a wall.
 
-STOP_TYPE: `NEXT_PROGRAM_SELECTED`
+STOP_TYPE: `ALL_LANES_PARKED`
