@@ -92,8 +92,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. The playbook governs continuation,
-and the owner-selected active lane is Release Engineering at `WO-REL-006` closeout.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. WO-PORTFOLIO-002 selects
+WO-AZURE-002 as the next bounded docs/evidence node after Work Order Engine closeout.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -111,8 +111,8 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Release Engineering is closing at `WO-REL-006`; next lane requires owner
-selection.
+**Current state:** Portfolio reconciliation selects WO-AZURE-002 for committed-evidence
+configuration-key and ownership documentation. No deployment or live Azure action is selected.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -131,9 +131,8 @@ Success:  Release Engineering baseline has merged evidence links, validation sum
           and next-lane recommendation.
 ```
 
-**Current state:** `WO-REL-006` closes the Release Engineering docs/governance baseline. After
-closeout, no Release Engineering continuation is automatic; the next recommended lane is DevEx Hook
-Tooling, owner-selection gated.
+**Current state:** Release Engineering is closed at `WO-REL-006`. DevEx Hook Bootstrap subsequently
+closed at `WO-DEVEX-HOOKS-006`; current routing is the WO-PORTFOLIO-002 all-lanes-parked result.
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 
@@ -164,10 +163,12 @@ File:     programs/benton-data-quality.md
 Success:  All open anomaly groups are documented with evidence; cleanup WOs are authorized before execution.
 ```
 
-**Current state:** WO-DATA-BENTON-DUPE-001 investigation CLOSED (PR #1115). Next: WO-DATA-BENTON-DUPE-001B (DELETE 30 rows) — **STOP WALL: data mutation, requires explicit operator authorization.**
+**Current state:** The audit set, sales audit, evidence rollup, credentialed verification, and bounded
+duplicate cleanup are complete in PRs #1115, #1132, #1152, #1156, #1164, and #1166. The safe queue
+is exhausted; any new remediation needs a new bounded WO and applicable protected authority.
 
-**Allowed loop modes:** `evidence`, `discovery`, `once` (for read-only WOs)
-**Blocked loop modes:** `program` (until data-mutation authorization granted for DUPE-001B)
+**Allowed loop modes:** `evidence`, `discovery`
+**Blocked loop modes:** `program` (no registered successor)
 
 ---
 

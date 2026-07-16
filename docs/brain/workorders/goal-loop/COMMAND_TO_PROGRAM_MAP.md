@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-14
+**Last Updated:** 2026-07-15
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -18,11 +18,11 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | Portfolio reconciliation — brain-operator baseline complete at WO-BRAIN-009; select the next dependency-cleared lane (none preselected) | NO | `program`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | WO-AZURE-002 selected by WO-PORTFOLIO-002 | NO - R1 docs/evidence only | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
-| `benton-data-quality` | P2 | WO-DATA-BENTON-DUPE-001B | YES — SW-02 data mutation wall | `evidence`, `discovery` |
+| `benton-data-quality` | P2 | Safe audit queue exhausted; new remediation requires a bounded WO | YES - protected follow-up only | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
 | `backend-start` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - do not restart Backend OE chain | `program` |
 | `backend-status` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - status/evidence only | `evidence`, `discovery` |
@@ -40,10 +40,10 @@ resolves.
 | `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-093 | YES — runtime repair diagnosis gate | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
-| `work-order-engine` | P6 | CLOSED at WO-WOE-013 on protected merge; next portfolio reconciliation | YES - report baseline complete; no successor preselected | `once`, `evidence`, `discovery` |
-| `brain-operator` | Brain Operator System | WO-BRAIN-009 (COMPLETE — evidence baseline, PARTIAL / INTEGRATION GAP) | NO | `once`, `program`, `evidence`, `discovery` |
+| `work-order-engine` | P6 | CLOSED at WO-WOE-013 / PR #1291 | YES - report baseline complete; no successor | `once`, `evidence`, `discovery` |
+| `brain-operator` | Brain Operator System | CLOSED at WO-BRAIN-009 (PARTIAL / INTEGRATION GAP) | YES - evidence baseline complete | `once`, `evidence`, `discovery` |
 | `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | CLOSED at WO-MAO-007; next portfolio reconciliation | YES - status/evidence only; continuation envelope consumed | `once`, `evidence`, `discovery` |
-| `azure-county-runtime` | P8 | WO-AZURE-001 | YES - SW-01 deployment/county boundary | `once`, `evidence`, `discovery` |
+| `azure-county-runtime` | P8 | WO-AZURE-002 | NO - docs/evidence only; live Azure and secrets remain blocked | `once`, `evidence`, `discovery` |
 
 ---
 
@@ -83,21 +83,20 @@ resolves.
 
 | WO | Title | Status | Notes |
 |----|-------|--------|-------|
-| WO-DATA-BENTON-DUPE-001 | Duplicate row investigation | CLOSED | PR #1115 auto-merge queued; 30 anomalous rows documented |
-| WO-DATA-BENTON-DUPE-001B | Delete 30 anomalous rows | **NEXT** | **SW-02 WALL — data mutation, explicit auth required** |
-| WO-DATA-BENTON-ADDR-001 | Address data gap investigation | QUEUED | Read-only; after DUPE-001 |
-| WO-DATA-BENTON-GEOM-001 | Geometry data gap investigation | QUEUED | Read-only |
-| WO-DATA-BENTON-OWNER-001 | Owner data gap investigation | QUEUED | Read-only |
-| WO-DATA-BENTON-EVIDENCE-ROLLUP | Full data quality evidence packet | QUEUED | After all above |
+| WO-DATA-BENTON-DUPE-001 | Duplicate row investigation | CLOSED | PR #1115; 30 anomalous rows documented |
+| WO-DATA-BENTON-ADDR-001 | Address data gap investigation | CLOSED | PR #1132 |
+| WO-DATA-BENTON-GEOM-001 | Geometry data gap investigation | CLOSED | PR #1132 |
+| WO-DATA-BENTON-OWNER-001 | Owner data gap investigation | CLOSED | PR #1132 |
+| WO-DATA-BENTON-IMPR-LAND-001 | Improvements/land gap investigation | CLOSED | PR #1132 |
+| WO-DATA-BENTON-SALE-001 | Sales data quality audit | CLOSED | PR #1156 |
+| WO-DATA-BENTON-EVIDENCE-ROLLUP | Full data quality evidence packet | CLOSED | PR #1152 |
+| WO-DATA-BENTON-QUARANTINE-001 | Credentialed read-only verification | CLOSED | PR #1164; prior SW-03 grant consumed |
+| WO-DATA-BENTON-DUPE-001B | Delete 30 anomalous rows | CLOSED | PR #1166; prior SW-02 grant consumed |
 
-**Active stop walls:** SW-02 at WO-DATA-BENTON-DUPE-001B (explicit operator data-mutation auth required)
+**Active stop walls:** Any new backfill, entitlement mutation, sync, PACS access, or production claim
+requires a new bounded WO and applicable SW-02/SW-03/SW-08 authority.
 
-**Recommended first move:**
-```
-/goal benton-data-quality
-/loop evidence
-```
-— collects remaining evidence on DUPE-001 without advancing to the mutation step.
+**Recommended first move:** None. Return to Portfolio Operator; do not fabricate a successor WO.
 
 ---
 
@@ -259,14 +258,15 @@ credential, county, county-data, or future MAO execution authority.
 
 | WO | Title | Status |
 |----|-------|--------|
-| WO-AZURE-001 | Azure App Service preflight | **NEXT** |
-| WO-AZURE-002 | App settings and secret inventory | QUEUED |
-| WO-AZURE-003 | Deployment slot strategy | QUEUED |
-| WO-AZURE-004 | Observability and log capture | QUEUED |
-| WO-AZURE-005 | Rollback and restart runbook | QUEUED |
+| WO-AZURE-001 | Azure App Service preflight | CLOSED - PR #1275 |
+| WO-AZURE-002 | App settings and secret inventory | **NEXT - R1 docs/evidence only** |
+| WO-AZURE-003 | Deployment slot strategy | QUEUED - R1 docs after 002 |
+| WO-AZURE-004 | Observability and log capture | BLOCKED - requires authorized live-smoke evidence |
+| WO-AZURE-005 | Rollback and restart runbook | BLOCKED - requires authorized live-smoke evidence |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED — **SW-01 + SW-09 wall** |
 
-Active stop walls: SW-01 and SW-09 at WO-AZURE-006.
+Active stop walls: live Azure access, secret values, configuration/resource mutation, deployment,
+and county production. WO-AZURE-002/003 remain committed-evidence documentation only.
 
 ---
 

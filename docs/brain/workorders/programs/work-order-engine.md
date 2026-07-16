@@ -4,7 +4,7 @@
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 
 **Program:** P6  
-**Status:** COMPLETE ON WO-WOE-013 PROTECTED MERGE
+**Status:** CLOSED AT WO-WOE-013 / PR #1291
 **Owner:** Operator (bsvalues@gmail.com)  
 **Last Updated:** 2026-07-15
 
@@ -46,7 +46,7 @@ Make TerraFusion compute "what's next" from evidence, dependencies, risk, PR sta
 | WO-WOE-010 | Goal/Loop Program Playbook Binding | **CLOSED** | PR #1117 |
 | WO-WOE-011 | Full Goal/Loop Operator Playbook | **CLOSED** | PR #1130 |
 | WO-WOE-012 | Autonomous Same-Risk Continuation Gate | **CLOSED** | PR #1138 |
-| WO-WOE-013 | Program Queue UI / Report | **COMPLETE ON MERGE** | Read-only Markdown report CLI + tests; no frontend route |
+| WO-WOE-013 | Program Queue UI / Report | **CLOSED** | PR #1291; read-only Markdown report CLI + tests; no frontend route |
 | WO-WOE-014 | Cross-Program Dependency Graph | **DONE** | Canonical authorization-to-unblocks map |
 
 ---
@@ -106,8 +106,8 @@ not part of this Work Order.
 001-008 → 009 → 010 → 011 → 012 → 014 → 013
 ```
 
-WO-WOE-013 closes the registered baseline after the continuation gate and dependency graph are
-available. The next route after protected merge is Portfolio Operator reconciliation.
+WO-WOE-013 closed the registered baseline in PR #1291 after the continuation gate and dependency
+graph became available. Portfolio reconciliation is recorded by WO-PORTFOLIO-002.
 
 ---
 

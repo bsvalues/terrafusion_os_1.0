@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-15
-**Authority:** WO-MAO-007
+**Authority:** WO-PORTFOLIO-002
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-Portfolio Operator completed `WO-P8-MGMT-004`, parked deployment at SW-01, and reconciled the
-remaining portfolio. Owner authority then selected bounded `WO-WOE-013` implementation. The
-read-only Program Queue Report is complete in this transition; after protected merge the Work Order
-Engine baseline is closed and routing returns to Portfolio Operator reconciliation.
+Portfolio Operator reconciled the live queue after WO-WOE-013 merged in PR #1291 at
+`14221dbda0e4a916ef4ea2937b1ca82623ead39b`. WO-AZURE-002 is the highest-priority
+dependency-cleared node: documentation of setting key names, source classes, storage posture, and
+ownership only. Deployment is not preselected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -62,24 +62,28 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ### benton-data-quality  (`/goal benton-data-quality`)
 | WO | State | Notes |
 |----|-------|-------|
-| WO-DATA-BENTON-DUPE-001 | DONE | Investigation complete |
-| WO-DATA-BENTON-ADDR-001 Address/legal null audit | NEXT (R0 read-only) | Safe |
-| WO-DATA-BENTON-GEOM-001 Geometry availability audit | QUEUED (R0) | Safe |
-| WO-DATA-BENTON-OWNER-001 Owner boundary audit | QUEUED (R0) | Safe |
-| WO-DATA-BENTON-IMPR-LAND-001 Improvements/land gap audit | QUEUED (R0) | Safe |
-| WO-DATA-BENTON-DUPE-001B Delete 30 rows | PARKED | **SW-02** |
+| WO-DATA-BENTON-DUPE-001 | DONE | PR #1115; investigation complete |
+| WO-DATA-BENTON-ADDR-001 Address/legal null audit | DONE | PR #1132 |
+| WO-DATA-BENTON-GEOM-001 Geometry availability audit | DONE | PR #1132 |
+| WO-DATA-BENTON-OWNER-001 Owner boundary audit | DONE | PR #1132 |
+| WO-DATA-BENTON-IMPR-LAND-001 Improvements/land gap audit | DONE | PR #1132 |
+| WO-DATA-BENTON-SALE-001 Sales data audit | DONE | PR #1156 |
+| WO-DATA-BENTON-EVIDENCE-ROLLUP | DONE | PR #1152; safe audit queue exhausted |
+| WO-DATA-BENTON-QUARANTINE-001 Credentialed verification | DONE | PR #1164; prior SW-03 grant consumed |
+| WO-DATA-BENTON-DUPE-001B Delete 30 rows | DONE | PR #1166; prior SW-02 grant consumed |
+| New backfill, entitlement, sync, or protected remediation | PARKED | Requires a new bounded WO and applicable authority |
 
 ### backend-excellence  (`/goal backend-excellence`)
 | WO | State |
 |----|-------|
-| WO-BACKEND-001 Reality Audit → 002 Warning Burn-down → 003 Service Registry → 004 Health/Readiness Truth → 005 Runtime Config Contract → 006 Auth/Security Proof → 007 Release Gate → 008 Operational Packet | QUEUED |
-| Stop for: auth/security policy (SW-10), DB mutation (SW-02), deploy (SW-01) | — |
+| WO-BACKEND-OE-001..013 | DONE - program closed |
+| Any new backend implementation | PARKED - requires a new bounded program/WO authority |
 
 ### property-workbench  (`/goal property-workbench`)
 | WO | State |
 |----|-------|
-| WO-WORKBENCH-001..010 (surface audit → route/tab truth → parcel path → Forge/Atlas/Dais/Dossier/Pilot contracts → reserved-office gating → E2E evidence) | QUEUED |
-| Stop for: product behavior change beyond scope (SW-09), reserved-office → tool-discovery policy | — |
+| WO-WORKBENCH-001..011 | DONE - evidence baseline closed |
+| Any new product phase | PARKED - no automatic restart; new authority required |
 
 ### terrapilot-maturity  (`/goal terrapilot-maturity`)
 | WO | State | Notes |
@@ -92,7 +96,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|
 | WO-WOE-001..012 | DONE |
 | WO-WOE-014 Cross-Program Dependency Graph | DONE |
-| **WO-WOE-013 Program Queue Report** | **COMPLETE ON MERGE** - deterministic read-only Markdown report; no frontend route |
+| **WO-WOE-013 Program Queue Report** | **DONE** - PR #1291; deterministic read-only Markdown report; no frontend route |
 
 ### brain-operator  (`/goal brain-operator`)
 | WO | State |
@@ -110,26 +114,33 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
 |----|-------|-------|
-| WO-AZURE-001+ | QUEUED | Most steps cross SW-01 |
+| WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
+| WO-AZURE-002 App settings and secret inventory | NEXT (R1 docs/evidence) | Key names and ownership only; no values or live inspection |
+| WO-AZURE-003 Deployment slot strategy | QUEUED (R1 docs) | After WO-AZURE-002; no slot creation or mutation |
+| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
+| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
+| WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
 
 ---
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-01 after the 5-lane autonomous run)*
+*(Updated 2026-07-15 by WO-PORTFOLIO-002 reconciliation)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
 | p8-management-dashboard | MGMT-005 frontend deploy | SW-01 / SW-10 | deploy SPA + auth posture | `WO_P8_MGMT_004_*` |
-| benton-data-quality | DUPE-001B (delete 30 rows) | SW-02 | data mutation | `WO_DATA_BENTON_DUPE_001` |
-| benton-data-quality | quarantine classification (owner 87,909 / imprv-attr 1.87M) | SW-03 | credentialed DB read | `WO_DATA_BENTON_{OWNER,IMPR_LAND}_001` |
-| backend-excellence | BACKEND-004/005/006 | SW-09 / SW-10 | health/config/auth code + GIT_SHA | `WO_BACKEND_001_*` |
-| property-workbench | SPA deploy / pilot runtime / reserved-office | SW-01 / SW-09 / SW-10 | reachability + runtime + auth | `WO_WORKBENCH_001_010_*` |
+| benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
+| benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
+| sovereign-sync-workbook-tooling | WO-SYNC-132 implementation | SW-05 / recorded owner-selection gate | no active program authority | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
+| local-omen-runtime-repair | WO-LOCAL-093 | SW-09 | runtime diagnosis/repair authority required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
+| runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
+| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | live evidence, credentials, deployment, and county boundary; WO-AZURE-002/003 docs remain safe | `programs/azure-county-runtime.md` |
 
-**Selected bounded lane result:** WOE-013 is complete in this transition. It renders the existing
-registry query as an advisory Markdown report and preserves live-queue provenance. After protected
-merge, next action is **portfolio reconciliation** with no deployment or protected lane preselected.
+**Portfolio result:** WO-PORTFOLIO-002 reconciles the stale queue after WOE-013 protected merge and
+selects **WO-AZURE-002** as a bounded R1 docs/evidence node. The selection grants no live Azure,
+secret, configuration, deployment, or county-production authority.
 
 ---
 

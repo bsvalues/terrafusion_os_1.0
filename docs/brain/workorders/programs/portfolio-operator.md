@@ -33,22 +33,18 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 
 `NEXT_PROGRAM_SELECTION_REQUIRED` is not a valid stop when an executable canonical node exists.
 
-## Current Selection
+## Current Reconciliation
 
 > **Snapshot, not live routing (CONTINUATION_RULEBOOK §7).** This section records the selection at a point
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `d0e8eb57bec3b34f5f52b68dd9b468c7ce3ab008`, the lowest-risk executable node is
-`WO-BRAIN-009 - Brain Operator integration evidence / closeout`:
+At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, WO-PORTFOLIO-002 selected
+`WO-AZURE-002 - App settings and secret inventory` as the highest-priority dependency-cleared node.
+PR #1275 completed WO-AZURE-001 and routes configuration key-name, source-class, storage-posture, and
+ownership documentation to WO-AZURE-002 without live Azure or secret access.
 
-- Brain Operator System has advanced through `WO-BRAIN-008`; `WO-BRAIN-001` … `WO-BRAIN-008` are all
-  complete (`WO-BRAIN-001` in PR #1140, `WO-BRAIN-005` in PR #1265, `WO-BRAIN-008` produced the canonical
-  `CONTINUATION_RULEBOOK.md`). `WO-BRAIN-009` is the current dependency-cleared node with merged
-  prerequisites and no active wall.
-- DevEx Hook Bootstrap is complete through `WO-DEVEX-HOOKS-006`; Work Order Engine WOE-012 and WOE-014
-  are complete, WOE-013 is an R2 UI soft wall.
-- Deployment, county runtime, data mutation, TerraPilot promotion, runtime import, and product
-  behavior lanes remain parked at explicit walls.
+No deployment lane is preselected. The live result is recorded in
+[`WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md).
 
 STOP_TYPE: `NEXT_PROGRAM_SELECTED`

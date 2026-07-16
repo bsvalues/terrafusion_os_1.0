@@ -1,9 +1,9 @@
 # P2 — Benton Data Quality
 
 **Program:** P2  
-**Status:** ACTIVE  
-**Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-06-30
+**Status:** SAFE AUDIT QUEUE EXHAUSTED
+**Owner:** Operator (bsvalues@gmail.com)
+**Last Updated:** 2026-07-15
 
 ---
 
@@ -30,12 +30,15 @@ Separate real Benton County data quality issues from app/config problems. Each W
 
 | WO | Title | Status | Blocker |
 |----|-------|--------|---------|
-| WO-DATA-BENTON-DUPE-001 | Investigate 84,418 raw rows vs 84,388 distinct parcels | **NEXT** | None |
-| WO-DATA-BENTON-ADDR-001 | Address/legalDescription null-field audit | QUEUED | None |
-| WO-DATA-BENTON-GEOM-001 | Geometry endpoint/data availability decision | QUEUED | None |
-| WO-DATA-BENTON-OWNER-001 | Owner endpoint/data boundary decision | QUEUED | None |
-| WO-DATA-BENTON-IMPR-LAND-001 | Improvements/land endpoint gap audit | QUEUED | None |
-| WO-DATA-BENTON-EVIDENCE-ROLLUP | Data truth packet for demo/prototype/release decisions | QUEUED | All above |
+| WO-DATA-BENTON-DUPE-001 | Investigate 84,418 raw rows vs 84,388 distinct parcels | COMPLETE | PR #1115 |
+| WO-DATA-BENTON-ADDR-001 | Address/legalDescription null-field audit | COMPLETE | PR #1132 |
+| WO-DATA-BENTON-GEOM-001 | Geometry endpoint/data availability decision | COMPLETE | PR #1132 |
+| WO-DATA-BENTON-OWNER-001 | Owner endpoint/data boundary decision | COMPLETE | PR #1132 |
+| WO-DATA-BENTON-IMPR-LAND-001 | Improvements/land endpoint gap audit | COMPLETE | PR #1132 |
+| WO-DATA-BENTON-SALE-001 | Sales data quality audit | COMPLETE | PR #1156 |
+| WO-DATA-BENTON-EVIDENCE-ROLLUP | Data truth packet for demo/prototype/release decisions | COMPLETE | PR #1152 |
+| WO-DATA-BENTON-QUARANTINE-001 | Credentialed read-only verification | COMPLETE | PR #1164; prior SW-03 grant consumed |
+| WO-DATA-BENTON-DUPE-001B | Delete 30 anomalous rows | COMPLETE | PR #1166; prior SW-02 grant consumed |
 
 ---
 
@@ -117,12 +120,15 @@ OWNER-001 ─┤
 IMPR-001  ─┘
 ```
 
-WOs in this program can run in parallel — no cross-dependency within P2. EVIDENCE-ROLLUP requires all others complete.
+The original audit WOs could run in parallel; the evidence rollup required them all. That chain is
+complete. Any new backfill, entitlement mutation, sync pass, PACS access, or production claim requires
+a new bounded Work Order and applicable authority.
 
 ---
 
 ## Stop Conditions
 
-- Any investigation WO that finds data corruption requiring PACS reload must stop and escalate to operator
+- Any new WO that requires PACS reload, credential use, or data mutation must stop unless exact
+  authority is already recorded
 - Do not run a new sync pass without operator authorization
 - Do not connect PACS in any investigation WO
