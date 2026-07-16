@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-16 - WO-AZURE-002 app-setting and secret inventory)*
+*(Updated 2026-07-16 - WO-AZURE-003 deployment slot strategy)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -37,9 +37,9 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Safe audit queue exhausted | Audits, rollup, credentialed verification, and duplicate cleanup complete | New bounded remediation WO only | No automatic continuation | Stop on data mutation, credentials, PACS, sync, or production claims |
 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Closed at WO-WOE-013 / PR #1291 | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
-| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop | `WO-PORTFOLIO-002` complete in PR #1292 | `WO-AZURE-003` after WO-AZURE-002 merge | Auto-select only dependency-cleared canonical nodes | Stop on live Azure, secrets, mutation, deployment, county, or production scope |
+| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Governing selection loop | `WO-PORTFOLIO-002` complete in PR #1292 | Portfolio reconciliation after WO-AZURE-003 | Auto-select only dependency-cleared canonical nodes | Stop on live Azure, secrets, mutation, deployment, county, or production scope |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
-| [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Active docs/evidence lane | `WO-AZURE-003` | `WO-AZURE-004/005` blocked on authorized live evidence | Auto only through committed-evidence documentation | Stop on live Azure, secret values, resource/config mutation, deployment, or county production |
+| [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Safe docs/evidence slice complete on WO-AZURE-003 merge | `WO-AZURE-003` complete on merge | Portfolio reconciliation; `WO-AZURE-004/005` remain blocked | No automatic live-Azure continuation | Stop on live Azure, secret values, resource/config mutation, deployment, or county production |
 | [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Packet complete; deployment parked | `WO-P8-MGMT-004` complete | `WO-P8-MGMT-005` at SW-01 or portfolio reconciliation | Park blocked deployment and continue portfolio selection | Stop P8 on deployment authorization; do not freeze unrelated lanes |
 
 **Active program graph:** [TerraFusion Active Goal/Loop Execution Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)

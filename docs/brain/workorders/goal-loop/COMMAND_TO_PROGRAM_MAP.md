@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | WO-AZURE-003 after WO-AZURE-002 protected merge | NO - R1 docs/evidence only | `program`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | Portfolio reconciliation after WO-AZURE-003 protected merge | NO - read-only portfolio selection | `program`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
@@ -43,7 +43,7 @@ resolves.
 | `work-order-engine` | P6 | CLOSED at WO-WOE-013 / PR #1291 | YES - report baseline complete; no successor | `once`, `evidence`, `discovery` |
 | `brain-operator` | Brain Operator System | CLOSED at WO-BRAIN-009 (PARTIAL / INTEGRATION GAP) | YES - evidence baseline complete | `once`, `evidence`, `discovery` |
 | `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | CLOSED at WO-MAO-007; next portfolio reconciliation | YES - status/evidence only; continuation envelope consumed | `once`, `evidence`, `discovery` |
-| `azure-county-runtime` | P8 | WO-AZURE-003 | NO - docs/evidence only; live Azure, slots, and secrets remain blocked | `once`, `evidence`, `discovery` |
+| `azure-county-runtime` | P8 | SAFE DOCS SLICE COMPLETE at WO-AZURE-003 | YES - live Azure successors blocked; return to portfolio reconciliation | `once`, `evidence`, `discovery` |
 
 ---
 
@@ -259,14 +259,14 @@ credential, county, county-data, or future MAO execution authority.
 | WO | Title | Status |
 |----|-------|--------|
 | WO-AZURE-001 | Azure App Service preflight | CLOSED - PR #1275 |
-| WO-AZURE-002 | App settings and secret inventory | COMPLETE ON MERGE - committed-evidence inventory only |
-| WO-AZURE-003 | Deployment slot strategy | **NEXT - R1 docs from committed evidence only** |
+| WO-AZURE-002 | App settings and secret inventory | COMPLETE - PR #1293 |
+| WO-AZURE-003 | Deployment slot strategy | COMPLETE ON MERGE - blue/green policy only |
 | WO-AZURE-004 | Observability and log capture | BLOCKED - live-smoke evidence requires authorization |
 | WO-AZURE-005 | Rollback and restart runbook | BLOCKED - live-smoke evidence requires authorization |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED — **SW-01 + SW-09 wall** |
 
 Active stop walls: live Azure access, secret values, slot/configuration/resource mutation,
-deployment, and county production. WO-AZURE-003 remains committed-evidence documentation only.
+deployment, and county production. With WO-AZURE-003 complete, route to portfolio reconciliation.
 
 ---
 

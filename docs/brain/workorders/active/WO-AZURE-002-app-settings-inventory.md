@@ -10,7 +10,7 @@
 
 **Risk:** R1 documentation and committed-evidence reconciliation
 
-**Status:** Complete on protected merge
+**Status:** Complete - PR #1293 merged at `5f7ffb764daf20c341ab415e47fd3228b66ab5cd`
 
 ## Objective
 
