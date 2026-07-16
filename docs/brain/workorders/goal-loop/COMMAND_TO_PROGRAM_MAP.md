@@ -261,8 +261,8 @@ credential, county, county-data, or future MAO execution authority.
 | WO-AZURE-001 | Azure App Service preflight | CLOSED - PR #1275 |
 | WO-AZURE-002 | App settings and secret inventory | COMPLETE ON MERGE - committed-evidence inventory only |
 | WO-AZURE-003 | Deployment slot strategy | **NEXT - R1 docs from committed evidence only** |
-| WO-AZURE-004 | Observability and log capture | BLOCKED - requires authorized live-smoke evidence |
-| WO-AZURE-005 | Rollback and restart runbook | BLOCKED - requires authorized live-smoke evidence |
+| WO-AZURE-004 | Observability and log capture | BLOCKED - live-smoke evidence requires authorization |
+| WO-AZURE-005 | Rollback and restart runbook | BLOCKED - live-smoke evidence requires authorization |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED — **SW-01 + SW-09 wall** |
 
 Active stop walls: live Azure access, secret values, slot/configuration/resource mutation,

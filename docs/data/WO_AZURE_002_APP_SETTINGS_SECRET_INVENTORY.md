@@ -29,6 +29,7 @@ absent. Those are protected remediation items, not permissions granted by this w
 |---|---|
 | EVIDENCED | Committed deployment evidence records the key as configured without disclosing a value |
 | EVIDENCED-WITH-GAP | The key is recorded, but its current storage or provenance has a material gap |
+| CONFIGURED-NOT-CONSUMED | Deployment evidence records the key, but current source does not bind it to the claimed runtime control |
 | REQUIRED-NOT-PROVEN | The key is required by committed preflight or runtime evidence but configuration is not proven |
 | OPTIONAL-DEFERRED | The key or family is intentionally omitted or deferred for the Benton demo |
 | PROTECTED | Any value, live verification, or remediation crosses a separate authority boundary |
@@ -59,10 +60,11 @@ No values are reproduced below.
 | `RuntimeTruth__ExpectedJune10Provider` | Validate expected database provider | Committed deployment/configuration evidence | App Service application setting | TerraFusion data-platform operator | EVIDENCED |
 | `Workbench__Evidence__HmacKey` | Sign Workbench evidence artifacts | Protected evidence-signing material | Undisclosed App Service application setting | TerraFusion security/evidence operator; county-production owner not established | EVIDENCED |
 | `Workbench__Evidence__KeyId` | Identify the active evidence-signing key | Evidence-signing metadata | App Service application setting | TerraFusion security/evidence operator | EVIDENCED |
-| `Security__RequireHttps` | Enforce HTTPS behavior | Application security policy | App Service application setting | TerraFusion security operator | EVIDENCED |
-| `Security__EnableRateLimiting` | Enable request-rate controls | Application security policy | App Service application setting | TerraFusion security operator | EVIDENCED |
-| `Security__MaxRequestsPerMinute` | Set the request-rate policy threshold | Application security policy | App Service application setting | TerraFusion security operator | EVIDENCED |
-| `AllowedOrigins__0` | Permit the selected browser origin | Deployment-specific CORS policy | App Service application setting | TerraFusion security and release operators | EVIDENCED |
+| `Security__RequireHttps` | Intended application HTTPS control | Application security policy | App Service application setting is recorded, but current `Program.cs` does not bind this key; Azure HTTPS-only is separate platform evidence | TerraFusion security operator | CONFIGURED-NOT-CONSUMED |
+| `Security__EnableRateLimiting` | Intended request-rate control switch | Application security policy | App Service application setting is recorded, but current `Program.cs` does not bind this key | TerraFusion security operator | CONFIGURED-NOT-CONSUMED |
+| `Security__MaxRequestsPerMinute` | Intended request-rate policy threshold | Application security policy | App Service application setting is recorded, but the current `ApiPolicy` limit is hardcoded in `Program.cs` | TerraFusion security operator | CONFIGURED-NOT-CONSUMED |
+| `AllowedOrigins__0` | Intended browser-origin allowlist entry | Deployment-specific CORS policy | App Service application setting is recorded, but current source reads `Cors:AllowedOrigins` instead | TerraFusion security and release operators | CONFIGURED-NOT-CONSUMED |
+| `Cors__AllowedOrigins__0` | Source-consumed browser-origin allowlist entry | Deployment-specific CORS policy | Current source expects this hierarchy; committed deployment evidence does not prove it configured | TerraFusion security and release operators | REQUIRED-NOT-PROVEN |
 
 ## Secret-Bearing Register
 
@@ -97,8 +99,9 @@ recommendations, not proof that Key Vault objects exist.
 | Is the application database principal distinct from an administrator? | Not proven |
 | Has secret rotation or revocation been rehearsed? | Not proven |
 | Is future county-production secret ownership established? | No; WO-AZURE-006 remains the explicit county-production authority packet |
+| Do the recorded security and CORS setting names prove effective runtime policy? | No; current source does not consume the three `Security__*` keys above and reads `Cors:AllowedOrigins`, not `AllowedOrigins` |
 
-## Required Protected Follow-Ups
+## Required Follow-Ups
 
 These gaps are documented but not authorized for implementation:
 
@@ -108,6 +111,8 @@ These gaps are documented but not authorized for implementation:
 4. Replace direct secret-bearing App Service values with Key Vault references.
 5. Prove a least-privilege application database principal distinct from administration.
 6. Define and rehearse rotation and revocation for database, JWT, and Workbench signing material.
+7. Reconcile the deployed security/rate-limit/CORS key names with the runtime configuration paths and
+   prove the effective policy after a separately authorized change.
 
 Each item requires a separately bounded security/runtime/Azure Work Order. Nothing here authorizes a
 live query, value read, resource change, redeployment, restart, or secret operation.
