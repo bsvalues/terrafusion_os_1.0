@@ -533,16 +533,16 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | None - all registered lanes parked or closed |
-| Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
-| Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
+| Selected program | Azure / DevOps / County Runtime |
+| Active goal | `/goal azure-county-runtime` |
+| Active loop | `/loop evidence` |
 | Current WO | `WO-PORTFOLIO-002` complete on protected merge |
-| Next WO | None inside current authority; `ALL_LANES_PARKED` |
+| Next WO | `WO-AZURE-002 - App settings and secret inventory` (R1 docs/evidence only) |
 
 WO-PORTFOLIO-002 excludes completed baselines and verifies that the Benton Data Quality audit,
-rollup, credentialed verification, and duplicate cleanup records are already merged. Remaining nodes
-require deployment, runtime, county, credentials, import, promotion, or new program authority. No
-deployment lane is preselected.
+rollup, credentialed verification, and duplicate cleanup records are already merged. PR #1275 proves
+WO-AZURE-001 complete and routes a safe committed-evidence inventory to WO-AZURE-002. Live Azure,
+secret values, mutation, deployment, and county production remain blocked.
 
 ---
 

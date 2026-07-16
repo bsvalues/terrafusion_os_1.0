@@ -14,8 +14,9 @@
 ## Active Goal
 
 Portfolio Operator reconciled the live queue after WO-WOE-013 merged in PR #1291 at
-`14221dbda0e4a916ef4ea2937b1ca82623ead39b`. No dependency-cleared registered node remains inside
-current authority. Deployment is not preselected; the portfolio is at `ALL_LANES_PARKED`.
+`14221dbda0e4a916ef4ea2937b1ca82623ead39b`. WO-AZURE-002 is the highest-priority
+dependency-cleared node: documentation of setting key names, source classes, storage posture, and
+ownership only. Deployment is not preselected.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -113,7 +114,12 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ### azure-county-runtime  (`/goal azure-county-runtime`)
 | WO | State | Notes |
 |----|-------|-------|
-| WO-AZURE-001+ | QUEUED | Most steps cross SW-01 |
+| WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
+| WO-AZURE-002 App settings and secret inventory | NEXT (R1 docs/evidence) | Key names and ownership only; no values or live inspection |
+| WO-AZURE-003 Deployment slot strategy | QUEUED (R1 docs) | After WO-AZURE-002; no slot creation or mutation |
+| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
+| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
+| WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
 
 ---
 
@@ -130,11 +136,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | sovereign-sync-workbook-tooling | WO-SYNC-132 implementation | SW-05 / recorded owner-selection gate | no active program authority | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | local-omen-runtime-repair | WO-LOCAL-093 | SW-09 | runtime diagnosis/repair authority required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
-| azure-county-runtime | WO-AZURE-001+ | SW-01 / SW-03 / SW-04 | Azure, credentials, deployment, and county boundary | `programs/azure-county-runtime.md` |
+| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | live evidence, credentials, deployment, and county boundary; WO-AZURE-002/003 docs remain safe | `programs/azure-county-runtime.md` |
 
-**Portfolio result:** WO-PORTFOLIO-002 reconciles the stale queue after WOE-013 protected merge. No
-safe registered node remains inside current authority. Result: **ALL_LANES_PARKED**. A future owner
-decision may reopen a recorded wall; no deployment or protected lane is preselected here.
+**Portfolio result:** WO-PORTFOLIO-002 reconciles the stale queue after WOE-013 protected merge and
+selects **WO-AZURE-002** as a bounded R1 docs/evidence node. The selection grants no live Azure,
+secret, configuration, deployment, or county-production authority.
 
 ---
 

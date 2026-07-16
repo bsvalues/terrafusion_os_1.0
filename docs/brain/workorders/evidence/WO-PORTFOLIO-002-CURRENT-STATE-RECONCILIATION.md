@@ -2,17 +2,21 @@
 
 ## Result
 
-`ALL_LANES_PARKED`
+`NEXT_PROGRAM_SELECTED`
 
-At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, no registered next Work Order is
-both dependency-cleared and inside existing authority. The portfolio is not empty, but every
-remaining node is closed, exhausted, superseded, dependency-blocked, owner-selection gated, or at a
-protected boundary. No deployment lane is preselected.
+At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, the highest-priority
+dependency-cleared node inside existing authority is `WO-AZURE-002 - App settings and secret
+inventory`. Its current scope is R1 documentation: key names, source classes, storage posture, and
+ownership only. It grants no live Azure inspection, secret access, configuration mutation, resource
+creation, deployment, or county-production authority.
 
 ## Reconciliation Basis
 
 - PR #1291 merged WO-WOE-013 at `14221dbda0e4a916ef4ea2937b1ca82623ead39b`; the Work Order Engine
   baseline is closed and its report remains advisory.
+- PR #1275 merged WO-AZURE-001 at `9986f5b4e4ffea1d10e3c9915745c0f280612639`; its evidence routes
+  the next safe documentation node to WO-AZURE-002 and the following slot-strategy document to
+  WO-AZURE-003.
 - PR #1132 merged the four Benton R0 audits at
   `5fe917662e032d25aecbf23251dc8da30783d1e9`.
 - PR #1152 merged the Benton evidence rollup at
@@ -45,7 +49,7 @@ protected boundary. No deployment lane is preselected.
 | TerraPilot Tool Maturity | Parked at P15; P16 requires explicit authorization | PARKED - runtime/promotion boundary |
 | Local OMEN Runtime Repair | WO-LOCAL-093 remains runtime-repair gated | PARKED - runtime authority required |
 | Runtime Import Disposition | WO-CORE-1 remains owner gated | PARKED - sovereign import decision |
-| Azure / County Runtime | Next nodes implicate Azure, deployment, county, or credentials | PARKED - SW-01 / SW-03 / SW-04 |
+| Azure / County Runtime | WO-AZURE-001 complete; WO-AZURE-002 can inventory key names and ownership without values or live access | SELECTED - R1 docs/evidence only |
 
 ## Open PR Triage
 
@@ -65,14 +69,14 @@ implementation work and is not smuggled into this docs-only packet.
 - `node docs/brain/workorders/tools/wo-query.mjs --json`: PASS; output remains the disclosed
   advisory LocalOps projection.
 - Query, report, and wave-planner suites: PASS, 42 tests.
-- Prettier check across all 10 changed files: PASS.
+- Prettier check across all 11 changed files: PASS.
 - `corepack pnpm run type-check`: PASS.
 - `node --test os-platform/core/tests/phase83-tools.test.mjs`: PASS, 56 tests.
 - Frozen bootstrap used `corepack pnpm install --frozen-lockfile --ignore-scripts`; `package.json`
   remained `AE1B423C71421A30983D06D8F303E4B556E674F3551CBB226CF1F33AB500C0D6` and
   `pnpm-lock.yaml` remained
   `D23687DD59C77E400D392DC99BB3F12308761377368D686528868C22615489A0`.
-- `brain review-diff --workorder WO-PORTFOLIO-002` confirms all 10 changed files are inside the exact
+- `brain review-diff --workorder WO-PORTFOLIO-002` confirms all 11 changed files are inside the exact
   Work Order allowlist. Its aggregate verdict remains blocked by the pre-existing global
   `write-lanes` baseline in unchanged files; this packet neither changes nor excludes that debt.
 - Scope inspection found no backend, frontend, OS runtime, tools/sync, CI, deployment, package,
@@ -80,8 +84,9 @@ implementation work and is not smuggled into this docs-only packet.
 
 ## Terminal State
 
-The canonical portfolio stop is `ALL_LANES_PARKED`, not `NEXT_PROGRAM_SELECTION_REQUIRED`. A future
-owner decision may reopen one or more recorded walls, but this packet does not rank a deployment
-choice as implicitly approved and does not manufacture an unregistered safe Work Order.
+WO-AZURE-002 is selected under `GOAL-PORTFOLIO-OPERATOR-001` and activates
+`/goal azure-county-runtime` with `/loop evidence`. It may continue to WO-AZURE-003 only while the
+work remains documentation-only and uses committed evidence. Live Azure access, secret values,
+resource or configuration mutation, deployment, and county production remain stop walls.
 
-STOP_TYPE: `ALL_LANES_PARKED`
+STOP_TYPE: `NEXT_PROGRAM_SELECTED`

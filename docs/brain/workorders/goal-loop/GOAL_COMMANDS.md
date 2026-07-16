@@ -92,8 +92,8 @@ Success:  Active program chains, continuation rules, stop gates, and command rou
           from one baseline playbook.
 ```
 
-**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. WO-PORTFOLIO-002 reconciles the
-current graph after Work Order Engine closeout; all remaining registered lanes are parked or closed.
+**Current state:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001` is merged. WO-PORTFOLIO-002 selects
+WO-AZURE-002 as the next bounded docs/evidence node after Work Order Engine closeout.
 
 **Allowed loop modes:** `once`, `evidence`
 
@@ -111,8 +111,8 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Portfolio reconciliation is complete at WO-PORTFOLIO-002 with
-`ALL_LANES_PARKED`; no deployment lane is preselected.
+**Current state:** Portfolio reconciliation selects WO-AZURE-002 for committed-evidence
+configuration-key and ownership documentation. No deployment or live Azure action is selected.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 

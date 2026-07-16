@@ -3,7 +3,7 @@
 **Program:** P8  
 **Status:** ACTIVE  
 **Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-06-30
+**Last Updated:** 2026-07-15
 
 ---
 
@@ -35,7 +35,7 @@ Keep GitHub, Azure, Azure DevOps, TerraFusion Azure, and county Azure from becom
 | Admin user: `tfadmin` (local env only, never Git) | Security constraint |
 | Connection requires SSL + Trust Server Certificate | WO-DEPLOY-BENTON-002B |
 | 94 EF migrations applied, 0 pending | WO-DEPLOY-BENTON-002D |
-| No Azure App Service yet provisioned | — |
+| Benton demo App Service exists; WO-AZURE-001 reconciliation is merged | PR #1275 / `docs/data/WO_AZURE_001_APP_SERVICE_PREFLIGHT.md` |
 | Redis: not connected (NoOp cache in dev) | WO-DEPLOY-BENTON-002D |
 
 ---
@@ -44,11 +44,11 @@ Keep GitHub, Azure, Azure DevOps, TerraFusion Azure, and county Azure from becom
 
 | WO | Title | Status | Blocker |
 |----|-------|--------|---------|
-| WO-AZURE-001 | Azure App Service preflight, Benton demo | **NEXT** | Runs parallel to / enables P1/WO-DEPLOY-BENTON-003B |
-| WO-AZURE-002 | App settings and secret inventory | QUEUED | Parallel to 003C |
-| WO-AZURE-003 | Deployment slot strategy | QUEUED | After 001+002 |
-| WO-AZURE-004 | Observability and log capture | QUEUED | After 003D smoke |
-| WO-AZURE-005 | Rollback and restart runbook | QUEUED | After 003D smoke |
+| WO-AZURE-001 | Azure App Service preflight, Benton demo | COMPLETE | PR #1275; committed evidence only |
+| WO-AZURE-002 | App settings and secret inventory | **NEXT** | Key names, source classes, storage posture, and ownership only |
+| WO-AZURE-003 | Deployment slot strategy | QUEUED | After 002; docs only |
+| WO-AZURE-004 | Observability and log capture | BLOCKED | After authorized 003D smoke |
+| WO-AZURE-005 | Rollback and restart runbook | BLOCKED | After authorized 003D smoke |
 | WO-AZURE-006 | County-owned production boundary packet | QUEUED | **Requires explicit operator authorization** |
 
 ---

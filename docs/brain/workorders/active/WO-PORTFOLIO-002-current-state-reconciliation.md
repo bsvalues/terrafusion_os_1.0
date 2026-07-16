@@ -33,7 +33,7 @@ lane.
 - exact governed scope inspection
 - no runtime, backend, tools/sync, CI, deployment, county, PACS, SQL, secret, or production changes
 
-STOP_TYPE: `ALL_LANES_PARKED`
+STOP_TYPE: `NEXT_PROGRAM_SELECTED`
 
 <!-- brain-machine-policy: brain review-diff reads the json block below -->
 ```json
@@ -50,6 +50,7 @@ STOP_TYPE: `ALL_LANES_PARKED`
     "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
     "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
     "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+    "docs/brain/workorders/programs/azure-county-runtime.md",
     "docs/brain/workorders/programs/benton-data-quality.md",
     "docs/brain/workorders/programs/portfolio-operator.md",
     "docs/brain/workorders/programs/work-order-engine.md"

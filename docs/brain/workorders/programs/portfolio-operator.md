@@ -39,13 +39,12 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, WO-PORTFOLIO-002 found no
-dependency-cleared registered node inside current authority. Completed baselines are excluded; Benton
-Data Quality's audit, evidence, credentialed verification, and duplicate cleanup records are merged;
-the remaining registered nodes require deployment, runtime, county, credential, import, promotion, or
-new program authority.
+At `origin/main` `14221dbda0e4a916ef4ea2937b1ca82623ead39b`, WO-PORTFOLIO-002 selected
+`WO-AZURE-002 - App settings and secret inventory` as the highest-priority dependency-cleared node.
+PR #1275 completed WO-AZURE-001 and routes configuration key-name, source-class, storage-posture, and
+ownership documentation to WO-AZURE-002 without live Azure or secret access.
 
 No deployment lane is preselected. The live result is recorded in
 [`WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-002-CURRENT-STATE-RECONCILIATION.md).
 
-STOP_TYPE: `ALL_LANES_PARKED`
+STOP_TYPE: `NEXT_PROGRAM_SELECTED`
