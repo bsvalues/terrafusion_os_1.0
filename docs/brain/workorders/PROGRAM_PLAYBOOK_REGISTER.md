@@ -3,7 +3,7 @@
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
-**Date:** 2026-06-30
+**Date:** 2026-07-15
 **Authority:** TerraFusion Brain / WO-WOE-009
 **Classification:** Operator Doctrine — canonical planning surface
 
