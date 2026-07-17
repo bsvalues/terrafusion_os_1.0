@@ -33,8 +33,9 @@ Future workflow runs publish to a deterministic per-run release shard:
 autonomy-evidence-shard-YYYY-MM-RUN_ID
 ```
 
-The run ID makes cross-run asset accumulation impossible. Existing monthly releases remain untouched.
-The workflow contract test requires both the date provenance and run binding.
+The run ID makes cross-run asset accumulation impossible. The month comes from the immutable PR merge
+timestamp, so a rerun cannot move shards at a month boundary. Existing monthly releases remain
+untouched. The workflow contract test requires stable date provenance and run binding.
 
 ## Validation
 

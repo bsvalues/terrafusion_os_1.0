@@ -23,8 +23,9 @@ that completed before upload.
 ## Repair Decision
 
 Each workflow run now uses a deterministic release shard named
-`autonomy-evidence-shard-YYYY-MM-RUN_ID`. A retry of the same workflow run remains idempotent because
-it targets the same shard; different runs cannot accumulate assets in one release.
+`autonomy-evidence-shard-YYYY-MM-RUN_ID`. The month is derived from the immutable PR merge timestamp,
+not rerun wall-clock time. A retry of the same workflow run therefore targets the same shard, while
+different runs cannot accumulate assets in one release.
 
 No existing release, tag, asset, evidence bundle, signature, or custody record is deleted or changed.
 The one-year release-retention contract is preserved and now documents the capacity rule and legacy

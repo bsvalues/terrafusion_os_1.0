@@ -202,12 +202,19 @@ describe('Evidence Publisher: Release Naming Contracts', () => {
     );
   });
 
-  it('should retain YYYY-MM provenance in each release shard', () => {
+  it('should derive YYYY-MM provenance from the immutable PR merge timestamp', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.gate?.steps ?? [];
 
     const checkStep = steps.find(s => s.id === 'check');
-    assert.ok(checkStep?.run?.includes('%Y-%m'), 'release tag should use YYYY-MM format');
+    assert.ok(
+      checkStep?.run?.includes('github.event.pull_request.merged_at'),
+      'release tag month must come from the immutable PR merge timestamp'
+    );
+    assert.ok(
+      !checkStep?.run?.includes('date +%Y-%m'),
+      'release tag must not depend on wall-clock time during a rerun'
+    );
   });
 
   it('should bind each release shard to one workflow run', () => {
