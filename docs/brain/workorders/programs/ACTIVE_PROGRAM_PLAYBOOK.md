@@ -536,17 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - shell routing contract reconciliation |
+| Selected program | Portfolio Operator - unscoped Workbench tab handoff |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-006 - Shell Routing Contract Reconciliation` complete on protected merge |
+| Current WO | `WO-PORTFOLIO-007 - Unscoped Workbench Tab Handoff` complete on protected merge |
 | Next WO | Portfolio reconciliation after protected merge |
 
-Portfolio synthesis at `1adc7df4f78c0e3aa33a829bdb668ad0f511773f` closed stale PR #1076 as
-superseded after verifying its reviewed outcomes on main. It then admitted WO-PORTFOLIO-006 to
-reconcile the remaining stale E3 static assertion with canonical shell routing. The slice changes no
-product source: parcel-scoped launches continue through Property Workbench and standalone modules
-remain shell-owned; deployment, schema, secrets, county/PACS/SQL, migration, and live resources stay
+Portfolio synthesis at `2d67835735fcd9a82f8b96fde422cf38a8edf0a8` admitted WO-PORTFOLIO-007
+from the accepted PR #1300 review evidence. The bounded slice carries an existing validated
+`openTab` request from the already-declared no-parcel fallback through Property Search parcel
+selection using the existing Workbench route and canonical tab allowlist. It adds no top-level
+surface or tab; deployment, schema, secrets, county/PACS/SQL, migration, and live resources stay
 protected and untouched.
 
 ---

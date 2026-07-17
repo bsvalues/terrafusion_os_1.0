@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-006",
+  "generatedBy": "WO-PORTFOLIO-007",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1094,6 +1094,115 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "Live portfolio synthesis and stale PR #1076 reconciliation",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-007",
+      "title": "Unscoped Workbench Tab Handoff",
+      "program": "Portfolio Operator",
+      "goal": "Preserve a validated requested Workbench tab through Property Search parcel selection.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-006",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1300 merged at 2d67835735fcd9a82f8b96fde422cf38a8edf0a8"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "OS Shell fallback and Property Search routing, focused contracts, and Brain work-order governance",
+          "paths": [
+            "frontend/apps/os-shell/src/Router.tsx",
+            "frontend/apps/os-shell/src/pages/PropertySearch.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx",
+            "tests/deployment-truth-gate.test.mjs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "New top-level surfaces or tabs, route-model changes beyond mounting the canonical fallback, suite business logic, backend, tools-sync, CI, deployment, schema, secrets, county, PACS, SQL, migrations, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/Router.tsx",
+        "frontend/apps/os-shell/src/pages/PropertySearch.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx",
+        "tests/deployment-truth-gate.test.mjs",
+        "docs/brain/workorders/active/WO-PORTFOLIO-007-unscoped-workbench-tab-handoff.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-007-UNSCOPED-WORKBENCH-TAB-HANDOFF.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Property Search accepts canonical tabs, normalizes summary, and rejects unknown values."
+        },
+        {
+          "kind": "test",
+          "description": "Deployment truth statically preserves the shell handoff contract."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Property Search contract",
+          "command": "corepack pnpm exec vitest run frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "deployment truth gate",
+          "command": "node --test tests/deployment-truth-gate.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-007-UNSCOPED-WORKBENCH-TAB-HANDOFF.md",
+          "summary": "Selection, TDD, implementation, safety, and non-claim evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on a new top-level surface or tab, route-model expansion beyond the canonical fallback, protected-resource access, or files outside the exact Work Order."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Portfolio synthesis, standing operator authority, and the owner's current continuation direction cover this exact bounded shell handoff correction."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Accepted PR #1300 exact-head review finding",
         "schemaVersion": "0.1.0"
       }
     }

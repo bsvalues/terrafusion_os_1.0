@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-006
+**Authority:** WO-PORTFOLIO-007
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,16 +13,17 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-006 is the active dependency-cleared node on base
-`1adc7df4f78c0e3aa33a829bdb668ad0f511773f`. Portfolio synthesis verified that the useful reviewed
-outcomes from stale PR #1076 are already present on current main and closed that unsafe 687-file PR
-as superseded. The same review exposed a bounded stale test contract: E3 rejected shell-owned
-standalone module activation even though the implementation correctly preserves Property Workbench
-navigation for parcel-scoped work.
+WO-PORTFOLIO-007 is the active dependency-cleared node on base
+`2d67835735fcd9a82f8b96fde422cf38a8edf0a8`. Review of WO-PORTFOLIO-006 proved an existing bounded
+handoff defect: an unscoped suite launch supplied `openTab`, but Property Search discarded that
+validated intent after parcel selection. WO-PORTFOLIO-006 merged the honest non-claim; this successor
+closes the user-facing gap by mounting the existing canonical fallback and preserving its tab intent
+through the established parcel route and tab allowlist.
 
-Standing operator authority covers this exact static-test reconciliation, governance evidence,
-review remediation, protected merge, and post-merge verification. No shell, Workbench, frontend,
-backend, runtime, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource
+Standing operator authority and the owner's current continuation direction cover this exact shell
+routing implementation, deterministic tests, governance evidence, review remediation, protected
+merge, and post-merge verification. No new top-level surface or tab, suite business logic, backend,
+tools-sync, CI, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource
 change is included.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
@@ -42,7 +43,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-004 Standing Operator Authority | DONE | PR #1297 merged; standing delivery lifecycle authority active |
 | WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
 | WO-BACKEND-014 Health Build-Provenance Truth | DONE | PR #1299 merged; endpoint and canonical container build provenance verified |
-| **WO-PORTFOLIO-006 Shell Routing Contract Reconciliation** | **CURRENT - complete on protected merge** | Static truth gate reconciled to canonical Workbench navigation plus shell-owned standalone activation; no product source change |
+| WO-PORTFOLIO-006 Shell Routing Contract Reconciliation | DONE | PR #1300 merged; static contract corrected and unscoped handoff gap recorded honestly |
+| **WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff** | **CURRENT - complete on protected merge** | Mount the existing no-parcel fallback; preserve validated requested tab through parcel selection; reject invalid values |
 | Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
@@ -156,10 +158,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-006 admission:** `ACTIVE`. Protected Azure, deployment,
+**Portfolio result after WO-PORTFOLIO-007 admission:** `ACTIVE`. Protected Azure, deployment,
 county-production, runtime-repair, product-promotion, protected-data, and sovereign-import boundaries
-remain parked, but the independent R2 shell routing contract reconciliation is executable and does
-not cross any of them.
+remain parked, but the bounded R3 Workbench handoff correction is executable and does not cross any
+of them.
 
 ---
 

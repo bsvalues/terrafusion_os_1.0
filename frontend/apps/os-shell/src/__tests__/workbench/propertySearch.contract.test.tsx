@@ -1,7 +1,7 @@
 /**
  * propertySearch.contract.test.tsx
  *
- * Phase 31-B: PropertySearch depth — 6 contract tests
+ * Phase 31-B: PropertySearch depth — 9 contract tests
  *
  * Covers: loading, empty, error, results, navigation, button/loading guard
  */
@@ -57,11 +57,11 @@ function makePageResult(items: { geoId: string; address: string }[]) {
   };
 }
 
-function renderSearch() {
+function renderSearch(initialEntry = '/property') {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <PropertySearch />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -116,7 +116,7 @@ describe('PropertySearch contract (Phase 31-B)', () => {
   // 5 -----------------------------------------------------------------------
   it('renders result items when search returns results', async () => {
     mockGetPacsProperties.mockResolvedValue(
-      makePageResult([{ geoId: 'GEO-001', address: '123 Main St' }]),
+      makePageResult([{ geoId: 'GEO-001', address: '123 Main St' }])
     );
     renderSearch();
 
@@ -127,7 +127,7 @@ describe('PropertySearch contract (Phase 31-B)', () => {
   // 6 -----------------------------------------------------------------------
   it('navigates to /property/:parcelId when a result is clicked', async () => {
     mockGetPacsProperties.mockResolvedValue(
-      makePageResult([{ geoId: 'GEO-002', address: '456 Oak Ave' }]),
+      makePageResult([{ geoId: 'GEO-002', address: '456 Oak Ave' }])
     );
     renderSearch();
 
@@ -137,5 +137,41 @@ describe('PropertySearch contract (Phase 31-B)', () => {
     await userEvent.click(resultItem);
 
     expect(mockNavigate).toHaveBeenCalledWith(`/property/${encodeURIComponent('GEO-002')}`);
+  });
+
+  // 7 -----------------------------------------------------------------------
+  it('preserves a valid requested Workbench tab after parcel selection', async () => {
+    mockGetPacsProperties.mockResolvedValue(
+      makePageResult([{ geoId: 'GEO-003', address: '789 Pine St' }])
+    );
+    renderSearch('/property?openTab=dais');
+
+    await userEvent.click(await screen.findByTestId('search-result-GEO-003'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/property/GEO-003/dais');
+  });
+
+  // 8 -----------------------------------------------------------------------
+  it('normalizes the summary tab to the Workbench index route', async () => {
+    mockGetPacsProperties.mockResolvedValue(
+      makePageResult([{ geoId: 'GEO-004', address: '101 Cedar St' }])
+    );
+    renderSearch('/property?openTab=summary');
+
+    await userEvent.click(await screen.findByTestId('search-result-GEO-004'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/property/GEO-004');
+  });
+
+  // 9 -----------------------------------------------------------------------
+  it('ignores an invalid requested Workbench tab', async () => {
+    mockGetPacsProperties.mockResolvedValue(
+      makePageResult([{ geoId: 'GEO-005', address: '202 Birch St' }])
+    );
+    renderSearch('/property?openTab=not-a-tab');
+
+    await userEvent.click(await screen.findByTestId('search-result-GEO-005'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/property/GEO-005');
   });
 });
