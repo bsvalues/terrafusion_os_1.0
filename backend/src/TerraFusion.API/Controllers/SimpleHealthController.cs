@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,16 +25,13 @@ public class SimpleHealthController : ControllerBase
     {
         _logger.LogInformation("Simple health check requested");
 
-        // Prometheus PR-9 / HIGH #32: expose immutable artifact identity.
-        // TF_GIT_SHA is stamped at docker build time via --build-arg GIT_SHA;
-        // when running outside a container (or built without the arg) the
-        // env var is unset and we return "unknown" so the response shape is
-        // stable for clients.
-        var gitSha = Environment.GetEnvironmentVariable("TF_GIT_SHA");
-        if (string.IsNullOrWhiteSpace(gitSha))
-        {
-            gitSha = "unknown";
-        }
+        var informationalVersion = typeof(SimpleHealthController)
+            .Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion;
+        var gitSha = ResolveGitSha(
+            Environment.GetEnvironmentVariable("TF_GIT_SHA"),
+            informationalVersion);
 
         return Ok(new
         {
@@ -81,5 +79,31 @@ public class SimpleHealthController : ControllerBase
             Status = "Live",
             Timestamp = DateTime.UtcNow
         });
+    }
+
+    internal static string ResolveGitSha(string? envSha, string? informationalVersion)
+    {
+        var normalizedEnvSha = envSha?.Trim();
+        if (!string.IsNullOrWhiteSpace(normalizedEnvSha)
+            && !string.Equals(normalizedEnvSha, "unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            return normalizedEnvSha;
+        }
+
+        if (!string.IsNullOrWhiteSpace(informationalVersion))
+        {
+            var plusIndex = informationalVersion.IndexOf('+', StringComparison.Ordinal);
+            if (plusIndex >= 0 && plusIndex < informationalVersion.Length - 1)
+            {
+                var stampedSha = informationalVersion[(plusIndex + 1)..].Trim();
+                if (!string.IsNullOrWhiteSpace(stampedSha)
+                    && !string.Equals(stampedSha, "unknown", StringComparison.OrdinalIgnoreCase))
+                {
+                    return stampedSha;
+                }
+            }
+        }
+
+        return "unknown";
     }
 }

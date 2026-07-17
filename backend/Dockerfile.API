@@ -5,6 +5,7 @@
 # ── Build stage ──────────────────────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+ARG GIT_SHA=unknown
 
 # Copy solution and project files first for layer caching
 COPY TerraFusion.sln ./
@@ -34,6 +35,7 @@ WORKDIR /src/src/TerraFusion.API
 RUN dotnet publish TerraFusion.API.csproj -c Release -o /app/publish \
     --self-contained false \
     --no-restore \
+    /p:SourceRevisionId="${GIT_SHA}" \
     /p:DebugType=None \
     /p:DebugSymbols=false
 

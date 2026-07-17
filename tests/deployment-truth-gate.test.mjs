@@ -59,14 +59,12 @@ describe('A. Environment contract', () => {
     const content = readFileSync(envExample, 'utf8');
     const secretLines = content
       .split('\n')
-      .filter((l) => /PASSWORD|SECRET|KEY/.test(l) && !l.startsWith('#'));
+      .filter(l => /PASSWORD|SECRET|KEY/.test(l) && !l.startsWith('#'));
 
     for (const line of secretLines) {
       // Must contain a placeholder like <REPLACE_WITH_...> or be a variable reference
       const hasPlaceholder =
-        line.includes('<REPLACE_') ||
-        line.includes('${') ||
-        line.includes('replace_me');
+        line.includes('<REPLACE_') || line.includes('${') || line.includes('replace_me');
       const isAssignment = line.includes('=');
 
       if (isAssignment) {
@@ -79,7 +77,7 @@ describe('A. Environment contract', () => {
           !value.includes('replace');
         assert.ok(
           !looksLikeRealSecret,
-          `Potential leaked secret in .env.example: ${line.substring(0, 40)}...`,
+          `Potential leaked secret in .env.example: ${line.substring(0, 40)}...`
         );
       }
     }
@@ -88,12 +86,12 @@ describe('A. Environment contract', () => {
   it('A3: county-scoped env templates exist', () => {
     const countyEnvDir = join(ROOT, 'config', 'counties');
     if (existsSync(countyEnvDir)) {
-      const files = readdirSync(countyEnvDir).filter((f) => f.startsWith('.env.'));
+      const files = readdirSync(countyEnvDir).filter(f => f.startsWith('.env.'));
       assert.ok(files.length >= 1, 'At least one county .env template should exist');
     }
     // Also accept root-level county env files
     const rootCountyEnvs = readdirSync(ROOT).filter(
-      (f) => f.startsWith('.env.') && f !== '.env.example' && f !== '.env.development',
+      f => f.startsWith('.env.') && f !== '.env.example' && f !== '.env.development'
     );
     // At least some env files should exist (county or environment-scoped)
     assert.ok(true, 'County env structure is present');
@@ -105,11 +103,7 @@ describe('A. Environment contract', () => {
 // ============================================================================
 
 describe('B. Docker build structure', () => {
-  const coreDockerfiles = [
-    'Dockerfile.API',
-    'Dockerfile.Consciousness',
-    'Dockerfile.Gateway',
-  ];
+  const coreDockerfiles = ['Dockerfile.API', 'Dockerfile.Consciousness', 'Dockerfile.Gateway'];
 
   for (const df of coreDockerfiles) {
     it(`B1: ${df} exists and uses multi-stage build`, () => {
@@ -125,7 +119,7 @@ describe('B. Docker build structure', () => {
       const content = readFileSync(join(BACKEND, df), 'utf8');
       assert.ok(
         content.includes('USER ') || content.includes('useradd'),
-        `${df} must configure non-root user (FISMA-HIGH)`,
+        `${df} must configure non-root user (FISMA-HIGH)`
       );
     });
 
@@ -139,7 +133,7 @@ describe('B. Docker build structure', () => {
     assert.ok(existsSync(join(BACKEND, 'TerraFusion.sln')), 'TerraFusion.sln must exist');
     assert.ok(
       existsSync(join(BACKEND, 'Directory.Packages.props')),
-      'Directory.Packages.props must exist for central package management',
+      'Directory.Packages.props must exist for central package management'
     );
   });
 });
@@ -168,10 +162,7 @@ describe('C. Helm chart structure', () => {
     });
 
     it(`C2: ${chart} has values.yaml`, () => {
-      assert.ok(
-        existsSync(join(chartDir, 'values.yaml')),
-        `${chart}/values.yaml must exist`,
-      );
+      assert.ok(existsSync(join(chartDir, 'values.yaml')), `${chart}/values.yaml must exist`);
     });
 
     it(`C3: ${chart} has templates/ directory`, () => {
@@ -181,28 +172,26 @@ describe('C. Helm chart structure', () => {
   }
 
   // Service charts (not umbrella) need deployment + service templates
-  const serviceCharts = charts.filter((c) => c !== 'terrafusion-platform');
+  const serviceCharts = charts.filter(c => c !== 'terrafusion-platform');
   for (const chart of serviceCharts) {
     it(`C4: ${chart} has deployment.yaml template`, () => {
       assert.ok(
         existsSync(join(HELM, chart, 'templates', 'deployment.yaml')),
-        `${chart}/templates/deployment.yaml must exist`,
+        `${chart}/templates/deployment.yaml must exist`
       );
     });
 
     it(`C5: ${chart} has service.yaml template`, () => {
       assert.ok(
         existsSync(join(HELM, chart, 'templates', 'service.yaml')),
-        `${chart}/templates/service.yaml must exist`,
+        `${chart}/templates/service.yaml must exist`
       );
     });
 
     it(`C6: ${chart} values.yaml defines health probes`, () => {
       const values = readFileSync(join(HELM, chart, 'values.yaml'), 'utf8');
-      const hasLiveness =
-        values.includes('livenessProbe') || values.includes('liveness:');
-      const hasReadiness =
-        values.includes('readinessProbe') || values.includes('readiness:');
+      const hasLiveness = values.includes('livenessProbe') || values.includes('liveness:');
+      const hasReadiness = values.includes('readinessProbe') || values.includes('readiness:');
       assert.ok(hasLiveness, `${chart} must configure liveness probe`);
       assert.ok(hasReadiness, `${chart} must configure readiness probe`);
     });
@@ -216,7 +205,7 @@ describe('C. Helm chart structure', () => {
       const values = readFileSync(join(HELM, chart, 'values.yaml'), 'utf8');
       assert.ok(
         values.includes('securityContext') || values.includes('podSecurityContext'),
-        `${chart} must define security context (FISMA-HIGH)`,
+        `${chart} must define security context (FISMA-HIGH)`
       );
     });
   }
@@ -225,7 +214,7 @@ describe('C. Helm chart structure', () => {
     const chartYaml = readFileSync(join(HELM, 'terrafusion-platform', 'Chart.yaml'), 'utf8');
     assert.ok(
       chartYaml.includes('dependencies:') || chartYaml.includes('dependencies'),
-      'Platform chart must declare sub-chart dependencies',
+      'Platform chart must declare sub-chart dependencies'
     );
   });
 
@@ -248,32 +237,26 @@ describe('C. Helm chart structure', () => {
 
 describe('D. CI release gate coverage', () => {
   it('D1: seal-gate-fast.yml (PR gate) exists', () => {
-    assert.ok(
-      existsSync(join(WORKFLOWS, 'seal-gate-fast.yml')),
-      'PR gate workflow must exist',
-    );
+    assert.ok(existsSync(join(WORKFLOWS, 'seal-gate-fast.yml')), 'PR gate workflow must exist');
   });
 
   it('D2: release-lane.yml (production gate) exists', () => {
     assert.ok(
       existsSync(join(WORKFLOWS, 'release-lane.yml')),
-      'Production release workflow must exist',
+      'Production release workflow must exist'
     );
   });
 
   it('D3: release-lane.yml requires manual dispatch (no auto-deploy)', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    assert.ok(
-      content.includes('workflow_dispatch'),
-      'Release lane must require manual dispatch',
-    );
+    assert.ok(content.includes('workflow_dispatch'), 'Release lane must require manual dispatch');
   });
 
   it('D4: release-lane.yml validates release SHA', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
     assert.ok(
       content.includes('release_sha') || content.includes('RELEASE_SHA'),
-      'Release lane must pin to explicit SHA',
+      'Release lane must pin to explicit SHA'
     );
   });
 
@@ -287,7 +270,7 @@ describe('D. CI release gate coverage', () => {
   it('D6: SBOM generation workflow exists', () => {
     assert.ok(
       existsSync(join(WORKFLOWS, 'sbom.yml')),
-      'SBOM generation workflow must exist (supply chain security)',
+      'SBOM generation workflow must exist (supply chain security)'
     );
   });
 
@@ -305,12 +288,16 @@ describe('D. CI release gate coverage', () => {
   it('D8: backend runtime image packages the DB-backed AuthProvisioner', () => {
     const content = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
     assert.ok(
-      content.includes('RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj'),
-      'Backend build stage must publish TerraFusion.AuthProvisioner',
+      content.includes(
+        'RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj'
+      ),
+      'Backend build stage must publish TerraFusion.AuthProvisioner'
     );
     assert.ok(
-      content.includes('COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/'),
-      'Backend runtime image must package TerraFusion.AuthProvisioner for DB-backed production operator provisioning',
+      content.includes(
+        'COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/'
+      ),
+      'Backend runtime image must package TerraFusion.AuthProvisioner for DB-backed production operator provisioning'
     );
   });
 
@@ -320,11 +307,11 @@ describe('D. CI release gate coverage', () => {
     const smokeIndex = content.indexOf('Provisioned auth contract smoke');
     assert.ok(
       provisionerIndex >= 0,
-      'Release lane must invoke TerraFusion.AuthProvisioner against the runtime TerraFusion DB',
+      'Release lane must invoke TerraFusion.AuthProvisioner against the runtime TerraFusion DB'
     );
     assert.ok(
       smokeIndex >= 0 && provisionerIndex < smokeIndex,
-      'Release lane must provision/reset the operator account before the provisioned auth smoke',
+      'Release lane must provision/reset the operator account before the provisioned auth smoke'
     );
     assert.ok(
       content.includes('--entrypoint sh') &&
@@ -332,11 +319,11 @@ describe('D. CI release gate coverage', () => {
         content.includes('PROVISION_OUTPUT=') &&
         content.includes('PROVISION_JSON=') &&
         content.includes("awk '/^\\{/{line=$0} END{print line}'"),
-      'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner',
+      'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner'
     );
     assert.ok(
       !content.includes('/tmp/terrafusion-auth-provisioner.json'),
-      'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file',
+      'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file'
     );
   });
 
@@ -344,15 +331,15 @@ describe('D. CI release gate coverage', () => {
     const content = readFileSync(join(ROOT, 'ops', 'prod', 'runtime-compose.template.yml'), 'utf8');
     assert.ok(
       content.includes('- ./app.env'),
-      'Production runtime compose must load operator-managed app.env',
+      'Production runtime compose must load operator-managed app.env'
     );
     assert.ok(
       !content.includes('DatabaseProvider: Sqlite'),
-      'Production runtime compose must not force SQLite over app.env',
+      'Production runtime compose must not force SQLite over app.env'
     );
     assert.ok(
       !content.includes('ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db'),
-      'Production runtime compose must not force the local SQLite file over app.env',
+      'Production runtime compose must not force the local SQLite file over app.env'
     );
   });
 
@@ -365,11 +352,11 @@ describe('D. CI release gate coverage', () => {
       assert.ok(
         !content.includes('DatabaseProvider=Sqlite') &&
           !content.includes('DatabaseProvider: Sqlite'),
-        `${composeFile} must not force SQLite over its production env file`,
+        `${composeFile} must not force SQLite over its production env file`
       );
       assert.ok(
         !content.includes('ConnectionStrings__DefaultConnection: Data Source=data/terrafusion.db'),
-        `${composeFile} must not pin the runtime connection string to local SQLite`,
+        `${composeFile} must not pin the runtime connection string to local SQLite`
       );
     }
   });
@@ -379,32 +366,60 @@ describe('D. CI release gate coverage', () => {
     assert.ok(
       content.includes('ConnectionStrings__DefaultConnection') &&
         content.includes('DatabaseProvider'),
-      'Release lane must validate the runtime DB provider and connection string from app.env',
+      'Release lane must validate the runtime DB provider and connection string from app.env'
     );
     assert.ok(
       !content.includes('--provider Sqlite') &&
         !content.includes('--connection-string "Data Source=/app/data/terrafusion.db"'),
-      'AuthProvisioner must not be pinned to a separate SQLite DB in production',
+      'AuthProvisioner must not be pinned to a separate SQLite DB in production'
     );
   });
 
   it('D13: release-lane production DB preflight rejects SQLite without blocking Postgres aliases', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
     assert.ok(
-      content.includes('provider_key=') &&
-        content.includes('postgres|postgresql|npgsql'),
-      'Release lane must normalize and accept governed Postgres provider aliases',
+      content.includes('provider_key=') && content.includes('postgres|postgresql|npgsql'),
+      'Release lane must normalize and accept governed Postgres provider aliases'
     );
     assert.ok(
       content.includes('APP_ENV_PRODUCTION_DB_PROVIDER_SQLITE') &&
         content.includes('APP_ENV_PRODUCTION_DB_CONNECTION_SQLITE'),
-      'Release lane must explicitly reject SQLite provider and local-file DB bindings',
+      'Release lane must explicitly reject SQLite provider and local-file DB bindings'
     );
     assert.ok(
-      content.includes('connection_key=') &&
-        content.includes('*"host="*|*"server="*'),
-      'Release lane must evaluate server-backed connection keys case-insensitively',
+      content.includes('connection_key=') && content.includes('*"host="*|*"server="*'),
+      'Release lane must evaluate server-backed connection keys case-insensitively'
     );
+  });
+
+  it('D14: canonical backend container builds preserve the exact source revision', () => {
+    const ci = readFileSync(join(WORKFLOWS, 'ci.yml'), 'utf8');
+    const releaseLane = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const backendDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
+    const apiDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile.API'), 'utf8');
+
+    assert.ok(
+      ci.includes('--build-arg GIT_SHA=${{ github.sha }}'),
+      'Canonical CI must pass github.sha into the backend image build'
+    );
+    assert.ok(
+      releaseLane.includes('--build-arg GIT_SHA="$RELEASE_SHA"'),
+      'Release lane must pass its validated RELEASE_SHA into the backend image build'
+    );
+
+    for (const [name, content] of [
+      ['backend/Dockerfile', backendDockerfile],
+      ['backend/Dockerfile.API', apiDockerfile],
+    ]) {
+      assert.ok(
+        content.includes('/p:SourceRevisionId="${GIT_SHA}"'),
+        `${name} must stamp the supplied GIT_SHA into the published assembly`
+      );
+      assert.ok(
+        content.includes('ENV TF_GIT_SHA=${GIT_SHA}'),
+        `${name} must expose the supplied GIT_SHA to the runtime health endpoint`
+      );
+    }
   });
 });
 
@@ -459,17 +474,17 @@ describe('E. Shell route contract survival', () => {
       'src',
       'components',
       'suites',
-      'SuiteModuleGrid.tsx',
+      'SuiteModuleGrid.tsx'
     );
     if (existsSync(smg)) {
       const content = readFileSync(smg, 'utf8');
       assert.ok(
         content.includes('useNavigate'),
-        'SuiteModuleGrid must use useNavigate for route navigation',
+        'SuiteModuleGrid must use useNavigate for route navigation'
       );
       assert.ok(
         !content.includes('activateModule'),
-        'SuiteModuleGrid must NOT use activateModule (window creation)',
+        'SuiteModuleGrid must NOT use activateModule (window creation)'
       );
     }
   });
@@ -483,17 +498,17 @@ describe('E. Shell route contract survival', () => {
       'src',
       'shell',
       'desktop',
-      'Taskbar.tsx',
+      'Taskbar.tsx'
     );
     if (existsSync(taskbar)) {
       const content = readFileSync(taskbar, 'utf8');
       assert.ok(
         content.includes('useNavigate'),
-        'Taskbar must use useNavigate for route navigation',
+        'Taskbar must use useNavigate for route navigation'
       );
       assert.ok(
         !content.includes('activateModule'),
-        'Taskbar must NOT use activateModule (window creation)',
+        'Taskbar must NOT use activateModule (window creation)'
       );
     }
   });
@@ -509,7 +524,7 @@ describe('F. Deployment documentation', () => {
       join(BACKEND, 'deployment', 'DEPLOYMENT_RUNBOOK.md'),
       join(ROOT, 'docs', 'deployment', 'GO_LIVE_RUNBOOK.md'),
     ];
-    const hasRunbook = runbookPaths.some((p) => existsSync(p));
+    const hasRunbook = runbookPaths.some(p => existsSync(p));
     assert.ok(hasRunbook, 'Deployment runbook must exist');
   });
 
@@ -519,7 +534,7 @@ describe('F. Deployment documentation', () => {
       join(BACKEND, 'deployment', 'strategies', 'rollback.sh'),
       join(WORKFLOWS, 'rollback-production.yml'),
     ];
-    const hasRollback = rollbackPaths.some((p) => existsSync(p));
+    const hasRollback = rollbackPaths.some(p => existsSync(p));
     assert.ok(hasRollback, 'Rollback procedures must be documented');
   });
 });

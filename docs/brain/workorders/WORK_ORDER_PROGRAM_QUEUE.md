@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-005
+**Authority:** WO-BACKEND-014
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,14 +13,16 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-005 is the active dependency-cleared node on base
-`5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6`. Portfolio synthesis rejected the stale
-`WO-LOCALOPS-000` recommendation because LocalOps through WO-008 is already merged, then selected the
-current evidence-publisher capacity defect as the highest-value bounded slice.
+WO-BACKEND-014 is the active dependency-cleared node on base
+`3649a4665337559213f62419377574cec2ebad1a`. Portfolio synthesis rejected stale Sync routing after
+live cross-repo evidence showed that chain complete through WO-SYNC-155. It then selected the bounded
+health build-provenance correction represented by stale PR #1153, rebuilding it from current main
+with its unlanded review corrections and canonical container-build proof instead of inheriting 142
+commits of drift.
 
-`OWNER-TF-STANDING-OPERATOR-AUTHORITY` covers its routine delivery lifecycle. The exact Work Order
-limits the implementation to evidence publication sharding, its contract test, retention truth, and
-canonical routing. No retained asset is deleted and no protected resource is accessed.
+Standing operator authority covers the exact implementation, tests, review remediation, protected
+merge, and post-merge verification. No deployment, schema, secret, county, PACS, SQL, migration, or
+live-resource action is included.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -37,7 +39,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 |----|-------|-------|
 | WO-PORTFOLIO-004 Standing Operator Authority | DONE | PR #1297 merged; standing delivery lifecycle authority active |
-| **WO-PORTFOLIO-005 Evidence Publisher Capacity Repair** | **CURRENT - complete on protected merge** | Replace the saturated shared monthly release with deterministic per-run release shards; no deletion or protected access |
+| WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
+| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** | Current-main replacement for stale PR #1153; backend health resolution plus exact canonical container-build provenance and governed packet/routing |
 | Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
@@ -88,7 +91,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State |
 |----|-------|
 | WO-BACKEND-OE-001..013 | DONE - program closed |
-| Any new backend implementation | PARKED - requires a new bounded program/WO authority |
+| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** |
+| Any other backend implementation | PARKED - requires a new bounded program/WO authority |
 
 ### property-workbench  (`/goal property-workbench`)
 | WO | State |
