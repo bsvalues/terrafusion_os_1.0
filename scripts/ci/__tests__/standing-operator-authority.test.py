@@ -31,7 +31,7 @@ def ready_context() -> dict[str, bool]:
         "unresolved_threads_zero": True,
         "merge_state_permits": True,
         "reservations_clear": True,
-        "true_authority_wall": False,
+        "no_true_authority_wall": True,
     }
 
 
@@ -61,6 +61,16 @@ class StandingAuthorityTests(unittest.TestCase):
         self.assertEqual(MODULE.classify(context, self.policy), "REVIEW_REMEDIATION")
 
     def test_true_wall_still_requires_owner(self) -> None:
+        context = ready_context()
+        context["no_true_authority_wall"] = False
+        self.assertEqual(MODULE.classify(context, self.policy), "BLOCKED_OWNER_DECISION")
+
+    def test_missing_wall_clearance_fails_closed(self) -> None:
+        context = ready_context()
+        del context["no_true_authority_wall"]
+        self.assertEqual(MODULE.classify(context, self.policy), "BLOCKED_OWNER_DECISION")
+
+    def test_legacy_positive_wall_also_blocks(self) -> None:
         context = ready_context()
         context["true_authority_wall"] = True
         self.assertEqual(MODULE.classify(context, self.policy), "BLOCKED_OWNER_DECISION")

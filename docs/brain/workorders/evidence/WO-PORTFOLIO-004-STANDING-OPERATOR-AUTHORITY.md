@@ -59,7 +59,7 @@ operator owns routine delivery and continuation without per-PR owner routing.
 Local validation before commit:
 
 - standing authority policy/verifier: PASS;
-- standing authority regression suite: PASS, 7 tests;
+- standing authority regression suite: PASS, 9 tests;
 - Work Order query/report/wave-planner suites: PASS, 42 tests;
 - core type-check: PASS;
 - phase83 tools: PASS, 56 tests;

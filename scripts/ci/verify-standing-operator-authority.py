@@ -69,6 +69,10 @@ def load_object(path: Path) -> dict[str, Any]:
 def classify(context: dict[str, bool], policy: dict[str, Any]) -> str:
     """Return the operator action without turning routine remediation into owner work."""
 
+    # The policy publishes the positive eligibility predicate. Requiring it explicitly
+    # keeps missing or false wall evidence from falling through to merge authority.
+    if context.get("no_true_authority_wall") is not True:
+        return OWNER_RESULT
     if context.get("true_authority_wall", False):
         return OWNER_RESULT
     if not context.get("program_authorized", False):
@@ -169,7 +173,7 @@ def validate_classifier(policy: dict[str, Any]) -> None:
         "unresolved_threads_zero": True,
         "merge_state_permits": True,
         "reservations_clear": True,
-        "true_authority_wall": False,
+        "no_true_authority_wall": True,
     }
     if classify(ready, policy) != ELIGIBLE_RESULT:
         fail("eligible authorized work must classify MERGE_AND_CONTINUE")
@@ -191,6 +195,10 @@ def validate_classifier(policy: dict[str, Any]) -> None:
         context[key] = False
         if classify(context, policy) != OWNER_RESULT:
             fail(f"{key}=false must classify {OWNER_RESULT}")
+    context = dict(ready)
+    context["no_true_authority_wall"] = False
+    if classify(context, policy) != OWNER_RESULT:
+        fail("no_true_authority_wall=false must classify BLOCKED_OWNER_DECISION")
     context = dict(ready)
     context["true_authority_wall"] = True
     if classify(context, policy) != OWNER_RESULT:
