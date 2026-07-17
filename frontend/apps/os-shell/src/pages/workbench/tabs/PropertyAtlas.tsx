@@ -340,7 +340,7 @@ export const PropertyAtlas: React.FC = () => {
       const situsText = boundary.data?.situsDisplay?.replace(/\r?\n/g, ', ') ?? parcelId;
       marker.setPopup(
         new mapboxgl.Popup({ offset: 25, closeButton: false })
-          .setHTML(`<span style="font-size:11px;font-weight:600">${situsText}</span>`)
+          .setText(situsText)
       );
 
       // Draw parcel polygon boundary when ArcGIS ring data is available

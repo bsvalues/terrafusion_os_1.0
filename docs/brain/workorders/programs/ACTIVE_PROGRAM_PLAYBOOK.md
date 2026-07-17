@@ -536,18 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - Atlas stale-branch reality audit |
+| Selected program | Portfolio Operator - Atlas popup text-safety repair |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-001 - MapLibre Migration Reality Audit` complete on protected merge |
-| Next WO | `WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair` |
+| Current WO | `WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair` complete on protected merge |
+| Next WO | `WO-ATLAS-003 - Map Renderer Contract Decision` |
 
-Portfolio synthesis at `bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e` executed WO-ATLAS-001.
-The audit closed stale PR #1073 without deleting its branch after proving 208-main-commit divergence,
-16 unresolved review threads, a missing claimed ADR, and cross-surface package scope. It identified
-the independent current-main popup text-safety repair at WO-ATLAS-002. The registry declares that
-frontend scope and fails closed until explicit R3 frontend authority activates it. Renderer migration
-remains a later contract decision, not an implied stale-branch merge.
+Direct 2026-07-17 R3 operator authority activated WO-ATLAS-002 from
+`4852836e3ffb5b5856d515cec7d2627fe0e683cb` after WO-ATLAS-001 exposed its protected frontend scope.
+The repair renders boundary-derived situs content through `Popup.setText`, with a hostile-markup
+regression proving no popup HTML call. WO-ATLAS-003 is the next docs-only decision and must define a
+current-main renderer contract rather than revive stale PR #1073.
 
 ---
 
