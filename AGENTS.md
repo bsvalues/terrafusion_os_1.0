@@ -77,6 +77,14 @@ Failed tests, review comments, routine merge-conflict remediation, approved work
 in-scope implementation choices, already-authorized product behavior, next-WO selection, and routine
 PR/check remediation are not authority walls.
 
+The active standing decision `OWNER-TF-STANDING-OPERATOR-AUTHORITY` grants Codex the complete
+delivery lifecycle for every ratified program and dependency-cleared Work Order inside that
+program's separately recorded scope. This includes branch/worktree creation, implementation,
+validation, commit, push, PR operation, exact-head assurance, review remediation, eligible squash
+merge, post-merge verification, closeout, and continuation. It does not create program scope or
+protected-resource authority. `MERGE_AUTH_REQUIRED` is valid only when no applicable standing or
+bounded merge authority exists.
+
 ## WORKTREE ISOLATION (MANDATORY — WO-BRAIN-0021)
 
 **No two agents may operate in the same mutable working tree.**
@@ -88,8 +96,9 @@ The shared/main working tree is for human-controlled sync only.
 - Before the first write, every agent runs and reports: `pwd`, `git branch --show-current`, `git rev-parse --show-toplevel`, `git status --short`. If toplevel = main repo root and the agent was not explicitly assigned there, **STOP** and create a worktree.
 - If foreign staged or unstaged files are present, **STOP** and report.
 - No `git reset --hard` / `git clean` / force checkout / broad stash / `git add -A` without human approval.
-- PR is the sync boundary. Agents may open draft or ready PRs and may merge only when recorded merge
-  authority and all canonical merge conditions apply; otherwise the owner merges.
+- PR is the sync boundary. Agents may open draft or ready PRs and must merge when applicable recorded
+  authority and all canonical merge conditions apply. The owner merges only when no standing or
+  bounded merge authority applies or a true authority wall requires new authority.
 - If a recovery plan's assumptions diverge from current repo state, the plan is stale — do not execute it.
 - If the shared checkout state is uncertain, **quarantine** it (do not clean/recover).
 

@@ -66,6 +66,12 @@ jobs:
           TF_MAO_002_EXECUTION_JSON: ${{ vars.MAO_002_PILOT_EXECUTION_JSON }}
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/ci/verify-mao-002-pilot-authority.py
+      - name: Test standing operator authority classifier
+        if: needs.changes.outputs.core == 'true'
+        run: python3 scripts/ci/__tests__/standing-operator-authority.test.py
+      - name: Verify standing operator authority canon
+        if: needs.changes.outputs.core == 'true'
+        run: python3 scripts/ci/verify-standing-operator-authority.py
       - name: Test MAO-003 reservation gate
         if: needs.changes.outputs.core == 'true'
         run: python3 scripts/ci/__tests__/mao-003-reservations.test.py

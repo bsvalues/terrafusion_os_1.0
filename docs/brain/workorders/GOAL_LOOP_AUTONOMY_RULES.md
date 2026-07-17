@@ -23,7 +23,7 @@ The operator:
 2. selects the active `/goal` (program)
 3. runs `/loop` in the allowed mode
 4. executes authorized unblocked WOs
-5. opens / monitors / merges PRs when allowed
+5. opens, monitors, remediates, and merges PRs under standing or bounded authority
 6. continues to the next legal WO
 7. stops **only** at a true authority wall
 8. returns evidence, blockers, and next state
@@ -42,6 +42,11 @@ The operator proceeds to the next WO automatically when **every** condition is t
 - **no** failed gate outside scope blocks the chain
 
 If all hold → execute. Do not narrate a decision to the human. Do the work.
+
+For delivery mechanics, `OWNER-TF-STANDING-OPERATOR-AUTHORITY` is the default applicable merge
+grant. When exact-head assurance, required checks, review resolution, merge state, reservations, and
+scope all pass, classify `MERGE_AND_CONTINUE`. This grant never creates the program or Work Order
+scope evaluated by the conditions above.
 
 ---
 

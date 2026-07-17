@@ -119,6 +119,9 @@ This is the correct place to surface the authorization backlog — not a per-saf
 - **Honesty invariants still hold** (no fabricated numbers, no stale 89,247, disclose `unavailable`).
 - **Merge-watch is in-scope** between lanes (resolve bot threads, update behind branches); it is not a wall.
 
+The active standing delivery grant also makes an eligible, exact-head, scope-clean PR an operator
+merge. It does not authorize any lane, scope, or protected boundary listed in the wall ledger.
+
 ---
 
 ## 6. Relationship to the Doctrine Layer

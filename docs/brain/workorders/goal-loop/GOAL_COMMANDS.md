@@ -76,8 +76,9 @@ now the governing model for subsequent owner-selected lanes.
 
 **Allowed loop modes:** `once`, `program`, `evidence`
 
-**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes, branch protection,
-hook bypass without owner authorization, merge without PR-specific authorization, production,
+**Blocked:** runtime/backend/tools-sync implementation, CI or workflow changes outside active
+authority, branch protection, hook bypass without an applicable standing exception, merge without
+applicable standing/bounded authority, production,
 deployment, secrets, county/PACS/SQL/live resources, and destructive operations.
 
 ---
@@ -390,7 +391,9 @@ Use `/goal portfolio-operator` for the next live reconciliation; no lane is pres
 
 **Mode B:** The canonical
 [Merge Authority Model](../operator/MERGE_AUTHORITY_MODEL.md#mode-b-preauthorized-operator-merge)
-defines Mode B as preauthorized operator merge under recorded, revocable, exact-scope authority.
+defines Mode B as operator merge under recorded, revocable authority. The active standing grant
+covers routine delivery for every already-ratified program and dependency-cleared Work Order inside
+its separate scope; it does not create that scope or protected-resource authority.
 MAO-002 consumed its two-PR issue #1276 grant and released the paired operational variables after
 post-merge assurance. The owner has ratified
 `OWNER-PROGRAM-MAO-001-R3-CONTINUATION-ENVELOPE`, which supplied bounded, revocable Mode B authority

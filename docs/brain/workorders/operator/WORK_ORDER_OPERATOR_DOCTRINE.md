@@ -183,9 +183,10 @@ When the Work Order grants PR authority, the operator may:
 - report merge readiness only after checks are green, review threads are resolved, and scope is clean.
 
 The operator merges only under the canonical
-[`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md). Mode B or Mode C authority may cover an exact
-PR, batch, or bounded PR class when the owner records the grant. Routine merge execution inside that
-grant is not a new branch/merge decision, but the grant alone is insufficient: exact scope,
+[`MERGE_AUTHORITY_MODEL.md`](MERGE_AUTHORITY_MODEL.md). The active standing Mode B grant covers every
+already-ratified program and dependency-cleared Work Order inside its separate scope; narrower Mode B
+or Mode C grants may also cover an exact PR, batch, or bounded PR class. Routine merge execution inside
+an applicable grant is not a new branch/merge decision, but the grant alone is insufficient: exact scope,
 reservation clearance, passing or explicitly acceptable checks, zero unresolved threads, clean merge
 state, complete evidence and rollback, and protected-boundary checks remain mandatory. Ambiguity,
 force operations, or missing authority remain walls.

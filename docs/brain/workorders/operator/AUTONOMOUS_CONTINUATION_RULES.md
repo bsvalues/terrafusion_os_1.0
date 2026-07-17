@@ -39,7 +39,7 @@ Codex must stop when the next action would require:
 - destructive git or filesystem operations,
 - hook bypass without an active bounded exception,
 - force push,
-- merge authority not already granted under the canonical merge model,
+- no standing or bounded merge authority applies under the canonical merge model,
 - production, county, PACS, SQL, live DB, or secrets access,
 - ambiguous or conflicting canon,
 - CI/release/deployment wiring,

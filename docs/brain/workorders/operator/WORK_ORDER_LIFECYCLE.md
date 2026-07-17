@@ -13,7 +13,7 @@ Program: codex-operator-playbook
 | PR_OPEN | PR exists. | Monitor checks and review. |
 | REVIEW_REMEDIATION | Review comments exist. | Fix within authorized files or stop for scope expansion. |
 | CHECK_WATCH | Checks are pending/rerunning. | Wait, update branch if routine, classify failures. |
-| MERGE_READY | Checks green/acceptable, threads zero, scope clean. | Request merge authorization unless already granted. |
+| MERGE_READY | Checks green/acceptable, threads zero, scope clean. | Apply standing/bounded authority; merge and continue when eligible, otherwise emit the exact true wall. |
 | MERGED | PR merged. | Fetch `origin/main` and record merge commit. |
 | POST_MERGE_VERIFIED | Files/evidence verified on `origin/main`. | Continue if loop permits. |
 | BLOCKED_OWNER_DECISION | Owner authority required. | Emit owner decision packet. |
@@ -33,7 +33,8 @@ Program: codex-operator-playbook
 
 | Stop type | Meaning |
 |-----------|---------|
-| MERGE_AUTH_REQUIRED | PR is merge-ready, but owner merge authorization is required. |
+| MERGE_AND_CONTINUE | PR is merge-ready and applicable standing/bounded authority is active. |
+| MERGE_AUTH_REQUIRED | PR is merge-ready but no applicable standing or bounded merge authority exists. |
 | HOOK_BYPASS_AUTH_REQUIRED | Local commit/push hook bypass is required. |
 | SCOPE_EXPANSION_REQUIRED | Required fix touches files outside authorized scope. |
 | VALIDATION_FAILURE_OUT_OF_SCOPE | Validation failed in a way the current WO cannot repair. |

@@ -65,9 +65,22 @@ authorization for this exact amendment. It is limited to the 19 source-cited WO-
 the WO-MAO-001 file/action scope. It is not general R5 authority, production authority, credentials
 authority, suite-boundary authority, or permission to modify runtime behavior.
 
-## Staged Operator-Merge Activation
+## Standing Operator-Merge Activation
 
-**OPERATOR-MERGE AUTHORITY IS RATIFIED BUT NOT ACTIVE.**
+**OPERATOR-MERGE AUTHORITY IS RATIFIED AND ACTIVE FOR ALREADY-AUTHORIZED DELIVERY.**
+
+The active owner decision `OWNER-TF-STANDING-OPERATOR-AUTHORITY` grants continuous delivery
+lifecycle authority across current and future ratified TerraFusion programs. It does not grant a
+program objective, file scope, risk ceiling, product behavior, protected-resource access, or
+production authority. Those boundaries continue to come from the active program and Work Order.
+When that separate authority exists and the canonical merge conditions pass, the operator must
+merge and continue without per-PR owner routing.
+
+The standing policy is machine-readable at `.governance/standing-operator-authority.json` and is
+validated by `scripts/ci/verify-standing-operator-authority.py`. It remains active until explicitly
+revoked or narrowed and suspends fail-closed on its recorded triggers.
+
+### Historical MAO-002 Activation
 
 WO-MAO-001A separates the one-time owner envelope from mutable pilot execution state. The owner
 envelope is published once in `MAO_002_PILOT_BOOTSTRAP_JSON` and defines the operator, assurance
@@ -93,9 +106,16 @@ must state:
 Authority persists across sessions and operators until its recorded expiry, completion, revocation,
 or superseding decision. It is not recreated from chat memory or inferred from a prior success.
 
+Standing delivery authority may delegate lifecycle mechanics to the operator while requiring each
+program and Work Order to provide the actual objective, scope, systems, risk, and protected-boundary
+authority. This separation prevents routine engineering from becoming owner dispatch without
+creating unrestricted portfolio authority.
+
 ## Consequences
 
 - Already-authorized work is not a new authority wall.
+- An eligible green PR inside active authority classifies `MERGE_AND_CONTINUE`; merge readiness is
+  not a new owner decision when standing authority applies.
 - One Brain may dispatch many isolated workers without creating competing governance.
 - Playbooks and local instructions cannot silently override canonical continuation or merge semantics.
 - Cross-repository dispatch requires a committed `PATH_CANON_REGISTER.md`. That file is absent from the

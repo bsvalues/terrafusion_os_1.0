@@ -112,12 +112,14 @@ actions.
 | Portfolio run: ALL lanes parked/exhausted | **STOP** — All-Lanes-Parked report |
 | Bounded mode reaches its scope boundary | **STOP** per that mode |
 | R3-R5 action requires authority not present in the active record | **STOP** — request the missing authority |
-| Merge requires human authority not already granted | **STOP** |
+| No standing or bounded merge authority applies | **STOP** — request the missing authority |
 | Conflicting canon, or an honesty invariant would be violated | **STOP** |
 
 **The human is the authority wall, not the per-WO dispatcher.** Safe continuation *inside the recorded
 authority boundary* is automatic and must not prompt "what next?". The human decides only when new
-authority is required, at ALL-LANES-PARKED, at merge-authority gaps, or at unresolved canon conflicts.
+program/protected-boundary authority is required, at ALL-LANES-PARKED, when no standing or bounded
+merge authority applies, or at unresolved canon conflicts. The active standing delivery grant means
+an eligible green PR is `MERGE_AND_CONTINUE`, not a merge-authority gap.
 (This supersedes the older
 "the operator always makes the final call on which WO to execute next" line in
 [work-order-engine.md](programs/work-order-engine.md), which predates the continuation gate.)

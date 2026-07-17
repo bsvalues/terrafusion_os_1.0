@@ -29,7 +29,7 @@ review, check, push, or post-merge state.
 11. Remediate review feedback in scope.
 12. Push fixes.
 13. Wait for clean merge state.
-14. Merge if pre-authorized; otherwise stop for merge authority.
+14. Apply standing/bounded authority; merge and continue when eligible, otherwise emit the true wall.
 15. Post-merge verify `origin/main`.
 16. Update loop state.
 17. Select the next Work Order in the same loop if allowed.
@@ -62,6 +62,6 @@ A PR is merge-ready only when:
 - remote checks are green or explicitly acceptable,
 - review threads are resolved,
 - merge state is clean,
-- no owner authority wall remains except merge authority itself.
+- no true authority wall remains and applicable standing/bounded merge authority is active.
 
 STOP_TYPE: CODEX_PR_LIFECYCLE_PLAYBOOK_DEFINED

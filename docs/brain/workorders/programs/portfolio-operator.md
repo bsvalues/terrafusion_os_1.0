@@ -4,7 +4,8 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Governing portfolio continuation baseline - all registered lanes parked
+**Status:** Governing portfolio continuation baseline - standing delivery authority active; all
+registered lanes parked
 
 ## Purpose
 
@@ -21,6 +22,16 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 5. Activate the highest-ranked program goal and loop.
 6. Start its first dependency-cleared Work Order and continue until a true wall or program closeout.
 7. On closeout, repeat portfolio reconciliation instead of returning a next-program selection stop.
+
+## Standing Delivery Authority
+
+`OWNER-TF-STANDING-OPERATOR-AUTHORITY` continuously authorizes routine delivery mechanics for every
+already-ratified program and dependency-cleared Work Order inside its separate scope. The operator
+owns worktrees, implementation judgment, validation, commits, pushes, PRs, exact-head assurance,
+review remediation, eligible squash merges, post-merge verification, closeout, and continuation.
+
+The grant does not make any parked node executable. A new program, protected boundary, destructive
+action, or other true wall still requires its own authority.
 
 ## Valid Portfolio Stops
 
@@ -39,13 +50,15 @@ closes. The owner is an authority wall, not the dispatcher between completed pro
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `9a6f8aceb66f5203aa235aed2ea0560e646699a5`, WO-PORTFOLIO-003 found no
+At `origin/main` `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3`, WO-PORTFOLIO-003 found no
 registered node that is both dependency-cleared and inside existing authority. The Azure safe
 evidence slice is complete; every remaining node is completed or parked at a recorded protected
 boundary.
 
 No deployment or runtime lane is preselected. The live result is recorded in
 [`WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md).
-The operator resumes when a canonical node is admitted or an applicable grant clears a wall.
+WO-PORTFOLIO-004 then ratifies standing delivery authority without selecting or broadening a parked
+lane. The operator resumes when a canonical node is admitted or an applicable program/protected
+grant clears a wall; routine delivery after that point needs no per-PR owner routing.
 
 STOP_TYPE: `ALL_LANES_PARKED`

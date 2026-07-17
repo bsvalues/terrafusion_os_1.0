@@ -405,6 +405,55 @@
         "evidence": "docs/brain/workorders/evidence/WO-MAO-007-EVIDENCE-ROLLUP-CANON-CLOSEOUT.md",
         "merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR"
       }
+    },
+    {
+      "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
+      "program": "all current and future ratified TerraFusion programs",
+      "goal": "GOAL-PORTFOLIO-OPERATOR-001",
+      "loop": "LOOP-PORTFOLIO-OPERATOR-001",
+      "work_order": "every dependency-cleared Work Order inside active ratified authority",
+      "status": "active",
+      "authority_class": "standing-portfolio-delivery-lifecycle",
+      "effective_base_sha": "4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3",
+      "scope_source": "active ratified program and dependency-cleared Work Order",
+      "policy": ".governance/standing-operator-authority.json",
+      "authorized_actions": [
+        "select the next dependency-cleared Work Order",
+        "create and repair dedicated worktrees and branches",
+        "implement only the scope separately authorized by the active program and Work Order",
+        "validate and remediate in-scope failures",
+        "commit, push, open or update pull requests, and monitor checks and reviews",
+        "resolve in-scope review feedback and ordinary conflicts",
+        "revalidate exact pull request heads",
+        "squash-merge eligible pull requests through protected branch controls",
+        "verify origin/main, close Work Orders, update evidence and routing, and continue"
+      ],
+      "authorized_files": [
+        "files explicitly authorized by the active ratified program and dependency-cleared Work Order"
+      ],
+      "explicitly_denied": [
+        "creation of a new program, objective, or material scope",
+        "production, deployment, county, PACS, SQL, credential, secret, or protected-data authority",
+        "destructive action outside an approved rollback envelope",
+        "required-check, branch-protection, review, exact-head, or reservation bypass",
+        "force push or direct push to main",
+        "legal, financial, procurement, licensing, employment, or political authority",
+        "unrestricted portfolio mutation"
+      ],
+      "merge_mode": "B-standing-authorized-work-order",
+      "revocation_triggers": [
+        "scope expansion outside active ratified authority",
+        "required-check bypass or failure",
+        "unresolved review thread at merge time",
+        "exact-head assurance failure",
+        "reservation collision or stale reservation",
+        "protected-boundary access without authority",
+        "false completion or rollback evidence",
+        "conflicting active authority",
+        "explicit owner revocation or narrowing"
+      ],
+      "terminal_condition": "Remains active until William explicitly revokes or narrows it; affected actions suspend automatically on any revocation trigger.",
+      "decision_basis": "Standing Operator Authority - TerraFusion Delivery, ratified by the owner after WO-PORTFOLIO-003 exposed repeated false merge-authority stops"
     }
   ]
 }
