@@ -17,13 +17,14 @@ WO-PORTFOLIO-007 is the active dependency-cleared node on base
 `2d67835735fcd9a82f8b96fde422cf38a8edf0a8`. Review of WO-PORTFOLIO-006 proved an existing bounded
 handoff defect: an unscoped suite launch supplied `openTab`, but Property Search discarded that
 validated intent after parcel selection. WO-PORTFOLIO-006 merged the honest non-claim; this successor
-closes the user-facing gap through the existing canonical route and tab allowlist.
+closes the user-facing gap by mounting the existing canonical fallback and preserving its tab intent
+through the established parcel route and tab allowlist.
 
 Standing operator authority and the owner's current continuation direction cover this exact shell
 routing implementation, deterministic tests, governance evidence, review remediation, protected
-merge, and post-merge verification. No new route or tab, suite business logic, backend, tools-sync,
-CI, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource change is
-included.
+merge, and post-merge verification. No new top-level surface or tab, suite business logic, backend,
+tools-sync, CI, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource
+change is included.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -43,7 +44,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
 | WO-BACKEND-014 Health Build-Provenance Truth | DONE | PR #1299 merged; endpoint and canonical container build provenance verified |
 | WO-PORTFOLIO-006 Shell Routing Contract Reconciliation | DONE | PR #1300 merged; static contract corrected and unscoped handoff gap recorded honestly |
-| **WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff** | **CURRENT - complete on protected merge** | Preserve validated requested tab through parcel selection; reject invalid values; no route or tab addition |
+| **WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff** | **CURRENT - complete on protected merge** | Mount the existing no-parcel fallback; preserve validated requested tab through parcel selection; reject invalid values |
 | Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)

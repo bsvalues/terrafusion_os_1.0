@@ -53,9 +53,10 @@ At `origin/main` `2d67835735fcd9a82f8b96fde422cf38a8edf0a8`, portfolio synthesis
 accepted PR #1300 review evidence: the unscoped suite launch includes `openTab`, but Property Search
 did not carry that intent through parcel selection.
 
-WO-PORTFOLIO-007 is a bounded R3 correction. It validates the existing query against the canonical
-tab allowlist, preserves valid non-summary intent in the existing parcel route, normalizes summary,
-and rejects unknown values. It adds no route, tab, business logic, or protected-resource access.
+WO-PORTFOLIO-007 is a bounded R3 correction. It mounts the already-declared no-parcel fallback on
+Property Search, validates the existing query against the canonical tab allowlist, preserves valid
+non-summary intent in the existing parcel route, normalizes summary, and rejects unknown values. It
+adds no top-level surface, tab, suite business logic, or protected-resource access.
 After protected merge, the portfolio loop reconciles again rather than returning to
 `ALL_LANES_PARKED` by default.
 

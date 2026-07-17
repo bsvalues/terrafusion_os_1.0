@@ -212,6 +212,7 @@ const Router: React.FC = () => {
 
                   {/* Property Search — native TerraPrime replacement */}
                   <Route path='property' element={<PropertySearch />} />
+                  <Route path='property/search' element={<PropertySearch />} />
 
                   {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
                   <Route path='property/:parcelId' element={<PropertyWorkbench />}>

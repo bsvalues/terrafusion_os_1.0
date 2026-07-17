@@ -14,13 +14,14 @@
 
 ## Objective
 
-Preserve a valid suite-requested Workbench tab when an unscoped launch enters Property Search and
-the operator selects a parcel. Reject unknown tab values and normalize the `summary` tab to the
-Workbench index route.
+Mount the existing canonical `/property/search?openTab=...` fallback on Property Search, then
+preserve a valid suite-requested Workbench tab when the operator selects a parcel. Reject unknown
+tab values and normalize the `summary` tab to the Workbench index route.
 
 ## Authorized Files
 
 - `frontend/apps/os-shell/src/pages/PropertySearch.tsx`
+- `frontend/apps/os-shell/src/Router.tsx`
 - `frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx`
 - `tests/deployment-truth-gate.test.mjs`
 - `docs/brain/workorders/active/WO-PORTFOLIO-007-unscoped-workbench-tab-handoff.md`
@@ -33,7 +34,8 @@ Workbench index route.
 
 ## Blocked Scope
 
-- New routes, Workbench tabs, top-level surfaces, or changes to canonical tab order.
+- New top-level surfaces, Workbench tabs, route-model changes beyond mounting the existing canonical
+  fallback, or changes to canonical tab order.
 - Suite business logic, backend, tools-sync, CI, deployment, package, lockfile, schema, or migration
   changes.
 - Secrets, credentials, county data, PACS, SQL, live services, or production resources.

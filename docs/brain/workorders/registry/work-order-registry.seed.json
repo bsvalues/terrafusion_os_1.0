@@ -1115,8 +1115,9 @@
       ],
       "allowedSystems": [
         {
-          "name": "OS Shell Property Search routing, focused contracts, and Brain work-order governance",
+          "name": "OS Shell fallback and Property Search routing, focused contracts, and Brain work-order governance",
           "paths": [
+            "frontend/apps/os-shell/src/Router.tsx",
             "frontend/apps/os-shell/src/pages/PropertySearch.tsx",
             "frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx",
             "tests/deployment-truth-gate.test.mjs",
@@ -1126,10 +1127,11 @@
       ],
       "blockedSystems": [
         {
-          "name": "New routes or tabs, suite business logic, backend, tools-sync, CI, deployment, schema, secrets, county, PACS, SQL, migrations, live resources"
+          "name": "New top-level surfaces or tabs, route-model changes beyond mounting the canonical fallback, suite business logic, backend, tools-sync, CI, deployment, schema, secrets, county, PACS, SQL, migrations, live resources"
         }
       ],
       "allowedFiles": [
+        "frontend/apps/os-shell/src/Router.tsx",
         "frontend/apps/os-shell/src/pages/PropertySearch.tsx",
         "frontend/apps/os-shell/src/__tests__/workbench/propertySearch.contract.test.tsx",
         "tests/deployment-truth-gate.test.mjs",
@@ -1184,7 +1186,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop on a new route or tab, protected-resource access, or files outside the exact Work Order."
+          "description": "Stop on a new top-level surface or tab, route-model expansion beyond the canonical fallback, protected-resource access, or files outside the exact Work Order."
         }
       ],
       "nextCandidates": [],

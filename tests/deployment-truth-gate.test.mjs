@@ -511,6 +511,16 @@ describe('E. Shell route contract survival', () => {
         searchContent.includes('`${workbenchRoute}/${requestedTab}`'),
         'PropertySearch must preserve a valid requested tab after parcel selection'
       );
+
+      const router = readFileSync(
+        join(ROOT, 'frontend', 'apps', 'os-shell', 'src', 'Router.tsx'),
+        'utf8'
+      );
+      assert.ok(
+        router.includes("path='property/search' element={<PropertySearch />}") &&
+          router.indexOf("path='property/search'") < router.indexOf("path='property/:parcelId'"),
+        'The canonical no-parcel fallback must mount PropertySearch before the parcel route'
+      );
     }
   });
 

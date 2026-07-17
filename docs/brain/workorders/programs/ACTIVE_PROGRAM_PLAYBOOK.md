@@ -544,9 +544,10 @@ from program evidence.
 
 Portfolio synthesis at `2d67835735fcd9a82f8b96fde422cf38a8edf0a8` admitted WO-PORTFOLIO-007
 from the accepted PR #1300 review evidence. The bounded slice carries an existing validated
-`openTab` request through Property Search parcel selection using the existing Workbench route and
-canonical tab allowlist. It adds no route or tab; deployment, schema, secrets, county/PACS/SQL,
-migration, and live resources stay protected and untouched.
+`openTab` request from the already-declared no-parcel fallback through Property Search parcel
+selection using the existing Workbench route and canonical tab allowlist. It adds no top-level
+surface or tab; deployment, schema, secrets, county/PACS/SQL, migration, and live resources stay
+protected and untouched.
 
 ---
 
