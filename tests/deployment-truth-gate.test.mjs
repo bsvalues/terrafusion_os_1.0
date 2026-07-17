@@ -465,7 +465,7 @@ describe('E. Shell route contract survival', () => {
     assert.ok(routerContent.includes('Route'), 'Router must define Route elements');
   });
 
-  it('E3: SuiteModuleGrid preserves parcel workbench routes and standalone activation', () => {
+  it('E3: shell preserves Workbench intent and standalone activation', () => {
     const smg = join(
       ROOT,
       'frontend',
@@ -490,6 +490,26 @@ describe('E. Shell route contract survival', () => {
         content.includes('activateModule') &&
           content.includes("void activateModule(targetId, { source: 'system' })"),
         'SuiteModuleGrid must preserve shell-owned activation for standalone modules'
+      );
+
+      const propertySearch = join(
+        ROOT,
+        'frontend',
+        'apps',
+        'os-shell',
+        'src',
+        'pages',
+        'PropertySearch.tsx'
+      );
+      const searchContent = readFileSync(propertySearch, 'utf8');
+      assert.ok(
+        searchContent.includes('useSearchParams') &&
+          searchContent.includes('VALID_WORKBENCH_TAB_IDS'),
+        'PropertySearch must validate requested Workbench tabs against the canonical allowlist'
+      );
+      assert.ok(
+        searchContent.includes('`${workbenchRoute}/${requestedTab}`'),
+        'PropertySearch must preserve a valid requested tab after parcel selection'
       );
     }
   });

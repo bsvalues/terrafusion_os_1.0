@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-PORTFOLIO-006` - shell routing contract reconciliation
+**Status:** Active at `WO-PORTFOLIO-007` - unscoped Workbench tab handoff
 
 ## Purpose
 
@@ -49,14 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `1adc7df4f78c0e3aa33a829bdb668ad0f511773f`, portfolio synthesis verified that
-the reviewed outcomes from stale PR #1076 already exist on main and closed that unsafe broad PR as
-superseded. The same reconciliation found an executable R2 defect in the deployment truth gate: its
-E3 assertion contradicted shell canon by prohibiting standalone module activation.
+At `origin/main` `2d67835735fcd9a82f8b96fde422cf38a8edf0a8`, portfolio synthesis consumed the
+accepted PR #1300 review evidence: the unscoped suite launch includes `openTab`, but Property Search
+did not carry that intent through parcel selection.
 
-WO-PORTFOLIO-006 updates only the static contract and governance evidence. It proves both canonical
-paths: parcel-scoped navigation through Property Workbench and shell-owned standalone activation.
+WO-PORTFOLIO-007 is a bounded R3 correction. It validates the existing query against the canonical
+tab allowlist, preserves valid non-summary intent in the existing parcel route, normalizes summary,
+and rejects unknown values. It adds no route, tab, business logic, or protected-resource access.
 After protected merge, the portfolio loop reconciles again rather than returning to
 `ALL_LANES_PARKED` by default.
 
-STOP_TYPE: `SHELL_ROUTING_CONTRACT_RECONCILED`
+STOP_TYPE: `UNSCOPED_WORKBENCH_TAB_HANDOFF_REPAIRED`

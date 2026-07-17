@@ -10,19 +10,24 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, MapPin, Loader2, Building2, ArrowRight, Clock } from 'lucide-react';
 import {
   getAssessmentProperties,
   type AssessmentPropertySummary,
 } from '../services/assessmentPropertyService';
 import { useRecentParcels } from '../context/parcelContext';
+import { VALID_WORKBENCH_TAB_IDS } from '../config/suiteRegistry';
 
 const PAGE_SIZE = 20;
 
 const PropertySearch: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const recentParcels = useRecentParcels();
+  const requestedTab = VALID_WORKBENCH_TAB_IDS.find(
+    (tabId) => tabId === searchParams.get('openTab'),
+  );
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<AssessmentPropertySummary[]>([]);
@@ -82,7 +87,12 @@ const PropertySearch: React.FC = () => {
   };
 
   const openParcel = (geoId: string) => {
-    navigate(`/property/${encodeURIComponent(geoId)}`);
+    const workbenchRoute = `/property/${encodeURIComponent(geoId)}`;
+    navigate(
+      requestedTab && requestedTab !== 'summary'
+        ? `${workbenchRoute}/${requestedTab}`
+        : workbenchRoute,
+    );
   };
 
   const fmt = (n: number) =>
