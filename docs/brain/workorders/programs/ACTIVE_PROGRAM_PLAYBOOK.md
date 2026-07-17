@@ -536,17 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Backend Operational Excellence - bounded provenance follow-up |
+| Selected program | Portfolio Operator - shell routing contract reconciliation |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-BACKEND-014 - Health Build-Provenance Truth` complete on protected merge |
+| Current WO | `WO-PORTFOLIO-006 - Shell Routing Contract Reconciliation` complete on protected merge |
 | Next WO | Portfolio reconciliation after protected merge |
 
-Portfolio synthesis at `3649a4665337559213f62419377574cec2ebad1a` rejected stale Sync routing
-because the canonical Sync repository is complete through WO-SYNC-155. It admitted WO-BACKEND-014
-as a bounded current-main replacement for stale PR #1153. The slice changes health build-provenance
-resolution, deterministic tests, and exact SHA propagation through the two canonical backend image
-builds; deployment execution, schema, secrets, county/PACS/SQL, migration, and live resources remain
+Portfolio synthesis at `1adc7df4f78c0e3aa33a829bdb668ad0f511773f` closed stale PR #1076 as
+superseded after verifying its reviewed outcomes on main. It then admitted WO-PORTFOLIO-006 to
+reconcile the remaining stale E3 static assertion with canonical shell routing. The slice changes no
+product source: parcel-scoped launches continue through Property Workbench and standalone modules
+remain shell-owned; deployment, schema, secrets, county/PACS/SQL, migration, and live resources stay
 protected and untouched.
 
 ---

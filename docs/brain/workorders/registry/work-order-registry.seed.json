@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-BACKEND-014",
+  "generatedBy": "WO-PORTFOLIO-006",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -990,6 +990,110 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "Live portfolio synthesis and stale PR #1153 reconciliation",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-006",
+      "title": "Shell Routing Contract Reconciliation",
+      "program": "Portfolio Operator",
+      "goal": "Reconcile the deployment truth gate with canonical Property Workbench navigation and shell-owned standalone activation.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-BACKEND-014",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1299 merged at 1adc7df4f78c0e3aa33a829bdb668ad0f511773f"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Static deployment truth contract and Brain work-order governance",
+          "paths": [
+            "tests/deployment-truth-gate.test.mjs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product runtime, frontend source, backend, tools-sync, CI, deployment, schema, secrets, county, PACS, SQL, migrations, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "tests/deployment-truth-gate.test.mjs",
+        "docs/brain/workorders/active/WO-PORTFOLIO-006-shell-routing-contract-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-006-SHELL-ROUTING-CONTRACT-RECONCILIATION.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Focused E3 and full deployment truth contracts pass."
+        },
+        {
+          "kind": "file",
+          "description": "Evidence records the shell canon and explicit no-product-change boundary."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "focused shell routing contract",
+          "command": "node --test --test-name-pattern=E3 tests/deployment-truth-gate.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "deployment truth gate",
+          "command": "node --test tests/deployment-truth-gate.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-006-SHELL-ROUTING-CONTRACT-RECONCILIATION.md",
+          "summary": "Current-main selection, shell canon, red/green validation, and non-claim evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on product source, deployment, protected-resource access, or files outside the exact Work Order."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Portfolio synthesis and standing operator authority cover this exact bounded test and governance reconciliation."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Live portfolio synthesis and stale PR #1076 reconciliation",
         "schemaVersion": "0.1.0"
       }
     }
