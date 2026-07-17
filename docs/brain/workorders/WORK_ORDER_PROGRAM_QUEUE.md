@@ -16,8 +16,9 @@
 WO-BACKEND-014 is the active dependency-cleared node on base
 `3649a4665337559213f62419377574cec2ebad1a`. Portfolio synthesis rejected stale Sync routing after
 live cross-repo evidence showed that chain complete through WO-SYNC-155. It then selected the bounded
-three-file health build-provenance correction represented by stale PR #1153, rebuilding it from
-current main with its unlanded review corrections instead of inheriting 142 commits of drift.
+health build-provenance correction represented by stale PR #1153, rebuilding it from current main
+with its unlanded review corrections and canonical container-build proof instead of inheriting 142
+commits of drift.
 
 Standing operator authority covers the exact implementation, tests, review remediation, protected
 merge, and post-merge verification. No deployment, schema, secret, county, PACS, SQL, migration, or
@@ -39,7 +40,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-PORTFOLIO-004 Standing Operator Authority | DONE | PR #1297 merged; standing delivery lifecycle authority active |
 | WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
-| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** | Current-main replacement for stale PR #1153; three backend files plus governed packet/routing only |
+| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** | Current-main replacement for stale PR #1153; backend health resolution plus exact canonical container-build provenance and governed packet/routing |
 | Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)

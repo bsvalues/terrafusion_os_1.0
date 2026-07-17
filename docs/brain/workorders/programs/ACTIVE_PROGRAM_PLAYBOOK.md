@@ -545,8 +545,9 @@ from program evidence.
 Portfolio synthesis at `3649a4665337559213f62419377574cec2ebad1a` rejected stale Sync routing
 because the canonical Sync repository is complete through WO-SYNC-155. It admitted WO-BACKEND-014
 as a bounded current-main replacement for stale PR #1153. The slice changes health build-provenance
-resolution and deterministic tests only; deployment, schema, secrets, county/PACS/SQL, migration,
-and live resources remain protected and untouched.
+resolution, deterministic tests, and exact SHA propagation through the two canonical backend image
+builds; deployment execution, schema, secrets, county/PACS/SQL, migration, and live resources remain
+protected and untouched.
 
 ---
 

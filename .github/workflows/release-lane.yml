@@ -241,7 +241,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target runtime -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
+          docker build --pull --target runtime --build-arg GIT_SHA="$RELEASE_SHA" -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
           docker push "$BACKEND_IMAGE"
 
       - name: Reclaim runner disk before frontend image

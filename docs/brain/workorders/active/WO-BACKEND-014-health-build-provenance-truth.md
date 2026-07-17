@@ -14,15 +14,17 @@
 
 ## Objective
 
-Make `/health` report the immutable build commit for non-container artifacts instead of relying only
-on the Docker `TF_GIT_SHA` path. Supersede stale PR #1153 with a current-main implementation that
-also incorporates its unlanded review findings.
+Make `/health` report the immutable build commit for container and non-container artifacts.
+Supersede stale PR #1153 with a current-main implementation that incorporates its unlanded review
+findings and closes the canonical Docker build-provenance path end to end.
 
 ## Capability
 
 - Preserve `TF_GIT_SHA` as the first provenance source when it contains a real value.
 - Treat the container placeholder `unknown` as absent.
 - Fall back to the source revision stamped into assembly `InformationalVersion`.
+- Pass the validated workflow SHA into both canonical backend image builds.
+- Stamp that SHA into the assembly during each Docker publish stage.
 - Trim provenance values and retain an explicit `unknown` fallback.
 
 ## Authorized Files
@@ -30,6 +32,11 @@ also incorporates its unlanded review findings.
 - `backend/src/TerraFusion.API/Controllers/SimpleHealthController.cs`
 - `backend/src/TerraFusion.API/TerraFusion.API.csproj`
 - `backend/tests/TerraFusion.Unit.Tests/Controllers/SimpleHealthControllerGitShaTests.cs`
+- `backend/Dockerfile`
+- `backend/Dockerfile.API`
+- `.github/workflows/ci.yml`
+- `.github/workflows/release-lane.yml`
+- `tests/deployment-truth-gate.test.mjs`
 - `docs/brain/workorders/active/WO-BACKEND-014-health-build-provenance-truth.md`
 - `docs/brain/workorders/evidence/WO-BACKEND-014-HEALTH-BUILD-PROVENANCE-TRUTH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -40,10 +47,10 @@ also incorporates its unlanded review findings.
 
 ## Blocked Scope
 
-- Deployment or live environment changes.
+- Deployment execution or live environment changes.
 - Secrets, credentials, county data, PACS, SQL, or migrations.
 - Health/readiness semantics beyond build provenance.
-- CI/workflow, Dockerfile, package, lockfile, frontend, or tools-sync changes.
+- Any other CI/workflow, Dockerfile, package, lockfile, frontend, or tools-sync changes.
 
 ## Validation
 
@@ -51,6 +58,7 @@ also incorporates its unlanded review findings.
 - Release solution build with zero warnings and zero errors.
 - Full backend unit-test project.
 - Build-stamp assembly inspection.
+- Deployment truth contract for workflow-to-image SHA propagation.
 - `git diff --check`.
 - `node docs/brain/workorders/tools/wo-query.mjs --json`.
 

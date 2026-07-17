@@ -3,6 +3,7 @@
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
+ARG GIT_SHA=unknown
 
 # Copy solution and project files for restore
 COPY TerraFusion.sln ./
@@ -44,6 +45,7 @@ RUN dotnet publish src/TerraFusion.API/TerraFusion.API.csproj \
     -c Release \
     -o /app/publish \
     --no-restore \
+    /p:SourceRevisionId="${GIT_SHA}" \
     --verbosity minimal
 
 RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.csproj \

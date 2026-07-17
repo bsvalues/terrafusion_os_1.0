@@ -17,11 +17,18 @@
 - The controller reads its declaring assembly, not the ambient executing assembly.
 - The resolver is internal and remains unit-testable through the existing friend assembly.
 - `GITHUB_SHA` populates `SourceRevisionId` without invoking Git during the build.
+- Canonical CI passes `github.sha` into `backend/Dockerfile.API`; the release lane passes its
+  validated `RELEASE_SHA` into `backend/Dockerfile`.
+- Both Docker publish stages stamp `GIT_SHA` into `SourceRevisionId`, and both runtime stages expose
+  the same value as `TF_GIT_SHA`.
 
 ## Validation Evidence
 
 - TDD red proof: focused compilation failed because `ResolveGitSha` did not exist.
 - Focused tests after implementation: 13 passed, 0 failed.
+- Deployment provenance TDD red proof: the new D14 contract failed because canonical CI did not
+  pass `github.sha` into the backend image build.
+- Focused D14 deployment provenance contract after implementation: PASS.
 - Canonical Release solution build: PASS, 0 warnings, 0 errors.
 - Build-stamp inspection: PASS; the compiled API assembly contains the supplied 40-character SHA.
 - Full `TerraFusion.Unit.Tests` Release suite: 3,480 passed, 0 failed, 0 skipped.
@@ -42,6 +49,7 @@ and test gates are clean.
 ## Non-Claims
 
 - No deployment was performed.
+- No image was pushed and no release workflow was dispatched.
 - No live endpoint was queried.
 - No secret, county, PACS, SQL, migration, schema, or production resource was accessed.
 - This packet does not claim that every historical artifact was built with a source revision stamp.

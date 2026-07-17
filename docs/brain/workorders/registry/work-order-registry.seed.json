@@ -892,19 +892,29 @@
             "backend/src/TerraFusion.API/Controllers/SimpleHealthController.cs",
             "backend/src/TerraFusion.API/TerraFusion.API.csproj",
             "backend/tests/TerraFusion.Unit.Tests/Controllers/SimpleHealthControllerGitShaTests.cs",
+            "backend/Dockerfile",
+            "backend/Dockerfile.API",
+            ".github/workflows/ci.yml",
+            ".github/workflows/release-lane.yml",
+            "tests/deployment-truth-gate.test.mjs",
             "docs/brain/workorders/**"
           ]
         }
       ],
       "blockedSystems": [
         {
-          "name": "Deployment, schema, secrets, county, PACS, SQL, migrations, live resources, frontend, tools-sync"
+          "name": "Deployment execution, schema, secrets, county, PACS, SQL, migrations, live resources, frontend, tools-sync"
         }
       ],
       "allowedFiles": [
         "backend/src/TerraFusion.API/Controllers/SimpleHealthController.cs",
         "backend/src/TerraFusion.API/TerraFusion.API.csproj",
         "backend/tests/TerraFusion.Unit.Tests/Controllers/SimpleHealthControllerGitShaTests.cs",
+        "backend/Dockerfile",
+        "backend/Dockerfile.API",
+        ".github/workflows/ci.yml",
+        ".github/workflows/release-lane.yml",
+        "tests/deployment-truth-gate.test.mjs",
         "docs/brain/workorders/active/WO-BACKEND-014-health-build-provenance-truth.md",
         "docs/brain/workorders/evidence/WO-BACKEND-014-HEALTH-BUILD-PROVENANCE-TRUTH.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -914,11 +924,9 @@
         "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "blockedFiles": [
-        ".github/workflows/**",
         "deployment/**",
         "frontend/**",
         "tools/sync/**",
-        "**/Dockerfile*",
         "**/*Migration*"
       ],
       "evidenceRequired": [
@@ -929,6 +937,10 @@
         {
           "kind": "build",
           "description": "Release solution build passes with zero warnings and zero errors."
+        },
+        {
+          "kind": "test",
+          "description": "Deployment truth contract proves exact SHA propagation through canonical backend container builds."
         }
       ],
       "validationGates": [
@@ -943,6 +955,12 @@
           "command": "dotnet build backend/TerraFusion.sln -c Release",
           "required": true,
           "result": "pass"
+        },
+        {
+          "name": "container provenance contract",
+          "command": "node --test --test-name-pattern=D14 tests/deployment-truth-gate.test.mjs",
+          "required": true,
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
@@ -955,7 +973,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop on deployment, schema, protected-resource access, or files outside the exact Work Order."
+          "description": "Stop on deployment execution, schema, protected-resource access, or files outside the exact Work Order."
         }
       ],
       "nextCandidates": [],
