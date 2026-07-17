@@ -533,17 +533,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Azure / DevOps / County Runtime |
-| Active goal | `/goal azure-county-runtime` |
-| Active loop | `/loop evidence` |
-| Current WO | `WO-AZURE-003 - Deployment slot strategy` complete on protected merge |
-| Next WO | Portfolio reconciliation; Azure live-evidence successors remain blocked |
+| Selected program | None - all registered lanes parked |
+| Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
+| Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
+| Current WO | `WO-PORTFOLIO-003 - Current-State Reconciliation` complete on protected merge |
+| Next WO | None until a canonical node is admitted or a recorded wall is cleared |
 
-PR #1292 selected the Azure committed-evidence lane and PR #1293 completed its configuration
-inventory. WO-AZURE-003 selects a blue/green slot policy without live access or mutation. After its
-protected merge, portfolio reconciliation resumes because WO-AZURE-004/005 require authorized live
-evidence. Live Azure, secret values, slot/resource mutation, deployment, and county production remain
-blocked.
+PR #1292 selected the Azure committed-evidence lane, PR #1293 completed its configuration inventory,
+and WO-AZURE-003 defined the blue/green slot policy without live access or mutation. WO-PORTFOLIO-003
+then reconciled every registered candidate and found no dependency-cleared node inside existing
+authority. Live Azure, secret values, slot/resource mutation, deployment, county production, runtime
+repair, product promotion, and sovereign import remain protected walls.
 
 ---
 
