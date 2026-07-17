@@ -14,7 +14,8 @@ STOP_TYPE values must tell Codex whether to continue, remediate, or stop for own
 | STOP_TYPE | Class | Codex action |
 |-----------|-------|--------------|
 | `NO_STOP` | Continue | Continue the active loop. |
-| `MERGE_AUTH_REQUIRED` | Owner wall unless pre-authorized | Stop for merge authority unless the active merge model grants Mode B or Mode C. |
+| `MERGE_AND_CONTINUE` | Continue | Squash-merge the eligible exact head, verify `origin/main`, close the WO, and continue. |
+| `MERGE_AUTH_REQUIRED` | Owner wall only without applicable authority | Emit only when no standing or bounded Mode B/Mode C authority applies. |
 | `LOCAL_TOOLING_BYPASS_USED` | Continue | Continue if the standing local-tooling exception applied and validation passed. |
 | `LOCAL_TOOLING_BYPASS_REQUIRED` | Conditional wall | Stop only if no standing exception applies. |
 | `VALIDATION_FAILED_REMEDIABLE` | Remediate | Fix within scope, rerun validation, continue. |
@@ -32,7 +33,15 @@ STOP_TYPE values must tell Codex whether to continue, remediate, or stop for own
 - Local tooling absence is not a validation failure when repository validation passed.
 - Review comments are not owner walls when they remain inside authorized scope.
 - Pending checks are not owner walls; Codex monitors until success, acceptable neutral/skipped, or failure.
-- Merge readiness is not the same as merge authority.
+- The active standing policy supplies merge authority for every already-ratified program and
+  dependency-cleared Work Order inside its separately recorded scope.
+- If `program_authorized`, `work_order_dependency_cleared`, `scope_within_authority`,
+  `checks_green`, `unresolved_threads = 0`, and `no_true_authority_wall`, plus the remaining
+  canonical exact-head, PR-state, reservation, and merge-state conditions all hold, classify
+  `MERGE_AND_CONTINUE`.
+- `MERGE_AUTH_REQUIRED` may not be emitted merely because an eligible PR is ready to merge.
+- Pending checks, review feedback, ordinary conflicts, stale exact-head assurance, and technical
+  uncertainty are operator watch or remediation states, not owner walls.
 - Branch strategy conflicts are owner walls even when code quality is clean.
 
 STOP_TYPE: STOP_TYPE_CLASSIFIER_DEFINED

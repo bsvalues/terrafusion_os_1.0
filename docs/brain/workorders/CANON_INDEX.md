@@ -21,11 +21,12 @@ playbooks/runbooks, implementation patterns, then agent judgment.
 |---------|--------------------|---------------------|
 | Constitution | [`TERRAFUSION_SUITE_CONSTITUTION_v1.md`](../../architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md) | Highest authority; TF-052 |
 | Governance precedence | [`ADR-EXEC-001`](../../adr/ADR-EXEC-001-governance-authority-hierarchy.md) | Active after PR #1273; replaces the audited six-level hierarchy |
-| Owner decisions | [`.governance/owner-decisions.json`](../../../.governance/owner-decisions.json) | Machine-readable active/expiry/revocation register; MAO-001A and the bounded MAO-002 bootstrap are complete |
+| Owner decisions | [`.governance/owner-decisions.json`](../../../.governance/owner-decisions.json) | Machine-readable active/expiry/revocation register; `OWNER-TF-STANDING-OPERATOR-AUTHORITY` is active while bounded MAO envelopes are complete |
+| Standing operator policy | [`.governance/standing-operator-authority.json`](../../../.governance/standing-operator-authority.json) | Delivery-lifecycle authority only; does not create program scope or protected-resource authority; mechanically classifies eligible work `MERGE_AND_CONTINUE` |
 | Root agent governance | [`AGENTS.md`](../../../AGENTS.md) | Repository-wide operating defaults and protected boundaries |
 | Brain/domain governance | [`brain/packs/README.md`](../../../brain/packs/README.md) | One Brain, many knowledge packs, many isolated workers |
 | Program register | [`PROGRAM_PLAYBOOK_REGISTER.md`](PROGRAM_PLAYBOOK_REGISTER.md) | Active program/Goal/Loop/WO routing |
-| Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; the consumed MAO-002 grant creates no continuing Mode B authority |
+| Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; standing Mode B applies to already-ratified in-scope delivery while protected boundaries remain Mode A |
 | Branch protection | [`.governance/main.protection.json`](../../../.governance/main.protection.json) | Normalized live-protection invariants checked by required governance tooling |
 | MAO-001A correction | [`WO-MAO-001A-authority-state-separation.md`](active/WO-MAO-001A-authority-state-separation.md) | Completed with PR #1274; separates owner authority from mutable operator state |
 | MAO-002 pilot authority | [`.governance/mao-002-pilot-merge-authority.json`](../../../.governance/mao-002-pilot-merge-authority.json) | Checked-in fail-closed policy; issue #1276 is complete and the paired operational variables were released after two merges |

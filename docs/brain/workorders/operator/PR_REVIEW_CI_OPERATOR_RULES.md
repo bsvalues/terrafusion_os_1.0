@@ -5,7 +5,8 @@ Program: codex-operator-playbook
 
 ## PR Ownership
 
-After implementation, Codex owns PR operations until merge authority is required.
+After implementation, Codex owns PR operations through eligible merge and post-merge verification.
+It stops only when no standing/bounded merge authority applies or another true wall is reached.
 
 Codex must:
 

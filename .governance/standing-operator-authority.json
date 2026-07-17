@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
+  "status": "active",
+  "owner": "William",
+  "operator": "codex-portfolio-operator",
+  "authority_class": "standing-portfolio-delivery-lifecycle",
+  "merge_mode": "B-standing-authorized-work-order",
+  "scope_rule": "This policy grants delivery lifecycle actions only. Program objectives, Work Order scope, files, systems, risk, and protected-resource access must come from separate active ratified authority.",
+  "eligible_when": [
+    "program_authorized",
+    "work_order_dependency_cleared",
+    "scope_within_authority",
+    "pr_open_non_draft",
+    "exact_head_assured",
+    "required_checks_complete",
+    "checks_green",
+    "unresolved_threads_zero",
+    "merge_state_permits",
+    "reservations_clear",
+    "no_true_authority_wall"
+  ],
+  "eligible_result": "MERGE_AND_CONTINUE",
+  "routine_operator_actions": [
+    "select the next dependency-cleared Work Order",
+    "create and repair dedicated worktrees and branches",
+    "implement authorized scope",
+    "run validation and remediate in-scope failures",
+    "commit and push",
+    "open or update the pull request",
+    "monitor checks and reviews",
+    "resolve in-scope review comments and ordinary conflicts",
+    "revalidate the exact pull request head",
+    "squash-merge an eligible pull request",
+    "verify origin/main and post-merge truth",
+    "close the Work Order and update evidence and routing",
+    "continue to the next dependency-cleared Work Order"
+  ],
+  "true_authority_walls": [
+    "new program, objective, or material scope not already ratified",
+    "constitutional or sovereign-canon decision with multiple valid policy outcomes",
+    "production activation, release, cutover, or irreversible production mutation not already authorized",
+    "credentials, secrets, signing ceremonies, private keys, or owner-controlled trust material",
+    "destructive or materially irreversible action outside an approved rollback envelope",
+    "legal, contractual, financial, procurement, licensing, employment, or political decision",
+    "protected county data or system access beyond existing authorization",
+    "material security exception or acceptance of known high-severity risk",
+    "controlling-authority conflict unresolved by documented precedence",
+    "external spending or resource commitment not already approved"
+  ],
+  "invalid_stop_classifications": [
+    "MERGE_AUTH_REQUIRED for an eligible pull request covered by this standing authority",
+    "OWNER_DECISION_NEEDED for routine implementation or validation choices inside authorized scope",
+    "OWNER_DECISION_NEEDED for selecting the next dependency-cleared Work Order",
+    "OWNER_DECISION_NEEDED because an operator has ordinary technical uncertainty"
+  ],
+  "merge_auth_required_only_when": "no applicable standing or bounded merge authority exists",
+  "suspension_triggers": [
+    "scope expansion outside active ratified authority",
+    "required-check bypass or failure",
+    "unresolved review thread at merge time",
+    "exact-head assurance failure",
+    "reservation collision or stale reservation",
+    "protected-boundary access without authority",
+    "false completion or rollback evidence",
+    "conflicting active authority",
+    "explicit owner revocation or narrowing"
+  ],
+  "explicitly_denied": [
+    "creation of a new program, objective, or material scope",
+    "production, deployment, county, PACS, SQL, credential, secret, or protected-data authority",
+    "destructive action outside an approved rollback envelope",
+    "required-check, branch-protection, review, exact-head, or reservation bypass",
+    "force push or direct push to main",
+    "legal, financial, procurement, licensing, employment, or political authority",
+    "unrestricted portfolio mutation"
+  ],
+  "terminal_condition": "Remains active until William explicitly revokes or narrows it; affected actions suspend automatically on any suspension trigger."
+}

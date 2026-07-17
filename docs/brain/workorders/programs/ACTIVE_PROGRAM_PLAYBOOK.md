@@ -4,7 +4,7 @@
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
 **Last Updated:** 2026-07-16
-**Base:** `origin/main` at `09f3cb847a503f23b9e64f479c09b9d53cdd04aa` or later
+**Base:** `origin/main` at `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` or later
 
 ---
 
@@ -41,12 +41,15 @@ no stop gate is hit:
 9. Update from `origin/main` if behind.
 10. Prepare the PR for merge when checks are green/acceptable, review threads are resolved, changed
     files remain in authorized scope, and no global stop gate is hit.
-11. Merge only when the canonical merge model records Mode B or Mode C authority; otherwise request
-    owner merge authority once.
+11. Apply the active standing Mode B grant. Merge and continue when the canonical conditions pass;
+    request owner authority only when no standing/bounded grant applies or a true wall is present.
 12. Verify `origin/main` after merge.
 13. Continue to the next Work Order in the same `/goal` plus `/loop` if allowed.
 
 Codex must return to the owner only for true authority walls.
+
+The standing grant covers delivery mechanics only. It does not authorize a program, Work Order,
+file, system, risk class, product behavior, protected resource, deployment, or destructive action.
 
 ---
 

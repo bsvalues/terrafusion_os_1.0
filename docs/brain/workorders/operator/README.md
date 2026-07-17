@@ -98,8 +98,9 @@ The operator may report merge readiness only when all conditions hold:
 - no protected systems or forbidden paths changed;
 - no admin override is required.
 
-The operator must not infer merge authority from this packet alone. Merge requires an active Mode B or
-Mode C grant under [MERGE_AUTHORITY_MODEL.md](MERGE_AUTHORITY_MODEL.md); that grant may cover one PR,
+The operator must not infer program scope from this packet alone. Merge requires an applicable active
+Mode B or Mode C grant under [MERGE_AUTHORITY_MODEL.md](MERGE_AUTHORITY_MODEL.md). The standing Mode B
+grant covers delivery mechanics for already-ratified Work Orders; narrower grants may cover one PR,
 an explicitly bounded batch, or a bounded PR class. If no grant applies, request owner authority once.
 If any readiness condition fails, classify the blocker instead of asking for merge.
 

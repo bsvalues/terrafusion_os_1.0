@@ -11,9 +11,9 @@ must not redefine these modes.
 Source audit: [`WO-MAO-000`](../../evidence/WO-MAO-000-proof.md). Owner authority is valid only when
 recorded in `.governance/owner-decisions.json` or a canonically indexed successor register.
 
-## Default Rule: Mode A
+## Default Rule: Mode A for Unratified or Protected Boundaries
 
-The owner merges unless recorded authority grants Mode B or Mode C. Mode A is mandatory for
+Mode A applies when no standing or bounded merge authority covers the action. It is mandatory for
 constitutional changes, production/deployment, protected security policy, secrets, PACS, county SQL,
 county data, destructive operations, and any PR outside a bounded operator grant.
 
@@ -32,11 +32,21 @@ Goal/Loop/Work Order. Every merge requires:
 - evidence and rollback are complete;
 - no production, credential, county-data, PACS, destructive, or protected-security boundary is crossed.
 
-**THE GENERAL MODE B DOCTRINE IS RATIFIED; THE MAO-002 BOUNDED OWNER ENVELOPE IS CONSUMED AND
-INACTIVE.** Owner issue [#1276](https://github.com/bsvalues/terrafusion_os_1.0/issues/1276) authorized
+**THE GENERAL MODE B DOCTRINE AND STANDING DELIVERY GRANT ARE ACTIVE.** The active decision
+`OWNER-TF-STANDING-OPERATOR-AUTHORITY` covers routine delivery for every already-ratified program and
+dependency-cleared Work Order inside its separately recorded scope. It does not authorize a new
+program, objective, file scope, risk, product behavior, deployment, protected resource, destructive
+action, or external commitment.
+
+When all Mode B conditions pass and no true authority wall exists, the result is
+`MERGE_AND_CONTINUE`. No per-WO or per-PR owner approval is required. `MERGE_AUTH_REQUIRED` may be
+emitted only when no applicable standing or bounded authority exists.
+
+The historical MAO-002 bounded owner envelope is consumed and inactive. Owner issue
+[#1276](https://github.com/bsvalues/terrafusion_os_1.0/issues/1276) authorized
 at most two docs-scoped pilot PRs. Both slots were consumed by PRs #1281 and #1280, independent
 post-merge assurance passed, and the paired operational repository variables were removed together
-to release their reservations. Mode A remains mandatory outside another applicable recorded grant.
+to release their reservations. Its completion does not revoke or narrow the later standing grant.
 
 During the pilot, operator merge remained fail-closed until `MAO_002_PILOT_BOOTSTRAP_JSON` and
 `MAO_002_PILOT_EXECUTION_JSON` validated together for the exact PR, head SHA, repository, allowed
@@ -64,6 +74,10 @@ eligible merge:
 
 Suspension applies to the affected grant and any broader grant that depends on the failed control. New
 operator merges stop until restoration is ratified.
+
+The standing grant also suspends for explicit owner revocation or narrowing. Suspension affects only
+the authority implicated by the trigger; it does not turn unrelated routine engineering into owner
+work.
 
 ## Suspension Response and Restoration
 

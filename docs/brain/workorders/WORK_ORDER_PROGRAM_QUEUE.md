@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-16
-**Authority:** WO-PORTFOLIO-003
+**Authority:** WO-PORTFOLIO-004
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,13 +13,17 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-003 reconciles the graph after WO-AZURE-003 merged at
-`9a6f8aceb66f5203aa235aed2ea0560e646699a5`. The safe Azure documentation slice is exhausted, and no
-remaining registered node is both dependency-cleared and inside existing authority.
+WO-PORTFOLIO-004 ratifies continuous standing delivery authority on the reconciled
+`4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` base. The authority covers routine execution and merge
+mechanics for already-ratified Work Orders; it does not authorize any parked program or protected
+boundary.
 
 Portfolio state is `ALL_LANES_PARKED`. This is not an owner engineering-dispatch request. The
 operator resumes automatically when a canonical Work Order is admitted or an applicable recorded
 grant clears one of the walls below.
+
+When that happens, `OWNER-TF-STANDING-OPERATOR-AUTHORITY` eliminates per-WO and per-PR owner routing:
+eligible work classifies `MERGE_AND_CONTINUE` after the canonical checks pass.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -142,7 +146,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result:** `ALL_LANES_PARKED`. No live Azure, secret, configuration, slot, deployment,
+**Portfolio result after WO-PORTFOLIO-004 protected merge:** `ALL_LANES_PARKED`. No live Azure,
+secret, configuration, slot, deployment,
 county-production, runtime-repair, product-promotion, protected-data, or sovereign-import authority
 is granted. The operator does not invent a successor or ask the owner to choose routine engineering;
 it resumes when the canonical graph contains an executable node.
