@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-008",
+  "generatedBy": "WO-ATLAS-001",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1310,7 +1310,7 @@
       "program": "Portfolio Operator",
       "goal": "Determine the current-main disposition of the stale MapLibre migration candidate before any implementation.",
       "riskClass": "R0",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-PORTFOLIO-008",
@@ -1360,17 +1360,30 @@
           "name": "work-order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-001-MAPLIBRE-MIGRATION-REALITY-AUDIT.md",
+          "summary": "Exact-head divergence, canon, dependency, review, defect, disposition, and next-slice evidence."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Stop before product implementation, package or lockfile mutation, stale-branch integration, or protected-resource access."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-002",
+          "reason": "Current main independently contains boundary-derived popup HTML interpolation that can be repaired without choosing a renderer migration.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -1379,11 +1392,109 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Standing operator authority covers this read-only source audit and docs/evidence lifecycle only."
+        "notes": "Standing operator authority covers this read-only source audit, stale PR closure, and docs/evidence lifecycle only."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-PORTFOLIO-008 live open-PR reconciliation",
+        "source": "WO-PORTFOLIO-008 live open-PR reconciliation and PR #1073 exact-head audit",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-002",
+      "title": "PropertyAtlas Popup Text-Safety Repair",
+      "program": "Portfolio Operator",
+      "goal": "Render boundary-derived situs text without interpreting it as popup HTML.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-001",
+          "status": "satisfied",
+          "evidence": [
+            "Current-main Popup.setHTML use confirmed in WO-ATLAS-001 evidence"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "PropertyAtlas popup text safety, focused regression proof, and Brain evidence",
+          "paths": [
+            "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Renderer migration, package or lockfile changes, cross-suite map changes, CI, deployment, secrets, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+        "docs/brain/workorders/active/WO-ATLAS-002-propertyatlas-popup-text-safety-repair.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-002-PROPERTYATLAS-POPUP-TEXT-SAFETY-REPAIR.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "frontend/package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Focused regression proves untrusted situs text uses popup text rendering and never popup HTML rendering."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "PropertyAtlas focused tests",
+          "command": "corepack pnpm exec vitest run frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before renderer migration, package or lockfile mutation, cross-suite map changes, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-003",
+          "reason": "After the independent security repair, define the renderer/provider/package contract from current main.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The owner's standing operator direction and this exact bounded Work Order authorize the current-main text-safety repair; no renderer or package change is included."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-001 current-main security finding",
         "schemaVersion": "0.1.0"
       }
     }

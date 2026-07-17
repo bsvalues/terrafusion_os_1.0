@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-008
+**Authority:** WO-ATLAS-001
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,17 +13,16 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-008 is the active dependency-cleared node on base
-`848024f31255306892c0c3f3dfd27bbfcf2a7c4d`. Portfolio reconciliation found six open PRs. Four were
-demonstrably superseded or unsafe to merge as presented and were closed without deleting branches or
-commits. PR #1082 remains an owner-held classification-ratification checkpoint. PR #1073 remains an
-unratified product candidate whose current truth must be audited from a fresh branch before any
-implementation decision.
+WO-ATLAS-001 is the active dependency-cleared node on base
+`bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e`. The read-only audit proved PR #1073 is 208 commits
+behind current main, has 16 unresolved review threads, spans 11 product/package files, and cites an
+`ADR-0021` MapLibre lock that does not exist in live tracked canon. The stale PR was closed without
+deleting its branch or commits.
 
-Standing operator authority covers the reversible backlog reconciliation, governance evidence,
-protected merge, and admission of the next read-only audit. It does not authorize recovery
-ratification, product implementation, stale-branch integration, branch deletion, protected-resource
-access, or deployment.
+The audit also confirmed a narrower current-main XSS defect in `PropertyAtlas` popup rendering.
+`WO-ATLAS-002` is the next bounded repair, but its machine record declares the exact frontend scope
+and fails closed as `protected-system-required` until explicit R3 frontend authority activates it.
+The broader renderer decision remains separate at `WO-ATLAS-003`.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -44,8 +43,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-BACKEND-014 Health Build-Provenance Truth | DONE | PR #1299 merged; endpoint and canonical container build provenance verified |
 | WO-PORTFOLIO-006 Shell Routing Contract Reconciliation | DONE | PR #1300 merged; static contract corrected and unscoped handoff gap recorded honestly |
 | WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff | DONE | PR #1301 merged; canonical fallback mounted and validated tab intent preserved |
-| **WO-PORTFOLIO-008 Open PR Backlog Reconciliation** | **CURRENT - complete on protected merge** | Close four superseded/unsafe PR records without deleting branches; preserve #1082 and #1073 |
-| WO-ATLAS-001 MapLibre Migration Reality Audit | NEXT | Fresh read-only comparison of #1073 with current main and Atlas canon; no stale-branch integration |
+| WO-PORTFOLIO-008 Open PR Backlog Reconciliation | DONE | PR #1302 merged; stale backlog reconciled and Atlas audit admitted |
+| **WO-ATLAS-001 MapLibre Migration Reality Audit** | **CURRENT - complete on protected merge** | #1073 closed as stale/unsafe; branch preserved; missing ADR and 16 unresolved threads recorded |
+| WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | NEXT - R3 FRONTEND AUTHORITY REQUIRED | Replace boundary-derived popup HTML with text-safe rendering and focused regression proof |
+| WO-ATLAS-003 Map Renderer Contract Decision | PLANNED | Decide Mapbox retention versus fresh MapLibre migration after the bounded security repair |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |

@@ -536,17 +536,18 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - open PR backlog reconciliation |
+| Selected program | Portfolio Operator - Atlas stale-branch reality audit |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-008 - Open PR Backlog Reconciliation` complete on protected merge |
-| Next WO | `WO-ATLAS-001 - MapLibre Migration Reality Audit` |
+| Current WO | `WO-ATLAS-001 - MapLibre Migration Reality Audit` complete on protected merge |
+| Next WO | `WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair` |
 
-Portfolio synthesis at `848024f31255306892c0c3f3dfd27bbfcf2a7c4d` admitted WO-PORTFOLIO-008.
-The reversible governance slice closed four superseded or unsafe-to-merge PR records while preserving
-their branches and commits. PR #1082 remains a true classification-ratification boundary. PR #1073
-remains a product candidate and routes next to a fresh R0 reality audit; no stale branch is treated as
-implementation authority.
+Portfolio synthesis at `bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e` executed WO-ATLAS-001.
+The audit closed stale PR #1073 without deleting its branch after proving 208-main-commit divergence,
+16 unresolved review threads, a missing claimed ADR, and cross-surface package scope. It identified
+the independent current-main popup text-safety repair at WO-ATLAS-002. The registry declares that
+frontend scope and fails closed until explicit R3 frontend authority activates it. Renderer migration
+remains a later contract decision, not an implied stale-branch merge.
 
 ---
 
