@@ -1419,7 +1419,11 @@
       "allowedSystems": [
         {
           "name": "PropertyAtlas popup text safety, focused regression proof, and Brain evidence",
-          "paths": ["docs/brain/workorders/**"]
+          "paths": [
+            "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+            "docs/brain/workorders/**"
+          ]
         }
       ],
       "blockedSystems": [

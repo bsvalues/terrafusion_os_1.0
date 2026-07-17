@@ -50,7 +50,9 @@ selection and is the highest-value safe successor.
 ## Disposition And Routing
 
 - PR #1073: closed as superseded; branch preserved.
-- `WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair`: admitted as the next bounded R3 Work Order.
+- `WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair`: identified as the next bounded R3 Work
+  Order. Its registry record declares the exact frontend scope and therefore fails closed as
+  `protected-system-required` until explicit R3 frontend authority is recorded for activation.
 - `WO-ATLAS-003 - Map Renderer Contract Decision`: planned after the security repair to decide
   Mapbox retention versus a fresh MapLibre migration, including provider, glyph, package, test, and
   rollback contracts.

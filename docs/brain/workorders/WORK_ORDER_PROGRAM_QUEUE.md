@@ -20,7 +20,8 @@ behind current main, has 16 unresolved review threads, spans 11 product/package 
 deleting its branch or commits.
 
 The audit also confirmed a narrower current-main XSS defect in `PropertyAtlas` popup rendering.
-`WO-ATLAS-002` is admitted to repair that exact defect with text-safe rendering and a focused test.
+`WO-ATLAS-002` is the next bounded repair, but its machine record declares the exact frontend scope
+and fails closed as `protected-system-required` until explicit R3 frontend authority activates it.
 The broader renderer decision remains separate at `WO-ATLAS-003`.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
@@ -44,7 +45,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff | DONE | PR #1301 merged; canonical fallback mounted and validated tab intent preserved |
 | WO-PORTFOLIO-008 Open PR Backlog Reconciliation | DONE | PR #1302 merged; stale backlog reconciled and Atlas audit admitted |
 | **WO-ATLAS-001 MapLibre Migration Reality Audit** | **CURRENT - complete on protected merge** | #1073 closed as stale/unsafe; branch preserved; missing ADR and 16 unresolved threads recorded |
-| WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | NEXT | Replace boundary-derived popup HTML with text-safe rendering and focused regression proof |
+| WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | NEXT - R3 FRONTEND AUTHORITY REQUIRED | Replace boundary-derived popup HTML with text-safe rendering and focused regression proof |
 | WO-ATLAS-003 Map Renderer Contract Decision | PLANNED | Decide Mapbox retention versus fresh MapLibre migration after the bounded security repair |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)

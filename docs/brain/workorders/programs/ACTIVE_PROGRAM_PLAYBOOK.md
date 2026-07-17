@@ -544,9 +544,10 @@ from program evidence.
 
 Portfolio synthesis at `bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e` executed WO-ATLAS-001.
 The audit closed stale PR #1073 without deleting its branch after proving 208-main-commit divergence,
-16 unresolved review threads, a missing claimed ADR, and cross-surface package scope. It admitted the
-independent current-main popup text-safety repair at WO-ATLAS-002. Renderer migration remains a later
-contract decision, not an implied stale-branch merge.
+16 unresolved review threads, a missing claimed ADR, and cross-surface package scope. It identified
+the independent current-main popup text-safety repair at WO-ATLAS-002. The registry declares that
+frontend scope and fails closed until explicit R3 frontend authority activates it. Renderer migration
+remains a later contract decision, not an implied stale-branch merge.
 
 ---
 
