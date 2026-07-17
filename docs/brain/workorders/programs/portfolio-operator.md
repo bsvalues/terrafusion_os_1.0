@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-PORTFOLIO-005` - evidence publisher capacity repair
+**Status:** Active at `WO-PORTFOLIO-006` - shell routing contract reconciliation
 
 ## Purpose
 
@@ -49,14 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6`, portfolio synthesis rejected the
-stale `WO-LOCALOPS-000` seed recommendation because that chain is already merged. It admitted
-`WO-PORTFOLIO-005` instead: the current post-merge evidence publisher repeatedly fails only because
-the July release contains GitHub's maximum 1,000 assets.
+At `origin/main` `1adc7df4f78c0e3aa33a829bdb668ad0f511773f`, portfolio synthesis verified that
+the reviewed outcomes from stale PR #1076 already exist on main and closed that unsafe broad PR as
+superseded. The same reconciliation found an executable R2 defect in the deployment truth gate: its
+E3 assertion contradicted shell canon by prohibiting standalone module activation.
 
-WO-PORTFOLIO-005 is a bounded R3 repair. It partitions future evidence publication into deterministic
-per-run release shards, preserves strict verification and one-year retention, and performs no
-deletion, production access, or runtime change. After protected merge, the portfolio loop reconciles
-again rather than returning to `ALL_LANES_PARKED` by default.
+WO-PORTFOLIO-006 updates only the static contract and governance evidence. It proves both canonical
+paths: parcel-scoped navigation through Property Workbench and shell-owned standalone activation.
+After protected merge, the portfolio loop reconciles again rather than returning to
+`ALL_LANES_PARKED` by default.
 
-STOP_TYPE: `EVIDENCE_PUBLISHER_CAPACITY_REPAIRED`
+STOP_TYPE: `SHELL_ROUTING_CONTRACT_RECONCILED`

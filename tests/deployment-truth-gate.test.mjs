@@ -465,7 +465,7 @@ describe('E. Shell route contract survival', () => {
     assert.ok(routerContent.includes('Route'), 'Router must define Route elements');
   });
 
-  it('E3: SuiteModuleGrid uses useNavigate (not activateModule)', () => {
+  it('E3: SuiteModuleGrid preserves parcel workbench routes and standalone activation', () => {
     const smg = join(
       ROOT,
       'frontend',
@@ -483,8 +483,13 @@ describe('E. Shell route contract survival', () => {
         'SuiteModuleGrid must use useNavigate for route navigation'
       );
       assert.ok(
-        !content.includes('activateModule'),
-        'SuiteModuleGrid must NOT use activateModule (window creation)'
+        content.includes('navigate(`/property/${parcelId}/${mod.workbenchTab}`)'),
+        'SuiteModuleGrid must route parcel-scoped workbench launches through Property Workbench'
+      );
+      assert.ok(
+        content.includes('activateModule') &&
+          content.includes("void activateModule(targetId, { source: 'system' })"),
+        'SuiteModuleGrid must preserve shell-owned activation for standalone modules'
       );
     }
   });

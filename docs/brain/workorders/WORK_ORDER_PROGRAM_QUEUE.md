@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-BACKEND-014
+**Authority:** WO-PORTFOLIO-006
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,16 +13,17 @@
 
 ## Active Goal
 
-WO-BACKEND-014 is the active dependency-cleared node on base
-`3649a4665337559213f62419377574cec2ebad1a`. Portfolio synthesis rejected stale Sync routing after
-live cross-repo evidence showed that chain complete through WO-SYNC-155. It then selected the bounded
-health build-provenance correction represented by stale PR #1153, rebuilding it from current main
-with its unlanded review corrections and canonical container-build proof instead of inheriting 142
-commits of drift.
+WO-PORTFOLIO-006 is the active dependency-cleared node on base
+`1adc7df4f78c0e3aa33a829bdb668ad0f511773f`. Portfolio synthesis verified that the useful reviewed
+outcomes from stale PR #1076 are already present on current main and closed that unsafe 687-file PR
+as superseded. The same review exposed a bounded stale test contract: E3 rejected shell-owned
+standalone module activation even though the implementation correctly preserves Property Workbench
+navigation for parcel-scoped work.
 
-Standing operator authority covers the exact implementation, tests, review remediation, protected
-merge, and post-merge verification. No deployment, schema, secret, county, PACS, SQL, migration, or
-live-resource action is included.
+Standing operator authority covers this exact static-test reconciliation, governance evidence,
+review remediation, protected merge, and post-merge verification. No shell, Workbench, frontend,
+backend, runtime, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource
+change is included.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -40,7 +41,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-PORTFOLIO-004 Standing Operator Authority | DONE | PR #1297 merged; standing delivery lifecycle authority active |
 | WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
-| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** | Current-main replacement for stale PR #1153; backend health resolution plus exact canonical container-build provenance and governed packet/routing |
+| WO-BACKEND-014 Health Build-Provenance Truth | DONE | PR #1299 merged; endpoint and canonical container build provenance verified |
+| **WO-PORTFOLIO-006 Shell Routing Contract Reconciliation** | **CURRENT - complete on protected merge** | Static truth gate reconciled to canonical Workbench navigation plus shell-owned standalone activation; no product source change |
 | Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
@@ -91,7 +93,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State |
 |----|-------|
 | WO-BACKEND-OE-001..013 | DONE - program closed |
-| **WO-BACKEND-014 Health Build-Provenance Truth** | **CURRENT - complete on protected merge** |
+| WO-BACKEND-014 Health Build-Provenance Truth | DONE - PR #1299 merged |
 | Any other backend implementation | PARKED - requires a new bounded program/WO authority |
 
 ### property-workbench  (`/goal property-workbench`)
@@ -154,10 +156,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-005 admission:** `ACTIVE`. Protected Azure, deployment,
+**Portfolio result after WO-PORTFOLIO-006 admission:** `ACTIVE`. Protected Azure, deployment,
 county-production, runtime-repair, product-promotion, protected-data, and sovereign-import boundaries
-remain parked, but the independent R3 evidence-publisher repair is executable and does not cross any
-of them.
+remain parked, but the independent R2 shell routing contract reconciliation is executable and does
+not cross any of them.
 
 ---
 
