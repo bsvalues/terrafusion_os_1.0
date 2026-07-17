@@ -536,17 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | None - all registered lanes parked |
+| Selected program | Portfolio Operator - evidence publisher capacity repair |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-003 - Current-State Reconciliation` complete on protected merge |
-| Next WO | None until a canonical node is admitted or a recorded wall is cleared |
+| Current WO | `WO-PORTFOLIO-005 - Evidence Publisher Capacity Repair` complete on protected merge |
+| Next WO | Portfolio reconciliation after protected merge |
 
-PR #1292 selected the Azure committed-evidence lane, PR #1293 completed its configuration inventory,
-and WO-AZURE-003 defined the blue/green slot policy without live access or mutation. WO-PORTFOLIO-003
-then reconciled every registered candidate and found no dependency-cleared node inside existing
-authority. Live Azure, secret values, slot/resource mutation, deployment, county production, runtime
-repair, product promotion, and sovereign import remain protected walls.
+Portfolio synthesis at `5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6` found that the advisory
+`WO-LOCALOPS-000` seed is obsolete because the LocalOps chain is already merged. It admitted
+WO-PORTFOLIO-005 to repair the independent post-merge evidence publisher capacity failure. Live
+Azure, secret values, slot/resource mutation, deployment, county production, runtime repair, product
+promotion, and sovereign import remain protected walls and are not implicated by this R3 slice.
 
 ---
 

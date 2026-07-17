@@ -67,10 +67,11 @@ jobs:
           LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
           echo "PR Labels: $LABELS"
 
-          # Generate release tag (monthly rollup namespace)
+          # Use one deterministic release shard per workflow run. A shared monthly
+          # release reached GitHub's 1,000-asset ceiling and blocked publication.
           YEAR_MONTH=$(date +%Y-%m)
-          RELEASE_TAG="autonomy-evidence/${YEAR_MONTH}"
           RUN_ID="${{ github.run_id }}"
+          RELEASE_TAG="autonomy-evidence-shard-${YEAR_MONTH}-${RUN_ID}"
 
           echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
           echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
