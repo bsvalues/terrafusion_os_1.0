@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-PORTFOLIO-008` - open PR backlog reconciliation
+**Status:** Active at `WO-ATLAS-001` - MapLibre migration reality audit
 
 ## Purpose
 
@@ -49,13 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `848024f31255306892c0c3f3dfd27bbfcf2a7c4d`, portfolio synthesis reconciled the
-six open pull requests against current canon. PRs #1271, #1238, #1102, and #1080 were closed as
-superseded or unsafe to merge as presented, without deleting branches or commits. PR #1082 remains
-open at its explicit ratification boundary. PR #1073 remains open as a stale product candidate.
+At `origin/main` `bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e`, WO-ATLAS-001 audited PR #1073.
+The stale branch is 208 commits behind, has 16 unresolved review threads, spans Workbench, Forge,
+shell, package, lockfile, and test-runtime files, and cites a missing `ADR-0021`. It was closed without
+branch deletion or import.
 
-WO-PORTFOLIO-008 is a bounded R1 governance reconciliation. Its protected merge routes directly to
-`WO-ATLAS-001 - MapLibre Migration Reality Audit`, a fresh read-only comparison of #1073 with current
-main. No product implementation or stale-branch integration is implied.
+The audit independently confirmed current main passes boundary-derived situs text to popup HTML.
+`WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair` is the next bounded R3 slice. The Mapbox versus
+MapLibre renderer contract remains planned separately at WO-ATLAS-003.
 
-STOP_TYPE: `OPEN_PR_BACKLOG_RECONCILED_ATLAS_AUDIT_ADMITTED`
+STOP_TYPE: `ATLAS_STALE_BRANCH_AUDITED_POPUP_SAFETY_REPAIR_ADMITTED`
