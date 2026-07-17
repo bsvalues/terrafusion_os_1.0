@@ -536,17 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - evidence publisher capacity repair |
+| Selected program | Backend Operational Excellence - bounded provenance follow-up |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-005 - Evidence Publisher Capacity Repair` complete on protected merge |
+| Current WO | `WO-BACKEND-014 - Health Build-Provenance Truth` complete on protected merge |
 | Next WO | Portfolio reconciliation after protected merge |
 
-Portfolio synthesis at `5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6` found that the advisory
-`WO-LOCALOPS-000` seed is obsolete because the LocalOps chain is already merged. It admitted
-WO-PORTFOLIO-005 to repair the independent post-merge evidence publisher capacity failure. Live
-Azure, secret values, slot/resource mutation, deployment, county production, runtime repair, product
-promotion, and sovereign import remain protected walls and are not implicated by this R3 slice.
+Portfolio synthesis at `3649a4665337559213f62419377574cec2ebad1a` rejected stale Sync routing
+because the canonical Sync repository is complete through WO-SYNC-155. It admitted WO-BACKEND-014
+as a bounded current-main replacement for stale PR #1153. The slice changes health build-provenance
+resolution and deterministic tests only; deployment, schema, secrets, county/PACS/SQL, migration,
+and live resources remain protected and untouched.
 
 ---
 

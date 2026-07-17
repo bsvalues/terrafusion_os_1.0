@@ -664,6 +664,19 @@ Codex must stop for owner decision when:
 
 ---
 
+## Post-Closeout Bounded Follow-up
+
+### WO-BACKEND-014 - Health Build-Provenance Truth
+
+Portfolio reconciliation selected this current-main correction after confirming that stale PR #1153
+contains the right three-file intent but remains 142 commits behind and does not incorporate its
+resolved review findings. The Work Order is limited to environment/assembly provenance resolution,
+build stamping, deterministic unit tests, and its governed evidence/routing packet. It does not
+reopen the Backend OE baseline or authorize deployment, schema, secrets, county/PACS/SQL, migration,
+or live-resource work.
+
+---
+
 ## Optional Separate DevEx Lane - Not Backend OE
 
 Program:

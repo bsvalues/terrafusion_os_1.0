@@ -16,10 +16,9 @@ namespace TerraFusion.Unit.Tests.Controllers;
 /// provable from an HTTP response instead of operator memory.
 ///
 /// Build process: docker build --build-arg GIT_SHA=$(git rev-parse --short HEAD)
-///   stamps TF_GIT_SHA into the image; SimpleHealthController.Get() reads it
-///   and returns it as the gitSha field. Outside a container TF_GIT_SHA is
-///   unset and the field returns "unknown" — but the field MUST exist either
-///   way so the response shape is stable for the operator's curl check.
+///   stamps TF_GIT_SHA into the image; non-container builds can stamp the
+///   source revision into the assembly InformationalVersion. The field MUST
+///   exist either way so the response shape is stable for operator checks.
 /// </summary>
 [Trait("Component", "Health")]
 [Trait("Category", "ReleaseHygiene")]
@@ -60,9 +59,8 @@ public sealed class SimpleHealthControllerGitShaTests
                 "PR-9 contract: /health response MUST carry a gitSha field even when the env var is unset");
 
             var gitShaValue = gitShaProperty!.GetValue(payload) as string;
-            gitShaValue.Should().Be(
-                "unknown",
-                "when TF_GIT_SHA is not set the field MUST fall back to the literal string \"unknown\" so clients can detect a non-tagged build");
+            gitShaValue.Should().NotBeNullOrWhiteSpace(
+                "the field must contain either build-stamped provenance or the explicit unknown fallback");
         }
         finally
         {
@@ -123,6 +121,26 @@ public sealed class SimpleHealthControllerGitShaTests
             "PR-9 is additive — the existing Status field MUST still be present");
 
         statusProperty!.GetValue(payload).Should().Be("Healthy");
+    }
+
+    [Theory]
+    [InlineData("abc1234", null, "abc1234")]
+    [InlineData("  abc1234  ", "1.0.0+def5678", "abc1234")]
+    [InlineData("unknown", "1.0.0+def5678", "def5678")]
+    [InlineData("UNKNOWN", "1.0.0+def5678", "def5678")]
+    [InlineData(null, "1.0.0+def5678", "def5678")]
+    [InlineData("", "1.0.0+def5678", "def5678")]
+    [InlineData(null, "1.0.0+   ", "unknown")]
+    [InlineData(null, "1.0.0", "unknown")]
+    [InlineData(null, null, "unknown")]
+    public void ResolveGitSha_UsesOnlyMeaningfulProvenance(
+        string? envSha,
+        string? informationalVersion,
+        string expected)
+    {
+        SimpleHealthController.ResolveGitSha(envSha, informationalVersion)
+            .Should()
+            .Be(expected);
     }
 
     /// <summary>

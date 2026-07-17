@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-005",
+  "generatedBy": "WO-BACKEND-014",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -874,6 +874,104 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "Live portfolio synthesis plus Autonomy Evidence Publisher run 29553323267",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-BACKEND-014",
+      "title": "Health Build-Provenance Truth",
+      "program": "Backend Operational Excellence",
+      "goal": "Expose truthful immutable build provenance from the health endpoint for container and non-container artifacts.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Backend health build provenance",
+          "paths": [
+            "backend/src/TerraFusion.API/Controllers/SimpleHealthController.cs",
+            "backend/src/TerraFusion.API/TerraFusion.API.csproj",
+            "backend/tests/TerraFusion.Unit.Tests/Controllers/SimpleHealthControllerGitShaTests.cs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Deployment, schema, secrets, county, PACS, SQL, migrations, live resources, frontend, tools-sync"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Controllers/SimpleHealthController.cs",
+        "backend/src/TerraFusion.API/TerraFusion.API.csproj",
+        "backend/tests/TerraFusion.Unit.Tests/Controllers/SimpleHealthControllerGitShaTests.cs",
+        "docs/brain/workorders/active/WO-BACKEND-014-health-build-provenance-truth.md",
+        "docs/brain/workorders/evidence/WO-BACKEND-014-HEALTH-BUILD-PROVENANCE-TRUTH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/backend-operational-excellence.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".github/workflows/**",
+        "deployment/**",
+        "frontend/**",
+        "tools/sync/**",
+        "**/Dockerfile*",
+        "**/*Migration*"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Focused provenance tests and full backend unit suite pass."
+        },
+        {
+          "kind": "build",
+          "description": "Release solution build passes with zero warnings and zero errors."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "health provenance tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~SimpleHealthControllerGitShaTests",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "backend solution build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-BACKEND-014-HEALTH-BUILD-PROVENANCE-TRUTH.md",
+          "summary": "Current-main selection, implementation, validation, and non-claim evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on deployment, schema, protected-resource access, or files outside the exact Work Order."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Portfolio selection and standing operator authority cover this exact bounded implementation and protected merge."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Live portfolio synthesis and stale PR #1153 reconciliation",
         "schemaVersion": "0.1.0"
       }
     }
