@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-PORTFOLIO-007` - unscoped Workbench tab handoff
+**Status:** Active at `WO-PORTFOLIO-008` - open PR backlog reconciliation
 
 ## Purpose
 
@@ -49,15 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `2d67835735fcd9a82f8b96fde422cf38a8edf0a8`, portfolio synthesis consumed the
-accepted PR #1300 review evidence: the unscoped suite launch includes `openTab`, but Property Search
-did not carry that intent through parcel selection.
+At `origin/main` `848024f31255306892c0c3f3dfd27bbfcf2a7c4d`, portfolio synthesis reconciled the
+six open pull requests against current canon. PRs #1271, #1238, #1102, and #1080 were closed as
+superseded or unsafe to merge as presented, without deleting branches or commits. PR #1082 remains
+open at its explicit ratification boundary. PR #1073 remains open as a stale product candidate.
 
-WO-PORTFOLIO-007 is a bounded R3 correction. It mounts the already-declared no-parcel fallback on
-Property Search, validates the existing query against the canonical tab allowlist, preserves valid
-non-summary intent in the existing parcel route, normalizes summary, and rejects unknown values. It
-adds no top-level surface, tab, suite business logic, or protected-resource access.
-After protected merge, the portfolio loop reconciles again rather than returning to
-`ALL_LANES_PARKED` by default.
+WO-PORTFOLIO-008 is a bounded R1 governance reconciliation. Its protected merge routes directly to
+`WO-ATLAS-001 - MapLibre Migration Reality Audit`, a fresh read-only comparison of #1073 with current
+main. No product implementation or stale-branch integration is implied.
 
-STOP_TYPE: `UNSCOPED_WORKBENCH_TAB_HANDOFF_REPAIRED`
+STOP_TYPE: `OPEN_PR_BACKLOG_RECONCILED_ATLAS_AUDIT_ADMITTED`

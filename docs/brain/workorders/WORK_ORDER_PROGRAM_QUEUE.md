@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-007
+**Authority:** WO-PORTFOLIO-008
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,18 +13,17 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-007 is the active dependency-cleared node on base
-`2d67835735fcd9a82f8b96fde422cf38a8edf0a8`. Review of WO-PORTFOLIO-006 proved an existing bounded
-handoff defect: an unscoped suite launch supplied `openTab`, but Property Search discarded that
-validated intent after parcel selection. WO-PORTFOLIO-006 merged the honest non-claim; this successor
-closes the user-facing gap by mounting the existing canonical fallback and preserving its tab intent
-through the established parcel route and tab allowlist.
+WO-PORTFOLIO-008 is the active dependency-cleared node on base
+`848024f31255306892c0c3f3dfd27bbfcf2a7c4d`. Portfolio reconciliation found six open PRs. Four were
+demonstrably superseded or unsafe to merge as presented and were closed without deleting branches or
+commits. PR #1082 remains an owner-held classification-ratification checkpoint. PR #1073 remains an
+unratified product candidate whose current truth must be audited from a fresh branch before any
+implementation decision.
 
-Standing operator authority and the owner's current continuation direction cover this exact shell
-routing implementation, deterministic tests, governance evidence, review remediation, protected
-merge, and post-merge verification. No new top-level surface or tab, suite business logic, backend,
-tools-sync, CI, deployment, package, schema, secret, county, PACS, SQL, migration, or live-resource
-change is included.
+Standing operator authority covers the reversible backlog reconciliation, governance evidence,
+protected merge, and admission of the next read-only audit. It does not authorize recovery
+ratification, product implementation, stale-branch integration, branch deletion, protected-resource
+access, or deployment.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -44,8 +43,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-005 Evidence Publisher Capacity Repair | DONE | PR #1298 merged; post-merge release shard and 13 assets verified |
 | WO-BACKEND-014 Health Build-Provenance Truth | DONE | PR #1299 merged; endpoint and canonical container build provenance verified |
 | WO-PORTFOLIO-006 Shell Routing Contract Reconciliation | DONE | PR #1300 merged; static contract corrected and unscoped handoff gap recorded honestly |
-| **WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff** | **CURRENT - complete on protected merge** | Mount the existing no-parcel fallback; preserve validated requested tab through parcel selection; reject invalid values |
-| Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
+| WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff | DONE | PR #1301 merged; canonical fallback mounted and validated tab intent preserved |
+| **WO-PORTFOLIO-008 Open PR Backlog Reconciliation** | **CURRENT - complete on protected merge** | Close four superseded/unsafe PR records without deleting branches; preserve #1082 and #1073 |
+| WO-ATLAS-001 MapLibre Migration Reality Audit | NEXT | Fresh read-only comparison of #1073 with current main and Atlas canon; no stale-branch integration |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |

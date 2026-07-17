@@ -536,18 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - unscoped Workbench tab handoff |
+| Selected program | Portfolio Operator - open PR backlog reconciliation |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-007 - Unscoped Workbench Tab Handoff` complete on protected merge |
-| Next WO | Portfolio reconciliation after protected merge |
+| Current WO | `WO-PORTFOLIO-008 - Open PR Backlog Reconciliation` complete on protected merge |
+| Next WO | `WO-ATLAS-001 - MapLibre Migration Reality Audit` |
 
-Portfolio synthesis at `2d67835735fcd9a82f8b96fde422cf38a8edf0a8` admitted WO-PORTFOLIO-007
-from the accepted PR #1300 review evidence. The bounded slice carries an existing validated
-`openTab` request from the already-declared no-parcel fallback through Property Search parcel
-selection using the existing Workbench route and canonical tab allowlist. It adds no top-level
-surface or tab; deployment, schema, secrets, county/PACS/SQL, migration, and live resources stay
-protected and untouched.
+Portfolio synthesis at `848024f31255306892c0c3f3dfd27bbfcf2a7c4d` admitted WO-PORTFOLIO-008.
+The reversible governance slice closed four superseded or unsafe-to-merge PR records while preserving
+their branches and commits. PR #1082 remains a true classification-ratification boundary. PR #1073
+remains a product candidate and routes next to a fresh R0 reality audit; no stale branch is treated as
+implementation authority.
 
 ---
 

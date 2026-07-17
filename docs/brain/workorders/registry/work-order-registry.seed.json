@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-007",
+  "generatedBy": "WO-PORTFOLIO-008",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1203,6 +1203,187 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "Accepted PR #1300 exact-head review finding",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-008",
+      "title": "Open PR Backlog Reconciliation",
+      "program": "Portfolio Operator",
+      "goal": "Reconcile stale pull requests and admit the next bounded dependency-cleared audit.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-007",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1301 merged at 848024f31255306892c0c3f3dfd27bbfcf2a7c4d"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "GitHub pull-request backlog and Brain work-order governance",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Stale-branch integration, branch deletion, product/runtime/backend/tools-sync/CI/deployment/package/schema/protected-resource changes"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-PORTFOLIO-008-open-pr-backlog-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-008-OPEN-PR-BACKLOG-RECONCILIATION.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "github",
+          "description": "Every open PR is classified against current main with branches preserved."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-008-OPEN-PR-BACKLOG-RECONCILIATION.md",
+          "summary": "Live PR dispositions, preserved boundaries, safety non-claims, and next-slice selection."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on branch deletion, stale-branch integration, product implementation, protected-resource access, or files outside the exact Work Order."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-001",
+          "reason": "PR #1073 is the highest-value preserved candidate, but needs a fresh current-main reality audit before implementation.",
+          "riskClass": "R0",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers reversible PR backlog reconciliation and fresh audit admission; it does not authorize branch deletion or product implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Live GitHub open-PR inventory after PR #1301",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-001",
+      "title": "MapLibre Migration Reality Audit",
+      "program": "Portfolio Operator",
+      "goal": "Determine the current-main disposition of the stale MapLibre migration candidate before any implementation.",
+      "riskClass": "R0",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-008",
+          "status": "satisfied",
+          "evidence": ["PR #1073 preserved open and classified for fresh audit"]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Committed Atlas and Workbench source inspection plus Brain evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product edits, stale-branch integration, package or lockfile changes, CI, deployment, secrets, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-ATLAS-001-maplibre-migration-reality-audit.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-001-MAPLIBRE-MIGRATION-REALITY-AUDIT.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "audit",
+          "description": "Compare PR #1073 exact scope and claims with current main, Atlas canon, dependencies, and tests."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before product implementation, package or lockfile mutation, stale-branch integration, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers this read-only source audit and docs/evidence lifecycle only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-PORTFOLIO-008 live open-PR reconciliation",
         "schemaVersion": "0.1.0"
       }
     }
