@@ -188,7 +188,7 @@ describe('Evidence Publisher: Verification Contracts', () => {
 // =============================================================================
 
 describe('Evidence Publisher: Release Naming Contracts', () => {
-  it('should use autonomy-evidence/ tag namespace', () => {
+  it('should use a capacity-bounded autonomy-evidence shard namespace', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.gate?.steps ?? [];
 
@@ -197,17 +197,38 @@ describe('Evidence Publisher: Release Naming Contracts', () => {
 
     assert.ok(releaseTagLine, 'must define RELEASE_TAG');
     assert.ok(
-      releaseTagLine[1].includes('autonomy-evidence/'),
-      'release tag must use autonomy-evidence/ namespace'
+      releaseTagLine[1].includes('autonomy-evidence-shard-'),
+      'release tag must use the capacity-bounded autonomy-evidence shard namespace'
     );
   });
 
-  it('should use YYYY-MM format for monthly rollup', () => {
+  it('should derive YYYY-MM provenance from the immutable PR merge timestamp', () => {
     const workflow = loadWorkflow();
     const steps = workflow.jobs.gate?.steps ?? [];
 
     const checkStep = steps.find(s => s.id === 'check');
-    assert.ok(checkStep?.run?.includes('%Y-%m'), 'release tag should use YYYY-MM format');
+    assert.ok(
+      checkStep?.run?.includes('github.event.pull_request.merged_at'),
+      'release tag month must come from the immutable PR merge timestamp'
+    );
+    assert.ok(
+      !checkStep?.run?.includes('date +%Y-%m'),
+      'release tag must not depend on wall-clock time during a rerun'
+    );
+  });
+
+  it('should bind each release shard to one workflow run', () => {
+    const workflow = loadWorkflow();
+    const steps = workflow.jobs.gate?.steps ?? [];
+
+    const checkStep = steps.find(s => s.id === 'check');
+    const releaseTagLine = checkStep?.run?.match(/RELEASE_TAG=["']?([^"'\n]+)["']?/);
+
+    assert.ok(releaseTagLine, 'must define RELEASE_TAG');
+    assert.ok(
+      releaseTagLine[1].includes('${RUN_ID}'),
+      'release tag must include RUN_ID so assets cannot accumulate across runs'
+    );
   });
 
   it('bundle name should include run_id', () => {

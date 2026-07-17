@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-16
-**Authority:** WO-PORTFOLIO-004
+**Date:** 2026-07-17
+**Authority:** WO-PORTFOLIO-005
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,17 +13,14 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-004 ratifies continuous standing delivery authority on the reconciled
-`4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` base. The authority covers routine execution and merge
-mechanics for already-ratified Work Orders; it does not authorize any parked program or protected
-boundary.
+WO-PORTFOLIO-005 is the active dependency-cleared node on base
+`5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6`. Portfolio synthesis rejected the stale
+`WO-LOCALOPS-000` recommendation because LocalOps through WO-008 is already merged, then selected the
+current evidence-publisher capacity defect as the highest-value bounded slice.
 
-Portfolio state is `ALL_LANES_PARKED`. This is not an owner engineering-dispatch request. The
-operator resumes automatically when a canonical Work Order is admitted or an applicable recorded
-grant clears one of the walls below.
-
-When that happens, `OWNER-TF-STANDING-OPERATOR-AUTHORITY` eliminates per-WO and per-PR owner routing:
-eligible work classifies `MERGE_AND_CONTINUE` after the canonical checks pass.
+`OWNER-TF-STANDING-OPERATOR-AUTHORITY` covers its routine delivery lifecycle. The exact Work Order
+limits the implementation to evidence publication sharding, its contract test, retention truth, and
+canonical routing. No retained asset is deleted and no protected resource is accessed.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -35,6 +32,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ---
 
 ## Program Queues
+
+### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
+| WO | State | Notes |
+|----|-------|-------|
+| WO-PORTFOLIO-004 Standing Operator Authority | DONE | PR #1297 merged; standing delivery lifecycle authority active |
+| **WO-PORTFOLIO-005 Evidence Publisher Capacity Repair** | **CURRENT - complete on protected merge** | Replace the saturated shared monthly release with deterministic per-run release shards; no deletion or protected access |
+| Portfolio reconciliation | NEXT | Refresh the graph after merge; do not default to an owner-selection stop |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
@@ -146,11 +150,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-004 protected merge:** `ALL_LANES_PARKED`. No live Azure,
-secret, configuration, slot, deployment,
-county-production, runtime-repair, product-promotion, protected-data, or sovereign-import authority
-is granted. The operator does not invent a successor or ask the owner to choose routine engineering;
-it resumes when the canonical graph contains an executable node.
+**Portfolio result after WO-PORTFOLIO-005 admission:** `ACTIVE`. Protected Azure, deployment,
+county-production, runtime-repair, product-promotion, protected-data, and sovereign-import boundaries
+remain parked, but the independent R3 evidence-publisher repair is executable and does not cross any
+of them.
 
 ---
 

@@ -112,10 +112,10 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** WO-PORTFOLIO-003 reconciled the live graph after WO-AZURE-003 and classified it
-`ALL_LANES_PARKED`. No registered node is both dependency-cleared and inside existing authority. No
-live slot, deployment, runtime, protected-data, product-promotion, or import action is selected; the
-operator resumes automatically when a canonical node or applicable grant exists.
+**Current state:** Portfolio synthesis admitted `WO-PORTFOLIO-005 - Evidence Publisher Capacity
+Repair` after excluding the already-completed LocalOps seed. No live slot, deployment, runtime,
+protected-data, product-promotion, or import action is selected. After the bounded R3 repair merges,
+the operator refreshes the graph automatically.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -415,10 +415,10 @@ File:     programs/portfolio-operator.md
 Success:  Program closeout advances directly into the next executable goal/loop without owner dispatch.
 ```
 
-**Current state:** WO-PORTFOLIO-003 reconciled the graph after WO-AZURE-003 and found no registered
-node that is both dependency-cleared and inside existing authority. The portfolio is
-`ALL_LANES_PARKED`; resume automatically when a canonical node is admitted or a recorded wall is
-cleared. Do not convert this state into an owner engineering-dispatch prompt.
+**Current state:** Portfolio synthesis at `5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6` rejected the
+obsolete LocalOps seed and admitted `WO-PORTFOLIO-005 - Evidence Publisher Capacity Repair`. The
+bounded R3 slice is complete on protected merge; afterward the operator reconciles again without an
+owner engineering-dispatch prompt.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

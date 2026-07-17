@@ -4,8 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Governing portfolio continuation baseline - standing delivery authority active; all
-registered lanes parked
+**Status:** Active at `WO-PORTFOLIO-005` - evidence publisher capacity repair
 
 ## Purpose
 
@@ -50,15 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3`, WO-PORTFOLIO-003 found no
-registered node that is both dependency-cleared and inside existing authority. The Azure safe
-evidence slice is complete; every remaining node is completed or parked at a recorded protected
-boundary.
+At `origin/main` `5049ed24eda651ac4896b2ccfcbf5ceed3ac04b6`, portfolio synthesis rejected the
+stale `WO-LOCALOPS-000` seed recommendation because that chain is already merged. It admitted
+`WO-PORTFOLIO-005` instead: the current post-merge evidence publisher repeatedly fails only because
+the July release contains GitHub's maximum 1,000 assets.
 
-No deployment or runtime lane is preselected. The live result is recorded in
-[`WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md`](../evidence/WO-PORTFOLIO-003-CURRENT-STATE-RECONCILIATION.md).
-WO-PORTFOLIO-004 then ratifies standing delivery authority without selecting or broadening a parked
-lane. The operator resumes when a canonical node is admitted or an applicable program/protected
-grant clears a wall; routine delivery after that point needs no per-PR owner routing.
+WO-PORTFOLIO-005 is a bounded R3 repair. It partitions future evidence publication into deterministic
+per-run release shards, preserves strict verification and one-year retention, and performs no
+deletion, production access, or runtime change. After protected merge, the portfolio loop reconciles
+again rather than returning to `ALL_LANES_PARKED` by default.
 
-STOP_TYPE: `ALL_LANES_PARKED`
+STOP_TYPE: `EVIDENCE_PUBLISHER_CAPACITY_REPAIRED`

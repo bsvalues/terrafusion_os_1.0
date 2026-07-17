@@ -41,13 +41,17 @@ When a PR with autonomy changes is **merged to main**, the evidence bundle is au
 
 | Condition | Retention Period | Storage Location | Automation |
 |-----------|------------------|------------------|------------|
-| PR merged to main | **1 year** | GitHub Release (`autonomy-evidence/YYYY-MM`) | `autonomy-evidence-publisher.yml` |
+| PR merged to main | **1 year** | GitHub Release (`autonomy-evidence-shard-YYYY-MM-RUN_ID`) | `autonomy-evidence-publisher.yml` |
 | Tagged release | **2 years** | Release Assets | Manual escalation |
 | Incident label applied | **7 years** | GitHub Release (`autonomy-incident/YYYY`) | `autonomy-incident-publisher.yml` |
 
 #### Release Evidence Channel Details
 
-- **Tag Format:** `autonomy-evidence/YYYY-MM` (monthly rollup)
+- **Tag Format:** `autonomy-evidence-shard-YYYY-MM-RUN_ID` (one deterministic shard per workflow run)
+- **Capacity Rule:** Evidence from different runs must not share a release. This keeps every release
+  below GitHub's 1,000-asset ceiling without deleting or overwriting retained evidence.
+- **Legacy Releases:** Existing `autonomy-evidence/YYYY-MM` monthly releases remain immutable retention
+  records. New workflow runs publish only to the per-run shard format.
 - **Assets Published:**
   - `autonomy-evidence-<runId>.zip` — Complete evidence bundle
   - `autonomy-evidence-<runId>.manifest.json` — SHA256 integrity hashes

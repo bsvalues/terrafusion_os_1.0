@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-WOE-003",
-  "generatedAt": "2026-06-29T00:00:00Z",
-  "description": "Representative seed registry for the TerraFusion Work Order Engine. Data only; no automation authority.",
+  "generatedBy": "WO-PORTFOLIO-005",
+  "generatedAt": "2026-07-17T00:00:00Z",
+  "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10,7 +10,7 @@
       "program": "Work Order Engine",
       "goal": "Turn the proven DevOps goal/loop operating pattern into reusable TerraFusion operator doctrine.",
       "riskClass": "R1",
-      "status": "pr_open",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-001",
@@ -166,7 +166,7 @@
       "program": "Work Order Engine",
       "goal": "Define the canonical Work Order schema and companion data-model specification.",
       "riskClass": "R1",
-      "status": "merged",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-001",
@@ -266,7 +266,7 @@
       "program": "Work Order Engine",
       "goal": "Create a representative registry of known completed/current WOs from the DevOps chain and next Brain candidates.",
       "riskClass": "R1",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-002",
@@ -337,7 +337,7 @@
       "program": "Work Order Engine",
       "goal": "Define deterministic scoring rules for what work order should run next.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-003",
@@ -390,7 +390,7 @@
       "program": "Work Order Engine",
       "goal": "Create a read-only command that reports active lane, completed WOs, blocked WOs, next recommended WO, and rationale.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-004",
@@ -443,7 +443,7 @@
       "program": "Work Order Engine",
       "goal": "Connect the WO registry to the goal/loop model as doctrine: goal owns intent, loop owns repeated execution, WO owns governed packet, evidence proves completion.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-005",
@@ -496,7 +496,7 @@
       "program": "Work Order Engine",
       "goal": "Create the operator packet defining continuation, stop, merge, and next-WO rules.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-006",
@@ -549,7 +549,7 @@
       "program": "Work Order Engine",
       "goal": "Record the Work Order Engine baseline: registry state, scoring rules, query output, limitations, and next program recommendation.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WOE-007",
@@ -715,7 +715,7 @@
       "program": "LocalOps",
       "goal": "Define the LocalOps chain head before executing local AI/operator work.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [],
       "allowedSystems": [
         {
@@ -730,6 +730,11 @@
           "name": "Autonomous repair, shell agent, AI mutation of records, county indexing without approval rules"
         }
       ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-LOCALOPS-000-planning-envelope.md",
+        "docs/localops/**"
+      ],
+      "blockedFiles": ["backend/**", ".github/workflows/**", "deployment/**"],
       "evidenceRequired": [
         {
           "kind": "file",
@@ -741,7 +746,19 @@
           "name": "planning proof",
           "command": "per-WO required_proof blocks",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion_os_1.0/pull/935",
+          "summary": "WO-LOCALOPS-000 planning envelope merged; implementation chain later completed through WO-LOCALOPS-008."
+        },
+        {
+          "kind": "file",
+          "location": "docs/localops/README.md",
+          "summary": "LocalOps planning and implemented-slice evidence."
         }
       ],
       "stopConditions": [
@@ -750,14 +767,115 @@
           "description": "WO-LOCALOPS-006 shell UI remains R4 and requires explicit architect sign-off at dispatch."
         }
       ],
+      "nextCandidates": []
+    },
+    {
+      "id": "WO-PORTFOLIO-005",
+      "title": "Evidence Publisher Capacity Repair",
+      "program": "Portfolio Operator",
+      "goal": "Restore post-merge autonomy evidence publication without deleting retained evidence or crossing protected boundaries.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Autonomy evidence publication governance",
+          "paths": [
+            ".github/workflows/autonomy-evidence-publisher.yml",
+            "tools/registry/autonomy-viewer/test/evidence-publisher.test.ts",
+            "docs/AUTONOMY_EVIDENCE_RETENTION_POLICY.md",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, product, deployment, county, PACS, SQL, credentials, secrets, destructive evidence cleanup"
+        }
+      ],
+      "allowedFiles": [
+        ".github/workflows/autonomy-evidence-publisher.yml",
+        "docs/AUTONOMY_EVIDENCE_RETENTION_POLICY.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-PORTFOLIO-005-evidence-publisher-capacity-repair.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-005-EVIDENCE-PUBLISHER-CAPACITY-REPAIR.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "tools/registry/autonomy-viewer/test/evidence-publisher.test.ts"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "check",
+          "description": "Evidence publisher contract tests pass with per-run release sharding."
+        },
+        {
+          "kind": "file",
+          "description": "Capacity failure and non-destructive repair are recorded in governed evidence."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-005-EVIDENCE-PUBLISHER-CAPACITY-REPAIR.md",
+          "summary": "Live 1,000-asset failure evidence, capacity-safe design, and scope non-claims."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "publisher contract",
+          "command": "corepack pnpm exec tsx --test tools/registry/autonomy-viewer/test/evidence-publisher.test.ts",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop if repair requires deleting retained evidence, bypassing verification, or touching runtime/protected resources."
+        }
+      ],
       "nextCandidates": [
         {
-          "id": "WO-LOCALOPS-001",
-          "reason": "First implementation slice after planning envelope.",
-          "riskClass": "R2",
+          "id": "WO-PORTFOLIO-006",
+          "reason": "Refresh the canonical portfolio graph after publisher repair merges.",
+          "riskClass": "R0",
           "blocked": false
         }
-      ]
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers delivery; the exact Work Order confines implementation to the listed R3 evidence-publication scope."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Live portfolio synthesis plus Autonomy Evidence Publisher run 29553323267",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }
