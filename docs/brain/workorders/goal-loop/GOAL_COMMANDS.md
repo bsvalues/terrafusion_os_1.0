@@ -111,9 +111,10 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** WO-AZURE-003 defines the slot policy from committed evidence. After protected merge,
-portfolio reconciliation selects another dependency-cleared lane. No live slot, deployment, or Azure
-action is selected.
+**Current state:** WO-PORTFOLIO-003 reconciled the live graph after WO-AZURE-003 and classified it
+`ALL_LANES_PARKED`. No registered node is both dependency-cleared and inside existing authority. No
+live slot, deployment, runtime, protected-data, product-promotion, or import action is selected; the
+operator resumes automatically when a canonical node or applicable grant exists.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 

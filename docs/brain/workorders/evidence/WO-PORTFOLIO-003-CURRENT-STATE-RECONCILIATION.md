@@ -43,6 +43,24 @@ The operator does not ask the owner to pick a routine engineering task because n
 task exists in the registered graph. It waits on canonical backlog admission or an applicable grant
 for a recorded wall, then resumes the portfolio algorithm automatically.
 
+## All-Lanes-Parked Terminal Report
+
+```text
+RESULT:                   ALL_LANES_PARKED
+GOAL:                     GOAL-PORTFOLIO-OPERATOR-001
+LOOP_MODE:                program
+LANES_RUN:                Azure committed-evidence lane through WO-AZURE-003; WO-PORTFOLIO-003 reconciliation
+WALL_LEDGER:              Azure SW-01/SW-03/SW-04; demo/deploy SW-01/SW-04/SW-10; data SW-02/SW-03/SW-08; Local OMEN SW-09; import SW-05; Sync and TerraPilot recorded selection/promotion gates
+PR_QUEUE:                 PR #1296 is the current reconciliation PR; no unrelated PR is promoted into canonical routing
+MERGED:                   PR #1293 (WO-AZURE-002) and PR #1295 (WO-AZURE-003)
+NEXT_UNBLOCK_OPTIONS:     1. TerraPilot P16 design-only authority; 2. select WO-SYNC-132 synthetic tooling; 3. authorize WO-LOCAL-093 runtime diagnosis; 4. authorize WO-AZURE-004 live evidence; 5. authorize deployment or protected-data work
+OPERATOR_ACTION_REQUIRED: none for routine engineering; resume automatically when a canonical node or applicable grant exists, otherwise the portfolio run is complete
+```
+
+The unblock list is risk-ordered and does not grant any listed action. It distinguishes a future
+protected-boundary choice from routine PR, review, validation, merge, and routing work that remains
+the operator's responsibility.
+
 ## Validation Results
 
 - Frozen bootstrap completed with `--frozen-lockfile --ignore-scripts`; `package.json` remained
