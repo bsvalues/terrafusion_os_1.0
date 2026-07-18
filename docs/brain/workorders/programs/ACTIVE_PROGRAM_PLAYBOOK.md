@@ -536,20 +536,20 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - GIS package token metadata disposition |
+| Selected program | Portfolio Operator - GIS package token metadata alignment |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` complete on protected merge |
-| Next WO | `WO-ATLAS-008 - GIS Package Mapbox Token Metadata Disposition Audit` |
+| Current WO | `WO-ATLAS-008 - GIS Package Mapbox Token Metadata Disposition Audit` complete on protected merge |
+| Next WO | `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` |
 
-WO-ATLAS-007 removes the GeoForge V2 legacy fallback, aligns both missing-token surfaces to
-`VITE_MAPBOX_ACCESS_TOKEN`, and adds cwd-independent source-contract proof. Frontend type-check and
-production build pass without token-value, provider, geometry, valuation, routing, package, lockfile,
-CI, deployment, or protected-resource changes.
+WO-ATLAS-008 proves that GIS package source and types use `VITE_MAPBOX_ACCESS_TOKEN`, no tracked live
+reader consumes `MAPBOX_ACCESS_TOKEN`, and no tracked live code loads the package's
+`terrafusion-config.json`. The README and metadata references are stale browser-contract surfaces,
+not a separate server-side contract.
 
-WO-ATLAS-008 next determines whether the two `MAPBOX_ACCESS_TOKEN` GIS package setup/metadata
-references are active metadata, stale guidance, or a separate server-side contract. It is read-only
-and must define a bounded disposition before package files change.
+WO-ATLAS-009 next aligns only those two references and adds mechanical package contract proof. It
+does not authorize token access, fallback aliases, provider behavior, package manifests, lockfiles,
+CI, deployment, or protected resources.
 
 ---
 

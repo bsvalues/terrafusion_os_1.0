@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-ATLAS-007
+**Authority:** WO-ATLAS-008
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,12 @@
 
 ## Active Goal
 
-WO-ATLAS-007 is the active bounded R3 browser token-name cleanup on base
-`03b048b72f035a2e4e8e7073e85690b683f2867f`. It removes the GeoForge V2 fallback, aligns V1/V2
-guidance, and adds cwd-independent proof without reading a token value or changing provider behavior.
-WO-ATLAS-008 is admitted as the docs-only R1 disposition audit for two GIS package setup/metadata
-references; it does not change package configuration or infer that a live reader exists.
+WO-ATLAS-008 is the active docs-only R1 disposition audit on base
+`c2744855cc6ae4f8966f6ed8460b065588e8908b`. Live GIS package source and types use
+`VITE_MAPBOX_ACCESS_TOKEN`; no tracked live reader consumes the two `MAPBOX_ACCESS_TOKEN` README and
+metadata references. The audit classifies them as stale without reading a token value or changing the
+package. WO-ATLAS-009 is admitted as the bounded R3 alignment of those two references with mechanical
+contract proof.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -45,8 +46,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-004 GeoForge Popup Content Safety Audit | DONE | PR #1306 merged; eight API-derived popup HTML sites inventoried with exact repair contract |
 | WO-ATLAS-005 GeoForge Popup DOM Safety Repair | DONE | PR #1307 merged; all eight HTML paths replaced with static DOM/textContent and hostile-input proof |
 | WO-ATLAS-006 Mapbox Token Alias Contract Audit | DONE | PR #1308 merged; browser contract narrowed and GIS package metadata follow-up recorded |
-| **WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup** | **CURRENT - complete on protected merge** | V2 fallback removed, V1/V2 guidance aligned, focused proof and build green |
-| WO-ATLAS-008 GIS Package Mapbox Token Metadata Disposition Audit | NEXT - docs-only R1 | Classify two package setup/metadata references and define a bounded disposition |
+| WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup | DONE | PR #1309 merged; V2 fallback removed, V1/V2 guidance aligned, focused proof and build green |
+| **WO-ATLAS-008 GIS Package Mapbox Token Metadata Disposition Audit** | **CURRENT - complete on protected merge** | Two unconsumed package references classified as stale browser guidance/metadata |
+| WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment | NEXT - bounded R3 | Align the two stale references and add mechanical package contract proof |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |

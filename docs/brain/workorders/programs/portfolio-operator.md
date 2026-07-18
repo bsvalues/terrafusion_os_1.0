@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-007` - GeoForge Mapbox token alias cleanup
+**Status:** Active at `WO-ATLAS-008` - GIS package Mapbox token metadata disposition audit
 
 ## Purpose
 
@@ -49,10 +49,11 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `03b048b72f035a2e4e8e7073e85690b683f2867f`, WO-ATLAS-007 removes the GeoForge V2
-legacy browser fallback, aligns V1/V2 guidance to `VITE_MAPBOX_ACCESS_TOKEN`, and adds focused proof
-without reading a token value or changing provider behavior.
+At `origin/main` `c2744855cc6ae4f8966f6ed8460b065588e8908b`, WO-ATLAS-008 proves the GIS
+package's live browser source and types use `VITE_MAPBOX_ACCESS_TOKEN`. The README and integration
+metadata retain an unconsumed `MAPBOX_ACCESS_TOKEN` name and are classified as stale without package
+mutation or token access.
 
-`WO-ATLAS-008 - GIS Package Mapbox Token Metadata Disposition Audit` is next as docs-only R1 work.
+`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is next as bounded R3 work.
 
-STOP_TYPE: `GEOFORGE_TOKEN_ALIAS_CLEANED_GIS_METADATA_AUDIT_NEXT`
+STOP_TYPE: `GIS_TOKEN_METADATA_DISPOSITION_COMPLETE_ALIGNMENT_NEXT`
