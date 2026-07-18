@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-002",
+  "generatedBy": "WO-ATLAS-003",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1515,7 +1515,7 @@
       "program": "Portfolio Operator",
       "goal": "Decide the supported Workbench map renderer contract from current main before any migration implementation.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-002",
@@ -1567,6 +1567,104 @@
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R1",
           "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "contract",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-003-MAP-RENDERER-CONTRACT-DECISION.md",
+          "description": "Current-main Mapbox retention decision and provider-neutral future migration contract."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before frontend implementation, renderer/provider mutation, package or lockfile mutation, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-004",
+          "reason": "Current-main source inspection exposed API-derived GeoForge popup HTML that requires a bounded security audit before renderer migration.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers this docs-only current-main renderer contract decision; the decision retains Mapbox as the current baseline and admits a separate docs-only popup safety audit."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-001 stale migration audit and WO-ATLAS-002 independent security repair",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-004",
+      "title": "GeoForge Popup Content Safety Audit",
+      "program": "Portfolio Operator",
+      "goal": "Inventory API-derived GeoForge popup HTML and define exact current-main repair slices.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-003",
+          "status": "satisfied",
+          "evidence": [
+            "Mapbox retained as the supported current renderer baseline with text-safe popup requirements"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Committed GeoForge popup source inspection and Brain evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frontend implementation, renderer/provider/package changes, CI, deployment, secrets, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-ATLAS-004-geoforge-popup-content-safety-audit.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-004-GEOFORGE-POPUP-CONTENT-SAFETY-AUDIT.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "security-audit",
+          "description": "Exact current-main setHTML inventory, trust-boundary classification, test gaps, and bounded repair recommendations."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R1",
+          "required": true,
           "result": "pending"
         }
       ],
@@ -1574,7 +1672,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop before frontend implementation, renderer/provider mutation, package or lockfile mutation, or protected-resource access."
+          "description": "Stop before frontend repair, renderer/provider/package mutation, or protected-resource access."
         }
       ],
       "nextCandidates": [],
@@ -1586,11 +1684,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Standing operator authority covers this docs-only current-main renderer contract decision; implementation requires a separately admitted bounded Work Order."
+        "notes": "Standing operator authority covers this docs-only current-main security audit; any repair must be admitted as a separate exact-scope Work Order."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-ATLAS-001 stale migration audit and WO-ATLAS-002 independent security repair",
+        "source": "WO-ATLAS-003 current-main renderer and popup trust-boundary inspection",
         "schemaVersion": "0.1.0"
       }
     }
