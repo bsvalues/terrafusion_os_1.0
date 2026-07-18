@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-004` - GeoForge popup content safety audit
+**Status:** Active at `WO-ATLAS-005` - GeoForge popup DOM safety repair
 
 ## Purpose
 
@@ -49,11 +49,10 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `60bc8fa951fd24a88555fce3e62ebf2d56896fb1`, WO-ATLAS-004 inventories eight GeoForge
-`setHTML` sites that interpolate API/store-derived feature properties and finds no focused popup
-safety proof. The audit defines an exact static-DOM repair that preserves current valuation, GIS,
-provider, routing, and persistence behavior.
+At `origin/main` `b6b36430a1fd9fdeae171abb08959193fc290712`, WO-ATLAS-005 replaces the eight audited
+GeoForge `setHTML` sites with static DOM and text-only feature values. Focused hostile-input proof
+preserves current valuation, GIS, provider, routing, and persistence behavior.
 
-`WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` is next as bounded R3 frontend work.
+`WO-ATLAS-006 - Mapbox Token Alias Contract Audit` is next as docs-only R1 evidence work.
 
-STOP_TYPE: `GEOFORGE_POPUP_SAFETY_AUDITED_DOM_REPAIR_NEXT`
+STOP_TYPE: `GEOFORGE_POPUP_DOM_SAFETY_REPAIRED_TOKEN_ALIAS_AUDIT_NEXT`

@@ -14,6 +14,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import type { NbhdOutlineCollection, ParcelTileCollection, ParcelTileProps } from './v2Api';
 import type { V2LayerId } from './LeftPanel';
 import type { MapContextPayload } from './mapContext';
+import { createGeoForgePopupContent } from '../popupContent';
 
 const MAPBOX_TOKEN = (
   (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined)
@@ -242,14 +243,24 @@ export function GeoForgeV2Map({
         map.getCanvas().style.cursor = 'pointer';
         popupRef.current
           .setLngLat(e.lngLat)
-          .setHTML(
-            `<div style="font-family: var(--font-primary); font-size: 10px;">
-              <div style="font-weight:700; letter-spacing: 0.14em; text-transform: uppercase; color: hsl(var(--tf-muted));">Neighborhood ${props.neighborhoodCode ?? ''}</div>
-              <div style="font-family: var(--font-mono); margin-top: 3px; color: hsl(var(--tf-text));">
-                Grade ${props.grade ?? '-'} · med ${(props.medianRatio ?? 0).toFixed(3)} · n=${props.saleCount ?? 0}
-              </div>
-            </div>`,
-          )
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'v2',
+            rows: [
+              {
+                parts: [{ text: `Neighborhood ${props.neighborhoodCode ?? ''}` }],
+                color: 'hsl(var(--tf-muted))',
+                fontWeight: '700',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+              },
+              {
+                parts: [{ text: `Grade ${props.grade ?? '-'} · med ${(props.medianRatio ?? 0).toFixed(3)} · n=${props.saleCount ?? 0}` }],
+                color: 'hsl(var(--tf-text))',
+                fontFamily: 'var(--font-mono)',
+                marginTop: '3px',
+              },
+            ],
+          }))
           .addTo(map);
       });
 

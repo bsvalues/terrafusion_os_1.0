@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-17 - WO-ATLAS-004 GeoForge popup content safety audit)*
+*(Updated 2026-07-17 - WO-ATLAS-005 GeoForge popup DOM safety repair)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -37,7 +37,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Safe audit queue exhausted | Audits, rollup, credentialed verification, and duplicate cleanup complete | New bounded remediation WO only | No automatic continuation | Stop on data mutation, credentials, PACS, sync, or production claims |
 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Closed at WO-WOE-013 / PR #1291 | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
-| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Active - GeoForge popup safety audit complete on merge | `WO-ATLAS-004` complete on protected merge | `WO-ATLAS-005` GeoForge Popup DOM Safety Repair | Auto-select, admit, deliver, merge, and continue dependency-cleared authorized nodes | Stop only on scope expansion, failed required proof, destructive action, or protected boundaries |
+| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Active - GeoForge popup DOM safety repair complete on merge | `WO-ATLAS-005` complete on protected merge | `WO-ATLAS-006` Mapbox Token Alias Contract Audit | Auto-select, admit, deliver, merge, and continue dependency-cleared authorized nodes | Stop only on scope expansion, failed required proof, destructive action, or protected boundaries |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Safe docs/evidence slice complete on WO-AZURE-003 merge | `WO-AZURE-003` complete on merge | Portfolio reconciliation; `WO-AZURE-004/005` remain blocked | No automatic live-Azure continuation | Stop on live Azure, secret values, resource/config mutation, deployment, or county production |
 | [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Packet complete; deployment parked | `WO-P8-MGMT-004` complete | `WO-P8-MGMT-005` at SW-01 or portfolio reconciliation | Park blocked deployment and continue portfolio selection | Stop P8 on deployment authorization; do not freeze unrelated lanes |
