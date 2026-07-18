@@ -536,17 +536,18 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - GeoForge popup safety |
+| Selected program | Portfolio Operator - GeoForge popup safety and token contract |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-004 - GeoForge Popup Content Safety Audit` complete on protected merge |
-| Next WO | `WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` |
+| Current WO | `WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` complete on protected merge |
+| Next WO | `WO-ATLAS-006 - Mapbox Token Alias Contract Audit` |
 
-WO-ATLAS-004 finds seven `setHTML` sites in `GeoForgeMap` and one in `GeoForgeV2Map`, all combining
-static markup with API/store-derived feature properties and none covered by focused hostile-input
-tests. WO-ATLAS-005 is the exact bounded repair: static DOM structure, dynamic `textContent`, all
-eight calls removed, and dedicated regression proof without valuation, geometry, provider, routing,
-package, or persistence changes.
+WO-ATLAS-005 replaces the seven `GeoForgeMap` and one `GeoForgeV2Map` HTML sinks with static DOM
+structure and text-only feature values. Focused proof covers hostile identifiers, labels, dates, and
+decisions without valuation, geometry, provider, routing, package, or persistence changes.
+
+WO-ATLAS-006 next audits the current token alias inconsistency recorded by WO-ATLAS-003 and defines
+an exact cleanup contract without touching tokens, secrets, runtime configuration, or frontend source.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-004",
+  "generatedBy": "WO-ATLAS-005",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1711,7 +1711,7 @@
       "program": "Portfolio Operator",
       "goal": "Remove executable popup HTML boundaries from current GeoForge maps without changing business or renderer behavior.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-004",
@@ -1774,29 +1774,42 @@
           "name": "Focused popup-content tests",
           "command": "corepack pnpm --dir frontend exec vitest run apps/os-shell/src/pages/forge/geo/__tests__/popupContent.test.ts",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Frontend type-check",
           "command": "corepack pnpm --dir frontend run type-check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "security-repair",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-005-GEOFORGE-POPUP-DOM-SAFETY-REPAIR.md",
+          "description": "Eight popup HTML sinks replaced by static DOM/textContent with hostile-input proof."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Stop on valuation, geometry, renderer/provider, routing, persistence, API, package/lockfile, CI/deployment, or protected-resource change."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-006",
+          "reason": "WO-ATLAS-003 recorded inconsistent Mapbox token aliases and guidance that require an exact docs-only contract audit before cleanup.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -1810,6 +1823,105 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "WO-ATLAS-004 exact current-main GeoForge popup trust-boundary audit",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-006",
+      "title": "Mapbox Token Alias Contract Audit",
+      "program": "Portfolio Operator",
+      "goal": "Inventory current Mapbox token names and guidance, then define an exact non-secret cleanup contract.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-005",
+          "status": "satisfied",
+          "evidence": [
+            "GeoForge popup HTML boundary removed without changing renderer, provider, token, or package behavior"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only Mapbox token contract inspection and Brain evidence",
+          "paths": [
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Token values, secrets, runtime configuration, frontend implementation, package/lockfile, CI, deployment, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-ATLAS-006-mapbox-token-alias-contract-audit.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-006-MAPBOX-TOKEN-ALIAS-CONTRACT-AUDIT.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".env*",
+        "frontend/apps/os-shell/src/**",
+        "frontend/package.json",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "audit",
+          "description": "Exact source and documentation inventory for VITE_MAPBOX_ACCESS_TOKEN and compatibility aliases without reading token values."
+        },
+        {
+          "kind": "contract",
+          "description": "Canonical name, compatibility posture, cleanup scope, validation, non-claims, and rollback defined before implementation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on secret access, token value inspection, runtime/config/source mutation, provider behavior, package/lockfile, CI/deployment, or protected resources."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio operator authority covers this docs-only current-main contract audit; no secret or runtime mutation is permitted."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-003 token-contract finding and WO-ATLAS-005 protected repair closeout",
         "schemaVersion": "0.1.0"
       }
     }

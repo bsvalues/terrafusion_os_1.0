@@ -7,6 +7,7 @@ import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor,
 import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
 import { computeLISA, type LISAResult } from './utils/spatialStats';
 import type { MapLayer, ChoroMode } from './types/geoforge.types';
+import { createGeoForgePopupContent, type PopupRow } from './popupContent';
 
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ?? '';
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -99,16 +100,45 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const n = props.saleCount;
         const simDelta = props.simulationDelta;
         const simRatio = props.simulatedRatio;
-        const simRow = simDelta != null && simRatio != null
-          ? `<div style="margin-top:4px;color:#f59e0b;font-size:9px">⬡ Sim: ${Number(med).toFixed ? med : '?'} → <span style="font-family:monospace;font-weight:700;color:#fbbf24">${Number(simRatio).toFixed(3)}</span> (${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%)</div>`
-          : '';
         const mLabel = props.modeLabel as string | undefined;
-        const modeRow = mLabel && mLabel !== 'RATIO'
-          ? `<div style="margin-top:2px;color:#7dd3fc;font-size:9px">▣ ${mLabel} <span style="font-family:monospace;font-weight:700">${props.modeValue}</span></div>`
-          : '';
+        const rows: PopupRow[] = [
+          {
+            parts: [{ text: String(props.neighborhoodCode ?? '') }],
+            color: '#00FFFF',
+            fontWeight: '700',
+            letterSpacing: '.05em',
+            marginBottom: '3px',
+          },
+          { parts: [{ text: 'MED ' }, { text: med, color: '#fff', fontWeight: '600' }] },
+          { parts: [{ text: 'COD ' }, { text: cod, color: '#fff' }] },
+        ];
+        if (mLabel && mLabel !== 'RATIO') {
+          rows.push({
+            parts: [
+              { text: `▣ ${mLabel} ` },
+              { text: String(props.modeValue ?? ''), fontFamily: 'monospace', fontWeight: '700' },
+            ],
+            color: '#7dd3fc',
+            fontSize: '9px',
+            marginTop: '2px',
+          });
+        }
+        rows.push({ parts: [{ text: `n = ${String(n ?? '')}` }], color: '#94a3b8' });
+        if (simDelta != null && simRatio != null) {
+          rows.push({
+            parts: [
+              { text: `⬡ Sim: ${med} → ` },
+              { text: Number(simRatio).toFixed(3), color: '#fbbf24', fontFamily: 'monospace', fontWeight: '700' },
+              { text: ` (${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%)` },
+            ],
+            color: '#f59e0b',
+            fontSize: '9px',
+            marginTop: '4px',
+          });
+        }
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div>${modeRow}<div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({ theme: 'legacy', minWidth: 130, rows }))
           .addTo(map);
       });
 
@@ -134,10 +164,38 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const ratio = Number(props.ratio);
         const ratioColor = ratio > 1.15 ? '#f87171' : ratio > 1.05 ? '#fb923c'
           : ratio < 0.85 ? '#60a5fa' : ratio < 0.95 ? '#93c5fd' : '#4ade80';
-        const dq = props.qualificationDecision === 'qualified' ? '' : `<div style="color:#fbbf24;font-size:9px">${props.qualificationDecision?.toUpperCase()}</div>`;
+        const rows: PopupRow[] = [
+          {
+            parts: [{ text: String(props.parcelId ?? '') }],
+            color: '#00FFFF',
+            fontFamily: 'monospace',
+            fontWeight: '700',
+            marginBottom: '3px',
+          },
+          {
+            parts: [
+              { text: 'Ratio ' },
+              { text: ratio.toFixed(3), color: ratioColor, fontFamily: 'monospace', fontWeight: '700' },
+            ],
+          },
+          {
+            parts: [
+              { text: 'Sale ' },
+              { text: `$${(Number(props.salePrice) / 1000).toFixed(0)}k`, color: '#fff', fontFamily: 'monospace' },
+            ],
+          },
+          { parts: [{ text: String(props.saleDate ?? '') }], color: '#64748b', fontSize: '9px' },
+        ];
+        if (props.qualificationDecision !== 'qualified') {
+          rows.push({
+            parts: [{ text: String(props.qualificationDecision ?? '').toUpperCase() }],
+            color: '#fbbf24',
+            fontSize: '9px',
+          });
+        }
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;font-family:monospace;margin-bottom:3px">${props.parcelId}</div><div>Ratio <span style="color:${ratioColor};font-weight:700;font-family:monospace">${ratio.toFixed(3)}</span></div><div>Sale <span style="color:#fff;font-family:monospace">$${(Number(props.salePrice)/1000).toFixed(0)}k</span></div><div style="color:#64748b;font-size:9px">${props.saleDate ?? ''}${dq}</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({ theme: 'legacy', minWidth: 130, rows }))
           .addTo(map);
       });
       map.on('mouseleave', 'sale-circles', () => {
@@ -153,7 +211,22 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const av = Number(props.assessedValue);
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;font-family:monospace;margin-bottom:3px">${props.parcelId}</div><div>AV <span style="color:#fff;font-family:monospace">$${(av/1000).toFixed(0)}k</span></div></div>`)
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'legacy',
+            minWidth: 130,
+            rows: [
+              {
+                parts: [{ text: String(props.parcelId ?? '') }],
+                color: '#00FFFF',
+                fontFamily: 'monospace',
+                fontWeight: '700',
+                marginBottom: '3px',
+              },
+              {
+                parts: [{ text: 'AV ' }, { text: `$${(av / 1000).toFixed(0)}k`, color: '#fff', fontFamily: 'monospace' }],
+              },
+            ],
+          }))
           .addTo(map);
       });
       map.on('mouseleave', 'parcel-pts-dots', () => {
@@ -170,7 +243,25 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const pctColor = pct > 5 ? '#4ade80' : pct > 0 ? '#86efac' : pct > -5 ? '#93c5fd' : '#60a5fa';
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:140px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>ΔAV <span style="color:${pctColor};font-weight:700;font-family:monospace">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span></div><div style="color:#64748b;font-size:9px">n = ${props.parcelCount} parcels</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'legacy',
+            minWidth: 140,
+            rows: [
+              {
+                parts: [{ text: String(props.neighborhoodCode ?? '') }],
+                color: '#00FFFF',
+                fontWeight: '700',
+                marginBottom: '3px',
+              },
+              {
+                parts: [
+                  { text: 'ΔAV ' },
+                  { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, color: pctColor, fontFamily: 'monospace', fontWeight: '700' },
+                ],
+              },
+              { parts: [{ text: `n = ${String(props.parcelCount ?? '')} parcels` }], color: '#64748b', fontSize: '9px' },
+            ],
+          }))
           .addTo(map);
       });
       map.on('mouseleave', 'yoy-change-circles', () => {
@@ -189,7 +280,30 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const prev = Number(props.prevMedianPrice);
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:160px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>Mkt Δ <span style="color:${pctColor};font-weight:700;font-family:monospace">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span></div><div style="color:#94a3b8;font-size:9px">${prev > 0 ? `$${(prev/1000).toFixed(0)}k → ` : ''}$${(curr/1000).toFixed(0)}k median</div><div style="color:#64748b;font-size:9px">n=${props.saleCount} sales</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'legacy',
+            minWidth: 160,
+            rows: [
+              {
+                parts: [{ text: String(props.neighborhoodCode ?? '') }],
+                color: '#00FFFF',
+                fontWeight: '700',
+                marginBottom: '3px',
+              },
+              {
+                parts: [
+                  { text: 'Mkt Δ ' },
+                  { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, color: pctColor, fontFamily: 'monospace', fontWeight: '700' },
+                ],
+              },
+              {
+                parts: [{ text: `${prev > 0 ? `$${(prev / 1000).toFixed(0)}k → ` : ''}$${(curr / 1000).toFixed(0)}k median` }],
+                color: '#94a3b8',
+                fontSize: '9px',
+              },
+              { parts: [{ text: `n=${String(props.saleCount ?? '')} sales` }], color: '#64748b', fontSize: '9px' },
+            ],
+          }))
           .addTo(map);
       });
       map.on('mouseleave', 'market-trend-circles', () => {
@@ -210,7 +324,31 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const dir = delta > 0.01 ? 'rising ↑' : delta < -0.01 ? 'falling ↓' : 'stable →';
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:170px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>Drift <span style="color:${dColor};font-weight:700;font-family:monospace">${delta >= 0 ? '+' : ''}${delta.toFixed(4)}</span> <span style="color:${dColor};font-size:9px">${dir}</span></div><div style="color:#94a3b8;font-size:9px">${prev.toFixed(3)} → ${curr.toFixed(3)} ratio</div><div style="color:#64748b;font-size:9px">n=${props.currN} / ${props.prevN} · COD ${Number(props.currCod).toFixed(1)}</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'legacy',
+            minWidth: 170,
+            rows: [
+              {
+                parts: [{ text: String(props.neighborhoodCode ?? '') }],
+                color: '#00FFFF',
+                fontWeight: '700',
+                marginBottom: '3px',
+              },
+              {
+                parts: [
+                  { text: 'Drift ' },
+                  { text: `${delta >= 0 ? '+' : ''}${delta.toFixed(4)}`, color: dColor, fontFamily: 'monospace', fontWeight: '700' },
+                  { text: ` ${dir}`, color: dColor, fontSize: '9px' },
+                ],
+              },
+              { parts: [{ text: `${prev.toFixed(3)} → ${curr.toFixed(3)} ratio` }], color: '#94a3b8', fontSize: '9px' },
+              {
+                parts: [{ text: `n=${String(props.currN ?? '')} / ${String(props.prevN ?? '')} · COD ${Number(props.currCod).toFixed(1)}` }],
+                color: '#64748b',
+                fontSize: '9px',
+              },
+            ],
+          }))
           .addTo(map);
       });
       map.on('mouseleave', 'ratio-drift-circles', () => {
@@ -227,7 +365,37 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const cliffColor = diff > 0.15 ? '#f87171' : '#fb923c';
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:170px"><div style="color:${cliffColor};font-weight:700;margin-bottom:3px">⚡ Ratio Cliff</div><div style="font-family:monospace;font-size:10px"><span style="color:#00FFFF">${props.codeA}</span> <span style="color:#64748b">${Number(props.ratioA).toFixed(3)}</span></div><div style="font-family:monospace;font-size:10px"><span style="color:#00FFFF">${props.codeB}</span> <span style="color:#64748b">${Number(props.ratioB).toFixed(3)}</span></div><div style="margin-top:4px;color:${cliffColor};font-weight:700;font-family:monospace">Δ ${diff.toFixed(3)}</div><div style="color:#475569;font-size:9px">Abrupt equity transition — review boundary</div></div>`)
+          .setDOMContent(createGeoForgePopupContent({
+            theme: 'legacy',
+            minWidth: 170,
+            rows: [
+              { parts: [{ text: '⚡ Ratio Cliff' }], color: cliffColor, fontWeight: '700', marginBottom: '3px' },
+              {
+                parts: [
+                  { text: String(props.codeA ?? ''), color: '#00FFFF' },
+                  { text: ` ${Number(props.ratioA).toFixed(3)}`, color: '#64748b' },
+                ],
+                fontFamily: 'monospace',
+                fontSize: '10px',
+              },
+              {
+                parts: [
+                  { text: String(props.codeB ?? ''), color: '#00FFFF' },
+                  { text: ` ${Number(props.ratioB).toFixed(3)}`, color: '#64748b' },
+                ],
+                fontFamily: 'monospace',
+                fontSize: '10px',
+              },
+              {
+                parts: [{ text: `Δ ${diff.toFixed(3)}` }],
+                color: cliffColor,
+                fontFamily: 'monospace',
+                fontWeight: '700',
+                marginTop: '4px',
+              },
+              { parts: [{ text: 'Abrupt equity transition — review boundary' }], color: '#475569', fontSize: '9px' },
+            ],
+          }))
           .addTo(map);
       });
       map.on('mouseleave', 'ratio-cliff-lines', () => {
