@@ -536,14 +536,13 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | None inside current authority |
-| Current WO | `WO-PORTFOLIO-012 - Protected Boundary Decomposition` complete |
-| Next WO | Recommended strategic grant: read-only `WO-LOCAL-093` diagnosis envelope |
+| Selected program | Local OMEN Runtime Repair diagnosis completed |
+| Current WO | `WO-LOCAL-093 - Bounded Read-Only Local OMEN Diagnosis` complete |
+| Next WO | Protected candidate: `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation` |
 
-WO-PORTFOLIO-012 verified that MGMT-005/006 already merged and decomposed Local OMEN diagnosis from
-repair, P16 design from L3/L4 promotion, and sovereign disposition from import. The remaining useful
-work requires an exact strategic activation or protected-resource grant. The recommended next grant
-is read-only WO-LOCAL-093 diagnosis; no Docker mutation is implied.
+WO-LOCAL-093 consumed the authorized read-only diagnosis envelope. It proved that Docker Desktop
+cannot initialize its Linux/WSL engine because `%LOCALAPPDATA%\Docker\wsl\disk` is a junction to an
+unavailable `E:\DockerData` target. Repair remains protected and is now decomposed as WO-LOCAL-094.
 
 ---
 
@@ -554,22 +553,24 @@ is read-only WO-LOCAL-093 diagnosis; no Docker mutation is implied.
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | STRATEGIC ACTIVATION GATED |
-| Next | `WO-LOCAL-093` |
+| Status | DIAGNOSED - REPAIR AUTHORITY GATED |
+| Current | `WO-LOCAL-093` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Next | Proposed `WO-LOCAL-094` |
 
 ### Current Facts
 
-- Docker Desktop recovered.
-- `williamos-postgres-proof` exists on `127.0.0.1:15432` but is unhealthy.
-- App proof container is missing.
-- Ports `3100` / `3101` are clear.
+- Docker Desktop client is installed, but the Linux/WSL engine and daemon pipes are unavailable.
+- Docker backend logs identify a deterministic WSL distribution-storage failure.
+- `%LOCALAPPDATA%\Docker\wsl\disk` is a junction to unavailable `E:\DockerData`.
+- Container existence and health are currently unknown because the Docker API is unavailable.
+- Ports `15432`, `3100`, and `3101` are clear.
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
-Rule: Diagnosis first. A bounded read-only packet may inspect only the named local proof containers,
-health, logs, metadata, ports, and processes. Start/restart/recreate/remove/prune, app integration,
-persistence, LAN exposure, service/schedule changes, TerraFusion Postgres, or external resources
-remain separately blocked.
+Rule: Diagnosis is complete. WO-LOCAL-094 requires an exact local-only mutation envelope for the WSL
+disk target and Docker engine re-observation. Factory reset, prune, generic cleanup, container
+recreation, persistence deletion, LAN exposure, TerraFusion Postgres, secrets, and external
+resources remain blocked.
 
 ---
 
