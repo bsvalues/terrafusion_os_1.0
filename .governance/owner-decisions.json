@@ -412,7 +412,7 @@
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",
       "loop": "LOOP-PORTFOLIO-OPERATOR-001",
       "work_order": "WO-ATLAS-009",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-package-metadata-alignment",
       "effective_base_sha": "81689621109bfd28d9a3a36c6fa3484bc7991e2d",
       "expires_at": "2026-08-17T23:59:59Z",
@@ -424,6 +424,7 @@
         "create Brain evidence, validate, remediate, merge under standing operator authority, and verify origin/main"
       ],
       "authorized_files": [
+        ".governance/owner-decisions.json",
         "packages/gis-pro/README.md",
         "packages/gis-pro/terrafusion-config.json",
         "packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
@@ -442,7 +443,13 @@
         "protected-boundary access or conflicting authority",
         "expiration"
       ],
-      "decision_basis": "Owner directed Codex to continue the bounded GIS token metadata correction after fail-closed protected-path authority integration"
+      "decision_basis": "Owner directed Codex to continue the bounded GIS token metadata correction after fail-closed protected-path authority integration",
+      "completion": {
+        "terminal_work_order": "WO-ATLAS-009",
+        "effective_on_merge": true,
+        "evidence": "docs/brain/workorders/evidence/WO-ATLAS-009-GIS-PACKAGE-MAPBOX-TOKEN-METADATA-ALIGNMENT.md",
+        "merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR"
+      }
     },
     {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
