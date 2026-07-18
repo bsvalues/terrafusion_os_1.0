@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-003` - map renderer contract decision
+**Status:** Active at `WO-ATLAS-004` - GeoForge popup content safety audit
 
 ## Purpose
 
@@ -49,12 +49,11 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `f2816c2740a0cc92b2442635d6c4673850c64a58`, WO-ATLAS-003 retains `mapbox-gl` 3.20.0 as the
-supported current renderer baseline. No live ADR or dependency canonizes MapLibre, and stale PR #1073
-is not a safe migration vehicle. Any future renderer change must start from current main and prove the
-provider, glyph, attribution, security, test, package, and rollback contract across every current map
-surface.
+At `origin/main` `60bc8fa951fd24a88555fce3e62ebf2d56896fb1`, WO-ATLAS-004 inventories eight GeoForge
+`setHTML` sites that interpolate API/store-derived feature properties and finds no focused popup
+safety proof. The audit defines an exact static-DOM repair that preserves current valuation, GIS,
+provider, routing, and persistence behavior.
 
-`WO-ATLAS-004 - GeoForge Popup Content Safety Audit` is next as a docs-only security inventory.
+`WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` is next as bounded R3 frontend work.
 
-STOP_TYPE: `ATLAS_RENDERER_CONTRACT_DECIDED_POPUP_SAFETY_AUDIT_NEXT`
+STOP_TYPE: `GEOFORGE_POPUP_SAFETY_AUDITED_DOM_REPAIR_NEXT`
