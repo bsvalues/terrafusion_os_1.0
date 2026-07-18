@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-PORTFOLIO-012`; exact protected portfolio boundary proven
+**Status:** Reconciled at `WO-LOCAL-095`; exact proof-container mutation boundary proven
 
 ## Purpose
 
@@ -49,13 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-LOCAL-094 consumed the bounded repair envelope but stopped at its mandatory preservation gate.
-The historical Docker data volume is physically disconnected, no source inventory or size can be
-proved, and no preserved Docker data VHDX exists on connected storage. No junction, Docker, container,
-network, volume, credential, or data mutation occurred.
+WO-LOCAL-095 verified the returned historical volume by exact GUID and recovered Docker Desktop once
+against its preserved data VHDX. Existing Docker images, volumes, networks, and the runtime-operator
+container survived. The named OMEN Postgres and application proof containers remain absent, and the
+application proof image is not present.
 
 The canonical registry and wave planner return no executable node inside current authority. The exact
-next candidate is proposed `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified
-Remount`; the physical source must be reconnected and GUID-matched before any repair resumes.
+next candidate is proposed `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving
+Reconstitution`; container recreation and application-image build require a bounded SW-09 envelope.
 
 STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`
