@@ -397,10 +397,10 @@ or local hook tooling repair.
 | Goal | `GOAL-SYNC-WORKBOOK-TOOLING` |
 | Loop | `LOOP-SYNC-WORKBOOK-TOOLING` |
 | Program slug | `sovereign-sync-workbook-tooling` |
-| Status | ACTIVE - selected by `WO-PORTFOLIO-010` |
+| Status | CLOSED in canonical `bsvalues/terrafusion-os` |
 | Repo | `bsvalues/terrafusion-os` |
-| Current executable | `WO-SYNC-132` |
-| Next | `WO-SYNC-133` |
+| Current | `WO-SYNC-155` complete |
+| Next | Portfolio reconciliation |
 
 ### Completed Work Orders
 
@@ -432,9 +432,8 @@ or local hook tooling repair.
 
 ### Stop Gates
 
-`WO-PORTFOLIO-010` selected Sync under the standing portfolio directive. `WO-SYNC-132` is active
-under an exact-file R3 decision. Stop on Gate 14 changes, workbook mutation, forbidden content scan
-shape, live data, county/PACS/SQL access, or implementation outside the selected Sync chain.
+Live cross-repository verification found WO-SYNC-132 through WO-SYNC-155 already merged in the
+canonical sovereign repository. Do not duplicate this chain in `terrafusion_os_1.0`.
 
 ### Sync Hard Rules
 
@@ -537,16 +536,14 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Sovereign Sync Workbook Tooling |
-| Active goal | `GOAL-SYNC-WORKBOOK-TOOLING` |
-| Active loop | `LOOP-SYNC-WORKBOOK-TOOLING` |
-| Current WO | `WO-SYNC-132 - C3 Lock-Readiness Checker` |
-| Next WO | `WO-SYNC-133 - Workbook Lifecycle Orchestrator Check` |
+| Selected program | None inside current authority |
+| Current WO | `WO-PORTFOLIO-011 - Cross-Repository Sync Truth Reconciliation` complete |
+| Next WO | None; true protected portfolio boundary |
 
-WO-PORTFOLIO-010 completed the post-Atlas reconciliation, closed stale PR #1082 without importing it,
-and selected Sync as the only bounded dependency-cleared engineering program. The C3 slice is
-read-only and synthetic-only. Exact-file authority does not extend to Gate 14 changes, workbook
-mutation, external artifact scanning, live data, packages, CI, deployment, or protected resources.
+WO-PORTFOLIO-011 verified that the sovereign Sync chain had already completed through WO-SYNC-155 in
+`bsvalues/terrafusion-os`; duplicate implementation was not started. The remaining incomplete
+programs require deployment/live resources, county or PACS data, runtime repair/import, promotion, or
+a new product-phase grant. This is a true portfolio boundary, not an operator routing gap.
 
 ---
 

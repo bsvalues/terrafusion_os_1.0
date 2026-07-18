@@ -43,6 +43,6 @@ amendments. It proves why the amendments exist but does not grant authority.
 
 ## Unavailable Canon
 
-`PATH_CANON_REGISTER.md` does not exist on the MAO-001 base. Cross-repository dispatch therefore
-remains blocked. The in-repository path map in `brain/packs/README.md` is the only currently indexed
-path-routing evidence.
+Root [`PATH_CANON_REGISTER.md`](../../../PATH_CANON_REGISTER.md) now records exact local path, remote,
+default branch, and scope identity for the OS and sovereign Sync repositories. Cross-repository
+dispatch remains fail-closed unless live identity matches that register.

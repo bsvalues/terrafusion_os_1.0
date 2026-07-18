@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-010",
+  "generatedBy": "WO-PORTFOLIO-011",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -2393,9 +2393,9 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SYNC-132",
-          "reason": "The synthetic-only C3 checker is the highest-value incomplete dependency-cleared slice outside every remaining production, county, runtime-import, deployment, protected-data, and promotion boundary.",
-          "riskClass": "R3",
+          "id": "WO-PORTFOLIO-011",
+          "reason": "Cross-repository verification superseded the stale Sync admission before implementation.",
+          "riskClass": "R1",
           "blocked": false
         }
       ],
@@ -2602,13 +2602,13 @@
       "program": "Sovereign Sync Workbook Tooling",
       "goal": "Determine whether an admitted and terminalized synthetic workbook is lock-eligible without mutating it or touching external resources.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
-          "id": "WO-PORTFOLIO-010",
+          "id": "WO-PORTFOLIO-011",
           "status": "satisfied",
           "evidence": [
-            "Portfolio reconciliation selected Sync as the only bounded dependency-cleared engineering program."
+            "Live path-canon reconciliation proved this Work Order already merged in canonical sovereign PR #142."
           ]
         },
         {
@@ -2619,38 +2619,166 @@
           ]
         }
       ],
+      "allowedSystems": [],
+      "blockedSystems": [
+        {
+          "name": "No duplicate implementation in this repository; sovereign completion evidence is terminal."
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [],
+      "evidenceRequired": [],
+      "validationGates": [
+        {
+          "name": "Sovereign completion proof",
+          "command": "gh pr view 142 -R bsvalues/terrafusion-os --json state,mergedAt,mergeCommit",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Sovereign closeout proof",
+          "command": "gh pr view 156 -R bsvalues/terrafusion-os --json state,mergedAt,mergeCommit",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "cross-repository-completion-reference",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-011-CROSS-REPO-SYNC-TRUTH-RECONCILIATION.md",
+          "description": "Canonical sovereign PR #142 contains WO-SYNC-132 and PR #156 closes the chain at WO-SYNC-155."
+        }
+      ],
+      "stopConditions": [],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Terminal cross-repository completion record. OWNER-SYNC-132-R3-LOCK-READINESS-20260717 is consumed as superseded."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Canonical bsvalues/terrafusion-os PR #142 and WO-PORTFOLIO-011 reconciliation",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SYNC-155",
+      "title": "Lock Packet Evidence Rollup and Program Closeout",
+      "program": "Sovereign Sync Workbook Tooling",
+      "goal": "Record the terminal sovereign Sync workbook tooling closeout without duplicating cross-repository implementation.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SYNC-132",
+          "status": "satisfied",
+          "evidence": [
+            "Canonical sovereign PR #142 merged the C3 checker before the chain advanced to WO-SYNC-155."
+          ]
+        }
+      ],
+      "allowedSystems": [],
+      "blockedSystems": [
+        {
+          "name": "No new execution; this record projects the canonical sovereign closeout into portfolio routing."
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [],
+      "evidenceRequired": [],
+      "validationGates": [
+        {
+          "name": "Sovereign closeout PR",
+          "command": "gh pr view 156 -R bsvalues/terrafusion-os --json state,mergedAt,mergeCommit",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "completion-reference",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-011-CROSS-REPO-SYNC-TRUTH-RECONCILIATION.md",
+          "description": "Sovereign PR #156 and origin/main prove the workbook tooling program closed at WO-SYNC-155."
+        }
+      ],
+      "stopConditions": [],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Terminal cross-repository program record only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Canonical bsvalues/terrafusion-os PR #156 and origin/main d9fa661e1c19f9d8eac93094a76ed68f6c0de9f6",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-011",
+      "title": "Cross-Repository Sync Truth Reconciliation",
+      "program": "Portfolio Operator",
+      "goal": "Prevent duplicate cross-repository implementation by reconciling path identity, sovereign completion evidence, authority state, and executable routing.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-010",
+          "status": "satisfied",
+          "evidence": [
+            "WO-PORTFOLIO-010 merged at edf82994ddd4d19ea4d34402b8b68a0e75ce779b before target-repository inspection exposed the stale admission."
+          ]
+        }
+      ],
       "allowedSystems": [
         {
-          "name": "Built-fresh read-only workbook lock-readiness validation over synthetic local artifacts",
+          "name": "Repository path canon, owner-decision closeout, Work Order registry, program routing, and evidence",
           "paths": [
-            "exact implementation and evidence files listed in allowedFiles"
+            "PATH_CANON_REGISTER.md",
+            ".governance/owner-decisions.json",
+            "CANON_INDEX.md",
+            "docs/brain/workorders/**"
           ]
         }
       ],
       "blockedSystems": [
         {
-          "name": "Gate 14 changes, workbook mutation, archive import, content scanning, external systems, live/county/PACS/SQL data, secrets, package/build/CI/runtime entrypoints, services, schedulers, deployment, or production resources"
+          "name": "Sovereign repository writes, Sync implementation, runtime, product, packages, CI, deployment, county, PACS, SQL, secrets, live services, or production resources"
         }
       ],
       "allowedFiles": [
-        "tools/sync/workbook-lock-readiness-check.mjs",
-        "tools/sync/fixtures/valid-workbook-lock-readiness.synthetic.json",
-        "tools/sync/fixtures/invalid-workbook-lock-readiness.synthetic.json",
-        "docs/brain/workorders/active/WO-SYNC-132-c3-lock-readiness-checker.md",
-        "docs/brain/workorders/evidence/WO-SYNC-132-C3-LOCK-READINESS-CHECKER.md",
+        "PATH_CANON_REGISTER.md",
+        ".governance/owner-decisions.json",
+        "CANON_INDEX.md",
+        "docs/brain/workorders/CANON_INDEX.md",
+        "docs/brain/workorders/active/WO-PORTFOLIO-011-cross-repo-sync-truth-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-011-CROSS-REPO-SYNC-TRUTH-RECONCILIATION.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
         "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
-        "docs/brain/workorders/registry/work-order-registry.seed.json"
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "scripts/quarantine/keep-list.json"
       ],
       "blockedFiles": [
-        ".governance/**",
-        "ARCHIVE/**",
-        "backend/**",
-        "frontend/**",
-        "os-platform/**",
+        "tools/sync/**",
         "packages/**",
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
         ".github/workflows/**",
         "deployment/**",
         "package.json",
@@ -2658,49 +2786,44 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "implementation-proof",
-          "description": "Focused valid and invalid synthetic artifacts prove deterministic lock-readiness decisions without writes or external access."
-        },
-        {
-          "kind": "regression",
-          "description": "Gate 14 plus existing contract, admission, and terminalization checks remain green."
+          "kind": "cross-repository-truth",
+          "description": "Match exact local path, remote, branch, remote head, merged Sync Work Orders, and open-PR posture before changing routing."
         }
       ],
       "validationGates": [
         {
-          "name": "Lock-readiness self-test",
-          "command": "node tools/sync/workbook-lock-readiness-check.mjs --self-test",
-          "required": true,
-          "result": "pending"
-        },
-        {
-          "name": "Gate 14",
-          "command": "node tools/sync/gate14-check.mjs",
-          "required": true,
-          "result": "pending"
-        },
-        {
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "cross-repository-reconciliation",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-011-CROSS-REPO-SYNC-TRUTH-RECONCILIATION.md",
+          "description": "Exact repository identity, sovereign completion, consumed authority, duplicate-work prevention, and non-claims."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop on Gate 14 modification, workbook writes, non-synthetic input requirements, external access, package/CI/runtime wiring, protected data, or any file outside the exact decision."
+          "description": "Stop on sovereign writes, runtime import, PR #133 modification, protected resources, or any identity conflict not resolved by live remote evidence."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "WO-SYNC-133",
-          "reason": "Compose the four read-only lifecycle checks after C3 is merged and verified.",
-          "riskClass": "R3",
-          "blocked": false
-        }
-      ],
+      "nextCandidates": [],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -2709,11 +2832,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "OWNER-SYNC-132-R3-LOCK-READINESS-20260717 covers the exact protected tool files. Standing operator authority covers delivery mechanics and no broader Sync boundary."
+        "notes": "Standing portfolio reconciliation and routine merge authority cover this exact governance-only correction."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-PORTFOLIO-010 post-Atlas portfolio reconciliation and owner continue directive",
+        "source": "Live target-repository verification after WO-PORTFOLIO-010 selected an already-completed cross-repository slice",
         "schemaVersion": "0.1.0"
       }
     }

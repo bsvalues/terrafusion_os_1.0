@@ -112,10 +112,10 @@ File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
 Success:  Operator sees the next executable WO and the stop gates that block parked lanes.
 ```
 
-**Current state:** Portfolio synthesis admitted `WO-PORTFOLIO-005 - Evidence Publisher Capacity
-Repair` after excluding the already-completed LocalOps seed. No live slot, deployment, runtime,
-protected-data, product-promotion, or import action is selected. After the bounded R3 repair merges,
-the operator refreshes the graph automatically.
+**Current state:** `WO-PORTFOLIO-011` prevented duplicate Sync implementation by verifying the
+canonical sovereign repository. Query and wave-planner routing now return no executable node because
+every incomplete candidate crosses a protected deployment, live-resource, data, runtime, promotion,
+or new-product boundary.
 
 **Related commands:** `/program-status`, `/program-next`, `/program-stop`
 
@@ -135,7 +135,8 @@ Success:  Release Engineering baseline has merged evidence links, validation sum
 ```
 
 **Current state:** Release Engineering is closed at `WO-REL-006`. DevEx Hook Bootstrap subsequently
-closed at `WO-DEVEX-HOOKS-006`; current routing is the WO-PORTFOLIO-003 all-lanes-parked result.
+closed at `WO-DEVEX-HOOKS-006`; current routing is the evidence-backed WO-PORTFOLIO-011 protected
+portfolio boundary.
 
 **Allowed loop modes:** `once`, `evidence`, `discovery`
 
@@ -188,9 +189,8 @@ Success:  Backend operational truth, warnings, runtime validation, release gates
           next lane.
 ```
 
-**Current state:** WO-BACKEND-000 is merged, WO-BACKEND-OE-001 established the baseline,
-WO-BACKEND-OE-002 recorded the zero-warning register, and the refreshed playbook routes next to
-WO-BACKEND-OE-003. This lane is hardening/proof/release discipline, not a foundation rebuild.
+**Current state:** WO-BACKEND-000 and WO-BACKEND-OE-001 through OE-013 are merged; WO-BACKEND-014
+completed the bounded provenance follow-up. The lane is closed and routes to portfolio evidence.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
@@ -204,19 +204,18 @@ TerraPilot P16, and any backend runtime mutation not explicitly authorized by th
 ### /goal sync-workbook-tooling
 
 ```
-Goal:     Continue Sovereign Sync workbook tooling only after owner selection.
+Goal:     Report Sovereign Sync workbook tooling status from its canonical repository.
 Program:  Sovereign Sync Workbook Tooling
 File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
-Success:  Workbook lifecycle checks are built-fresh, synthetic-safe, evidence-backed, and Gate-14 compliant.
+Success:  Workbook lifecycle evidence and closeout are resolved without duplicate cross-repository work.
 ```
 
-**Current state:** `WO-SYNC-132` is next after owner selection. Do not start Sync implementation from
-a status command or from Backend OE.
+**Current state:** The canonical `bsvalues/terrafusion-os` repository completed WO-SYNC-132 through
+WO-SYNC-155. This repository must not restart or duplicate that closed chain.
 
 **Command aliases:** `/sync-status`, `/sync-next`, `/sync-stop`
 
-**Allowed loop modes:** `evidence`, `discovery`, `once` before selection; `program` only after owner
-selects Sync.
+**Allowed loop modes:** `evidence`, `discovery`, `once`; no implementation continuation remains.
 
 **Blocked:** Gate 14 changes, forbidden content scan shape, county/live data, cross-lane
 implementation, or any weakening of sync guards.
@@ -232,7 +231,8 @@ File:     programs/property-workbench.md
 Success:  All workbench tabs have live data, honest empty states, and validated tab contracts.
 ```
 
-**Current state:** WO-WORKBENCH-001 is next (QUEUED).
+**Current state:** WO-WORKBENCH-001 through WO-WORKBENCH-011 are complete. No new Workbench phase is
+authorized or queued.
 
 **Allowed loop modes:** `once`, `program`, `evidence`, `discovery`
 
@@ -241,14 +241,14 @@ Success:  All workbench tabs have live data, honest empty states, and validated 
 ### /goal sync-status
 
 ```
-Goal:     Inspect Sovereign Sync workbook tooling state before any owner-selected implementation WO.
+Goal:     Inspect Sovereign Sync workbook tooling state from its canonical repository.
 Program:  Sovereign Sync Workbook Tooling
 File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
-Success:  Operator sees WO-SYNC-132 as the next owner-selection-gated workbook tooling WO.
+Success:  Operator sees WO-SYNC-132 through WO-SYNC-155 as complete and does not duplicate them.
 ```
 
-**Current state:** `WO-SYNC-132` is next after owner choice. Do not start Sync implementation from this
-status command.
+**Current state:** The canonical sovereign repository closed the program at WO-SYNC-155. Status and
+evidence inspection remain available; implementation continuation does not.
 
 **Command aliases:** `/sync-status`, `/sync-next`, `/sync-stop`
 
