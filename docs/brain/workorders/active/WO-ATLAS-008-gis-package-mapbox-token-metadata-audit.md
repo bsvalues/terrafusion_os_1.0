@@ -30,6 +30,8 @@ See
 
 ## Next
 
-`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is the next bounded R3 node. It may
-change only the two stale package references, add mechanical source-contract proof, and update Brain
-evidence. It may not read token values or alter provider, runtime, deployment, or protected resources.
+`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is the bounded R3 correction, but it is
+blocked because the wave planner rejects every `packages/**` reservation even when a specific owner
+grant exists. `WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` is the next
+executable node. It must add a fail-closed, exact-file authority adapter before WO-ATLAS-009 can move
+to `ready`.

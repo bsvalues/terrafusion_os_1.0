@@ -33,7 +33,10 @@ artifact.
    wiring.
 
 The correction is isolated as WO-ATLAS-009 because this audit is docs-only and does not have package
-write authority.
+write authority. The current wave planner excludes all `packages/**` allowed files unconditionally,
+so WO-ATLAS-009 remains blocked rather than being advertised as executable. WO-PORTFOLIO-009 must
+mechanically bind an active, exact-file owner decision to a candidate before the package reservation
+can pass.
 
 ## Validation
 
@@ -43,6 +46,7 @@ write authority.
 - package README/config history inspection: PASS - references predate current live-contract audit;
 - `git diff --check`: required before commit;
 - Brain query at R3: required before commit;
+- wave planner at R3: required to select WO-PORTFOLIO-009 and keep WO-ATLAS-009 excluded;
 - required remote checks and exact-head assurance: required before protected merge.
 
 ## Non-Claims

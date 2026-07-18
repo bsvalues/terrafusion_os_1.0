@@ -17,8 +17,9 @@ WO-ATLAS-008 is the active docs-only R1 disposition audit on base
 `c2744855cc6ae4f8966f6ed8460b065588e8908b`. Live GIS package source and types use
 `VITE_MAPBOX_ACCESS_TOKEN`; no tracked live reader consumes the two `MAPBOX_ACCESS_TOKEN` README and
 metadata references. The audit classifies them as stale without reading a token value or changing the
-package. WO-ATLAS-009 is admitted as the bounded R3 alignment of those two references with mechanical
-contract proof.
+package. WO-ATLAS-009 is bounded but blocked because the wave planner unconditionally excludes
+`packages/**`. WO-PORTFOLIO-009 is the next executable R3 node and must add a fail-closed exact-file
+owner-authority adapter before the package alignment becomes ready.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -48,7 +49,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-006 Mapbox Token Alias Contract Audit | DONE | PR #1308 merged; browser contract narrowed and GIS package metadata follow-up recorded |
 | WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup | DONE | PR #1309 merged; V2 fallback removed, V1/V2 guidance aligned, focused proof and build green |
 | **WO-ATLAS-008 GIS Package Mapbox Token Metadata Disposition Audit** | **CURRENT - complete on protected merge** | Two unconsumed package references classified as stale browser guidance/metadata |
-| WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment | NEXT - bounded R3 | Align the two stale references and add mechanical package contract proof |
+| WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment | BLOCKED - protected package reservation | Await mechanical exact-file authority evaluation in WO-PORTFOLIO-009 |
+| **WO-PORTFOLIO-009 Protected-Path Authority Planner Integration** | **NEXT - bounded R3** | Make explicit owner decisions executable without weakening protected-path denial |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
