@@ -407,6 +407,44 @@
       }
     },
     {
+      "id": "OWNER-ATLAS-009-R3-MAPBOX-METADATA-ALIGNMENT-20260717",
+      "program": "Portfolio Operator",
+      "goal": "GOAL-PORTFOLIO-OPERATOR-001",
+      "loop": "LOOP-PORTFOLIO-OPERATOR-001",
+      "work_order": "WO-ATLAS-009",
+      "status": "active",
+      "authority_class": "R3-bounded-package-metadata-alignment",
+      "effective_base_sha": "81689621109bfd28d9a3a36c6fa3484bc7991e2d",
+      "expires_at": "2026-08-17T23:59:59Z",
+      "terminal_condition": "The exact-scope WO-ATLAS-009 PR merges, closes without merge, this decision expires, or the owner revokes it",
+      "authorized_actions": [
+        "align stale GIS package Mapbox README guidance with the live Vite environment contract",
+        "align the unconsumed GIS package integration metadata with the same Vite environment contract",
+        "add a focused cwd-independent contract test for the exact aligned surfaces",
+        "create Brain evidence, validate, remediate, merge under standing operator authority, and verify origin/main"
+      ],
+      "authorized_files": [
+        "packages/gis-pro/README.md",
+        "packages/gis-pro/terrafusion-config.json",
+        "packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
+        "docs/brain/workorders/**"
+      ],
+      "explicitly_denied": [
+        "token values, environment files, credentials, secrets, or signing material",
+        "package source, provider behavior, compatibility aliases, package manifests, or lockfiles",
+        "runtime, backend, frontend product behavior, tools-sync, CI, workflow, deployment, county, PACS, SQL, live service, or production changes"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check or exact-head assurance failure",
+        "unresolved review thread or reservation collision",
+        "protected-boundary access or conflicting authority",
+        "expiration"
+      ],
+      "decision_basis": "Owner directed Codex to continue the bounded GIS token metadata correction after fail-closed protected-path authority integration"
+    },
+    {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
       "program": "all current and future ratified TerraFusion programs",
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",

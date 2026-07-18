@@ -15,6 +15,7 @@ import {
 
 const DEFAULT_REGISTRY = 'docs/brain/workorders/registry/work-order-registry.seed.json';
 const DEFAULT_RULES = 'docs/brain/workorders/scoring/next-work-order-scoring.rules.json';
+const DEFAULT_OWNER_DECISIONS = '.governance/owner-decisions.json';
 const DEFAULT_MAX_WORKERS = 2;
 const DEFAULT_SEARCH_NODE_LIMIT = 100000;
 const CANONICAL_REPOSITORY = 'bsvalues/terrafusion_os_1.0';
@@ -76,6 +77,7 @@ function parseArgs(argv) {
     registry: DEFAULT_REGISTRY,
     rules: DEFAULT_RULES,
     reservations: null,
+    ownerDecisions: DEFAULT_OWNER_DECISIONS,
     authority: 'R3',
     maxWorkers: DEFAULT_MAX_WORKERS,
     searchNodeLimit: DEFAULT_SEARCH_NODE_LIMIT,
@@ -86,8 +88,10 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === '--json') {
       args.json = true;
-    } else if (['--registry', '--rules', '--reservations', '--authority'].includes(arg)) {
-      const key = arg.slice(2);
+    } else if (
+      ['--registry', '--rules', '--reservations', '--owner-decisions', '--authority'].includes(arg)
+    ) {
+      const key = arg === '--owner-decisions' ? 'ownerDecisions' : arg.slice(2);
       args[key] = readOptionValue(argv, index, arg);
       index += 1;
     } else if (arg === '--max-workers') {
@@ -115,6 +119,7 @@ function usage() {
     `  --registry <path>            Registry JSON path. Default: ${DEFAULT_REGISTRY}`,
     `  --rules <path>               Scoring rules JSON path. Default: ${DEFAULT_RULES}`,
     '  --reservations <path>        Optional active/candidate reservation input JSON.',
+    `  --owner-decisions <path>     Owner decision register. Default: ${DEFAULT_OWNER_DECISIONS}`,
     '  --authority <R0-R5>          Current authority boundary. Default: R3',
     `  --max-workers <count>        Maximum workers per wave. Default: ${DEFAULT_MAX_WORKERS}`,
     `  --search-node-limit <count>  Fail-closed search bound. Default: ${DEFAULT_SEARCH_NODE_LIMIT}`,
@@ -236,6 +241,68 @@ function protectedReservationReason(reservation) {
   return null;
 }
 
+function protectedPathAuthority(record, protectedPaths, ownerDecisions, authority, now) {
+  if (protectedPaths.length === 0) return { decisionId: null, exactFiles: new Set() };
+  if (!ownerDecisions || !Array.isArray(ownerDecisions.decisions)) {
+    return { reason: 'invalid-protected-path-authority-register' };
+  }
+
+  const matching = ownerDecisions.decisions.filter(
+    decision => decision?.work_order === record.id && decision?.status === 'active'
+  );
+  if (matching.length === 0) return { reason: `missing-protected-path-authority:${record.id}` };
+  if (matching.length > 1) {
+    return {
+      reason: `conflicting-protected-path-authority:${matching
+        .map(decision => decision.id ?? 'unknown')
+        .sort()
+        .join(',')}`,
+    };
+  }
+
+  const decision = matching[0];
+  const authorityMatch = /^R([0-5])(?:-|$)/i.exec(decision.authority_class ?? '');
+  if (!authorityMatch) return { reason: `invalid-protected-path-authority-class:${decision.id}` };
+  const decisionRisk = `R${authorityMatch[1]}`;
+  if (
+    RISK_ORDER.indexOf(decisionRisk) < RISK_ORDER.indexOf(record.riskClass) ||
+    RISK_ORDER.indexOf(decisionRisk) > RISK_ORDER.indexOf(authority)
+  ) {
+    return { reason: `insufficient-protected-path-authority:${decision.id}` };
+  }
+
+  if (decision.expires_at != null) {
+    const expiresAt = Date.parse(decision.expires_at);
+    if (!Number.isFinite(expiresAt)) {
+      return { reason: `invalid-protected-path-authority-expiry:${decision.id}` };
+    }
+    if (expiresAt <= now) return { reason: `expired-protected-path-authority:${decision.id}` };
+  }
+
+  if (!Array.isArray(decision.authorized_files)) {
+    return { reason: `invalid-protected-path-authority-files:${decision.id}` };
+  }
+  const exactFiles = new Set();
+  try {
+    for (const [index, value] of decision.authorized_files.entries()) {
+      const normalized = normalizePath(value, `${decision.id}.authorized_files[${index}]`);
+      if (normalized.scope === 'exact') exactFiles.add(normalized.value);
+    }
+  } catch {
+    return { reason: `invalid-protected-path-authority-files:${decision.id}` };
+  }
+
+  for (const protectedPath of protectedPaths) {
+    if (protectedPath.scope !== 'exact') {
+      return { reason: `non-exact-protected-path-scope:${protectedPath.value}` };
+    }
+    if (!exactFiles.has(protectedPath.value)) {
+      return { reason: `incomplete-protected-path-authority:${protectedPath.value}` };
+    }
+  }
+  return { decisionId: decision.id, exactFiles };
+}
+
 function allowedPathReservations(record) {
   if (!Array.isArray(record.allowedFiles)) {
     throw new Error(`${record.id}.allowedFiles must be an array`);
@@ -252,8 +319,7 @@ function reservationWithinAllowedPath(reservation, allowedPath) {
     return reservation.scope === 'exact' && reservation.value === allowedPath.value;
   }
   return (
-    reservation.value === allowedPath.value ||
-    reservation.value.startsWith(`${allowedPath.value}/`)
+    reservation.value === allowedPath.value || reservation.value.startsWith(`${allowedPath.value}/`)
   );
 }
 
@@ -459,6 +525,9 @@ function planWaves(registry, rules, options = {}) {
     'searchNodeLimit'
   );
   const reservationInput = options.reservations ?? {};
+  const now = Date.parse(options.now ?? new Date().toISOString());
+  if (!Number.isFinite(now)) throw new Error('now must be a valid ISO-8601 timestamp');
+  const ownerDecisions = options.ownerDecisions ?? { decisions: [] };
   if (reservationInput.repository != null) {
     const requestedRepository = normalizeIdentifier(
       reservationInput.repository,
@@ -527,16 +596,19 @@ function planWaves(registry, rules, options = {}) {
     }
 
     let reservations;
+    let protectedAuthority;
     try {
       const allowedPaths = allowedPathReservations(record);
-      const protectedAllowedPath = allowedPaths
-        .map(protectedReservationReason)
-        .find(Boolean);
-      if (protectedAllowedPath) {
-        const reason = protectedAllowedPath.replace(
-          'protected-path-reservation:',
-          'protected-allowed-file:'
-        );
+      const protectedAllowedPaths = allowedPaths.filter(protectedReservationReason);
+      protectedAuthority = protectedPathAuthority(
+        record,
+        protectedAllowedPaths,
+        ownerDecisions,
+        authority,
+        now
+      );
+      if (protectedAuthority.reason) {
+        const reason = protectedAuthority.reason;
         excluded.push({
           workOrderId: record.id,
           reasons: [reason],
@@ -554,7 +626,20 @@ function planWaves(registry, rules, options = {}) {
       });
       continue;
     }
-    const protectedReason = reservations.map(protectedReservationReason).find(Boolean);
+    const protectedReason = reservations
+      .map(reservation => {
+        const reason = protectedReservationReason(reservation);
+        if (!reason) return null;
+        if (
+          reservation.kind === 'path' &&
+          reservation.scope === 'exact' &&
+          protectedAuthority.exactFiles.has(reservation.value)
+        ) {
+          return null;
+        }
+        return reason;
+      })
+      .find(Boolean);
     if (protectedReason) {
       excluded.push({
         workOrderId: record.id,
@@ -568,6 +653,7 @@ function planWaves(registry, rules, options = {}) {
       record,
       score: scoreRecord(record, rules, authority),
       reservations,
+      authorityDecisionId: protectedAuthority.decisionId,
     };
     const conflicts = active.flatMap(reservation =>
       conflictDetails(candidate, {
@@ -629,7 +715,9 @@ function planWaves(registry, rules, options = {}) {
         score: candidate.score.score,
         riskClass: candidate.score.riskClass,
         reservations: candidate.reservations,
-        explanation: `Selected in priority order within a maximum-cardinality conflict-free set of ${selected.length}/${maxWorkers}.`,
+        explanation: candidate.authorityDecisionId
+          ? `Selected in priority order within a maximum-cardinality conflict-free set of ${selected.length}/${maxWorkers}; protected paths authorized by ${candidate.authorityDecisionId}.`
+          : `Selected in priority order within a maximum-cardinality conflict-free set of ${selected.length}/${maxWorkers}.`,
       })),
       workerBudget: maxWorkers,
       utilization: selected.length,
@@ -706,11 +794,15 @@ if (path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1
     const registry = readJson(root, args.registry);
     const rules = readJson(root, args.rules);
     const reservations = args.reservations ? readJson(root, args.reservations) : {};
+    const ownerDecisions = args.ownerDecisions
+      ? readJson(root, args.ownerDecisions)
+      : { decisions: [] };
     const plan = planWaves(registry, rules, {
       authority: args.authority,
       maxWorkers: args.maxWorkers,
       searchNodeLimit: args.searchNodeLimit,
       reservations,
+      ownerDecisions,
     });
     console.log(args.json ? JSON.stringify(plan, null, 2) : printText(plan));
   } catch (error) {

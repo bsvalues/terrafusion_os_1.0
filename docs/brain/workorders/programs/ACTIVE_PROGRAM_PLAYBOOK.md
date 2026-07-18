@@ -536,22 +536,21 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - protected-path authority planner integration |
+| Selected program | Portfolio Operator - GIS package token metadata alignment |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-008 - GIS Package Mapbox Token Metadata Disposition Audit` complete on protected merge |
-| Next WO | `WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` |
+| Current WO | `WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` complete on protected merge |
+| Next WO | `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` |
 
 WO-ATLAS-008 proves that GIS package source and types use `VITE_MAPBOX_ACCESS_TOKEN`, no tracked live
 reader consumes `MAPBOX_ACCESS_TOKEN`, and no tracked live code loads the package's
 `terrafusion-config.json`. The README and metadata references are stale browser-contract surfaces,
 not a separate server-side contract.
 
-WO-ATLAS-009 is bounded to those two references and mechanical package contract proof, but remains
-blocked because the current wave planner rejects every `packages/**` allowed file. WO-PORTFOLIO-009
-next adds fail-closed evaluation of active exact-file owner decisions. It must not weaken the default
-protected-path denial or authorize token access, provider behavior, package manifests, lockfiles, CI,
-deployment, or other protected resources.
+WO-PORTFOLIO-009 adds fail-closed evaluation of one active, sufficient, unexpired exact-work-order
+decision covering every exact protected file. It does not weaken default protected-path denial or
+authorize token access, provider behavior, package manifests, lockfiles, CI, deployment, or other
+protected resources. WO-ATLAS-009 is now ready under that exact-file decision.
 
 ---
 
