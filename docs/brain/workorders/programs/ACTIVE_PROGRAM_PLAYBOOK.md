@@ -536,18 +536,22 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - GeoForge popup safety and token contract |
+| Selected program | Portfolio Operator - GeoForge token contract cleanup |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` complete on protected merge |
-| Next WO | `WO-ATLAS-006 - Mapbox Token Alias Contract Audit` |
+| Current WO | `WO-ATLAS-006 - Mapbox Token Alias Contract Audit` complete on protected merge |
+| Next WO | `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` |
 
-WO-ATLAS-005 replaces the seven `GeoForgeMap` and one `GeoForgeV2Map` HTML sinks with static DOM
-structure and text-only feature values. Focused proof covers hostile identifiers, labels, dates, and
-decisions without valuation, geometry, provider, routing, package, or persistence changes.
+WO-ATLAS-006 confirms `VITE_MAPBOX_ACCESS_TOKEN` as the canonical live browser/Vite name, classifies
+exactly three GeoForge legacy-alias references, records two inconsistent GIS package setup/metadata
+references, and separates live guidance from immutable historical records without inspecting a token
+value.
 
-WO-ATLAS-006 next audits the current token alias inconsistency recorded by WO-ATLAS-003 and defines
-an exact cleanup contract without touching tokens, secrets, runtime configuration, or frontend source.
+WO-ATLAS-007 next removes the V2 alias fallback, corrects V1/V2 missing-state guidance, and adds
+focused source-contract proof without changing provider, renderer, token value, package, or runtime
+configuration behavior beyond removal of the deprecated alias.
+The separate GIS package setup/metadata inconsistency remains a portfolio disposition candidate after
+the GeoForge cleanup.
 
 ---
 

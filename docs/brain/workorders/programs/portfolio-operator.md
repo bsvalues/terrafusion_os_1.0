@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-005` - GeoForge popup DOM safety repair
+**Status:** Active at `WO-ATLAS-006` - Mapbox token alias contract audit
 
 ## Purpose
 
@@ -49,10 +49,11 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `b6b36430a1fd9fdeae171abb08959193fc290712`, WO-ATLAS-005 replaces the eight audited
-GeoForge `setHTML` sites with static DOM and text-only feature values. Focused hostile-input proof
-preserves current valuation, GIS, provider, routing, and persistence behavior.
+At `origin/main` `80d2d0788f341b86e77582608d6e9321eb24f7a7`, WO-ATLAS-006 confirms the canonical
+browser/Vite `VITE_MAPBOX_ACCESS_TOKEN` name, classifies exactly three live GeoForge legacy-alias
+references plus two inconsistent GIS package setup/metadata references, and defines a cleanup
+contract without reading token values or mutating runtime configuration.
 
-`WO-ATLAS-006 - Mapbox Token Alias Contract Audit` is next as docs-only R1 evidence work.
+`WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` is next as bounded R3 source-and-test work.
 
-STOP_TYPE: `GEOFORGE_POPUP_DOM_SAFETY_REPAIRED_TOKEN_ALIAS_AUDIT_NEXT`
+STOP_TYPE: `MAPBOX_TOKEN_ALIAS_AUDITED_GEOFORGE_CLEANUP_NEXT`
