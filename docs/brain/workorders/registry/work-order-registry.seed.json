@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-007",
+  "generatedBy": "WO-ATLAS-008",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -2072,7 +2072,7 @@
       "program": "Portfolio Operator",
       "goal": "Classify the GIS package MAPBOX_ACCESS_TOKEN setup and metadata references before any package correction.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-007",
@@ -2130,23 +2130,36 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "disposition-audit",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-008-GIS-PACKAGE-MAPBOX-TOKEN-METADATA-AUDIT.md",
+          "description": "Live Vite token contract, two stale unconsumed package references, correction boundary, proof, rollback, and non-claims recorded without token access or package mutation."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Stop on token-value or environment access, package mutation, provider behavior, CI/deployment, backend, protected resource, or scope expansion beyond Brain evidence."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-PORTFOLIO-009",
+          "reason": "The audit exposed an unconditional protected-path planner exclusion that must evaluate exact-file owner authority before the bounded package correction can execute.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -2160,6 +2173,240 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "WO-ATLAS-006 package metadata review finding and WO-ATLAS-007 bounded browser cleanup",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-009",
+      "title": "GIS Package Mapbox Token Metadata Alignment",
+      "program": "Portfolio Operator",
+      "goal": "Align stale GIS package Mapbox setup guidance and integration metadata with the live Vite contract.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-008",
+          "status": "satisfied",
+          "evidence": [
+            "Live GIS package source and types use VITE_MAPBOX_ACCESS_TOKEN; README and metadata MAPBOX_ACCESS_TOKEN references have no tracked live reader"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "GIS package Mapbox setup guidance, integration metadata, focused contract proof, and Brain evidence",
+          "paths": [
+            "packages/gis-pro/README.md",
+            "packages/gis-pro/terrafusion-config.json",
+            "packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Token values, environment files, package source, provider behavior, compatibility aliases, package/lockfile, CI/deployment, backend, county, PACS, SQL, live services, production resources"
+        }
+      ],
+      "allowedFiles": [
+        "packages/gis-pro/README.md",
+        "packages/gis-pro/terrafusion-config.json",
+        "packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
+        "docs/brain/workorders/active/WO-ATLAS-009-gis-package-mapbox-token-metadata-alignment.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-009-GIS-PACKAGE-MAPBOX-TOKEN-METADATA-ALIGNMENT.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".env*",
+        "packages/gis-pro/client/**",
+        "packages/gis-pro/server/**",
+        "packages/gis-pro/package.json",
+        "package.json",
+        "pnpm-lock.yaml",
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "implementation-proof",
+          "description": "README and integration metadata use only VITE_MAPBOX_ACCESS_TOKEN and focused proof agrees with live package source and types."
+        },
+        {
+          "kind": "safety",
+          "description": "No token access, fallback alias, provider/runtime behavior, package manifest, lockfile, CI, deployment, or protected-resource change."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused package token contract",
+          "command": "node --test packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on token-value or environment access, package source or manifest mutation, alias fallback, provider/runtime behavior, CI/deployment, backend, or protected resources."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Blocked until WO-PORTFOLIO-009 makes an active exact-file owner decision mechanically visible to the wave planner; token values, runtime behavior, and other protected boundaries remain denied."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-008 GIS package Mapbox token metadata disposition audit",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-009",
+      "title": "Protected-Path Authority Planner Integration",
+      "program": "Portfolio Operator",
+      "goal": "Make explicit exact-file owner authority executable by the wave planner without weakening protected-path defaults.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-008",
+          "status": "satisfied",
+          "evidence": [
+            "WO-ATLAS-009 is bounded but mechanically excluded because the planner does not evaluate owner decisions for protected allowed files"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only Work Order wave-planner authorization evaluation and bounded grant evidence",
+          "paths": [
+            "docs/brain/workorders/tools/**",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "General protected-path bypass, runtime/product behavior, package mutation, CI/deployment, backend, county, PACS, SQL, secrets, live services, production resources"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "docs/brain/workorders/tools/wo-wave-plan.mjs",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+        "docs/brain/workorders/active/WO-PORTFOLIO-009-protected-path-authority-planner-integration.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-009-PROTECTED-PATH-AUTHORITY-PLANNER-INTEGRATION.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "packages/**",
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "package.json",
+        "pnpm-lock.yaml",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "mechanical-proof",
+          "description": "Planner excludes protected paths by default, accepts only active exact-work-order exact-file grants, and fails closed on missing, expired, completed, revoked, wildcard, partial, or conflicting decisions."
+        },
+        {
+          "kind": "regression",
+          "description": "Existing planner tests and a red-team protected-path authority matrix pass without changing scoring, reservations, or wave ordering."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Wave planner exact authority proof",
+          "command": "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on any default protected-path weakening, wildcard or implicit authority, runtime/package mutation, CI/deployment change, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-009",
+          "reason": "After an active exact-file decision is mechanically recognized, the already-bounded GIS metadata alignment can move from blocked to ready.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio operator authority covers this bounded planner integration. It may consume only explicit owner decisions and cannot itself grant package or protected-resource authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-008 review finding: protected package successor was not executable in the canonical wave planner",
         "schemaVersion": "0.1.0"
       }
     }
