@@ -17,9 +17,8 @@ import type { MapContextPayload } from './mapContext';
 import { createGeoForgePopupContent } from '../popupContent';
 
 const MAPBOX_TOKEN = (
-  (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined)
-  ?? (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined)
-  ?? ''
+  (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ??
+  ''
 ).trim();
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -469,7 +468,7 @@ export function GeoForgeV2Map({
   if (!MAPBOX_TOKEN) {
     return (
       <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-        Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN or VITE_MAPBOX_TOKEN).
+        Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN).
       </div>
     );
   }

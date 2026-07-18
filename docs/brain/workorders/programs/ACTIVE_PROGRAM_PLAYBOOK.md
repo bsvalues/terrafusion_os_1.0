@@ -536,22 +536,20 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - GeoForge token contract cleanup |
+| Selected program | Portfolio Operator - GIS package token metadata disposition |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-006 - Mapbox Token Alias Contract Audit` complete on protected merge |
-| Next WO | `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` |
+| Current WO | `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` complete on protected merge |
+| Next WO | `WO-ATLAS-008 - GIS Package Mapbox Token Metadata Disposition Audit` |
 
-WO-ATLAS-006 confirms `VITE_MAPBOX_ACCESS_TOKEN` as the canonical live browser/Vite name, classifies
-exactly three GeoForge legacy-alias references, records two inconsistent GIS package setup/metadata
-references, and separates live guidance from immutable historical records without inspecting a token
-value.
+WO-ATLAS-007 removes the GeoForge V2 legacy fallback, aligns both missing-token surfaces to
+`VITE_MAPBOX_ACCESS_TOKEN`, and adds cwd-independent source-contract proof. Frontend type-check and
+production build pass without token-value, provider, geometry, valuation, routing, package, lockfile,
+CI, deployment, or protected-resource changes.
 
-WO-ATLAS-007 next removes the V2 alias fallback, corrects V1/V2 missing-state guidance, and adds
-focused source-contract proof without changing provider, renderer, token value, package, or runtime
-configuration behavior beyond removal of the deprecated alias.
-The separate GIS package setup/metadata inconsistency remains a portfolio disposition candidate after
-the GeoForge cleanup.
+WO-ATLAS-008 next determines whether the two `MAPBOX_ACCESS_TOKEN` GIS package setup/metadata
+references are active metadata, stale guidance, or a separate server-side contract. It is read-only
+and must define a bounded disposition before package files change.
 
 ---
 

@@ -915,7 +915,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         <div className="text-slate-300 text-sm font-semibold mt-1">Mapbox token required</div>
         <div className="text-slate-500 text-xs mt-1 max-w-xs leading-relaxed">
           Add{' '}
-          <code className="text-cyan-500/80 font-mono">VITE_MAPBOX_TOKEN=pk.your_token</code>
+          <code className="text-cyan-500/80 font-mono">VITE_MAPBOX_ACCESS_TOKEN=pk.your_token</code>
           {' '}to{' '}
           <code className="text-slate-400 font-mono">frontend/apps/os-shell/.env.development</code>
           {' '}and restart the dev server.
