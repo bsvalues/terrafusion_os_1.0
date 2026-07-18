@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join, parse } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { createGeoForgePopupContent } from '../popupContent';
@@ -9,6 +10,22 @@ const HOSTILE_VALUES = [
   '<svg onload=alert(2)>N-101</svg>',
   '<a href="javascript:alert(3)">qualified</a>',
 ] as const;
+
+function resolveRepoFile(relativePath: string): string {
+  let directory = process.cwd();
+  const root = parse(directory).root;
+
+  while (directory !== root) {
+    const candidate = join(directory, relativePath);
+    if (existsSync(candidate)) return candidate;
+    directory = dirname(directory);
+  }
+
+  const rootCandidate = join(root, relativePath);
+  if (existsSync(rootCandidate)) return rootCandidate;
+
+  throw new Error(`Unable to resolve repository file: ${relativePath}`);
+}
 
 describe('createGeoForgePopupContent', () => {
   it('renders hostile feature values as inert text', () => {
@@ -68,9 +85,12 @@ describe('createGeoForgePopupContent', () => {
 
 describe('GeoForge popup integration contract', () => {
   it('uses DOM content at every audited popup sink', () => {
-    const v1 = readFileSync('frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx', 'utf8');
+    const v1 = readFileSync(
+      resolveRepoFile('frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx'),
+      'utf8'
+    );
     const v2 = readFileSync(
-      'frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx',
+      resolveRepoFile('frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx'),
       'utf8'
     );
     const source = `${v1}\n${v2}`;
