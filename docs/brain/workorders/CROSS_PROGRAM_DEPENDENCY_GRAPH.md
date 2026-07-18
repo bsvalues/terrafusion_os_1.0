@@ -89,7 +89,7 @@ RUNTIME IMPORT
 | work-order-engine | 001-014 including 013 report | no successor | new registry/runtime program authority | CLOSED |
 | brain-operator | 001-009 | no successor | new implementation program authority | CLOSED |
 | azure-county-runtime | 001-003 | AZURE-004/005 live evidence | SW-01 / SW-03 / SW-04 | DEPENDENCY BLOCKED |
-| local-omen-runtime-repair | LOCAL-095 historical-volume and engine recovery complete | proposed LOCAL-096 proof-container recovery | exact data-preserving container recreation / SW-09 | RUNTIME MUTATION BLOCKED |
+| local-omen-runtime-repair | LOCAL-096 container preflight complete | proposed LOCAL-097 proof-image acquisition/build | exact image pull/build and app topology proof / SW-09 | IMAGE MUTATION BLOCKED |
 | runtime-import-disposition | none | CORE-1 | SW-05 / sovereign boundary | PARKED |
 
 ---
@@ -114,6 +114,7 @@ RUNTIME IMPORT
 | 2026-07-16 | Removed completed-node executable claims and recorded all-lanes-parked state | WO-PORTFOLIO-003 |
 | 2026-07-18 | Decomposed runtime diagnosis/import/promotion and removed stale MGMT-005 deployment wall | WO-PORTFOLIO-012 |
 | 2026-07-18 | Verified historical Docker volume, recovered engine against preserved state, and isolated proof-container reconstitution | WO-LOCAL-095 |
+| 2026-07-18 | Failed closed before proof-container creation because both required local images are absent | WO-LOCAL-096 |
 
 ---
 

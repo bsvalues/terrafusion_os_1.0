@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-LOCAL-095`; exact proof-container mutation boundary proven
+**Status:** Reconciled at `WO-LOCAL-096`; exact proof-image acquisition/build boundary proven
 
 ## Purpose
 
@@ -49,13 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-LOCAL-095 verified the returned historical volume by exact GUID and recovered Docker Desktop once
-against its preserved data VHDX. Existing Docker images, volumes, networks, and the runtime-operator
-container survived. The named OMEN Postgres and application proof containers remain absent, and the
-application proof image is not present.
+WO-LOCAL-096 verified the preserved Postgres volume, existing network, localhost ports, Compose
+definition, application start source, and environment key names. Both required images are absent:
+`postgres:16-bookworm` and `williamos-app-proof:omen`. The mandatory preflight prohibited pulls,
+builds, and container creation, so preserved runtime state remains unchanged.
 
 The canonical registry and wave planner return no executable node inside current authority. The exact
-next candidate is proposed `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving
-Reconstitution`; container recreation and application-image build require a bounded SW-09 envelope.
+next candidate is proposed `WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology
+Reconstitution`; image acquisition/build and app topology correction require a bounded SW-09 envelope.
 
 STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`

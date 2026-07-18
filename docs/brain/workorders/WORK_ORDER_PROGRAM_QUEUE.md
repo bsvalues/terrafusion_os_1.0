@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-18
-**Authority:** WO-LOCAL-095
+**Authority:** WO-LOCAL-096
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-WO-LOCAL-095 verified the returned historical `E:` volume by exact GUID and recovered Docker Desktop
-once against its preserved data VHDX. Existing Docker state survived. The named OMEN Postgres and
-application proof containers are absent, and completing the proof runtime requires a separately
-bounded data-preserving container-reconstitution envelope.
+WO-LOCAL-096 completed exact preflight for the named OMEN proof containers. The preserved Postgres
+volume, existing network, localhost ports, definitions, and environment key names are verified, but
+both required local images are absent. The fail-closed gate prohibited pulls/builds and created zero
+containers, leaving preserved runtime state unchanged.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -164,15 +164,16 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 | benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
-| local-omen-runtime-repair | proposed WO-LOCAL-096 | exact proof-container recreation / SW-09 | Docker store is recovered; named Postgres/app proof containers and app image are absent | `evidence/WO-LOCAL-095-HISTORICAL-VOLUME-RECOVERY.md` |
+| local-omen-runtime-repair | proposed WO-LOCAL-097 | exact proof-image acquisition/build / SW-09 | both required images are absent; app network/restart topology also needs explicit reconciliation | `evidence/WO-LOCAL-096-OMEN-PROOF-CONTAINER-RECOVERY.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-LOCAL-095:** `FOLLOW_ON_PROTECTED_BOUNDARY`. Historical storage and Docker
-Engine recovery passed without state replacement. The exact next candidate is `WO-LOCAL-096 - OMEN
-Proof Container Recovery and Data-Preserving Reconstitution`; it requires container recreation and
-possibly an application-image build. The registry and wave planner return no executable node inside
-current authority.
+**Portfolio result after WO-LOCAL-096:** `FOLLOW_ON_PROTECTED_BOUNDARY`. Container preflight passed
+except for mandatory local-image availability. The exact next candidate is `WO-LOCAL-097 - OMEN
+Proof Image Acquisition and Topology Reconstitution`; it requires a digest-recorded Postgres pull or
+verified archive, a reproducible application image build or verified archive, and explicit app
+network/restart topology. The registry and wave planner return no executable node inside current
+authority.
 
 ---
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-LOCAL-095",
+  "generatedBy": "WO-LOCAL-096",
   "generatedAt": "2026-07-18T00:00:00Z",
-  "description": "Local OMEN historical-volume and Docker-engine-recovery-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "description": "Local OMEN proof-container-preflight-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3305,6 +3305,125 @@
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
         "source": "Live exact-volume, Docker data VHDX, Docker Engine, container, image, volume, network, and port evidence under the authorized WO-LOCAL-095 recovery envelope",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-LOCAL-096",
+      "title": "OMEN Proof Container Recovery and Data-Preserving Reconstitution",
+      "program": "Local OMEN Runtime Repair",
+      "goal": "Recreate the named OMEN proof containers only after exact local images and preserved topology pass mandatory preflight.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-LOCAL-095",
+          "status": "satisfied",
+          "evidence": [
+            "WO-LOCAL-095 recovered Docker Engine against the exact preserved historical data store and isolated container recreation as the next boundary."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded OMEN proof-container preflight and recreation envelope",
+          "paths": [
+            "exact target container names and local image identities",
+            "preserved Postgres volume metadata",
+            "existing Docker network and localhost proof ports",
+            "Compose/start-script/Dockerfile topology and environment key names"
+          ]
+        },
+        {
+          "name": "Local OMEN and portfolio governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Image pull/build/import, container creation without verified local images, database or secret access, destructive cleanup, external resources, county, PACS, production, product, package, CI, or deployment changes"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-096-omen-proof-container-recovery.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-096-OMEN-PROOF-CONTAINER-RECOVERY.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "proof-container-fail-closed-preflight",
+          "description": "Verify exact images, container names, preserved volume, network, ports, startup definitions, and non-destructive behavior before any proof-container creation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "proof-container-preflight-and-image-boundary",
+          "location": "docs/brain/workorders/evidence/WO-LOCAL-096-OMEN-PROOF-CONTAINER-RECOVERY.md",
+          "description": "Exact target topology, preserved volume/network/ports, absent image identities, zero-mutation ledger, and follow-on image acquisition/build boundary."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "Both required local images are absent and the application topology is incomplete; image acquisition/build and topology reconciliation require a new exact envelope before container recreation."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The owner authorized exact proof-container recreation only from verified existing local images. Mandatory preflight failed closed before runtime mutation; routine governance PR lifecycle remains authorized."
+      },
+      "provenance": {
+        "createdAt": "2026-07-18T00:00:00Z",
+        "source": "Live Docker image/container/volume/network/port metadata and local Compose/start-script/Dockerfile definitions under the authorized WO-LOCAL-096 envelope",
         "schemaVersion": "0.1.0"
       }
     }

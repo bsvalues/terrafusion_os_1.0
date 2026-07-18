@@ -536,13 +536,13 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Local OMEN Runtime Repair historical-volume recovery completed |
-| Current WO | `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount` complete |
-| Next WO | Protected candidate: `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution` |
+| Selected program | Local OMEN Runtime Repair container preflight completed |
+| Current WO | `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution` complete |
+| Next WO | Protected candidate: `WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology Reconstitution` |
 
-WO-LOCAL-095 proved that the returned `E:` volume matches the historical GUID and recovered Docker
-Desktop once against the preserved data VHDX. The engine is healthy, but the named OMEN Postgres and
-application proof containers are absent and the application proof image is unavailable.
+WO-LOCAL-096 proved the preserved Postgres volume and prior localhost topology are identifiable, but
+both required local images are absent. The packet prohibited pulls/builds and container creation
+without exact images, so preflight failed closed before any runtime mutation.
 
 ---
 
@@ -553,23 +553,23 @@ application proof containers are absent and the application proof image is unava
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | ENGINE RECOVERED - PROOF CONTAINER RECONSTITUTION BLOCKED |
-| Current | `WO-LOCAL-095` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
-| Next | Proposed `WO-LOCAL-096` |
+| Status | CONTAINER PREFLIGHT COMPLETE - PROOF IMAGE ACQUISITION BLOCKED |
+| Current | `WO-LOCAL-096` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Next | Proposed `WO-LOCAL-097` |
 
 ### Current Facts
 
-- The returned `E:` volume exactly matches `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` and contains the
-  preserved Docker data VHDX at `E:\DockerData`.
-- Docker Desktop recovered after one bounded failed-engine restart and now runs against preserved state.
-- Existing runtime-operator state, images, volumes, and networks survived.
-- The named OMEN database and application proof containers are absent; the application image is absent.
+- Docker Desktop remains healthy against the recovered historical data VHDX.
+- The preserved `williamos-local-runtime_williamos_pgdata` volume is 47.66 MB and unchanged.
+- The existing `williamos-local-runtime_default` network remains present.
+- Both target container names are absent and all three localhost proof ports are clear.
+- `postgres:16-bookworm` and `williamos-app-proof:omen` are both absent from all local images.
 - Ports `15432`, `3100`, and `3101` are clear.
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
-Rule: Preserve existing state. Any proof-container recreation must use exact named services and retain
-the existing Postgres data volume. Factory reset, format, prune, generic cleanup, persistence deletion,
+Rule: Preserve existing state. Acquire/build only exact images under a separate bounded envelope before
+repeating container preflight. Factory reset, format, prune, generic cleanup, persistence deletion,
 LAN exposure, TerraFusion Postgres, secrets, and external operational resources remain blocked.
 
 ---
