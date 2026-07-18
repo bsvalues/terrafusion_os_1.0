@@ -52,8 +52,9 @@ No bounded candidate remains inside current authority. This is a `TRUE_PORTFOLIO
 - Wave planner tests: 29/29 PASS.
 - Core TypeScript type-check: PASS.
 - Phase 8.3 core tool tests: 56/56 PASS.
+- Strict repository-shape guard: PASS with `PATH_CANON_REGISTER.md` in the hard keep-list.
 - Brain protected-path and hardcoded-port checks: PASS.
-- Brain Work Order scope review: all 13 changed files inside scope.
+- Brain Work Order scope review: all 14 changed files inside scope.
 - The Brain wrapper's legacy write-lane script still reports 21 pre-existing manifest-suite findings;
   this diff changes no tool manifest or runtime file, and the canonical Phase 8.3 write-lane tests
   pass. This packet does not claim to repair that unrelated baseline drift.

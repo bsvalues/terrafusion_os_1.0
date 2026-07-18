@@ -27,6 +27,7 @@ repository.
 - `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
 - `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
+- `scripts/quarantine/keep-list.json`
 - this active packet and its evidence packet
 
 ## Explicitly Blocked
@@ -51,6 +52,8 @@ started. The exact C3 decision is consumed as superseded, and the missing path c
 - Reverify the sovereign remote, `origin/main`, PR #142, PR #156, and open-PR posture.
 - Confirm no `tools/sync/**`, runtime, package, CI, deployment, or protected-resource path changed.
 - Enumerate every remaining incomplete registered program and cite its exact protected boundary.
+- Confirm the strict repository-shape guard recognizes the new root canon file without changing the
+  guard implementation.
 
 ## Safety
 
@@ -77,7 +80,8 @@ PACS, SQL, secret, or production resource changed.
     "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
     "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
     "docs/brain/workorders/programs/portfolio-operator.md",
-    "docs/brain/workorders/registry/work-order-registry.seed.json"
+    "docs/brain/workorders/registry/work-order-registry.seed.json",
+    "scripts/quarantine/keep-list.json"
   ],
   "forbidden_patterns": [
     "tools/sync/**",
@@ -99,6 +103,7 @@ PACS, SQL, secret, or production resource changed.
     "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
     "node docs/brain/workorders/tools/wo-query.mjs --json",
     "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
+    "node scripts/repo-shape-guard.mjs --strict",
     "corepack pnpm brain review-diff --workorder WO-PORTFOLIO-011"
   ]
 }
