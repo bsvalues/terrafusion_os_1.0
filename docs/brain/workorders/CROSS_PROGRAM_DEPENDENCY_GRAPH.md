@@ -89,7 +89,7 @@ RUNTIME IMPORT
 | work-order-engine | 001-014 including 013 report | no successor | new registry/runtime program authority | CLOSED |
 | brain-operator | 001-009 | no successor | new implementation program authority | CLOSED |
 | azure-county-runtime | 001-003 | AZURE-004/005 live evidence | SW-01 / SW-03 / SW-04 | DEPENDENCY BLOCKED |
-| local-omen-runtime-repair | recovery evidence only | LOCAL-093 read-only diagnosis | exact local environment activation; repair later crosses SW-09 | PARKED |
+| local-omen-runtime-repair | LOCAL-093 read-only diagnosis complete | proposed LOCAL-094 disk-path repair | SW-09 bounded local Docker storage/engine mutation | REPAIR AUTHORITY GATED |
 | runtime-import-disposition | none | CORE-1 | SW-05 / sovereign boundary | PARKED |
 
 ---

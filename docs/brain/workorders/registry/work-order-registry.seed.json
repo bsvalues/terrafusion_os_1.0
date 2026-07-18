@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-012",
+  "generatedBy": "WO-LOCAL-093",
   "generatedAt": "2026-07-18T00:00:00Z",
-  "description": "Boundary-decomposed representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "description": "Local OMEN diagnosis-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -2947,6 +2947,126 @@
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
         "source": "Live repository, GitHub PR, and owner-decision audit after WO-PORTFOLIO-011",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-LOCAL-093",
+      "title": "Bounded Read-Only Local OMEN Diagnosis",
+      "program": "Local OMEN Runtime Repair",
+      "goal": "Diagnose the named local OMEN proof runtime without mutation and identify the exact repair boundary.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-012",
+          "status": "satisfied",
+          "evidence": [
+            "WO-PORTFOLIO-012 recommended the bounded read-only diagnosis, and the owner supplied the exact local runtime envelope."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Named local OMEN proof runtime read-only diagnostics",
+          "paths": [
+            "Docker client and daemon metadata",
+            "Docker Desktop and WSL process/service state",
+            "named OMEN proof container metadata and logs",
+            "localhost port and process observations",
+            "local Docker storage-path metadata",
+            "previously generated local proof artifact names"
+          ]
+        },
+        {
+          "name": "Local OMEN and portfolio governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Docker, WSL, process, container, image, network, volume, port, configuration, credential, database, external-resource, county, PACS, production, runtime, product, package, CI, or deployment mutation"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-093-read-only-diagnosis.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-093-LOCAL-OMEN-READ-ONLY-DIAGNOSIS.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "read-only-runtime-diagnosis",
+          "description": "Identify the exact failing component and distinguish observed facts, unknown container state, required mutation, rollback, validation, and non-claims without reading secrets or mutating runtime state."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "local-omen-read-only-diagnosis",
+          "location": "docs/brain/workorders/evidence/WO-LOCAL-093-LOCAL-OMEN-READ-ONLY-DIAGNOSIS.md",
+          "description": "Docker WSL disk-path failure evidence, exact protected repair proposal, rollback, validation, and portfolio recomputation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "Stop before any Docker, WSL, path, process, container, image, network, volume, port, configuration, credential, or database mutation."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The owner authorized the complete read-only diagnostic Work Order and routine governance PR lifecycle. The authority excludes all runtime mutation."
+      },
+      "provenance": {
+        "createdAt": "2026-07-18T00:00:00Z",
+        "source": "Owner-authorized bounded local OMEN read-only diagnosis executed against current local runtime evidence",
         "schemaVersion": "0.1.0"
       }
     }

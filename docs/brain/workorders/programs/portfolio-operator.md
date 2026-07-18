@@ -49,14 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-PORTFOLIO-012 decomposed the broad runtime and promotion labels left by WO-PORTFOLIO-011. It also
-proved that P8 MGMT-005 and MGMT-006 already merged, so frontend deployment is not an outstanding
-wall. Local OMEN read-only diagnosis, Local OMEN repair, sovereign import, TerraPilot P16 design,
-TerraPilot L3/L4 promotion, live Azure, protected data, and new product scope now have separate
-authority descriptions.
+WO-LOCAL-093 consumed the recommended bounded read-only Local OMEN diagnosis envelope. It found that
+Docker Desktop's Linux/WSL engine fails before container startup because its `disk` path is a
+junction to unavailable `E:\DockerData`. No Docker, container, network, volume, credential, or data
+mutation occurred.
 
 The canonical registry and wave planner return no executable node inside current authority. The
-recommended next strategic grant is a read-only `WO-LOCAL-093` local Docker diagnosis envelope; no
-Docker mutation or repair is implied.
+exact next candidate is proposed `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN
+Re-observation`; generic Docker repair is not authorized.
 
-STOP_TYPE: `TRUE_PORTFOLIO_BOUNDARY`
+STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`
