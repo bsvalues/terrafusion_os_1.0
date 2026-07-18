@@ -128,6 +128,8 @@ its current-source provenance and no-secret build contract are explicit.
 | Wave planner tests | PASS - 29/29 |
 | Work Order query JSON | PASS - 36 records, all terminal, no recommendation |
 | Wave planner JSON at R3 | PASS - no executable set or waves |
+| `corepack pnpm run type-check` | PASS |
+| Phase 8.3 core tool tests | PASS - 56/56 |
 | Brain Work Order scope check | PASS - all ten changed files authorized; no suite touched |
 | Brain aggregate protected-path/write-lane checks | BLOCK on unchanged repository baseline; no implementation files changed by WO-LOCAL-095 |
 

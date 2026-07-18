@@ -92,7 +92,9 @@ runtime mutation and was not performed.
     "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
     "node docs/brain/workorders/tools/wo-query.mjs --json",
     "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
-    "corepack pnpm brain review-diff --workorder WO-LOCAL-095"
+    "corepack pnpm brain review-diff --workorder WO-LOCAL-095",
+    "corepack pnpm run type-check",
+    "node --test os-platform/core/tests/phase83-tools.test.mjs"
   ]
 }
 ```
