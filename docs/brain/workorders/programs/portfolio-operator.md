@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-001` - MapLibre migration reality audit
+**Status:** Active at `WO-ATLAS-003` - map renderer contract decision
 
 ## Purpose
 
@@ -49,12 +49,12 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `4852836e3ffb5b5856d515cec7d2627fe0e683cb`, direct 2026-07-17 R3 operator authority activated
-WO-ATLAS-002 after the prior audit declared its exact protected frontend scope. PropertyAtlas now
-renders boundary-derived situs content through popup text rather than popup HTML, and a hostile-markup
-regression proves the boundary. No renderer, package, routing, geometry, or persistence contract
-changed.
+At `origin/main` `f2816c2740a0cc92b2442635d6c4673850c64a58`, WO-ATLAS-003 retains `mapbox-gl` 3.20.0 as the
+supported current renderer baseline. No live ADR or dependency canonizes MapLibre, and stale PR #1073
+is not a safe migration vehicle. Any future renderer change must start from current main and prove the
+provider, glyph, attribution, security, test, package, and rollback contract across every current map
+surface.
 
-`WO-ATLAS-003 - Map Renderer Contract Decision` is next as a docs-only current-main decision.
+`WO-ATLAS-004 - GeoForge Popup Content Safety Audit` is next as a docs-only security inventory.
 
-STOP_TYPE: `ATLAS_POPUP_TEXT_SAFETY_REPAIRED_RENDERER_CONTRACT_NEXT`
+STOP_TYPE: `ATLAS_RENDERER_CONTRACT_DECIDED_POPUP_SAFETY_AUDIT_NEXT`
