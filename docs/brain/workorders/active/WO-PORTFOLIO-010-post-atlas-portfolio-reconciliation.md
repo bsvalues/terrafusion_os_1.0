@@ -1,9 +1,13 @@
 # WO-PORTFOLIO-010 - Post-Atlas Portfolio Reconciliation
 
-**Program:** Portfolio Operator  
-**Goal:** `GOAL-PORTFOLIO-OPERATOR-001`  
-**Loop:** `LOOP-PORTFOLIO-OPERATOR-001`  
-**Risk:** R1  
+**Program:** Portfolio Operator
+
+**Goal:** `GOAL-PORTFOLIO-OPERATOR-001`
+
+**Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
+
+**Risk:** R1
+
 **Status:** COMPLETE
 
 ## Objective
@@ -43,4 +47,3 @@ production resources.
 - `node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs`
 - `node docs/brain/workorders/tools/wo-query.mjs --json --authority R3`
 - `node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3 --reservations <bounded-reservations>`
-

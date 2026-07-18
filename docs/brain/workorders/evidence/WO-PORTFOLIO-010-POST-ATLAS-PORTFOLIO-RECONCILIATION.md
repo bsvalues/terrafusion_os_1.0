@@ -51,4 +51,3 @@ frontend, os-platform, deployment, secrets, and production resources.
 
 `WO-SYNC-132 - C3 Lock-Readiness Checker` is active. `WO-SYNC-133` remains next after the C3 PR is
 merged and post-merge verification passes.
-
