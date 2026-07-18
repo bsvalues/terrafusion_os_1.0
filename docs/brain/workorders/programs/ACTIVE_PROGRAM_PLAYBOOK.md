@@ -536,17 +536,17 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - Atlas renderer contract |
+| Selected program | Portfolio Operator - GeoForge popup safety |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-003 - Map Renderer Contract Decision` complete on protected merge |
-| Next WO | `WO-ATLAS-004 - GeoForge Popup Content Safety Audit` |
+| Current WO | `WO-ATLAS-004 - GeoForge Popup Content Safety Audit` complete on protected merge |
+| Next WO | `WO-ATLAS-005 - GeoForge Popup DOM Safety Repair` |
 
-WO-ATLAS-003 retains `mapbox-gl` 3.20.0 as the current supported OS-shell renderer baseline and
-rejects stale PR #1073 as an integration vehicle. A future MapLibre migration must start from current
-main and prove provider, glyph, attribution, package, security, test, and rollback contracts across
-every current map surface. WO-ATLAS-004 next audits GeoForge API-derived popup HTML without changing
-frontend code.
+WO-ATLAS-004 finds seven `setHTML` sites in `GeoForgeMap` and one in `GeoForgeV2Map`, all combining
+static markup with API/store-derived feature properties and none covered by focused hostile-input
+tests. WO-ATLAS-005 is the exact bounded repair: static DOM structure, dynamic `textContent`, all
+eight calls removed, and dedicated regression proof without valuation, geometry, provider, routing,
+package, or persistence changes.
 
 ---
 

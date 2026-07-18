@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-003",
+  "generatedBy": "WO-ATLAS-004",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1613,7 +1613,7 @@
       "program": "Portfolio Operator",
       "goal": "Inventory API-derived GeoForge popup HTML and define exact current-main repair slices.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-003",
@@ -1665,6 +1665,127 @@
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R1",
           "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "security-audit",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-004-GEOFORGE-POPUP-CONTENT-SAFETY-AUDIT.md",
+          "description": "Exact eight-site popup HTML inventory, trust-boundary classification, and bounded repair contract."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before frontend repair, renderer/provider/package mutation, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-005",
+          "reason": "Eight API-derived popup HTML paths require static DOM and hostile-input regression proof.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers this docs-only current-main security audit; WO-ATLAS-005 records the exact protected frontend repair scope."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-003 current-main renderer and popup trust-boundary inspection",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-005",
+      "title": "GeoForge Popup DOM Safety Repair",
+      "program": "Portfolio Operator",
+      "goal": "Remove executable popup HTML boundaries from current GeoForge maps without changing business or renderer behavior.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-004",
+          "status": "satisfied",
+          "evidence": [
+            "Eight exact current-main setHTML sites and their API/store trust boundaries inventoried"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded Forge presentation safety and focused regression proof",
+          "paths": [
+            "frontend/apps/os-shell/src/pages/forge/geo/**",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Valuation methodology, GIS geometry, renderer/provider/token/style, routing, persistence, API, package, lockfile, CI, deployment, secrets, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx",
+        "frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx",
+        "frontend/apps/os-shell/src/pages/forge/geo/popupContent.ts",
+        "frontend/apps/os-shell/src/pages/forge/geo/__tests__/popupContent.test.ts",
+        "docs/brain/workorders/active/WO-ATLAS-005-geoforge-popup-dom-safety-repair.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-005-GEOFORGE-POPUP-DOM-SAFETY-REPAIR.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "frontend/package.json",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Hostile identifiers, labels, dates, and decisions remain text and create no injected DOM element or event attribute."
+        },
+        {
+          "kind": "scope",
+          "description": "All eight current GeoForge setHTML calls removed with no business, renderer, provider, package, or persistence change."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused popup-content tests",
+          "command": "corepack pnpm --dir frontend exec vitest run apps/os-shell/src/pages/forge/geo/__tests__/popupContent.test.ts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frontend type-check",
+          "command": "corepack pnpm --dir frontend run type-check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
           "result": "pending"
         }
       ],
@@ -1672,7 +1793,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop before frontend repair, renderer/provider/package mutation, or protected-resource access."
+          "description": "Stop on valuation, geometry, renderer/provider, routing, persistence, API, package/lockfile, CI/deployment, or protected-resource change."
         }
       ],
       "nextCandidates": [],
@@ -1684,11 +1805,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Standing operator authority covers this docs-only current-main security audit; any repair must be admitted as a separate exact-scope Work Order."
+        "notes": "The user's standing 2026-07-17 direction authorizes routine bounded engineering; this record limits it to the exact presentation-safety files and proof."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-ATLAS-003 current-main renderer and popup trust-boundary inspection",
+        "source": "WO-ATLAS-004 exact current-main GeoForge popup trust-boundary audit",
         "schemaVersion": "0.1.0"
       }
     }

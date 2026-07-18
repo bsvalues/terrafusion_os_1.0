@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-ATLAS-003
+**Authority:** WO-ATLAS-004
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,11 @@
 
 ## Active Goal
 
-WO-ATLAS-003 is the active docs-only R1 node on base
-`f2816c2740a0cc92b2442635d6c4673850c64a58`. Current main retains `mapbox-gl` 3.20.0 as the supported
-renderer baseline. MapLibre remains a future candidate only after a fresh provider-neutral migration
-packet proves every current surface, provider, security, test, and rollback requirement. Source
-inspection also exposes GeoForge popup HTML as the next bounded audit.
+WO-ATLAS-004 is the active docs-only R1 node on base
+`60bc8fa951fd24a88555fce3e62ebf2d56896fb1`. It inventories eight current-main GeoForge popup HTML
+sites, classifies their API/store-derived trust boundaries, and finds no focused hostile-input proof.
+WO-ATLAS-005 is admitted as the exact bounded DOM-safety repair; no renderer, provider, valuation,
+geometry, routing, package, or persistence change is included.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -41,8 +41,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-008 Open PR Backlog Reconciliation | DONE | PR #1302 merged; stale backlog reconciled and Atlas audit admitted |
 | WO-ATLAS-001 MapLibre Migration Reality Audit | DONE | PR #1303 merged; #1073 closed as stale/unsafe and exact frontend boundary exposed |
 | WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | DONE | PR #1304 merged; boundary-derived situs now renders as popup text with hostile-input proof |
-| **WO-ATLAS-003 Map Renderer Contract Decision** | **CURRENT - complete on protected merge** | Retain Mapbox as current baseline; fresh migration must satisfy provider-neutral contract |
-| WO-ATLAS-004 GeoForge Popup Content Safety Audit | NEXT | Inventory API-derived popup HTML and define exact bounded repair slices |
+| WO-ATLAS-003 Map Renderer Contract Decision | DONE | PR #1305 merged; Mapbox retained as current baseline with provider-neutral migration contract |
+| **WO-ATLAS-004 GeoForge Popup Content Safety Audit** | **CURRENT - complete on protected merge** | Eight API-derived popup HTML sites inventoried with exact repair contract |
+| WO-ATLAS-005 GeoForge Popup DOM Safety Repair | NEXT - protected R3 | Replace all eight HTML paths with static DOM/textContent and hostile-input proof |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
