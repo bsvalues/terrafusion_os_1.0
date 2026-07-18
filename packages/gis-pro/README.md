@@ -83,7 +83,7 @@ DATABASE_URL="postgresql://username:password@localhost:5432/terrafusion"
 
 # API Keys
 ANTHROPIC_API_KEY="your_anthropic_api_key"
-MAPBOX_ACCESS_TOKEN="your_mapbox_token"
+VITE_MAPBOX_ACCESS_TOKEN="your_mapbox_token"
 ARCGIS_API_KEY="your_arcgis_key"
 
 # Security

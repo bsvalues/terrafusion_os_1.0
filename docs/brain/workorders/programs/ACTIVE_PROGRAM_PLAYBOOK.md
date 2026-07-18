@@ -536,21 +536,21 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - GIS package token metadata alignment |
+| Selected program | Portfolio Operator - post-Atlas portfolio reconciliation |
 | Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` complete on protected merge |
-| Next WO | `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` |
+| Current WO | `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` complete on protected merge |
+| Next WO | `WO-PORTFOLIO-010 - Post-Atlas Portfolio Reconciliation` |
 
 WO-ATLAS-008 proves that GIS package source and types use `VITE_MAPBOX_ACCESS_TOKEN`, no tracked live
 reader consumes `MAPBOX_ACCESS_TOKEN`, and no tracked live code loads the package's
 `terrafusion-config.json`. The README and metadata references are stale browser-contract surfaces,
 not a separate server-side contract.
 
-WO-PORTFOLIO-009 adds fail-closed evaluation of one active, sufficient, unexpired exact-work-order
-decision covering every exact protected file. It does not weaken default protected-path denial or
-authorize token access, provider behavior, package manifests, lockfiles, CI, deployment, or other
-protected resources. WO-ATLAS-009 is now ready under that exact-file decision.
+WO-PORTFOLIO-009 added fail-closed exact-file authority evaluation. WO-ATLAS-009 used the resulting
+bounded decision to align only the stale README/config names and add focused proof, then consumes that
+decision on merge. WO-PORTFOLIO-010 next refreshes incomplete programs and admits the next bounded,
+dependency-cleared slice; completion of the Atlas sequence is not a terminal park.
 
 ---
 

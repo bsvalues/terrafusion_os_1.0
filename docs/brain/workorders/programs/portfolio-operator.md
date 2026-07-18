@@ -56,8 +56,11 @@ mutation or token access.
 
 `WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` makes one active, sufficient,
 unexpired exact-work-order decision and exact protected file list mechanically visible to the wave
-planner. Wildcard, partial, inactive, expired, conflicting, or insufficient grants still fail closed.
-`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is next under the recorded exact-file
-R3 decision.
+planner. `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` then aligned the two stale
+package metadata references with the live Vite contract and added cwd-independent proof. The exact
+R3 decision is consumed on merge.
 
-STOP_TYPE: `PROTECTED_PATH_AUTHORITY_INTEGRATED_ATLAS_METADATA_ALIGNMENT_NEXT`
+`WO-PORTFOLIO-010 - Post-Atlas Portfolio Reconciliation` is next to rank and admit the highest-value
+dependency-cleared bounded slice from live canonical state.
+
+STOP_TYPE: `ATLAS_METADATA_ALIGNMENT_COMPLETE_PORTFOLIO_RECONCILIATION_NEXT`

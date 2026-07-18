@@ -176,7 +176,7 @@
       "mapbox": {
         "purpose": "Advanced mapping and geocoding",
         "required": false,
-        "env_var": "MAPBOX_ACCESS_TOKEN"
+        "env_var": "VITE_MAPBOX_ACCESS_TOKEN"
       },
       "arcgis": {
         "purpose": "ESRI services integration",

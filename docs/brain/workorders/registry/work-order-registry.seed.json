@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-009",
+  "generatedBy": "WO-ATLAS-009",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -2182,7 +2182,7 @@
       "program": "Portfolio Operator",
       "goal": "Align stale GIS package Mapbox setup guidance and integration metadata with the live Vite contract.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-008",
@@ -2209,6 +2209,7 @@
         }
       ],
       "allowedFiles": [
+        ".governance/owner-decisions.json",
         "packages/gis-pro/README.md",
         "packages/gis-pro/terrafusion-config.json",
         "packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
@@ -2250,8 +2251,114 @@
           "name": "Focused package token contract",
           "command": "node --test packages/gis-pro/tests/mapbox-token-metadata-contract.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-proof",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-009-GIS-PACKAGE-MAPBOX-TOKEN-METADATA-ALIGNMENT.md",
+          "description": "Exact metadata diff, cwd-independent contract proof, safety non-claims, authority consumption, and rollback."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on token-value or environment access, package source or manifest mutation, alias fallback, provider/runtime behavior, CI/deployment, backend, or protected resources."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-PORTFOLIO-010",
+          "reason": "Refresh the canonical backlog and admit the next bounded dependency-cleared slice after the Atlas sequence closes.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "OWNER-ATLAS-009-R3-MAPBOX-METADATA-ALIGNMENT-20260717 is consumed on protected merge after the three exact package files and bounded Brain evidence pass. Token values, runtime behavior, and every other protected boundary remain denied."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-008 GIS package Mapbox token metadata disposition audit",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-010",
+      "title": "Post-Atlas Portfolio Reconciliation",
+      "program": "Portfolio Operator",
+      "goal": "Refresh canonical portfolio state after the Atlas metadata sequence and admit the highest-value bounded dependency-cleared slice.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-009",
+          "status": "satisfied",
+          "evidence": [
+            "The GIS package metadata contract is aligned, exact-file authority is consumed on merge, and the Atlas sequence no longer blocks portfolio synthesis."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only portfolio state, program routing, registry evidence, and bounded next-Work-Order admission",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime/product behavior, packages, CI/deployment, backend, county, PACS, SQL, secrets, live services, production resources, or new unratified program scope"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-PORTFOLIO-010-post-atlas-portfolio-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-010-POST-ATLAS-PORTFOLIO-RECONCILIATION.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "packages/**",
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "package.json",
+        "pnpm-lock.yaml",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "portfolio-reconciliation",
+          "description": "Enumerate incomplete ratified programs, classify dependency and authority state, and admit one bounded next slice or prove an exact protected boundary."
+        }
+      ],
+      "validationGates": [
         {
           "name": "Diff check",
           "command": "git diff --check",
@@ -2263,13 +2370,19 @@
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
           "required": true,
           "result": "pending"
+        },
+        {
+          "name": "Wave planner",
+          "command": "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
+          "required": true,
+          "result": "pending"
         }
       ],
       "evidenceProduced": [],
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop on token-value or environment access, package source or manifest mutation, alias fallback, provider/runtime behavior, CI/deployment, backend, or protected resources."
+          "description": "Stop only if every useful incomplete candidate crosses a true protected boundary or canonical sources create an unresolved strategic conflict."
         }
       ],
       "nextCandidates": [],
@@ -2281,11 +2394,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "OWNER-ATLAS-009-R3-MAPBOX-METADATA-ALIGNMENT-20260717 grants only the three exact protected package files and bounded Brain evidence. Token values, runtime behavior, and every other protected boundary remain denied."
+        "notes": "Standing portfolio operator authority covers read-only reconciliation and bounded Brain admission only; implementation or protected-boundary authority must come from the selected program and Work Order."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-ATLAS-008 GIS package Mapbox token metadata disposition audit",
+        "source": "Portfolio continuation rule: completion of a bounded sequence triggers synthesis rather than ALL_LANES_PARKED",
         "schemaVersion": "0.1.0"
       }
     },
