@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-001",
+  "generatedBy": "WO-ATLAS-002",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1406,7 +1406,7 @@
       "program": "Portfolio Operator",
       "goal": "Render boundary-derived situs text without interpreting it as popup HTML.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-001",
@@ -1462,12 +1462,23 @@
       "validationGates": [
         {
           "name": "PropertyAtlas focused tests",
-          "command": "corepack pnpm exec vitest run frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+          "command": "corepack pnpm --dir frontend exec vitest run apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
           "required": true,
-          "result": "pending"
+          "result": "13 passed, 0 failed"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "test",
+          "location": "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+          "summary": "Hostile situs markup is passed to Popup.setText and never Popup.setHTML."
+        },
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-002-PROPERTYATLAS-POPUP-TEXT-SAFETY-REPAIR.md",
+          "summary": "Red/green proof, bounded implementation, validation, safety posture, and next route."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
@@ -1490,11 +1501,96 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "The owner's standing operator direction and this exact bounded Work Order authorize the current-main text-safety repair; no renderer or package change is included."
+        "notes": "The user's 2026-07-17 standing operator direction and this exact bounded Work Order authorize the current-main text-safety repair; no renderer or package change is included."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-ATLAS-001 current-main security finding",
+        "source": "WO-ATLAS-001 current-main security finding and direct 2026-07-17 R3 activation authority",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-003",
+      "title": "Map Renderer Contract Decision",
+      "program": "Portfolio Operator",
+      "goal": "Decide the supported Workbench map renderer contract from current main before any migration implementation.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-002",
+          "status": "satisfied",
+          "evidence": [
+            "PropertyAtlas popup text-safety repair complete with focused regression proof"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Committed Atlas renderer source inspection and Brain evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frontend implementation, renderer or provider changes, package or lockfile changes, CI, deployment, secrets, county, PACS, SQL, live resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-ATLAS-003-map-renderer-contract-decision.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-003-MAP-RENDERER-CONTRACT-DECISION.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "contract",
+          "description": "Evidence-backed Mapbox retention or fresh MapLibre migration decision with provider, glyph, package, test, security, and rollback requirements."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R1",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before frontend implementation, renderer/provider mutation, package or lockfile mutation, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers this docs-only current-main renderer contract decision; implementation requires a separately admitted bounded Work Order."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-001 stale migration audit and WO-ATLAS-002 independent security repair",
         "schemaVersion": "0.1.0"
       }
     }

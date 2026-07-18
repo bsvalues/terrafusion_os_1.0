@@ -5,11 +5,48 @@
  * Tests: map view → layer selection → query_parcel_layers tool → correlationId UX
  */
 
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyAtlas from '../../pages/workbench/tabs/PropertyAtlas';
+
+const mapboxMocks = vi.hoisted(() => ({
+  setText: vi.fn(),
+  setHTML: vi.fn(),
+  setPopup: vi.fn(),
+  setLngLat: vi.fn(),
+  addTo: vi.fn(),
+  remove: vi.fn(),
+}));
+
+vi.mock('mapbox-gl', () => {
+  const marker = {
+    setLngLat: mapboxMocks.setLngLat,
+    addTo: mapboxMocks.addTo,
+    setPopup: mapboxMocks.setPopup,
+  };
+  mapboxMocks.setLngLat.mockReturnValue(marker);
+  mapboxMocks.addTo.mockReturnValue(marker);
+
+  return {
+    default: {
+      accessToken: '',
+      Map: vi.fn(() => ({
+        addControl: vi.fn(),
+        on: vi.fn(),
+        remove: mapboxMocks.remove,
+      })),
+      AttributionControl: vi.fn(),
+      NavigationControl: vi.fn(),
+      Marker: vi.fn(() => marker),
+      Popup: vi.fn(() => ({
+        setText: mapboxMocks.setText,
+        setHTML: mapboxMocks.setHTML,
+      })),
+    },
+  };
+});
 
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
@@ -51,6 +88,10 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 describe('PropertyAtlas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('Rendering', () => {
@@ -297,6 +338,32 @@ describe('PropertyAtlas', () => {
   // Phase 0A — GIS Source Behavior
   // ---------------------------------------------------------------------------
   describe('GIS Source Behavior', () => {
+    it('renders boundary-derived situs content as text rather than HTML', async () => {
+      vi.stubEnv('VITE_MAPBOX_ACCESS_TOKEN', 'test-token');
+      const hostileSitus = '<img src=x onerror=alert(1)>';
+      mockUseParcelBoundary.mockReturnValue({
+        data: {
+          parcelId: '12345-001',
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [-119.498, 46.233] },
+          centroid: { lat: 46.233, lng: -119.498, derivedFrom: 'geometry' },
+          situsDisplay: hostileSitus,
+        },
+        loading: false,
+        error: null,
+        source: 'live',
+        refetch: vi.fn(),
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      await waitFor(() => {
+        expect(mapboxMocks.setText).toHaveBeenCalledWith(hostileSitus);
+      });
+      expect(mapboxMocks.setHTML).not.toHaveBeenCalled();
+      expect(mapboxMocks.setPopup).toHaveBeenCalledTimes(1);
+    });
+
     /**
      * WhenLiveSourceAvailable_RendersMapCanvas
      *

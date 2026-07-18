@@ -49,13 +49,12 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e`, WO-ATLAS-001 audited PR #1073.
-The stale branch is 208 commits behind, has 16 unresolved review threads, spans Workbench, Forge,
-shell, package, lockfile, and test-runtime files, and cites a missing `ADR-0021`. It was closed without
-branch deletion or import.
+At `origin/main` `4852836e3ffb5b5856d515cec7d2627fe0e683cb`, direct 2026-07-17 R3 operator authority activated
+WO-ATLAS-002 after the prior audit declared its exact protected frontend scope. PropertyAtlas now
+renders boundary-derived situs content through popup text rather than popup HTML, and a hostile-markup
+regression proves the boundary. No renderer, package, routing, geometry, or persistence contract
+changed.
 
-The audit independently confirmed current main passes boundary-derived situs text to popup HTML.
-`WO-ATLAS-002 - PropertyAtlas Popup Text-Safety Repair` is the next bounded R3 slice. The Mapbox versus
-MapLibre renderer contract remains planned separately at WO-ATLAS-003.
+`WO-ATLAS-003 - Map Renderer Contract Decision` is next as a docs-only current-main decision.
 
-STOP_TYPE: `ATLAS_STALE_BRANCH_AUDITED_POPUP_SAFETY_REPAIR_ADMITTED`
+STOP_TYPE: `ATLAS_POPUP_TEXT_SAFETY_REPAIRED_RENDERER_CONTRACT_NEXT`

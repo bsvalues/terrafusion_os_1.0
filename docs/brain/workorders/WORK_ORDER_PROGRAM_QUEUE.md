@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-ATLAS-001
+**Authority:** WO-ATLAS-002
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,16 +13,11 @@
 
 ## Active Goal
 
-WO-ATLAS-001 is the active dependency-cleared node on base
-`bba42d1fe6c1a7bb39744b01fdd72da9c6f7460e`. The read-only audit proved PR #1073 is 208 commits
-behind current main, has 16 unresolved review threads, spans 11 product/package files, and cites an
-`ADR-0021` MapLibre lock that does not exist in live tracked canon. The stale PR was closed without
-deleting its branch or commits.
-
-The audit also confirmed a narrower current-main XSS defect in `PropertyAtlas` popup rendering.
-`WO-ATLAS-002` is the next bounded repair, but its machine record declares the exact frontend scope
-and fails closed as `protected-system-required` until explicit R3 frontend authority activates it.
-The broader renderer decision remains separate at `WO-ATLAS-003`.
+WO-ATLAS-002 is the active bounded R3 node on base
+`4852836e3ffb5b5856d515cec7d2627fe0e683cb`. Direct 2026-07-17 operator authority activated its exact
+frontend scope after WO-ATLAS-001 correctly exposed `protected-system-required`. The repair replaces
+boundary-derived popup HTML interpolation with text rendering and adds hostile-markup regression
+proof. The broader renderer decision remains separate at `WO-ATLAS-003`.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -44,9 +39,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-006 Shell Routing Contract Reconciliation | DONE | PR #1300 merged; static contract corrected and unscoped handoff gap recorded honestly |
 | WO-PORTFOLIO-007 Unscoped Workbench Tab Handoff | DONE | PR #1301 merged; canonical fallback mounted and validated tab intent preserved |
 | WO-PORTFOLIO-008 Open PR Backlog Reconciliation | DONE | PR #1302 merged; stale backlog reconciled and Atlas audit admitted |
-| **WO-ATLAS-001 MapLibre Migration Reality Audit** | **CURRENT - complete on protected merge** | #1073 closed as stale/unsafe; branch preserved; missing ADR and 16 unresolved threads recorded |
-| WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | NEXT - R3 FRONTEND AUTHORITY REQUIRED | Replace boundary-derived popup HTML with text-safe rendering and focused regression proof |
-| WO-ATLAS-003 Map Renderer Contract Decision | PLANNED | Decide Mapbox retention versus fresh MapLibre migration after the bounded security repair |
+| WO-ATLAS-001 MapLibre Migration Reality Audit | DONE | PR #1303 merged; #1073 closed as stale/unsafe and exact frontend boundary exposed |
+| **WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair** | **CURRENT - complete on protected merge** | Replace boundary-derived popup HTML with text-safe rendering and focused regression proof |
+| WO-ATLAS-003 Map Renderer Contract Decision | NEXT | Decide Mapbox retention versus fresh MapLibre migration after the bounded security repair |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
