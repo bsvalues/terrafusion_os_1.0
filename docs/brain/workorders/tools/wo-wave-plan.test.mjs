@@ -65,6 +65,19 @@ function optionsFor(records, overrides = {}) {
   };
 }
 
+function protectedPathDecision(workOrderId, authorizedFiles, overrides = {}) {
+  return {
+    id: `OWNER-${workOrderId}-R3-TEST`,
+    work_order: workOrderId,
+    status: 'active',
+    authority_class: 'R3-bounded-protected-path',
+    authorized_files: authorizedFiles,
+    effective_base_sha: 'a'.repeat(40),
+    expires_at: '2026-08-17T23:59:59Z',
+    ...overrides,
+  };
+}
+
 describe('wo-wave-plan', () => {
   it('validates numeric CLI options', () => {
     assert.throws(() => parseArgs(['--max-workers', '0']), /positive integer/);
@@ -74,6 +87,10 @@ describe('wo-wave-plan', () => {
     assert.throws(
       () => planWaves(registry([record('WO-TEST-AUTH')]), rules, { authority: 'NOT-A-RISK' }),
       /authority must be one of/
+    );
+    assert.equal(
+      parseArgs(['--owner-decisions', 'fixtures/owner-decisions.json']).ownerDecisions,
+      'fixtures/owner-decisions.json'
     );
   });
 
@@ -277,10 +294,156 @@ describe('wo-wave-plan', () => {
     const plan = planWaves(registry(records), rules, options);
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-023').reasons[0],
-      /protected-allowed-file:backend/
+      /missing-protected-path-authority:WO-TEST-023/
     );
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-024').reasons[0],
+      /protected-resource-reservation:environment:production/
+    );
+  });
+
+  it('accepts exact protected files under one active matching owner decision', () => {
+    const records = [
+      record('WO-TEST-023A', {
+        riskClass: 'R3',
+        allowedFiles: ['packages/gis-pro/README.md', 'packages/gis-pro/metadata.json'],
+      }),
+    ];
+    const options = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [
+          protectedPathDecision(records[0].id, [
+            'packages/gis-pro/README.md',
+            'packages/gis-pro/metadata.json',
+          ]),
+        ],
+      },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.deepEqual(plan.initialExecutableSet, ['WO-TEST-023A']);
+    assert.deepEqual(
+      plan.waves[0].workOrders.map(item => item.workOrderId),
+      ['WO-TEST-023A']
+    );
+    assert.match(
+      plan.waves[0].workOrders[0].explanation,
+      /protected paths authorized by OWNER-WO-TEST-023A-R3-TEST/
+    );
+  });
+
+  it('rejects wildcard and partial protected-path grants', () => {
+    const records = [
+      record('WO-TEST-023B', {
+        riskClass: 'R3',
+        allowedFiles: ['packages/gis-pro/README.md', 'packages/gis-pro/metadata.json'],
+      }),
+    ];
+    const wildcard = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [protectedPathDecision(records[0].id, ['packages/gis-pro/**'])],
+      },
+    });
+    assert.match(
+      planWaves(registry(records), rules, wildcard).excludedWorkOrders[0].reasons[0],
+      /non-exact-protected-path-authority:packages\/gis-pro/
+    );
+
+    const partial = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [protectedPathDecision(records[0].id, ['packages/gis-pro/README.md'])],
+      },
+    });
+    assert.match(
+      planWaves(registry(records), rules, partial).excludedWorkOrders[0].reasons[0],
+      /incomplete-protected-path-authority:packages\/gis-pro\/metadata.json/
+    );
+
+    const mixedWildcardAndExact = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [
+          protectedPathDecision(records[0].id, [
+            'packages/gis-pro/**',
+            'packages/gis-pro/README.md',
+            'packages/gis-pro/metadata.json',
+          ]),
+        ],
+      },
+    });
+    assert.match(
+      planWaves(registry(records), rules, mixedWildcardAndExact).excludedWorkOrders[0].reasons[0],
+      /non-exact-protected-path-authority:packages\/gis-pro/
+    );
+  });
+
+  it('rejects inactive, expired, conflicting, and insufficient protected-path decisions', () => {
+    const records = [
+      record('WO-TEST-023C', {
+        riskClass: 'R3',
+        allowedFiles: ['packages/gis-pro/README.md'],
+      }),
+    ];
+    const decision = protectedPathDecision(records[0].id, records[0].allowedFiles);
+    const cases = [
+      {
+        decisions: [{ ...decision, status: 'completed' }],
+        expected: /missing-protected-path-authority:WO-TEST-023C/,
+      },
+      {
+        decisions: [{ ...decision, expires_at: '2026-07-17T11:59:59Z' }],
+        expected: /expired-protected-path-authority/,
+      },
+      {
+        decisions: [decision, { ...decision, id: `${decision.id}-SECOND` }],
+        expected: /conflicting-protected-path-authority/,
+      },
+      {
+        decisions: [{ ...decision, authority_class: 'R2-bounded-protected-path' }],
+        expected: /insufficient-protected-path-authority/,
+      },
+    ];
+
+    for (const testCase of cases) {
+      const options = optionsFor(records, {
+        now: '2026-07-17T12:00:00Z',
+        ownerDecisions: { decisions: testCase.decisions },
+      });
+      assert.match(
+        planWaves(registry(records), rules, options).excludedWorkOrders[0].reasons[0],
+        testCase.expected
+      );
+    }
+  });
+
+  it('does not let protected-path authority authorize a protected environment', () => {
+    const records = [
+      record('WO-TEST-023D', {
+        riskClass: 'R3',
+        allowedFiles: ['packages/gis-pro/README.md'],
+      }),
+    ];
+    const options = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [protectedPathDecision(records[0].id, records[0].allowedFiles)],
+      },
+      reservations: {
+        repository: 'bsvalues/terrafusion_os_1.0',
+        candidateReservations: {
+          [records[0].id]: [
+            { id: 'PROD', kind: 'environment', value: 'production', scope: 'exact' },
+          ],
+        },
+      },
+    });
+
+    assert.match(
+      planWaves(registry(records), rules, options).excludedWorkOrders[0].reasons[0],
       /protected-resource-reservation:environment:production/
     );
   });
@@ -301,11 +464,11 @@ describe('wo-wave-plan', () => {
     );
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-026').reasons[0],
-      /protected-allowed-file:\.github\/actions/
+      /missing-protected-path-authority:WO-TEST-026/
     );
     assert.match(
       plan.excludedWorkOrders.find(item => item.workOrderId === 'WO-TEST-027').reasons[0],
-      /protected-allowed-file:scripts\/deploy/
+      /missing-protected-path-authority:WO-TEST-027/
     );
   });
 

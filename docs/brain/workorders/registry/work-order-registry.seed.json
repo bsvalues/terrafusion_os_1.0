@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-008",
+  "generatedBy": "WO-PORTFOLIO-009",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -2182,7 +2182,7 @@
       "program": "Portfolio Operator",
       "goal": "Align stale GIS package Mapbox setup guidance and integration metadata with the live Vite contract.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "ready",
       "dependencies": [
         {
           "id": "WO-ATLAS-008",
@@ -2274,14 +2274,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Blocked until WO-PORTFOLIO-009 makes an active exact-file owner decision mechanically visible to the wave planner; token values, runtime behavior, and other protected boundaries remain denied."
+        "notes": "OWNER-ATLAS-009-R3-MAPBOX-METADATA-ALIGNMENT-20260717 grants only the three exact protected package files and bounded Brain evidence. Token values, runtime behavior, and every other protected boundary remain denied."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
@@ -2295,7 +2295,7 @@
       "program": "Portfolio Operator",
       "goal": "Make explicit exact-file owner authority executable by the wave planner without weakening protected-path defaults.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-008",
@@ -2358,28 +2358,34 @@
           "name": "Wave planner tests",
           "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Wave planner exact authority proof",
           "command": "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "mechanical-proof",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-009-PROTECTED-PATH-AUTHORITY-PLANNER-INTEGRATION.md",
+          "description": "Fail-closed exact-file owner-decision evaluation, red-team matrix, Atlas successor grant, non-claims, and rollback."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
@@ -2391,7 +2397,7 @@
           "id": "WO-ATLAS-009",
           "reason": "After an active exact-file decision is mechanically recognized, the already-bounded GIS metadata alignment can move from blocked to ready.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {

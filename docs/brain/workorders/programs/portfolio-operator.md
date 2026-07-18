@@ -54,8 +54,10 @@ package's live browser source and types use `VITE_MAPBOX_ACCESS_TOKEN`. The READ
 metadata retain an unconsumed `MAPBOX_ACCESS_TOKEN` name and are classified as stale without package
 mutation or token access.
 
-`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is bounded but blocked by the wave
-planner's unconditional `packages/**` exclusion. `WO-PORTFOLIO-009 - Protected-Path Authority Planner
-Integration` is next as bounded R3 work and must preserve fail-closed default behavior.
+`WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` makes one active, sufficient,
+unexpired exact-work-order decision and exact protected file list mechanically visible to the wave
+planner. Wildcard, partial, inactive, expired, conflicting, or insufficient grants still fail closed.
+`WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` is next under the recorded exact-file
+R3 decision.
 
-STOP_TYPE: `GIS_TOKEN_METADATA_DISPOSITION_COMPLETE_AUTHORITY_ADAPTER_NEXT`
+STOP_TYPE: `PROTECTED_PATH_AUTHORITY_INTEGRATED_ATLAS_METADATA_ALIGNMENT_NEXT`
