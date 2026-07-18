@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-ATLAS-008
+**Authority:** WO-PORTFOLIO-010
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,10 @@
 
 ## Active Goal
 
-WO-ATLAS-009 is the active R3 exact-file alignment on base
-`0d8fc950449407d4cb0019793fd28f357fd4720e`. It aligns only the stale GIS package README/config
-token names with the live Vite contract and adds cwd-independent proof. WO-PORTFOLIO-010 is admitted
-as the next R1 portfolio synthesis node so the operator refreshes the backlog rather than parking
-after the Atlas sequence.
+WO-PORTFOLIO-010 completed live portfolio synthesis after the Atlas sequence. Sovereign Sync
+Workbook Tooling is selected as the only bounded dependency-cleared engineering program.
+`WO-SYNC-132` is active under exact-file R3 decision
+`OWNER-SYNC-132-R3-LOCK-READINESS-20260717`; `WO-SYNC-133` is next.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -47,9 +46,16 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-006 Mapbox Token Alias Contract Audit | DONE | PR #1308 merged; browser contract narrowed and GIS package metadata follow-up recorded |
 | WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup | DONE | PR #1309 merged; V2 fallback removed, V1/V2 guidance aligned, focused proof and build green |
 | WO-ATLAS-008 GIS Package Mapbox Token Metadata Disposition Audit | DONE | Two unconsumed package references classified as stale browser guidance/metadata |
-| **WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment** | **CURRENT - complete on protected merge** | README/config aligned to the live Vite contract with cwd-independent proof |
+| WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment | DONE | README/config aligned to the live Vite contract with cwd-independent proof |
 | WO-PORTFOLIO-009 Protected-Path Authority Planner Integration | DONE | Exact active owner decisions are executable without weakening protected-path denial |
-| **WO-PORTFOLIO-010 Post-Atlas Portfolio Reconciliation** | **NEXT - ready R1** | Refresh incomplete programs and admit the next bounded dependency-cleared slice |
+| **WO-PORTFOLIO-010 Post-Atlas Portfolio Reconciliation** | **DONE** | Sync selected; stale PR #1082 closed as superseded |
+
+### sovereign-sync-workbook-tooling (`GOAL-SYNC-WORKBOOK-TOOLING` / `LOOP-SYNC-WORKBOOK-TOOLING`)
+| WO | State | Notes |
+|----|-------|-------|
+| WO-SYNC-057 / 058 / 130 / 131 | DONE | Boundary, Gate 14, admission, and terminalization proof established |
+| **WO-SYNC-132 C3 Lock-Readiness Checker** | **CURRENT - active R3** | Built-fresh read-only checker and synthetic fixtures only |
+| WO-SYNC-133 Workbook Lifecycle Orchestrator Check | NEXT | Starts only after C3 merge and post-merge verification |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
@@ -157,7 +163,6 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 | benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
-| sovereign-sync-workbook-tooling | WO-SYNC-132 implementation | SW-05 / recorded owner-selection gate | no active program authority | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | local-omen-runtime-repair | WO-LOCAL-093 | SW-09 | runtime diagnosis/repair authority required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
