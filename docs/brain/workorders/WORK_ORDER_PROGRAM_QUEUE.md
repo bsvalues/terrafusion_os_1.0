@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-ATLAS-005
+**Authority:** WO-ATLAS-006
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,13 @@
 
 ## Active Goal
 
-WO-ATLAS-005 is the active bounded R3 presentation-safety node on base
-`b6b36430a1fd9fdeae171abb08959193fc290712`. It replaces all eight audited GeoForge popup HTML sinks
-with static DOM and text-only feature values, backed by focused hostile-input proof. WO-ATLAS-006 is
-admitted as the docs-only Mapbox token alias contract audit; no secret, provider behavior, package,
-runtime configuration, or frontend source change is included in that successor.
+WO-ATLAS-006 is the active docs-only R1 token-contract audit on base
+`80d2d0788f341b86e77582608d6e9321eb24f7a7`. It confirms `VITE_MAPBOX_ACCESS_TOKEN` as canonical,
+classifies three live GeoForge legacy-alias references, and inspects no token value. WO-ATLAS-007 is
+admitted as the bounded R3 source-and-test cleanup; no token value, provider behavior, package,
+lockfile, CI/deployment, county, PACS, SQL, live service, or production resource is included. The
+standing portfolio authority admits the exact file set while `wo-query` truthfully retains its
+`protected-system-required` classification for frontend work.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -43,8 +45,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-002 PropertyAtlas Popup Text-Safety Repair | DONE | PR #1304 merged; boundary-derived situs now renders as popup text with hostile-input proof |
 | WO-ATLAS-003 Map Renderer Contract Decision | DONE | PR #1305 merged; Mapbox retained as current baseline with provider-neutral migration contract |
 | WO-ATLAS-004 GeoForge Popup Content Safety Audit | DONE | PR #1306 merged; eight API-derived popup HTML sites inventoried with exact repair contract |
-| **WO-ATLAS-005 GeoForge Popup DOM Safety Repair** | **CURRENT - complete on protected merge** | All eight HTML paths replaced with static DOM/textContent and hostile-input proof |
-| WO-ATLAS-006 Mapbox Token Alias Contract Audit | NEXT - docs-only R1 | Inventory canonical token name, compatibility aliases, guidance, and bounded cleanup requirements |
+| WO-ATLAS-005 GeoForge Popup DOM Safety Repair | DONE | PR #1307 merged; all eight HTML paths replaced with static DOM/textContent and hostile-input proof |
+| **WO-ATLAS-006 Mapbox Token Alias Contract Audit** | **CURRENT - complete on protected merge** | Canonical name, three live alias references, historical exclusions, and exact cleanup contract recorded |
+| WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup | NEXT - bounded R3 | Remove V2 fallback, correct V1/V2 guidance, and add focused live-source proof |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |

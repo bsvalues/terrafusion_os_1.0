@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-005",
+  "generatedBy": "WO-ATLAS-006",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1832,7 +1832,7 @@
       "program": "Portfolio Operator",
       "goal": "Inventory current Mapbox token names and guidance, then define an exact non-secret cleanup contract.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-005",
@@ -1845,9 +1845,7 @@
       "allowedSystems": [
         {
           "name": "Read-only Mapbox token contract inspection and Brain evidence",
-          "paths": [
-            "docs/brain/workorders/**"
-          ]
+          "paths": ["docs/brain/workorders/**"]
         }
       ],
       "blockedSystems": [
@@ -1892,23 +1890,36 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "contract-audit",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-006-MAPBOX-TOKEN-ALIAS-CONTRACT-AUDIT.md",
+          "description": "Canonical token name, three live GeoForge alias references, historical exclusions, and exact cleanup contract recorded without token-value access."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Stop on secret access, token value inspection, runtime/config/source mutation, provider behavior, package/lockfile, CI/deployment, or protected resources."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-007",
+          "reason": "The audit isolates three live GeoForge legacy-alias references and defines a source-and-test cleanup with no token-value or provider change.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -1922,6 +1933,123 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "WO-ATLAS-003 token-contract finding and WO-ATLAS-005 protected repair closeout",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-007",
+      "title": "GeoForge Mapbox Token Alias Cleanup",
+      "program": "Portfolio Operator",
+      "goal": "Remove the deprecated GeoForge Mapbox token alias and align missing-token guidance to the canonical contract.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-006",
+          "status": "satisfied",
+          "evidence": [
+            "Canonical VITE_MAPBOX_ACCESS_TOKEN contract and exact three-reference GeoForge cleanup scope recorded"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "GeoForge token-name source cleanup, focused contract test, and Brain evidence",
+          "paths": [
+            "frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx",
+            "frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx",
+            "frontend/apps/os-shell/src/pages/forge/geo/__tests__/mapboxTokenContract.test.ts",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Token values, environment files, provider/renderer behavior, package/lockfile, CI/deployment, backend, geometry, valuation, county, PACS, SQL, live services, production resources"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/pages/forge/geo/GeoForgeMap.tsx",
+        "frontend/apps/os-shell/src/pages/forge/geo/v2/GeoForgeV2Map.tsx",
+        "frontend/apps/os-shell/src/pages/forge/geo/__tests__/mapboxTokenContract.test.ts",
+        "docs/brain/workorders/active/WO-ATLAS-007-geoforge-mapbox-token-alias-cleanup.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-007-GEOFORGE-MAPBOX-TOKEN-ALIAS-CLEANUP.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".env*",
+        "frontend/package.json",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**",
+        "packages/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "implementation",
+          "description": "V2 legacy alias fallback removed and V1/V2 missing-token guidance names only VITE_MAPBOX_ACCESS_TOKEN."
+        },
+        {
+          "kind": "regression",
+          "description": "Focused test proves canonical live GeoForge name and zero VITE_MAPBOX_TOKEN source references from root and frontend working directories."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused token-contract test",
+          "command": "corepack pnpm --dir frontend exec vitest run apps/os-shell/src/pages/forge/geo/__tests__/mapboxTokenContract.test.ts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frontend type-check",
+          "command": "corepack pnpm --dir frontend run type-check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frontend production build",
+          "command": "corepack pnpm run frontend:build",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on token-value or environment access, provider/renderer behavior, package/lockfile, CI/deployment, backend, protected resource, or scope expansion beyond the exact three frontend files and Brain evidence."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio operator authority covers this exact bounded R3 token-name cleanup; token values and protected boundaries remain denied."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-006 exact live-source token alias contract audit",
         "schemaVersion": "0.1.0"
       }
     }
