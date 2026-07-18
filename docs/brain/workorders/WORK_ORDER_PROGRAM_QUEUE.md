@@ -14,8 +14,9 @@
 ## Active Goal
 
 WO-ATLAS-006 is the active docs-only R1 token-contract audit on base
-`80d2d0788f341b86e77582608d6e9321eb24f7a7`. It confirms `VITE_MAPBOX_ACCESS_TOKEN` as canonical,
-classifies three live GeoForge legacy-alias references, and inspects no token value. WO-ATLAS-007 is
+`80d2d0788f341b86e77582608d6e9321eb24f7a7`. It confirms `VITE_MAPBOX_ACCESS_TOKEN` as the canonical
+browser/Vite name, classifies three live GeoForge legacy-alias references plus two inconsistent GIS
+package setup/metadata references, and inspects no token value. WO-ATLAS-007 is
 admitted as the bounded R3 source-and-test cleanup; no token value, provider behavior, package,
 lockfile, CI/deployment, county, PACS, SQL, live service, or production resource is included. The
 standing portfolio authority admits the exact file set while `wo-query` truthfully retains its
@@ -46,7 +47,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-003 Map Renderer Contract Decision | DONE | PR #1305 merged; Mapbox retained as current baseline with provider-neutral migration contract |
 | WO-ATLAS-004 GeoForge Popup Content Safety Audit | DONE | PR #1306 merged; eight API-derived popup HTML sites inventoried with exact repair contract |
 | WO-ATLAS-005 GeoForge Popup DOM Safety Repair | DONE | PR #1307 merged; all eight HTML paths replaced with static DOM/textContent and hostile-input proof |
-| **WO-ATLAS-006 Mapbox Token Alias Contract Audit** | **CURRENT - complete on protected merge** | Canonical name, three live alias references, historical exclusions, and exact cleanup contract recorded |
+| **WO-ATLAS-006 Mapbox Token Alias Contract Audit** | **CURRENT - complete on protected merge** | Browser canonical name, three GeoForge alias references, two package metadata references, and exact cleanup contract recorded |
 | WO-ATLAS-007 GeoForge Mapbox Token Alias Cleanup | NEXT - bounded R3 | Remove V2 fallback, correct V1/V2 guidance, and add focused live-source proof |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)

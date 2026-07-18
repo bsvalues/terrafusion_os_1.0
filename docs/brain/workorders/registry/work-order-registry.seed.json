@@ -1903,7 +1903,7 @@
         {
           "kind": "contract-audit",
           "location": "docs/brain/workorders/evidence/WO-ATLAS-006-MAPBOX-TOKEN-ALIAS-CONTRACT-AUDIT.md",
-          "description": "Canonical token name, three live GeoForge alias references, historical exclusions, and exact cleanup contract recorded without token-value access."
+          "description": "Canonical browser/Vite token name, three live GeoForge alias references, two GIS package setup/metadata references, historical exclusions, and exact cleanup contract recorded without token-value access."
         }
       ],
       "stopConditions": [

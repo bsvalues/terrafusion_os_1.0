@@ -50,8 +50,9 @@ action, or other true wall still requires its own authority.
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
 At `origin/main` `80d2d0788f341b86e77582608d6e9321eb24f7a7`, WO-ATLAS-006 confirms the canonical
-`VITE_MAPBOX_ACCESS_TOKEN` name, classifies exactly three live GeoForge legacy-alias references, and
-defines a cleanup contract without reading token values or mutating runtime configuration.
+browser/Vite `VITE_MAPBOX_ACCESS_TOKEN` name, classifies exactly three live GeoForge legacy-alias
+references plus two inconsistent GIS package setup/metadata references, and defines a cleanup
+contract without reading token values or mutating runtime configuration.
 
 `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` is next as bounded R3 source-and-test work.
 

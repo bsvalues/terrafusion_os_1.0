@@ -542,13 +542,16 @@ from program evidence.
 | Current WO | `WO-ATLAS-006 - Mapbox Token Alias Contract Audit` complete on protected merge |
 | Next WO | `WO-ATLAS-007 - GeoForge Mapbox Token Alias Cleanup` |
 
-WO-ATLAS-006 confirms `VITE_MAPBOX_ACCESS_TOKEN` as the canonical live name, classifies exactly three
-GeoForge legacy-alias references, and separates live guidance from immutable historical records
-without inspecting a token value.
+WO-ATLAS-006 confirms `VITE_MAPBOX_ACCESS_TOKEN` as the canonical live browser/Vite name, classifies
+exactly three GeoForge legacy-alias references, records two inconsistent GIS package setup/metadata
+references, and separates live guidance from immutable historical records without inspecting a token
+value.
 
 WO-ATLAS-007 next removes the V2 alias fallback, corrects V1/V2 missing-state guidance, and adds
 focused source-contract proof without changing provider, renderer, token value, package, or runtime
 configuration behavior beyond removal of the deprecated alias.
+The separate GIS package setup/metadata inconsistency remains a portfolio disposition candidate after
+the GeoForge cleanup.
 
 ---
 
