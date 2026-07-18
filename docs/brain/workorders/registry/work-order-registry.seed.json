@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-006",
+  "generatedBy": "WO-ATLAS-007",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -1942,7 +1942,7 @@
       "program": "Portfolio Operator",
       "goal": "Remove the deprecated GeoForge Mapbox token alias and align missing-token guidance to the canonical contract.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-006",
@@ -2008,17 +2008,127 @@
           "name": "Focused token-contract test",
           "command": "corepack pnpm --dir frontend exec vitest run apps/os-shell/src/pages/forge/geo/__tests__/mapboxTokenContract.test.ts",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Frontend type-check",
           "command": "corepack pnpm --dir frontend run type-check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Frontend production build",
           "command": "corepack pnpm run frontend:build",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-proof",
+          "location": "docs/brain/workorders/evidence/WO-ATLAS-007-GEOFORGE-MAPBOX-TOKEN-ALIAS-CLEANUP.md",
+          "description": "Canonical-only GeoForge lookup and guidance, cwd-independent source proof, frontend type-check, and production build recorded without token-value access."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on token-value or environment access, provider/renderer behavior, package/lockfile, CI/deployment, backend, protected resource, or scope expansion beyond the exact three frontend files and Brain evidence."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-ATLAS-008",
+          "reason": "Two GIS package setup/metadata references remain inconsistent with the live browser contract and require evidence-first disposition.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio operator authority covers this exact bounded R3 token-name cleanup; token values and protected boundaries remain denied."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-ATLAS-006 exact live-source token alias contract audit",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-ATLAS-008",
+      "title": "GIS Package Mapbox Token Metadata Disposition Audit",
+      "program": "Portfolio Operator",
+      "goal": "Classify the GIS package MAPBOX_ACCESS_TOKEN setup and metadata references before any package correction.",
+      "riskClass": "R1",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-ATLAS-007",
+          "status": "satisfied",
+          "evidence": [
+            "GeoForge live browser alias removed while two GIS package setup/metadata references remain explicitly unresolved"
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "GIS package token setup and metadata contract inspection and Brain evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Token values, environment files, package source or metadata mutation, provider behavior, CI/deployment, backend, county, PACS, SQL, live services, production resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-ATLAS-008-gis-package-mapbox-token-metadata-audit.md",
+        "docs/brain/workorders/evidence/WO-ATLAS-008-GIS-PACKAGE-MAPBOX-TOKEN-METADATA-AUDIT.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".env*",
+        "packages/**",
+        "frontend/**",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "audit",
+          "description": "Determine whether GIS package README and terrafusion-config token names have a tracked consumer or operational authority."
+        },
+        {
+          "kind": "decision-contract",
+          "description": "Define preserve, correct, separate, or retire disposition with exact scope, proof, non-claims, and rollback."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
           "required": true,
           "result": "pending"
         },
@@ -2033,7 +2143,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Stop on token-value or environment access, provider/renderer behavior, package/lockfile, CI/deployment, backend, protected resource, or scope expansion beyond the exact three frontend files and Brain evidence."
+          "description": "Stop on token-value or environment access, package mutation, provider behavior, CI/deployment, backend, protected resource, or scope expansion beyond Brain evidence."
         }
       ],
       "nextCandidates": [],
@@ -2045,11 +2155,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Standing portfolio operator authority covers this exact bounded R3 token-name cleanup; token values and protected boundaries remain denied."
+        "notes": "Standing portfolio operator authority covers this docs-only disposition audit; package files, token values, and protected boundaries remain denied."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
-        "source": "WO-ATLAS-006 exact live-source token alias contract audit",
+        "source": "WO-ATLAS-006 package metadata review finding and WO-ATLAS-007 bounded browser cleanup",
         "schemaVersion": "0.1.0"
       }
     }
