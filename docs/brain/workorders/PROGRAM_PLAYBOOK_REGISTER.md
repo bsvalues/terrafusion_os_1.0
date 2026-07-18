@@ -3,7 +3,7 @@
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
-**Date:** 2026-07-15
+**Date:** 2026-07-18
 **Authority:** TerraFusion Brain / WO-WOE-009
 **Classification:** Operator Doctrine — canonical planning surface
 
@@ -46,7 +46,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ---
 
-## Known Blockers (as of 2026-07-15)
+## Known Blockers (as of 2026-07-18)
 
 | Blocker | Blocking | Stop Wall |
 |---------|---------|-----------|
