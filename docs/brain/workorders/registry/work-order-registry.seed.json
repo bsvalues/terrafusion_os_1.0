@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-LOCAL-094",
+  "generatedBy": "WO-LOCAL-095",
   "generatedAt": "2026-07-18T00:00:00Z",
-  "description": "Local OMEN Docker data-preservation-gate-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "description": "Local OMEN historical-volume and Docker-engine-recovery-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3186,6 +3186,125 @@
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
         "source": "Owner-authorized Docker WSL path repair envelope evaluated against live local storage, junction, WSL, Docker, and historical volume evidence",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-LOCAL-095",
+      "title": "Historical Docker Data Volume Recovery and Verified Remount",
+      "program": "Local OMEN Runtime Repair",
+      "goal": "Verify the reconnected historical Docker data volume, recover Docker against preserved state, and re-observe OMEN proof surfaces without container recreation.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-LOCAL-094",
+          "status": "satisfied",
+          "evidence": [
+            "WO-LOCAL-094 preserved the unchanged junction and recorded the exact historical volume identity required for safe recovery."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded historical Docker volume and failed-engine recovery",
+          "paths": [
+            "exact historical Windows volume identity and existing Docker data VHDX",
+            "unchanged Docker WSL junction",
+            "failed Docker Desktop and docker-desktop WSL engine processes",
+            "read-only Docker container, image, volume, network, and port observations"
+          ]
+        },
+        {
+          "name": "Local OMEN and portfolio governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Container or image recreation, build, pull, generic runtime mutation, volume/network changes, database access, credentials, external resources, county, PACS, production, product, package, CI, or deployment changes"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-095-historical-volume-recovery.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-095-HISTORICAL-VOLUME-RECOVERY.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "historical-volume-and-engine-recovery",
+          "description": "Match the exact historical volume identity, preserve the Docker data VHDX, recover the failed engine once, and classify the named OMEN proof state without container recreation or secret access."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "historical-volume-engine-recovery-and-container-boundary",
+          "location": "docs/brain/workorders/evidence/WO-LOCAL-095-HISTORICAL-VOLUME-RECOVERY.md",
+          "description": "Exact volume identity, Docker data VHDX, bounded failed-engine recovery, preserved Docker inventory, absent OMEN proof surfaces, and follow-on container-reconstitution boundary."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "Docker Engine is healthy against preserved state, but the named OMEN proof containers and application image are absent; container recreation/build requires a new exact runtime envelope."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The bounded historical-volume and failed-engine recovery completed. Routine governance evidence and PR lifecycle remain authorized; container recreation/build is not."
+      },
+      "provenance": {
+        "createdAt": "2026-07-18T00:00:00Z",
+        "source": "Live exact-volume, Docker data VHDX, Docker Engine, container, image, volume, network, and port evidence under the authorized WO-LOCAL-095 recovery envelope",
         "schemaVersion": "0.1.0"
       }
     }

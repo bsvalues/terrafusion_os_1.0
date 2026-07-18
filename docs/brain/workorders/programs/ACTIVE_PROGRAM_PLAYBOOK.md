@@ -536,13 +536,13 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Local OMEN Runtime Repair preservation gate completed |
-| Current WO | `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation` complete |
-| Next WO | Protected candidate: `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount` |
+| Selected program | Local OMEN Runtime Repair historical-volume recovery completed |
+| Current WO | `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount` complete |
+| Next WO | Protected candidate: `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution` |
 
-WO-LOCAL-094 proved that the historical `E:` Docker data volume is physically disconnected. No
-preserved Docker data VHDX exists on the connected system disk, so the data-preservation gate blocked
-junction mutation and Docker startup. Recovery now requires the exact historical volume.
+WO-LOCAL-095 proved that the returned `E:` volume matches the historical GUID and recovered Docker
+Desktop once against the preserved data VHDX. The engine is healthy, but the named OMEN Postgres and
+application proof containers are absent and the application proof image is unavailable.
 
 ---
 
@@ -553,24 +553,24 @@ junction mutation and Docker startup. Recovery now requires the exact historical
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | PRESERVATION BLOCKED - HISTORICAL VOLUME REQUIRED |
-| Current | `WO-LOCAL-094` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
-| Next | Proposed `WO-LOCAL-095` |
+| Status | ENGINE RECOVERED - PROOF CONTAINER RECONSTITUTION BLOCKED |
+| Current | `WO-LOCAL-095` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Next | Proposed `WO-LOCAL-096` |
 
 ### Current Facts
 
-- The junction targets historical volume `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` at `E:\DockerData`.
-- Only the internal system disk is connected; the historical volume is absent.
-- No Docker data VHDX or preserved copy exists on connected storage.
-- Container existence and health remain unknown because Docker was not started against empty state.
+- The returned `E:` volume exactly matches `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` and contains the
+  preserved Docker data VHDX at `E:\DockerData`.
+- Docker Desktop recovered after one bounded failed-engine restart and now runs against preserved state.
+- Existing runtime-operator state, images, volumes, and networks survived.
+- The named OMEN database and application proof containers are absent; the application image is absent.
 - Ports `15432`, `3100`, and `3101` are clear.
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
-Rule: Preserve existing state. Reconnect and GUID-match the historical volume before any drive-letter,
-junction, or Docker start action. Factory reset, fresh state, format, prune, generic cleanup,
-container recreation, persistence deletion, LAN exposure, TerraFusion Postgres, secrets, and
-external operational resources remain blocked.
+Rule: Preserve existing state. Any proof-container recreation must use exact named services and retain
+the existing Postgres data volume. Factory reset, format, prune, generic cleanup, persistence deletion,
+LAN exposure, TerraFusion Postgres, secrets, and external operational resources remain blocked.
 
 ---
 
