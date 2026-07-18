@@ -281,10 +281,12 @@ installs auto-proceed.
 Goal:     Inspect Local OMEN runtime repair state without authorizing runtime mutation.
 Program:  Local OMEN Runtime Repair
 File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
-Success:  Operator sees WO-LOCAL-093 as a diagnosis-first runtime repair gate.
+Success:  Operator sees WO-LOCAL-094 complete and WO-LOCAL-095 protected by historical-volume recovery.
 ```
 
-**Current state:** Blocked at runtime repair gate.
+**Current state:** Preservation blocked. The historical Docker data volume must be reconnected and
+matched to `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` before drive-letter, junction, or Docker start
+action.
 
 **Command alias:** `/local-omen-status`
 

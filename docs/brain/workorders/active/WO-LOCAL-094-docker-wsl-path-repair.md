@@ -23,6 +23,7 @@ the named OMEN containers without deleting, replacing, or silently recreating Do
 - `docs/brain/workorders/active/WO-LOCAL-094-docker-wsl-path-repair.md`
 - `docs/brain/workorders/evidence/WO-LOCAL-094-DOCKER-WSL-PATH-REPAIR.md`
 - `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
 - `docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md`
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
@@ -66,6 +67,7 @@ was performed.
     "docs/brain/workorders/active/WO-LOCAL-094-docker-wsl-path-repair.md",
     "docs/brain/workorders/evidence/WO-LOCAL-094-DOCKER-WSL-PATH-REPAIR.md",
     "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+    "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
     "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
     "docs/brain/workorders/programs/portfolio-operator.md",
     "docs/brain/workorders/registry/work-order-registry.seed.json"

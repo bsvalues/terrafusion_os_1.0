@@ -135,7 +135,7 @@ remain unchanged.
 | `corepack pnpm run type-check` | PASS |
 | Phase 8.3 core tool tests | PASS - 56/56 |
 | Brain protected-path and hardcoded-port checks | PASS |
-| Brain Work Order scope check | PASS - all nine changed files authorized |
+| Brain Work Order scope check | PASS - all ten changed files authorized after review remediation |
 | Brain aggregate write-lane check | BLOCK on unchanged repository baseline; no suite or implementation files changed by WO-LOCAL-094 |
 
 The fresh validation worktree required repository-local packages for the planner. A frozen bootstrap
@@ -144,7 +144,7 @@ ran with `corepack pnpm install --frozen-lockfile --ignore-scripts`. SHA-256 has
 (`D23687DD...15489A0`) were identical before and after, and no tracked dependency file changed.
 
 The Brain aggregate write-lane failure is not hidden or waived. Its scoped output independently
-confirms that every WO-LOCAL-094 change is inside the authorized nine-file governance set and that no
+confirms that every WO-LOCAL-094 change is inside the authorized governance set and that no
 suite was touched. The repository's unchanged write-lane baseline remains outside this bounded
 evidence Work Order.
 
