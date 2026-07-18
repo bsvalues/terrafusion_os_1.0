@@ -349,7 +349,7 @@ describe('wo-wave-plan', () => {
     });
     assert.match(
       planWaves(registry(records), rules, wildcard).excludedWorkOrders[0].reasons[0],
-      /incomplete-protected-path-authority:packages\/gis-pro\/readme.md/
+      /non-exact-protected-path-authority:packages\/gis-pro/
     );
 
     const partial = optionsFor(records, {
@@ -361,6 +361,23 @@ describe('wo-wave-plan', () => {
     assert.match(
       planWaves(registry(records), rules, partial).excludedWorkOrders[0].reasons[0],
       /incomplete-protected-path-authority:packages\/gis-pro\/metadata.json/
+    );
+
+    const mixedWildcardAndExact = optionsFor(records, {
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: {
+        decisions: [
+          protectedPathDecision(records[0].id, [
+            'packages/gis-pro/**',
+            'packages/gis-pro/README.md',
+            'packages/gis-pro/metadata.json',
+          ]),
+        ],
+      },
+    });
+    assert.match(
+      planWaves(registry(records), rules, mixedWildcardAndExact).excludedWorkOrders[0].reasons[0],
+      /non-exact-protected-path-authority:packages\/gis-pro/
     );
   });
 

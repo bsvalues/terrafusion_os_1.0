@@ -286,6 +286,12 @@ function protectedPathAuthority(record, protectedPaths, ownerDecisions, authorit
   try {
     for (const [index, value] of decision.authorized_files.entries()) {
       const normalized = normalizePath(value, `${decision.id}.authorized_files[${index}]`);
+      if (
+        normalized.scope !== 'exact' &&
+        protectedReservationReason({ kind: 'path', ...normalized })
+      ) {
+        return { reason: `non-exact-protected-path-authority:${normalized.value}` };
+      }
       if (normalized.scope === 'exact') exactFiles.add(normalized.value);
     }
   } catch {
