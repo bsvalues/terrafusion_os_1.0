@@ -84,7 +84,7 @@ RUNTIME IMPORT
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
 | backend-excellence | 001-013 | no automatic successor | new bounded program authority | CLOSED |
 | property-workbench | 001-011 | no automatic restart | new product-phase authority | CLOSED |
-| terrapilot-maturity | P1-P15 baseline | P16 | product/runtime promotion authority | PARKED |
+| terrapilot-maturity | P1-P15 baseline | P16 design-only | strategic design authorization; L3/L4 later require separate runtime/promotion authority | PARKED |
 | sovereign-sync-workbook-tooling | 057, 058, 130, 131 | SYNC-132 | recorded program-selection gate | PARKED |
 | work-order-engine | 001-014 including 013 report | no successor | new registry/runtime program authority | CLOSED |
 | brain-operator | 001-009 | no successor | new implementation program authority | CLOSED |
