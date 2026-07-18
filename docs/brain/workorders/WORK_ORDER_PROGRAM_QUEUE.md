@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-010
+**Authority:** WO-PORTFOLIO-011
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,9 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-010 completed live portfolio synthesis after the Atlas sequence. Sovereign Sync
-Workbook Tooling is selected as the only bounded dependency-cleared engineering program.
-`WO-SYNC-132` is active under exact-file R3 decision
-`OWNER-SYNC-132-R3-LOCK-READINESS-20260717`; `WO-SYNC-133` is next.
+WO-PORTFOLIO-011 reconciled cross-repository truth. Canonical `bsvalues/terrafusion-os` already
+completed WO-SYNC-132 through WO-SYNC-155, so duplicate Sync implementation is closed and its stale
+decision is consumed.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -49,13 +48,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-ATLAS-009 GIS Package Mapbox Token Metadata Alignment | DONE | README/config aligned to the live Vite contract with cwd-independent proof |
 | WO-PORTFOLIO-009 Protected-Path Authority Planner Integration | DONE | Exact active owner decisions are executable without weakening protected-path denial |
 | **WO-PORTFOLIO-010 Post-Atlas Portfolio Reconciliation** | **DONE** | Sync selected; stale PR #1082 closed as superseded |
+| **WO-PORTFOLIO-011 Cross-Repository Sync Truth Reconciliation** | **DONE** | Target-repository proof prevented duplicate Sync work and established the current protected portfolio boundary |
 
 ### sovereign-sync-workbook-tooling (`GOAL-SYNC-WORKBOOK-TOOLING` / `LOOP-SYNC-WORKBOOK-TOOLING`)
 | WO | State | Notes |
 |----|-------|-------|
 | WO-SYNC-057 / 058 / 130 / 131 | DONE | Boundary, Gate 14, admission, and terminalization proof established |
-| **WO-SYNC-132 C3 Lock-Readiness Checker** | **CURRENT - active R3** | Built-fresh read-only checker and synthetic fixtures only |
-| WO-SYNC-133 Workbook Lifecycle Orchestrator Check | NEXT | Starts only after C3 merge and post-merge verification |
+| WO-SYNC-132 through WO-SYNC-155 | DONE | Verified on canonical sovereign `origin/main`; PR #156 closed the program |
 
 ### governed-multi-agent-operator-activation (`GOAL-MAO-001` / `LOOP-MAO-001`)
 | WO | State | Notes |
@@ -167,10 +166,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-007 admission:** `ACTIVE`. Protected Azure, deployment,
-county-production, runtime-repair, product-promotion, protected-data, and sovereign-import boundaries
-remain parked, but the bounded R3 Workbench handoff correction is executable and does not cross any
-of them.
+**Portfolio result after WO-PORTFOLIO-011 reconciliation:** `TRUE_PORTFOLIO_BOUNDARY`. The sovereign
+Sync chain is already closed. Every remaining incomplete candidate requires deployment or live Azure,
+county/PACS/protected-data authority, runtime repair/import, product promotion, or a new product-phase
+grant. The registry and wave planner return no executable node inside current authority.
 
 ---
 

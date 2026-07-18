@@ -457,7 +457,7 @@
       "goal": "GOAL-SYNC-WORKBOOK-TOOLING",
       "loop": "LOOP-SYNC-WORKBOOK-TOOLING",
       "work_order": "WO-SYNC-132",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-synthetic-lock-readiness-tool",
       "effective_base_sha": "58c27cb186f7d56fbf7cd941599e6fe61878a2b8",
       "expires_at": "2026-08-17T23:59:59Z",
@@ -500,7 +500,9 @@
         "terminal_work_order": "WO-SYNC-132",
         "effective_on_merge": true,
         "evidence": "docs/brain/workorders/evidence/WO-SYNC-132-C3-LOCK-READINESS-CHECKER.md",
-        "merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR"
+        "merge_commit_source": "Sovereign repository PR #142 and origin/main verification",
+        "authority_consumed": true,
+        "disposition": "Superseded before implementation: canonical bsvalues/terrafusion-os already contained WO-SYNC-132 and later closed at WO-SYNC-155."
       }
     },
     {

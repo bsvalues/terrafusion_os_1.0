@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 C3 Lock-Readiness Checker | NO - selected bounded R3 synthetic-only implementation | `program`, `once`, `evidence` |
+| `program-next` | Portfolio Operator | Cross-repository reconciliation after sovereign Sync closeout | NO - reconcile remaining candidates | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
@@ -28,9 +28,9 @@ resolves.
 | `backend-status` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - status/evidence only | `evidence`, `discovery` |
 | `backend-next` | P3 | Owner/WOE lane selection after closeout | YES - no automatic backend continuation | `once`, `evidence` |
 | `backend-stop` | P3 | NONE | YES — operator stop command | `once` |
-| `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | NO - active exact-file R3 slice | `program`, `once`, `evidence`, `discovery` |
-| `sync-status` | Sovereign Sync Workbook Tooling | WO-SYNC-132 | NO - active | `evidence`, `discovery` |
-| `sync-next` | Sovereign Sync Workbook Tooling | WO-SYNC-132 then WO-SYNC-133 | NO - continue after merge inside recorded authority | `program`, `once`, `evidence` |
+| `sync-workbook-tooling` | Sovereign Sync Workbook Tooling | CLOSED at WO-SYNC-155 in canonical sovereign repo | YES - program closed | `once`, `evidence`, `discovery` |
+| `sync-status` | Sovereign Sync Workbook Tooling | CLOSED at WO-SYNC-155 | YES - status/evidence only | `evidence`, `discovery` |
+| `sync-next` | Sovereign Sync Workbook Tooling | Portfolio reconciliation | YES - no duplicate continuation | `once`, `evidence` |
 | `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |
 | `property-workbench` | P4 | CLOSED at WO-WORKBENCH-011 | YES - do not restart closed Workbench evidence chain | `once`, `program`, `evidence`, `discovery` |
 | `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |

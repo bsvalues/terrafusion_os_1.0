@@ -20,6 +20,8 @@ conflict-resolution semantics and mechanical-enforcement boundary.
 
 ## Subordinate Registers
 
+- [`PATH_CANON_REGISTER.md`](PATH_CANON_REGISTER.md) is the repository-identity register for
+  cross-repository dispatch. A repository name alone never establishes path or remote identity.
 - [`docs/brain/workorders/CANON_INDEX.md`](docs/brain/workorders/CANON_INDEX.md) is the subordinate
   Work Order governance register. It records controlling documents but cannot redefine this root
   precedence.
