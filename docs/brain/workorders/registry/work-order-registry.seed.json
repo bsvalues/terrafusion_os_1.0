@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-ATLAS-009",
+  "generatedBy": "WO-PORTFOLIO-010",
   "generatedAt": "2026-07-17T00:00:00Z",
   "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
@@ -2309,7 +2309,7 @@
       "program": "Portfolio Operator",
       "goal": "Refresh canonical portfolio state after the Atlas metadata sequence and admit the highest-value bounded dependency-cleared slice.",
       "riskClass": "R1",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-ATLAS-009",
@@ -2331,6 +2331,7 @@
         }
       ],
       "allowedFiles": [
+        ".governance/owner-decisions.json",
         "docs/brain/workorders/active/WO-PORTFOLIO-010-post-atlas-portfolio-reconciliation.md",
         "docs/brain/workorders/evidence/WO-PORTFOLIO-010-POST-ATLAS-PORTFOLIO-RECONCILIATION.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -2341,7 +2342,6 @@
         "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "blockedFiles": [
-        ".governance/**",
         "packages/**",
         "frontend/**",
         "backend/**",
@@ -2363,29 +2363,42 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Brain query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Wave planner",
           "command": "node docs/brain/workorders/tools/wo-wave-plan.mjs --json --authority R3",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "portfolio-reconciliation",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-010-POST-ATLAS-PORTFOLIO-RECONCILIATION.md",
+          "description": "Live candidate classification, stale PR disposition, exact Sync selection boundary, non-claims, and next routing."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Stop only if every useful incomplete candidate crosses a true protected boundary or canonical sources create an unresolved strategic conflict."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SYNC-132",
+          "reason": "The synthetic-only C3 checker is the highest-value incomplete dependency-cleared slice outside every remaining production, county, runtime-import, deployment, protected-data, and promotion boundary.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -2394,7 +2407,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Standing portfolio operator authority covers read-only reconciliation and bounded Brain admission only; implementation or protected-boundary authority must come from the selected program and Work Order."
+        "notes": "Standing portfolio authority covers reconciliation. The owner's continue directive is recorded separately as OWNER-SYNC-132-R3-LOCK-READINESS-20260717 for the exact protected tool files."
       },
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
@@ -2526,6 +2539,181 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "WO-ATLAS-008 review finding: protected package successor was not executable in the canonical wave planner",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SYNC-131",
+      "title": "C2 Column-Terminalization Checker",
+      "program": "Sovereign Sync Workbook Tooling",
+      "goal": "Validate terminal workbook completeness and Hard Guard 3 consistency.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Historical built-fresh workbook terminalization proof",
+          "paths": ["merged predecessor evidence"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "No new execution; this record only reconciles an already-completed predecessor"
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [],
+      "evidenceRequired": [],
+      "validationGates": [],
+      "evidenceProduced": [
+        {
+          "kind": "completion-reference",
+          "description": "Canonical Sync program playbook lists WO-SYNC-131 complete and the terminalization checker in the current tool stack."
+        }
+      ],
+      "stopConditions": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SYNC-132",
+          "reason": "C3 lock readiness follows terminalization proof.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Terminal predecessor record only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "Canonical Sovereign Sync Workbook Tooling completed-work and current-tool-stack sections",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SYNC-132",
+      "title": "C3 Lock-Readiness Checker",
+      "program": "Sovereign Sync Workbook Tooling",
+      "goal": "Determine whether an admitted and terminalized synthetic workbook is lock-eligible without mutating it or touching external resources.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-010",
+          "status": "satisfied",
+          "evidence": [
+            "Portfolio reconciliation selected Sync as the only bounded dependency-cleared engineering program."
+          ]
+        },
+        {
+          "id": "WO-SYNC-131",
+          "status": "satisfied",
+          "evidence": [
+            "The C2 terminalization checker is merged and listed in the canonical Sync tool stack."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Built-fresh read-only workbook lock-readiness validation over synthetic local artifacts",
+          "paths": [
+            "exact implementation and evidence files listed in allowedFiles"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Gate 14 changes, workbook mutation, archive import, content scanning, external systems, live/county/PACS/SQL data, secrets, package/build/CI/runtime entrypoints, services, schedulers, deployment, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        "tools/sync/workbook-lock-readiness-check.mjs",
+        "tools/sync/fixtures/valid-workbook-lock-readiness.synthetic.json",
+        "tools/sync/fixtures/invalid-workbook-lock-readiness.synthetic.json",
+        "docs/brain/workorders/active/WO-SYNC-132-c3-lock-readiness-checker.md",
+        "docs/brain/workorders/evidence/WO-SYNC-132-C3-LOCK-READINESS-CHECKER.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "ARCHIVE/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "implementation-proof",
+          "description": "Focused valid and invalid synthetic artifacts prove deterministic lock-readiness decisions without writes or external access."
+        },
+        {
+          "kind": "regression",
+          "description": "Gate 14 plus existing contract, admission, and terminalization checks remain green."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Lock-readiness self-test",
+          "command": "node tools/sync/workbook-lock-readiness-check.mjs --self-test",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Gate 14",
+          "command": "node tools/sync/gate14-check.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop on Gate 14 modification, workbook writes, non-synthetic input requirements, external access, package/CI/runtime wiring, protected data, or any file outside the exact decision."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SYNC-133",
+          "reason": "Compose the four read-only lifecycle checks after C3 is merged and verified.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "OWNER-SYNC-132-R3-LOCK-READINESS-20260717 covers the exact protected tool files. Standing operator authority covers delivery mechanics and no broader Sync boundary."
+      },
+      "provenance": {
+        "createdAt": "2026-07-17T00:00:00Z",
+        "source": "WO-PORTFOLIO-010 post-Atlas portfolio reconciliation and owner continue directive",
         "schemaVersion": "0.1.0"
       }
     }

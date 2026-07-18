@@ -452,6 +452,58 @@
       }
     },
     {
+      "id": "OWNER-SYNC-132-R3-LOCK-READINESS-20260717",
+      "program": "Sovereign Sync Workbook Tooling",
+      "goal": "GOAL-SYNC-WORKBOOK-TOOLING",
+      "loop": "LOOP-SYNC-WORKBOOK-TOOLING",
+      "work_order": "WO-SYNC-132",
+      "status": "active",
+      "authority_class": "R3-bounded-synthetic-lock-readiness-tool",
+      "effective_base_sha": "58c27cb186f7d56fbf7cd941599e6fe61878a2b8",
+      "expires_at": "2026-08-17T23:59:59Z",
+      "terminal_condition": "The exact-scope WO-SYNC-132 PR merges, closes without merge, this decision expires, or the owner revokes it",
+      "authorized_actions": [
+        "implement one built-fresh read-only workbook lock-readiness checker over synthetic artifacts",
+        "add one valid and one invalid synthetic lock-readiness fixture",
+        "validate Gate 14 plus existing contract, admission, and terminalization checks",
+        "create bounded Brain evidence and routing, remediate reviews, merge under standing operator authority, verify origin/main, and continue to WO-SYNC-133"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "tools/sync/workbook-lock-readiness-check.mjs",
+        "tools/sync/fixtures/valid-workbook-lock-readiness.synthetic.json",
+        "tools/sync/fixtures/invalid-workbook-lock-readiness.synthetic.json",
+        "docs/brain/workorders/active/WO-SYNC-132-c3-lock-readiness-checker.md",
+        "docs/brain/workorders/evidence/WO-SYNC-132-C3-LOCK-READINESS-CHECKER.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "Gate 14 modification or weakening, archive import, workbook mutation, external artifact content scanning, or inference of workbook values",
+        "package manifests, lockfiles, package/build/CI/runtime entrypoints, schedulers, daemons, services, backend, frontend, or os-platform changes",
+        "live artifacts, county data, PACS, SQL, external connections, credentials, secrets, deployment, live services, or production resources",
+        "WO-SYNC-133 or later mutation/content-scan implementation authority"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "Gate 14 or required-check failure",
+        "unresolved review thread or reservation collision",
+        "protected-boundary access or conflicting authority",
+        "expiration"
+      ],
+      "decision_basis": "Owner directed Codex to continue autonomously, complete routine engineering, synthesize the next executable lane, and stop only at a genuine protected boundary",
+      "completion": {
+        "terminal_work_order": "WO-SYNC-132",
+        "effective_on_merge": true,
+        "evidence": "docs/brain/workorders/evidence/WO-SYNC-132-C3-LOCK-READINESS-CHECKER.md",
+        "merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR"
+      }
+    },
+    {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
       "program": "all current and future ratified TerraFusion programs",
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",

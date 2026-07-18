@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Active at `WO-ATLAS-008` - GIS package Mapbox token metadata disposition audit
+**Status:** Reconciled at `WO-PORTFOLIO-010`; Sovereign Sync Workbook Tooling selected
 
 ## Purpose
 
@@ -49,18 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-At `origin/main` `c2744855cc6ae4f8966f6ed8460b065588e8908b`, WO-ATLAS-008 proves the GIS
-package's live browser source and types use `VITE_MAPBOX_ACCESS_TOKEN`. The README and integration
-metadata retain an unconsumed `MAPBOX_ACCESS_TOKEN` name and are classified as stale without package
-mutation or token access.
+At `origin/main` `58c27cb186f7d56fbf7cd941599e6fe61878a2b8`, WO-PORTFOLIO-010 found one
+bounded dependency-cleared engineering program. Sovereign Sync Workbook Tooling is selected at
+`WO-SYNC-132`; all other incomplete candidates are closed, parked, dependency-blocked, or cross a
+production, county, runtime-import, deployment, protected-data, or promotion boundary.
 
-`WO-PORTFOLIO-009 - Protected-Path Authority Planner Integration` makes one active, sufficient,
-unexpired exact-work-order decision and exact protected file list mechanically visible to the wave
-planner. `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` then aligned the two stale
-package metadata references with the live Vite contract and added cwd-independent proof. The exact
-R3 decision is consumed on merge.
+PR #1082 was closed as superseded without importing its stale recovery snapshot. The exact
+`OWNER-SYNC-132-R3-LOCK-READINESS-20260717` decision permits only a built-fresh checker, two
+synthetic fixtures, and bounded Brain evidence/routing while preserving Gate 14 and all protected
+resource denials.
 
-`WO-PORTFOLIO-010 - Post-Atlas Portfolio Reconciliation` is next to rank and admit the highest-value
-dependency-cleared bounded slice from live canonical state.
-
-STOP_TYPE: `ATLAS_METADATA_ALIGNMENT_COMPLETE_PORTFOLIO_RECONCILIATION_NEXT`
+STOP_TYPE: `NEXT_WO_ADMITTED_AND_STARTED`

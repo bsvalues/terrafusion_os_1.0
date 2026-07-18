@@ -397,9 +397,10 @@ or local hook tooling repair.
 | Goal | `GOAL-SYNC-WORKBOOK-TOOLING` |
 | Loop | `LOOP-SYNC-WORKBOOK-TOOLING` |
 | Program slug | `sovereign-sync-workbook-tooling` |
-| Status | ACTIVE / OWNER-SELECTION GATED |
+| Status | ACTIVE - selected by `WO-PORTFOLIO-010` |
 | Repo | `bsvalues/terrafusion-os` |
-| Next executable after owner selection | `WO-SYNC-132` |
+| Current executable | `WO-SYNC-132` |
+| Next | `WO-SYNC-133` |
 
 ### Completed Work Orders
 
@@ -431,9 +432,9 @@ or local hook tooling repair.
 
 ### Stop Gates
 
-Sync remains owner-selection gated. Do not start `WO-SYNC-132` unless the owner selects Sync. Stop on
-Gate 14 changes, forbidden content scan shape, live data, county/PACS/SQL access, or implementation
-outside the selected Sync chain.
+`WO-PORTFOLIO-010` selected Sync under the standing portfolio directive. `WO-SYNC-132` is active
+under an exact-file R3 decision. Stop on Gate 14 changes, workbook mutation, forbidden content scan
+shape, live data, county/PACS/SQL access, or implementation outside the selected Sync chain.
 
 ### Sync Hard Rules
 
@@ -448,8 +449,8 @@ outside the selected Sync chain.
 
 ### Sync Continuation Rule
 
-Do not auto-start Sync while Backend OE is the selected active program. If the owner selects Sync,
-continue within the Sync chain only while each next WO is defined and no global stop gate is hit.
+Continue within the Sync chain while each next WO is defined, separately authorized where required,
+and no global stop gate is hit. Selection of C3 does not pre-authorize mutation or content scanning.
 
 ---
 
@@ -536,21 +537,16 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio Operator - post-Atlas portfolio reconciliation |
-| Active goal | `GOAL-PORTFOLIO-OPERATOR-001` |
-| Active loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Current WO | `WO-ATLAS-009 - GIS Package Mapbox Token Metadata Alignment` complete on protected merge |
-| Next WO | `WO-PORTFOLIO-010 - Post-Atlas Portfolio Reconciliation` |
+| Selected program | Sovereign Sync Workbook Tooling |
+| Active goal | `GOAL-SYNC-WORKBOOK-TOOLING` |
+| Active loop | `LOOP-SYNC-WORKBOOK-TOOLING` |
+| Current WO | `WO-SYNC-132 - C3 Lock-Readiness Checker` |
+| Next WO | `WO-SYNC-133 - Workbook Lifecycle Orchestrator Check` |
 
-WO-ATLAS-008 proves that GIS package source and types use `VITE_MAPBOX_ACCESS_TOKEN`, no tracked live
-reader consumes `MAPBOX_ACCESS_TOKEN`, and no tracked live code loads the package's
-`terrafusion-config.json`. The README and metadata references are stale browser-contract surfaces,
-not a separate server-side contract.
-
-WO-PORTFOLIO-009 added fail-closed exact-file authority evaluation. WO-ATLAS-009 used the resulting
-bounded decision to align only the stale README/config names and add focused proof, then consumes that
-decision on merge. WO-PORTFOLIO-010 next refreshes incomplete programs and admits the next bounded,
-dependency-cleared slice; completion of the Atlas sequence is not a terminal park.
+WO-PORTFOLIO-010 completed the post-Atlas reconciliation, closed stale PR #1082 without importing it,
+and selected Sync as the only bounded dependency-cleared engineering program. The C3 slice is
+read-only and synthetic-only. Exact-file authority does not extend to Gate 14 changes, workbook
+mutation, external artifact scanning, live data, packages, CI, deployment, or protected resources.
 
 ---
 
