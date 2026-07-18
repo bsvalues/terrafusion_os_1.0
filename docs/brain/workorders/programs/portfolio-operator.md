@@ -49,13 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-LOCAL-093 consumed the recommended bounded read-only Local OMEN diagnosis envelope. It found that
-Docker Desktop's Linux/WSL engine fails before container startup because its `disk` path is a
-junction to unavailable `E:\DockerData`. No Docker, container, network, volume, credential, or data
-mutation occurred.
+WO-LOCAL-094 consumed the bounded repair envelope but stopped at its mandatory preservation gate.
+The historical Docker data volume is physically disconnected, no source inventory or size can be
+proved, and no preserved Docker data VHDX exists on connected storage. No junction, Docker, container,
+network, volume, credential, or data mutation occurred.
 
-The canonical registry and wave planner return no executable node inside current authority. The
-exact next candidate is proposed `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN
-Re-observation`; generic Docker repair is not authorized.
+The canonical registry and wave planner return no executable node inside current authority. The exact
+next candidate is proposed `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified
+Remount`; the physical source must be reconnected and GUID-matched before any repair resumes.
 
 STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`

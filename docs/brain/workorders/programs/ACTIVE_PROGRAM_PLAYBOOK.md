@@ -536,13 +536,13 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Local OMEN Runtime Repair diagnosis completed |
-| Current WO | `WO-LOCAL-093 - Bounded Read-Only Local OMEN Diagnosis` complete |
-| Next WO | Protected candidate: `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation` |
+| Selected program | Local OMEN Runtime Repair preservation gate completed |
+| Current WO | `WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation` complete |
+| Next WO | Protected candidate: `WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount` |
 
-WO-LOCAL-093 consumed the authorized read-only diagnosis envelope. It proved that Docker Desktop
-cannot initialize its Linux/WSL engine because `%LOCALAPPDATA%\Docker\wsl\disk` is a junction to an
-unavailable `E:\DockerData` target. Repair remains protected and is now decomposed as WO-LOCAL-094.
+WO-LOCAL-094 proved that the historical `E:` Docker data volume is physically disconnected. No
+preserved Docker data VHDX exists on the connected system disk, so the data-preservation gate blocked
+junction mutation and Docker startup. Recovery now requires the exact historical volume.
 
 ---
 
@@ -553,24 +553,24 @@ unavailable `E:\DockerData` target. Repair remains protected and is now decompos
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | DIAGNOSED - REPAIR AUTHORITY GATED |
-| Current | `WO-LOCAL-093` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
-| Next | Proposed `WO-LOCAL-094` |
+| Status | PRESERVATION BLOCKED - HISTORICAL VOLUME REQUIRED |
+| Current | `WO-LOCAL-094` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Next | Proposed `WO-LOCAL-095` |
 
 ### Current Facts
 
-- Docker Desktop client is installed, but the Linux/WSL engine and daemon pipes are unavailable.
-- Docker backend logs identify a deterministic WSL distribution-storage failure.
-- `%LOCALAPPDATA%\Docker\wsl\disk` is a junction to unavailable `E:\DockerData`.
-- Container existence and health are currently unknown because the Docker API is unavailable.
+- The junction targets historical volume `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` at `E:\DockerData`.
+- Only the internal system disk is connected; the historical volume is absent.
+- No Docker data VHDX or preserved copy exists on connected storage.
+- Container existence and health remain unknown because Docker was not started against empty state.
 - Ports `15432`, `3100`, and `3101` are clear.
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
-Rule: Diagnosis is complete. WO-LOCAL-094 requires an exact local-only mutation envelope for the WSL
-disk target and Docker engine re-observation. Factory reset, prune, generic cleanup, container
-recreation, persistence deletion, LAN exposure, TerraFusion Postgres, secrets, and external
-resources remain blocked.
+Rule: Preserve existing state. Reconnect and GUID-match the historical volume before any drive-letter,
+junction, or Docker start action. Factory reset, fresh state, format, prune, generic cleanup,
+container recreation, persistence deletion, LAN exposure, TerraFusion Postgres, secrets, and
+external operational resources remain blocked.
 
 ---
 

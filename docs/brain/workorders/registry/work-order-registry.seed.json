@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-LOCAL-093",
+  "generatedBy": "WO-LOCAL-094",
   "generatedAt": "2026-07-18T00:00:00Z",
-  "description": "Local OMEN diagnosis-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "description": "Local OMEN Docker data-preservation-gate-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3067,6 +3067,125 @@
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
         "source": "Owner-authorized bounded local OMEN read-only diagnosis executed against current local runtime evidence",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-LOCAL-094",
+      "title": "Docker WSL Disk Path Repair and OMEN Re-observation",
+      "program": "Local OMEN Runtime Repair",
+      "goal": "Preserve and restore access to the existing Docker WSL data store before re-observing the named OMEN proof runtime.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-LOCAL-093",
+          "status": "satisfied",
+          "evidence": [
+            "WO-LOCAL-093 identified the broken Docker WSL disk junction and defined the exact preservation-first repair boundary."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded local Docker storage preservation and recovery evidence",
+          "paths": [
+            "Docker WSL disk junction metadata",
+            "connected and historical Windows volume identity",
+            "existing Docker and WSL VHDX inventory",
+            "Docker Desktop, WSL, service, and named OMEN proof runtime observations"
+          ]
+        },
+        {
+          "name": "Local OMEN and portfolio governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Any mutation beyond the exact preservation-first envelope, including empty-state initialization, factory reset, reinstall, deletion, container or image recreation, prune, pull, build, configuration, networking, ports, database, external-resource, county, PACS, production, runtime, product, package, CI, or deployment changes"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-094-docker-wsl-path-repair.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-094-DOCKER-WSL-PATH-REPAIR.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "docker-data-preservation-gate",
+          "description": "Prove the existing Docker data store can be located, identified, read, preserved, and safely restored before any Docker start or junction mutation; otherwise fail closed without initializing replacement state."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "docker-data-preservation-boundary",
+          "location": "docs/brain/workorders/evidence/WO-LOCAL-094-DOCKER-WSL-PATH-REPAIR.md",
+          "description": "Exact junction, historical volume, connected-storage, VHDX, Docker/WSL state, non-mutation, and follow-on protected-boundary evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "The historical Docker data volume is physically unavailable, so source identity, contents, and preservation capacity cannot be proven; stop before starting Docker, changing the junction, or initializing replacement state."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The owner authorized a bounded preservation-first repair, but the mandatory data-preservation gate failed safely before mutation. Routine governance evidence and PR lifecycle remain authorized."
+      },
+      "provenance": {
+        "createdAt": "2026-07-18T00:00:00Z",
+        "source": "Owner-authorized Docker WSL path repair envelope evaluated against live local storage, junction, WSL, Docker, and historical volume evidence",
         "schemaVersion": "0.1.0"
       }
     }
