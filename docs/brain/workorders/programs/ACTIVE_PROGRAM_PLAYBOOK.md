@@ -537,13 +537,13 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | None inside current authority |
-| Current WO | `WO-PORTFOLIO-011 - Cross-Repository Sync Truth Reconciliation` complete |
-| Next WO | None; true protected portfolio boundary |
+| Current WO | `WO-PORTFOLIO-012 - Protected Boundary Decomposition` complete |
+| Next WO | Recommended strategic grant: read-only `WO-LOCAL-093` diagnosis envelope |
 
-WO-PORTFOLIO-011 verified that the sovereign Sync chain had already completed through WO-SYNC-155 in
-`bsvalues/terrafusion-os`; duplicate implementation was not started. The remaining incomplete
-programs require deployment/live resources, county or PACS data, runtime repair/import, promotion, or
-a new product-phase grant. This is a true portfolio boundary, not an operator routing gap.
+WO-PORTFOLIO-012 verified that MGMT-005/006 already merged and decomposed Local OMEN diagnosis from
+repair, P16 design from L3/L4 promotion, and sovereign disposition from import. The remaining useful
+work requires an exact strategic activation or protected-resource grant. The recommended next grant
+is read-only WO-LOCAL-093 diagnosis; no Docker mutation is implied.
 
 ---
 
@@ -554,7 +554,7 @@ a new product-phase grant. This is a true portfolio boundary, not an operator ro
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | BLOCKED AT RUNTIME REPAIR GATE |
+| Status | STRATEGIC ACTIVATION GATED |
 | Next | `WO-LOCAL-093` |
 
 ### Current Facts
@@ -566,8 +566,10 @@ a new product-phase grant. This is a true portfolio boundary, not an operator ro
 - TerraFusion Postgres is untouched.
 - Manual proof is incomplete.
 
-Rule: Diagnosis first. No app integration, persistence, LAN exposure, service/schedule, or Docker
-destructive cleanup unless separately authorized.
+Rule: Diagnosis first. A bounded read-only packet may inspect only the named local proof containers,
+health, logs, metadata, ports, and processes. Start/restart/recreate/remove/prune, app integration,
+persistence, LAN exposure, service/schedule changes, TerraFusion Postgres, or external resources
+remain separately blocked.
 
 ---
 

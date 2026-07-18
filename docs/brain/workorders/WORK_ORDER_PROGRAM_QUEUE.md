@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-17
-**Authority:** WO-PORTFOLIO-011
+**Date:** 2026-07-18
+**Authority:** WO-PORTFOLIO-012
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,9 +13,10 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-011 reconciled cross-repository truth. Canonical `bsvalues/terrafusion-os` already
-completed WO-SYNC-132 through WO-SYNC-155, so duplicate Sync implementation is closed and its stale
-decision is consumed.
+WO-PORTFOLIO-012 decomposed every remaining protected boundary. It also reconciled PRs #1157 and
+#1158, proving Management Dashboard deployment and its SPA auth-boundary repair are complete. No
+generic runtime/promotion wall remains: Local OMEN diagnosis, Local OMEN repair, sovereign import,
+P16 design, and L3/L4 promotion now have separate authority conditions.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -49,6 +50,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-PORTFOLIO-009 Protected-Path Authority Planner Integration | DONE | Exact active owner decisions are executable without weakening protected-path denial |
 | **WO-PORTFOLIO-010 Post-Atlas Portfolio Reconciliation** | **DONE** | Sync selected; stale PR #1082 closed as superseded |
 | **WO-PORTFOLIO-011 Cross-Repository Sync Truth Reconciliation** | **DONE** | Target-repository proof prevented duplicate Sync work and established the current protected portfolio boundary |
+| **WO-PORTFOLIO-012 Protected Boundary Decomposition** | **DONE** | Exact lane table, stale P8 correction, and one consolidated strategic recommendation |
 
 ### sovereign-sync-workbook-tooling (`GOAL-SYNC-WORKBOOK-TOOLING` / `LOOP-SYNC-WORKBOOK-TOOLING`)
 | WO | State | Notes |
@@ -76,7 +78,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-P8-MGMT-002 Local os-shell vs Azure proof | DONE | #1123 queued/merged | Reachability proven |
 | WO-P8-MGMT-003 Sync Doctrine client conformance | DONE | #1125 queued on CI | Single-config now works |
 | **WO-P8-MGMT-004 Frontend Deployment Authorization Packet** | **DONE** | this PR | Packet records host/config/health/honesty/rollback decision contract; no deployment |
-| WO-P8-MGMT-005 Frontend Deployment Execution | WALL | — | **SW-01** - needs authorization |
+| WO-P8-MGMT-005 Frontend Deployment Execution | DONE | #1157 merged | Same-origin SPA deployed to `app-terrafusion-benton-demo` |
+| WO-P8-MGMT-006 SPA Entry / Fallback Auth Boundary | DONE | #1158 merged | Anonymous shell fallback; API deny-by-default preserved |
 
 ### benton-demo  (`/goal benton-demo`)
 | WO | State | Notes |
@@ -118,7 +121,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-TERRAPILOT-P1 Tool Maturity Matrix | DONE/PARTIAL | — |
 | WO-TERRAPILOT-P2 through P15 | DONE / parked baseline | Green contract does not claim live integration |
-| WO-TERRAPILOT-P16 | PARKED | Design/runtime promotion boundary requires explicit authority |
+| WO-TERRAPILOT-P16 | PARKED | Design-only strategic direction gate for `summarize_levy_rate_components`; L3/L4 require later runtime/promotion authority |
 
 ### work-order-engine  (`/goal work-order-engine`)
 | WO | State |
@@ -158,18 +161,18 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
-| p8-management-dashboard | MGMT-005 frontend deploy | SW-01 / SW-10 | deploy SPA + auth posture | `WO_P8_MGMT_004_*` |
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 | benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
-| local-omen-runtime-repair | WO-LOCAL-093 | SW-09 | runtime diagnosis/repair authority required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
+| local-omen-runtime-repair | WO-LOCAL-093 | Exact local diagnosis envelope absent | Read-only diagnosis is not SW-09; repair or Docker mutation remains separately blocked | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-011 reconciliation:** `TRUE_PORTFOLIO_BOUNDARY`. The sovereign
-Sync chain is already closed. Every remaining incomplete candidate requires deployment or live Azure,
-county/PACS/protected-data authority, runtime repair/import, product promotion, or a new product-phase
-grant. The registry and wave planner return no executable node inside current authority.
+**Portfolio result after WO-PORTFOLIO-012 reconciliation:** `TRUE_PORTFOLIO_BOUNDARY`. The sovereign
+Sync chain and Management Dashboard deployment baseline are already closed. Every remaining useful
+candidate now has an exact strategic activation or protected boundary. The registry and wave planner
+return no executable node inside current authority. The recommended next strategic grant is a
+read-only `WO-LOCAL-093` local Docker diagnosis envelope; it grants no repair or Docker mutation.
 
 ---
 
