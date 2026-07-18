@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-17 - WO-PORTFOLIO-011 reconciled sovereign Sync completion and proved the current portfolio boundary)*
+*(Updated 2026-07-18 - WO-PORTFOLIO-012 decomposed every remaining boundary and removed stale P8 routing)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
@@ -31,16 +31,16 @@ This register is the canonical source of truth for all active TerraFusion work o
 | [Sovereign Sync Workbook Tooling](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-2---sovereign-sync-workbook-tooling) | `GOAL-SYNC-WORKBOOK-TOOLING` | `LOOP-SYNC-WORKBOOK-TOOLING` | Closed in canonical sovereign repository | `WO-SYNC-155` complete | Portfolio reconciliation | No duplicate continuation from this repository | Stop on runtime import, live data, or unregistered cross-repo dispatch |
 | [TerraPilot Tool Maturity](programs/terrapilot-tool-maturity.md) | `GOAL-TERRAPILOT-TOOL-MATURITY` | `LOOP-TERRAPILOT-TOOL-MATURITY` | Parked | P15 | P16 design-only | No auto | Owner authorization required |
 | [DevEx Hook Tooling](programs/devex-hook-tooling.md) | `GOAL-DEVEX-HOOK-BOOTSTRAP` | `LOOP-DEVEX-HOOK-BOOTSTRAP` | Closed | `WO-DEVEX-HOOKS-006` | Portfolio reconciliation | Frozen bootstrap auto-proceeds under operator policy | Stop on tracked dependency mutation, cleanup, CI/runtime changes, or protected resources |
-| [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Blocked | `WO-LOCAL-093` | TBD | No auto | Owner authorization required |
+| [Local OMEN Runtime Repair](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-5---local-omen-runtime-repair) | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` | Strategic activation gated | `WO-LOCAL-093` read-only diagnosis | Repair recommendation | No auto before exact local diagnosis envelope | Read-only diagnosis needs named environment scope; Docker mutation remains separately blocked |
 | [Runtime Import Disposition](programs/ACTIVE_PROGRAM_PLAYBOOK.md#program-6---runtime-import-disposition) | `GOAL-RUNTIME-IMPORT-DISPOSITION` | `LOOP-RUNTIME-IMPORT-DISPOSITION` | Owner-gated | `WO-CORE-1` | TBD | No auto | Owner authorization required |
 | [Property Workbench](programs/property-workbench.md) | `GOAL-PROPERTY-WORKBENCH` | `LOOP-PROPERTY-WORKBENCH` | Closed evidence baseline | `WO-WORKBENCH-011` | New phase only if owner/WOE selects | No auto restart | Owner or WOE selection required |
 | [Benton Demo / Deployment Readiness](programs/benton-demo-deployment.md) | `/goal benton-demo` | `/loop merge-watch` / `/loop once` | Active | `WO-DEPLOY-BENTON-003B` | `WO-DEPLOY-BENTON-003D` if authorized | No auto deploy | Stop on deployment authorization |
 | [Benton Data Quality](programs/benton-data-quality.md) | `/goal benton-data-quality` | `/loop evidence` | Safe audit queue exhausted | Audits, rollup, credentialed verification, and duplicate cleanup complete | New bounded remediation WO only | No automatic continuation | Stop on data mutation, credentials, PACS, sync, or production claims |
 | [Work Order Engine](programs/work-order-engine.md) | `/goal work-order-engine` | `/loop program` | Closed at WO-WOE-013 / PR #1291 | `WO-WOE-013` complete | Portfolio reconciliation | No automatic WOE successor after baseline closeout | Report is advisory; stop on registry/scoring expansion, protected systems, or new runtime work |
-| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Reconciled - true protected boundary | `WO-PORTFOLIO-011` complete | None inside current authority | Auto-select, admit, deliver, merge, and continue dependency-cleared authorized nodes | Every incomplete candidate now crosses deployment, live-resource, protected-data, runtime-import/repair, promotion, or new-product authority |
+| [Portfolio Operator](programs/portfolio-operator.md) | `GOAL-PORTFOLIO-OPERATOR-001` | `LOOP-PORTFOLIO-OPERATOR-001` | Reconciled - exact protected boundary | `WO-PORTFOLIO-012` complete | Recommended strategic grant: read-only `WO-LOCAL-093` | Auto-select, admit, deliver, merge, and continue dependency-cleared authorized nodes | Every useful successor now has an exact protected or strategic activation boundary |
 | [AI / Brain / Operator System](programs/brain-operator-system.md) | `GOAL-BRAIN-OPERATOR-001` | `LOOP-BRAIN-OPERATOR-001` | Evidence baseline COMPLETE (PARTIAL / INTEGRATION GAP) | `WO-BRAIN-009` (done) | portfolio reconciliation | Auto through evidence/docs chain | Stop on canon conflict, implementation, runtime, CI, secrets, protected data, or deployment |
 | [Azure / DevOps / County Runtime](programs/azure-county-runtime.md) | `/goal azure-county-runtime` | `/loop evidence` | Safe docs/evidence slice complete on WO-AZURE-003 merge | `WO-AZURE-003` complete on merge | Portfolio reconciliation; `WO-AZURE-004/005` remain blocked | No automatic live-Azure continuation | Stop on live Azure, secret values, resource/config mutation, deployment, or county production |
-| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Packet complete; deployment parked | `WO-P8-MGMT-004` complete | `WO-P8-MGMT-005` at SW-01 or portfolio reconciliation | Park blocked deployment and continue portfolio selection | Stop P8 on deployment authorization; do not freeze unrelated lanes |
+| [Management Dashboard](programs/p8-management-dashboard.md) | `/goal p8-management-dashboard` | `/loop program` | Baseline complete; deployed and auth boundary repaired | `WO-P8-MGMT-006` complete | Portfolio reconciliation | No automatic successor | Credentialed verification, auth changes, or county release require exact authority |
 
 **Active program graph:** [TerraFusion Active Goal/Loop Execution Playbook](programs/ACTIVE_PROGRAM_PLAYBOOK.md)
 
@@ -50,9 +50,9 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 | Blocker | Blocking | Stop Wall |
 |---------|---------|-----------|
-| Live deployment / smoke authority is not active | WO-DEPLOY-BENTON-003D, WO-P8-MGMT-005 | SW-01 / SW-04 |
+| Live staging-slot smoke authority is not active | WO-DEPLOY-BENTON-003D, WO-AZURE-004/005 | SW-01 / SW-03 |
 | New Benton backfill, entitlement mutation, sync, or PACS follow-up needs a bounded packet | Benton Data Quality remediation | SW-02 / SW-03 / SW-08 |
-| Local OMEN runtime repair remains blocked | WO-LOCAL-093 | SW-09 |
+| Local OMEN exact local diagnosis envelope is absent | WO-LOCAL-093 | Strategic activation; repair after diagnosis may cross SW-09 |
 | Runtime import disposition remains owner-gated | WO-CORE-1 | SW-05 / sovereign boundary |
 | Backend full solution tests depend on Docker/Testcontainers SQL Server lane | Backend release readiness / integration validation | Classified in WO-BACKEND-OE-003 as segmented integration prerequisite; release gate criteria defined in WO-BACKEND-OE-009; operational runbook created in WO-BACKEND-OE-010 without Docker repair |
 | Dependency-clean worktrees cannot resolve local Prettier/Vitest before explicit bootstrap | Local PR-finalization before bootstrap | Run the governed frozen bootstrap; unattended runs require `--ignore-scripts` and tracked mutation remains an authority wall |

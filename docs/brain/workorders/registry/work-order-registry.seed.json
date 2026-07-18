@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-011",
-  "generatedAt": "2026-07-17T00:00:00Z",
-  "description": "Reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "generatedBy": "WO-PORTFOLIO-012",
+  "generatedAt": "2026-07-18T00:00:00Z",
+  "description": "Boundary-decomposed representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -2837,6 +2837,113 @@
       "provenance": {
         "createdAt": "2026-07-17T00:00:00Z",
         "source": "Live target-repository verification after WO-PORTFOLIO-010 selected an already-completed cross-repository slice",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-012",
+      "title": "Protected Boundary Decomposition",
+      "program": "Portfolio Operator",
+      "goal": "Decompose every remaining portfolio boundary, remove stale wall claims, and provide one consolidated strategic recommendation.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-PORTFOLIO-011",
+          "status": "satisfied",
+          "evidence": [
+            "WO-PORTFOLIO-011 merged at 416942e43cc272e7bbc2ed6c667b2ff6ca2e4278 and supplied the broad boundary inventory that this Work Order decomposes."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Portfolio governance, routing, registry, and evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Docker mutation, TerraPilot design or implementation, sovereign import, runtime, product, package, CI, deployment, county, PACS, SQL, secrets, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-PORTFOLIO-012-protected-boundary-decomposition.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-012-PROTECTED-BOUNDARY-DECOMPOSITION.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/p8-management-dashboard.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "boundary-decomposition",
+          "description": "Every incomplete or parked lane names its current state, remaining outcome, missing authority, boundary, recommendation, and first Work Order after authorization."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "protected-boundary-decomposition",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-012-PROTECTED-BOUNDARY-DECOMPOSITION.md",
+          "description": "Exact lane-by-lane strategic boundary table and corrected Management Dashboard disposition."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "No successor may execute until its exact strategic activation or protected-resource envelope exists."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio reconciliation and routine merge authority cover this governance-only decomposition. They do not activate a protected successor."
+      },
+      "provenance": {
+        "createdAt": "2026-07-18T00:00:00Z",
+        "source": "Live repository, GitHub PR, and owner-decision audit after WO-PORTFOLIO-011",
         "schemaVersion": "0.1.0"
       }
     }

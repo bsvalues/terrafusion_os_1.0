@@ -1,7 +1,7 @@
 # P8 — Management Dashboard (Roadmap Phase 8)
 
 **Program:** P8-MGMT (roadmap Phase 8; distinct from the register's P8 = Azure/County Runtime)
-**Status:** PACKET COMPLETE - DEPLOYMENT PARKED AT SW-01
+**Status:** BASELINE COMPLETE - MGMT-005 DEPLOYED, MGMT-006 AUTH BOUNDARY REPAIRED
 **Owner:** Operator (bsvalues@gmail.com)
 **Last Updated:** 2026-07-15
 
@@ -54,7 +54,8 @@ The gap is **reachability + client conformance + deployment**, not construction.
 | WO-P8-MGMT-002 | Local os-shell vs Azure API reachability proof | **DONE** | PR #1123, `docs/data/WO_P8_MGMT_002_REACHABILITY_PROOF.md` |
 | WO-P8-MGMT-003 | Sync Doctrine API client conformance fix | **DONE** | PR #1125, `docs/data/WO_P8_MGMT_003_SYNC_DOCTRINE_CONFORMANCE.md` |
 | WO-P8-MGMT-004 | Frontend Deployment Authorization Packet | **DONE** (R1 docs) | `docs/data/WO_P8_MGMT_004_FRONTEND_DEPLOYMENT_AUTHORIZATION_PACKET.md` |
-| WO-P8-MGMT-005 | Frontend Deployment Execution | **WALL: SW-01** | requires operator authorization |
+| WO-P8-MGMT-005 | Frontend Deployment Execution | **DONE** | PR #1157; same-origin SPA deployed to Benton demo App Service |
+| WO-P8-MGMT-006 | SPA Entry / Fallback Auth Boundary | **DONE** | PR #1158; anonymous shell fallback with API deny-by-default preserved |
 
 ---
 
@@ -95,6 +96,8 @@ the Azure demo. Planning only — crosses no wall.
 /loop program        # runs 004 packet (R1), then STOPS at SW-01 before deployment
 ```
 
-The operator completed 001->002->003->004. Actual deployment remains parked at SW-01. A blocked P8
-deployment does not freeze unrelated lanes; Portfolio Operator reconciliation may select another
-dependency-cleared program unless a bounded deployment authority is recorded.
+The operator completed 001 through 006. MGMT-005 deployed the existing SPA to
+`app-terrafusion-benton-demo`; MGMT-006 resolved the SPA fallback boundary while preserving API
+deny-by-default authorization. No deployment execution WO remains. Authenticated data-surface proof,
+an auth-policy change, or county release requires a new exact packet and must not be inferred from
+this completed baseline.

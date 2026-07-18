@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-PORTFOLIO-011`; true protected portfolio boundary proven
+**Status:** Reconciled at `WO-PORTFOLIO-012`; exact protected portfolio boundary proven
 
 ## Purpose
 
@@ -49,12 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-PORTFOLIO-011 verified the target repository before implementation and found WO-SYNC-132 already
-merged in sovereign PR #142 and the program closed at WO-SYNC-155 in PR #156. The stale exact-file
-decision is consumed and the repository identity is now registered in root `PATH_CANON_REGISTER.md`.
+WO-PORTFOLIO-012 decomposed the broad runtime and promotion labels left by WO-PORTFOLIO-011. It also
+proved that P8 MGMT-005 and MGMT-006 already merged, so frontend deployment is not an outstanding
+wall. Local OMEN read-only diagnosis, Local OMEN repair, sovereign import, TerraPilot P16 design,
+TerraPilot L3/L4 promotion, live Azure, protected data, and new product scope now have separate
+authority descriptions.
 
-The canonical registry and wave planner return no executable node. Every remaining incomplete
-program crosses a recorded deployment/live-resource, county/PACS/protected-data, runtime
-repair/import, product-promotion, or new-product-phase boundary.
+The canonical registry and wave planner return no executable node inside current authority. The
+recommended next strategic grant is a read-only `WO-LOCAL-093` local Docker diagnosis envelope; no
+Docker mutation or repair is implied.
 
 STOP_TYPE: `TRUE_PORTFOLIO_BOUNDARY`
