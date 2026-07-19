@@ -112,6 +112,7 @@ runtime-import, TerraPilot promotion, or new-product boundaries.
   ],
   "required_proof": [
     "git diff --check",
+    "corepack pnpm brain review-diff --workorder WO-PORTFOLIO-013",
     "node --test docs/brain/workorders/tools/wo-query.test.mjs",
     "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
     "node docs/brain/workorders/tools/wo-query.mjs --json",

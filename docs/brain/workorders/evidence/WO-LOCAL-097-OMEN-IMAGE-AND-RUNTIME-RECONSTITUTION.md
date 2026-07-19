@@ -3,6 +3,8 @@
 > **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
 > Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
 > continuation in its own repository and canon. The proposed WO-LOCAL-098 successor is withdrawn.
+> Every follow-on recommendation below is historical, withdrawn, non-routable, and grants no current
+> TerraFusion authority.
 
 ## Verdict
 
@@ -131,11 +133,11 @@ current envelope explicitly prohibits credential changes, so no rotation was att
 | Manual migration/seed/restore/admin data operations | zero |
 | County/PACS/production/external operational access | zero |
 
-## Follow-On Protected Boundary
+## Historical Follow-On Protected Boundary (Withdrawn)
 
 ### Proposed Work Order
 
-`WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup`
+`WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup` (withdrawn; non-routable)
 
 ### Exact Requested Mutation
 
@@ -156,7 +158,7 @@ do not transition atomically. Roll back by restoring the prior credential throug
 handling only if it has not been treated as compromised; otherwise generate a second replacement.
 Do not replace the volume, rebuild the database, or run schema/data repair.
 
-### Operator Recommendation
+### Historical Operator Recommendation (Withdrawn)
 
 Authorize one bounded credential-rotation and safe-start envelope. Keep PostgreSQL on the preserved
 volume, keep OMEN stopped until rotation completes, and prohibit secret values in all command output,
@@ -185,7 +187,7 @@ that manifest or the write-lanes policy.
 ## Final Result
 
 ```text
-RESULT: FOLLOW_ON_PROTECTED_BOUNDARY
+RESULT: OUT_OF_SCOPE_CROSS_PROJECT
 WORK_ORDER: WO-LOCAL-097
 IMAGES_READY: yes
 POSTGRES_HEALTHY: yes
@@ -194,5 +196,5 @@ OMEN_IMAGE_READY: yes
 OMEN_CONTAINER_CREATED: no
 OMEN_STARTED: no
 SECRET_VALUE_IN_REPOSITORY_EVIDENCE: no
-NEXT_WORK_ORDER: WO-LOCAL-098
+NEXT_WORK_ORDER: NONE_IN_TERRAFUSION
 ```

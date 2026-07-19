@@ -3555,7 +3555,7 @@
       "dependencies": [
         {
           "id": "WO-LOCAL-097",
-          "status": "superseded",
+          "status": "satisfied",
           "evidence": [
             "WO-LOCAL-097 exposed the final foreign WilliamOS and OMEN routing that required correction."
           ]

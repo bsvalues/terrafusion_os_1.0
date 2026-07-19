@@ -3,6 +3,7 @@
 > **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
 > Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
 > continuation in its own repository and canon.
+> Every follow-on recommendation below is withdrawn and has no current TerraFusion authority.
 
 ## Verdict
 
@@ -70,9 +71,9 @@ unavailable.
 
 ## Follow-On Protected Boundary
 
-### Proposed Work Order
+### Historical Proposed Work Order (Withdrawn)
 
-`WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation`
+`WO-LOCAL-094 - Docker WSL Disk Path Repair and OMEN Re-observation` (withdrawn; non-routable)
 
 ### Exact Proposed Mutation
 
@@ -132,7 +133,7 @@ EXACT_FAILING_COMPONENT: Docker Desktop 4.79.0 Linux/WSL distribution storage in
 EXACT_PROPOSED_MUTATION: repair availability or mapping of the Docker WSL disk target, then re-observe
 RUNTIME_MUTATION_PERFORMED: no
 SECRETS_READ: no
-NEXT_WORK_ORDER: WO-LOCAL-094
+NEXT_WORK_ORDER: NONE_IN_TERRAFUSION
 ```
 
 ## Validation

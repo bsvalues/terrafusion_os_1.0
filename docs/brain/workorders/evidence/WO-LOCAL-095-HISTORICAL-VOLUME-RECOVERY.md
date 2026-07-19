@@ -3,6 +3,7 @@
 > **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
 > Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
 > continuation in its own repository and canon.
+> Every follow-on recommendation below is withdrawn and has no current TerraFusion authority.
 
 ## Verdict
 
@@ -76,9 +77,9 @@ application or database proof runtime healthy.
 
 ## Follow-On Protected Boundary
 
-### Proposed Work Order
+### Historical Proposed Work Order (Withdrawn)
 
-`WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution`
+`WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution` (withdrawn; non-routable)
 
 ### Exact Missing Capability
 
@@ -156,5 +157,5 @@ OMEN_PROOF_STATE: named database and application proof containers absent
 RUNTIME_MUTATION_PERFORMED: bounded failed-engine restart only
 CONTAINERS_RECREATED: no
 SECRETS_READ: no
-NEXT_WORK_ORDER: WO-LOCAL-096
+NEXT_WORK_ORDER: NONE_IN_TERRAFUSION
 ```

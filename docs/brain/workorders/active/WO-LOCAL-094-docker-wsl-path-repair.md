@@ -14,12 +14,15 @@
 > Historical audit only. The repaired Docker/OMEN surfaces belong to the separate
 > WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
 
-## Objective
+> Every objective, file scope, result, successor, and authorization below is historical and
+> withdrawn. It is not routable and cannot be used as a current Brain machine policy.
+
+## Historical Objective (Not Authorized)
 
 Preserve and restore Docker Desktop's existing WSL data path, initialize Docker once, and re-observe
 the named OMEN containers without deleting, replacing, or silently recreating Docker state.
 
-## Authorized Files
+## Historical File Scope (Withdrawn)
 
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -32,7 +35,7 @@ the named OMEN containers without deleting, replacing, or silently recreating Do
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 
-## Result
+## Historical Result
 
 The data-preservation gate stopped repair before mutation. The existing Docker data target is a
 historical external volume with GUID `{359cf739-10c6-4534-98b0-07fc3c6de7fb}` mounted previously as
@@ -57,8 +60,8 @@ was performed.
 - No runtime, Docker, WSL, process, container, filesystem mapping, product, package, CI, deployment,
   county, PACS, SQL, secret, or live-resource mutation.
 
-<!-- brain-machine-policy: brain review-diff reads the json block below -->
-```json
+<!-- withdrawn historical policy: deliberately not machine-readable by brain review-diff -->
+```historical-json
 {
   "id": "WO-LOCAL-094",
   "task": "Repair Docker WSL storage only when existing state can be preserved, then re-observe the named OMEN containers",
