@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | FOLLOW_ON_PROTECTED_BOUNDARY after WO-LOCAL-095; proposed WO-LOCAL-096 proof-container recovery | YES - named container recreation/app-image build requires exact runtime authority | `once`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | FOLLOW_ON_PROTECTED_BOUNDARY after WO-LOCAL-096; proposed WO-LOCAL-097 proof-image acquisition/build | YES - exact pull/build and app topology authority is absent | `once`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
@@ -37,7 +37,7 @@ resolves.
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
 | `devex-hooks-status` | DevEx Hook Tooling | CLOSED at WO-DEVEX-HOOKS-006 | YES - return to portfolio loop | `evidence`, `discovery` |
-| `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-095 complete; proposed WO-LOCAL-096 | YES - Docker engine is recovered but named proof containers are absent | `evidence`, `discovery` |
+| `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-096 complete; proposed WO-LOCAL-097 | YES - both required proof images are absent; no container was created | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | CLOSED at WO-WOE-013 / PR #1291 | YES - report baseline complete; no successor | `once`, `evidence`, `discovery` |
