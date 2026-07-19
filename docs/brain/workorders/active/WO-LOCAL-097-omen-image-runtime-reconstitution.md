@@ -18,6 +18,11 @@ startup behavior passes every fail-closed gate.
 
 ## Authorized Files
 
+This outside-core documentation scope is not self-granted by the Work Order. The controlling Owner
+authorization for WO-LOCAL-097 explicitly permits evidence capture, commit, PR, review remediation,
+authorized merge, post-merge verification, and portfolio recomputation for this recovery cycle. The
+exact file list below bounds that explicit exception to the root `AGENTS.md` core-surface default.
+
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
 - `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
