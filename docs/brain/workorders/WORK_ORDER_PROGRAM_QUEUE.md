@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-18
-**Authority:** WO-LOCAL-096
+**Date:** 2026-07-19
+**Authority:** WO-LOCAL-097
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-WO-LOCAL-096 completed exact preflight for the named OMEN proof containers. The preserved Postgres
-volume, existing network, localhost ports, definitions, and environment key names are verified, but
-both required local images are absent. The fail-closed gate prohibited pulls/builds and created zero
-containers, leaving preserved runtime state unchanged.
+WO-LOCAL-097 acquired the digest-verified official PostgreSQL image and built the OMEN image from
+governed source. PostgreSQL is healthy on the preserved named volume after ordinary crash recovery.
+OMEN remains stopped because an over-broad local metadata command exposed a credential in transient
+operator output and because the local proof topology must explicitly disable the unconfigured OTLP
+exporter before startup. No secret value is reproduced in repository evidence.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -164,16 +165,15 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 | benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
-| local-omen-runtime-repair | proposed WO-LOCAL-097 | exact proof-image acquisition/build / SW-09 | both required images are absent; app network/restart topology also needs explicit reconciliation | `evidence/WO-LOCAL-096-OMEN-PROOF-CONTAINER-RECOVERY.md` |
+| local-omen-runtime-repair | proposed WO-LOCAL-098 | credential rotation and safe OMEN startup / SW-03 / SW-09 | both images are ready and Postgres is healthy; exposed local credential must be rotated before OMEN starts | `evidence/WO-LOCAL-097-OMEN-IMAGE-AND-RUNTIME-RECONSTITUTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-LOCAL-096:** `FOLLOW_ON_PROTECTED_BOUNDARY`. Container preflight passed
-except for mandatory local-image availability. The exact next candidate is `WO-LOCAL-097 - OMEN
-Proof Image Acquisition and Topology Reconstitution`; it requires a digest-recorded Postgres pull or
-verified archive, a reproducible application image build or verified archive, and explicit app
-network/restart topology. The registry and wave planner return no executable node inside current
-authority.
+**Portfolio result after WO-LOCAL-097:** `FOLLOW_ON_PROTECTED_BOUNDARY`. Image and PostgreSQL
+reconstitution passed, but OMEN startup did not occur. The exact next candidate is `WO-LOCAL-098 -
+OMEN Credential Rotation and Safe Application Startup`; it requires bounded secret rotation across
+the Postgres role and local credential sources, plus an explicit telemetry-disabled proof topology.
+The registry and wave planner return no executable node inside current authority.
 
 ---
 

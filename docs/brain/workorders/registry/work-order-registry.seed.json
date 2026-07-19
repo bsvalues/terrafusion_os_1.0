@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-LOCAL-096",
-  "generatedAt": "2026-07-18T00:00:00Z",
-  "description": "Local OMEN proof-container-preflight-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "generatedBy": "WO-LOCAL-097",
+  "generatedAt": "2026-07-19T00:00:00Z",
+  "description": "Local OMEN image-and-Postgres-recovery-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3424,6 +3424,109 @@
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
         "source": "Live Docker image/container/volume/network/port metadata and local Compose/start-script/Dockerfile definitions under the authorized WO-LOCAL-096 envelope",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-LOCAL-097",
+      "title": "OMEN Proof Image Acquisition and Runtime Reconstitution",
+      "program": "Local OMEN Runtime Repair",
+      "goal": "Acquire immutable proof images, reconstruct evidenced topology, and recover the local OMEN proof runtime without crossing protected data or credential boundaries.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-LOCAL-096",
+          "status": "satisfied",
+          "evidence": [
+            "WO-LOCAL-096 proved the preserved volume, network, ports, image absence, and exact image-acquisition boundary."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded OMEN proof-image and runtime recovery envelope",
+          "paths": [
+            "official postgres:16-bookworm registry artifact",
+            "governed WilliamOS source and Dockerfile.local-app-proof",
+            "exact proof container names, preserved Postgres volume, existing network, and localhost ports"
+          ]
+        },
+        {
+          "name": "Local OMEN and portfolio governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Credential rotation, secret-value evidence, OMEN startup after credential exposure, schema/data repair, destructive cleanup, external resources, county, PACS, production, product, package, CI, or deployment changes"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-097-omen-image-runtime-reconstitution.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-097-OMEN-IMAGE-AND-RUNTIME-RECONSTITUTION.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "image-provenance-and-runtime-recovery",
+          "description": "Record immutable image provenance, preserved-volume topology, safe startup gates, runtime results, and all prohibited-boundary stops without secret values."
+        }
+      ],
+      "validationGates": [
+        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pass"},
+        {"name": "Brain query tests", "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs", "required": true, "result": "pass"},
+        {"name": "Wave planner tests", "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pass"}
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "image-provenance-postgres-recovery-and-app-startup-boundary",
+          "location": "docs/brain/workorders/evidence/WO-LOCAL-097-OMEN-IMAGE-AND-RUNTIME-RECONSTITUTION.md",
+          "description": "Digest-pinned images, reproducible OMEN build, healthy preserved-volume Postgres, blocked OMEN startup, and exact credential-rotation successor."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "protected_boundary",
+          "description": "A credential appeared in transient operator output and must be rotated before OMEN startup; secret mutation is outside WO-LOCAL-097."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The owner authorized exact image acquisition/build and runtime reconstruction. The operator stopped before OMEN startup when credential rotation became necessary."
+      },
+      "provenance": {
+        "createdAt": "2026-07-19T00:00:00Z",
+        "source": "Live registry/image/build/container/volume/network/port evidence and independent startup assurance under the authorized WO-LOCAL-097 envelope",
         "schemaVersion": "0.1.0"
       }
     }

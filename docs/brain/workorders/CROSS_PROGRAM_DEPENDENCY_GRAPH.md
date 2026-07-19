@@ -89,7 +89,7 @@ RUNTIME IMPORT
 | work-order-engine | 001-014 including 013 report | no successor | new registry/runtime program authority | CLOSED |
 | brain-operator | 001-009 | no successor | new implementation program authority | CLOSED |
 | azure-county-runtime | 001-003 | AZURE-004/005 live evidence | SW-01 / SW-03 / SW-04 | DEPENDENCY BLOCKED |
-| local-omen-runtime-repair | LOCAL-096 container preflight complete | proposed LOCAL-097 proof-image acquisition/build | exact image pull/build and app topology proof / SW-09 | IMAGE MUTATION BLOCKED |
+| local-omen-runtime-repair | LOCAL-097 image acquisition/build and Postgres recovery complete | proposed LOCAL-098 credential rotation and safe app startup | credential mutation and secret-bearing source reconciliation / SW-03 / SW-09 | CREDENTIAL MUTATION BLOCKED |
 | runtime-import-disposition | none | CORE-1 | SW-05 / sovereign boundary | PARKED |
 
 ---
@@ -115,6 +115,7 @@ RUNTIME IMPORT
 | 2026-07-18 | Decomposed runtime diagnosis/import/promotion and removed stale MGMT-005 deployment wall | WO-PORTFOLIO-012 |
 | 2026-07-18 | Verified historical Docker volume, recovered engine against preserved state, and isolated proof-container reconstitution | WO-LOCAL-095 |
 | 2026-07-18 | Failed closed before proof-container creation because both required local images are absent | WO-LOCAL-096 |
+| 2026-07-19 | Acquired immutable images and recovered Postgres on preserved persistence; stopped before OMEN startup after transient credential output | WO-LOCAL-097 |
 
 ---
 

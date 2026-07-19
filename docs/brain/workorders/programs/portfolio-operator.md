@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-LOCAL-096`; exact proof-image acquisition/build boundary proven
+**Status:** Reconciled at `WO-LOCAL-097`; credential-rotation boundary proven
 
 ## Purpose
 
@@ -49,13 +49,13 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-LOCAL-096 verified the preserved Postgres volume, existing network, localhost ports, Compose
-definition, application start source, and environment key names. Both required images are absent:
-`postgres:16-bookworm` and `williamos-app-proof:omen`. The mandatory preflight prohibited pulls,
-builds, and container creation, so preserved runtime state remains unchanged.
+WO-LOCAL-097 acquired both required images with immutable provenance and recovered the named
+Postgres container against preserved persistence. PostgreSQL is healthy after normal crash recovery.
+The OMEN image is ready, but the application container was not created or started.
 
 The canonical registry and wave planner return no executable node inside current authority. The exact
-next candidate is proposed `WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology
-Reconstitution`; image acquisition/build and app topology correction require a bounded SW-09 envelope.
+next candidate is proposed `WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup`.
+It requires an exact SW-03/SW-09 envelope because a credential appeared in transient operator output
+and must be rotated across the local database role and secret sources before OMEN starts.
 
 STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`
