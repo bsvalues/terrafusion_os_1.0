@@ -536,13 +536,14 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Local OMEN Runtime Repair container preflight completed |
-| Current WO | `WO-LOCAL-096 - OMEN Proof Container Recovery and Data-Preserving Reconstitution` complete |
-| Next WO | Protected candidate: `WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology Reconstitution` |
+| Selected program | Local OMEN Runtime Repair partial runtime recovery completed |
+| Current WO | `WO-LOCAL-097 - OMEN Proof Image Acquisition and Runtime Reconstitution` complete |
+| Next WO | Protected candidate: `WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup` |
 
-WO-LOCAL-096 proved the preserved Postgres volume and prior localhost topology are identifiable, but
-both required local images are absent. The packet prohibited pulls/builds and container creation
-without exact images, so preflight failed closed before any runtime mutation.
+WO-LOCAL-097 acquired the official digest-pinned Postgres image, reproduced the OMEN image from
+governed source, and recovered Postgres against the preserved volume. OMEN remains stopped after a
+credential appeared in transient operator-only inspect output; the value is omitted from evidence
+and must be rotated before application startup.
 
 ---
 
@@ -553,24 +554,25 @@ without exact images, so preflight failed closed before any runtime mutation.
 | Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
 | Program slug | `local-omen-runtime-repair` |
-| Status | CONTAINER PREFLIGHT COMPLETE - PROOF IMAGE ACQUISITION BLOCKED |
-| Current | `WO-LOCAL-096` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
-| Next | Proposed `WO-LOCAL-097` |
+| Status | POSTGRES HEALTHY - OMEN CREDENTIAL ROTATION BLOCKED |
+| Current | `WO-LOCAL-097` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Next | Proposed `WO-LOCAL-098` |
 
 ### Current Facts
 
 - Docker Desktop remains healthy against the recovered historical data VHDX.
-- The preserved `williamos-local-runtime_williamos_pgdata` volume is 47.66 MB and unchanged.
-- The existing `williamos-local-runtime_default` network remains present.
-- Both target container names are absent and all three localhost proof ports are clear.
-- `postgres:16-bookworm` and `williamos-app-proof:omen` are both absent from all local images.
-- Ports `15432`, `3100`, and `3101` are clear.
-- TerraFusion Postgres is untouched.
-- Manual proof is incomplete.
+- `postgres:16-bookworm` is present at registry digest `sha256:92620daddcd947f8d5ab5ba66e848702fe443d87fed30c4cea8e389fd78dfc55`.
+- `williamos-app-proof:omen` is present at image ID `sha256:21685ba482b9e7694aaac4afcf2c96ae83ffde5108bcb985e926196d996c7f38`.
+- `williamos-postgres-proof` is healthy on `127.0.0.1:15432` using the preserved `williamos-local-runtime_williamos_pgdata` volume.
+- `williamos-omen-app-proof` was not created or started.
+- The proof app's OpenTelemetry package defaults to loopback OTLP at port `4318`; the next proof topology must set `OTEL_SDK_DISABLED=true`.
+- A credential appeared in transient operator output from an over-broad inspect command. The value is not retained in evidence and must be rotated.
+- TerraFusion Postgres, county, PACS, production, schema, and application records remain untouched.
 
-Rule: Preserve existing state. Acquire/build only exact images under a separate bounded envelope before
-repeating container preflight. Factory reset, format, prune, generic cleanup, persistence deletion,
-LAN exposure, TerraFusion Postgres, secrets, and external operational resources remain blocked.
+Rule: Preserve the recovered Postgres state and keep OMEN stopped. Rotate the exposed local proof
+credential and reconcile secret-bearing sources only under a separate bounded envelope before app
+startup. Factory reset, format, prune, generic cleanup, persistence deletion, LAN exposure,
+TerraFusion Postgres, secret-value evidence, and external operational resources remain blocked.
 
 ---
 

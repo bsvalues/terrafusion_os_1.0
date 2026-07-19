@@ -281,11 +281,11 @@ installs auto-proceed.
 Goal:     Inspect Local OMEN runtime repair state without authorizing runtime mutation.
 Program:  Local OMEN Runtime Repair
 File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
-Success:  Operator sees WO-LOCAL-096 complete and WO-LOCAL-097 protected by exact image-acquisition/build authority.
+Success:  Operator sees WO-LOCAL-097 complete and WO-LOCAL-098 protected by exact credential-rotation authority.
 ```
 
-**Current state:** Historical storage and Docker Engine remain healthy. Container preflight failed
-closed because both required local images are absent; no proof container was created or started.
+**Current state:** Both proof images are ready and PostgreSQL is healthy on preserved persistence.
+OMEN remains stopped pending bounded credential rotation and telemetry-disabled proof startup.
 
 **Command alias:** `/local-omen-status`
 
