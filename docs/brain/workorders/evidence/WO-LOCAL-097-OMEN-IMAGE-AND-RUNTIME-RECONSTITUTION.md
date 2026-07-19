@@ -1,5 +1,9 @@
 # WO-LOCAL-097 - OMEN Image and Runtime Reconstitution Evidence
 
+> **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+> Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
+> continuation in its own repository and canon. The proposed WO-LOCAL-098 successor is withdrawn.
+
 ## Verdict
 
 **FOLLOW_ON_PROTECTED_BOUNDARY.** Both images are ready with immutable provenance and PostgreSQL is

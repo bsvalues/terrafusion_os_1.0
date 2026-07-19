@@ -2,13 +2,17 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
-| Program | Local OMEN Runtime Repair |
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
+| Status | SUPERSEDED - `OUT_OF_SCOPE_CROSS_PROJECT` |
+| TerraFusion capability | `NO_TERRAFUSION_CAPABILITY_DELIVERED` |
+| Program | Cross-Project Historical Audit (WilliamOS/TerraGroq) |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
 | Risk | R3 bounded local-runtime repair envelope |
 | Base | `13f0eabea7c4975e14818bbace84856f3ba823d9` |
-| Result | `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Result | `OUT_OF_SCOPE_CROSS_PROJECT` |
+
+> Historical audit only. The repaired Docker/OMEN surfaces belong to the separate
+> WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
 
 ## Objective
 

@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-19
-**Authority:** WO-LOCAL-097
+**Authority:** WO-PORTFOLIO-013
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,11 @@
 
 ## Active Goal
 
-WO-LOCAL-097 acquired the digest-verified official PostgreSQL image and built the OMEN image from
-governed source. PostgreSQL is healthy on the preserved named volume after ordinary crash recovery.
-OMEN remains stopped because an over-broad local metadata command exposed a credential in transient
-operator output and because the local proof topology must explicitly disable the unconfigured OTLP
-exporter before startup. No secret value is reproduced in repository evidence.
+WO-PORTFOLIO-013 corrected cross-project contamination: OMEN and all `williamos-*` proof surfaces
+belong to WilliamOS/TerraGroq, not TerraFusion. WO-LOCAL-093 through WO-LOCAL-097 are superseded as
+historical audit material, delivered no TerraFusion capability, and cannot route to proposed
+WO-LOCAL-098. No runtime, credential, container, database, or external resource mutation occurred in
+the correction.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -52,6 +52,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-PORTFOLIO-010 Post-Atlas Portfolio Reconciliation** | **DONE** | Sync selected; stale PR #1082 closed as superseded |
 | **WO-PORTFOLIO-011 Cross-Repository Sync Truth Reconciliation** | **DONE** | Target-repository proof prevented duplicate Sync work and established the current protected portfolio boundary |
 | **WO-PORTFOLIO-012 Protected Boundary Decomposition** | **DONE** | Exact lane table, stale P8 correction, and one consolidated strategic recommendation |
+| **WO-PORTFOLIO-013 Cross-Project Scope Correction** | **DONE** | WilliamOS/TerraGroq OMEN work removed from TerraFusion routing; historical evidence retained without capability claims |
 
 ### sovereign-sync-workbook-tooling (`GOAL-SYNC-WORKBOOK-TOOLING` / `LOOP-SYNC-WORKBOOK-TOOLING`)
 | WO | State | Notes |
@@ -165,15 +166,14 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
 | terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
 | benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
-| local-omen-runtime-repair | proposed WO-LOCAL-098 | credential rotation and safe OMEN startup / SW-03 / SW-09 | both images are ready and Postgres is healthy; exposed local credential must be rotated before OMEN starts | `evidence/WO-LOCAL-097-OMEN-IMAGE-AND-RUNTIME-RECONSTITUTION.md` |
+| cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-LOCAL-097:** `FOLLOW_ON_PROTECTED_BOUNDARY`. Image and PostgreSQL
-reconstitution passed, but OMEN startup did not occur. The exact next candidate is `WO-LOCAL-098 -
-OMEN Credential Rotation and Safe Application Startup`; it requires bounded secret rotation across
-the Postgres role and local credential sources, plus an explicit telemetry-disabled proof topology.
-The registry and wave planner return no executable node inside current authority.
+**Portfolio result after WO-PORTFOLIO-013:** `TRUE_TERRAFUSION_PORTFOLIO_BOUNDARY`. The foreign OMEN
+lane is removed. The registry and wave planner return no dependency-cleared TerraFusion-native node
+inside current authority. Remaining native candidates cross recorded production deployment,
+protected county/PACS data, runtime-import, TerraPilot promotion, or new-product boundaries.
 
 ---
 

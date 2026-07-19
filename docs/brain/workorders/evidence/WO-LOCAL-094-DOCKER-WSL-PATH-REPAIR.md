@@ -1,5 +1,9 @@
 # WO-LOCAL-094 - Docker WSL Disk Path Repair Evidence
 
+> **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+> Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
+> continuation in its own repository and canon.
+
 ## Verdict
 
 **FOLLOW_ON_PROTECTED_BOUNDARY.** Existing Docker state cannot be located, read, or preserved while

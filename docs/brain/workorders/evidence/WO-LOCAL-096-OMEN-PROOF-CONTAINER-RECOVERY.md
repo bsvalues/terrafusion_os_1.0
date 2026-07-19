@@ -1,5 +1,9 @@
 # WO-LOCAL-096 - OMEN Proof Container Recovery Evidence
 
+> **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+> Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
+> continuation in its own repository and canon.
+
 ## Verdict
 
 **FOLLOW_ON_PROTECTED_BOUNDARY.** The preserved database volume and prior proof topology are

@@ -278,14 +278,15 @@ installs auto-proceed.
 ### /goal local-omen-status
 
 ```
-Goal:     Inspect Local OMEN runtime repair state without authorizing runtime mutation.
-Program:  Local OMEN Runtime Repair
+Goal:     Inspect the historical cross-project contamination record without authorizing continuation.
+Program:  Cross-Project Historical Audit (WilliamOS/TerraGroq)
 File:     programs/ACTIVE_PROGRAM_PLAYBOOK.md
-Success:  Operator sees WO-LOCAL-097 complete and WO-LOCAL-098 protected by exact credential-rotation authority.
+Success:  Operator sees WO-LOCAL-093 through WO-LOCAL-097 superseded and WO-LOCAL-098 withdrawn.
 ```
 
-**Current state:** Both proof images are ready and PostgreSQL is healthy on preserved persistence.
-OMEN remains stopped pending bounded credential rotation and telemetry-disabled proof startup.
+**Current state:** OMEN and all `williamos-*` proof surfaces are foreign to TerraFusion. Their merged
+documents remain historical audit material only. No TerraFusion goal, loop, WO, or authority permits
+runtime continuation or transfer to WilliamOS/TerraGroq.
 
 **Command alias:** `/local-omen-status`
 

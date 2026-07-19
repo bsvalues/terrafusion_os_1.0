@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-LOCAL-097`; credential-rotation boundary proven
+**Status:** Reconciled at `WO-PORTFOLIO-013`; cross-project contamination removed
 
 ## Purpose
 
@@ -49,13 +49,14 @@ action, or other true wall still requires its own authority.
 > in time. The authoritative live "current node / next WO" is
 > [WORK_ORDER_PROGRAM_QUEUE.md](../WORK_ORDER_PROGRAM_QUEUE.md); if this snapshot disagrees, the queue wins.
 
-WO-LOCAL-097 acquired both required images with immutable provenance and recovered the named
-Postgres container against preserved persistence. PostgreSQL is healthy after normal crash recovery.
-The OMEN image is ready, but the application container was not created or started.
+WO-PORTFOLIO-013 classified WO-LOCAL-093 through WO-LOCAL-097 as cross-project WilliamOS/TerraGroq
+work, preserved their documents as historical audit material, removed them from TerraFusion
+executable routing, and withdrew proposed WO-LOCAL-098. No TerraFusion capability was delivered by
+those Work Orders and no authority transfers to the foreign project.
 
-The canonical registry and wave planner return no executable node inside current authority. The exact
-next candidate is proposed `WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup`.
-It requires an exact SW-03/SW-09 envelope because a credential appeared in transient operator output
-and must be rotated across the local database role and secret sources before OMEN starts.
+After that correction, the canonical registry and wave planner return no dependency-cleared
+TerraFusion-native node inside current authority. Remaining native candidates are bounded by their
+recorded production deployment, protected county/PACS data, runtime-import, TerraPilot promotion, or
+new-product authority walls.
 
-STOP_TYPE: `FOLLOW_ON_PROTECTED_BOUNDARY`
+STOP_TYPE: `TRUE_TERRAFUSION_PORTFOLIO_BOUNDARY`

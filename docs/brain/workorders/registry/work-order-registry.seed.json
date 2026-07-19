@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-LOCAL-097",
+  "generatedBy": "WO-PORTFOLIO-013",
   "generatedAt": "2026-07-19T00:00:00Z",
-  "description": "Local OMEN image-and-Postgres-recovery-reconciled representative registry for deterministic Work Order queries. Data only; no automation authority.",
+  "description": "Cross-project-corrected representative registry for deterministic Work Order queries. WilliamOS and OMEN records are historical only; data grants no automation authority.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -2953,10 +2953,10 @@
     {
       "id": "WO-LOCAL-093",
       "title": "Bounded Read-Only Local OMEN Diagnosis",
-      "program": "Local OMEN Runtime Repair",
+      "program": "Cross-Project Historical Audit (WilliamOS/TerraGroq)",
       "goal": "Diagnose the named local OMEN proof runtime without mutation and identify the exact repair boundary.",
       "riskClass": "R2",
-      "status": "complete",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-PORTFOLIO-012",
@@ -3055,14 +3055,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The owner authorized the complete read-only diagnostic Work Order and routine governance PR lifecycle. The authority excludes all runtime mutation."
+        "notes": "OUT_OF_SCOPE_CROSS_PROJECT. Historical evidence only; no TerraFusion execution or transfer authority remains."
       },
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
@@ -3073,10 +3073,10 @@
     {
       "id": "WO-LOCAL-094",
       "title": "Docker WSL Disk Path Repair and OMEN Re-observation",
-      "program": "Local OMEN Runtime Repair",
+      "program": "Cross-Project Historical Audit (WilliamOS/TerraGroq)",
       "goal": "Preserve and restore access to the existing Docker WSL data store before re-observing the named OMEN proof runtime.",
       "riskClass": "R3",
-      "status": "complete",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-LOCAL-093",
@@ -3174,14 +3174,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The owner authorized a bounded preservation-first repair, but the mandatory data-preservation gate failed safely before mutation. Routine governance evidence and PR lifecycle remain authorized."
+        "notes": "OUT_OF_SCOPE_CROSS_PROJECT. Historical evidence only; no TerraFusion execution or transfer authority remains."
       },
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
@@ -3192,10 +3192,10 @@
     {
       "id": "WO-LOCAL-095",
       "title": "Historical Docker Data Volume Recovery and Verified Remount",
-      "program": "Local OMEN Runtime Repair",
+      "program": "Cross-Project Historical Audit (WilliamOS/TerraGroq)",
       "goal": "Verify the reconnected historical Docker data volume, recover Docker against preserved state, and re-observe OMEN proof surfaces without container recreation.",
       "riskClass": "R3",
-      "status": "complete",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-LOCAL-094",
@@ -3293,14 +3293,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The bounded historical-volume and failed-engine recovery completed. Routine governance evidence and PR lifecycle remain authorized; container recreation/build is not."
+        "notes": "OUT_OF_SCOPE_CROSS_PROJECT. Historical evidence only; no TerraFusion execution or transfer authority remains."
       },
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
@@ -3311,10 +3311,10 @@
     {
       "id": "WO-LOCAL-096",
       "title": "OMEN Proof Container Recovery and Data-Preserving Reconstitution",
-      "program": "Local OMEN Runtime Repair",
+      "program": "Cross-Project Historical Audit (WilliamOS/TerraGroq)",
       "goal": "Recreate the named OMEN proof containers only after exact local images and preserved topology pass mandatory preflight.",
       "riskClass": "R3",
-      "status": "complete",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-LOCAL-095",
@@ -3412,14 +3412,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The owner authorized exact proof-container recreation only from verified existing local images. Mandatory preflight failed closed before runtime mutation; routine governance PR lifecycle remains authorized."
+        "notes": "OUT_OF_SCOPE_CROSS_PROJECT. Historical evidence only; no TerraFusion execution or transfer authority remains."
       },
       "provenance": {
         "createdAt": "2026-07-18T00:00:00Z",
@@ -3430,10 +3430,10 @@
     {
       "id": "WO-LOCAL-097",
       "title": "OMEN Proof Image Acquisition and Runtime Reconstitution",
-      "program": "Local OMEN Runtime Repair",
+      "program": "Cross-Project Historical Audit (WilliamOS/TerraGroq)",
       "goal": "Acquire immutable proof images, reconstruct evidenced topology, and recover the local OMEN proof runtime without crossing protected data or credential boundaries.",
       "riskClass": "R3",
-      "status": "complete",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-LOCAL-096",
@@ -3496,9 +3496,24 @@
         }
       ],
       "validationGates": [
-        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pass"},
-        {"name": "Brain query tests", "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs", "required": true, "result": "pass"},
-        {"name": "Wave planner tests", "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pass"}
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
       ],
       "evidenceProduced": [
         {
@@ -3515,6 +3530,126 @@
       ],
       "nextCandidates": [],
       "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "OUT_OF_SCOPE_CROSS_PROJECT. Historical evidence only; no TerraFusion execution or transfer authority remains."
+      },
+      "provenance": {
+        "createdAt": "2026-07-19T00:00:00Z",
+        "source": "Live registry/image/build/container/volume/network/port evidence and independent startup assurance under the authorized WO-LOCAL-097 envelope",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-PORTFOLIO-013",
+      "title": "Cross-Project Scope Correction",
+      "program": "Portfolio Operator",
+      "goal": "Remove WilliamOS and OMEN work from TerraFusion capability claims and executable routing while preserving audit history.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-LOCAL-097",
+          "status": "superseded",
+          "evidence": [
+            "WO-LOCAL-097 exposed the final foreign WilliamOS and OMEN routing that required correction."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and historical evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "WilliamOS, TerraGroq, OMEN, Docker, credentials, runtime, product, package, CI, deployment, county, PACS, SQL, secrets, production, or external-resource mutation"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-LOCAL-093-read-only-diagnosis.md",
+        "docs/brain/workorders/active/WO-LOCAL-094-docker-wsl-path-repair.md",
+        "docs/brain/workorders/active/WO-LOCAL-095-historical-volume-recovery.md",
+        "docs/brain/workorders/active/WO-LOCAL-096-omen-proof-container-recovery.md",
+        "docs/brain/workorders/active/WO-LOCAL-097-omen-image-runtime-reconstitution.md",
+        "docs/brain/workorders/active/WO-PORTFOLIO-013-cross-project-scope-correction.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-093-LOCAL-OMEN-READ-ONLY-DIAGNOSIS.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-094-DOCKER-WSL-PATH-REPAIR.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-095-HISTORICAL-VOLUME-RECOVERY.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-096-OMEN-PROOF-CONTAINER-RECOVERY.md",
+        "docs/brain/workorders/evidence/WO-LOCAL-097-OMEN-IMAGE-AND-RUNTIME-RECONSTITUTION.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/portfolio-operator.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "cross-project-scope-correction",
+          "description": "Prove foreign Work Orders are historical-only, no successor routes in TerraFusion, and no runtime or protected-resource mutation occurred."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "cross-project-scope-correction",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md",
+          "description": "Superseded foreign records, withdrawn successor routing, non-mutation proof, and TerraFusion-native boundary reconciliation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "true_portfolio_boundary",
+          "description": "No dependency-cleared TerraFusion-native node remains; every useful candidate crosses an exact protected boundary."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
         "mayWrite": true,
         "mayCommit": true,
         "mayPush": true,
@@ -3522,11 +3657,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "The owner authorized exact image acquisition/build and runtime reconstruction. The operator stopped before OMEN startup when credential rotation became necessary."
+        "notes": "Standing portfolio authority covers this governance-only correction and no foreign-project or runtime continuation."
       },
       "provenance": {
         "createdAt": "2026-07-19T00:00:00Z",
-        "source": "Live registry/image/build/container/volume/network/port evidence and independent startup assurance under the authorized WO-LOCAL-097 envelope",
+        "source": "Owner-confirmed project-boundary correction reconciled against current TerraFusion registry, queue, playbook, command routing, and historical evidence.",
         "schemaVersion": "0.1.0"
       }
     }
