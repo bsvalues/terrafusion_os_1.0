@@ -761,3 +761,18 @@
 | **verified constraints** | Suite-repo existence UNVERIFIABLE from session (`terrafusion-forge` probe → access-denied ≠ nonexistence). Repo creation owner-only (`403`). |
 | **lock status** | Unchanged. Decision-layer blueprint only; no repo created, no code moved, no lock released. Migrate-execution ACTIVE-LOCKED. |
 | **decision (for owner)** | Ratify §12 checklist (names, existence, retention, assignments, Forge-first, scope) → unblocks WO-SR-002 (freeze contracts) + WO-SR-003 (create repos, owner-only). |
+
+## Loop 49 — Authority-Reconciliation Ledger (WO-SR-001 §8): decomposition RECONCILED, base-repo identity = TRUE_OWNER_BOUNDARY (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L49 |
+| **trigger** | Owner doctrine: missing/external canon = reconciliation workload, NOT a protected boundary; `BLOCKED_MISSING_CANON_SOURCE` was wrong. Requirement #8: produce an authority-reconciliation ledger; constrain result to `CANON_RECONCILED_AND_PROGRAMMED` or a proven `TRUE_OWNER_BOUNDARY`. |
+| **precedence backbone** | `docs/brain/canon/source-priority.json`: rank1 `.github/AGENT_ENTRYPOINT.md`, rank2 **TF-052 Suite Constitution (LAW)**, rank3 `canon/*.json`, rank4 specs (write-lanes v3.1), … rank8 "other docs = context not law", rank9 ARCHIVE. |
+| **Layer A — RECONCILED** | Five-suite decomposition (forge/atlas/dais/dossier/gpt + domains + write-lanes + **Workbench/Pilot/Trace = OS**) is **LAW** (TF-052 + `suites.json` + `write-lanes.json v3.1`); owner thread + topology matrix agree. Older "monorepo = coordination/integration hub" language is **complementary** (= the OS/platform host role in WO-SR-001), not contradictory. → **CANON_RECONCILED_AND_PROGRAMMED** via WO-SR-001. |
+| **Layer B — TRUE_OWNER_BOUNDARY** | TF-052 is **silent on physical repo topology**; rank-8 arch docs conflict. **`CAPABILITY_PLACEMENT_MAP.md` classifies `terrafusion-os` as a SUPERSEDED predecessor and `terrafusion_os_1.0` as the CANONICAL monorepo — the inverse of the Loop 45 premise.** Also: absorb-IN (feeder ecosystem → monorepo) vs extract-OUT (owner thread) vs hybrid (coordination-hub + polyrepo SoT). Genuine unreconciled strategic fork. |
+| **new material** | Feeder-repo ecosystem found (`BSIncomeValuation`→Forge, `BCBSGISPRO`/`TerraGama`→Atlas, `TerraFlow`/`TerraPILT`→Dais, `CountyDataSync-1`→Sync, etc.) — WO-*-X-001 inventories need a **feeder-provenance** column; those repos are out-of-session/unverifiable. |
+| **evidence** | `AUTHORITY-RECONCILIATION-LEDGER.md` (ledger table + Layer A/B verdicts + RESULT block); WO-SR-001 §1 host row flagged CONTESTED. |
+| **correction to prior loops** | Loop 45's "terrafusion-os = sovereign receiving vessel" rests on a premise that origin/main canon contradicts. NOT silently reversed — **surfaced for knowing owner adjudication.** Owner's live word can supersede rank-8 context, but then `CAPABILITY_PLACEMENT_MAP` must be reconciled/updated. |
+| **lock status** | Unchanged. Decision/evidence-layer only; no repo created, no code moved, no lock released. |
+| **decision (for owner)** | Adjudicate Layer B: **EXTRACT-OUT** (terrafusion-os host + 5 new repos) vs **MONOREPO-CANONICAL/ABSORB-IN** (terrafusion_os_1.0 stays base; suites stay logical) vs **HYBRID** (coordination hub + polyrepo SoT). On EXTRACT-OUT, confirm the `terrafusion-os` supersession knowingly + update CAPABILITY_PLACEMENT_MAP. Layer A proceeds regardless. |

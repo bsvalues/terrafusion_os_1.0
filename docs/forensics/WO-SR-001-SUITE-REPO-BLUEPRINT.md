@@ -16,7 +16,7 @@ Names are **proposed, not final**. WO-SR-001 does not ratify them by stating the
 
 | Role | Proposed name | Owns | Exists? (owner to confirm) |
 |---|---|---|---|
-| **OS / platform host** | `terrafusion-os` (successor to `terrafusion_os_1.0` archive) | shell, Workbench host, Brain, Pilot, Trace, identity/auth/county, Sync/PACS, shared contracts, integration, governance | asserted-exists (Loop 45); **content unverifiable here** |
+| **OS / platform host** | `terrafusion-os` (successor to `terrafusion_os_1.0` archive) | shell, Workbench host, Brain, Pilot, Trace, identity/auth/county, Sync/PACS, shared contracts, integration, governance | ⚠ **CONTESTED** — `CAPABILITY_PLACEMENT_MAP.md` calls `terrafusion-os` a *superseded predecessor* and `terrafusion_os_1.0` the canonical monorepo (inverse of Loop 45). **Owner adjudication required — see `AUTHORITY-RECONCILIATION-LEDGER.md` Layer B** before this host identity is treated as settled |
 | Suite — valuation | `terrafusion-forge` | valuation / cost / current-use / sales | UNVERIFIABLE (access-denied) |
 | Suite — spatial | `terrafusion-atlas` | GIS / spatial | UNVERIFIABLE |
 | Suite — workflow | `terrafusion-dais` | assessor workflow / notices / certification / levy | UNVERIFIABLE |
