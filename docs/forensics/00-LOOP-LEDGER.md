@@ -748,3 +748,16 @@
 | **caveat** | "build/tests **passing**" unverifiable in-session (`dotnet` absent) — test existence/volume verified, greenness not. |
 | **lock status** | Unchanged. Docs/evidence-layer only; no code moved, no repo created, no lock released. Migrate-execution ACTIVE-LOCKED. |
 | **decision (for owner)** | Reconstruction complete. Recommended next: reconcile `CLAUDE.md` counts to reality; land/triage the 50+ unmerged branches; finish Atlas maps (#1073). Migration sequence (44R→45→Lock A) unchanged. |
+
+## Loop 48 — WO-SR-001: Canonical Suite Repository Ratification & Extraction Blueprint (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L48 |
+| **trigger** | Owner accepted Loop 47 ledger as baseline; reframed the program as **governed extraction of proven suite implementations** into clean canonical repos (not greenfield). Directed: produce **WO-SR-001**, not another audit. |
+| **grounding** | Verified suite source paths: Forge = `TerraFusion.CostForge`+`CurrentUse`(+Host)+fe `pages/forge`(307); Atlas = fe `pages/atlas`(20)+GIS in Data (maps placeholder); Dais = Core entities+`DaisController`+`Levy`+fe `pages/dais`(8)/`notice`(16); Dossier = fe `pages/dossier`(1)+API/Core; GPT = `TerraFusion.AI` Muse/RAG+fe `pages/suites`(49)+MuseChat. Abstractions seam (Loops 24–39) = the consume-side contracts. |
+| **action** | Wrote `WO-SR-001-SUITE-REPO-BLUEPRINT.md` answering all 10 required questions: names (PROPOSED, owner-ratify), existence (UNVERIFIABLE here), OS retention list, source-path assignments, shared contracts per suite, disposition taxonomy (RETAIN_IN_OS/EXTRACT_EXACT/REWRITE_FOR_SUITE/SHARE_AS_CONTRACT/MINE_PATTERN/DEFER/REJECT), extraction-matrix schema + worked Forge rows, dependency/build boundaries (suite→Abstractions→OS, one-way), cutover test/evidence gates, bootstrap Phases 1–4 (Forge pilot first), WO chain (SR-001..006, FORGE-X-001..007, then per suite), locks, owner ratification checklist. |
+| **key model** | OS host = `terrafusion-os` (keeps shell, **Workbench host**, Brain, Pilot, Trace, identity/auth/county, Sync/PACS, contracts, integration, governance). 5 suite repos = forge/atlas/dais/dossier/gpt (names PROPOSED). **Property Workbench stays in OS — composes suites, never absorbs.** Forge = first pilot (strongest). Phase-4 order Atlas→Dais→Dossier→GPT (uncertainty-minimizing, not maturity rank). |
+| **verified constraints** | Suite-repo existence UNVERIFIABLE from session (`terrafusion-forge` probe → access-denied ≠ nonexistence). Repo creation owner-only (`403`). |
+| **lock status** | Unchanged. Decision-layer blueprint only; no repo created, no code moved, no lock released. Migrate-execution ACTIVE-LOCKED. |
+| **decision (for owner)** | Ratify §12 checklist (names, existence, retention, assignments, Forge-first, scope) → unblocks WO-SR-002 (freeze contracts) + WO-SR-003 (create repos, owner-only). |

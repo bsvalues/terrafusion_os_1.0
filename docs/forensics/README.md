@@ -118,6 +118,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **TerraFusionOS Receiving-Vessel Scaffold** (WO-LOOP-44; governance scaffold — now a *reconciliation candidate*, see correction) | `terrafusionos-vessel/_STAGING-README.md` |
 | **WO-LOOP-44R — Reconcile w/ existing `terrafusion-os`** (CORRECTION: receiving repo already exists; reconcile not create; identity map, lock model, comparison checklist) | `WO-LOOP-44R-RECONCILE.md` |
 | **Progress Reconstruction Ledger** (what is actually BUILT — merged-PR arc + backend/gov/frontend/CI reality; corrects "half-made" impression + stale doc counts) | `PROGRESS-RECONSTRUCTION-LEDGER.md` |
+| **WO-SR-001 — Suite Repo Ratification & Extraction Blueprint** (5-repo names/retention/source-paths/contracts/disposition/matrix/bootstrap/WO-chain; decision-layer) | `WO-SR-001-SUITE-REPO-BLUEPRINT.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
