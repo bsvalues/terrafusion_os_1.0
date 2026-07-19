@@ -734,3 +734,17 @@
 | **key corrections folded in** | Receiving vessel = existing `bsvalues/terrafusion-os` (never create a new repo); `terrafusion_os_1.0` = source/archive (not deprecated); Lock B SATISFIED (repo exists) pending content verification; execution BLOCKED on Lock A; next sequence WO-LOOP-44R → WO-LOOP-45 → (maybe) open Lock A. |
 | **lock status** | Unchanged. Lock A CLOSED, Lock B SATISFIED (parity pending), execution BLOCKED. Recovery/Migrate-execution ACTIVE-LOCKED. |
 | **decision (for owner)** | Same fork as Loop 45: add `terrafusion-os` to scope (so I run WO-LOOP-44R) or run it owner-side; then WO-LOOP-45; then discuss Lock A. Or signal 1/2/3. |
+
+## Loop 47 — Progress Reconstruction Ledger: inventory what is actually BUILT (evidence sweep) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L47 |
+| **trigger** | Owner reframe: step back, reconstruct actual progress from the record, not another audit. Correct the "half-made monorepo" impression; produce a progress reconstruction ledger. |
+| **method** | Four parallel evidence-gathering agents over this repo + `origin/main` merged history: (1) merged-PR arc, (2) backend reality, (3) governance/execution/portfolio, (4) frontend/suites/CI. Evidence-only; cross-repo/cross-chat claims marked ASSERTED-ELSEWHERE. |
+| **key findings** | **Merged core is real, not scaffolding:** 17 evidence-backed PRs (2026-05-25→06-23, main HEAD `2ae013561`). **Backend substantially built:** 228 DbSets, 103 migrations, 19,720-ln snapshot, TerraDais end-to-end, ~7,483 tests (~1,900 integration), county isolation in 95 files. **Governance ~70% real** (Brain/Cortex `workorder.mjs` engine, canon law, reserved-staging, SEAL CI). **Frontend uneven:** Forge (307 files) + Workbench host strong; Atlas maps placeholder; Dossier 1 file. **CI/DevEx most mature** (Azure pipelines, Seal Gate, phase85/86, Tier-1 harness — all confirmed). |
+| **corrections (invalid old findings)** | `CLAUDE.md` "716 tests / 20+ DbSets" = stale undercount (real ~7,483 / 228). "3-way sharding" DENIED (2-way visual only). "No hook-time installs" CONTRADICTED (`.husky/pre-push`). **`TerraFusion_Codex_Full_Portfolio_Goal.md` / `PROGRAM-MAO-001` / "portfolio operator" NOT on disk anywhere** — ASSERTED-ELSEWHERE. **Self-correction:** my Loops 1–46 over-framed the project as "superseded/locked/to-migrate" and never inventoried what main delivers; this ledger fills that gap. Still valid: AI-swarm stubbed; branch lineage superseded-by-main; PACS fence. |
+| **evidence** | `PROGRESS-RECONSTRUCTION-LEDGER.md` (ledger table + 6 syntheses: complete / operational / impl-not-proven / remaining / invalid-findings / where-5-repos-enter) |
+| **caveat** | "build/tests **passing**" unverifiable in-session (`dotnet` absent) — test existence/volume verified, greenness not. |
+| **lock status** | Unchanged. Docs/evidence-layer only; no code moved, no repo created, no lock released. Migrate-execution ACTIVE-LOCKED. |
+| **decision (for owner)** | Reconstruction complete. Recommended next: reconcile `CLAUDE.md` counts to reality; land/triage the 50+ unmerged branches; finish Atlas maps (#1073). Migration sequence (44R→45→Lock A) unchanged. |
