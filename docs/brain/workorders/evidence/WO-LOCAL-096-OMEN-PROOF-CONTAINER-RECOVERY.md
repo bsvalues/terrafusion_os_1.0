@@ -1,5 +1,10 @@
 # WO-LOCAL-096 - OMEN Proof Container Recovery Evidence
 
+> **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+> Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
+> continuation in its own repository and canon.
+> Every follow-on recommendation below is withdrawn and has no current TerraFusion authority.
+
 ## Verdict
 
 **FOLLOW_ON_PROTECTED_BOUNDARY.** The preserved database volume and prior proof topology are
@@ -68,9 +73,9 @@ ports are otherwise ready.
 
 ## Follow-On Protected Boundary
 
-### Proposed Work Order
+### Historical Proposed Work Order (Withdrawn)
 
-`WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology Reconstitution`
+`WO-LOCAL-097 - OMEN Proof Image Acquisition and Topology Reconstitution` (withdrawn; non-routable)
 
 ### Exact Failing Components
 
@@ -160,5 +165,5 @@ APPLICATION_IMAGE: absent
 CONTAINERS_CREATED: 0
 RUNTIME_MUTATION_PERFORMED: no
 SECRETS_READ_OR_DISCLOSED: no
-NEXT_WORK_ORDER: WO-LOCAL-097
+NEXT_WORK_ORDER: NONE_IN_TERRAFUSION
 ```

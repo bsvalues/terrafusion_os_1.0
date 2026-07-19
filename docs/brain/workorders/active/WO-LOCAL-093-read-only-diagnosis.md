@@ -2,20 +2,27 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
-| Program | Local OMEN Runtime Repair |
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
+| Status | SUPERSEDED - `OUT_OF_SCOPE_CROSS_PROJECT` |
+| TerraFusion capability | `NO_TERRAFUSION_CAPABILITY_DELIVERED` |
+| Program | Cross-Project Historical Audit (WilliamOS/TerraGroq) |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
 | Risk | R2 local environment read-only diagnosis |
 | Base | `d334c679a59a596810a9055dc168c20b589adc9f` |
-| Result | `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Result | `OUT_OF_SCOPE_CROSS_PROJECT` |
 
-## Objective
+> Historical audit only. The diagnosed OMEN and `williamos-*` surfaces belong to the separate
+> WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
+
+> Every objective, file scope, result, successor, and authorization below is historical and
+> withdrawn. It is not routable and cannot be used as a current Brain machine policy.
+
+## Historical Objective (Not Authorized)
 
 Inspect the named local OMEN proof surfaces without mutation, determine whether the proof runtime is
 healthy, and produce one exact follow-on packet if repair requires protected runtime action.
 
-## Authorized Files
+## Historical File Scope (Withdrawn)
 
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -27,7 +34,7 @@ healthy, and produce one exact follow-on packet if repair requires protected run
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 
-## Result
+## Historical Result
 
 Docker Desktop 4.79.0 cannot initialize its Linux/WSL engine. The configured WSL disk path is a
 junction from `%LOCALAPPDATA%\Docker\wsl\disk` to `E:\DockerData`, while `E:` is not available in
@@ -36,7 +43,8 @@ fails before the daemon pipe is created. The named OMEN containers therefore can
 through the Docker API, and no expected proof ports are listening.
 
 No runtime, container, process, network, volume, configuration, credential, or data mutation was
-performed. Repair requires a separately authorized `WO-LOCAL-094` packet.
+performed. The historical report recommended `WO-LOCAL-094`; that successor is now withdrawn and
+non-routable in TerraFusion.
 
 ## Validation
 
@@ -48,8 +56,8 @@ performed. Repair requires a separately authorized `WO-LOCAL-094` packet.
 - No runtime, backend, product, package, CI, deployment, county, PACS, SQL, secret, or live-resource
   change.
 
-<!-- brain-machine-policy: brain review-diff reads the json block below -->
-```json
+<!-- withdrawn historical policy: deliberately not machine-readable by brain review-diff -->
+```historical-json
 {
   "id": "WO-LOCAL-093",
   "task": "Diagnose the named local OMEN proof runtime without mutation and identify the exact repair boundary",

@@ -2,21 +2,28 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
-| Program | Local OMEN Runtime Repair |
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
+| Status | SUPERSEDED - `OUT_OF_SCOPE_CROSS_PROJECT` |
+| TerraFusion capability | `NO_TERRAFUSION_CAPABILITY_DELIVERED` |
+| Program | Cross-Project Historical Audit (WilliamOS/TerraGroq) |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
 | Risk | R3 bounded local-runtime mutation envelope |
 | Base | `e5082f7b981ce4f5d5ee06d0fa7041af9d2ecc9d` |
-| Result | `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Result | `OUT_OF_SCOPE_CROSS_PROJECT` |
 
-## Objective
+> Historical audit only. The OMEN and `williamos-*` proof surfaces belong to the separate
+> WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
+
+> Every objective, file scope, result, successor, and authorization below is historical and
+> withdrawn. It is not routable and cannot be used as a current Brain machine policy.
+
+## Historical Objective (Not Authorized)
 
 Recreate only the named OMEN Postgres and application proof containers against preserved Docker
 state after proving the exact images, volume, network, ports, commands, and non-destructive startup
 contract.
 
-## Authorized Files
+## Historical File Scope (Withdrawn)
 
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -29,7 +36,7 @@ contract.
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 
-## Result
+## Historical Result
 
 Preflight positively identified the preserved Postgres volume, existing Docker network, localhost
 ports, Compose service, application start script, and environment-variable names without exposing
@@ -56,8 +63,8 @@ mounted or mutated.
 - No container, image, volume, network, database, credential, package, CI, deployment, county, PACS,
   SQL, external-resource, or production mutation.
 
-<!-- brain-machine-policy: brain review-diff reads the json block below -->
-```json
+<!-- withdrawn historical policy: deliberately not machine-readable by brain review-diff -->
+```historical-json
 {
   "id": "WO-LOCAL-096",
   "task": "Recreate the named OMEN proof containers only after exact local images and preserved topology pass the mandatory preflight",

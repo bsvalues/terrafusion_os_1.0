@@ -2,21 +2,28 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
-| Program | Local OMEN Runtime Repair |
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
+| Status | SUPERSEDED - `OUT_OF_SCOPE_CROSS_PROJECT` |
+| TerraFusion capability | `NO_TERRAFUSION_CAPABILITY_DELIVERED` |
+| Program | Cross-Project Historical Audit (WilliamOS/TerraGroq) |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
 | Risk | R3 bounded local-runtime recovery envelope |
 | Base | `4d77e0717b10c3178a1c59e811cf1cf25cb6116f` |
-| Result | `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Result | `OUT_OF_SCOPE_CROSS_PROJECT` |
 
-## Objective
+> Historical audit only. The recovered Docker/OMEN surfaces belong to the separate
+> WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
+
+> Every objective, file scope, result, successor, and authorization below is historical and
+> withdrawn. It is not routable and cannot be used as a current Brain machine policy.
+
+## Historical Objective (Not Authorized)
 
 Verify the reconnected historical Docker data volume by exact identity, recover Docker Desktop once
 against the preserved data store, and re-observe the named OMEN proof surfaces without recreating
 containers, images, volumes, networks, or credentials.
 
-## Authorized Files
+## Historical File Scope (Withdrawn)
 
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -29,7 +36,7 @@ containers, images, volumes, networks, or credentials.
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 
-## Result
+## Historical Result
 
 The historical volume returned at `E:` with the exact recorded volume GUID and preserved Docker data
 VHDX. Docker Desktop's automatic startup raced volume attachment and failed. The authorized bounded
@@ -52,8 +59,8 @@ runtime mutation and was not performed.
 - No container/image/volume/network recreation, removal, pull, build, configuration, database,
   product, package, CI, deployment, county, PACS, SQL, secret, or production mutation.
 
-<!-- brain-machine-policy: brain review-diff reads the json block below -->
-```json
+<!-- withdrawn historical policy: deliberately not machine-readable by brain review-diff -->
+```historical-json
 {
   "id": "WO-LOCAL-095",
   "task": "Verify and recover Docker against the reconnected historical data volume, then re-observe OMEN proof state without container recreation",

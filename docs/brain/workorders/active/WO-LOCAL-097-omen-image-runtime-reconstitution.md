@@ -2,26 +2,32 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
-| Program | Local OMEN Runtime Repair |
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
+| Status | SUPERSEDED - `OUT_OF_SCOPE_CROSS_PROJECT` |
+| TerraFusion capability | `NO_TERRAFUSION_CAPABILITY_DELIVERED` |
+| Program | Cross-Project Historical Audit (WilliamOS/TerraGroq) |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
 | Risk | R3 bounded local-runtime and supply-chain mutation envelope |
 | Base | `4d1be03f4d5012ae249e2b0d2f016f7952d7da29` |
-| Result | `FOLLOW_ON_PROTECTED_BOUNDARY` |
+| Result | `OUT_OF_SCOPE_CROSS_PROJECT` |
 
-## Objective
+> Historical audit only. The OMEN and `williamos-*` proof surfaces belong to the separate
+> WilliamOS/TerraGroq project. This packet grants no TerraFusion execution or successor authority.
+
+> Every objective, file scope, result, successor, and authorization below is historical and
+> withdrawn. It is not routable and cannot be used as a current Brain machine policy.
+
+## Historical Objective (Not Authorized)
 
 Acquire the two exact proof images with immutable provenance, reconstruct the evidenced local-only
 topology, recover PostgreSQL against preserved persistence, and start OMEN only when its effective
 startup behavior passes every fail-closed gate.
 
-## Authorized Files
+## Historical File Scope (Withdrawn)
 
-This outside-core documentation scope is not self-granted by the Work Order. The controlling Owner
-authorization for WO-LOCAL-097 explicitly permits evidence capture, commit, PR, review remediation,
-authorized merge, post-merge verification, and portfolio recomputation for this recovery cycle. The
-exact file list below bounds that explicit exception to the root `AGENTS.md` core-surface default.
+At the time of execution, a controlling Owner authorization permitted the historical recovery cycle.
+That authorization is consumed and withdrawn from TerraFusion routing. The file list below records
+the former scope only and grants no present evidence, commit, PR, merge, runtime, or successor action.
 
 - `docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md`
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
@@ -34,7 +40,7 @@ exact file list below bounds that explicit exception to the root `AGENTS.md` cor
 - `docs/brain/workorders/programs/portfolio-operator.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 
-## Result
+## Historical Result
 
 The official PostgreSQL image was acquired by immutable registry digest, and the OMEN image was
 reproduced from exact governed source with unchanged package and lockfile hashes. PostgreSQL was
@@ -62,8 +68,8 @@ rotation is now mandatory before OMEN startup and is outside this envelope.
 - Work Order query and wave-planner tests and JSON output.
 - Required core gates.
 
-<!-- brain-machine-policy: brain review-diff reads the json block below -->
-```json
+<!-- withdrawn historical policy: deliberately not machine-readable by brain review-diff -->
+```historical-json
 {
   "id": "WO-LOCAL-097",
   "task": "Acquire immutable OMEN proof images and reconstitute the local proof runtime only while supply-chain, topology, persistence, startup, and secret-safety gates pass",

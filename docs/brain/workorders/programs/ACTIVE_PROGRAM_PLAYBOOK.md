@@ -536,43 +536,42 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Local OMEN Runtime Repair partial runtime recovery completed |
-| Current WO | `WO-LOCAL-097 - OMEN Proof Image Acquisition and Runtime Reconstitution` complete |
-| Next WO | Protected candidate: `WO-LOCAL-098 - OMEN Credential Rotation and Safe Application Startup` |
+| Selected program | Portfolio Operator cross-project scope correction |
+| Current WO | `WO-PORTFOLIO-013 - Cross-Project Scope Correction` complete |
+| Next WO | No dependency-cleared TerraFusion-native WO is registered |
 
-WO-LOCAL-097 acquired the official digest-pinned Postgres image, reproduced the OMEN image from
-governed source, and recovered Postgres against the preserved volume. OMEN remains stopped after a
-credential appeared in transient operator-only inspect output; the value is omitted from evidence
-and must be rotated before application startup.
+WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
+TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
+TerraFusion capability. Proposed WO-LOCAL-098 is withdrawn and cannot execute under TerraFusion
+authority.
 
 ---
 
-## Program 5 - Local OMEN Runtime Repair
+## Program 5 - Cross-Project Historical Audit (WilliamOS/TerraGroq)
 
 | Field | Value |
 |-------|-------|
-| Goal | `GOAL-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Loop | `LOOP-LOCAL-OMEN-RUNTIME-REPAIR` |
-| Program slug | `local-omen-runtime-repair` |
-| Status | POSTGRES HEALTHY - OMEN CREDENTIAL ROTATION BLOCKED |
-| Current | `WO-LOCAL-097` complete with `FOLLOW_ON_PROTECTED_BOUNDARY` |
-| Next | Proposed `WO-LOCAL-098` |
+| Goal | None in TerraFusion |
+| Loop | None in TerraFusion |
+| Program slug | `cross-project-historical-audit` |
+| Status | `OUT_OF_SCOPE_CROSS_PROJECT` |
+| Current | `WO-LOCAL-093` through `WO-LOCAL-097` superseded |
+| Next | None in TerraFusion; `WO-LOCAL-098` withdrawn |
 
 ### Current Facts
 
-- Docker Desktop remains healthy against the recovered historical data VHDX.
-- `postgres:16-bookworm` is present at registry digest `sha256:92620daddcd947f8d5ab5ba66e848702fe443d87fed30c4cea8e389fd78dfc55`.
-- `williamos-app-proof:omen` is present at image ID `sha256:21685ba482b9e7694aaac4afcf2c96ae83ffde5108bcb985e926196d996c7f38`.
-- `williamos-postgres-proof` is healthy on `127.0.0.1:15432` using the preserved `williamos-local-runtime_williamos_pgdata` volume.
-- `williamos-omen-app-proof` was not created or started.
-- The proof app's OpenTelemetry package defaults to loopback OTLP at port `4318`; the next proof topology must set `OTEL_SDK_DISABLED=true`.
-- A credential appeared in transient operator output from an over-broad inspect command. The value is not retained in evidence and must be rotated.
-- TerraFusion Postgres, county, PACS, production, schema, and application records remain untouched.
+- OMEN, `williamos-postgres-proof`, `williamos-omen-app-proof`, and `williamos-app-proof:omen` are
+  WilliamOS/TerraGroq surfaces, not TerraFusion components.
+- WO-LOCAL-093 through WO-LOCAL-097 are preserved only as audit evidence of the scope error.
+- Classification: `OUT_OF_SCOPE_CROSS_PROJECT` and `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+- No credential rotation, container creation, startup, or runtime mutation is authorized here.
+- Transfer or continuation requires the other project's repository, canon, Work Order, authority,
+  evidence, and credential handling.
+- TerraFusion runtime, Postgres, county, PACS, production, schema, and application records remain
+  untouched by this correction.
 
-Rule: Preserve the recovered Postgres state and keep OMEN stopped. Rotate the exposed local proof
-credential and reconcile secret-bearing sources only under a separate bounded envelope before app
-startup. Factory reset, format, prune, generic cleanup, persistence deletion, LAN exposure,
-TerraFusion Postgres, secret-value evidence, and external operational resources remain blocked.
+Rule: Do not route or execute WilliamOS/TerraGroq work from TerraFusion. Historical evidence may be
+read for audit only and does not transfer authority between projects.
 
 ---
 

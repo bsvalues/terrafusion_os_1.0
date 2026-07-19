@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-19
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | FOLLOW_ON_PROTECTED_BOUNDARY after WO-LOCAL-097; proposed WO-LOCAL-098 credential rotation and safe app startup | YES - credential mutation authority is absent | `once`, `evidence`, `discovery` |
+| `program-next` | Portfolio Operator | TRUE_TERRAFUSION_PORTFOLIO_BOUNDARY after WO-PORTFOLIO-013; no dependency-cleared TerraFusion-native WO is registered | YES - remaining native candidates cross recorded protected boundaries | `once`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
@@ -37,7 +37,7 @@ resolves.
 | `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
 | `devex-hooks-status` | DevEx Hook Tooling | CLOSED at WO-DEVEX-HOOKS-006 | YES - return to portfolio loop | `evidence`, `discovery` |
-| `local-omen-status` | Local OMEN Runtime Repair | WO-LOCAL-097 complete; proposed WO-LOCAL-098 | YES - Postgres is healthy, but credential rotation is required before OMEN startup | `evidence`, `discovery` |
+| `local-omen-status` | Cross-Project Historical Audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | YES - WilliamOS/TerraGroq is outside TerraFusion authority | `evidence`, `discovery` |
 | `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | CLOSED at WO-WOE-013 / PR #1291 | YES - report baseline complete; no successor | `once`, `evidence`, `discovery` |

@@ -1,5 +1,10 @@
 # WO-LOCAL-094 - Docker WSL Disk Path Repair Evidence
 
+> **Portfolio classification:** `OUT_OF_SCOPE_CROSS_PROJECT` / `NO_TERRAFUSION_CAPABILITY_DELIVERED`.
+> Preserved as historical audit material only. WilliamOS/TerraGroq must authorize any transfer or
+> continuation in its own repository and canon.
+> Every follow-on recommendation below is withdrawn and has no current TerraFusion authority.
+
 ## Verdict
 
 **FOLLOW_ON_PROTECTED_BOUNDARY.** Existing Docker state cannot be located, read, or preserved while
@@ -60,9 +65,9 @@ Accordingly, these authorized actions were deliberately **not** taken:
 
 ## Follow-On Protected Boundary
 
-### Proposed Work Order
+### Historical Proposed Work Order (Withdrawn)
 
-`WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount`
+`WO-LOCAL-095 - Historical Docker Data Volume Recovery and Verified Remount` (withdrawn; non-routable)
 
 ### Exact Failing Component
 
@@ -159,5 +164,5 @@ PROPOSED_ACTION: reconnect and GUID-match the historical volume before any repai
 DATA_LOSS_RISK: high if empty or wrong storage is substituted
 RUNTIME_MUTATION_PERFORMED: no
 SECRETS_READ: no
-NEXT_WORK_ORDER: WO-LOCAL-095
+NEXT_WORK_ORDER: NONE_IN_TERRAFUSION
 ```
