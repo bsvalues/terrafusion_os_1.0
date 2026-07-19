@@ -1,0 +1,149 @@
+{
+  "_manifest": "TerraFusion suite repository creation manifest",
+  "_status": "READY — machine-executable; execution gated only by EXECUTION_CREDENTIAL_BOUNDARY (repo-create scope)",
+  "_authority": "OWNER-DECISION-TOPOLOGY-RATIFIED.md (Loop 50) — topology + names + base identity CLOSED",
+  "_owner_engineering_required": "NONE",
+  "_generated": "2026-06-25",
+  "_defaults": {
+    "organization": "bsvalues",
+    "visibility": "private",
+    "default_branch": "main",
+    "merge_strategy": { "allow_squash": true, "allow_merge_commit": false, "allow_rebase": false, "delete_branch_on_merge": true },
+    "branch_protection": {
+      "branch": "main",
+      "require_pull_request": true,
+      "required_approving_reviews": 1,
+      "dismiss_stale_reviews": true,
+      "require_conversation_resolution": true,
+      "allow_force_pushes": false,
+      "allow_deletions": false,
+      "enforce_admins": true,
+      "required_status_checks": ["suite-ci", "contract-compat", "governance-gate"]
+    },
+    "initial_files": [
+      "README.md", "AGENTS.md", "LICENSE", ".gitignore",
+      "canon/INTAKE_RULES.md",
+      "canon/SUITE_DOMAIN_PACK.md",
+      "canon/CONTRACT_DEPENDENCY.md",
+      "operations/work-orders/.gitkeep",
+      "operations/evidence/MIGRATION_PROVENANCE_LEDGER.md",
+      "docs/decisions/.gitkeep",
+      "EXTRACTED_FROM.md",
+      ".github/workflows/suite-ci.yml"
+    ],
+    "governance": {
+      "one_brain": "subordinate to bsvalues/terrafusion_os_1.0 — NO separate brain/queue/constitution",
+      "central_integration_gates": true,
+      "may_redefine_shared_contracts": false
+    }
+  },
+  "repositories": [
+    {
+      "name": "terrafusion-forge",
+      "owning_suite": "forge",
+      "domain": "Valuation",
+      "description": "TerraForge — valuation suite (cost/income/sales/AVM/ratio). Federated Tier-1 suite under terrafusion_os_1.0. One Brain: central governance.",
+      "topics": ["terrafusion", "suite", "valuation", "cama", "assessment", "federated-suite"],
+      "shared_contract_dependency": [
+        "TerraFusion.Abstractions/Interfaces/IForgeStatisticsService",
+        "TerraFusion.Abstractions/DTOs/CostForgeStatsDto",
+        "TerraFusion.Abstractions/DTOs/CostMatrixDto",
+        "TerraFusion.Abstractions/DTOs/PropertyValuationInputDto",
+        "TerraFusion.Abstractions/DTOs/ValuationResultDto",
+        "TerraFusion.Abstractions/DTOs/Kernel/KernelCostApproachRequest",
+        "TerraFusion.Abstractions/DTOs/Kernel/KernelCostApproachResponse"
+      ],
+      "extraction_source_paths": [
+        "backend/src/TerraFusion.CostForge/**",
+        "backend/src/TerraFusion.CurrentUse/** (+ .Host)",
+        "frontend/apps/os-shell/src/pages/forge/** (307)"
+      ],
+      "feeder_provenance": ["BSIncomeValuation", "GeospatialAnalyzerBS(sales)", "terra-forge-rebuild(provisional)", "WashingtonForge(provisional)"],
+      "pilot": true,
+      "rollback": "delete repo if empty; if bootstrapped, revert bootstrap commit; terrafusion_os_1.0 remains authoritative until Forge extraction/promotion gate passes"
+    },
+    {
+      "name": "terrafusion-atlas",
+      "owning_suite": "atlas",
+      "domain": "GIS",
+      "description": "TerraAtlas — GIS/spatial suite. Federated Tier-1 suite under terrafusion_os_1.0. One Brain: central governance.",
+      "topics": ["terrafusion", "suite", "gis", "spatial", "maps", "federated-suite"],
+      "shared_contract_dependency": [
+        "TerraFusion.Abstractions/Interfaces/IGisDataService",
+        "TerraFusion.Abstractions/DTOs/GisTf/ParcelGeometryResponse",
+        "TerraFusion.Abstractions/DTOs/GisTf/ParcelNeighborResponse"
+      ],
+      "extraction_source_paths": [
+        "frontend/apps/os-shell/src/pages/atlas/** (20)",
+        "GIS geometry in backend/src/TerraFusion.Data (type-level cut)"
+      ],
+      "feeder_provenance": ["BCBSGISPRO", "GeospatialAnalyzerBS", "TerraGama"],
+      "blocker": "map rendering is placeholder (atlas/components/MapContainer.tsx); close #1073 maplibre BEFORE extraction/promotion gate",
+      "rollback": "delete repo if empty; terrafusion_os_1.0 remains authoritative until Atlas gate passes"
+    },
+    {
+      "name": "terrafusion-dais",
+      "owning_suite": "dais",
+      "domain": "Assessor Admin",
+      "description": "TerraDais — assessor workflow suite (permits/exemptions/appeals/notices/certification/levy). Federated Tier-1 suite under terrafusion_os_1.0. One Brain: central governance.",
+      "topics": ["terrafusion", "suite", "assessor", "workflow", "levy", "federated-suite"],
+      "shared_contract_dependency": [
+        "TerraFusion.Abstractions/DTOs/Workbench/SyncReadinessDto",
+        "TerraFusion.Abstractions/Interfaces/Workbench/IWorkbenchSyncReadinessService",
+        "TerraFusion.Abstractions/Interfaces/Workbench/IPacsReachabilityProbeService",
+        "TerraFusion.Abstractions/DTOs/CanonicalTf/*"
+      ],
+      "extraction_source_paths": [
+        "Dais entities+services in backend/src/TerraFusion.Core (type-level cut)",
+        "DaisController in backend/src/TerraFusion.API",
+        "backend/src/TerraFusion.Levy/** (+ LevyDbContext)",
+        "frontend/apps/os-shell/src/pages/dais/** (8), pages/notice/** (16)"
+      ],
+      "feeder_provenance": ["TerraFlow", "TerraPILT", "BCBSLevy"],
+      "note": "backend strong / frontend thin — extract backend, thicken fe post-gate",
+      "rollback": "delete repo if empty; terrafusion_os_1.0 remains authoritative until Dais gate passes"
+    },
+    {
+      "name": "terrafusion-dossier",
+      "owning_suite": "dossier",
+      "domain": "Records/Evidence",
+      "description": "TerraDossier — evidence/document assembly suite. Federated Tier-1 suite under terrafusion_os_1.0. One Brain: central governance.",
+      "topics": ["terrafusion", "suite", "evidence", "documents", "records", "federated-suite"],
+      "shared_contract_dependency": [
+        "TerraFusion.Abstractions/Interfaces/IAuditLogger",
+        "TerraFusion.Abstractions/DTOs/CanonicalTf/* (parcel refs)"
+      ],
+      "extraction_source_paths": [
+        "Dossier controllers/entities in backend/src/{TerraFusion.API,TerraFusion.Core}",
+        "frontend/apps/os-shell/src/pages/dossier/** (1 — thinnest)"
+      ],
+      "feeder_provenance": [],
+      "note": "thinnest suite — consolidate ownership slice first; do NOT split early; last non-GPT extraction",
+      "rollback": "delete repo if empty; terrafusion_os_1.0 remains authoritative until Dossier gate passes"
+    },
+    {
+      "name": "terrafusion-gpt",
+      "owning_suite": "gpt",
+      "domain": "AI",
+      "description": "TerraGPT — governed AI/RAG suite. Federated Tier-1 suite under terrafusion_os_1.0. NO sovereign write lane (acts only via sanctioned TerraPilot tools). One Brain: central governance.",
+      "topics": ["terrafusion", "suite", "ai", "rag", "governed-ai", "federated-suite"],
+      "shared_contract_dependency": [
+        "acts only through sanctioned TerraPilot tools (write-lanes.json: gpt has no sovereign write lane)"
+      ],
+      "extraction_source_paths": [
+        "Muse/RAG surfaces in backend/src/TerraFusion.AI (careful: Muse also powers OS-retained Pilot)",
+        "frontend/apps/os-shell/src/pages/suites/** (49) + MuseChat.tsx"
+      ],
+      "feeder_provenance": ["PropertyTaxAI", "TaxI_AI"],
+      "blocker": "freeze safety/tool/citation boundary BEFORE extraction; extract LAST",
+      "rollback": "delete repo if empty; terrafusion_os_1.0 remains authoritative until GPT gate passes"
+    }
+  ],
+  "execution": {
+    "attempt_via": "authorized GitHub operator credential or connector with repo-create scope",
+    "on_missing_permission": "RESULT: BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+    "missing_permission_detail": "administration:write (repo creation) on org bsvalues — current integration token is read/write-limited to bsvalues/terrafusion_os_1.0 only",
+    "least_privilege_grant": "a GitHub App/PAT with 'Administration: Read and write' scoped to org bsvalues (or at minimum permission to create the 5 named private repos), plus contents:write on the 5 new repos for bootstrap",
+    "post_creation_automation": ["verify identity+settings", "apply bootstrap content", "open first bounded PRs", "execute suite-repo program", "continue without owner relay"]
+  }
+}

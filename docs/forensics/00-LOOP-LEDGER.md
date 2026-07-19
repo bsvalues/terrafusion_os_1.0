@@ -789,3 +789,17 @@
 | **owner-cited (asserted-elsewhere)** | MAO doctrine / `WO-MAO-006` / Claude-Codex suite-lane assignment — authoritative per owner, artifacts not on disk here. |
 | **lock status** | Topology settled. Still decision/evidence-layer; no repo created, no code moved, no runtime import. Per-suite extraction remains gated (contract-first; no big-bang). |
 | **next (authorized, no approval)** | Ratified federated **topology matrix** → **program register** → **WO-SR-002** shared-contract freeze (in-session) → **WO-SR-003** suite repo-creation WOs (owner-only exec) → extraction/provenance policy + validation gates. |
+
+## Loop 51 — Suite-repo program prepared; creation = EXECUTION_CREDENTIAL_BOUNDARY (not owner engineering) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L51 |
+| **trigger** | Owner correction: a `403` is an **EXECUTION_CREDENTIAL_BOUNDARY**, not an owner decision. Repo creation is authorized operator work; only human action = one bounded platform grant/execute. Classification: TOPOLOGY/BASE=CLOSED, canon+creation=OPERATOR WORK, 403=credential boundary, **OWNER ENGINEERING=NONE**. Do not hand implementation back via a missing permission. |
+| **action (operator, all in-scope prep)** | Produced: `SUITE-REPO-CREATION-MANIFEST.json` (machine-executable: org/names/desc/private/branch/merge/protection/checks/topics/files/owning-suite/contract-deps/feeder-provenance/rollback); `SUITE-PROGRAM-AND-TOPOLOGY.md` (federated topology matrix + program register + One-Brain dispatch + contract-freeze policy + extraction/provenance policy + validation/cutover gates + bootstrap inventory + branch-protection spec). |
+| **creation attempt** | `create_repository terrafusion-forge` → **`403 Resource not accessible by integration`**. Recorded `SUITE-REPO-CREATION-CREDENTIAL-REQUEST.md` → **RESULT: BLOCKED_MISSING_EXECUTION_CREDENTIAL**. |
+| **missing permission** | `Administration: Read and write` on org `bsvalues` (create repos) + `Contents: write` on the 5 new repos for bootstrap; current token scoped to `terrafusion_os_1.0` only. |
+| **repos to create** | `terrafusion-{forge,atlas,dais,dossier,gpt}` (private). |
+| **owner action** | ONE bounded platform action: grant the least-privilege credential (or add repos to session scope), **or** execute the prepared manifest once. **No strategic decision, no engineering.** |
+| **lock status** | Topology/identity CLOSED. Decision/evidence-layer complete for this phase; no repo created (credential-blocked), no code moved, no runtime import. |
+| **post-credential automation (no relay)** | verify settings → apply bootstrap → open first bounded PRs → WO-SR-004/005/006 → WO-FORGE-X-001… → continue. Meanwhile **WO-SR-002 (contract freeze) is in-session capable** and proceeds independent of the credential. |
