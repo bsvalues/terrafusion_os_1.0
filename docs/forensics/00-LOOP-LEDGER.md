@@ -803,3 +803,15 @@
 | **owner action** | ONE bounded platform action: grant the least-privilege credential (or add repos to session scope), **or** execute the prepared manifest once. **No strategic decision, no engineering.** |
 | **lock status** | Topology/identity CLOSED. Decision/evidence-layer complete for this phase; no repo created (credential-blocked), no code moved, no runtime import. |
 | **post-credential automation (no relay)** | verify settings → apply bootstrap → open first bounded PRs → WO-SR-004/005/006 → WO-FORGE-X-001… → continue. Meanwhile **WO-SR-002 (contract freeze) is in-session capable** and proceeds independent of the credential. |
+
+## Loop 52 — credential capabilities-first + bootstrap-trap fix + WO-SR-002 contract freeze (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L52 |
+| **trigger** | Owner refinements: (1) credential doc must describe **required capabilities** then map to credential type (App/fine-grained/classic/connector) — not a single fixed permission string; (2) manifest must avoid the **bootstrap trap** (don't require checks that don't exist yet → first PR deadlock); (3) proceed to WO-SR-002 within a narrow acceptance boundary. |
+| **fix 1 — capabilities-first** | `SUITE-REPO-CREATION-CREDENTIAL-REQUEST.md`: replaced fixed `Administration:write` string with a **REQUIRED CAPABILITIES** list + a capability→credential-type mapping table (GitHub App / fine-grained PAT / classic PAT / org connector). Prevents a false stop under a different permission-naming model. |
+| **fix 2 — bootstrap trap** | `SUITE-REPO-CREATION-MANIFEST.json`: split branch protection into **phase1_bootstrap** (PR required, **NO required checks**) + **phase2_tighten** (add `suite-ci`/`contract-compat`/`governance-gate` only after the bootstrap PR lands the workflows + they produce runs). `SUITE-PROGRAM-AND-TOPOLOGY.md §7` updated. |
+| **WO-SR-002 — contract freeze** | `WO-SR-002-CONTRACT-FREEZE.md`: classified the `Abstractions` seam (SUITE / CROSS-CUTTING / OS-INTERNAL / DEFER); **froze only genuinely suite-consumable contracts** (CanonicalTf, GisTf+IGisDataService, Forge valuation DTOs+IForgeStatisticsService, Workbench SyncReadiness+PACS-probe, cross-cutting envelopes/audit) at `v1.0.0`; **excluded OS-internal impl details** (cache/perf/service-discovery/quantum/negative-cache/refresh-runner); DEFERred unclear-ownership (training DTOs, IContextEnrichment, ITerraFusionSyncService/IModuleCatalog/IValuationService). Defined SemVer + compat/deprecation + publication boundary (**not published yet**) + `contract-compat` validation. **Invented no contracts; moved no impl; published nothing.** |
+| **lock status** | Decision-layer. No repo created (credential-blocked), no code moved, no package published. |
+| **posture** | STRATEGIC=CLOSED · CREDENTIAL BLOCK=ISOLATED · PROGRAM=CONTINUING · OWNER ACTION NOW=NONE · active WO done=SR-002. Next in-repo (optional): stamp version table into `Abstractions/CONTRACTS.md` + wire `contract-compat` check (no credential). |

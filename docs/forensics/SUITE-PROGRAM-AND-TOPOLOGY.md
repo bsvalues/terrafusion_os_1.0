@@ -73,10 +73,14 @@ stop conditions) · `LICENSE` · `.gitignore` · `canon/{INTAKE_RULES,SUITE_DOMA
 `EXTRACTED_FROM.md` (points back to `terrafusion_os_1.0` source SHA) · `.github/workflows/suite-ci.yml`
 (frozen-lockfile, warnaserror, contract-compat, governance-gate). Reuses the `terrafusionos-vessel/` template.
 
-## 7. Branch-protection & settings spec (per suite)
+## 7. Branch-protection & settings spec (per suite) — two-phase (bootstrap-trap safe)
 Private · default `main` · squash-only + delete-branch-on-merge · PR required (1 review, dismiss-stale,
-conversation-resolution) · no force-push · no deletion · enforce-admins · required checks
-`suite-ci`/`contract-compat`/`governance-gate`. (Machine form in `SUITE-REPO-CREATION-MANIFEST.json`.)
+conversation-resolution) · no force-push · no deletion · enforce-admins.
+- **Phase 1 (at creation):** PR required, **NO required status checks** (checks don't exist yet).
+- **Phase 2 (tighten):** after the bootstrap PR merges `.github/workflows/{suite-ci,contract-compat,governance-gate}.yml`
+  and each has produced a check run, add required checks `suite-ci`/`contract-compat`/`governance-gate`.
+- **Never** require a check that doesn't exist yet → prevents the first bootstrap PR deadlocking.
+(Machine form in `SUITE-REPO-CREATION-MANIFEST.json`: `branch_protection_phase1_bootstrap` + `_phase2_tighten`.)
 
 ## 8. Execution boundary
 Repo creation is **authorized operator work**, blocked only by the credential boundary. See the

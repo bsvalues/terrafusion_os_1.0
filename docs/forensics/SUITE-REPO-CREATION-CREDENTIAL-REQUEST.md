@@ -10,10 +10,27 @@
 RESULT: BLOCKED_MISSING_EXECUTION_CREDENTIAL
 ```
 
-## Exact missing GitHub permission
-- **`Administration: Read and write`** on org/user **`bsvalues`** (permission to **create repositories**).
-- The current session integration token is scoped to **`bsvalues/terrafusion_os_1.0` only** and returns
-  `403` on repo creation and `access-denied` on any other repo.
+## Required capabilities (NOT a single fixed permission name)
+The exact permission string depends on credential type; describe **capabilities**, then map:
+```text
+REQUIRED CAPABILITIES
+- create private repositories in bsvalues
+- initialize repository contents
+- configure repository settings
+- configure merge policy
+- configure branch protection or rulesets
+- create branches and pull requests
+```
+**Capability → credential mapping:**
+| Credential type | Grant that satisfies the capabilities |
+|---|---|
+| **GitHub App** | `Administration: Read and write` (repo create/settings/protection) + `Contents: Read and write` (init) + `Pull requests: Read and write` — installed on org `bsvalues` |
+| **Fine-grained PAT** | Resource owner `bsvalues`; **Repository permissions**: Administration RW, Contents RW, Pull requests RW; (org-level "create repo" allowed by org policy) |
+| **Classic PAT** | scope `repo` (+ `admin:org` only if org restricts repo creation) |
+| **Org connector** | a connector authorized to create repos in `bsvalues` and manage new-repo settings |
+
+The current session integration token is scoped to **`bsvalues/terrafusion_os_1.0` only** → `403` on
+repo creation, `access-denied` on any other repo. It lacks the create-repository capability under **any** mapping above.
 
 ## Exact repositories to create (5, private)
 `bsvalues/terrafusion-forge` · `bsvalues/terrafusion-atlas` · `bsvalues/terrafusion-dais` ·
@@ -28,9 +45,8 @@ shared-contract dependency, feeder provenance, rollback.
 
 ## Recommended least-privilege grant (one bounded platform action)
 Either:
-1. **Grant** a GitHub App/PAT with **`Administration: Read and write`** scoped to org `bsvalues`
-   (or minimally: permission to create the 5 named private repos) **+ `Contents: Read and write`** on
-   the 5 new repos (for bootstrap), and add them to this session's scope; **or**
+1. **Grant** a credential satisfying the **Required Capabilities** above (pick the row for your credential
+   type), and add the 5 repos to this session's scope; **or**
 2. **Execute** `SUITE-REPO-CREATION-MANIFEST.json` once via any authorized GitHub operator credential/connector.
 
 ## Confirmation
