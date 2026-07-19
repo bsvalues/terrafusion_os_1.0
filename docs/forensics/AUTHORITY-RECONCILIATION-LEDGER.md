@@ -39,7 +39,14 @@ integration + documentation hub"* (`ARCHITECTURE_REALITY_CORRECT_ANSWER.md`) —
 WO-SR-001 assigns to the OS/platform host** (retains shell + Workbench host + Brain + integration +
 governance; suites own domains). So the composition model is reconciled, not in conflict. → programmed by `WO-SR-001` + the WO-SR / WO-*-X chains.
 
-### Layer B — Repository topology + base-repo identity: **TRUE_OWNER_BOUNDARY**
+### Layer B — Repository topology + base-repo identity: **RESOLVED (owner-ratified 2026-06-25)**
+> **RATIFIED (`OWNER-DECISION-TOPOLOGY-RATIFIED.md`):** sovereign base = **`terrafusion_os_1.0`** (federated topology
+> + five Tier-1 suite repos: forge/atlas/dais/dossier/gpt). **`terrafusion-os` = superseded predecessor** (mine, not
+> master). This aligns `CAPABILITY_PLACEMENT_MAP.md` — the conflict is **resolved, not overridden**. One Brain in the
+> base; Workbench = Tier-0 OS surface; single-host Gen2 runtime; source-of-truth transfers per-suite **at the
+> extraction/promotion gate**; no big-bang; contract-first sequence. The boundary below is retained for the record.
+
+**(historical framing of the boundary — now resolved):**
 Higher law (TF-052) is **silent on physical repo topology**; the rank-8 architecture docs **conflict
 with each other and with the owner's live thread direction** on two coupled points that no existing
 instruction unambiguously settles:

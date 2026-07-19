@@ -1,5 +1,13 @@
 # TerraFusion Full Agent Handoff
 
+> ## ⛔ SUPERSEDED PREMISE (Loop 50, 2026-06-25) — READ FIRST
+> This document's §5A/§2 treat **`terrafusion-os` as the sovereign receiving vessel**. That premise is
+> **REVERSED by owner decision** (`OWNER-DECISION-TOPOLOGY-RATIFIED.md`): the **sovereign base is
+> `terrafusion_os_1.0`** (this repo); **`terrafusion-os` is a SUPERSEDED predecessor** (mine, not
+> master). Go-forward = **federated topology**: `terrafusion_os_1.0` (sovereign OS/platform) **consumes**
+> five Tier-1 suite repos (forge/atlas/dais/dossier/gpt) via versioned contracts. The OS is **not**
+> extracted to a new repo. Read `OWNER-DECISION-TOPOLOGY-RATIFIED.md` + `WO-SR-001` for current truth.
+
 > **Operating-memory & continuity document — NOT an execution release.** This handoff is memory,
 > not a green light. The existence of a handoff, playbook, or work order does **not** create implicit
 > authorization. Current as of **Loop 45**, HEAD `fc00d5e24`, clean tree, no scope drift.

@@ -776,3 +776,16 @@
 | **correction to prior loops** | Loop 45's "terrafusion-os = sovereign receiving vessel" rests on a premise that origin/main canon contradicts. NOT silently reversed — **surfaced for knowing owner adjudication.** Owner's live word can supersede rank-8 context, but then `CAPABILITY_PLACEMENT_MAP` must be reconciled/updated. |
 | **lock status** | Unchanged. Decision/evidence-layer only; no repo created, no code moved, no lock released. |
 | **decision (for owner)** | Adjudicate Layer B: **EXTRACT-OUT** (terrafusion-os host + 5 new repos) vs **MONOREPO-CANONICAL/ABSORB-IN** (terrafusion_os_1.0 stays base; suites stay logical) vs **HYBRID** (coordination hub + polyrepo SoT). On EXTRACT-OUT, confirm the `terrafusion-os` supersession knowingly + update CAPABILITY_PLACEMENT_MAP. Layer A proceeds regardless. |
+
+## Loop 50 — OWNER DECISION RATIFIED: federated topology, sovereign base = `terrafusion_os_1.0` (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L50 |
+| **trigger** | Owner **RATIFIED** the Layer B boundary (10-point decision). Sovereign base = **`terrafusion_os_1.0`**; `terrafusion-os` = **superseded predecessor** (mine, not master); go-forward = **federated topology** (1 sovereign OS + 5 Tier-1 suite repos: forge/atlas/dais/dossier/gpt). Grants operator §10 authority to create all canon without further approval; must not return doc work to owner. |
+| **resolution** | Layer B **RESOLVED** — matches `CAPABILITY_PLACEMENT_MAP.md` (conflict resolved, NOT overridden). Loop 45 premise (`terrafusion-os` = sovereign vessel) **formally reversed**. |
+| **action (operator §10, no approval)** | Wrote **`OWNER-DECISION-TOPOLOGY-RATIFIED.md`** (governing topology canon: sovereign base, superseded repo, federated topology, TF-052 relationship, **One Brain rule**, Tier-0 Workbench + single-host Gen2 runtime, gate-transfer source-of-truth + no big-bang, contract-first sequence, migration provenance, operator authority + corpus-reconciliation table). Resolved Layer B in `AUTHORITY-RECONCILIATION-LEDGER.md`. Corrected `WO-SR-001` §1 host row (base = `terrafusion_os_1.0`, RATIFIED). Added SUPERSEDED-PREMISE banners to `FULL-AGENT-HANDOFF.md` + `terrafusionos-vessel/_STAGING-README.md` (vessel scaffold repurposed as **suite-repo governance template**). |
+| **reframes** | OS needs **no** new repo (stays here) → `MIGRATE-CORE-WO-1` moot for OS. Two-lock repo-creation now applies to the **5 suite repos** (owner-only, integration `403`). Workbench = OS Tier-0 (unchanged). |
+| **owner-cited (asserted-elsewhere)** | MAO doctrine / `WO-MAO-006` / Claude-Codex suite-lane assignment — authoritative per owner, artifacts not on disk here. |
+| **lock status** | Topology settled. Still decision/evidence-layer; no repo created, no code moved, no runtime import. Per-suite extraction remains gated (contract-first; no big-bang). |
+| **next (authorized, no approval)** | Ratified federated **topology matrix** → **program register** → **WO-SR-002** shared-contract freeze (in-session) → **WO-SR-003** suite repo-creation WOs (owner-only exec) → extraction/provenance policy + validation gates. |

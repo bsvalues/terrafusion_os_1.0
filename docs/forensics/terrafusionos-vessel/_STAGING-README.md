@@ -1,5 +1,12 @@
 # TerraFusionOS Receiving-Vessel — STAGED SCAFFOLD (transplant-ready)
 
+> ## ⛔ REPURPOSED (Loop 50) — this scaffold is NO LONGER for an OS repo
+> Owner ratified (`../OWNER-DECISION-TOPOLOGY-RATIFIED.md`): the **OS/platform stays in
+> `terrafusion_os_1.0`** (sovereign base). No new OS repo is created; `terrafusion-os` is **superseded**.
+> This governance-scaffold **pattern is reused for the FIVE SUITE repos** (forge/atlas/dais/dossier/gpt),
+> not for an OS vessel. Treat the files below as a **reusable suite-repo governance template**, not an
+> OS transplant payload. See `../WO-SR-001-SUITE-REPO-BLUEPRINT.md`.
+
 > ## ⚠️ CORRECTION (Loop 45 / WO-LOOP-44R) — DO NOT CREATE A NEW REPO
 > The sovereign receiving repo **already exists** as **`github.com/bsvalues/terrafusion-os`**.
 > The earlier "create `TerraFusionOS`" instruction below was a **naming error** — it treated the
