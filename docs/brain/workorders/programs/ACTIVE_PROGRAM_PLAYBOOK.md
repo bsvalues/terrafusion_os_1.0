@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Atlas read contract frozen, extraction still blocked |
-| Current | `WO-SR-005B-A - Atlas Adapter and Standalone Parity Preparation` |
-| Next | Bounded parity implementation packet or exact blocker |
+| Status | Active; Atlas adapter boundary prepared, extraction still blocked |
+| Current | `WO-SR-005B-E1 - Atlas Sovereign Spatial Read Adapter Implementation` |
+| Next | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -112,8 +112,9 @@ bootstrapped, checked, and protected all five private suite repositories. WO-SR-
 standalone Forge valuation kernel to Forge PR #1 with exact provenance and 2/2 parity tests; the
 sovereign source remains authoritative. WO-SR-005B-P rejected wholesale GIS-package extraction and
 defined the parity gate. WO-SR-005B-C decomposed an exact provider-neutral, county-context-aware read
-contract, and WO-SR-005B-I implemented and froze it with synthetic proof. WO-SR-005B-A now prepares
-the adapter and standalone parity boundary without authorizing runtime adoption.
+contract, and WO-SR-005B-I implemented and froze it with synthetic proof. WO-SR-005B-A selected the
+authenticated canonical geometry DTO, rejected the unsafe legacy GIS surface, and admitted E1/E2 as
+the bounded adapter and standalone parity sequence without authorizing runtime adoption.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -565,8 +566,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005B-A - Atlas Adapter and Standalone Parity Preparation` |
-| Next WO | Bounded parity implementation packet or exact blocker |
+| Current WO | `WO-SR-005B-E1 - Atlas Sovereign Spatial Read Adapter Implementation` |
+| Next WO | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

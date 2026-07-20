@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005B-I",
+  "generatedBy": "WO-SR-005B-A",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Atlas read-contract freeze. WO-SR-005B-A adapter and standalone parity preparation is active; runtime adoption and extraction remain blocked.",
+  "description": "Five-suite registry after Atlas adapter/parity preparation. WO-SR-005B-E1 pure sovereign adapter implementation is active; standalone parity, runtime adoption, and extraction remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4230,7 +4230,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the smallest provider-neutral adapter and synthetic standalone parity slice before Atlas extraction.",
       "riskClass": "R1",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005B-I", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "Read-only Atlas source and destination inspection" },
@@ -4262,8 +4262,27 @@
           "description": "Synthetic-only destination contract-compat and parity assertions."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "atlas-adapter-parity-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-A-ATLAS-ADAPTER-STANDALONE-PARITY-PREPARATION.md",
+          "description": "Exact safe source, rejected legacy source, field mapping, two-repository implementation sequence, provenance, and rollback."
+        }
+      ],
       "stopConditions": [
         {
           "type": "runtime-implementation",
@@ -4272,9 +4291,137 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-005B",
-          "reason": "Extraction remains blocked until bounded adapter and standalone parity implementation passes.",
-          "riskClass": "R4",
+          "id": "WO-SR-005B-E1",
+          "reason": "Implement the pure unwired sovereign adapter over the authenticated canonical geometry DTO.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-E1",
+      "title": "Atlas Sovereign Spatial Read Adapter Implementation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and prove a pure unwired adapter from canonical county-isolated geometry to atlas.spatial-read@1.0.0.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005B-A", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Pure Atlas spatial-read adapter and unit tests" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime registration, endpoint wiring, or consumer adoption"
+        },
+        {
+          "name": "Provider, database, county, PACS, SQL, live, production, or secret access"
+        },
+        {
+          "name": "Frontend, GIS package, destination repository, workflow, package, or extraction changes"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Adapters/AtlasSpatialReadAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasSpatialReadAdapterTests.cs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "packages/gis-pro/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-proof",
+          "description": "Positive field mapping plus fail-closed identity, geometry, and numeric tests."
+        },
+        {
+          "kind": "no-runtime-adoption",
+          "description": "No DI, controller, endpoint, provider, database, or consumer references to the adapter."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Targeted Atlas adapter tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter AtlasSpatialReadAdapterTests",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any runtime wiring, provider/database call, endpoint change, or consumer adoption is outside this node."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-E2",
+          "reason": "Materialize and prove the frozen contract in the standalone Atlas bootstrap after the sovereign adapter passes.",
+          "riskClass": "R2",
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-E2",
+      "title": "Atlas Standalone Synthetic Contract Parity Harness",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove standalone contract compatibility and provider-neutral map projection using only the frozen synthetic corpus.",
+      "riskClass": "R2",
+      "status": "blocked",
+      "dependencies": [{ "id": "WO-SR-005B-E1", "status": "pending" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Atlas contract-compat material and synthetic parity harness"
+        }
+      ],
+      "blockedSystems": [
+        { "name": "Product source extraction or runtime adoption" },
+        {
+          "name": "Provider, county, PACS, SQL, credentials, secrets, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        "bsvalues/terrafusion-atlas bounded contract-compat scope defined by WO-SR-005B-A"
+      ],
+      "blockedFiles": ["terrafusion_os_1.0 runtime and product paths"],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-contract-parity",
+          "description": "Four positive and three negative frozen fixtures plus polygon/centroid/unavailable projection proof."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "source-extraction",
+          "description": "No product source extraction or ownership cutover is authorized by E2."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-E",
+          "reason": "Admit the exact bounded Atlas extraction only after E1 and E2 pass.",
+          "riskClass": "R3",
           "blocked": true
         }
       ]

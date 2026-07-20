@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Reconciled at `WO-SR-003/004`; Forge bounded extraction active
+**Status:** Five-suite program active at WO-SR-005B-E1
 
 ## Purpose
 
@@ -57,7 +57,8 @@ those Work Orders and no authority transfers to the foreign project.
 After that correction, the ratified Five-Suite Federated Repository Buildout remains active.
 WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five suite repositories.
 WO-SR-005B-I implemented and hash-froze the Atlas read boundary without runtime adoption.
-WO-SR-005B-A is the dependency-cleared adapter and standalone parity preparation node; runtime
-adoption and Atlas extraction remain blocked.
+WO-SR-005B-A selected the safe canonical adapter source and admitted the two-repository E1/E2
+implementation sequence. WO-SR-005B-E1 is the dependency-cleared pure-adapter node; runtime adoption
+and Atlas extraction remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`
