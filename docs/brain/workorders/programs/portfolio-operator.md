@@ -56,7 +56,8 @@ those Work Orders and no authority transfers to the foreign project.
 
 After that correction, the ratified Five-Suite Federated Repository Buildout remains active.
 WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five suite repositories.
-WO-SR-005A is the highest-priority dependency-cleared node because Forge alone has a frozen domain
-contract. The other four extraction lanes remain blocked on their exact contract and parity gates.
+WO-SR-005A completed the Forge valuation-kernel copy and parity proof without cutover. WO-SR-005B-P
+is now the highest-priority dependency-cleared node because Atlas requires a live-source contract and
+map-parity audit before extraction can be admitted.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`

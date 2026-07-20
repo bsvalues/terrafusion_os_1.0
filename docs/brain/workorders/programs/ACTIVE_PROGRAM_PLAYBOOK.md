@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; repository creation and bootstrap verification complete |
-| Current | `WO-SR-005A - Forge Bounded Extraction and Provenance` |
-| Next | Forge standalone valuation parity proof |
+| Status | Active; Forge valuation-kernel parity complete without cutover |
+| Current | `WO-SR-005B-P - Atlas Contract and Parity Gate Preparation` |
+| Next | `WO-SR-005B` only if the preparation gate passes |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -108,9 +108,10 @@ The sovereign base remains `terrafusion_os_1.0`. The five ratified suite reposit
 infrastructure, CI/release governance, and integration evidence remain in the sovereign base.
 
 WO-SR-002 froze current genuine suite-consumable contracts. WO-SR-003 and WO-SR-004 created,
-bootstrapped, checked, and protected all five private suite repositories. Forge now advances first
-because `forge.valuation` and `crosscut.audit` are frozen; the other four extraction lanes remain
-domain-contract gated.
+bootstrapped, checked, and protected all five private suite repositories. WO-SR-005A copied the
+standalone Forge valuation kernel to Forge PR #1 with exact provenance and 2/2 parity tests; the
+sovereign source remains authoritative. Atlas preparation is next because extraction cannot begin
+until a genuine contract boundary and standalone map parity gate are evidenced.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -562,8 +563,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005A - Forge Bounded Extraction and Provenance` |
-| Next WO | Forge parity proof, then evidence-backed ownership cutover decision |
+| Current WO | `WO-SR-005B-P - Atlas Contract and Parity Gate Preparation` |
+| Next WO | `WO-SR-005B` only after evidence-backed contract and map-parity readiness |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
