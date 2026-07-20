@@ -109,8 +109,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
 1. WO-SR-005B-P is the admitted dependency-cleared node after Forge valuation-kernel parity.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue the suite repository program automatically through bounded Forge extraction; do not
-   infer extraction readiness for suites whose domain contracts remain absent.
+4. Continue the suite repository program through the read-only Atlas contract and parity gate;
+   keep Atlas extraction blocked until that gate proves contract ownership and parity readiness.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
