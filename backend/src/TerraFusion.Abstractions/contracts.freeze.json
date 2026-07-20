@@ -1,0 +1,96 @@
+{
+  "_source": "WO-SR-002 shared-contract freeze (docs/forensics/WO-SR-002-CONTRACT-FREEZE.md)",
+  "_authority": "OWNER-DECISION-TOPOLOGY-RATIFIED.md — sovereign base terrafusion_os_1.0 owns contracts",
+  "_note": "Machine source of truth for the contract-compat check. Paths are relative to backend/src/TerraFusion.Abstractions/. Only genuinely suite-consumable + cross-cutting contracts are frozen. OS-internal impl details are listed under os_internal_excluded and MUST NOT appear in a frozen group.",
+  "root": "backend/src/TerraFusion.Abstractions",
+  "frozen": [
+    {
+      "group": "canonical.parcel",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["forge", "dais", "dossier"],
+      "files": [
+        "DTOs/CanonicalTf/OpenWorkResponse.cs",
+        "DTOs/CanonicalTf/ParcelOwnerCurrentResponse.cs",
+        "DTOs/CanonicalTf/ParcelWsdorRollResponse.cs",
+        "DTOs/CanonicalTf/TfSaleResponse.cs"
+      ]
+    },
+    {
+      "group": "atlas.gis",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["atlas"],
+      "files": [
+        "DTOs/GisTf/ParcelGeometryResponse.cs",
+        "DTOs/GisTf/ParcelNeighborResponse.cs",
+        "Interfaces/IGisDataService.cs"
+      ]
+    },
+    {
+      "group": "forge.valuation",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["forge"],
+      "files": [
+        "DTOs/CostForgeStatsDto.cs",
+        "DTOs/CostMatrixDto.cs",
+        "DTOs/UpdateCostMatrixDto.cs",
+        "DTOs/PropertyValuationInputDto.cs",
+        "DTOs/ValuationResultDto.cs",
+        "DTOs/Kernel/KernelCostApproachRequest.cs",
+        "DTOs/Kernel/KernelCostApproachResponse.cs",
+        "Interfaces/IForgeStatisticsService.cs"
+      ]
+    },
+    {
+      "group": "dais.sync-readiness",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dais"],
+      "files": [
+        "DTOs/Workbench/SyncReadinessDto.cs",
+        "Interfaces/Workbench/IWorkbenchSyncReadinessService.cs",
+        "Interfaces/Workbench/IPacsReachabilityProbeService.cs"
+      ]
+    },
+    {
+      "group": "shared.envelopes",
+      "version": "1.0.0",
+      "class": "CROSS-CUTTING",
+      "consumers": ["forge", "atlas", "dais", "dossier", "gpt"],
+      "files": [
+        "DTOs/ComplianceDto.cs",
+        "DTOs/Responses/CommonResponses.cs",
+        "DTOs/Responses/PerformanceMetricsDto.cs",
+        "DTOs/Shared/SharedDtos.cs"
+      ]
+    },
+    {
+      "group": "crosscut.audit",
+      "version": "1.0.0",
+      "class": "CROSS-CUTTING",
+      "consumers": ["forge", "atlas", "dais", "dossier", "gpt"],
+      "files": [
+        "Interfaces/IAuditLogger.cs",
+        "Interfaces/ICitizenContextService.cs"
+      ]
+    }
+  ],
+  "os_internal_excluded": [
+    "DTOs/NegativeCacheStatistics.cs",
+    "Interfaces/ICacheStatisticsService.cs",
+    "Interfaces/IPerformanceMonitor.cs",
+    "Interfaces/IServiceDiscoveryService.cs",
+    "Interfaces/IQuantumAIRoutingService.cs",
+    "DTOs/AIAgentStatusDto.cs",
+    "Interfaces/Workbench/IWorkbenchSyncReadinessRefreshRunner.cs"
+  ],
+  "deferred": [
+    "DTOs/ModelTrainingConfigDto.cs",
+    "DTOs/ModelTrainingStatusDto.cs",
+    "DTOs/TrainingConfigDto.cs",
+    "DTOs/TrainingDataDto.cs",
+    "Interfaces/IContextEnrichmentService.cs"
+  ]
+}

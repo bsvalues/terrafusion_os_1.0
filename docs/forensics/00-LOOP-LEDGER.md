@@ -815,3 +815,15 @@
 | **WO-SR-002 — contract freeze** | `WO-SR-002-CONTRACT-FREEZE.md`: classified the `Abstractions` seam (SUITE / CROSS-CUTTING / OS-INTERNAL / DEFER); **froze only genuinely suite-consumable contracts** (CanonicalTf, GisTf+IGisDataService, Forge valuation DTOs+IForgeStatisticsService, Workbench SyncReadiness+PACS-probe, cross-cutting envelopes/audit) at `v1.0.0`; **excluded OS-internal impl details** (cache/perf/service-discovery/quantum/negative-cache/refresh-runner); DEFERred unclear-ownership (training DTOs, IContextEnrichment, ITerraFusionSyncService/IModuleCatalog/IValuationService). Defined SemVer + compat/deprecation + publication boundary (**not published yet**) + `contract-compat` validation. **Invented no contracts; moved no impl; published nothing.** |
 | **lock status** | Decision-layer. No repo created (credential-blocked), no code moved, no package published. |
 | **posture** | STRATEGIC=CLOSED · CREDENTIAL BLOCK=ISOLATED · PROGRAM=CONTINUING · OWNER ACTION NOW=NONE · active WO done=SR-002. Next in-repo (optional): stamp version table into `Abstractions/CONTRACTS.md` + wire `contract-compat` check (no credential). |
+
+## Loop 53 — WO-SR-002 stamped + contract-compat wired (first suite-program code landing) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L53 |
+| **trigger** | Owner: "stamp the version table into CONTRACTS.md and wire contract-compat." |
+| **action** | (1) `backend/src/TerraFusion.Abstractions/contracts.freeze.json` — machine source of truth: 6 frozen groups @ `v1.0.0` (canonical.parcel, atlas.gis, forge.valuation, dais.sync-readiness, shared.envelopes, crosscut.audit), 24 files; 7 OS-internal excluded, 5 deferred. (2) Stamped human version table into `CONTRACTS.md` §8 + reconciled owner to sovereign base `terrafusion_os_1.0`. (3) Wired **`contract-compat`** check: `scripts/contracts/verify-contract-freeze.mjs` (Node built-ins only) + `.github/workflows/contract-compat.yml` (paths-scoped). |
+| **verification** | 24/24 frozen files confirmed present on disk; `node verify-contract-freeze.mjs` → **PASS** (6 groups, 24 verified, 7 excluded, 5 deferred). Check validates: files exist · SemVer · no OS-internal frozen as suite contract · single ownership · excluded/deferred not frozen. |
+| **scope of edit** | Contract **metadata + validation tooling only** — no implementation moved, no entity/persistence change, no package published, no contract invented. First suite-program artifact to touch `backend/`/`.github/` (all additive, non-behavioral). |
+| **lock status** | Decision + light tooling layer. No repo created, no suite impl moved, no runtime change. |
+| **posture** | STRATEGIC=CLOSED · CREDENTIAL BLOCK=ISOLATED · PROGRAM=CONTINUING · OWNER ACTION NOW=NONE. Frozen contract surface now machine-validated in CI. Next gated step: suite repo creation (credential) → bootstrap → WO-FORGE-X-001. |

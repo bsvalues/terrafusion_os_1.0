@@ -104,3 +104,29 @@ review — it may be consciousness-internal mis-placed here (do not expand its u
 Repo creation, `filter-repo`/subtree moves, suite extraction, schema/persistence changes, or any
 move of fenced material (CostForge "Ultimate", `LevyDbContextStub.cs`, fabricated value
 placeholders, Tyler lore). Those remain lock-gated (`MIGRATE-R1-RATIFICATION.md` §3).
+
+## 8. Frozen contract version table (WO-SR-002)
+> **Owner:** `terrafusion_os_1.0` (sovereign base — `OWNER-DECISION-TOPOLOGY-RATIFIED.md`; supersedes the
+> "TerraFusionOS core" wording above). Suites **consume** these versioned contracts; none may redefine
+> them (owner decision §5/§8). **Machine source of truth:** [`contracts.freeze.json`](contracts.freeze.json),
+> validated by `scripts/contracts/verify-contract-freeze.mjs` (CI check `contract-compat`).
+> Only genuinely suite-consumable + cross-cutting contracts are frozen; OS-internal impl details are excluded.
+
+| Contract group | Version | Class | Consumers | Files |
+|---|---|---|---|---|
+| `canonical.parcel` | `1.0.0` | SUITE | forge, dais, dossier | `DTOs/CanonicalTf/{OpenWorkResponse,ParcelOwnerCurrentResponse,ParcelWsdorRollResponse,TfSaleResponse}` |
+| `atlas.gis` | `1.0.0` | SUITE | atlas | `DTOs/GisTf/{ParcelGeometryResponse,ParcelNeighborResponse}` · `Interfaces/IGisDataService` |
+| `forge.valuation` | `1.0.0` | SUITE | forge | `DTOs/{CostForgeStatsDto,CostMatrixDto,UpdateCostMatrixDto,PropertyValuationInputDto,ValuationResultDto}` · `DTOs/Kernel/{KernelCostApproachRequest,KernelCostApproachResponse}` · `Interfaces/IForgeStatisticsService` |
+| `dais.sync-readiness` | `1.0.0` | SUITE | dais | `DTOs/Workbench/SyncReadinessDto` · `Interfaces/Workbench/{IWorkbenchSyncReadinessService,IPacsReachabilityProbeService}` |
+| `shared.envelopes` | `1.0.0` | CROSS-CUTTING | all | `DTOs/{ComplianceDto,Responses/CommonResponses,Responses/PerformanceMetricsDto,Shared/SharedDtos}` |
+| `crosscut.audit` | `1.0.0` | CROSS-CUTTING | all | `Interfaces/{IAuditLogger,ICitizenContextService}` |
+
+**Excluded (OS-internal impl details — NOT suite contracts):** `NegativeCacheStatistics`,
+`ICacheStatisticsService`, `IPerformanceMonitor`, `IServiceDiscoveryService`, `IQuantumAIRoutingService`,
+`AIAgentStatusDto`, `IWorkbenchSyncReadinessRefreshRunner`.
+**Deferred (classify at WO-*-X-001 before freeze):** training DTOs, `IContextEnrichmentService`,
+and the Core-side `ITerraFusionSyncService`/`IModuleCatalog`/`IValuationService`.
+
+**Compatibility:** MINOR = additive/back-compat · MAJOR = breaking (deprecation window + `[Obsolete]`,
+old+new coexist ≥1 release) · PATCH = doc-only. Consumers pin a MAJOR line. **Publication:** project-ref
+now; versioned package publication is **not yet authorized** (post repo-creation, gated).

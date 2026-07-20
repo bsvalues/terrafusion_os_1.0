@@ -75,6 +75,9 @@ shared-contract freeze (THIS)  →  suite repos created (WO-SR-003, credential-g
 ```
 
 ## 8. Status
-**WO-SR-002 = classification + versioning + compat/deprecation rules + publication boundary + validation
-plan DONE (decision-layer).** Next concrete in-repo step (optional, when desired): stamp the version table
-into `Abstractions/CONTRACTS.md` and wire the `contract-compat` check. No credential required.
+**WO-SR-002 COMPLETE.** Classification + versioning + compat/deprecation + publication boundary +
+validation — done (decision-layer) **and stamped/wired in-repo (Loop 53):**
+- Machine source of truth: `backend/src/TerraFusion.Abstractions/contracts.freeze.json` (6 groups @ `v1.0.0`, 24 files).
+- Human version table stamped into `Abstractions/CONTRACTS.md` §8 (owner reconciled to sovereign base).
+- CI check **`contract-compat`** wired: `scripts/contracts/verify-contract-freeze.mjs` + `.github/workflows/contract-compat.yml` — verifies every frozen file exists, versions are SemVer, OS-internal details are not frozen, single ownership. **Local run: PASS** (24 files verified, 7 excluded, 5 deferred).
+- No implementation moved; no package published; no contract invented.

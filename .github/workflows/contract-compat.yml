@@ -1,0 +1,30 @@
+name: contract-compat
+
+# Validates the WO-SR-002 shared-contract freeze: every frozen contract exists,
+# versions are valid SemVer, and OS-internal implementation details are not frozen
+# as suite contracts. Dependency-light (Node built-ins only). See
+# docs/forensics/WO-SR-002-CONTRACT-FREEZE.md.
+
+on:
+  pull_request:
+    paths:
+      - 'backend/src/TerraFusion.Abstractions/**'
+      - 'scripts/contracts/**'
+      - '.github/workflows/contract-compat.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'backend/src/TerraFusion.Abstractions/**'
+      - 'scripts/contracts/**'
+  workflow_dispatch: {}
+
+jobs:
+  contract-compat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify shared-contract freeze
+        run: node scripts/contracts/verify-contract-freeze.mjs
