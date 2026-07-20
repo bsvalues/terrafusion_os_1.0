@@ -36,13 +36,16 @@ gate-transfer source-of-truth · no big-bang · historical repos are mines not m
 | **WO-FORGE-X-002** | exact disposition + dependency + provenance | decision | ✅ done (Loop 55) — engines→Forge (new ForgeDbContext); shared data→OS/Sync via contract | — |
 | WO-FORGE-X-003..007 | bootstrap→extract→services→rebind→parity+retire | execution | ⏸ after Forge repo | SR-003 + SR-002 |
 | **WO-ATLAS-X-001** | Atlas inventory + disposition | decision | ✅ done (Loop 56) — "Atlas" spans 3 domains; maps unrendered (#1073 gate) | — |
-| WO-ATLAS-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Atlas repo (+#1073) | SR-003 |
+| **WO-ATLAS-X-002** | exact disposition + dependency | decision | ✅ done (Loop 62) — Atlas owns ~no data (geometry=Sync-populated); AtlasDbContext=authored artifacts only | — |
+| WO-ATLAS-X-003..007 | bootstrap→…→parity+retire | execution | ⏸ after Atlas repo (+#1073) | SR-003 |
 | **WO-DAIS-X-001** | Dais inventory + disposition | decision | ✅ done (Loop 57) — clean/no-theater but largest; F14 Levy SoR/projection crux; `levy.projection` contract GAP | — |
-| WO-DAIS-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Dais repo | SR-003 + levy.projection freeze |
+| **WO-DAIS-X-002** | exact disposition + dependency | decision | ✅ done (Loop 62) — F14 3-way confirmed (Forge reads Core projection); generic Workflow stays OS; DaisDbContext+LevyDbContext | — |
+| WO-DAIS-X-003..007 | bootstrap→…→parity+retire | execution | ⏸ after Dais repo | SR-003 + levy.projection freeze |
 | **WO-DOSSIER-X-001** | Dossier inventory + disposition | decision | ✅ done (Loop 58) — NOT thinnest (dispersed, real chain-of-custody); "evidence" 4-way overload; `dossier.evidence` contract GAP | — |
 | WO-DOSSIER-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Dossier repo | SR-003 + dossier.evidence freeze |
 | **WO-GPT-X-001** | GPT inventory + disposition | decision | ✅ done (Loop 59) — real RAG infra vs largest theater; Muse/Pilot=OS; pages/suites=shared registry; SystemGptAtlas→Atlas | — |
-| WO-GPT-X-002..007 | disposition→…→parity+retire | execution | ⏸ after GPT repo | SR-003 + pilot-tool contract |
+| **WO-GPT-X-002** | exact disposition + dependency | decision | ✅ done (Loop 62) — theater REJECT (Consciousness/TerraGaia); GptDbContext carve (remove hook); Pilot-tool contract | — |
+| WO-GPT-X-003..007 | bootstrap→…→parity+retire | execution | ⏸ after GPT repo | SR-003 + pilot-tool contract |
 
 **One-Brain dispatch model:** the base Brain issues each suite a **domain pack + dispatch packet +
 reservations + WO + evidence obligations**; suites report to **central integration gates**. No suite

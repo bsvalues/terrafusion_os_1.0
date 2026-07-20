@@ -131,6 +131,9 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **WO-DAIS-X-001 — Dais Inventory** (clean/no-theater but largest; F14 Levy SoR/projection three-way split; `levy.projection` contract GAP; Levy own-context clean extract) | `WO-DAIS-X-001-INVENTORY.md` |
 | **WO-DOSSIER-X-001 — Dossier Inventory** (NOT thinnest — dispersed, real chain-of-custody; "evidence" 4-way overload; `dossier.evidence` contract GAP) | `WO-DOSSIER-X-001-INVENTORY.md` |
 | **WO-GPT-X-001 — TerraGPT Inventory** (real RAG infra vs largest theater; Muse/Pilot=OS; pages/suites=shared registry; SystemGptAtlas→Atlas; GPT=leaf/no-write-lane) — completes all 5 | `WO-GPT-X-001-INVENTORY.md` |
+| **WO-ATLAS-X-002 — Atlas Disposition** (Atlas owns ~no data; geometry Sync-populated; AtlasDbContext=authored artifacts; SystemGptAtlas→Atlas) | `WO-ATLAS-X-002-DISPOSITION.md` |
+| **WO-DAIS-X-002 — Dais Disposition** (F14 3-way confirmed; generic Workflow stays OS; DaisDbContext+LevyDbContext; levy.projection gating) | `WO-DAIS-X-002-DISPOSITION.md` |
+| **WO-GPT-X-002 — GPT Disposition** (theater REJECT incl. TerraGaia; GptDbContext carve; gpt↔pilot tool contract) | `WO-GPT-X-002-DISPOSITION.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical

@@ -945,3 +945,17 @@
 | **lock status** | Real code move (self-contained DTO promotion, no behavior change). No repo created, no package published. |
 | **decision (for owner)** | dossier.evidence is structurally promoted but **backend build unverified** in the closed-PR state. To get real Backend .NET Tests verification, a PR must be open (reopen #1080 or a fresh draft PR) — **requires explicit owner go-ahead** (not done unilaterally). Alternatives: accept static verification (low-risk pure-DTO move), or defer verification to whenever a PR next opens. |
 | **next** | await owner call on reopening for CI verification; meanwhile per-suite X-002s / levy.projection materialization are decision-layer and unaffected. |
+
+## Loop 62 — Atlas + Dais + GPT X-002 disposition passes (all suite X-002s complete) (2026-06-25) [parallel while PR #1325 CI runs]
+
+| Field | Value |
+|---|---|
+| **loop_id** | L62 |
+| **trigger** | Owner: "continue the X-002 passes while CI runs." Docs-only (no conflict with the in-flight dossier PR); `levy.projection` manifest edit deferred until #1325 merges. |
+| **Atlas X-002** | **Atlas owns almost NO authored data** — geometry (`GisParcelGeometry`/`TfParcelGeom`) is **Sync-populated** by `ArcGisSyncService`; `SpatialAnalysis` shared w/ Forge (CostForgeController reads it). AtlasDbContext holds only **user-authored map artifacts** (CountySpatialArtifact + layers/symbology/bookmarks/neighborhood-defs). Atlas = presentation suite over Sync geometry. SystemGptAtlas→Atlas confirmed; #1073 hard gate. |
+| **Dais X-002** | **F14 three-way confirmed** — Core `LevyCertification` read by many Levy controllers + `LevyRiskScoringService` **+ CostForgeController** (Forge reads the projection) → Core=read-projection (RETAIN), Levy/Models=SoR→Dais, Pacs*=ingested. **`Workflow`/`WorkflowExecution` are GENERIC** (Quantum/Consciousness/Automation readers) → generic engine stays OS; Dais owns domain workflow state. DaisDbContext + retained LevyDbContext. DraftNoticeService→Pilot. `levy.projection` = gating contract. |
+| **GPT X-002** | Theater REJECT: `Consciousness` project + swarm/quantum + **`TerraGaia` ("Supreme AI Consciousness…Championship-level")**. **GptDbContext carve** — GPT entities coupled to main `TerraFusionDbContext` via `OnModelCreatingExtensions` hook (remove it). **Pilot-tool contract** = GPT's only write path (leaf, no sovereign write). SystemGptAtlas→Atlas. Module-registry stays OS. |
+| **cross-suite** | All 5 suites now have X-001 + X-002 (Forge/Atlas/Dais/Dossier/GPT). Recurring: each gets its own DbContext; **shared/ingested data (geometry, CostMatrix, Pacs*, Core levy projection) stays OS/Sync via contract**; theater REJECTed (CostForge/Consciousness/TerraGaia); generic infra (Workflow) stays OS. |
+| **contract actions surfaced** | `levy.projection` (materialize + freeze after #1325 merge); `gpt↔pilot` sanctioned-tool contract (define at GPT X-003); AtlasDbContext/DaisDbContext/GptDbContext carves at respective X-003. |
+| **lock status** | Decision-layer docs only. No code moved, no repo, no credential. Manifest untouched (PR-in-flight). |
+| **next** | on PR #1325 CI green → merge dossier promotion; then levy.projection materialization + X-003 bootstraps (execution-gated on suite repos). |
