@@ -827,3 +827,18 @@
 | **scope of edit** | Contract **metadata + validation tooling only** — no implementation moved, no entity/persistence change, no package published, no contract invented. First suite-program artifact to touch `backend/`/`.github/` (all additive, non-behavioral). |
 | **lock status** | Decision + light tooling layer. No repo created, no suite impl moved, no runtime change. |
 | **posture** | STRATEGIC=CLOSED · CREDENTIAL BLOCK=ISOLATED · PROGRAM=CONTINUING · OWNER ACTION NOW=NONE. Frozen contract surface now machine-validated in CI. Next gated step: suite repo creation (credential) → bootstrap → WO-FORGE-X-001. |
+
+## Loop 54 — WO-FORGE-X-001: Forge inventory + disposition (CostForge project = theater) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L54 |
+| **trigger** | Owner: "proceed to WO-FORGE-X-001 inventory." Source-side inventory of the proven Forge implementation (no repo, no credential). |
+| **load-bearing finding** | **`backend/src/TerraFusion.CostForge` is fenced theater** (`UltimateCostForgeController`: "Million-Agent Property Intelligence… Government. Transcended… pinnacle of valuation consciousness"; Quantum/Consciousness/MillionAgent/Transcendence models) → **REJECT**. Corrects WO-SR-001 §3's assumption that CostForge = the Forge backend. |
+| **real Forge (distributed)** | `Core/Entities/Forge/*` (17 real domain entities: CostApproach/IncomeApproach/LandApproach/SalesRatio/CapRateSet/ParcelValuation/ParityEvaluator/CalibrationGate/ForgeGovernance…) · AI valuation/AVM/sales services (`CostForgeService`, `MassAppraisalService`, `AiValuationService`, `SaleRatioQueryBuilder`, `ValuationAgent`) · **`API/SalesForge`** (OLS regression + ratio study + sale qualification — strongest-proven, real stats + tests) · **`CurrentUse`** (own DbContext 4 DbSets + migration + 7 tests — cleanest lift) · frontend `pages/forge` 307 files. |
+| **disposition summary** | REJECT: CostForge theater. EXTRACT_EXACT: Core/Entities/Forge, AI valuation type-cut, API/SalesForge + forge controllers, CurrentUse, most forge UI, SalesForge/CurrentUse tests. RETAIN_IN_OS: PACS controllers (fence), OS orchestration/collab, Workbench Forge tab host. DEFER (boundary): `forge/geo`(64)+`atlas-live`(16)→Atlas overlap; `forge/county-studio`(74)→ownership; shared valuation entities read by Dais/Sync. |
+| **flagged for X-002/X-003** | EF-coupling (Forge DbContext slice like CurrentUse vs contracts+own persistence); shared-entity per-entity cut; geo/atlas-live boundary; county-studio ownership; AI-project type-level cut; controller-level cut. |
+| **contracts consumed** | `forge.valuation` + `canonical.parcel` + `shared.envelopes` + `crosscut.audit` (frozen v1.0.0). Feeder provenance (out-of-session): BSIncomeValuation, GeospatialAnalyzerBS, terra-forge-rebuild, WashingtonForge. |
+| **caveat** | build/test greenness unverifiable (no dotnet); existence/structure verified. Provenance = origin/main `2ae013561`. |
+| **lock status** | Inventory/decision-layer. No code moved, no repo created, no credential used. |
+| **next** | WO-FORGE-X-002 (exact source/dependency/provenance disposition + resolve the 6 flagged decisions) — decision-layer, in-session capable; then bootstrap/extraction gated on the suite repo (credential). |
