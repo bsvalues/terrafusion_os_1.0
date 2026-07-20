@@ -885,3 +885,18 @@
 | **contracts/feeders** | Consumes canonical.parcel/shared.envelopes/crosscut.audit/dais.sync-readiness. Feeders (out-of-session): TerraFlow, TerraPILT, BCBSLevy. |
 | **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
 | **cross-suite doctrine** | 3 suites inventoried: each owns its engine/workflow + own DbContext; PACS-ingested/shared data stays OS/Sync via contract. Name-overload held for Forge(theater)/Atlas(AI+Sync); Dais clean but carries F14 split + a contract gap. |
+
+## Loop 58 — WO-DOSSIER-X-001: Dossier inventory (NOT thinnest; "evidence" 4-way overload) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L58 |
+| **trigger** | Owner: "proceed to Dossier inventory." Source-side inventory + disposition (no repo, no credential). |
+| **correction** | **Dossier is NOT the thinnest suite.** Loop 47's "1 file" counted only `pages/dossier/`. Real Dossier is dispersed but substantial: 6 backend entities incl. **chain-of-custody `DossierCustodyEvent`** + DossierController + scattered real frontend (`components/dossier/`×7, `services/suites/dossier*`×5, hooks, `pages/suites` modules, Workbench tab) + real tests (Cx22–25, contract tests). No theater. Corrects `PROGRESS-RECONSTRUCTION-LEDGER.md`'s "Dossier 1 file". |
+| **load-bearing** | **"Evidence" is overloaded 4 ways** (like "Atlas" 3 ways): Dossier product-evidence (parcel/case docs/packets/custody) → EXTRACT; OS/Sync corpus/data-quality evidence (`EvidencePacketService`, `CorpusEvidencePacketService`, `DictionaryLoaderPreflight`) → RETAIN; Pilot `EvidenceRail` → OS/Pilot; canon `CanonEvidenceViewer` → OS/governance. |
+| **contract GAP** | **`dossier.evidence` not frozen** (ParcelDossierDto/ParcelDossierDetailsDto/EvidenceSnapshotDto/packet/custody DTOs) → new WO-SR-002 increment before cutover. **Second gap after `levy.projection`.** |
+| **disposition** | REWRITE→DossierDbContext: Core Dossier entities. EXTRACT: DossierController, components/dossier + services/suites/dossier* + hooks + pages/suites Dossier modules + PacketAssembly. RETAIN_IN_OS/Sync: corpus/sync evidence services, Pilot EvidenceRail, canon viewer, Workbench PropertyDossier host. DEFER: EvidenceSnapshotPanel + RevalAreaEvidenceAge ownership. |
+| **boundaries** | Dais↔Dossier: DefensePacket/appeal-handoff/BentonLevyPacket — Dossier owns product-evidence packets, Dais consumes via contract. Atlas↔Dossier: guard tests — confirm no shared ownership. |
+| **flagged for X-002** | freeze `dossier.evidence`; DossierDbContext carve; Dais↔Dossier packet boundary; EvidenceSnapshotPanel/RevalAreaEvidenceAge ownership; corpus-evidence stays OS. |
+| **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
+| **next** | WO-GPT-X-001 (final inventory — also resolves deferred SystemGptAtlas ownership); or freeze the two pending contracts (levy.projection, dossier.evidence) in-session. |

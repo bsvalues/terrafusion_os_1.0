@@ -129,6 +129,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **WO-FORGE-X-002 — Forge Disposition/Dependency/Provenance** (crux: Forge owns engines→new ForgeDbContext; shared parcel/sale data stays OS/Sync via contract; geo/county-studio→Forge) | `WO-FORGE-X-002-DISPOSITION.md` |
 | **WO-ATLAS-X-001 — Atlas Inventory** ("Atlas" spans 3 domains: GIS suite / SystemGptAtlas AI→GPT / Sync-profiling; maps unrendered → #1073 hard cutover precondition) | `WO-ATLAS-X-001-INVENTORY.md` |
 | **WO-DAIS-X-001 — Dais Inventory** (clean/no-theater but largest; F14 Levy SoR/projection three-way split; `levy.projection` contract GAP; Levy own-context clean extract) | `WO-DAIS-X-001-INVENTORY.md` |
+| **WO-DOSSIER-X-001 — Dossier Inventory** (NOT thinnest — dispersed, real chain-of-custody; "evidence" 4-way overload; `dossier.evidence` contract GAP) | `WO-DOSSIER-X-001-INVENTORY.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
