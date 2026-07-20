@@ -37,6 +37,25 @@ are compatibility aliases for read-only routing or loop control; they are not se
 Executable repository commands such as `corepack pnpm brain` and `corepack pnpm tf` are outside this
 operator-directive grammar and retain their own help surfaces.
 
+### /goal suite-repositories
+
+```
+Goal:     Build the five federated Tier-1 suite repositories under the sovereign OS base.
+Program:  Five-Suite Federated Repository Buildout
+File:     programs/five-suite-federated-repository-buildout.md
+Success:  Shared contracts are frozen, repositories are bootstrapped, bounded extraction passes
+          parity/provenance gates, and duplicate mutable ownership is retired at cutover.
+```
+
+**Current state:** WO-SR-002 completes the contract freeze and preparation packet. Physical creation
+of `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
+`terrafusion-gpt` is `BLOCKED_MISSING_EXECUTION_CREDENTIAL`; that substep does not park the program.
+
+**Allowed loop modes:** `program`, `evidence`, `discovery`
+
+**Blocked:** package publication, blind extraction, duplicate mutable ownership, secrets, county/PACS
+data, production deployment, or repository creation without the exact execution credential.
+
 ### /goal codex-operator-autonomy
 
 ```

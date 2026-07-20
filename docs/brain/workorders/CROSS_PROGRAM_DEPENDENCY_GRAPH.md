@@ -2,7 +2,7 @@
 
 **Version:** 1.2
 **Date:** 2026-07-18
-**Authority:** WO-WOE-014, current-state refresh by WO-PORTFOLIO-012
+**Authority:** WO-WOE-014, current-state refresh by WO-SR-002
 **Classification:** Operator Doctrine - makes the Wall Ledger operational
 **Builds on:** [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) (WOE-012),
 [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md), and
@@ -40,8 +40,9 @@ At WO-PORTFOLIO-003 reconciliation, the previously listed safe lanes are complet
 - Backend Operational Excellence closed at WO-BACKEND-OE-013.
 - Azure's committed-evidence slice closed at WO-AZURE-003.
 
-No registered Work Order currently runs without new authority. The terminal classification is
-`ALL_LANES_PARKED`, not an invitation to revive completed nodes or select an advisory registry seed.
+WO-SR-002 runs under the ratified Five-Suite Federated Repository Buildout authority. Contract,
+policy, validation, provenance, bootstrap inventory, and Work Order preparation do not require the
+repo-create credential. The credential blocks only WO-SR-003A through WO-SR-003E physical creation.
 
 ---
 
@@ -71,6 +72,12 @@ CROSS-PROJECT HISTORICAL AUDIT
 
 RUNTIME IMPORT
   starts at WO-CORE-1 only after the sovereign import disposition is authorized
+
+FIVE-SUITE FEDERATED REPOSITORIES
+  WO-SR-002 contract and policy preparation executes in the sovereign base
+  WO-SR-003A through WO-SR-003E physical creation requires the repo-create credential
+  WO-SR-004 bootstrap verification follows each created repository
+  WO-SR-005 extraction remains gated by contract, parity, provenance, and rollback proof
 ```
 
 ---
@@ -79,6 +86,7 @@ RUNTIME IMPORT
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
+| five-suite-federated-repository-buildout | SR-001, SR-002 on merge | SR-003A through SR-003E | GitHub repo-create execution credential | ACTIVE / EXTERNAL SUBSTEP BLOCKED |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -96,11 +104,11 @@ RUNTIME IMPORT
 
 ## 5. Operator Reading
 
-1. No dependency-cleared authorized node exists at WO-PORTFOLIO-003.
+1. WO-SR-002 is the admitted dependency-cleared node after portfolio correction.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. When a canonical node or applicable grant appears, rerun the Portfolio Operator algorithm and
-   continue automatically if the node is dependency-cleared and inside authority.
+4. Continue the suite repository program automatically for in-repo work; isolate the physical
+   repository-creation credential boundary rather than parking the portfolio.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
@@ -117,6 +125,7 @@ RUNTIME IMPORT
 | 2026-07-18 | Failed closed before proof-container creation because both required local images are absent | WO-LOCAL-096 |
 | 2026-07-19 | Acquired immutable images and recovered Postgres on preserved persistence; stopped before OMEN startup after transient credential output | WO-LOCAL-097 |
 | 2026-07-19 | Reclassified LOCAL-093 through LOCAL-097 as cross-project audit history and withdrew LOCAL-098 from TerraFusion routing | WO-PORTFOLIO-013 |
+| 2026-07-19 | Restored the ratified five-suite program; isolated the repo-create credential from in-repo contract and policy work | WO-SR-002 |
 
 ---
 
