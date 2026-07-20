@@ -130,3 +130,17 @@ and the Core-side `ITerraFusionSyncService`/`IModuleCatalog`/`IValuationService`
 **Compatibility:** MINOR = additive/back-compat · MAJOR = breaking (deprecation window + `[Obsolete]`,
 old+new coexist ≥1 release) · PATCH = doc-only. Consumers pin a MAJOR line. **Publication:** project-ref
 now; versioned package publication is **not yet authorized** (post repo-creation, gated).
+
+### 8a. Planned-promotion (spec frozen; source DTOs exist, not yet in Abstractions)
+| Group | Version | Class | Consumers | Source (current) → target | Status |
+|---|---|---|---|---|---|
+| `dossier.evidence` | `1.0.0` | SUITE | dossier, dais | `Core/DTOs/ParcelDossierDto`, `API/DTOs/{ParcelDossierDetailsDto,EvidenceSnapshotDto}` → `Abstractions/DTOs/Dossier/` | spec **frozen**; the `git mv` promotion is a **CI-gated code move** (self-containment confirmed at promotion). Surfaced by `WO-DOSSIER-X-001`. |
+
+### 8b. Spec-declared (forward declaration; DTOs to-be-defined — NOT invented)
+| Group | Version | Class | Consumers | Source-of-record | Status |
+|---|---|---|---|---|---|
+| `levy.projection` | `1.0.0` | SUITE | dais, core-read-projection | `docs/forensics/F14-CROSSREPO-CONTRACTS.md` | spec **recorded** (Sync→Dais levy-input · Levy projection read-model · Cert read DTO · Levy domain events); **DTOs to-be-materialized at Dais/Levy extraction**. Invariants: no dual-write, no shadow schema, event-derived + staleness budget. Not frozen over code; not invented. Surfaced by `WO-DAIS-X-001`. |
+
+> **Neither 8a nor 8b is an Abstractions-resident frozen contract yet.** 8a awaits a CI-verified promotion;
+> 8b awaits DTO materialization during suite extraction. The `contract-compat` check validates both tiers
+> structurally (8a: source files exist; 8b: valid version + cites ratification, lists no concrete files).

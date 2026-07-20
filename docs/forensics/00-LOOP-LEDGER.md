@@ -915,3 +915,17 @@
 | **ALL-FIVE SYNTHESIS** | Every suite name over-counts; real domain narrower. Strip: theater (Forge/GPT), OS-AI (Muse/Pilot), Sync-ingested/profiling, shared registries. Each suite owns engine/workflow/config + own DbContext (+Levy/CurrentUse). Shared/ingested/PACS stay OS/Sync via contract. Two contract GAPS (levy.projection, dossier.evidence). GPT = leaf, no write lane. |
 | **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
 | **next** | per-suite X-002s (in-session); or freeze the 2 pending contracts (levy.projection, dossier.evidence) in-session; or WO-SR-003 execution once credential lands. All extraction execution-gated on suite repos. |
+
+## Loop 60 — freeze levy.projection + dossier.evidence (honest two-tier: planned-promotion vs spec-declared) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L60 |
+| **trigger** | Owner: "freeze levy.projection and dossier.evidence." |
+| **honesty split** | The two are in **different states**, handled differently (not conflated): **dossier.evidence** source DTOs EXIST (`Core/DTOs/ParcelDossierDto`, `API/DTOs/{ParcelDossierDetailsDto,EvidenceSnapshotDto}`) but are **not yet in Abstractions** → **planned-promotion** (spec frozen; git-mv is a CI-gated code move — not claimed unverified). **levy.projection** DTOs **do not exist** (F14 "to be defined") → **spec-declared** forward declaration (recorded per F14, **not invented**, not frozen over code). |
+| **action** | Extended `contracts.freeze.json` with `planned_promotion` (dossier.evidence@1.0.0, source DTOs + target dir) + `spec_declared` (levy.projection@1.0.0, F14 source-of-record + surface + invariants). Extended `verify-contract-freeze.mjs`: tier-6 (planned source files exist, not already in Abstractions) + tier-7 (spec has semver + source_of_record + lists NO concrete files). Stamped CONTRACTS.md §8a/§8b. |
+| **verification** | `contract-compat` → **PASS**: 6 frozen groups, 27 files verified, 7 excluded, 5 deferred, **1 planned-promotion, 1 spec-declared**. |
+| **why not a full freeze** | Charter discipline (HR-4: no "done" without green build; no invented contracts). dossier DTO promotion (git mv across Core/API) is unverifiable in-session (no dotnet) → deferred to CI-gated increment. levy DTOs don't exist → cannot freeze without inventing. Both gaps now **specified + versioned + validated**, materialization tracked. |
+| **lock status** | Contract-metadata + validation tooling only. No DTO moved, no package published, no invented type. |
+| **materialization path** | dossier.evidence → CI-verified `git mv` to `Abstractions/DTOs/Dossier/` (WO-DOSSIER-X-002 or a promotion increment). levy.projection → DTOs authored at WO-DAIS-X-002/X-003 (reconcile candidate `API/Contracts/LevyDtos.cs`). |
+| **next** | promote dossier.evidence DTOs (CI-verified) when desired; per-suite X-002s; or WO-SR-003 on credential. |
