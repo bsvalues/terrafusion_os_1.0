@@ -10,6 +10,7 @@ using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using TerraFusion.API.DTOs;
+using TerraFusion.Abstractions.DTOs.Dossier;
 using TerraFusion.API.Security;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 

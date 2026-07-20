@@ -929,3 +929,17 @@
 | **lock status** | Contract-metadata + validation tooling only. No DTO moved, no package published, no invented type. |
 | **materialization path** | dossier.evidence → CI-verified `git mv` to `Abstractions/DTOs/Dossier/` (WO-DOSSIER-X-002 or a promotion increment). levy.projection → DTOs authored at WO-DAIS-X-002/X-003 (reconcile candidate `API/Contracts/LevyDtos.cs`). |
 | **next** | promote dossier.evidence DTOs (CI-verified) when desired; per-suite X-002s; or WO-SR-003 on credential. |
+
+## Loop 61 — promote dossier.evidence DTOs to Abstractions (first real backend code move) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L61 |
+| **trigger** | Owner: "promote the dossier DTOs." First real backend code movement this session (prior = docs + contract metadata/tooling only). |
+| **self-containment gate (§2)** | All 3 DTOs verified self-contained: only primitives/Guid/DateTime/decimal/List/string[] + own nested types; **no EF/Core-entity refs**. `EvidenceSnapshotDto` uses `DossierResourceLinks` (in the same set → moves together). PASS. |
+| **consumer scan** | **Sole consumer = `DossierController.cs`** (Cx23/25 tests are JSON/integration, no C# type ref). Nested-name collisions (`PropertyDetails`→Core.Services.AI, `LevyEntry`→a test private record) are in namespaces DossierController does NOT import → no ambiguity. |
+| **action** | `git mv` `Core/DTOs/ParcelDossierDto.cs` + `API/DTOs/{ParcelDossierDetailsDto,EvidenceSnapshotDto}.cs` → `Abstractions/DTOs/Dossier/`; namespace → `TerraFusion.Abstractions.DTOs.Dossier`; added `using TerraFusion.Abstractions.DTOs.Dossier;` to DossierController. `Guid CountyId` **kept** (align→string = separate versioned decision, charter §5). Abstractions has `ImplicitUsings=enable` (Guid/List resolve); API already refs Abstractions. |
+| **freeze update** | `contracts.freeze.json`: dossier.evidence moved `planned_promotion → frozen` (7 frozen groups); planned_promotion now empty. `contract-compat` local → **PASS** (7 frozen, 27 files, 0 planned, 1 spec-declared). CONTRACTS.md §8 + §8a updated. |
+| **verification status** | Local checks green (files moved, sole consumer rebound, no stale refs, ImplicitUsings confirmed). **Build/test greenness PENDING CI** (no dotnet in-session) — NOT claimed done until Backend .NET Tests + Warning Gate green on the pushed HEAD. |
+| **lock status** | Real code move (self-contained DTO promotion, no behavior change). No repo created, no package published. |
+| **next** | confirm CI green → dossier.evidence fully frozen; then levy.projection materialization (Dais X-002/X-003) or per-suite X-002s. |

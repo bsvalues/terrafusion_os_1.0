@@ -75,6 +75,18 @@
         "Interfaces/IAuditLogger.cs",
         "Interfaces/ICitizenContextService.cs"
       ]
+    },
+    {
+      "group": "dossier.evidence",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dossier", "dais"],
+      "files": [
+        "DTOs/Dossier/ParcelDossierDto.cs",
+        "DTOs/Dossier/ParcelDossierDetailsDto.cs",
+        "DTOs/Dossier/EvidenceSnapshotDto.cs"
+      ],
+      "note": "promoted Loop 61 (git mv from Core/API DTOs); CountyId kept as Guid (align to string = separate versioned decision)"
     }
   ],
   "os_internal_excluded": [
@@ -94,22 +106,7 @@
     "Interfaces/IContextEnrichmentService.cs"
   ],
   "_planned_note": "planned_promotion = contract spec frozen (version+compat locked) but source DTOs still live outside Abstractions; the git-mv promotion is a separate CI-gated code move. spec_declared = contract spec recorded but the DTOs do not exist yet (to-be-defined); NOT frozen over code, NOT invented. Neither counts as an Abstractions-resident frozen contract until promoted/materialized.",
-  "planned_promotion": [
-    {
-      "group": "dossier.evidence",
-      "version": "1.0.0",
-      "class": "SUITE",
-      "consumers": ["dossier", "dais"],
-      "status": "source DTOs EXIST; promotion into Abstractions pending (CI-gated code move; self-containment confirmed at promotion)",
-      "source_files": [
-        "backend/src/TerraFusion.Core/DTOs/ParcelDossierDto.cs",
-        "backend/src/TerraFusion.API/DTOs/ParcelDossierDetailsDto.cs",
-        "backend/src/TerraFusion.API/DTOs/EvidenceSnapshotDto.cs"
-      ],
-      "target_dir": "backend/src/TerraFusion.Abstractions/DTOs/Dossier/",
-      "surface": ["parcel dossier detail", "evidence snapshot", "packet/custody read DTOs"]
-    }
-  ],
+  "planned_promotion": [],
   "spec_declared": [
     {
       "group": "levy.projection",

@@ -1,4 +1,4 @@
-namespace TerraFusion.API.DTOs;
+namespace TerraFusion.Abstractions.DTOs.Dossier;
 
 /// <summary>
 /// CX-25: Dossier evidence snapshot — self-contained, hash-verifiable

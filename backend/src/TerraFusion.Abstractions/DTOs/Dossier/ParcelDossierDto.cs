@@ -1,4 +1,4 @@
-namespace TerraFusion.Core.DTOs;
+namespace TerraFusion.Abstractions.DTOs.Dossier;
 
 /// <summary>
 /// CX-22: Composed parcel dossier — read-only view combining

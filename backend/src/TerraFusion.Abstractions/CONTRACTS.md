@@ -120,6 +120,7 @@ placeholders, Tyler lore). Those remain lock-gated (`MIGRATE-R1-RATIFICATION.md`
 | `dais.sync-readiness` | `1.0.0` | SUITE | dais | `DTOs/Workbench/SyncReadinessDto` · `Interfaces/Workbench/{IWorkbenchSyncReadinessService,IPacsReachabilityProbeService}` |
 | `shared.envelopes` | `1.0.0` | CROSS-CUTTING | all | `DTOs/{ComplianceDto,Responses/CommonResponses,Responses/PerformanceMetricsDto,Shared/SharedDtos}` |
 | `crosscut.audit` | `1.0.0` | CROSS-CUTTING | all | `Interfaces/{IAuditLogger,ICitizenContextService}` |
+| `dossier.evidence` | `1.0.0` | SUITE | dossier, dais | `DTOs/Dossier/{ParcelDossierDto,ParcelDossierDetailsDto,EvidenceSnapshotDto}` (promoted Loop 61; `Guid CountyId` kept) |
 
 **Excluded (OS-internal impl details — NOT suite contracts):** `NegativeCacheStatistics`,
 `ICacheStatisticsService`, `IPerformanceMonitor`, `IServiceDiscoveryService`, `IQuantumAIRoutingService`,
@@ -134,7 +135,7 @@ now; versioned package publication is **not yet authorized** (post repo-creation
 ### 8a. Planned-promotion (spec frozen; source DTOs exist, not yet in Abstractions)
 | Group | Version | Class | Consumers | Source (current) → target | Status |
 |---|---|---|---|---|---|
-| `dossier.evidence` | `1.0.0` | SUITE | dossier, dais | `Core/DTOs/ParcelDossierDto`, `API/DTOs/{ParcelDossierDetailsDto,EvidenceSnapshotDto}` → `Abstractions/DTOs/Dossier/` | spec **frozen**; the `git mv` promotion is a **CI-gated code move** (self-containment confirmed at promotion). Surfaced by `WO-DOSSIER-X-001`. |
+| ~~`dossier.evidence`~~ | `1.0.0` | SUITE | dossier, dais | → `Abstractions/DTOs/Dossier/` | ✅ **PROMOTED (Loop 61)** — `git mv` complete, now a frozen group (§8); sole consumer `DossierController` rebound; `Guid CountyId` kept (align→string = separate versioned decision). *(pending CI-green confirmation on push.)* |
 
 ### 8b. Spec-declared (forward declaration; DTOs to-be-defined — NOT invented)
 | Group | Version | Class | Consumers | Source-of-record | Status |

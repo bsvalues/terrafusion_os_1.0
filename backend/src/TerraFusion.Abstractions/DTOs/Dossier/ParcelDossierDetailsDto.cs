@@ -1,4 +1,4 @@
-namespace TerraFusion.API.DTOs;
+namespace TerraFusion.Abstractions.DTOs.Dossier;
 
 /// <summary>
 /// CX-23/CX-24: Parcel Dossier v1 "details" — deeper view than CX-22's composed summary.
