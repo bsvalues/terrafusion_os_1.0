@@ -870,3 +870,18 @@
 | **flagged for X-002** | SystemGptAtlas ownership (Atlas vs GPT); AtlasDbContext per-entity carve (authored vs Sync-ingested geometry); GeoForge reassignment reconciliation; sentiment→GPT; #1073 sequencing. |
 | **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
 | **next** | WO-ATLAS-X-002 (disposition/dependency/provenance) — in-session capable; or continue Dais/Dossier/GPT inventories. Atlas extraction gated on Atlas repo **+ #1073**. |
+
+## Loop 57 — WO-DAIS-X-001: Dais inventory (clean/no-theater; F14 Levy SoR/projection crux) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L57 |
+| **trigger** | Owner: "proceed to Dais inventory." Source-side inventory + disposition (no repo, no credential). |
+| **load-bearing 1** | **Dais is clean — NO theater** (breaks the Forge/Atlas name-overload streak); backend real end-to-end (DaisController 2,162 ln → 5 services). **Largest suite**: assessor workflow + Levy sub-domain (own project + own LevyDbContext 9 DbSets + ~17 Levy controllers) + TerraNotice (13 areas). |
+| **load-bearing 2 (crux)** | **F14 data-truth split:** `LevyCertification` exists in 3 places — `Core/Entities`, `TerraFusion.Levy/Models`, `Pacs/PacsLevyCertification*`. F14 Option C: **Levy=SoR→Dais; Core levy=read-projection; Pacs*=PACS-ingested**. Mirror of Forge shared-data / Atlas ingested-geometry. |
+| **contract GAP** | **`levy.projection` contract is NOT yet frozen** (CONTRACTS.md §4 "to be defined"). Needs a new WO-SR-002 increment (freeze `levy.projection@1.0.0`) before Levy cutover. |
+| **disposition** | REWRITE_FOR_SUITE: Core Dais entities → DaisDbContext. EXTRACT_EXACT: Dais services (Core type-cut), DaisController + assessor controllers, **TerraFusion.Levy** (own context, clean), ~17 Levy controllers, PILT. RETAIN_IN_OS/Sync: Pacs* projections, Core levy read-projection, DraftNoticeService (AI notice-drafting → Pilot; Dais consumes via contract). EXTRACT frontend: pages/dais (8 thin shells), pages/notice (16 TerraNotice), pages/pilt. |
+| **flagged for X-002** | F14 three-way LevyCertification cut; DaisDbContext per-entity carve; Workflow/WorkflowExecution genericity; freeze `levy.projection`; DraftNoticeService boundary; PILT sub-domain confirm. |
+| **contracts/feeders** | Consumes canonical.parcel/shared.envelopes/crosscut.audit/dais.sync-readiness. Feeders (out-of-session): TerraFlow, TerraPILT, BCBSLevy. |
+| **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
+| **cross-suite doctrine** | 3 suites inventoried: each owns its engine/workflow + own DbContext; PACS-ingested/shared data stays OS/Sync via contract. Name-overload held for Forge(theater)/Atlas(AI+Sync); Dais clean but carries F14 split + a contract gap. |
