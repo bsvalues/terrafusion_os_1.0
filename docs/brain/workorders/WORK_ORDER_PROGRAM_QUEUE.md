@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005A closeout
+**Authority:** WO-SR-005B-P closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,9 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. Forge's standalone valuation kernel now has
-byte provenance and parity in `bsvalues/terrafusion-forge`; no ownership cutover occurred.
-`WO-SR-005B-P` is active to prepare Atlas contract and map-parity truth without runtime extraction.
+The Five-Suite Federated Repository Buildout is active. WO-SR-005B-P proved that Atlas has no frozen
+domain contract and that the mixed GIS package is not a bounded extraction unit. `WO-SR-005B-C` is
+active to decompose an exact provider-neutral, county-context-aware read contract without changing
+runtime source. Atlas extraction remains blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -36,8 +37,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-003A-E Create and bootstrap five suite repositories | DONE | Five exact private repositories created and bootstrap commits verified |
 | WO-SR-004 Bootstrap and Settings Verification | DONE | Required checks pass and protected-main settings are verified in all five repositories |
 | WO-SR-005A Forge Bounded Extraction and Provenance | DONE | Forge PR #1 merged at `2430b483`; exact byte provenance and 2/2 parity tests; no cutover |
-| **WO-SR-005B-P Atlas Contract and Parity Gate Preparation** | **ACTIVE** | Read-only/docs audit must identify genuine contract ownership and standalone map parity |
-| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON PREPARATION GATE | Bootstrap complete; execute only if WO-SR-005B-P proves the domain contract and map parity gate |
+| WO-SR-005B-P Atlas Contract and Parity Gate Preparation | DONE | No frozen Atlas group; mixed package rejected; standalone parity gate defined |
+| **WO-SR-005B-C Atlas Read Contract Decomposition** | **ACTIVE** | Define exact provider-neutral records, county context, exclusions, and synthetic fixtures |
+| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON CONTRACT IMPLEMENTATION | Requires a stable hash-frozen Atlas domain contract and executable parity fixtures |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; governed-AI contract and grounding proof required |
