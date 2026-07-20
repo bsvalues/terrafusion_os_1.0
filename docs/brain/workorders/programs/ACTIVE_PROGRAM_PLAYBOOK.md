@@ -93,24 +93,24 @@ automatically.
 
 ## Active Program - Five-Suite Federated Repository Buildout
 
-| Field | Value |
-| --- | --- |
-| Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
-| Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
-| Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; in-repo preparation complete at WO-SR-002 |
-| Current | `WO-SR-002` completes on merge |
-| Next | `WO-SR-003A` through `WO-SR-003E` |
+| Field        | Value                                                           |
+| ------------ | --------------------------------------------------------------- |
+| Goal         | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES`                        |
+| Loop         | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`                        |
+| Program slug | `five-suite-federated-repository-buildout`                      |
+| Status       | Active; repository creation and bootstrap verification complete |
+| Current      | `WO-SR-005A - Forge Bounded Extraction and Provenance`          |
+| Next         | Forge standalone valuation parity proof                         |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
 `terrafusion-gpt`. Shared contracts, Brain, Workbench composition, security, county context, Sync
 infrastructure, CI/release governance, and integration evidence remain in the sovereign base.
 
-WO-SR-002 freezes current genuine suite-consumable contracts, classifies the entire Abstractions
-surface, establishes compatibility and publication rules, and prepares extraction, provenance,
-bootstrap, and repository-creation packets. Physical repository creation alone is
-`BLOCKED_MISSING_EXECUTION_CREDENTIAL`; it does not convert the program into an all-lanes park.
+WO-SR-002 froze current genuine suite-consumable contracts. WO-SR-003 and WO-SR-004 created,
+bootstrapped, checked, and protected all five private suite repositories. Forge now advances first
+because `forge.valuation` and `crosscut.audit` are frozen; the other four extraction lanes remain
+domain-contract gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -118,14 +118,14 @@ Program definition: [five-suite-federated-repository-buildout.md](five-suite-fed
 
 ## Program MAO - Governed Multi-Agent Operator Activation
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-MAO-001` |
-| Loop | `LOOP-MAO-001` |
+| Field        | Value                                      |
+| ------------ | ------------------------------------------ |
+| Goal         | `GOAL-MAO-001`                             |
+| Loop         | `LOOP-MAO-001`                             |
 | Program slug | `governed-multi-agent-operator-activation` |
-| Status | CLOSED - PASS_WITH_GAPS |
-| Current WO | `WO-MAO-007` complete |
-| Next WO | Portfolio reconciliation |
+| Status       | CLOSED - PASS_WITH_GAPS                    |
+| Current WO   | `WO-MAO-007` complete                      |
+| Next WO      | Portfolio reconciliation                   |
 
 ### Purpose
 
@@ -137,17 +137,17 @@ Audit source: [`WO-MAO-000 Doctrine Conflict Audit Proof`](../../evidence/WO-MAO
 
 ### Work Order Chain
 
-| Work Order | Mode | Required outcome |
-|------------|------|------------------|
-| `WO-MAO-000` | read-only audit | Persisted source-cited contradiction matrix and historical denominator |
-| `WO-MAO-001` | governance reconciliation | Exact bounded R5 owner authorization, replacement hierarchy, complete protection canon, and inactive operator-merge model |
-| `WO-MAO-001A` | governance correction | One-time owner envelope separated from Codex-maintained PR/SHA/scope/reservation execution state |
-| `WO-MAO-002` | two-lane pilot | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
-| `WO-MAO-003` | contract + mechanical gate | Reservation schema plus intentional-overlap rejection and release/retry proof |
-| `WO-MAO-004` | planner implementation | COMPLETE - dependency-cleared executable set and conflict-free parallel waves |
-| `WO-MAO-005` | evidence-informed playbooks | COMPLETE - PR #1287 merged bounded worker, assurance, monitoring, retry, and operator rules |
-| `WO-MAO-006` | portfolio rollout | COMPLETE - PR #1288 |
-| `WO-MAO-007` | evidence rollup | COMPLETE - PASS_WITH_GAPS; authority consumed |
+| Work Order    | Mode                        | Required outcome                                                                                                                            |
+| ------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WO-MAO-000`  | read-only audit             | Persisted source-cited contradiction matrix and historical denominator                                                                      |
+| `WO-MAO-001`  | governance reconciliation   | Exact bounded R5 owner authorization, replacement hierarchy, complete protection canon, and inactive operator-merge model                   |
+| `WO-MAO-001A` | governance correction       | One-time owner envelope separated from Codex-maintained PR/SHA/scope/reservation execution state                                            |
+| `WO-MAO-002`  | two-lane pilot              | Two disjoint WOs, operator-maintained exact execution state, required governed-spine interlock, and independent read-only post-merge checks |
+| `WO-MAO-003`  | contract + mechanical gate  | Reservation schema plus intentional-overlap rejection and release/retry proof                                                               |
+| `WO-MAO-004`  | planner implementation      | COMPLETE - dependency-cleared executable set and conflict-free parallel waves                                                               |
+| `WO-MAO-005`  | evidence-informed playbooks | COMPLETE - PR #1287 merged bounded worker, assurance, monitoring, retry, and operator rules                                                 |
+| `WO-MAO-006`  | portfolio rollout           | COMPLETE - PR #1288                                                                                                                         |
+| `WO-MAO-007`  | evidence rollup             | COMPLETE - PASS_WITH_GAPS; authority consumed                                                                                               |
 
 ### Pilot Boundary
 
@@ -179,13 +179,13 @@ the next route is Portfolio Operator reconciliation.
 
 ## Program 0 - Master Playbook Governance
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` |
-| Loop | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` |
-| Program slug | `goal-loop-master-playbook` |
-| Status | GOVERNING BASELINE |
-| Current WO | Merged |
+| Field        | Value                            |
+| ------------ | -------------------------------- |
+| Goal         | `GOAL-GOAL-LOOP-MASTER-PLAYBOOK` |
+| Loop         | `LOOP-GOAL-LOOP-MASTER-PLAYBOOK` |
+| Program slug | `goal-loop-master-playbook`      |
+| Status       | GOVERNING BASELINE               |
+| Current WO   | Merged                           |
 
 ### Purpose
 
@@ -229,13 +229,13 @@ Routing note:
 
 ## Program 0A - Codex Operator Work Order Playbook
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
-| Loop | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
-| Program slug | `codex-operator-playbook` |
-| Status | GOVERNING OPERATOR DOCTRINE |
-| Current WO | Merged through `WO-CODEX-OP-009` |
+| Field        | Value                                    |
+| ------------ | ---------------------------------------- |
+| Goal         | `GOAL-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Loop         | `LOOP-TF-CODEX-OPERATOR-WO-PLAYBOOK-001` |
+| Program slug | `codex-operator-playbook`                |
+| Status       | GOVERNING OPERATOR DOCTRINE              |
+| Current WO   | Merged through `WO-CODEX-OP-009`         |
 
 ### Purpose
 
@@ -265,13 +265,13 @@ agents, PRs, reviews, checks, and merge readiness.
 
 ## Program 0B - Codex Operator Autonomy
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` |
-| Loop | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` |
-| Program slug | `codex-operator-autonomy` |
-| Status | GOVERNING AUTONOMY BASELINE |
-| Current WO | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` |
+| Field        | Value                                     |
+| ------------ | ----------------------------------------- |
+| Goal         | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001`     |
+| Loop         | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001`     |
+| Program slug | `codex-operator-autonomy`                 |
+| Status       | GOVERNING AUTONOMY BASELINE               |
+| Current WO   | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` |
 
 ### Purpose
 
@@ -308,14 +308,14 @@ remains governing doctrine; it does not keep Release Engineering active after cl
 
 ## Program 0C - Release Engineering
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-TF-RELEASE-ENGINEERING-001` |
-| Loop | `LOOP-TF-RELEASE-ENGINEERING-001` |
-| Program slug | `release-engineering` |
-| Status | CLOSED |
-| Current WO | `WO-REL-006` complete |
-| Next WO | Portfolio reconciliation |
+| Field        | Value                             |
+| ------------ | --------------------------------- |
+| Goal         | `GOAL-TF-RELEASE-ENGINEERING-001` |
+| Loop         | `LOOP-TF-RELEASE-ENGINEERING-001` |
+| Program slug | `release-engineering`             |
+| Status       | CLOSED                            |
+| Current WO   | `WO-REL-006` complete             |
+| Next WO      | Portfolio reconciliation          |
 
 ### Purpose
 
@@ -334,14 +334,14 @@ mutation.
 
 ### Work Order Chain
 
-| WO | Mode | Purpose | Stop Type |
-|----|------|---------|-----------|
-| `WO-REL-001` | Read-only discovery | Inventory release/version/tag/rollback evidence and recommend smallest next release-engineering WO. | `RELEASE_ENGINEERING_DISCOVERY_COMPLETE` |
-| `WO-REL-002` | Docs/governance evidence contract | Define release gate checklist and evidence contract from Backend OE evidence. | `RELEASE_GATE_EVIDENCE_CONTRACT_READY_FOR_PR` |
-| `WO-REL-003` | Docs/template only | Create release candidate evidence packet template. | `RELEASE_CANDIDATE_EVIDENCE_TEMPLATE_READY_FOR_PR` |
-| `WO-REL-004` | Docs/governance only | Define release tag/version evidence model without creating tags or changing automation. | `RELEASE_TAG_VERSION_MODEL_READY_FOR_PR` |
-| `WO-REL-005` | Docs/governance only | Define rollback drill authorization packet and required proof for future safe-environment rollback execution. | `ROLLBACK_DRILL_AUTH_PACKET_READY_FOR_OWNER_DECISION` |
-| `WO-REL-006` | Evidence rollup | Close the Release Engineering docs/governance baseline and recommend next lane. | `RELEASE_ENGINEERING_BASELINE_CLOSED` |
+| WO           | Mode                              | Purpose                                                                                                       | Stop Type                                             |
+| ------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `WO-REL-001` | Read-only discovery               | Inventory release/version/tag/rollback evidence and recommend smallest next release-engineering WO.           | `RELEASE_ENGINEERING_DISCOVERY_COMPLETE`              |
+| `WO-REL-002` | Docs/governance evidence contract | Define release gate checklist and evidence contract from Backend OE evidence.                                 | `RELEASE_GATE_EVIDENCE_CONTRACT_READY_FOR_PR`         |
+| `WO-REL-003` | Docs/template only                | Create release candidate evidence packet template.                                                            | `RELEASE_CANDIDATE_EVIDENCE_TEMPLATE_READY_FOR_PR`    |
+| `WO-REL-004` | Docs/governance only              | Define release tag/version evidence model without creating tags or changing automation.                       | `RELEASE_TAG_VERSION_MODEL_READY_FOR_PR`              |
+| `WO-REL-005` | Docs/governance only              | Define rollback drill authorization packet and required proof for future safe-environment rollback execution. | `ROLLBACK_DRILL_AUTH_PACKET_READY_FOR_OWNER_DECISION` |
+| `WO-REL-006` | Evidence rollup                   | Close the Release Engineering docs/governance baseline and recommend next lane.                               | `RELEASE_ENGINEERING_BASELINE_CLOSED`                 |
 
 ### Stop Gates
 
@@ -353,12 +353,12 @@ without proof.
 
 ## Program 1 - Backend Operational Excellence
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE` |
-| Loop | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE` |
-| Program slug | `backend-operational-excellence` |
-| Status | CLOSED |
+| Field              | Value                                              |
+| ------------------ | -------------------------------------------------- |
+| Goal               | `GOAL-BACKEND-OPERATIONAL-EXCELLENCE`              |
+| Loop               | `LOOP-BACKEND-OPERATIONAL-EXCELLENCE`              |
+| Program slug       | `backend-operational-excellence`                   |
+| Status             | CLOSED                                             |
 | Next executable WO | None - program closed; owner/WOE selects next lane |
 
 ### Current State
@@ -392,19 +392,19 @@ automation, DevEx hook bootstrap, county runtime proof, or future product-lane e
 
 ### Backend OE Work Order Chain
 
-| WO | Mode | Purpose | Stop Type |
-|----|------|---------|-----------|
-| `WO-BACKEND-OE-003` | Docs/evidence/register only | Classify the Docker/Testcontainers SQL Server dependency blocking the full solution test pass. | `BACKEND_INTEGRATION_DEPENDENCY_REGISTER_READY_FOR_PR` |
-| `WO-BACKEND-OE-004` | Evidence + endpoint contract proof | Define what `/healthz`, `/healthz/ready`, `/health/codex369`, `/api/transcendence/health`, and Levy `/health` actually prove. | `BACKEND_HEALTH_READINESS_SEMANTICS_PROVEN` |
-| `WO-BACKEND-OE-005` | Evidence + targeted validation | Move ServiceRegistry from source-wired to runtime-understood. | `BACKEND_SERVICE_REGISTRY_RUNTIME_VALIDATED` |
-| `WO-BACKEND-OE-006` | Evidence matrix first | Consolidate auth, authorization, county isolation, audit, and security proof into one release-grade matrix. | `BACKEND_SECURITY_PROOF_MATRIX_READY` |
-| `WO-BACKEND-OE-007` | Evidence/register first | Inventory backend migrations and classify rollback/readiness evidence. | `BACKEND_MIGRATION_ROLLBACK_REGISTER_READY` |
-| `WO-BACKEND-OE-008` | Test-plan/evidence first | Define the next Dais proof gaps without rebuilding persistence. | `BACKEND_DAIS_E2E_PROOF_PLAN_READY` |
-| `WO-BACKEND-OE-009` | Governance/release checklist | Define objective backend release-readiness criteria. | `BACKEND_RELEASE_GATE_DEFINED` |
-| `WO-BACKEND-OE-010` | Runbook creation | Create backend validation, triage, rollback, and evidence runbook. | `BACKEND_OPERATIONAL_RUNBOOK_READY` |
-| `WO-BACKEND-OE-011` | Evidence/docs | Map backend diagnostics and operational signals. | `BACKEND_DIAGNOSTICS_OBSERVABILITY_MAPPED` |
-| `WO-BACKEND-OE-012` | Operational packet assembly | Assemble the Backend Operational Excellence packet. | `BACKEND_OPERATIONAL_PACKET_READY` |
-| `WO-BACKEND-OE-013` | Evidence rollup | Close Backend OE with proof, deferred items, and next-lane recommendation. | `BACKEND_OPERATIONAL_EXCELLENCE_PROGRAM_CLOSED` |
+| WO                  | Mode                               | Purpose                                                                                                                       | Stop Type                                              |
+| ------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `WO-BACKEND-OE-003` | Docs/evidence/register only        | Classify the Docker/Testcontainers SQL Server dependency blocking the full solution test pass.                                | `BACKEND_INTEGRATION_DEPENDENCY_REGISTER_READY_FOR_PR` |
+| `WO-BACKEND-OE-004` | Evidence + endpoint contract proof | Define what `/healthz`, `/healthz/ready`, `/health/codex369`, `/api/transcendence/health`, and Levy `/health` actually prove. | `BACKEND_HEALTH_READINESS_SEMANTICS_PROVEN`            |
+| `WO-BACKEND-OE-005` | Evidence + targeted validation     | Move ServiceRegistry from source-wired to runtime-understood.                                                                 | `BACKEND_SERVICE_REGISTRY_RUNTIME_VALIDATED`           |
+| `WO-BACKEND-OE-006` | Evidence matrix first              | Consolidate auth, authorization, county isolation, audit, and security proof into one release-grade matrix.                   | `BACKEND_SECURITY_PROOF_MATRIX_READY`                  |
+| `WO-BACKEND-OE-007` | Evidence/register first            | Inventory backend migrations and classify rollback/readiness evidence.                                                        | `BACKEND_MIGRATION_ROLLBACK_REGISTER_READY`            |
+| `WO-BACKEND-OE-008` | Test-plan/evidence first           | Define the next Dais proof gaps without rebuilding persistence.                                                               | `BACKEND_DAIS_E2E_PROOF_PLAN_READY`                    |
+| `WO-BACKEND-OE-009` | Governance/release checklist       | Define objective backend release-readiness criteria.                                                                          | `BACKEND_RELEASE_GATE_DEFINED`                         |
+| `WO-BACKEND-OE-010` | Runbook creation                   | Create backend validation, triage, rollback, and evidence runbook.                                                            | `BACKEND_OPERATIONAL_RUNBOOK_READY`                    |
+| `WO-BACKEND-OE-011` | Evidence/docs                      | Map backend diagnostics and operational signals.                                                                              | `BACKEND_DIAGNOSTICS_OBSERVABILITY_MAPPED`             |
+| `WO-BACKEND-OE-012` | Operational packet assembly        | Assemble the Backend Operational Excellence packet.                                                                           | `BACKEND_OPERATIONAL_PACKET_READY`                     |
+| `WO-BACKEND-OE-013` | Evidence rollup                    | Close Backend OE with proof, deferred items, and next-lane recommendation.                                                    | `BACKEND_OPERATIONAL_EXCELLENCE_PROGRAM_CLOSED`        |
 
 ### Continuation Rule
 
@@ -417,15 +417,15 @@ or local hook tooling repair.
 
 ## Program 2 - Sovereign Sync Workbook Tooling
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-SYNC-WORKBOOK-TOOLING` |
-| Loop | `LOOP-SYNC-WORKBOOK-TOOLING` |
-| Program slug | `sovereign-sync-workbook-tooling` |
-| Status | CLOSED in canonical `bsvalues/terrafusion-os` |
-| Repo | `bsvalues/terrafusion-os` |
-| Current | `WO-SYNC-155` complete |
-| Next | Portfolio reconciliation |
+| Field        | Value                                         |
+| ------------ | --------------------------------------------- |
+| Goal         | `GOAL-SYNC-WORKBOOK-TOOLING`                  |
+| Loop         | `LOOP-SYNC-WORKBOOK-TOOLING`                  |
+| Program slug | `sovereign-sync-workbook-tooling`             |
+| Status       | CLOSED in canonical `bsvalues/terrafusion-os` |
+| Repo         | `bsvalues/terrafusion-os`                     |
+| Current      | `WO-SYNC-155` complete                        |
+| Next         | Portfolio reconciliation                      |
 
 ### Completed Work Orders
 
@@ -442,18 +442,18 @@ or local hook tooling repair.
 
 ### Sync Workbook Tooling Chain
 
-| WO | Type | Purpose | Stop Type |
-|----|------|---------|-----------|
-| `WO-SYNC-132` | Built-fresh runtime tool | Determine whether an admitted and terminalized workbook is lock-eligible. | `SYNC_C3_LOCK_READINESS_CHECKER_MERGED` |
-| `WO-SYNC-133` | Built-fresh runtime tool | Run contract, admission, terminalization, and lock-readiness checks and report lifecycle state. | `SYNC_WORKBOOK_LIFECYCLE_CHECKER_MERGED` |
-| `WO-SYNC-134` | Design/policy gate only | Decide safe edit CLI behavior before mutation tooling exists. | `SYNC_WORKBOOK_EDIT_CLI_DESIGN_DECISION_READY` |
-| `WO-SYNC-135` | Built-fresh runtime tool | Create a synthetic-only edit CLI if `WO-SYNC-134` explicitly authorizes implementation. | `SYNC_SYNTHETIC_WORKBOOK_EDIT_CLI_MERGED` |
-| `WO-SYNC-136` | Design/safety architecture | Design a Gate-14-safe external artifact content scanner. | `SYNC_EXTERNAL_ARTIFACT_SCAN_DESIGN_DECISION_READY` |
-| `WO-SYNC-137` | Built-fresh implementation only if authorized | Implement external artifact content scanning using the safe design. | `SYNC_EXTERNAL_ARTIFACT_CONTENT_SCAN_MERGED` |
-| `WO-SYNC-138` | Built-fresh runtime tool | Generate a synthetic evidence bundle summarizing workbook validation state. | `SYNC_WORKBOOK_EVIDENCE_BUNDLE_MERGED` |
-| `WO-SYNC-139` | Runbook/operator documentation | Create operator runbook for the built-fresh workbook toolchain. | `SYNC_WORKBOOK_OPERATOR_RUNBOOK_MERGED` |
-| `WO-SYNC-140` | Governance/release checklist | Define what must pass before workbook tooling is release-ready for broader operator use. | `SYNC_WORKBOOK_TOOLING_RELEASE_GATE_DEFINED` |
-| `WO-SYNC-141` | Evidence rollup/program closeout | Summarize workbook tooling lane evidence, limitations, and next Sync lane. | `SYNC_WORKBOOK_TOOLING_ROLLUP_COMPLETE` |
+| WO            | Type                                          | Purpose                                                                                         | Stop Type                                           |
+| ------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `WO-SYNC-132` | Built-fresh runtime tool                      | Determine whether an admitted and terminalized workbook is lock-eligible.                       | `SYNC_C3_LOCK_READINESS_CHECKER_MERGED`             |
+| `WO-SYNC-133` | Built-fresh runtime tool                      | Run contract, admission, terminalization, and lock-readiness checks and report lifecycle state. | `SYNC_WORKBOOK_LIFECYCLE_CHECKER_MERGED`            |
+| `WO-SYNC-134` | Design/policy gate only                       | Decide safe edit CLI behavior before mutation tooling exists.                                   | `SYNC_WORKBOOK_EDIT_CLI_DESIGN_DECISION_READY`      |
+| `WO-SYNC-135` | Built-fresh runtime tool                      | Create a synthetic-only edit CLI if `WO-SYNC-134` explicitly authorizes implementation.         | `SYNC_SYNTHETIC_WORKBOOK_EDIT_CLI_MERGED`           |
+| `WO-SYNC-136` | Design/safety architecture                    | Design a Gate-14-safe external artifact content scanner.                                        | `SYNC_EXTERNAL_ARTIFACT_SCAN_DESIGN_DECISION_READY` |
+| `WO-SYNC-137` | Built-fresh implementation only if authorized | Implement external artifact content scanning using the safe design.                             | `SYNC_EXTERNAL_ARTIFACT_CONTENT_SCAN_MERGED`        |
+| `WO-SYNC-138` | Built-fresh runtime tool                      | Generate a synthetic evidence bundle summarizing workbook validation state.                     | `SYNC_WORKBOOK_EVIDENCE_BUNDLE_MERGED`              |
+| `WO-SYNC-139` | Runbook/operator documentation                | Create operator runbook for the built-fresh workbook toolchain.                                 | `SYNC_WORKBOOK_OPERATOR_RUNBOOK_MERGED`             |
+| `WO-SYNC-140` | Governance/release checklist                  | Define what must pass before workbook tooling is release-ready for broader operator use.        | `SYNC_WORKBOOK_TOOLING_RELEASE_GATE_DEFINED`        |
+| `WO-SYNC-141` | Evidence rollup/program closeout              | Summarize workbook tooling lane evidence, limitations, and next Sync lane.                      | `SYNC_WORKBOOK_TOOLING_ROLLUP_COMPLETE`             |
 
 ### Stop Gates
 
@@ -480,13 +480,13 @@ and no global stop gate is hit. Selection of C3 does not pre-authorize mutation 
 
 ## Program 3 - TerraPilot Tool Maturity
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-TERRAPILOT-TOOL-MATURITY` |
-| Loop | `LOOP-TERRAPILOT-TOOL-MATURITY` |
-| Program slug | `terrapilot-tool-maturity` |
-| Status | PARKED |
-| Next | None unless owner authorizes P16 design-only |
+| Field        | Value                                        |
+| ------------ | -------------------------------------------- |
+| Goal         | `GOAL-TERRAPILOT-TOOL-MATURITY`              |
+| Loop         | `LOOP-TERRAPILOT-TOOL-MATURITY`              |
+| Program slug | `terrapilot-tool-maturity`                   |
+| Status       | PARKED                                       |
+| Next         | None unless owner authorizes P16 design-only |
 
 ### Current State
 
@@ -509,14 +509,14 @@ Stop type: `TERRAPILOT_P15_PARKED`
 
 ## Program 4 - DevEx Hook Tooling
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-DEVEX-HOOK-BOOTSTRAP` |
-| Loop | `LOOP-DEVEX-HOOK-BOOTSTRAP` |
-| Program slug | `devex-hook-tooling` |
-| Status | CLOSED - bootstrap verification complete |
-| Current WO | `WO-DEVEX-HOOKS-006` |
-| Next WO | Portfolio reconciliation |
+| Field            | Value                                          |
+| ---------------- | ---------------------------------------------- |
+| Goal             | `GOAL-DEVEX-HOOK-BOOTSTRAP`                    |
+| Loop             | `LOOP-DEVEX-HOOK-BOOTSTRAP`                    |
+| Program slug     | `devex-hook-tooling`                           |
+| Status           | CLOSED - bootstrap verification complete       |
+| Current WO       | `WO-DEVEX-HOOKS-006`                           |
+| Next WO          | Portfolio reconciliation                       |
 | Program playbook | [devex-hook-tooling.md](devex-hook-tooling.md) |
 
 ### Problem
@@ -557,13 +557,13 @@ from program evidence.
 
 ## Portfolio Selection - Current Reconciliation
 
-| Field | Value |
-|-------|-------|
-| Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
-| Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-002 - Shared Contract Freeze` complete on merge |
-| Next WO | `WO-SR-003A` through `WO-SR-003E`, physical creation credential-blocked |
+| Field            | Value                                                               |
+| ---------------- | ------------------------------------------------------------------- |
+| Portfolio goal   | `GOAL-PORTFOLIO-OPERATOR-001`                                       |
+| Portfolio loop   | `LOOP-PORTFOLIO-OPERATOR-001`                                       |
+| Selected program | Five-Suite Federated Repository Buildout                            |
+| Current WO       | `WO-SR-005A - Forge Bounded Extraction and Provenance`              |
+| Next WO          | Forge parity proof, then evidence-backed ownership cutover decision |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
@@ -574,14 +574,14 @@ authority. That correction does not park the ratified five-suite repository prog
 
 ## Program 5 - Cross-Project Historical Audit (WilliamOS/TerraGroq)
 
-| Field | Value |
-|-------|-------|
-| Goal | None in TerraFusion |
-| Loop | None in TerraFusion |
-| Program slug | `cross-project-historical-audit` |
-| Status | `OUT_OF_SCOPE_CROSS_PROJECT` |
-| Current | `WO-LOCAL-093` through `WO-LOCAL-097` superseded |
-| Next | None in TerraFusion; `WO-LOCAL-098` withdrawn |
+| Field        | Value                                            |
+| ------------ | ------------------------------------------------ |
+| Goal         | None in TerraFusion                              |
+| Loop         | None in TerraFusion                              |
+| Program slug | `cross-project-historical-audit`                 |
+| Status       | `OUT_OF_SCOPE_CROSS_PROJECT`                     |
+| Current      | `WO-LOCAL-093` through `WO-LOCAL-097` superseded |
+| Next         | None in TerraFusion; `WO-LOCAL-098` withdrawn    |
 
 ### Current Facts
 
@@ -602,13 +602,13 @@ read for audit only and does not transfer authority between projects.
 
 ## Program 6 - Runtime Import Disposition
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-RUNTIME-IMPORT-DISPOSITION` |
-| Loop | `LOOP-RUNTIME-IMPORT-DISPOSITION` |
-| Program slug | `runtime-import-disposition` |
-| Status | OWNER-GATED |
-| Next | `WO-CORE-1` |
+| Field        | Value                             |
+| ------------ | --------------------------------- |
+| Goal         | `GOAL-RUNTIME-IMPORT-DISPOSITION` |
+| Loop         | `LOOP-RUNTIME-IMPORT-DISPOSITION` |
+| Program slug | `runtime-import-disposition`      |
+| Status       | OWNER-GATED                       |
+| Next         | `WO-CORE-1`                       |
 
 Rule: No `backend/`, `frontend/`, or `os-platform/` import into the sovereign repo without explicit
 Work Order, provenance, and validation gates.
@@ -625,12 +625,12 @@ Possible outcomes:
 
 ## Program 7 - Property Workbench
 
-| Field | Value |
-|-------|-------|
-| Goal | `GOAL-PROPERTY-WORKBENCH` |
-| Loop | `LOOP-PROPERTY-WORKBENCH` |
-| Program slug | `property-workbench` |
-| Status | CLOSED / EVIDENCE BASELINE COMPLETE |
+| Field            | Value                                                  |
+| ---------------- | ------------------------------------------------------ |
+| Goal             | `GOAL-PROPERTY-WORKBENCH`                              |
+| Loop             | `LOOP-PROPERTY-WORKBENCH`                              |
+| Program slug     | `property-workbench`                                   |
+| Status           | CLOSED / EVIDENCE BASELINE COMPLETE                    |
 | Next if selected | No restart; owner must authorize a new Workbench phase |
 
 Rule: Do not restart the closed Workbench evidence chain. Any future Workbench work must be a new
