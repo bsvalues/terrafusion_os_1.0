@@ -41,7 +41,8 @@ gate-transfer source-of-truth · no big-bang · historical repos are mines not m
 | WO-DAIS-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Dais repo | SR-003 + levy.projection freeze |
 | **WO-DOSSIER-X-001** | Dossier inventory + disposition | decision | ✅ done (Loop 58) — NOT thinnest (dispersed, real chain-of-custody); "evidence" 4-way overload; `dossier.evidence` contract GAP | — |
 | WO-DOSSIER-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Dossier repo | SR-003 + dossier.evidence freeze |
-| WO-GPT-X-001..007 | per-suite extraction | execution | ⏸ sequenced | Forge pattern proven; resolves SystemGptAtlas |
+| **WO-GPT-X-001** | GPT inventory + disposition | decision | ✅ done (Loop 59) — real RAG infra vs largest theater; Muse/Pilot=OS; pages/suites=shared registry; SystemGptAtlas→Atlas | — |
+| WO-GPT-X-002..007 | disposition→…→parity+retire | execution | ⏸ after GPT repo | SR-003 + pilot-tool contract |
 
 **One-Brain dispatch model:** the base Brain issues each suite a **domain pack + dispatch packet +
 reservations + WO + evidence obligations**; suites report to **central integration gates**. No suite

@@ -900,3 +900,18 @@
 | **flagged for X-002** | freeze `dossier.evidence`; DossierDbContext carve; Dais↔Dossier packet boundary; EvidenceSnapshotPanel/RevalAreaEvidenceAge ownership; corpus-evidence stays OS. |
 | **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
 | **next** | WO-GPT-X-001 (final inventory — also resolves deferred SystemGptAtlas ownership); or freeze the two pending contracts (levy.projection, dossier.evidence) in-session. |
+
+## Loop 59 — WO-GPT-X-001: TerraGPT inventory (all 5 suite inventories complete) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L59 |
+| **trigger** | Owner: "proceed to GPT inventory." Final suite inventory (no repo, no credential). |
+| **findings (5)** | (1) **TerraGPT real** — genuine RAG infra (OpenAIEmbedding, PgVectorRAGEmbeddingRepository, GPTConfiguration, cost/budget). (2) **Largest theater** — 124 swarm/consciousness/quantum `.cs` + whole `TerraFusion.Consciousness` project → REJECT; hardest theater separation. (3) **Muse/Pilot = OS features, NOT GPT** (MuseService/MuseChat → Pilot). (4) **`pages/suites` = shared cross-suite module registry** (OS), not GPT — only GPT modules → GPT; CompsForge/GIS/Documents → their suites. (5) **SystemGptAtlas → Atlas** (spatial-analytics; "SystemGpt" prefix misleading; closes Atlas X-001 defer). |
+| **write-lane** | GPT has **NO sovereign write lane** — acts only via sanctioned Pilot tools (`write-lanes.json`); GPT is a leaf consumer, not a contract producer. |
+| **disposition** | REWRITE→GptDbContext: GPTConfiguration + RAG embedding tables (pgvector). EXTRACT: GPT/RAG/cost services + controllers + components/gpt + GPT modules + GptSuiteHome. RETAIN_IN_OS: Muse/Pilot LLM (MuseService/MuseChat), suite-module registry/SuiteHome scaffolding. REJECT: Consciousness project + swarm/quantum theater. →Atlas: SystemGptAtlas+Spatial (23). DEFER: TerraGaia. |
+| **flagged for X-002** | theater separation (largest); GptDbContext carve; **Pilot-tool contract** (GPT's only write path); SystemGptAtlas hand-off to Atlas; TerraGaia ownership; registry disposition. |
+| **feeders** | PropertyTaxAI, TaxI_AI (out-of-session). |
+| **ALL-FIVE SYNTHESIS** | Every suite name over-counts; real domain narrower. Strip: theater (Forge/GPT), OS-AI (Muse/Pilot), Sync-ingested/profiling, shared registries. Each suite owns engine/workflow/config + own DbContext (+Levy/CurrentUse). Shared/ingested/PACS stay OS/Sync via contract. Two contract GAPS (levy.projection, dossier.evidence). GPT = leaf, no write lane. |
+| **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
+| **next** | per-suite X-002s (in-session); or freeze the 2 pending contracts (levy.projection, dossier.evidence) in-session; or WO-SR-003 execution once credential lands. All extraction execution-gated on suite repos. |
