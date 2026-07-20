@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; Atlas extraction blocked, WO-SR-005B-I contract implementation/freeze active
+**Status:** Active; Atlas contract frozen, WO-SR-005B-A adapter/parity preparation active
 
 ## Ratified topology
 
@@ -32,7 +32,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005A | Execute bounded Forge extraction with provenance and parity proof | Complete; Forge PR #1 / merge `2430b483`, no cutover |
 | WO-SR-005B-P | Prepare Atlas contract ownership and standalone map parity gate | Complete; extraction blocked on missing stable domain contract |
 | WO-SR-005B-C | Decompose the Atlas read contract candidate | Complete; implementation-ready without runtime adoption |
-| WO-SR-005B-I | Implement and freeze `atlas.spatial-read@1.0.0` | Active; bounded contract-only implementation |
+| WO-SR-005B-I | Implement and freeze `atlas.spatial-read@1.0.0` | Complete; 3 groups / 14 files frozen, 8/8 verifier tests, no runtime adoption |
+| WO-SR-005B-A | Prepare the Atlas adapter boundary and standalone parity harness | Active; docs/evidence and read-only inspection only |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on suite-specific preparation and parity gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -64,12 +65,13 @@ and required `suite-ci`, `contract-compat`, and `governance-gate` checks.
 | WO | Frozen dependencies | Initial extraction inventory | Additional gate |
 | --- | --- | --- | --- |
 | SR-003A Forge | `forge.valuation`, `crosscut.audit` | CostForge, CurrentUse, Forge shell surfaces | Standalone valuation parity |
-| SR-003B Atlas | `crosscut.audit`; Atlas group still required | Atlas shell surfaces and GIS type-level cut | Domain contract promotion before extraction |
+| SR-003B Atlas | `atlas.spatial-read`, `crosscut.audit` | Atlas shell surfaces and GIS type-level cut | Adapter and standalone synthetic parity preparation before extraction |
 | SR-003C Dais | `crosscut.audit`; Dais group still required | Dais workflow, Levy, Dais/notice surfaces | Domain contract promotion and county-isolation proof |
 | SR-003D Dossier | `crosscut.audit`; Dossier group still required | Dossier controllers/entities/surface | Custody contract and evidence-integrity proof |
 | SR-003E GPT | `crosscut.audit`; GPT group still required | Governed Muse/RAG and GPT surfaces | TerraPilot-only action boundary and grounding proof |
 
 The five private repositories now exist, contain the declared bootstrap inventory, pass the three
-required checks, and enforce the recorded protected-main settings. Forge is the first extraction lane
-because it alone has a frozen domain contract. The other suite repositories remain valid bootstraps,
-not claims of extracted or standalone product capability.
+required checks, and enforce the recorded protected-main settings. Forge completed the first bounded
+extraction. Atlas now has a frozen read contract but still requires adapter and standalone parity
+preparation. The other suite repositories remain valid bootstraps, not claims of extracted or
+standalone product capability.

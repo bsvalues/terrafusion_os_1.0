@@ -1,0 +1,14 @@
+{
+  "request": { "countyId": "synthetic-county", "parcelId": "SYN-300" },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "SYN-300",
+    "evidenceState": "fallback",
+    "boundary": {
+      "geometryState": "centroid_only",
+      "centroid": { "longitude": -118.5, "latitude": 45.75 }
+    },
+    "layers": {}
+  }
+}
