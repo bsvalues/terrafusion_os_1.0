@@ -26,7 +26,7 @@ playbooks/runbooks, implementation patterns, then agent judgment.
 | Root agent governance | [`AGENTS.md`](../../../AGENTS.md) | Repository-wide operating defaults and protected boundaries |
 | Brain/domain governance | [`brain/packs/README.md`](../../../brain/packs/README.md) | One Brain, many knowledge packs, many isolated workers |
 | Program register | [`PROGRAM_PLAYBOOK_REGISTER.md`](PROGRAM_PLAYBOOK_REGISTER.md) | Active program/Goal/Loop/WO routing |
-| Five-suite repository program | [`five-suite-federated-repository-buildout.md`](programs/five-suite-federated-repository-buildout.md) | Active federated topology; Forge valuation kernel parity complete; Atlas contract/parity preparation active |
+| Five-suite repository program | [`five-suite-federated-repository-buildout.md`](programs/five-suite-federated-repository-buildout.md) | Active federated topology; Atlas extraction blocked; Atlas read-contract decomposition active |
 | Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; standing Mode B applies to already-ratified in-scope delivery while protected boundaries remain Mode A |
 | Branch protection | [`.governance/main.protection.json`](../../../.governance/main.protection.json) | Normalized live-protection invariants checked by required governance tooling |
 | MAO-001A correction | [`WO-MAO-001A-authority-state-separation.md`](active/WO-MAO-001A-authority-state-separation.md) | Completed with PR #1274; separates owner authority from mutable operator state |
