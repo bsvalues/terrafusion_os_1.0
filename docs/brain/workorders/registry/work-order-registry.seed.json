@@ -3792,9 +3792,7 @@
       "riskClass": "R3",
       "status": "complete",
       "dependencies": [{ "id": "WO-SR-002", "status": "satisfied" }],
-      "allowedSystems": [
-        { "name": "Five exact private GitHub suite repositories" }
-      ],
+      "allowedSystems": [{ "name": "Five exact private GitHub suite repositories" }],
       "blockedSystems": [
         { "name": "Runtime extraction" },
         { "name": "Package publication" },

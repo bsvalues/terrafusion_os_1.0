@@ -12,7 +12,6 @@
 does not mutate the repository by itself.
 
 A `/goal` stays active until:
-
 - the program's terminal WO completes, OR
 - an authority wall is reached, OR
 - the operator explicitly changes the goal
