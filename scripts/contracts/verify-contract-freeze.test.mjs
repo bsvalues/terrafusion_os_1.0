@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import Ajv from 'ajv';
 import { verifyContractFreeze } from './verify-contract-freeze.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -12,6 +13,37 @@ const manifestPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.Abstractions/contracts.freeze.json'
 );
+const atlasContractRoot = path.join(repoRoot, 'backend/src/TerraFusion.Abstractions/contracts');
+const atlasSchemaPath = path.join(atlasContractRoot, 'atlas.spatial-read.v1.schema.json');
+const atlasFixtureRoot = path.join(atlasContractRoot, 'fixtures');
+
+function atlasFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `atlas.spatial-read.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function validateAtlasSemantics(exchange) {
+  const errors = [];
+  if (exchange.request?.countyId !== exchange.result?.countyId) {
+    errors.push('response countyId must match request countyId');
+  }
+  if (exchange.request?.parcelId !== exchange.result?.parcelId) {
+    errors.push('response parcelId must match request parcelId');
+  }
+  const ring = exchange.result?.boundary?.outerRing;
+  if (Array.isArray(ring) && ring.length > 0) {
+    const first = ring[0];
+    const last = ring.at(-1);
+    if (first.longitude !== last.longitude || first.latitude !== last.latitude) {
+      errors.push('outerRing must be closed');
+    }
+  }
+  return errors;
+}
 
 function withManifest(mutator) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -58,11 +90,47 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 2,
-    frozenFiles: 5,
+    groups: 3,
+    frozenFiles: 14,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
+});
+
+test('Atlas spatial read positive fixtures satisfy schema and county semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
+  const validate = new Ajv({ allErrors: true, strict: true, strictRequired: false }).compile(
+    schema
+  );
+
+  for (const name of [
+    'canonical-polygon',
+    'provider-polygon',
+    'fallback-centroid',
+    'unavailable',
+  ]) {
+    const fixture = atlasFixture(name);
+    assert.equal(validate(fixture), true, `${name}: ${JSON.stringify(validate.errors)}`);
+    assert.deepEqual(validateAtlasSemantics(fixture), [], name);
+  }
+});
+
+test('Atlas spatial read negative fixtures fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
+  const validate = new Ajv({ allErrors: true, strict: true, strictRequired: false }).compile(
+    schema
+  );
+
+  const countyMismatch = atlasFixture('county-mismatch');
+  assert.equal(validate(countyMismatch), true);
+  assert.deepEqual(validateAtlasSemantics(countyMismatch), [
+    'response countyId must match request countyId',
+  ]);
+
+  for (const name of ['invalid-ring', 'cross-lane-fields']) {
+    const fixture = atlasFixture(name);
+    assert.equal(validate(fixture), false, `${name} must be rejected`);
+  }
 });
 
 test('a modified frozen hash fails closed', () => {
@@ -117,8 +185,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 2,
-      frozenFiles: 5,
+      groups: 3,
+      frozenFiles: 14,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

@@ -18,6 +18,11 @@
       "groups": ["forge.valuation"]
     },
     {
+      "id": "TerraFusion.Contracts.Atlas",
+      "status": "planned_not_published",
+      "groups": ["atlas.spatial-read"]
+    },
+    {
       "id": "TerraFusion.Contracts.CrossCutting",
       "status": "planned_not_published",
       "groups": ["crosscut.audit"]
@@ -57,6 +62,50 @@
         {
           "path": "Interfaces/IAuditLogger.cs",
           "sha256": "ef0d1e74038d9fab408c441471b738483db130f0debbadb10276eb04de4607a0"
+        }
+      ]
+    },
+    {
+      "group": "atlas.spatial-read",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["atlas"],
+      "files": [
+        {
+          "path": "DTOs/AtlasSpatialReadDto.cs",
+          "sha256": "27313fb523bd858ba936f0b6d3ecfd89faf983b175b2680cb0deb7b4091af93e"
+        },
+        {
+          "path": "contracts/atlas.spatial-read.v1.schema.json",
+          "sha256": "21ef6c6fb97a98c353794e59be3b80f0d666de435593dec74c2324351ec6fadc"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.canonical-polygon.synthetic.json",
+          "sha256": "35ed4047a73784f5cbd33d403f5618a5f88a625fe75fe729227d6aa18ffc3758"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.county-mismatch.synthetic.json",
+          "sha256": "cd176f55cafd9f5081ba5f8035a936586b6e6cce694bf51f832067f88af36454"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.cross-lane-fields.synthetic.json",
+          "sha256": "790afee399edaf8c6e7c987dc648c717e0dd046573d89e8f90b6d7cdef07e636"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.fallback-centroid.synthetic.json",
+          "sha256": "d4952d24ef7e7d70763d1dee7cd7182fb11794faca0bddd6efeaf96baaf27dae"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.invalid-ring.synthetic.json",
+          "sha256": "f8a2d11b5ea9f7366b8d28a28d62d991db6ca482eea4f3591f0d36a8acc26eed"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.provider-polygon.synthetic.json",
+          "sha256": "c9cb183a4c5eff830a2efd3956995eac5472267ceb15ee647cf805f17fdd294c"
+        },
+        {
+          "path": "contracts/fixtures/atlas.spatial-read.v1.unavailable.synthetic.json",
+          "sha256": "013ed10debe485695fc4b5d826da194ce12ee29beae17d5b0c139556ef7ec245"
         }
       ]
     }

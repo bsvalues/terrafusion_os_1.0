@@ -1,0 +1,36 @@
+{
+  "request": { "countyId": "synthetic-county", "parcelId": "SYN-100" },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "SYN-100",
+    "evidenceState": "canonical",
+    "boundary": {
+      "geometryState": "polygon",
+      "centroid": { "longitude": -119.2, "latitude": 46.2 },
+      "dimensions": {
+        "frontFeet": 100,
+        "backFeet": 100,
+        "leftFeet": 200,
+        "rightFeet": 200
+      },
+      "areaAcres": 0.46,
+      "areaSquareFeet": 20037.6,
+      "outerRing": [
+        { "longitude": -119.201, "latitude": 46.199 },
+        { "longitude": -119.199, "latitude": 46.199 },
+        { "longitude": -119.199, "latitude": 46.201 },
+        { "longitude": -119.201, "latitude": 46.201 },
+        { "longitude": -119.201, "latitude": 46.199 }
+      ]
+    },
+    "layers": {
+      "zoning": {
+        "evidenceState": "canonical",
+        "zoneCode": "R-1",
+        "description": "Synthetic residential"
+      },
+      "flood": { "evidenceState": "canonical", "zone": "X", "risk": "minimal" }
+    }
+  }
+}

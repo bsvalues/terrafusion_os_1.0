@@ -1,0 +1,23 @@
+{
+  "request": { "countyId": "synthetic-county", "parcelId": "SYN-200" },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "SYN-200",
+    "evidenceState": "provider",
+    "boundary": {
+      "geometryState": "polygon",
+      "outerRing": [
+        { "longitude": -120.001, "latitude": 47.001 },
+        { "longitude": -119.999, "latitude": 47.001 },
+        { "longitude": -119.999, "latitude": 47.003 },
+        { "longitude": -120.001, "latitude": 47.003 },
+        { "longitude": -120.001, "latitude": 47.001 }
+      ]
+    },
+    "layers": {
+      "zoning": { "evidenceState": "provider", "zoneCode": "AG" },
+      "flood": { "evidenceState": "provider", "zone": "AE" }
+    }
+  }
+}

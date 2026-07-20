@@ -185,7 +185,7 @@ export function verifyContractFreeze(options = {}) {
     for (const file of currentFiles) {
       if (!classified.has(file)) errors.push(`${file}: unclassified C# contract surface`);
     }
-    for (const file of classified.keys()) {
+    for (const file of [...classified.keys()].filter(candidate => candidate.endsWith('.cs'))) {
       if (!currentFiles.includes(file)) errors.push(`${file}: classified file does not exist`);
     }
   }

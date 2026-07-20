@@ -1,0 +1,18 @@
+{
+  "request": { "countyId": "synthetic-county", "parcelId": "SYN-600" },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "SYN-600",
+    "evidenceState": "canonical",
+    "boundary": {
+      "geometryState": "polygon",
+      "outerRing": [
+        { "longitude": -119.1, "latitude": 46.1 },
+        { "longitude": -119.0, "latitude": 46.1 },
+        { "longitude": -119.0, "latitude": 46.2 }
+      ]
+    },
+    "layers": {}
+  }
+}

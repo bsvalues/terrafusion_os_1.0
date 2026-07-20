@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005B-C closeout
+**Authority:** WO-SR-005B-I closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,9 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. WO-SR-005B-C defined the exact
-`atlas.spatial-read@1.0.0` boundary and fixture corpus. `WO-SR-005B-I` is active to implement and
-hash-freeze that contract without runtime adoption. Atlas extraction remains blocked.
+The Five-Suite Federated Repository Buildout is active. WO-SR-005B-I implemented and hash-froze
+`atlas.spatial-read@1.0.0` with four positive and three fail-closed synthetic fixtures.
+`WO-SR-005B-A` is active to prepare the adapter boundary and standalone parity harness without
+runtime adoption. Atlas extraction remains blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -32,14 +33,15 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 | --- | --- | --- |
 | WO-SR-001 Topology and Extraction Blueprint | DONE | Sovereign base plus five suite repositories ratified |
-| WO-SR-002 Shared Contract Freeze | DONE | Five current files frozen in two groups; all 20 abstraction files classified; validation wired |
+| WO-SR-002 Shared Contract Freeze | DONE | Initial Forge and cross-cutting groups frozen; validation wired |
 | WO-SR-003A-E Create and bootstrap five suite repositories | DONE | Five exact private repositories created and bootstrap commits verified |
 | WO-SR-004 Bootstrap and Settings Verification | DONE | Required checks pass and protected-main settings are verified in all five repositories |
 | WO-SR-005A Forge Bounded Extraction and Provenance | DONE | Forge PR #1 merged at `2430b483`; exact byte provenance and 2/2 parity tests; no cutover |
 | WO-SR-005B-P Atlas Contract and Parity Gate Preparation | DONE | No frozen Atlas group; mixed package rejected; standalone parity gate defined |
 | WO-SR-005B-C Atlas Read Contract Decomposition | DONE | Exact records, county semantics, exclusions, compatibility, and fixtures defined |
-| **WO-SR-005B-I Atlas Read Contract Implementation and Freeze** | **ACTIVE** | Implement exact DTO/schema/fixtures and hash-freeze; no runtime adoption |
-| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON CONTRACT IMPLEMENTATION | Requires a stable hash-frozen Atlas domain contract and executable parity fixtures |
+| WO-SR-005B-I Atlas Read Contract Implementation and Freeze | DONE | `atlas.spatial-read@1.0.0`; 3 groups / 14 files frozen; 8/8 tests; no runtime adoption |
+| **WO-SR-005B-A Atlas Adapter and Standalone Parity Preparation** | **ACTIVE** | Map exact adapter and synthetic parity implementation slice; docs/read-only only |
+| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON ADAPTER/PARITY PREPARATION | Stable contract exists; bounded adapter and standalone parity gate still required |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; governed-AI contract and grounding proof required |
@@ -184,9 +186,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-003/004:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Repository creation and bootstrap verification are complete; Forge is the first
-dependency-cleared extraction lane.
+**Portfolio result after WO-SR-005B-I:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
+removed. Atlas contract freeze is complete; adapter/parity preparation is the dependency-cleared
+next node.
 
 ---
 
