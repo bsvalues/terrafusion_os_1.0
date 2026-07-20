@@ -82,6 +82,9 @@ of the following against the same fixtures in sovereign and destination reposito
 
 ## Validation
 
+- `brain/packs/atlas/README.md` and `frontend/apps/os-shell/AGENTS.md` boundary review: PASS;
+  Atlas ownership, forbidden writes, shell composition, and escalation rules were applied before
+  source classification.
 - Live tracked source inventory and ownership classification: PASS.
 - Existing Atlas and Workbench evidence reconciliation: PASS.
 - Contract-freeze inspection: PASS; Atlas domain group absent.
