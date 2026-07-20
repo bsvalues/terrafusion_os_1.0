@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-003/WO-SR-004",
-  "generatedAt": "2026-07-19T00:00:00Z",
-  "description": "Cross-project-corrected registry with the active five-suite federated repository program. Five suite repositories are bootstrapped and protected; Forge bounded extraction is active.",
+  "generatedBy": "WO-SR-005A",
+  "generatedAt": "2026-07-20T00:00:00Z",
+  "description": "Five-suite registry after Forge valuation-kernel parity. WO-SR-005B-P Atlas contract and map-parity preparation is active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3792,7 +3792,9 @@
       "riskClass": "R3",
       "status": "complete",
       "dependencies": [{ "id": "WO-SR-002", "status": "satisfied" }],
-      "allowedSystems": [{ "name": "Five exact private GitHub suite repositories" }],
+      "allowedSystems": [
+        { "name": "Five exact private GitHub suite repositories" }
+      ],
       "blockedSystems": [
         { "name": "Runtime extraction" },
         { "name": "Package publication" },
@@ -3892,7 +3894,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Copy the smallest contract-backed Forge valuation slice with exact provenance and standalone parity proof.",
       "riskClass": "R4",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-SR-004", "status": "satisfied" },
         {
@@ -3941,15 +3943,103 @@
           "description": "Forge contract compatibility and standalone valuation parity."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Forge valuation kernel parity",
+          "command": "cargo test --locked --manifest-path kernels/terraforge.kernel.valuation/Cargo.toml",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Forge protected checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "extraction-closeout",
+          "location": "docs/brain/workorders/evidence/WO-SR-005A-FORGE-BOUNDED-EXTRACTION-CLOSEOUT.md",
+          "description": "Exact source/destination provenance, parity, protected-check, rollback, and no-cutover proof."
+        },
+        {
+          "kind": "destination-parity",
+          "location": "bsvalues/terrafusion-forge@2430b483f20e07a6ff9a66e493caab0e39db64ef:operations/evidence/WO-SR-005A-FORGE-VALUATION-KERNEL-PARITY.md",
+          "description": "Merged destination parity evidence from Forge PR #1."
+        }
+      ],
       "stopConditions": [
         {
           "type": "cutover",
           "description": "Deletion or canonical ownership transfer requires a separate evidence-backed Work Order."
         }
       ],
-      "nextCandidates": []
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-P",
+          "reason": "Atlas requires a genuine contract ownership and standalone map parity audit before extraction.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-P",
+      "title": "Atlas Contract and Parity Gate Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prepare the Atlas contract ownership and standalone map parity gate from live source truth.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005A", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Read-only sovereign Atlas source inventory" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Atlas runtime extraction" },
+        { "name": "Shared contract implementation or publication" },
+        { "name": "County and PACS systems" },
+        { "name": "Production and external services" },
+        { "name": "Ownership cutover or source retirement" }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "packages/gis-pro/**",
+        "backend/**/*.cs",
+        "frontend/**/*.ts",
+        "frontend/**/*.tsx",
+        ".github/workflows/**",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "atlas-source-inventory",
+          "description": "Live tracked source paths and dependency ownership classification."
+        },
+        {
+          "kind": "atlas-readiness-gate",
+          "description": "Evidence-backed contract and standalone map parity definition or blocked verdict."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "runtime-extraction",
+          "description": "WO-SR-005B-P cannot modify or extract Atlas runtime source."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B",
+          "reason": "Atlas bounded extraction follows only if contract and map parity preparation passes.",
+          "riskClass": "R4",
+          "blocked": true
+        }
+      ]
     }
   ]
 }

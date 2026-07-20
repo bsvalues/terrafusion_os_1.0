@@ -47,9 +47,9 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five
-private suite repositories. `WO-SR-005A` is active for Forge because its domain contracts are frozen;
-the other suite extraction lanes remain domain-contract gated.
+**Current state:** WO-SR-005A copied the standalone Forge valuation kernel with exact provenance and
+parity without ownership cutover. `WO-SR-005B-P` is active to prepare Atlas contract and map-parity
+truth; Atlas extraction and the remaining suite lanes stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

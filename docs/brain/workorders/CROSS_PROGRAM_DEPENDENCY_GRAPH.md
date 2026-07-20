@@ -77,8 +77,9 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-002 contract and policy preparation is complete in the sovereign base
   WO-SR-003A through WO-SR-003E repository creation and bootstrap are complete
   WO-SR-004 bootstrap and protected-main verification is complete
-  WO-SR-005A Forge extraction is active under contract, parity, provenance, and rollback gates
-  WO-SR-005B through WO-SR-005E remain gated by suite-specific domain contracts
+  WO-SR-005A Forge valuation-kernel extraction is complete without ownership cutover
+  WO-SR-005B-P Atlas contract and map-parity preparation is active
+  WO-SR-005B through WO-SR-005E remain gated by suite-specific preparation and parity proof
 ```
 
 ---
@@ -87,7 +88,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-004 | SR-005A Forge bounded extraction | Frozen Forge contracts and copy-first provenance gate | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005A | SR-005B-P Atlas contract/parity preparation | Read-only live-source inventory and no-runtime-change gate | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -105,11 +106,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005A is the admitted dependency-cleared node after repository bootstrap verification.
+1. WO-SR-005B-P is the admitted dependency-cleared node after Forge valuation-kernel parity.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue the suite repository program automatically through bounded Forge extraction; do not
-   infer extraction readiness for suites whose domain contracts remain absent.
+4. Continue the suite repository program through the read-only Atlas contract and parity gate;
+   keep Atlas extraction blocked until that gate proves contract ownership and parity readiness.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
