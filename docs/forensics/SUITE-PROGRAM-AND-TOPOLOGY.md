@@ -35,7 +35,9 @@ gate-transfer source-of-truth · no big-bang · historical repos are mines not m
 | **WO-FORGE-X-001** | Forge inventory + disposition (source-side) | decision | ✅ done (Loop 54) — CostForge=theater/REJECT; real Forge distributed | — |
 | **WO-FORGE-X-002** | exact disposition + dependency + provenance | decision | ✅ done (Loop 55) — engines→Forge (new ForgeDbContext); shared data→OS/Sync via contract | — |
 | WO-FORGE-X-003..007 | bootstrap→extract→services→rebind→parity+retire | execution | ⏸ after Forge repo | SR-003 + SR-002 |
-| WO-{ATLAS,DAIS,DOSSIER,GPT}-X-001..007 | per-suite extraction | execution | ⏸ sequenced | Forge pattern proven |
+| **WO-ATLAS-X-001** | Atlas inventory + disposition | decision | ✅ done (Loop 56) — "Atlas" spans 3 domains; maps unrendered (#1073 gate) | — |
+| WO-ATLAS-X-002..007 | disposition→…→parity+retire | execution | ⏸ after Atlas repo (+#1073) | SR-003 |
+| WO-{DAIS,DOSSIER,GPT}-X-001..007 | per-suite extraction | execution | ⏸ sequenced | Forge pattern proven |
 
 **One-Brain dispatch model:** the base Brain issues each suite a **domain pack + dispatch packet +
 reservations + WO + evidence obligations**; suites report to **central integration gates**. No suite

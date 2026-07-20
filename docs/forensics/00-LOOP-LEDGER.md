@@ -856,3 +856,17 @@
 | **provenance** | every EXTRACT row carries source SHA `2ae013561`; per-entity confirmations + Atlas-boundary confirm deferred to X-003. Greenness unverifiable (no dotnet). |
 | **lock status** | Decision-layer. No code moved, no repo, no credential. |
 | **next** | WO-FORGE-X-003 (bootstrap Forge build + contract boundary + ForgeDbContext carve) — **execution-gated on the Forge repo** (credential). |
+
+## Loop 56 — WO-ATLAS-X-001: Atlas inventory ("Atlas" spans 3 domains; maps unrendered) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L56 |
+| **trigger** | Owner: "proceed to Atlas inventory." Source-side inventory + disposition (no repo, no credential). |
+| **load-bearing 1** | **"Atlas" is overloaded across 3 domains:** (A) TerraAtlas **GIS suite** (`AtlasGisController` + `GisDataService`=IGisDataService impl + GIS geometry entities + true-GIS UI) → EXTRACT; (B) **`SystemGptAtlas*`+`Spatial/*`** in TerraFusion.AI (forecast/anomaly/GAMA/spatial-regression) → **DEFER→GPT**; (C) **`Sync/Workbench/Atlas`** DeepProfile → **RETAIN_IN_OS/Sync** (data-profiling, not GIS). The real suite is narrow. |
+| **load-bearing 2** | **Maps entirely unrendered** — NO `atlas/` page imports maplibre/leaflet/mapbox (0 hits); MapContainer is placeholder. PR #942 "full-production" broadly aspirational. **#1073 (maps render) = HARD cutover precondition**; Atlas is least extraction-ready suite. |
+| **disposition** | EXTRACT (Atlas): AtlasGisController, GisDataService, Atlas-authored geometry (→ new AtlasDbContext, REWRITE), true-GIS UI (MapContainer/AddressMap/GeometryHealth/NeighborhoodDelineation/SpatialDiagnostics). RETAIN_IN_OS/Sync: PACS-ingested raw geometry (TruthArcGis, LegacyArcGisRaw), Sync Atlas-profiling. REASSIGN→Forge(GeoForge): MassAppraisalGIS/ResidualMap/GeoEquity/TerraGama/MarketHeatMap (valuation-on-map, consistent w/ FORGE-X-002). DEFER→GPT: SystemGptAtlas analytics, sentiment surfaces. |
+| **contracts** | Owns/produces `atlas.gis@1.0.0`; consumes `canonical.parcel`/`shared.envelopes`/`crosscut.audit`. Feeders (out-of-session): BCBSGISPRO, GeospatialAnalyzerBS, TerraGama. |
+| **flagged for X-002** | SystemGptAtlas ownership (Atlas vs GPT); AtlasDbContext per-entity carve (authored vs Sync-ingested geometry); GeoForge reassignment reconciliation; sentiment→GPT; #1073 sequencing. |
+| **lock status** | Decision-layer. No code moved, no repo, no credential. Greenness unverifiable (no dotnet). |
+| **next** | WO-ATLAS-X-002 (disposition/dependency/provenance) — in-session capable; or continue Dais/Dossier/GPT inventories. Atlas extraction gated on Atlas repo **+ #1073**. |
