@@ -842,3 +842,17 @@
 | **caveat** | build/test greenness unverifiable (no dotnet); existence/structure verified. Provenance = origin/main `2ae013561`. |
 | **lock status** | Inventory/decision-layer. No code moved, no repo created, no credential used. |
 | **next** | WO-FORGE-X-002 (exact source/dependency/provenance disposition + resolve the 6 flagged decisions) — decision-layer, in-session capable; then bootstrap/extraction gated on the suite repo (credential). |
+
+## Loop 55 — WO-FORGE-X-002: exact disposition, dependency & provenance (ownership crux resolved) (2026-06-25)
+
+| Field | Value |
+|---|---|
+| **loop_id** | L55 |
+| **trigger** | Owner: "proceed to WO-FORGE-X-002." Resolve the 6 X-001-flagged decisions with source evidence; produce exact disposition + dependency + provenance. |
+| **crux resolved** | **Forge owns ENGINES, not shared data.** Evidence: Forge entities are `DbSet`s on the shared `TerraFusionDbContext` (no Forge context/configs); `CostMatrix`+`ComparableSale` are **populated by Sync/PACS** (`PacsToTerraFusionSyncService.cs`, `SyncController.cs`) → **RETAIN_IN_OS**, read via frozen contracts. Forge gets a **new `ForgeDbContext`** (CurrentUse pattern proves viable) for engine/config/output tables → `Core/Entities/Forge/*` = **REWRITE_FOR_SUITE**, not clean lift. |
+| **boundary decisions** | `forge/geo`+`atlas-live` (80) = **GeoForge** (spatially-rendered valuation — ValueStrata/RatioCliff/AssessmentRoll panels) → Forge, consuming `atlas.gis@1.0.0`. `forge/county-studio` (74, 51 valuation-referencing) = ratio-study/risk studio → Forge, consuming OS county-context (soft-flag governance). AI type-level cut + controller-level cut confirmed. |
+| **disposition matrix** | REJECT: CostForge theater. RETAIN_IN_OS: CostMatrix/ComparableSale (Sync-populated), PACS/orchestration controllers, Workbench Forge host. REWRITE_FOR_SUITE: Core/Entities/Forge → ForgeDbContext. EXTRACT_EXACT: AI valuation type-cut, API/SalesForge, forge controllers, CurrentUse (+own context), forge UI, SalesForge/CurrentUse tests. DEFER per-entity (X-003 reader scan): Valuation/ValuationPipeline/ValuationRecord/SaleComparableRecord/CalibrationMemo. |
+| **dependency inventory** | Consumes forge.valuation/canonical.parcel/shared.envelopes/crosscut.audit/atlas.gis (v1.0.0); reads CostMatrix/ComparableSale via contract; new ForgeDbContext + CurrentUseDbContext; no GPT/swarm/PACS/Dais/Atlas-layer. |
+| **provenance** | every EXTRACT row carries source SHA `2ae013561`; per-entity confirmations + Atlas-boundary confirm deferred to X-003. Greenness unverifiable (no dotnet). |
+| **lock status** | Decision-layer. No code moved, no repo, no credential. |
+| **next** | WO-FORGE-X-003 (bootstrap Forge build + contract boundary + ForgeDbContext carve) — **execution-gated on the Forge repo** (credential). |

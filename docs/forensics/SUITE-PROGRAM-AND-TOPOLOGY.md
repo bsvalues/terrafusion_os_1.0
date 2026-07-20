@@ -33,7 +33,8 @@ gate-transfer source-of-truth · no big-bang · historical repos are mines not m
 | WO-SR-005 | Cross-repo contract-compat validation | execution | ⏸ after SR-004 | repos exist |
 | WO-SR-006 | Register suites in Brain/portfolio state | in-repo | ⏸ after SR-003 | repo names live |
 | **WO-FORGE-X-001** | Forge inventory + disposition (source-side) | decision | ✅ done (Loop 54) — CostForge=theater/REJECT; real Forge distributed | — |
-| WO-FORGE-X-002..007 | disposition→bootstrap→extract→services→rebind→parity+retire | execution | ⏸ after Forge repo | SR-003 + SR-002 |
+| **WO-FORGE-X-002** | exact disposition + dependency + provenance | decision | ✅ done (Loop 55) — engines→Forge (new ForgeDbContext); shared data→OS/Sync via contract | — |
+| WO-FORGE-X-003..007 | bootstrap→extract→services→rebind→parity+retire | execution | ⏸ after Forge repo | SR-003 + SR-002 |
 | WO-{ATLAS,DAIS,DOSSIER,GPT}-X-001..007 | per-suite extraction | execution | ⏸ sequenced | Forge pattern proven |
 
 **One-Brain dispatch model:** the base Brain issues each suite a **domain pack + dispatch packet +

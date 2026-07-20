@@ -126,6 +126,7 @@ cleared. Recovery still gated; Loop 4 = verification + quantification.
 | **Suite Repo Creation — Credential Request** (RESULT: BLOCKED_MISSING_EXECUTION_CREDENTIAL; required-capabilities + credential-type map; no strategic/owner-engineering work remains) | `SUITE-REPO-CREATION-CREDENTIAL-REQUEST.md` |
 | **WO-SR-002 — Shared-Contract Freeze** (classifies Abstractions seam; versions only suite-consumable contracts; compat/deprecation + publication boundary + validation; invents nothing) | `WO-SR-002-CONTRACT-FREEZE.md` |
 | **WO-FORGE-X-001 — Forge Inventory** (source-side disposition; CostForge project = theater/REJECT; real Forge distributed across Core/Entities/Forge + AI + SalesForge + CurrentUse) | `WO-FORGE-X-001-INVENTORY.md` |
+| **WO-FORGE-X-002 — Forge Disposition/Dependency/Provenance** (crux: Forge owns engines→new ForgeDbContext; shared parcel/sale data stays OS/Sync via contract; geo/county-studio→Forge) | `WO-FORGE-X-002-DISPOSITION.md` |
 
 **Loop 4 outcome:** suspected→classified on all five items. `TerraFusionContext` = separate
 Identity context (naming hazard, not dual-core). Dual `LevyCertification` = **no physical
