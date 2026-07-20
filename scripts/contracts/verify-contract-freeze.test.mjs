@@ -5,7 +5,6 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import Ajv from 'ajv';
 import { verifyContractFreeze } from './verify-contract-freeze.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -24,6 +23,104 @@ function atlasFixture(name) {
       'utf8'
     )
   );
+}
+
+function resolveRef(root, reference) {
+  assert.match(reference, /^#\//, `only local schema references are supported: ${reference}`);
+  return reference
+    .slice(2)
+    .split('/')
+    .map(segment => segment.replaceAll('~1', '/').replaceAll('~0', '~'))
+    .reduce((current, segment) => current[segment], root);
+}
+
+function matchesType(type, value) {
+  if (type === 'object')
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  if (type === 'array') return Array.isArray(value);
+  if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
+  return typeof value === type;
+}
+
+// The governed-spine job intentionally runs this test without installing workspace dependencies.
+// Keep the evaluator limited to the Draft-07 keywords used by the frozen Atlas schema.
+function validateJsonSchema(root, schema, value, location = '$') {
+  if (schema === true) return [];
+  if (schema === false) return [`${location}: schema is false`];
+  if (schema.$ref) return validateJsonSchema(root, resolveRef(root, schema.$ref), value, location);
+
+  const errors = [];
+  if (schema.type && !matchesType(schema.type, value)) {
+    return [`${location}: expected ${schema.type}`];
+  }
+  if (Object.hasOwn(schema, 'const') && value !== schema.const) {
+    errors.push(`${location}: value does not match const`);
+  }
+  if (schema.enum && !schema.enum.includes(value)) {
+    errors.push(`${location}: value is outside enum`);
+  }
+  if (typeof value === 'string' && schema.minLength && value.length < schema.minLength) {
+    errors.push(`${location}: string is shorter than ${schema.minLength}`);
+  }
+  if (typeof value === 'number') {
+    if (schema.minimum !== undefined && value < schema.minimum) {
+      errors.push(`${location}: number is below minimum`);
+    }
+    if (schema.maximum !== undefined && value > schema.maximum) {
+      errors.push(`${location}: number is above maximum`);
+    }
+  }
+  if (Array.isArray(value)) {
+    if (schema.minItems !== undefined && value.length < schema.minItems) {
+      errors.push(`${location}: array has fewer than ${schema.minItems} items`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => {
+        errors.push(...validateJsonSchema(root, schema.items, item, `${location}[${index}]`));
+      });
+    }
+  }
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    const properties = schema.properties ?? {};
+    for (const required of schema.required ?? []) {
+      if (!Object.hasOwn(value, required)) errors.push(`${location}: missing ${required}`);
+    }
+    for (const [name, child] of Object.entries(properties)) {
+      if (Object.hasOwn(value, name)) {
+        errors.push(...validateJsonSchema(root, child, value[name], `${location}.${name}`));
+      }
+    }
+    if (schema.additionalProperties === false) {
+      for (const name of Object.keys(value)) {
+        if (!Object.hasOwn(properties, name)) errors.push(`${location}: unexpected ${name}`);
+      }
+    }
+    if (schema.minProperties !== undefined && Object.keys(value).length < schema.minProperties) {
+      errors.push(`${location}: object has fewer than ${schema.minProperties} properties`);
+    }
+  }
+  for (const child of schema.allOf ?? []) {
+    errors.push(...validateJsonSchema(root, child, value, location));
+  }
+  if (
+    schema.if &&
+    validateJsonSchema(root, schema.if, value, location).length === 0 &&
+    schema.then
+  ) {
+    errors.push(...validateJsonSchema(root, schema.then, value, location));
+  }
+  if (schema.anyOf) {
+    const alternatives = schema.anyOf.map(child =>
+      validateJsonSchema(root, child, value, location)
+    );
+    if (!alternatives.some(result => result.length === 0)) {
+      errors.push(`${location}: no anyOf alternative matched`);
+    }
+  }
+  if (schema.not && validateJsonSchema(root, schema.not, value, location).length === 0) {
+    errors.push(`${location}: forbidden schema matched`);
+  }
+  return errors;
 }
 
 function validateAtlasSemantics(exchange) {
@@ -99,9 +196,6 @@ test('current shared-contract freeze is complete and hash-pinned', () => {
 
 test('Atlas spatial read positive fixtures satisfy schema and county semantics', () => {
   const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
-  const validate = new Ajv({ allErrors: true, strict: true, strictRequired: false }).compile(
-    schema
-  );
 
   for (const name of [
     'canonical-polygon',
@@ -110,26 +204,27 @@ test('Atlas spatial read positive fixtures satisfy schema and county semantics',
     'unavailable',
   ]) {
     const fixture = atlasFixture(name);
-    assert.equal(validate(fixture), true, `${name}: ${JSON.stringify(validate.errors)}`);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
     assert.deepEqual(validateAtlasSemantics(fixture), [], name);
   }
 });
 
 test('Atlas spatial read negative fixtures fail closed', () => {
   const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
-  const validate = new Ajv({ allErrors: true, strict: true, strictRequired: false }).compile(
-    schema
-  );
 
   const countyMismatch = atlasFixture('county-mismatch');
-  assert.equal(validate(countyMismatch), true);
+  assert.deepEqual(validateJsonSchema(schema, schema, countyMismatch), []);
   assert.deepEqual(validateAtlasSemantics(countyMismatch), [
     'response countyId must match request countyId',
   ]);
 
   for (const name of ['invalid-ring', 'cross-lane-fields']) {
     const fixture = atlasFixture(name);
-    assert.equal(validate(fixture), false, `${name} must be rejected`);
+    assert.notDeepEqual(
+      validateJsonSchema(schema, schema, fixture),
+      [],
+      `${name} must be rejected`
+    );
   }
 });
 
