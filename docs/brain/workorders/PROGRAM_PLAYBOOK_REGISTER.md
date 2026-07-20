@@ -19,11 +19,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-19 - WO-SR-002 restored the ratified five-suite repository program and froze current shared contracts)*
+*(Updated 2026-07-19 - WO-SR-003/004 created, bootstrapped, and verified all five suite repositories)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active; contract freeze complete, repository creation substep credential-blocked | `WO-SR-002` complete | `WO-SR-003A` through `WO-SR-003E` | Continue all in-repo policy, contract, bootstrap, validation, and provenance work | Physical GitHub repository creation only is `BLOCKED_MISSING_EXECUTION_CREDENTIAL`; extraction/cutover retain their explicit gates |
+| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active; five repositories bootstrapped and protected | `WO-SR-005A` Forge extraction | Forge parity proof, then evidence-backed cutover decision | Continue bounded copy-first extraction and provenance work | No deletion/cutover; non-Forge suites remain domain-contract gated |
 | [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Closed - PASS_WITH_GAPS; continuation envelope completed and consumed | `WO-MAO-007` complete | Portfolio reconciliation | No MAO continuation authority survives closeout | Future execution requires new applicable authority; protected boundaries remain denied |
 | [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Portfolio reconciliation | Operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closed | `WO-REL-006` complete | Portfolio reconciliation | No automatic Release Engineering successor after closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |

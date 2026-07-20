@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "program": "Five-Suite Federated Repository Buildout",
   "sovereignBase": "bsvalues/terrafusion_os_1.0",
-  "status": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+  "status": "COMPLETE",
   "ownerEngineeringRequired": false,
   "defaults": {
     "visibility": "private",
@@ -29,6 +29,9 @@
     {
       "workOrder": "WO-SR-003A",
       "name": "terrafusion-forge",
+      "url": "https://github.com/bsvalues/terrafusion-forge",
+      "bootstrapCommit": "a43014c273d51fb0247cec520304c873c237ac35",
+      "bootstrapStatus": "verified",
       "suite": "forge",
       "domain": "valuation",
       "contractGroups": ["forge.valuation", "crosscut.audit"],
@@ -42,6 +45,9 @@
     {
       "workOrder": "WO-SR-003B",
       "name": "terrafusion-atlas",
+      "url": "https://github.com/bsvalues/terrafusion-atlas",
+      "bootstrapCommit": "86999064de0bf590060f307789a6e5c3305d4171",
+      "bootstrapStatus": "verified",
       "suite": "atlas",
       "domain": "gis-spatial",
       "contractGroups": ["crosscut.audit"],
@@ -51,6 +57,9 @@
     {
       "workOrder": "WO-SR-003C",
       "name": "terrafusion-dais",
+      "url": "https://github.com/bsvalues/terrafusion-dais",
+      "bootstrapCommit": "1404db1947587d4f8c868092798c4d71c23bb62d",
+      "bootstrapStatus": "verified",
       "suite": "dais",
       "domain": "assessor-administration",
       "contractGroups": ["crosscut.audit"],
@@ -64,6 +73,9 @@
     {
       "workOrder": "WO-SR-003D",
       "name": "terrafusion-dossier",
+      "url": "https://github.com/bsvalues/terrafusion-dossier",
+      "bootstrapCommit": "b211387b7ba3653d901b6223900710b2012395d6",
+      "bootstrapStatus": "verified",
       "suite": "dossier",
       "domain": "evidence-records",
       "contractGroups": ["crosscut.audit"],
@@ -77,6 +89,9 @@
     {
       "workOrder": "WO-SR-003E",
       "name": "terrafusion-gpt",
+      "url": "https://github.com/bsvalues/terrafusion-gpt",
+      "bootstrapCommit": "10295e9b534cce7ba9d428a91fb966bd58963c77",
+      "bootstrapStatus": "verified",
       "suite": "gpt",
       "domain": "governed-ai-rag",
       "contractGroups": ["crosscut.audit"],
@@ -89,7 +104,8 @@
   ],
   "execution": {
     "credentialRequirement": "GitHub repository administration write permission for the five exact private repositories",
-    "onMissingPermission": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+    "credentialPathUsed": "stored gh user credential for bsvalues; no GH_TOKEN or GITHUB_TOKEN override",
+    "completedAt": "2026-07-19",
     "nonBlockingPreparation": [
       "shared contract freeze",
       "compatibility policy",

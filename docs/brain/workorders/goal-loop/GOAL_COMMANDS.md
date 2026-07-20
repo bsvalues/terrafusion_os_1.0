@@ -47,14 +47,14 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-002 completes the contract freeze and preparation packet. Physical creation
-of `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
-`terrafusion-gpt` is `BLOCKED_MISSING_EXECUTION_CREDENTIAL`; that substep does not park the program.
+**Current state:** WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five
+private suite repositories. `WO-SR-005A` is active for Forge because its domain contracts are frozen;
+the other suite extraction lanes remain domain-contract gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
-**Blocked:** package publication, blind extraction, duplicate mutable ownership, secrets, county/PACS
-data, production deployment, or repository creation without the exact execution credential.
+**Blocked:** package publication, blind extraction, duplicate mutable ownership, source deletion or
+cutover, secrets, county/PACS data, and production deployment.
 
 ### /goal codex-operator-autonomy
 

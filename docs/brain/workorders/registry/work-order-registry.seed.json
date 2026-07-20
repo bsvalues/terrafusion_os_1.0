@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-002",
+  "generatedBy": "WO-SR-003/WO-SR-004",
   "generatedAt": "2026-07-19T00:00:00Z",
-  "description": "Cross-project-corrected registry with the active five-suite federated repository program. WilliamOS and OMEN records remain historical only; the suite-repository credential blocks physical creation only.",
+  "description": "Cross-project-corrected registry with the active five-suite federated repository program. Five suite repositories are bootstrapped and protected; Forge bounded extraction is active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3790,11 +3790,9 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Create and bootstrap the five ratified private suite repositories.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-002", "status": "satisfied" }],
-      "allowedSystems": [
-        { "name": "GitHub repository administration credential" }
-      ],
+      "allowedSystems": [{ "name": "Five exact private GitHub suite repositories" }],
       "blockedSystems": [
         { "name": "Runtime extraction" },
         { "name": "Package publication" },
@@ -3816,26 +3814,27 @@
         }
       ],
       "validationGates": [],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "repository-bootstrap",
+          "location": "docs/brain/workorders/evidence/WO-SR-003-004-REPOSITORY-BOOTSTRAP-VERIFICATION.md",
+          "description": "Five exact private repository identities and bootstrap commit proof."
+        }
+      ],
       "blockers": [
         {
           "type": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
-          "status": "open",
-          "description": "Current GitHub integration cannot create the five repositories."
+          "status": "resolved",
+          "description": "Stored bsvalues GitHub CLI credential created the five repositories; integration-token limitation was isolated."
         }
       ],
-      "stopConditions": [
-        {
-          "type": "execution_credential",
-          "description": "Do not create repositories without an exact least-privilege repo-create credential."
-        }
-      ],
+      "stopConditions": [],
       "nextCandidates": [
         {
           "id": "WO-SR-004",
           "reason": "Bootstrap verification follows successful repository creation.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
     },
@@ -3845,8 +3844,8 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Verify subordinate governance, branch protection, contract consumption, and bootstrap identity.",
       "riskClass": "R3",
-      "status": "proposed",
-      "dependencies": [{ "id": "WO-SR-003", "status": "blocked" }],
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-003", "status": "satisfied" }],
       "allowedSystems": [{ "name": "New suite repositories after creation" }],
       "blockedSystems": [
         { "name": "Runtime extraction" },
@@ -3854,7 +3853,7 @@
         { "name": "County and PACS systems" },
         { "name": "Production resources" }
       ],
-      "allowedFiles": [],
+      "allowedFiles": ["docs/brain/workorders/**"],
       "blockedFiles": [],
       "evidenceRequired": [
         {
@@ -3862,17 +3861,95 @@
           "description": "Repository identity, settings, governance, and contract compatibility proof."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Suite bootstrap checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "bootstrap-verification",
+          "location": "docs/brain/workorders/evidence/WO-SR-003-004-REPOSITORY-BOOTSTRAP-VERIFICATION.md",
+          "description": "Identity, settings, governance, protection, and check verification for all five repositories."
+        }
+      ],
       "stopConditions": [],
       "nextCandidates": [
         {
-          "id": "WO-SR-005",
-          "reason": "Extraction planning follows verified repository bootstrap.",
+          "id": "WO-SR-005A",
+          "reason": "Forge has verified bootstrap plus frozen valuation and audit contracts.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
+    },
+    {
+      "id": "WO-SR-005A",
+      "title": "Forge Bounded Extraction and Provenance",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Copy the smallest contract-backed Forge valuation slice with exact provenance and standalone parity proof.",
+      "riskClass": "R4",
+      "status": "in_progress",
+      "dependencies": [
+        { "id": "WO-SR-004", "status": "satisfied" },
+        {
+          "id": "forge.valuation",
+          "status": "waived",
+          "reason": "External contract group frozen and hash-pinned by WO-SR-002."
+        },
+        {
+          "id": "crosscut.audit",
+          "status": "waived",
+          "reason": "External contract group frozen and hash-pinned by WO-SR-002."
+        }
+      ],
+      "allowedSystems": [
+        { "name": "Sovereign Forge source inventory" },
+        { "name": "bsvalues/terrafusion-forge" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Source deletion or ownership cutover" },
+        { "name": "Package publication" },
+        { "name": "Other suite extraction" },
+        { "name": "County and PACS systems" },
+        { "name": "Production resources" }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/**",
+        "backend/src/TerraFusion.CostForge/**",
+        "backend/src/TerraFusion.CurrentUse/**",
+        "frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx",
+        "packages/terrabuild/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.Abstractions/**/*.cs",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "extraction-provenance",
+          "description": "Exact source SHA/path, destination path, dependency inventory, rollback, and duplicate-retirement plan."
+        },
+        {
+          "kind": "standalone-parity",
+          "description": "Forge contract compatibility and standalone valuation parity."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "cutover",
+          "description": "Deletion or canonical ownership transfer requires a separate evidence-backed Work Order."
+        }
+      ],
+      "nextCandidates": []
     }
   ]
 }

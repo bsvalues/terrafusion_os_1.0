@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-002 complete on merge, WO-SR-003A-E external credential-blocked
+**Status:** Active; WO-SR-003 and WO-SR-004 complete, WO-SR-005A Forge extraction active
 
 ## Ratified topology
 
@@ -26,14 +26,11 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO | Purpose | State |
 | --- | --- | --- |
 | WO-SR-001 | Ratify topology and extraction blueprint | Complete by owner decision; canonized here |
-| WO-SR-002 | Inventory, version, freeze, and validate shared contracts | Complete on merge |
-| WO-SR-003A | Create and bootstrap `terrafusion-forge` | Blocked only on repo-create credential |
-| WO-SR-003B | Create and bootstrap `terrafusion-atlas` | Blocked only on repo-create credential |
-| WO-SR-003C | Create and bootstrap `terrafusion-dais` | Blocked only on repo-create credential |
-| WO-SR-003D | Create and bootstrap `terrafusion-dossier` | Blocked only on repo-create credential |
-| WO-SR-003E | Create and bootstrap `terrafusion-gpt` | Blocked only on repo-create credential |
-| WO-SR-004 | Verify settings, branch protection, bootstrap, and contract consumption | Depends on the corresponding SR-003 repository |
-| WO-SR-005 | Execute bounded extraction with provenance and parity proof | Depends on SR-004 and a domain contract group |
+| WO-SR-002 | Inventory, version, freeze, and validate shared contracts | Complete |
+| WO-SR-003A-E | Create and bootstrap the five private suite repositories | Complete |
+| WO-SR-004 | Verify settings, branch protection, bootstrap, and contract consumption | Complete |
+| WO-SR-005A | Execute bounded Forge extraction with provenance and parity proof | Active; Forge contract groups are frozen |
+| WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on suite-specific domain contracts |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
 ## Extraction and provenance policy
@@ -69,5 +66,7 @@ and required `suite-ci`, `contract-compat`, and `governance-gate` checks.
 | SR-003D Dossier | `crosscut.audit`; Dossier group still required | Dossier controllers/entities/surface | Custody contract and evidence-integrity proof |
 | SR-003E GPT | `crosscut.audit`; GPT group still required | Governed Muse/RAG and GPT surfaces | TerraPilot-only action boundary and grounding proof |
 
-The repository-creation operation is the only currently blocked substep. Its state is
-`BLOCKED_MISSING_EXECUTION_CREDENTIAL`; no owner engineering decision is pending.
+The five private repositories now exist, contain the declared bootstrap inventory, pass the three
+required checks, and enforce the recorded protected-main settings. Forge is the first extraction lane
+because it alone has a frozen domain contract. The other suite repositories remain valid bootstraps,
+not claims of extracted or standalone product capability.

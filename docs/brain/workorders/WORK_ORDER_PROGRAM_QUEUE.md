@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-19
-**Authority:** WO-SR-002
+**Authority:** WO-SR-003 / WO-SR-004
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,9 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. WO-SR-002 freezes the current shared contract
-boundary in `terrafusion_os_1.0`, defines compatibility, publication, extraction, provenance, and
-bootstrap policy, and prepares five repository-creation Work Orders. Only the physical GitHub
-repository-creation call is `BLOCKED_MISSING_EXECUTION_CREDENTIAL`; the program is not parked.
+The Five-Suite Federated Repository Buildout is active. All five private suite repositories now exist,
+their bootstrap checks pass, and protected `main` settings are verified. `WO-SR-005A` is the active
+Forge extraction lane because Forge is the only suite with a frozen domain contract.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -33,14 +32,14 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 | --- | --- | --- |
 | WO-SR-001 Topology and Extraction Blueprint | DONE | Sovereign base plus five suite repositories ratified |
-| **WO-SR-002 Shared Contract Freeze** | **DONE ON MERGE** | Five current files frozen in two groups; all 20 abstraction files classified; validation wired |
-| WO-SR-003A Create `terrafusion-forge` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet and bootstrap inventory ready |
-| WO-SR-003B Create `terrafusion-atlas` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; Atlas domain contract still required before extraction |
-| WO-SR-003C Create `terrafusion-dais` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; Dais domain contract still required before extraction |
-| WO-SR-003D Create `terrafusion-dossier` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; custody contract still required before extraction |
-| WO-SR-003E Create `terrafusion-gpt` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; governed AI contract still required before extraction |
-| WO-SR-004 Bootstrap and Settings Verification | BLOCKED ON SR-003 | No publication or extraction before repository identity/settings proof |
-| WO-SR-005 Bounded Extraction and Provenance | BLOCKED ON SR-004 | Per-suite contract, parity, and provenance gates apply |
+| WO-SR-002 Shared Contract Freeze | DONE | Five current files frozen in two groups; all 20 abstraction files classified; validation wired |
+| WO-SR-003A-E Create and bootstrap five suite repositories | DONE | Five exact private repositories created and bootstrap commits verified |
+| WO-SR-004 Bootstrap and Settings Verification | DONE | Required checks pass and protected-main settings are verified in all five repositories |
+| **WO-SR-005A Forge Bounded Extraction and Provenance** | **ACTIVE** | `forge.valuation` and `crosscut.audit` are frozen; copy-first provenance and parity proof required |
+| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Atlas domain contract and map parity required |
+| WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
+| WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
+| WO-SR-005E GPT Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; governed-AI contract and grounding proof required |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -182,9 +181,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-002:** `ACTIVE_PROGRAM_EXTERNAL_SUBSTEP_BLOCKED`. The foreign OMEN lane
-remains removed. The ratified suite program is active and its in-repo contract/policy preparation is
-complete; only the five physical repository-creation calls await an execution credential.
+**Portfolio result after WO-SR-003/004:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
+removed. Repository creation and bootstrap verification are complete; Forge is the first
+dependency-cleared extraction lane.
 
 ---
 

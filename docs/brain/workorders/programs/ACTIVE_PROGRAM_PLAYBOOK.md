@@ -98,19 +98,19 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; in-repo preparation complete at WO-SR-002 |
-| Current | `WO-SR-002` completes on merge |
-| Next | `WO-SR-003A` through `WO-SR-003E` |
+| Status | Active; repository creation and bootstrap verification complete |
+| Current | `WO-SR-005A - Forge Bounded Extraction and Provenance` |
+| Next | Forge standalone valuation parity proof |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
 `terrafusion-gpt`. Shared contracts, Brain, Workbench composition, security, county context, Sync
 infrastructure, CI/release governance, and integration evidence remain in the sovereign base.
 
-WO-SR-002 freezes current genuine suite-consumable contracts, classifies the entire Abstractions
-surface, establishes compatibility and publication rules, and prepares extraction, provenance,
-bootstrap, and repository-creation packets. Physical repository creation alone is
-`BLOCKED_MISSING_EXECUTION_CREDENTIAL`; it does not convert the program into an all-lanes park.
+WO-SR-002 froze current genuine suite-consumable contracts. WO-SR-003 and WO-SR-004 created,
+bootstrapped, checked, and protected all five private suite repositories. Forge now advances first
+because `forge.valuation` and `crosscut.audit` are frozen; the other four extraction lanes remain
+domain-contract gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -562,8 +562,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-002 - Shared Contract Freeze` complete on merge |
-| Next WO | `WO-SR-003A` through `WO-SR-003E`, physical creation credential-blocked |
+| Current WO | `WO-SR-005A - Forge Bounded Extraction and Provenance` |
+| Next WO | Forge parity proof, then evidence-backed ownership cutover decision |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

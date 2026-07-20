@@ -2,7 +2,7 @@
 
 **Version:** 1.2
 **Date:** 2026-07-18
-**Authority:** WO-WOE-014, current-state refresh by WO-SR-002
+**Authority:** WO-WOE-014, current-state refresh by WO-SR-003 / WO-SR-004
 **Classification:** Operator Doctrine - makes the Wall Ledger operational
 **Builds on:** [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) (WOE-012),
 [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md), and
@@ -40,9 +40,9 @@ At WO-PORTFOLIO-003 reconciliation, the previously listed safe lanes are complet
 - Backend Operational Excellence closed at WO-BACKEND-OE-013.
 - Azure's committed-evidence slice closed at WO-AZURE-003.
 
-WO-SR-002 runs under the ratified Five-Suite Federated Repository Buildout authority. Contract,
-policy, validation, provenance, bootstrap inventory, and Work Order preparation do not require the
-repo-create credential. The credential blocks only WO-SR-003A through WO-SR-003E physical creation.
+WO-SR-003 and WO-SR-004 completed repository creation, bootstrap, required-check verification, and
+protected-main configuration for all five suite repositories. Forge is dependency-cleared for
+bounded extraction because its domain contracts are frozen.
 
 ---
 
@@ -74,10 +74,11 @@ RUNTIME IMPORT
   starts at WO-CORE-1 only after the sovereign import disposition is authorized
 
 FIVE-SUITE FEDERATED REPOSITORIES
-  WO-SR-002 contract and policy preparation executes in the sovereign base
-  WO-SR-003A through WO-SR-003E physical creation requires the repo-create credential
-  WO-SR-004 bootstrap verification follows each created repository
-  WO-SR-005 extraction remains gated by contract, parity, provenance, and rollback proof
+  WO-SR-002 contract and policy preparation is complete in the sovereign base
+  WO-SR-003A through WO-SR-003E repository creation and bootstrap are complete
+  WO-SR-004 bootstrap and protected-main verification is complete
+  WO-SR-005A Forge extraction is active under contract, parity, provenance, and rollback gates
+  WO-SR-005B through WO-SR-005E remain gated by suite-specific domain contracts
 ```
 
 ---
@@ -86,7 +87,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001, SR-002 on merge | SR-003A through SR-003E | GitHub repo-create execution credential | ACTIVE / EXTERNAL SUBSTEP BLOCKED |
+| five-suite-federated-repository-buildout | SR-001 through SR-004 | SR-005A Forge bounded extraction | Frozen Forge contracts and copy-first provenance gate | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -104,11 +105,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-002 is the admitted dependency-cleared node after portfolio correction.
+1. WO-SR-005A is the admitted dependency-cleared node after repository bootstrap verification.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue the suite repository program automatically for in-repo work; isolate the physical
-   repository-creation credential boundary rather than parking the portfolio.
+4. Continue the suite repository program automatically through bounded Forge extraction; do not
+   infer extraction readiness for suites whose domain contracts remain absent.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
@@ -118,6 +119,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Date | Change | WO |
 |------|--------|----|
+| 2026-07-19 | Created, bootstrapped, checked, and protected all five suite repositories; admitted Forge extraction | WO-SR-003 / WO-SR-004 |
 | 2026-07-01 | Cross-program dependency graph; authorization-to-unblocks map; prerequisite chains | WO-WOE-014 |
 | 2026-07-16 | Removed completed-node executable claims and recorded all-lanes-parked state | WO-PORTFOLIO-003 |
 | 2026-07-18 | Decomposed runtime diagnosis/import/promotion and removed stale MGMT-005 deployment wall | WO-PORTFOLIO-012 |
