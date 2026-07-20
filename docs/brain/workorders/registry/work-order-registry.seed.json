@@ -3891,12 +3891,20 @@
       "title": "Forge Bounded Extraction and Provenance",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Copy the smallest contract-backed Forge valuation slice with exact provenance and standalone parity proof.",
-      "riskClass": "R3",
+      "riskClass": "R4",
       "status": "in_progress",
       "dependencies": [
         { "id": "WO-SR-004", "status": "satisfied" },
-        { "id": "forge.valuation", "status": "satisfied" },
-        { "id": "crosscut.audit", "status": "satisfied" }
+        {
+          "id": "forge.valuation",
+          "status": "waived",
+          "reason": "External contract group frozen and hash-pinned by WO-SR-002."
+        },
+        {
+          "id": "crosscut.audit",
+          "status": "waived",
+          "reason": "External contract group frozen and hash-pinned by WO-SR-002."
+        }
       ],
       "allowedSystems": [
         { "name": "Sovereign Forge source inventory" },

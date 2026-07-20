@@ -4,7 +4,7 @@
 | ----------- | ------------------------------------------------------------------- |
 | Status      | ACTIVE AFTER WO-SR-003/004 CLOSEOUT MERGES                          |
 | Program     | Five-Suite Federated Repository Buildout                            |
-| Risk        | R3 bounded cross-repository extraction                              |
+| Risk        | R4 bounded backend/frontend cross-repository extraction             |
 | Base        | Current `origin/main` after WO-SR-003/004 closeout                  |
 | Destination | `bsvalues/terrafusion-forge`                                        |
 | Next        | Forge parity proof, then evidence-backed ownership cutover decision |
@@ -37,7 +37,7 @@ or transferring sovereign-base ownership.
 {
   "id": "WO-SR-005A",
   "task": "Extract the smallest contract-backed Forge valuation slice with provenance and parity proof",
-  "risk": "R3",
+  "risk": "R4",
   "suite": "TerraForge",
   "allowed_files": [
     "docs/brain/workorders/**",
