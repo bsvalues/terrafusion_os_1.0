@@ -189,8 +189,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
 **Portfolio result after WO-SR-005B-A:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Atlas contract freeze is complete; adapter/parity preparation is the dependency-cleared
-next node.
+removed. Atlas adapter/parity preparation is complete; WO-SR-005B-E1 is the dependency-cleared
+active node and WO-SR-005B-E2 remains blocked on E1.
 
 ---
 

@@ -111,11 +111,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005B-A is the admitted dependency-cleared node after Atlas contract freeze.
+1. WO-SR-005B-E1 is the admitted dependency-cleared node after Atlas adapter/parity preparation.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through Atlas adapter/parity preparation; keep runtime adoption and extraction blocked
-   until the synthetic parity implementation is separately admitted and executable.
+4. Continue through the pure unwired E1 adapter implementation. WO-SR-005B-E2 remains blocked on
+   E1; keep runtime adoption and extraction blocked until both synthetic proof nodes pass.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
