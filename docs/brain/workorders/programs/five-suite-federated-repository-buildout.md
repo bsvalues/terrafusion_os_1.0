@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; Atlas extraction blocked, WO-SR-005B-C contract decomposition active
+**Status:** Active; Atlas extraction blocked, WO-SR-005B-I contract implementation/freeze active
 
 ## Ratified topology
 
@@ -31,7 +31,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-004 | Verify settings, branch protection, bootstrap, and contract consumption | Complete |
 | WO-SR-005A | Execute bounded Forge extraction with provenance and parity proof | Complete; Forge PR #1 / merge `2430b483`, no cutover |
 | WO-SR-005B-P | Prepare Atlas contract ownership and standalone map parity gate | Complete; extraction blocked on missing stable domain contract |
-| WO-SR-005B-C | Decompose the Atlas read contract candidate | Active; read-only/docs evidence |
+| WO-SR-005B-C | Decompose the Atlas read contract candidate | Complete; implementation-ready without runtime adoption |
+| WO-SR-005B-I | Implement and freeze `atlas.spatial-read@1.0.0` | Active; bounded contract-only implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on suite-specific preparation and parity gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 

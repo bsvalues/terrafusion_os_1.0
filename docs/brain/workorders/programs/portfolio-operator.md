@@ -56,8 +56,8 @@ those Work Orders and no authority transfers to the foreign project.
 
 After that correction, the ratified Five-Suite Federated Repository Buildout remains active.
 WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five suite repositories.
-WO-SR-005B-P completed the Atlas source and parity-gate audit without runtime change. It proved the
-mixed GIS package is not extractable and that no frozen Atlas domain contract exists. WO-SR-005B-C
-is the dependency-cleared read-only contract-decomposition node; Atlas extraction remains blocked.
+WO-SR-005B-C decomposed the Atlas read boundary without runtime change. WO-SR-005B-I is the
+dependency-cleared bounded contract implementation/freeze node; runtime adoption and Atlas extraction
+remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`

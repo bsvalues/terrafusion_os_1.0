@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Atlas extraction blocked on missing stable domain contract |
-| Current | `WO-SR-005B-C - Atlas Read Contract Decomposition` |
-| Next | Atlas contract implementation packet only if decomposition passes |
+| Status | Active; Atlas contract boundary decomposed, extraction still blocked |
+| Current | `WO-SR-005B-I - Atlas Read Contract Implementation and Freeze` |
+| Next | Atlas adapter/parity preparation only after contract freeze passes |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -110,9 +110,9 @@ infrastructure, CI/release governance, and integration evidence remain in the so
 WO-SR-002 froze current genuine suite-consumable contracts. WO-SR-003 and WO-SR-004 created,
 bootstrapped, checked, and protected all five private suite repositories. WO-SR-005A copied the
 standalone Forge valuation kernel to Forge PR #1 with exact provenance and 2/2 parity tests; the
-sovereign source remains authoritative. WO-SR-005B-P then rejected wholesale GIS-package extraction,
-defined the standalone map parity gate, and proved that contract decomposition must precede any Atlas
-implementation or extraction.
+sovereign source remains authoritative. WO-SR-005B-P rejected wholesale GIS-package extraction and
+defined the parity gate. WO-SR-005B-C then decomposed an exact provider-neutral, county-context-aware
+read contract. Its implementation is contract-only and does not authorize runtime adoption.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -564,8 +564,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005B-C - Atlas Read Contract Decomposition` |
-| Next WO | Atlas contract implementation packet only after evidence-backed decomposition |
+| Current WO | `WO-SR-005B-I - Atlas Read Contract Implementation and Freeze` |
+| Next WO | Atlas adapter/parity preparation only after contract freeze passes |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

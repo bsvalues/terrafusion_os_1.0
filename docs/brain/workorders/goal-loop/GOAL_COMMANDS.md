@@ -47,9 +47,9 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-P proved Atlas extraction is blocked by the absence of a frozen domain
-contract and by mixed source ownership. `WO-SR-005B-C` is active to decompose the provider-neutral,
-county-context-aware read boundary; Atlas extraction and the remaining suite lanes stay gated.
+**Current state:** WO-SR-005B-C defined `atlas.spatial-read@1.0.0` without runtime change.
+`WO-SR-005B-I` is active to implement and hash-freeze only that contract and its synthetic fixtures;
+Atlas runtime adoption, extraction, and the remaining suite lanes stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

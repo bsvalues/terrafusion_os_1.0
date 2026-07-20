@@ -79,7 +79,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-004 bootstrap and protected-main verification is complete
   WO-SR-005A Forge valuation-kernel extraction is complete without ownership cutover
   WO-SR-005B-P Atlas preparation is complete with extraction blocked
-  WO-SR-005B-C Atlas read-contract decomposition is active
+  WO-SR-005B-C Atlas read-contract decomposition is complete
+  WO-SR-005B-I Atlas read-contract implementation and freeze is active
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 
@@ -89,7 +90,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005B-P | SR-005B-C Atlas read-contract decomposition | Read-only contract design and no-runtime-change gate | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005B-C | SR-005B-I Atlas contract implementation/freeze | Exact contract-only scope; no runtime adoption | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -107,11 +108,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005B-C is the admitted dependency-cleared node after the Atlas preparation verdict.
+1. WO-SR-005B-I is the admitted dependency-cleared node after Atlas contract decomposition.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through read-only Atlas contract decomposition; keep extraction blocked until a later
-   implementation is hash-frozen and the synthetic parity gate is executable.
+4. Continue through bounded Atlas contract implementation/freeze; keep runtime adoption and
+   extraction blocked until the synthetic parity gate is executable.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
