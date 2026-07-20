@@ -97,7 +97,7 @@
         },
         {
           "path": "contracts/fixtures/atlas.spatial-read.v1.invalid-ring.synthetic.json",
-          "sha256": "f8a2d11b5ea9f7366b8d28a28d62d991db6ca482eea4f3591f0d36a8acc26eed"
+          "sha256": "e10bba0ba1d4844c07d8be700479c7e558eb9f823288bbbb67e6ec5af304501e"
         },
         {
           "path": "contracts/fixtures/atlas.spatial-read.v1.provider-polygon.synthetic.json",

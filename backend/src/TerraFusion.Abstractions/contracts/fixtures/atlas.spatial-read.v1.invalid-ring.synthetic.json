@@ -10,7 +10,8 @@
       "outerRing": [
         { "longitude": -119.1, "latitude": 46.1 },
         { "longitude": -119.0, "latitude": 46.1 },
-        { "longitude": -119.0, "latitude": 46.2 }
+        { "longitude": -119.0, "latitude": 46.2 },
+        { "longitude": -119.1, "latitude": 46.2 }
       ]
     },
     "layers": {}

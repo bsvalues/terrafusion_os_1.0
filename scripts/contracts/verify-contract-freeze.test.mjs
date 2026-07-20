@@ -218,14 +218,16 @@ test('Atlas spatial read negative fixtures fail closed', () => {
     'response countyId must match request countyId',
   ]);
 
-  for (const name of ['invalid-ring', 'cross-lane-fields']) {
-    const fixture = atlasFixture(name);
-    assert.notDeepEqual(
-      validateJsonSchema(schema, schema, fixture),
-      [],
-      `${name} must be rejected`
-    );
-  }
+  const invalidRing = atlasFixture('invalid-ring');
+  assert.deepEqual(validateJsonSchema(schema, schema, invalidRing), []);
+  assert.deepEqual(validateAtlasSemantics(invalidRing), ['outerRing must be closed']);
+
+  const crossLaneFields = atlasFixture('cross-lane-fields');
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, crossLaneFields),
+    [],
+    'cross-lane fields must be rejected'
+  );
 });
 
 test('a modified frozen hash fails closed', () => {

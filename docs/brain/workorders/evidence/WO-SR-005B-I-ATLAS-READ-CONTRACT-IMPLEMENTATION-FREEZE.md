@@ -30,7 +30,7 @@ and `crosscut.audit@1.0.0` entries remain unchanged.
 | fallback centroid | PASS | Centroid-only fallback makes no polygon claim |
 | unavailable | PASS | No coordinates, layers, or geometry truth invented |
 | county mismatch | REJECT | Request and result county identity differ |
-| invalid ring | REJECT | Polygon has fewer than four coordinates |
+| invalid ring | REJECT | Structurally valid four-point polygon does not close on its first coordinate |
 | cross-lane fields | REJECT | Owner, valuation, document, workflow, and provider-token fields are forbidden |
 
 County and parcel equality and ring closure are semantic verifier assertions layered on the
