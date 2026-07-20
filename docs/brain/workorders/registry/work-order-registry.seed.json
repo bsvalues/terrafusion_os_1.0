@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-PORTFOLIO-013",
+  "generatedBy": "WO-SR-002",
   "generatedAt": "2026-07-19T00:00:00Z",
-  "description": "Cross-project-corrected representative registry for deterministic Work Order queries. WilliamOS and OMEN records are historical only; data grants no automation authority.",
+  "description": "Cross-project-corrected registry with the active five-suite federated repository program. WilliamOS and OMEN records remain historical only; the suite-repository credential blocks physical creation only.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3664,6 +3664,177 @@
         "source": "Owner-confirmed project-boundary correction reconciled against current TerraFusion registry, queue, playbook, command routing, and historical evidence.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-001",
+      "title": "Five-Suite Repository Topology and Extraction Blueprint",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Ratify the sovereign base and five subordinate Tier-1 suite repositories.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [],
+      "allowedSystems": ["docs/governance"],
+      "blockedSystems": [
+        "repository creation",
+        "runtime extraction",
+        "package publication"
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**/*.cs",
+        "frontend/**",
+        "os-platform/**",
+        "packages/**"
+      ],
+      "evidenceRequired": [],
+      "validationGates": [],
+      "evidenceProduced": [
+        {
+          "kind": "program-definition",
+          "location": "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+          "description": "Ratified topology and extraction sequence."
+        }
+      ],
+      "stopConditions": [],
+      "nextCandidates": ["WO-SR-002"]
+    },
+    {
+      "id": "WO-SR-002",
+      "title": "Shared Contract Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Freeze, version, classify, and validate the genuine suite-consumable contract boundary.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-001", "status": "complete" }],
+      "allowedSystems": [
+        "shared contract metadata",
+        "contract validation",
+        "docs/governance"
+      ],
+      "blockedSystems": [
+        "package publication",
+        "runtime extraction",
+        "county/PACS",
+        "production"
+      ],
+      "allowedFiles": [
+        ".github/workflows/contract-compat.yml",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "scripts/contracts/verify-contract-freeze.mjs",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.Abstractions/**/*.cs",
+        "frontend/**",
+        "os-platform/**",
+        "packages/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "contract-freeze",
+          "description": "Complete, versioned, hash-pinned abstraction classification."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Contract freeze",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "contract-freeze",
+          "location": "docs/brain/workorders/evidence/WO-SR-002-SHARED-CONTRACT-FREEZE.md",
+          "description": "Current-main contract inventory, compatibility policy, and external credential boundary."
+        }
+      ],
+      "stopConditions": [],
+      "nextCandidates": ["WO-SR-003"]
+    },
+    {
+      "id": "WO-SR-003",
+      "title": "Five Suite Repository Creation and Bootstrap",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Create and bootstrap the five ratified private suite repositories.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [{ "id": "WO-SR-002", "status": "complete" }],
+      "allowedSystems": ["GitHub repository administration credential"],
+      "blockedSystems": [
+        "runtime extraction",
+        "package publication",
+        "county/PACS",
+        "production"
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "packages/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "repository-identity",
+          "description": "Five exact private repository identities and settings."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "blockers": [
+        {
+          "type": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+          "status": "open",
+          "description": "Current GitHub integration cannot create the five repositories."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "execution_credential",
+          "description": "Do not create repositories without an exact least-privilege repo-create credential."
+        }
+      ],
+      "nextCandidates": ["WO-SR-004"]
+    },
+    {
+      "id": "WO-SR-004",
+      "title": "Suite Repository Bootstrap and Settings Verification",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Verify subordinate governance, branch protection, contract consumption, and bootstrap identity.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-003", "status": "blocked" }],
+      "allowedSystems": ["new suite repositories after creation"],
+      "blockedSystems": [
+        "runtime extraction",
+        "package publication",
+        "county/PACS",
+        "production"
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [],
+      "evidenceRequired": [
+        {
+          "kind": "bootstrap-verification",
+          "description": "Repository identity, settings, governance, and contract compatibility proof."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [],
+      "nextCandidates": ["WO-SR-005"]
     }
   ]
 }

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0.0",
+  "workOrder": "WO-SR-002",
+  "sourceRepository": "bsvalues/terrafusion_os_1.0",
+  "root": "backend/src/TerraFusion.Abstractions",
+  "publicationStatus": "planned_not_published",
+  "allowedSuites": ["forge", "atlas", "dais", "dossier", "gpt"],
+  "compatibility": {
+    "patch": "documentation_or_annotation_only",
+    "minor": "additive_backward_compatible",
+    "major": "breaking_change_with_one_release_deprecation_window"
+  },
+  "packages": [
+    {
+      "id": "TerraFusion.Contracts.Forge",
+      "status": "planned_not_published",
+      "groups": ["forge.valuation"]
+    },
+    {
+      "id": "TerraFusion.Contracts.CrossCutting",
+      "status": "planned_not_published",
+      "groups": ["crosscut.audit"]
+    }
+  ],
+  "frozen": [
+    {
+      "group": "forge.valuation",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["forge"],
+      "files": [
+        {
+          "path": "DTOs/CostMatrixDto.cs",
+          "sha256": "4761b65ac541d59ad3b506b4b03391cddd81d017aad83e9a4a72c895c7f14137"
+        },
+        {
+          "path": "DTOs/PropertyValuationInputDto.cs",
+          "sha256": "5f9fe66294d02e330d1ccd54ac604a6c27d98fdee7c93c5ea2bb65ff7d21ea9a"
+        },
+        {
+          "path": "DTOs/UpdateCostMatrixDto.cs",
+          "sha256": "03398f662b44426c0b45ac7b2bc4804453362f229460b88303c7708d3b5b3c39"
+        },
+        {
+          "path": "DTOs/ValuationResultDto.cs",
+          "sha256": "61640e7bd46180793aa8024c173a8580833ac2537ece616c68c95aa6798986df"
+        }
+      ]
+    },
+    {
+      "group": "crosscut.audit",
+      "version": "1.0.0",
+      "class": "CROSS_CUTTING",
+      "consumers": ["forge", "atlas", "dais", "dossier", "gpt"],
+      "files": [
+        {
+          "path": "Interfaces/IAuditLogger.cs",
+          "sha256": "ef0d1e74038d9fab408c441471b738483db130f0debbadb10276eb04de4607a0"
+        }
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "path": "DTOs/AIAgentStatusDto.cs",
+      "reason": "duplicate AI and Core definitions; ownership unresolved"
+    },
+    {
+      "path": "DTOs/ComplianceDto.cs",
+      "reason": "broad compliance model with competing definitions"
+    },
+    {
+      "path": "DTOs/CostForgeStatsDto.cs",
+      "reason": "zero-byte source is not a contract"
+    },
+    {
+      "path": "DTOs/ModelTrainingConfigDto.cs",
+      "reason": "Forge ML versus GPT ownership unresolved"
+    },
+    {
+      "path": "DTOs/ModelTrainingStatusDto.cs",
+      "reason": "Forge ML versus GPT ownership unresolved"
+    },
+    {
+      "path": "DTOs/Responses/CommonResponses.cs",
+      "reason": "mixed response families require decomposition"
+    },
+    {
+      "path": "DTOs/Responses/PerformanceMetricsDto.cs",
+      "reason": "mixes Forge and quantum platform metrics"
+    },
+    {
+      "path": "DTOs/Shared/SharedDtos.cs",
+      "reason": "duplicates response types in another namespace"
+    },
+    {
+      "path": "DTOs/TrainingConfigDto.cs",
+      "reason": "obsolete alias in unresolved training contract family"
+    },
+    {
+      "path": "DTOs/TrainingDataDto.cs",
+      "reason": "Forge ML versus GPT ownership unresolved"
+    }
+  ],
+  "osInternalExcluded": [
+    {
+      "path": "Interfaces/ICitizenContextService.cs",
+      "reason": "OS identity and citizen context"
+    },
+    {
+      "path": "Interfaces/IContextEnrichmentService.cs",
+      "reason": "gateway orchestration"
+    },
+    {
+      "path": "Interfaces/IPerformanceMonitor.cs",
+      "reason": "platform monitoring"
+    },
+    {
+      "path": "Interfaces/IQuantumAIRoutingService.cs",
+      "reason": "platform AI routing"
+    },
+    {
+      "path": "Interfaces/IServiceDiscoveryService.cs",
+      "reason": "gateway service discovery"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-19
-**Authority:** WO-PORTFOLIO-013
+**Authority:** WO-SR-002
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,11 +13,10 @@
 
 ## Active Goal
 
-WO-PORTFOLIO-013 corrected cross-project contamination: OMEN and all `williamos-*` proof surfaces
-belong to WilliamOS/TerraGroq, not TerraFusion. WO-LOCAL-093 through WO-LOCAL-097 are superseded as
-historical audit material, delivered no TerraFusion capability, and cannot route to proposed
-WO-LOCAL-098. No runtime, credential, container, database, or external resource mutation occurred in
-the correction.
+The Five-Suite Federated Repository Buildout is active. WO-SR-002 freezes the current shared contract
+boundary in `terrafusion_os_1.0`, defines compatibility, publication, extraction, provenance, and
+bootstrap policy, and prepares five repository-creation Work Orders. Only the physical GitHub
+repository-creation call is `BLOCKED_MISSING_EXECUTION_CREDENTIAL`; the program is not parked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -29,6 +28,19 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ---
 
 ## Program Queues
+
+### five-suite-federated-repository-buildout (`GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` / `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`)
+| WO | State | Notes |
+| --- | --- | --- |
+| WO-SR-001 Topology and Extraction Blueprint | DONE | Sovereign base plus five suite repositories ratified |
+| **WO-SR-002 Shared Contract Freeze** | **DONE ON MERGE** | Five current files frozen in two groups; all 20 abstraction files classified; validation wired |
+| WO-SR-003A Create `terrafusion-forge` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet and bootstrap inventory ready |
+| WO-SR-003B Create `terrafusion-atlas` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; Atlas domain contract still required before extraction |
+| WO-SR-003C Create `terrafusion-dais` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; Dais domain contract still required before extraction |
+| WO-SR-003D Create `terrafusion-dossier` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; custody contract still required before extraction |
+| WO-SR-003E Create `terrafusion-gpt` | BLOCKED_MISSING_EXECUTION_CREDENTIAL | Packet ready; governed AI contract still required before extraction |
+| WO-SR-004 Bootstrap and Settings Verification | BLOCKED ON SR-003 | No publication or extraction before repository identity/settings proof |
+| WO-SR-005 Bounded Extraction and Provenance | BLOCKED ON SR-004 | Per-suite contract, parity, and provenance gates apply |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -170,10 +182,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-PORTFOLIO-013:** `TRUE_TERRAFUSION_PORTFOLIO_BOUNDARY`. The foreign OMEN
-lane is removed. The registry and wave planner return no dependency-cleared TerraFusion-native node
-inside current authority. Remaining native candidates cross recorded production deployment,
-protected county/PACS data, runtime-import, TerraPilot promotion, or new-product boundaries.
+**Portfolio result after WO-SR-002:** `ACTIVE_PROGRAM_EXTERNAL_SUBSTEP_BLOCKED`. The foreign OMEN lane
+remains removed. The ratified suite program is active and its in-repo contract/policy preparation is
+complete; only the five physical repository-creation calls await an execution credential.
 
 ---
 

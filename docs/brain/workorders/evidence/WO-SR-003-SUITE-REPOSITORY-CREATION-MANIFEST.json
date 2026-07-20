@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "program": "Five-Suite Federated Repository Buildout",
+  "sovereignBase": "bsvalues/terrafusion_os_1.0",
+  "status": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+  "ownerEngineeringRequired": false,
+  "defaults": {
+    "visibility": "private",
+    "defaultBranch": "main",
+    "squashMergeOnly": true,
+    "deleteBranchOnMerge": true,
+    "requiredChecks": ["suite-ci", "contract-compat", "governance-gate"],
+    "bootstrapFiles": [
+      "README.md",
+      "AGENTS.md",
+      "LICENSE",
+      ".gitignore",
+      "canon/INTAKE_RULES.md",
+      "canon/SUITE_DOMAIN_PACK.md",
+      "canon/CONTRACT_DEPENDENCY.md",
+      "operations/work-orders/.gitkeep",
+      "operations/evidence/MIGRATION_PROVENANCE_LEDGER.md",
+      "docs/decisions/.gitkeep",
+      "EXTRACTED_FROM.md",
+      ".github/workflows/suite-ci.yml"
+    ]
+  },
+  "repositories": [
+    {
+      "workOrder": "WO-SR-003A",
+      "name": "terrafusion-forge",
+      "suite": "forge",
+      "domain": "valuation",
+      "contractGroups": ["forge.valuation", "crosscut.audit"],
+      "sourceInventory": [
+        "backend/src/TerraFusion.CostForge/**",
+        "backend/src/TerraFusion.CurrentUse/**",
+        "frontend/apps/os-shell/src/pages/forge/**"
+      ],
+      "preExtractionGate": "standalone valuation parity"
+    },
+    {
+      "workOrder": "WO-SR-003B",
+      "name": "terrafusion-atlas",
+      "suite": "atlas",
+      "domain": "gis-spatial",
+      "contractGroups": ["crosscut.audit"],
+      "sourceInventory": ["frontend/apps/os-shell/src/pages/atlas/**"],
+      "preExtractionGate": "promote an Atlas domain contract and prove map parity"
+    },
+    {
+      "workOrder": "WO-SR-003C",
+      "name": "terrafusion-dais",
+      "suite": "dais",
+      "domain": "assessor-administration",
+      "contractGroups": ["crosscut.audit"],
+      "sourceInventory": [
+        "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+        "backend/src/TerraFusion.Levy/**",
+        "frontend/apps/os-shell/src/pages/dais/**"
+      ],
+      "preExtractionGate": "promote a Dais domain contract and prove county isolation"
+    },
+    {
+      "workOrder": "WO-SR-003D",
+      "name": "terrafusion-dossier",
+      "suite": "dossier",
+      "domain": "evidence-records",
+      "contractGroups": ["crosscut.audit"],
+      "sourceInventory": [
+        "backend/src/TerraFusion.API/Controllers/DossierController.cs",
+        "backend/src/TerraFusion.Core/Entities/Dossier*.cs",
+        "frontend/apps/os-shell/src/pages/dossier/**"
+      ],
+      "preExtractionGate": "define custody contract and prove evidence integrity"
+    },
+    {
+      "workOrder": "WO-SR-003E",
+      "name": "terrafusion-gpt",
+      "suite": "gpt",
+      "domain": "governed-ai-rag",
+      "contractGroups": ["crosscut.audit"],
+      "sourceInventory": [
+        "backend/src/TerraFusion.AI/**",
+        "frontend/apps/os-shell/src/pages/suites/**"
+      ],
+      "preExtractionGate": "define governed AI contract, preserve TerraPilot-only actions, and prove grounding"
+    }
+  ],
+  "execution": {
+    "credentialRequirement": "GitHub repository administration write permission for the five exact private repositories",
+    "onMissingPermission": "BLOCKED_MISSING_EXECUTION_CREDENTIAL",
+    "nonBlockingPreparation": [
+      "shared contract freeze",
+      "compatibility policy",
+      "extraction and provenance policy",
+      "bootstrap inventory",
+      "per-suite creation Work Orders"
+    ]
+  }
+}

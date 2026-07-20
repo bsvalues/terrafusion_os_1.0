@@ -1,0 +1,73 @@
+# Five-Suite Federated Repository Buildout
+
+**Goal:** `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES`
+
+**Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
+
+**Status:** Active; WO-SR-002 complete on merge, WO-SR-003A-E external credential-blocked
+
+## Ratified topology
+
+| Repository | Responsibility |
+| --- | --- |
+| `bsvalues/terrafusion_os_1.0` | Sovereign OS, platform, integration, Workbench, shared contracts, Brain, security, Sync infrastructure, CI/release governance |
+| `bsvalues/terrafusion-forge` | Valuation |
+| `bsvalues/terrafusion-atlas` | GIS and spatial |
+| `bsvalues/terrafusion-dais` | Assessor administration |
+| `bsvalues/terrafusion-dossier` | Evidence and records |
+| `bsvalues/terrafusion-gpt` | Governed AI and RAG |
+
+The five suites remain subordinate to one TerraFusion Brain and one constitutional integration
+model. Separate source repositories do not create separate products, shells, identity systems,
+county contexts, audit spines, deployment control planes, or contract authorities.
+
+## Work Order chain
+
+| WO | Purpose | State |
+| --- | --- | --- |
+| WO-SR-001 | Ratify topology and extraction blueprint | Complete by owner decision; canonized here |
+| WO-SR-002 | Inventory, version, freeze, and validate shared contracts | Complete on merge |
+| WO-SR-003A | Create and bootstrap `terrafusion-forge` | Blocked only on repo-create credential |
+| WO-SR-003B | Create and bootstrap `terrafusion-atlas` | Blocked only on repo-create credential |
+| WO-SR-003C | Create and bootstrap `terrafusion-dais` | Blocked only on repo-create credential |
+| WO-SR-003D | Create and bootstrap `terrafusion-dossier` | Blocked only on repo-create credential |
+| WO-SR-003E | Create and bootstrap `terrafusion-gpt` | Blocked only on repo-create credential |
+| WO-SR-004 | Verify settings, branch protection, bootstrap, and contract consumption | Depends on the corresponding SR-003 repository |
+| WO-SR-005 | Execute bounded extraction with provenance and parity proof | Depends on SR-004 and a domain contract group |
+| WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
+
+## Extraction and provenance policy
+
+1. Current `terrafusion_os_1.0` source remains authoritative until a suite passes cutover.
+2. Every extraction records exact source path, source SHA, destination path, ownership class,
+   dependency inventory, history/import decision, contract version, tests, rollback, and duplicate
+   retirement plan.
+3. Historical repositories are mines, not masters. No wholesale copy or blind import is allowed.
+4. Copy-then-verify precedes any deletion. Deletion or ownership transfer is a separate gate.
+5. A suite builds and tests standalone, passes parity and contract compatibility, and renders through
+   an OS-owned versioned contract before becoming canonical.
+6. Shared contracts remain owned by the sovereign base; suites consume and never redefine them.
+
+## Bootstrap inventory
+
+Each suite repository receives `README.md`, subordinate `AGENTS.md`, `LICENSE`, `.gitignore`,
+`canon/INTAKE_RULES.md`, `canon/SUITE_DOMAIN_PACK.md`, `canon/CONTRACT_DEPENDENCY.md`,
+`operations/work-orders/`, `operations/evidence/MIGRATION_PROVENANCE_LEDGER.md`,
+`docs/decisions/`, `EXTRACTED_FROM.md`, and `.github/workflows/suite-ci.yml`.
+
+Settings are private repository, `main` default, PR required, squash-only, delete branch after merge,
+no force push or branch deletion, admin enforcement, stale-review dismissal, conversation resolution,
+and required `suite-ci`, `contract-compat`, and `governance-gate` checks.
+
+## Suite creation packets
+
+| WO | Frozen dependencies | Initial extraction inventory | Additional gate |
+| --- | --- | --- | --- |
+| SR-003A Forge | `forge.valuation`, `crosscut.audit` | CostForge, CurrentUse, Forge shell surfaces | Standalone valuation parity |
+| SR-003B Atlas | `crosscut.audit`; Atlas group still required | Atlas shell surfaces and GIS type-level cut | Domain contract promotion before extraction |
+| SR-003C Dais | `crosscut.audit`; Dais group still required | Dais workflow, Levy, Dais/notice surfaces | Domain contract promotion and county-isolation proof |
+| SR-003D Dossier | `crosscut.audit`; Dossier group still required | Dossier controllers/entities/surface | Custody contract and evidence-integrity proof |
+| SR-003E GPT | `crosscut.audit`; GPT group still required | Governed Muse/RAG and GPT surfaces | TerraPilot-only action boundary and grounding proof |
+
+The repository-creation operation is the only currently blocked substep. Its state is
+`BLOCKED_MISSING_EXECUTION_CREDENTIAL`; no owner engineering decision is pending.
