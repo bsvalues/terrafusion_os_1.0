@@ -20,7 +20,7 @@ suite-bootstrap packets without publishing packages or creating repositories.
 - `backend/src/TerraFusion.Abstractions/contracts.freeze.json`
 - `scripts/contracts/verify-contract-freeze.mjs`
 - `scripts/contracts/verify-contract-freeze.test.mjs`
-- `.github/workflows/contract-compat.yml`
+- `.github/workflows/core-governance-gates.yml` (contract verification wiring only)
 - `docs/brain/workorders/**` files required for this program and routing
 
 ## Blocked
@@ -47,7 +47,7 @@ suite-bootstrap packets without publishing packages or creating repositories.
   "risk": "R3",
   "suite": "Portfolio Operator",
   "allowed_files": [
-    ".github/workflows/contract-compat.yml",
+    ".github/workflows/core-governance-gates.yml",
     "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
     "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
     "scripts/contracts/verify-contract-freeze.mjs",

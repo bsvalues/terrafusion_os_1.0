@@ -27,7 +27,8 @@ must promote or define a stable contract before implementation ownership transfe
 - Every C# file under the contract root is classified exactly once.
 - Compatibility and deprecation rules are recorded in `CONTRACTS.md` and the manifest.
 - Future package IDs are reserved but explicitly `planned_not_published`.
-- `contract-compat` validates the freeze without dependency installation.
+- The required `governed-spine` context validates the current freeze, its tests, and any transition
+  from the pull request base manifest without dependency installation.
 - `WO-SR-003-SUITE-REPOSITORY-CREATION-MANIFEST.json` records five exact creation Work Orders,
   bootstrap inventories, source inventories, contract dependencies, and pre-extraction gates.
 

@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_MANIFEST = 'backend/src/TerraFusion.Abstractions/contracts.freeze.json';
 const SEMVER = /^\d+\.\d+\.\d+$/;
 const SHA256 = /^[a-f0-9]{64}$/;
+const WORK_ORDER = /^WO-[A-Z0-9-]+$/;
 
 function repositoryRoot() {
   let current = path.dirname(fileURLToPath(import.meta.url));
@@ -32,6 +33,96 @@ function listCsFiles(root, relative = '') {
 
 function digest(file) {
   return createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+
+function versionParts(version) {
+  return SEMVER.test(version ?? '') ? version.split('.').map(Number) : null;
+}
+
+function transitionClass(fromVersion, toVersion) {
+  const from = versionParts(fromVersion);
+  const to = versionParts(toVersion);
+  if (!from || !to) return null;
+  if (to[0] > from[0]) return 'major';
+  if (to[0] === from[0] && to[1] > from[1]) return 'minor';
+  if (to[0] === from[0] && to[1] === from[1] && to[2] > from[2]) return 'patch';
+  return null;
+}
+
+function frozenFileSignature(group) {
+  return JSON.stringify(
+    (group.files ?? [])
+      .map(file => ({ path: file.path.replaceAll('\\', '/'), sha256: file.sha256 }))
+      .sort((left, right) => left.path.localeCompare(right.path))
+  );
+}
+
+function verifyBaselineTransitions(manifest, baseline, errors) {
+  const currentGroups = new Map((manifest.frozen ?? []).map(group => [group.group, group]));
+  const baselineGroups = new Map((baseline.frozen ?? []).map(group => [group.group, group]));
+  const transitions = new Map();
+
+  for (const transition of manifest.transitions ?? []) {
+    if (transitions.has(transition.group)) {
+      errors.push(`${transition.group}: transition recorded more than once`);
+    }
+    transitions.set(transition.group, transition);
+  }
+
+  for (const [groupName, previous] of baselineGroups) {
+    const current = currentGroups.get(groupName);
+    if (!current) {
+      errors.push(`${groupName}: frozen group removed without a replacement contract`);
+      continue;
+    }
+
+    const filesChanged = frozenFileSignature(current) !== frozenFileSignature(previous);
+    const versionChanged = current.version !== previous.version;
+    if (!filesChanged && !versionChanged) continue;
+    if (!filesChanged) {
+      errors.push(`${groupName}: version changed without a frozen contract change`);
+      continue;
+    }
+
+    const expectedClass = transitionClass(previous.version, current.version);
+    if (!expectedClass) {
+      errors.push(
+        `${groupName}: changed frozen contract requires a strictly increasing semantic version`
+      );
+      continue;
+    }
+
+    const transition = transitions.get(groupName);
+    if (!transition) {
+      errors.push(`${groupName}: changed frozen contract requires an explicit transition record`);
+      continue;
+    }
+    if (transition.fromVersion !== previous.version || transition.toVersion !== current.version) {
+      errors.push(`${groupName}: transition versions do not match baseline and current manifests`);
+    }
+    if (transition.classification !== expectedClass) {
+      errors.push(`${groupName}: transition classification must be ${expectedClass}`);
+    }
+    if (!WORK_ORDER.test(transition.workOrder ?? '')) {
+      errors.push(`${groupName}: transition requires a canonical Work Order`);
+    }
+    if (typeof transition.evidence !== 'string' || transition.evidence.trim() === '') {
+      errors.push(`${groupName}: transition requires evidence`);
+    }
+    if (
+      expectedClass === 'major' &&
+      (typeof transition.deprecationEvidence !== 'string' ||
+        transition.deprecationEvidence.trim() === '')
+    ) {
+      errors.push(`${groupName}: major transition requires deprecation evidence`);
+    }
+  }
+
+  for (const groupName of transitions.keys()) {
+    if (!baselineGroups.has(groupName)) {
+      errors.push(`${groupName}: transition has no baseline frozen group`);
+    }
+  }
 }
 
 export function verifyContractFreeze(options = {}) {
@@ -104,8 +195,19 @@ export function verifyContractFreeze(options = {}) {
       errors.push(`${pkg.id}: package status must remain planned_not_published`);
   }
 
-  if (errors.length > 0)
-    throw new Error(`Contract freeze verification failed:\n- ${errors.join('\n- ')}`);
+  if (options.baselineManifestPath) {
+    const baselinePath = path.resolve(repoRoot, options.baselineManifestPath);
+    const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
+    verifyBaselineTransitions(manifest, baseline, errors);
+  }
+
+  if (errors.length > 0) {
+    const error = new Error(`Contract freeze verification failed:\n- ${errors.join('\n- ')}`);
+    error.errorCode = 'CONTRACT_FREEZE_VERIFICATION_FAILED';
+    error.component = 'verify-contract-freeze';
+    error.stackTrace = error.stack;
+    throw error;
+  }
   return {
     groups: manifest.frozen.length,
     frozenFiles: [...classified.values()].filter(value => value.startsWith('frozen:')).length,
@@ -116,7 +218,10 @@ export function verifyContractFreeze(options = {}) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const result = verifyContractFreeze({ manifestPath: process.argv[2] });
+    const result = verifyContractFreeze({
+      manifestPath: process.argv[2],
+      baselineManifestPath: process.argv[3],
+    });
     console.log(
       `contract-freeze: PASS (${result.groups} groups, ${result.frozenFiles} frozen, ` +
         `${result.deferredFiles} deferred, ${result.osInternalFiles} OS-internal)`

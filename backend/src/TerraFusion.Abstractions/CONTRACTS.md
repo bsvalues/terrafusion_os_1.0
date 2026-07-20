@@ -22,6 +22,9 @@ classifies every other C# file in this project as either deferred or OS-internal
 - A major replacement must coexist with the prior major for at least one release and use
   `[Obsolete]` before removal.
 - Suites pin a major contract line and must not redefine a shared contract.
+- A changed frozen hash must increase the group version and add a `transitions` record naming the
+  governing Work Order, compatibility classification, and evidence. Major changes also require
+  deprecation evidence. Updating a file and its hash in the same change without that record fails.
 
 ## Publication boundary
 
@@ -40,4 +43,6 @@ node --test scripts/contracts/verify-contract-freeze.test.mjs
 ```
 
 The validator fails on a missing or modified frozen file, invalid version, duplicate classification,
-unknown suite, unclassified C# file, or accidental publication claim.
+unknown suite, unclassified C# file, accidental publication claim, or an ungoverned baseline
+transition. Pull requests run the current manifest and its base revision through the required
+`governed-spine` context in `core-governance-gates.yml`.

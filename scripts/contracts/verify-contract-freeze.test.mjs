@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -19,6 +20,40 @@ function withManifest(mutator) {
   const tempManifest = path.join(tempDir, 'contracts.freeze.json');
   fs.writeFileSync(tempManifest, `${JSON.stringify(manifest, null, 2)}\n`);
   return tempManifest;
+}
+
+function withChangedContractAndManifest(addTransition = false) {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-contract-repo-'));
+  const relativeRoot = 'backend/src/TerraFusion.Abstractions';
+  const sourceRoot = path.join(repoRoot, relativeRoot);
+  const targetRoot = path.join(tempRoot, relativeRoot);
+  fs.mkdirSync(path.dirname(targetRoot), { recursive: true });
+  fs.cpSync(sourceRoot, targetRoot, {
+    recursive: true,
+    filter: source => !source.split(path.sep).some(part => part === 'bin' || part === 'obj'),
+  });
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const frozen = manifest.frozen[0];
+  const target = path.join(targetRoot, frozen.files[0].path);
+  fs.appendFileSync(target, '\n// compatibility fixture\n');
+  frozen.files[0].sha256 = createHash('sha256').update(fs.readFileSync(target)).digest('hex');
+  frozen.version = '1.1.0';
+  if (addTransition) {
+    manifest.transitions = [
+      {
+        group: frozen.group,
+        fromVersion: '1.0.0',
+        toVersion: '1.1.0',
+        classification: 'minor',
+        workOrder: 'WO-SR-TEST',
+        evidence: 'synthetic additive compatibility proof',
+      },
+    ];
+  }
+  const currentManifest = path.join(targetRoot, 'contracts.freeze.json');
+  fs.writeFileSync(currentManifest, `${JSON.stringify(manifest, null, 2)}\n`);
+  return { tempRoot, currentManifest };
 }
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
@@ -57,5 +92,35 @@ test('publication cannot be claimed by the freeze', () => {
   assert.throws(
     () => verifyContractFreeze({ repoRoot, manifestPath: altered }),
     /planned_not_published/
+  );
+});
+
+test('same-change manifest hash rewrite fails without an explicit transition', () => {
+  const fixture = withChangedContractAndManifest();
+  assert.throws(
+    () =>
+      verifyContractFreeze({
+        repoRoot: fixture.tempRoot,
+        manifestPath: fixture.currentManifest,
+        baselineManifestPath: manifestPath,
+      }),
+    /explicit transition record/
+  );
+});
+
+test('versioned transition with Work Order and evidence passes baseline comparison', () => {
+  const fixture = withChangedContractAndManifest(true);
+  assert.deepEqual(
+    verifyContractFreeze({
+      repoRoot: fixture.tempRoot,
+      manifestPath: fixture.currentManifest,
+      baselineManifestPath: manifestPath,
+    }),
+    {
+      groups: 2,
+      frozenFiles: 5,
+      deferredFiles: 10,
+      osInternalFiles: 5,
+    }
   );
 });
