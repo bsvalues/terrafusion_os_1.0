@@ -124,3 +124,60 @@ test('versioned transition with Work Order and evidence passes baseline comparis
     }
   );
 });
+
+// Overwrite the first frozen contract file with degraded content and re-pin its hash, so the
+// hash check passes but the content check must fail closed. Proves a validly-pinned placeholder
+// (the CostForgeStatsDto zero-byte scenario) cannot masquerade as a frozen contract.
+function withDegradedFrozenFile(content) {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-contract-degraded-'));
+  const relativeRoot = 'backend/src/TerraFusion.Abstractions';
+  const targetRoot = path.join(tempRoot, relativeRoot);
+  fs.mkdirSync(path.dirname(targetRoot), { recursive: true });
+  fs.cpSync(path.join(repoRoot, relativeRoot), targetRoot, {
+    recursive: true,
+    filter: source => !source.split(path.sep).some(part => part === 'bin' || part === 'obj'),
+  });
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const target = path.join(targetRoot, manifest.frozen[0].files[0].path);
+  fs.writeFileSync(target, content);
+  manifest.frozen[0].files[0].sha256 = createHash('sha256')
+    .update(fs.readFileSync(target))
+    .digest('hex');
+
+  const currentManifest = path.join(targetRoot, 'contracts.freeze.json');
+  fs.writeFileSync(currentManifest, `${JSON.stringify(manifest, null, 2)}\n`);
+  return { tempRoot, currentManifest };
+}
+
+test('a zero-byte frozen contract fails closed', () => {
+  const fixture = withDegradedFrozenFile('');
+  assert.throws(
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    /no meaningful content/
+  );
+});
+
+test('a whitespace-only frozen contract fails closed', () => {
+  const fixture = withDegradedFrozenFile('   \n\t  \r\n');
+  assert.throws(
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    /no meaningful content/
+  );
+});
+
+test('a comment-only frozen contract fails closed', () => {
+  const fixture = withDegradedFrozenFile('// only a line comment\n/* and a\n   block comment */\n');
+  assert.throws(
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    /no meaningful content/
+  );
+});
+
+test('a typeless namespace-only frozen contract fails closed', () => {
+  const fixture = withDegradedFrozenFile('namespace TerraFusion.Abstractions.DTOs;\n');
+  assert.throws(
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    /declares no C# type/
+  );
+});

@@ -35,6 +35,24 @@ function digest(file) {
   return createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 }
 
+// A frozen C# file must be a real contract, not a hash-pinned placeholder. Strips comments and
+// whitespace, then requires (1) non-empty meaningful content and (2) a contract-bearing construct.
+const CONTRACT_CONSTRUCT = /\b(?:class|record|struct|interface|enum|delegate)\b/;
+
+function contractContentError(relative, fullPath) {
+  const withoutComments = fs
+    .readFileSync(fullPath, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/\/\/[^\n]*/g, ' ');
+  if (withoutComments.replace(/\s+/g, '') === '') {
+    return `${relative}: frozen contract has no meaningful content (empty, whitespace-only, or comment-only)`;
+  }
+  if (!CONTRACT_CONSTRUCT.test(withoutComments)) {
+    return `${relative}: frozen contract declares no C# type (class, record, struct, interface, enum, or delegate)`;
+  }
+  return null;
+}
+
 function versionParts(version) {
   return SEMVER.test(version ?? '') ? version.split('.').map(Number) : null;
 }
@@ -173,6 +191,11 @@ export function verifyContractFreeze(options = {}) {
       } else {
         const actual = digest(fullPath);
         if (actual !== file.sha256) errors.push(`${relative}: hash mismatch (${actual})`);
+        // A correct hash of an empty/typeless file is still not a contract — check content too.
+        if (relative.endsWith('.cs')) {
+          const contentError = contractContentError(relative, fullPath);
+          if (contentError) errors.push(contentError);
+        }
       }
     }
   }
