@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Atlas adapter boundary prepared, extraction still blocked |
-| Current | `WO-SR-005B-E1 - Atlas Sovereign Spatial Read Adapter Implementation` |
-| Next | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
+| Status | Active; sovereign Atlas adapter proven, extraction still blocked |
+| Current | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
+| Next | Bounded Atlas extraction remains blocked pending E2 proof and exact R3 admission |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -115,6 +115,8 @@ defined the parity gate. WO-SR-005B-C decomposed an exact provider-neutral, coun
 contract, and WO-SR-005B-I implemented and froze it with synthetic proof. WO-SR-005B-A selected the
 authenticated canonical geometry DTO, rejected the unsafe legacy GIS surface, and admitted E1/E2 as
 the bounded adapter and standalone parity sequence without authorizing runtime adoption.
+WO-SR-005B-E1 then implemented that pure unwired adapter with 27 passing tests and a zero-warning
+solution build. WO-SR-005B-E2 now owns only the standalone synthetic contract-compat proof.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -566,8 +568,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005B-E1 - Atlas Sovereign Spatial Read Adapter Implementation` |
-| Next WO | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
+| Current WO | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
+| Next WO | Bounded Atlas extraction remains blocked pending E2 proof and exact R3 admission |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

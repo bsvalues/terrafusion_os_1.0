@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005B-E1 sovereign Atlas adapter implementation active
+**Status:** Active; WO-SR-005B-E2 standalone Atlas synthetic parity active
 
 ## Ratified topology
 
@@ -34,8 +34,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005B-C | Decompose the Atlas read contract candidate | Complete; implementation-ready without runtime adoption |
 | WO-SR-005B-I | Implement and freeze `atlas.spatial-read@1.0.0` | Complete; 3 groups / 14 files frozen, 8/8 verifier tests, no runtime adoption |
 | WO-SR-005B-A | Prepare the Atlas adapter boundary and standalone parity harness | Complete; canonical source selected and legacy unsafe source rejected |
-| WO-SR-005B-E1 | Implement the pure unwired sovereign spatial-read adapter | Active; bounded API adapter file and unit tests only |
-| WO-SR-005B-E2 | Implement standalone synthetic contract/parity harness | Blocked on E1; no product source extraction |
+| WO-SR-005B-E1 | Implement the pure unwired sovereign spatial-read adapter | Complete; 27/27 tests, zero-warning build, no runtime wiring |
+| WO-SR-005B-E2 | Implement standalone synthetic contract/parity harness | Active; frozen synthetic corpus only, no product source extraction |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on suite-specific preparation and parity gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
