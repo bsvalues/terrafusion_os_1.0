@@ -12,6 +12,135 @@ const manifestPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.Abstractions/contracts.freeze.json'
 );
+const atlasContractRoot = path.join(repoRoot, 'backend/src/TerraFusion.Abstractions/contracts');
+const atlasSchemaPath = path.join(atlasContractRoot, 'atlas.spatial-read.v1.schema.json');
+const atlasFixtureRoot = path.join(atlasContractRoot, 'fixtures');
+
+function atlasFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `atlas.spatial-read.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function resolveRef(root, reference) {
+  assert.match(reference, /^#\//, `only local schema references are supported: ${reference}`);
+  return reference
+    .slice(2)
+    .split('/')
+    .map(segment => segment.replaceAll('~1', '/').replaceAll('~0', '~'))
+    .reduce((current, segment) => current[segment], root);
+}
+
+function matchesType(type, value) {
+  if (type === 'object')
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  if (type === 'array') return Array.isArray(value);
+  if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
+  return typeof value === type;
+}
+
+// The governed-spine job intentionally runs this test without installing workspace dependencies.
+// Keep the evaluator limited to the Draft-07 keywords used by the frozen Atlas schema.
+function validateJsonSchema(root, schema, value, location = '$') {
+  if (schema === true) return [];
+  if (schema === false) return [`${location}: schema is false`];
+  if (schema.$ref) return validateJsonSchema(root, resolveRef(root, schema.$ref), value, location);
+
+  const errors = [];
+  if (schema.type && !matchesType(schema.type, value)) {
+    return [`${location}: expected ${schema.type}`];
+  }
+  if (Object.hasOwn(schema, 'const') && value !== schema.const) {
+    errors.push(`${location}: value does not match const`);
+  }
+  if (schema.enum && !schema.enum.includes(value)) {
+    errors.push(`${location}: value is outside enum`);
+  }
+  if (typeof value === 'string' && schema.minLength && value.length < schema.minLength) {
+    errors.push(`${location}: string is shorter than ${schema.minLength}`);
+  }
+  if (typeof value === 'number') {
+    if (schema.minimum !== undefined && value < schema.minimum) {
+      errors.push(`${location}: number is below minimum`);
+    }
+    if (schema.maximum !== undefined && value > schema.maximum) {
+      errors.push(`${location}: number is above maximum`);
+    }
+  }
+  if (Array.isArray(value)) {
+    if (schema.minItems !== undefined && value.length < schema.minItems) {
+      errors.push(`${location}: array has fewer than ${schema.minItems} items`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => {
+        errors.push(...validateJsonSchema(root, schema.items, item, `${location}[${index}]`));
+      });
+    }
+  }
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    const properties = schema.properties ?? {};
+    for (const required of schema.required ?? []) {
+      if (!Object.hasOwn(value, required)) errors.push(`${location}: missing ${required}`);
+    }
+    for (const [name, child] of Object.entries(properties)) {
+      if (Object.hasOwn(value, name)) {
+        errors.push(...validateJsonSchema(root, child, value[name], `${location}.${name}`));
+      }
+    }
+    if (schema.additionalProperties === false) {
+      for (const name of Object.keys(value)) {
+        if (!Object.hasOwn(properties, name)) errors.push(`${location}: unexpected ${name}`);
+      }
+    }
+    if (schema.minProperties !== undefined && Object.keys(value).length < schema.minProperties) {
+      errors.push(`${location}: object has fewer than ${schema.minProperties} properties`);
+    }
+  }
+  for (const child of schema.allOf ?? []) {
+    errors.push(...validateJsonSchema(root, child, value, location));
+  }
+  if (
+    schema.if &&
+    validateJsonSchema(root, schema.if, value, location).length === 0 &&
+    schema.then
+  ) {
+    errors.push(...validateJsonSchema(root, schema.then, value, location));
+  }
+  if (schema.anyOf) {
+    const alternatives = schema.anyOf.map(child =>
+      validateJsonSchema(root, child, value, location)
+    );
+    if (!alternatives.some(result => result.length === 0)) {
+      errors.push(`${location}: no anyOf alternative matched`);
+    }
+  }
+  if (schema.not && validateJsonSchema(root, schema.not, value, location).length === 0) {
+    errors.push(`${location}: forbidden schema matched`);
+  }
+  return errors;
+}
+
+function validateAtlasSemantics(exchange) {
+  const errors = [];
+  if (exchange.request?.countyId !== exchange.result?.countyId) {
+    errors.push('response countyId must match request countyId');
+  }
+  if (exchange.request?.parcelId !== exchange.result?.parcelId) {
+    errors.push('response parcelId must match request parcelId');
+  }
+  const ring = exchange.result?.boundary?.outerRing;
+  if (Array.isArray(ring) && ring.length > 0) {
+    const first = ring[0];
+    const last = ring.at(-1);
+    if (first.longitude !== last.longitude || first.latitude !== last.latitude) {
+      errors.push('outerRing must be closed');
+    }
+  }
+  return errors;
+}
 
 function withManifest(mutator) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -58,11 +187,47 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 2,
-    frozenFiles: 5,
+    groups: 3,
+    frozenFiles: 14,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
+});
+
+test('Atlas spatial read positive fixtures satisfy schema and county semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
+
+  for (const name of [
+    'canonical-polygon',
+    'provider-polygon',
+    'fallback-centroid',
+    'unavailable',
+  ]) {
+    const fixture = atlasFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateAtlasSemantics(fixture), [], name);
+  }
+});
+
+test('Atlas spatial read negative fixtures fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(atlasSchemaPath, 'utf8'));
+
+  const countyMismatch = atlasFixture('county-mismatch');
+  assert.deepEqual(validateJsonSchema(schema, schema, countyMismatch), []);
+  assert.deepEqual(validateAtlasSemantics(countyMismatch), [
+    'response countyId must match request countyId',
+  ]);
+
+  const invalidRing = atlasFixture('invalid-ring');
+  assert.deepEqual(validateJsonSchema(schema, schema, invalidRing), []);
+  assert.deepEqual(validateAtlasSemantics(invalidRing), ['outerRing must be closed']);
+
+  const crossLaneFields = atlasFixture('cross-lane-fields');
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, crossLaneFields),
+    [],
+    'cross-lane fields must be rejected'
+  );
 });
 
 test('a modified frozen hash fails closed', () => {
@@ -117,8 +282,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 2,
-      frozenFiles: 5,
+      groups: 3,
+      frozenFiles: 14,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

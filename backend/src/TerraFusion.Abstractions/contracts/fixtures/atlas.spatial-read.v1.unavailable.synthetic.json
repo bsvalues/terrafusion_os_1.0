@@ -1,0 +1,11 @@
+{
+  "request": { "countyId": "synthetic-county", "parcelId": "SYN-400" },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "SYN-400",
+    "evidenceState": "unavailable",
+    "boundary": { "geometryState": "unavailable" },
+    "layers": {}
+  }
+}

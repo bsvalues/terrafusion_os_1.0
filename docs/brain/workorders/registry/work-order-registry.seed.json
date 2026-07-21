@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005A",
+  "generatedBy": "WO-SR-005B-I",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Forge valuation-kernel parity. WO-SR-005B-P Atlas contract and map-parity preparation is active.",
+  "description": "Five-suite registry after Atlas read-contract freeze. WO-SR-005B-A adapter and standalone parity preparation is active; runtime adoption and extraction remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -3990,7 +3990,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prepare the Atlas contract ownership and standalone map parity gate from live source truth.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005A", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "Read-only sovereign Atlas source inventory" },
@@ -4024,8 +4024,27 @@
           "description": "Evidence-backed contract and standalone map parity definition or blocked verdict."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Atlas live source and contract classification",
+          "command": "read-only tracked source and contracts.freeze.json inspection",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Atlas standalone map parity definition",
+          "command": "evidence review against WO-ATLAS-003 and WO-WORKBENCH-005",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "atlas-preparation-verdict",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-P-ATLAS-CONTRACT-PARITY-GATE-PREPARATION.md",
+          "description": "Live source inventory, contract ownership classification, standalone parity gate, and blocked-extraction verdict."
+        }
+      ],
       "stopConditions": [
         {
           "type": "runtime-extraction",
@@ -4034,8 +4053,227 @@
       ],
       "nextCandidates": [
         {
+          "id": "WO-SR-005B-C",
+          "reason": "Atlas requires read-only decomposition of the genuine spatial read boundary before contract implementation.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-C",
+      "title": "Atlas Read Contract Decomposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Decompose the Atlas parcel spatial read contract from live source truth without implementation.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005B-P", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Read-only sovereign Atlas contract candidates" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "C# and TypeScript contract implementation" },
+        { "name": "Contract freeze change or package publication" },
+        { "name": "Atlas runtime extraction" },
+        { "name": "County and PACS systems" },
+        { "name": "Production and external services" }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**/*.cs",
+        "frontend/**/*.ts",
+        "frontend/**/*.tsx",
+        "packages/gis-pro/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "atlas-contract-decomposition",
+          "description": "Exact candidate records, field ownership, county context, exclusions, compatibility, and synthetic fixtures."
+        },
+        {
+          "kind": "atlas-contract-readiness",
+          "description": "Implementation-ready or blocked verdict without promoting source."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Atlas read contract decomposition",
+          "command": "field ownership, county semantics, compatibility, and fixture review",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "atlas-contract-decomposition",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-C-ATLAS-READ-CONTRACT-DECOMPOSITION.md",
+          "description": "Exact atlas.spatial-read boundary, exclusions, compatibility, fixtures, and implementation slice."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "contract-implementation",
+          "description": "WO-SR-005B-C cannot modify or promote C# or TypeScript contracts."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-I",
+          "reason": "Implement and hash-freeze the decomposed Atlas read contract without runtime adoption.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-I",
+      "title": "Atlas Read Contract Implementation and Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and hash-freeze atlas.spatial-read@1.0.0 without runtime adoption.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005B-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "TerraFusion.Abstractions contract source" },
+        { "name": "Contract freeze verifier" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime contract adoption" },
+        { "name": "Atlas extraction or destination runtime" },
+        { "name": "Package publication" },
+        { "name": "County, PACS, SQL, provider, production, and secrets" }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Abstractions/DTOs/AtlasSpatialReadDto.cs",
+        "backend/src/TerraFusion.Abstractions/contracts/**",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "scripts/contracts/verify-contract-freeze.mjs",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.Core/**",
+        "backend/src/TerraFusion.API/**",
+        "frontend/**",
+        "packages/gis-pro/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "contract-build",
+          "description": "Abstractions project builds with the new DTO."
+        },
+        {
+          "kind": "schema-fixtures",
+          "description": "Positive and negative synthetic fixture validation."
+        },
+        {
+          "kind": "contract-freeze",
+          "description": "Exact hashes and unchanged prior groups."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Atlas contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Atlas schema and fixture tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Abstractions contract build",
+          "command": "dotnet build backend/src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj -c Release",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "atlas-contract-freeze",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-I-ATLAS-READ-CONTRACT-IMPLEMENTATION-FREEZE.md",
+          "description": "Hash-pinned Atlas DTO, schema, fixture corpus, verifier results, and no-runtime-adoption proof."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any consumer or behavior change requires a later Work Order."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-A",
+          "reason": "Prepare the exact adapter and standalone synthetic parity boundary without runtime adoption.",
+          "riskClass": "R1",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-A",
+      "title": "Atlas Adapter and Standalone Parity Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the smallest provider-neutral adapter and synthetic standalone parity slice before Atlas extraction.",
+      "riskClass": "R1",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005B-I", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Read-only Atlas source and destination inspection" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime contract adoption or implementation" },
+        { "name": "Atlas extraction or destination runtime writes" },
+        { "name": "Package publication or workflow changes" },
+        { "name": "County, PACS, SQL, provider, production, and secrets" }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "packages/gis-pro/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-boundary",
+          "description": "Exact source-to-contract field mapping and bounded adapter candidate."
+        },
+        {
+          "kind": "standalone-parity-plan",
+          "description": "Synthetic-only destination contract-compat and parity assertions."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "runtime-implementation",
+          "description": "Any adapter, consumer, provider, extraction, package, or workflow change requires a later bounded Work Order."
+        }
+      ],
+      "nextCandidates": [
+        {
           "id": "WO-SR-005B",
-          "reason": "Atlas bounded extraction follows only if contract and map parity preparation passes.",
+          "reason": "Extraction remains blocked until bounded adapter and standalone parity implementation passes.",
           "riskClass": "R4",
           "blocked": true
         }

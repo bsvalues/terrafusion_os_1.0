@@ -56,8 +56,8 @@ those Work Orders and no authority transfers to the foreign project.
 
 After that correction, the ratified Five-Suite Federated Repository Buildout remains active.
 WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five suite repositories.
-WO-SR-005A completed the Forge valuation-kernel copy and parity proof without cutover. WO-SR-005B-P
-is now the highest-priority dependency-cleared node because Atlas requires a live-source contract and
-map-parity audit before extraction can be admitted.
+WO-SR-005B-I implemented and hash-froze the Atlas read boundary without runtime adoption.
+WO-SR-005B-A is the dependency-cleared adapter and standalone parity preparation node; runtime
+adoption and Atlas extraction remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`
