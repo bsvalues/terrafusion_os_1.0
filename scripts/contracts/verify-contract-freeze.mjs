@@ -51,7 +51,9 @@ function stripCsLiterals(code) {
 }
 
 function contractContentError(relative, content) {
-  const withoutComments = content.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
+  const withoutComments = content
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/\/\/[^\n]*/g, ' ');
   if (withoutComments.replace(/\s+/g, '') === '') {
     return `${relative}: frozen contract has no meaningful content (empty, whitespace-only, or comment-only)`;
   }

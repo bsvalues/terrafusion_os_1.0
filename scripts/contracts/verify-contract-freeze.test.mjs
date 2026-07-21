@@ -318,8 +318,7 @@ function withDegradedFrozenFile(content) {
 test('a zero-byte frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('');
   assert.throws(
-    () =>
-      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -327,8 +326,7 @@ test('a zero-byte frozen contract fails closed', () => {
 test('a whitespace-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('   \n\t  \r\n');
   assert.throws(
-    () =>
-      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -336,8 +334,7 @@ test('a whitespace-only frozen contract fails closed', () => {
 test('a comment-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('// only a line comment\n/* and a\n   block comment */\n');
   assert.throws(
-    () =>
-      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -345,8 +342,7 @@ test('a comment-only frozen contract fails closed', () => {
 test('a typeless namespace-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('namespace TerraFusion.Abstractions.DTOs;\n');
   assert.throws(
-    () =>
-      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /declares no C# type/
   );
 });
@@ -360,8 +356,7 @@ test('a typeless file with a construct keyword only inside a string literal fail
       "// grouping = 'e'; // enum-ish\n"
   );
   assert.throws(
-    () =>
-      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /declares no C# type/
   );
 });
