@@ -569,7 +569,8 @@
   "pnpm": {
     "overrides": {
       "shell-quote": ">=1.8.4",
-      "aframe@1.7.1>three-bmfont-text": "3.0.0"
+      "aframe@1.7.1>three-bmfont-text": "3.0.0",
+      "@tailwindcss/oxide>tar": ">=7.5.19"
     }
   }
 }
