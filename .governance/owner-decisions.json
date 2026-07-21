@@ -553,6 +553,128 @@
       ],
       "terminal_condition": "Remains active until William explicitly revokes or narrows it; affected actions suspend automatically on any revocation trigger.",
       "decision_basis": "Standing Operator Authority - TerraFusion Delivery, ratified by the owner after WO-PORTFOLIO-003 exposed repeated false merge-authority stops"
+    },
+    {
+      "id": "OWNER-SEC-TAR-001-WRITELANE-GRANT-20260721",
+      "program": "Dependency Supply-Chain Security",
+      "goal": "GOAL-SUPPLY-CHAIN-ADVISORY-REMEDIATION",
+      "loop": "LOOP-SUPPLY-CHAIN-ADVISORY-REMEDIATION",
+      "work_order": "WO-SEC-TAR-001",
+      "work_order_routing": "No docs/brain/workorders record exists for this id; it is a descriptive label, not a canonical Brain Work Order. This was an out-of-band, owner-directed security remediation whose scope authority is this decision entry itself and whose evidence is the referenced PR and merge commit. Merge mechanics ran under OWNER-TF-STANDING-OPERATOR-AUTHORITY. program/goal/loop are descriptive, not Brain-registered identifiers.",
+      "status": "completed",
+      "authority_class": "R3-bounded-supply-chain-security-remediation",
+      "effective_base_sha": "d0dfaae01561ac1dda7c42ced2b03f0b82f4c526",
+      "terminal_condition": "PR #1331 is merged, closed without merge, or this decision is explicitly revoked",
+      "authorized_actions": [
+        "force @tailwindcss/oxide's transitive node-tar onto the patched line to clear the critical GHSA-23hp-3jrh-7fpw (node-tar decompression/parse DoS) that was failing the Vitest prod dependency-vulnerability merge gate",
+        "add a scoped '@tailwindcss/oxide>tar' override to the root pnpm override maps and repoint the lockfile in lockstep with no other dependency change"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "pnpm-lock.yaml"
+      ],
+      "writelane_note": "package.json is within the AGENTS.md core-surface allow-list; pnpm-workspace.yaml and pnpm-lock.yaml are outside it and are authorized here as the required lockfile mirror of the same override. This record retroactively documents the explicit owner authorization for that out-of-core-surface edit (the gap Codex flagged on PR #1331).",
+      "explicitly_denied": [
+        "any dependency change beyond the scoped tar override",
+        "production, deployment, county, PACS, SQL, credential, secret, or protected-data authority",
+        "runtime, backend, frontend, or product behavior changes",
+        "required-check, branch-protection, review, or exact-head bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check bypass or failure",
+        "unresolved review thread at merge time",
+        "protected-boundary access or conflicting authority"
+      ],
+      "decision_basis": "Owner directed: 'Proceed with (a): open the tar override PR' and 'Yes. Proceed - this is routine operator work, not an owner decision.'",
+      "completion": {
+        "merged_pr": 1331,
+        "merge_commit": "34a4525d36fc9ed43f476d137cee56a9ce15da4e"
+      }
+    },
+    {
+      "id": "OWNER-SEC-VALIDATOR-002A-WRITELANE-GRANT-20260721",
+      "program": "Dependency Supply-Chain Security",
+      "goal": "GOAL-CONTRACT-FREEZE-VALIDATOR-INTEGRITY",
+      "loop": "LOOP-CONTRACT-FREEZE-VALIDATOR-INTEGRITY",
+      "work_order": "WO-SR-002A",
+      "work_order_routing": "No docs/brain/workorders record exists for this id; it is a descriptive label, not a canonical Brain Work Order. This was an out-of-band, owner-directed validator hardening whose scope authority is this decision entry itself and whose evidence is the referenced PR and merge commit. Merge mechanics ran under OWNER-TF-STANDING-OPERATOR-AUTHORITY. program/goal/loop are descriptive, not Brain-registered identifiers.",
+      "status": "completed",
+      "authority_class": "R3-bounded-governance-validator-hardening",
+      "effective_base_sha": "34a4525d36fc9ed43f476d137cee56a9ce15da4e",
+      "terminal_condition": "PR #1330 is merged, closed without merge, or this decision is explicitly revoked",
+      "authorized_actions": [
+        "harden the contract-freeze validator so a frozen .cs file must declare a real C# type, not merely exist and hash-match",
+        "require declaration syntax after stripping comments and string/char literals (closing the Codex P2 string-literal-keyword bypass)",
+        "add regression tests; make no manifest classification change and invent no DTO content"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "scripts/contracts/verify-contract-freeze.mjs",
+        "scripts/contracts/verify-contract-freeze.test.mjs"
+      ],
+      "writelane_note": "scripts/contracts/** is outside the AGENTS.md core-surface allow-list; this record documents the explicit owner authorization for the validator/test edit. No runtime code, no CostForgeStatsDto content, no classification change.",
+      "explicitly_denied": [
+        "manifest classification changes or DTO content invention or CostForgeStatsDto population/deletion",
+        "runtime, backend, frontend, or product behavior changes",
+        "production, county, PACS, SQL, credential, secret, or protected-data authority",
+        "required-check, branch-protection, review, or exact-head bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check bypass or failure",
+        "unresolved review thread at merge time",
+        "protected-boundary access or conflicting authority"
+      ],
+      "decision_basis": "Owner directed the contract-freeze validator hardening (RESULT: CONTRACT_FREEZE_VALIDATOR_HARDENING) from current main, keeping deferred and OS-internal entries exempt and inventing no DTO content.",
+      "completion": {
+        "merged_pr": 1330,
+        "merge_commit": "f844628ee2347d6a839a1362ec843309c1234ce2"
+      }
+    },
+    {
+      "id": "OWNER-SEC-VITE-001-WRITELANE-GRANT-20260721",
+      "program": "Dependency Supply-Chain Security",
+      "goal": "GOAL-SUPPLY-CHAIN-ADVISORY-REMEDIATION",
+      "loop": "LOOP-SUPPLY-CHAIN-ADVISORY-REMEDIATION",
+      "work_order": "WO-SEC-VITE-001",
+      "work_order_routing": "No docs/brain/workorders record exists for this id; it is a descriptive label, not a canonical Brain Work Order. This was an out-of-band, owner-directed security remediation whose scope authority is this decision entry itself and whose evidence is the referenced PR and merge commit (and issue #1332). Merge mechanics ran under OWNER-TF-STANDING-OPERATOR-AUTHORITY. program/goal/loop are descriptive, not Brain-registered identifiers.",
+      "status": "completed",
+      "authority_class": "R3-bounded-supply-chain-security-remediation",
+      "effective_base_sha": "f844628ee2347d6a839a1362ec843309c1234ce2",
+      "terminal_condition": "PR #1333 is merged, closed without merge, or this decision is explicitly revoked",
+      "authorized_actions": [
+        "pin vite to the patched 6.4.3 in the lockfile to clear 4 dev-tooling advisories (GHSA-p9ff-h696-f583, GHSA-4w7w-66w2-5vf9, GHSA-fx2h-pf6j-xcff, bundled launch-editor GHSA-v6wh-96g9-6wx3)",
+        "make the change lockfile-only with unchanged importer specifiers (no override), leaving vite 4.x/5.x majors for a separate follow-up"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "pnpm-lock.yaml"
+      ],
+      "writelane_note": "pnpm-lock.yaml is outside the AGENTS.md core-surface allow-list; this record documents the explicit owner authorization for the dependency-pin edit (the gap Codex flagged on PR #1333). Final diff is a single lockfile file after the initial vite@6 override was dropped.",
+      "explicitly_denied": [
+        "any dependency change beyond the vite 6.4.3 pin",
+        "vite 4.x/5.x major bumps",
+        "production, deployment, county, PACS, SQL, credential, secret, or protected-data authority",
+        "runtime, backend, frontend, or product behavior changes",
+        "required-check, branch-protection, review, or exact-head bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check bypass or failure",
+        "unresolved review thread at merge time",
+        "protected-boundary access or conflicting authority"
+      ],
+      "decision_basis": "Owner directed: 'Once #1330 merges, remediate the vite advisories in #1332' and 'record the governance write-lane grants in .governance.'",
+      "completion": {
+        "merged_pr": 1333,
+        "merge_commit": "111032979a794324c3b217185bb4d7bafb568232"
+      }
     }
   ]
 }
