@@ -81,7 +81,9 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005B-P Atlas preparation is complete with extraction blocked
   WO-SR-005B-C Atlas read-contract decomposition is complete
   WO-SR-005B-I Atlas read-contract implementation and freeze is complete
-  WO-SR-005B-A Atlas adapter and standalone parity preparation is active
+  WO-SR-005B-A Atlas adapter and standalone parity preparation is complete
+  WO-SR-005B-E1 pure unwired sovereign adapter implementation is active
+  WO-SR-005B-E2 standalone synthetic parity is dependency-blocked on E1
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 
@@ -91,7 +93,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005B-I | SR-005B-A Atlas adapter/parity preparation | Docs/evidence and read-only inspection; no runtime adoption | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005B-A | SR-005B-E1 Atlas sovereign adapter implementation | Pure unwired adapter and tests; no runtime adoption | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -109,11 +111,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005B-A is the admitted dependency-cleared node after Atlas contract freeze.
+1. WO-SR-005B-E1 is the admitted dependency-cleared node after Atlas adapter/parity preparation.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through Atlas adapter/parity preparation; keep runtime adoption and extraction blocked
-   until the synthetic parity implementation is separately admitted and executable.
+4. Continue through the pure unwired E1 adapter implementation. WO-SR-005B-E2 remains blocked on
+   E1; keep runtime adoption and extraction blocked until both synthetic proof nodes pass.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 

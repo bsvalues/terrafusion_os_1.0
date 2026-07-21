@@ -47,9 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-I implemented and hash-froze `atlas.spatial-read@1.0.0` without runtime
-change. `WO-SR-005B-A` is active to prepare the exact adapter and standalone synthetic parity slice;
-Atlas runtime adoption, extraction, and the remaining suite lanes stay gated.
+**Current state:** WO-SR-005B-A completed the exact adapter and standalone synthetic parity plan.
+`WO-SR-005B-E1` is active to implement a pure unwired adapter over the authenticated canonical
+geometry DTO; standalone parity, runtime adoption, extraction, and the remaining suite lanes stay
+gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
