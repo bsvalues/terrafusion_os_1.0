@@ -346,3 +346,33 @@ test('a typeless namespace-only frozen contract fails closed', () => {
     /declares no C# type/
   );
 });
+
+test('a typeless file with a construct keyword only inside a string literal fails closed', () => {
+  // The keyword appears solely as an attribute string value and a char literal — no type is
+  // declared. A bare-keyword check would be fooled; declaration-syntax matching must not be.
+  const fixture = withDegradedFrozenFile(
+    'namespace TerraFusion.Abstractions.DTOs;\n' +
+      '[assembly: System.Reflection.AssemblyMetadata("kind", "public class Fake")]\n' +
+      "// grouping = 'e'; // enum-ish\n"
+  );
+  assert.throws(
+    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    /declares no C# type/
+  );
+});
+
+test('a genuine type declaration still passes the content check', () => {
+  // Positive control: declaration-syntax matching must not reject a real, re-pinned contract.
+  const fixture = withDegradedFrozenFile(
+    'namespace TerraFusion.Abstractions.DTOs;\n\npublic sealed class RealContract\n{\n    public string Name { get; set; } = "class struct enum";\n}\n'
+  );
+  assert.deepEqual(
+    verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    {
+      groups: 3,
+      frozenFiles: 14,
+      deferredFiles: 10,
+      osInternalFiles: 5,
+    }
+  );
+});
