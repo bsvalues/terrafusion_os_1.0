@@ -126,43 +126,43 @@
         },
         {
           "path": "contracts/dais.appeal-workflow.v1.schema.json",
-          "sha256": "8fde48ce38100f863873ffc80ef2d28825b74c4fb5c1f0dfb4aa161212b0e14d"
+          "sha256": "d327006e92f1256c10ccd3be0924710811baa5e947cfaf8b9fcaf60789997193"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.ambiguous-selector.synthetic.json",
-          "sha256": "738e2b3dd4e8428c4378980cee38fb107145658340987827e30a672a01a4f182"
+          "sha256": "3ff0de0c5ea92916afb63de5a3a9166c8c620e68b41dc8bfb6a39aa992cdea17"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.county-mismatch.synthetic.json",
-          "sha256": "3867fd33f3f09ee824c18e1e1abf711da15fd9ade2946a0573a5ffa8ac363434"
+          "sha256": "58e9b3e9b5198b83cf0f35cf8e5f0c8d10d1039bb71a73da6349975250e940ce"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.cross-lane-fields.synthetic.json",
-          "sha256": "a46497ccb1d0630bc9b54c71fbe0cfdf4e2435e704df245eb2581f3ef5ee9167"
+          "sha256": "f290364ae814e241d75d92d4ee230740526a15a64ea077247fe42910315a8aff"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.decided-by-id.synthetic.json",
-          "sha256": "af4f082d8cb7cfb949ee04f54dfa1371d22693e6bcbf1af96e9579b9c3448e3d"
+          "sha256": "8bce4af4bca4b75a5d8d274fdbea55732b62c091d426a9776e357494fd124d10"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.empty-by-tax-year.synthetic.json",
-          "sha256": "0c735b3beaa9b5964b177d4a827c2d98993b32a494c7d09f04b4ecc552d7c625"
+          "sha256": "711fabf84f640befaaf2bf8ce3bef1f6ba5a7f3bded2e080123d283bd975ea7d"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.filed-by-parcel.synthetic.json",
-          "sha256": "20d0668e99973072c66de7929a3263ad7d7b55a8f14e336a5f73e67c3b8bbf4d"
+          "sha256": "3b5196ccd2e6080a357279297f53a23c996a29db87071a0237f829d9b2cf6a3e"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.invalid-status.synthetic.json",
-          "sha256": "60e9b535ce98a965fa983112f9134e533f6ade4fd01019b35c46504927bc61f6"
+          "sha256": "5db538ba1e89ac17b45f40df6922cd27d3b5a0ee5368ed466ff8aa89ec55ad05"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.missing-county.synthetic.json",
-          "sha256": "219c352f9ae2c060f9f608a23fcc3c812fe364cbf56924e0eb4dd8801a1c61f2"
+          "sha256": "a05e064f6fa43d5778870b88413b94a111b07f3c5d019e9338820914ecb6c849"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.selector-mismatch.synthetic.json",
-          "sha256": "d5bacfaf88e8ce37b82da22df0007acdcbf26163982e661c6702ba5714e63ae0"
+          "sha256": "99828201845dfceccb2ed2392d6ae4f1927918ac78ca652d2cc9a83d9789e8cc"
         }
       ]
     }
