@@ -487,6 +487,14 @@ test('GPT grounded context negative fixtures fail closed', () => {
     fixture.request.queryText = queryText;
     assert.notDeepEqual(validateGptSemantics(fixture), [], queryText);
   }
+
+  const belowThreshold = gptFixture('grounded-two-citations');
+  belowThreshold.result.citations[1].score = belowThreshold.request.scoreThreshold - 0.01;
+  assert.notDeepEqual(
+    validateGptSemantics(belowThreshold),
+    [],
+    'citations below scoreThreshold must fail closed'
+  );
 });
 
 test('a modified frozen hash fails closed', () => {
