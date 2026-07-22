@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005C-I Dais appeal-workflow contract implementation/freeze active
+**Status:** Active; WO-SR-005D-P Dossier custody/evidence-integrity preparation active
 
 ## Ratified topology
 
@@ -40,7 +40,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005B-F1 | Build the standalone spatial projection foundation | Complete; Atlas PR #2 / merge `6c530f1b`, standalone and unwired |
 | WO-SR-005C-P | Prepare the Dais domain contract and county-isolation gate | Complete; appeal cohort selected, decomposition required |
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
-| WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Active; R3 bounded contract artifacts, no runtime adoption |
+| WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Proposed; implementation-ready but exact non-core source authority required |
+| WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Active; R2 read-only evidence, no implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -85,5 +86,6 @@ candidate crosses OS, provider, county, valuation, or sovereign-assembly boundar
 proven projection behavior as a built-fresh standalone product module in Atlas PR #2 without runtime
 wiring. WO-SR-005C-P found real county-isolated Dais workflow proof, selected appeals as the smallest
 coherent cohort, and rejected direct extraction before a frozen contract exists. WO-SR-005C-C then
-defined a read-only contract boundary; WO-SR-005C-I implements and freezes only those artifacts. The other
-suite repositories remain valid bootstraps, not claims of extracted or standalone product capability.
+defined a read-only contract boundary. WO-SR-005C-I is implementation-ready but authority-gated;
+WO-SR-005D-P now audits the Dossier custody/evidence-integrity boundary. The other suite repositories
+remain valid bootstraps, not claims of extracted or standalone product capability.

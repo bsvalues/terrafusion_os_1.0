@@ -48,9 +48,9 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 ```
 
 **Current state:** WO-SR-005C-C defined the exact read-only, county-scoped
-`dais.appeal-workflow@1.0.0` boundary. `WO-SR-005C-I` is active to implement and hash-freeze only
-that contract. Dais extraction, adapter/runtime adoption, protected data, package/workflow changes,
-cutover, and the remaining suite lanes stay gated.
+`dais.appeal-workflow@1.0.0` boundary. WO-SR-005C-I is implementation-ready but authority-gated;
+`WO-SR-005D-P` is active for read-only Dossier custody/evidence-integrity preparation. Extraction,
+runtime adoption, protected data, package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

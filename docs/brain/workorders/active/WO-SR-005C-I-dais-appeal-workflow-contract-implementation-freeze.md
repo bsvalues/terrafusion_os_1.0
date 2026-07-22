@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE |
+| Status | PROPOSED / AUTHORITY GATED |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded contract implementation; no runtime adoption |
 | Dependency | WO-SR-005C-C complete |
@@ -36,3 +36,9 @@ synthetic fixtures defined by WO-SR-005C-C.
 ## Stop Type
 
 `DAIS_APPEAL_WORKFLOW_CONTRACT_IMPLEMENTED_AND_FROZEN`
+
+## Authority Gate
+
+This Work Order must not execute until a recorded authority explicitly covers the exact
+`TerraFusion.Abstractions` and contract-verifier paths listed by WO-SR-005C-C. Its proposal does not
+expand the root governance write scope.

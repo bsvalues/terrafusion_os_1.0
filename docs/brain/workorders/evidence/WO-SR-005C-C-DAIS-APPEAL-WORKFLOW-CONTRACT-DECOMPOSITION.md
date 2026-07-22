@@ -34,6 +34,10 @@ All identifiers are non-empty strings. `taxYear` is an integer from 1900 through
 are RFC 3339 UTC values. A result county must exactly match the request county. `appeals` may be
 empty and must never be replaced with fixture or fallback truth.
 
+Every returned record must also match the request selector: `appealId` matches exactly,
+`parcelId` matches exactly, and `taxYear` matches numerically. A same-county record that does not
+match the selected identity is rejected rather than filtered or ignored by the consumer.
+
 ## Closed Vocabulary
 
 - `ground`: `MARKET_VALUE`, `UNIFORMITY`, `CLASSIFICATION`, `EXEMPTION_DENIAL`,
@@ -75,6 +79,7 @@ empty and must never be replaced with fixture or fallback truth.
 | `invalid-status` | Reject an unknown lifecycle value. |
 | `cross-lane-fields` | Reject PII, value, notes, documents, geometry, and provider fields. |
 | `ambiguous-selector` | Reject zero or multiple selector members. |
+| `selector-mismatch` | Reject a same-county result whose record does not match the request selector. |
 
 The sovereign and standalone verifiers must consume the same hash-pinned corpus and agree on every
 accept/reject result before adapter or extraction work is admitted.
@@ -104,6 +109,7 @@ destination source, packages, lockfiles, and workflows remain blocked.
 
 ## Next
 
-`WO-SR-005C-I - Dais Appeal Workflow Contract Implementation and Freeze` is admitted as an R3
-bounded contract-artifact slice. It may implement and hash-freeze this read-only contract only;
-runtime adoption, adapter work, extraction, publication, and cutover remain separately blocked.
+`WO-SR-005C-I - Dais Appeal Workflow Contract Implementation and Freeze` is implementation-ready
+but remains proposed until an explicit authority record covers its exact non-core source paths.
+`WO-SR-005D-P - Dossier Custody Contract and Evidence-Integrity Gate Preparation` is admitted as
+the next read-only portfolio slice. Runtime adoption, extraction, publication, and cutover remain blocked.

@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-005C-C",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Dais appeal-workflow decomposition defined a read-only county-scoped contract. WO-SR-005C-C is complete and WO-SR-005C-I bounded contract implementation/freeze is active; extraction and runtime adoption remain blocked.",
+  "description": "Five-suite registry after Dais appeal-workflow decomposition defined a read-only county-scoped contract. WO-SR-005C-C is complete, WO-SR-005C-I is implementation-ready but authority-gated, and WO-SR-005D-P read-only Dossier preparation is active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4835,6 +4835,12 @@
           "id": "WO-SR-005C-I",
           "reason": "Implement and hash-freeze the decomposed Dais appeal-workflow read contract without runtime adoption.",
           "riskClass": "R3",
+          "blocked": true
+        },
+        {
+          "id": "WO-SR-005D-P",
+          "reason": "Prepare the Dossier custody/evidence-integrity contract boundary while Dais implementation awaits exact source authority.",
+          "riskClass": "R2",
           "blocked": false
         }
       ]
@@ -4845,7 +4851,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Implement and hash-freeze dais.appeal-workflow@1.0.0 without runtime adoption.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "proposed",
       "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "TerraFusion.Abstractions Dais contract source" },
@@ -4909,6 +4915,72 @@
         {
           "type": "runtime-adoption",
           "description": "Any consumer, write command, persistence, extraction, or behavior change requires a later Work Order."
+        }
+      ],
+      "nextCandidates": []
+    },
+    {
+      "id": "WO-SR-005D-P",
+      "title": "Dossier Custody Contract and Evidence-Integrity Gate Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Inventory Dossier custody and evidence-integrity truth and select the smallest coherent contract cohort.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Committed Dossier source, tests, contracts, pack governance, and standalone bootstrap in read-only mode" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Contract, runtime, API, service, persistence, test, or destination implementation" },
+        { "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, or deployment" }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005D-P-dossier-custody-contract-evidence-integrity-gate-preparation.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md",
+        "docs/brain/workorders governance and routing required for WO-SR-005D-P"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "suite product-source paths",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact ownership, custody, integrity, county, cross-suite, synthetic-proof, contract-cohort, and next-slice evidence or a no-go verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Exact Dossier source reconciliation",
+          "command": "Reconcile committed Dossier source, tests, contracts, pack governance, and standalone bootstrap",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Exact docs-only scope",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "WO-SR-005D-P cannot implement, copy source, access protected data, publish, deploy, cut over, or delete."
         }
       ],
       "nextCandidates": []

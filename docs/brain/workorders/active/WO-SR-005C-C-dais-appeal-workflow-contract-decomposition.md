@@ -7,7 +7,7 @@
 | Repository | `bsvalues/terrafusion_os_1.0` |
 | Risk | R2 docs/evidence contract design |
 | Dependency | WO-SR-005C-P complete |
-| Next | WO-SR-005C-I - Dais Appeal Workflow Contract Implementation and Freeze |
+| Next | WO-SR-005D-P - Dossier Custody Contract and Evidence-Integrity Gate Preparation; WO-SR-005C-I remains implementation-ready and authority-gated |
 
 ## Objective
 
