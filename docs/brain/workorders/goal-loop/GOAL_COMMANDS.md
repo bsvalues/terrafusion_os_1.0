@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-A completed the exact adapter and standalone synthetic parity plan.
-`WO-SR-005B-E1` is active to implement a pure unwired adapter over the authenticated canonical
-geometry DTO; standalone parity, runtime adoption, extraction, and the remaining suite lanes stay
-gated.
+**Current state:** WO-SR-005B-E1 completed the pure unwired adapter over the authenticated canonical
+geometry DTO with 30 passing tests and a zero-warning backend build. `WO-SR-005B-E2` is active for
+standalone synthetic contract parity; runtime adoption, extraction, and the remaining suite lanes
+stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

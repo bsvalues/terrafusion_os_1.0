@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005B-A",
+  "generatedBy": "WO-SR-005B-E1",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Atlas adapter/parity preparation. WO-SR-005B-E1 pure sovereign adapter implementation is active; standalone parity, runtime adoption, and extraction remain blocked.",
+  "description": "Five-suite registry after sovereign Atlas adapter proof. WO-SR-005B-E1 is complete and WO-SR-005B-E2 standalone synthetic parity is active; runtime adoption and extraction remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4310,7 +4310,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Implement and prove a pure unwired adapter from canonical county-isolated geometry to atlas.spatial-read@1.0.0.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005B-A", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "Pure Atlas spatial-read adapter and unit tests" },
@@ -4355,46 +4355,51 @@
           "name": "Targeted Atlas adapter tests",
           "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter AtlasSpatialReadAdapterTests",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Canonical backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Contract freeze verifier",
           "command": "node scripts/contracts/verify-contract-freeze.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Contract freeze tests",
           "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work-order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work-order tooling tests",
           "command": "node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005B-E1-ATLAS-SOVEREIGN-SPATIAL-READ-ADAPTER.md"
+        }
+      ],
       "stopConditions": [
         {
           "type": "runtime-adoption",
@@ -4406,7 +4411,7 @@
           "id": "WO-SR-005B-E2",
           "reason": "Materialize and prove the frozen contract in the standalone Atlas bootstrap after the sovereign adapter passes.",
           "riskClass": "R2",
-          "blocked": true
+          "blocked": false
         }
       ]
     },
@@ -4416,8 +4421,8 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove standalone contract compatibility and provider-neutral map projection using only the frozen synthetic corpus.",
       "riskClass": "R2",
-      "status": "blocked",
-      "dependencies": [{ "id": "WO-SR-005B-E1", "status": "pending" }],
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005B-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
           "name": "TerraFusion Atlas contract-compat material and synthetic parity harness"
@@ -4430,7 +4435,15 @@
         }
       ],
       "allowedFiles": [
-        "bsvalues/terrafusion-atlas bounded contract-compat scope defined by WO-SR-005B-A"
+        ".github/workflows/suite-ci.yml (contract-compat job only)",
+        "canon/CONTRACT_DEPENDENCY.md",
+        "contract-compat/atlas.spatial-read.v1/manifest.json",
+        "contract-compat/atlas.spatial-read.v1/atlas.spatial-read.v1.schema.json",
+        "contract-compat/atlas.spatial-read.v1/fixtures/*.json",
+        "scripts/verify-atlas-spatial-read.mjs",
+        "scripts/verify-atlas-spatial-read.test.mjs",
+        "operations/work-orders/WO-SR-005B-E2-atlas-standalone-synthetic-contract-parity.md",
+        "operations/evidence/WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
       ],
       "blockedFiles": ["terrafusion_os_1.0 runtime and product paths"],
       "evidenceRequired": [
@@ -4439,7 +4452,38 @@
           "description": "Four positive and three negative frozen fixtures plus polygon/centroid/unavailable projection proof."
         }
       ],
-      "validationGates": [],
+      "validationGates": [
+        {
+          "name": "Standalone Atlas verifier tests",
+          "command": "node --test scripts/verify-atlas-spatial-read.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone Atlas verifier",
+          "command": "node scripts/verify-atlas-spatial-read.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frozen source and destination hash parity",
+          "command": "Verify manifest SHA-256 entries against atlas.spatial-read@1.0.0 source artifacts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Exact destination scope inspection",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pending"
+        }
+      ],
       "evidenceProduced": [],
       "stopConditions": [
         {
