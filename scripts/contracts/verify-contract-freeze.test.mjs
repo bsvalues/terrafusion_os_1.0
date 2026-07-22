@@ -106,6 +106,9 @@ function validateJsonSchema(root, schema, value, location = '$') {
   if (typeof value === 'string' && schema.minLength && value.length < schema.minLength) {
     errors.push(`${location}: string is shorter than ${schema.minLength}`);
   }
+  if (typeof value === 'string' && schema.pattern && !new RegExp(schema.pattern).test(value)) {
+    errors.push(`${location}: string does not match pattern`);
+  }
   if (typeof value === 'number') {
     if (schema.minimum !== undefined && value < schema.minimum) {
       errors.push(`${location}: number is below minimum`);
@@ -297,6 +300,14 @@ test('Dais appeal workflow negative fixtures fail closed', () => {
     const fixture = daisFixture(name);
     assert.notDeepEqual(validateDaisSemantics(fixture), [], name);
   }
+
+  const invalidTimestamp = daisFixture('filed-by-parcel');
+  invalidTimestamp.result.appeals[0].filedAt = '2026-01-10 18:30:00 local';
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, invalidTimestamp),
+    [],
+    'non-UTC timestamp must be rejected by the schema'
+  );
 });
 
 test('a modified frozen hash fails closed', () => {

@@ -126,7 +126,7 @@
         },
         {
           "path": "contracts/dais.appeal-workflow.v1.schema.json",
-          "sha256": "d327006e92f1256c10ccd3be0924710811baa5e947cfaf8b9fcaf60789997193"
+          "sha256": "b66579eda680849b9bfc998c9cb89b33079ff3ef87a20ad499643b5f9249dd8c"
         },
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.ambiguous-selector.synthetic.json",
