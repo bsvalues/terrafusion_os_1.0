@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005B-E1 closeout
+**Authority:** WO-SR-005B-E2 closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. WO-SR-005B-E1 implemented the pure unwired
-adapter over the authenticated, county-isolated canonical geometry DTO and proved it with 30 tests
-and a zero-warning backend build. `WO-SR-005B-E2` is active for standalone, synthetic-only contract
-parity. Runtime adoption and Atlas extraction remain blocked.
+The Five-Suite Federated Repository Buildout is active. WO-SR-005B-E1 proved the pure unwired
+adapter, and WO-SR-005B-E2 merged hash-pinned standalone synthetic parity in Atlas PR #1.
+`WO-SR-005B-E3` is active for a read-only exact extraction-scope audit. Runtime adoption, source
+copying, and Atlas cutover remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -42,8 +42,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005B-I Atlas Read Contract Implementation and Freeze | DONE | `atlas.spatial-read@1.0.0`; 3 groups / 14 files frozen; 8/8 tests; no runtime adoption |
 | WO-SR-005B-A Atlas Adapter and Standalone Parity Preparation | DONE | Canonical source selected; two-repository implementation sequence admitted |
 | WO-SR-005B-E1 Atlas Sovereign Spatial Read Adapter Implementation | DONE | 30/30 adapter tests; backend build 0 warnings/errors; no runtime wiring |
-| **WO-SR-005B-E2 Atlas Standalone Synthetic Contract Parity Harness** | **ACTIVE** | Destination synthetic contract/parity only; no product source extraction |
-| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON ADAPTER/PARITY IMPLEMENTATION | Stable contract exists; E1 and E2 must pass before extraction |
+| WO-SR-005B-E2 Atlas Standalone Synthetic Contract Parity Harness | DONE | Atlas PR #1; 8/8 hash parity; 6/6 verifier tests; all required checks passed |
+| **WO-SR-005B-E3 Atlas Bounded Extraction Scope Audit** | **ACTIVE** | Read-only exact source/destination, provenance, dependency, parity, and rollback audit |
+| WO-SR-005B Atlas Bounded Extraction | BLOCKED ON EXACT R3 SCOPE | E1/E2 passed; E3 must prove the exact extraction slice before source copying |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; governed-AI contract and grounding proof required |
@@ -188,9 +189,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-005B-E1:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. The pure sovereign adapter is complete; WO-SR-005B-E2 is the dependency-cleared active
-node. Runtime adoption and Atlas extraction remain blocked.
+**Portfolio result after WO-SR-005B-E2:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
+removed. Sovereign and standalone parity are complete; WO-SR-005B-E3 is the dependency-cleared
+read-only audit. Runtime adoption, source copying, and Atlas cutover remain blocked.
 
 ---
 
