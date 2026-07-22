@@ -4448,7 +4448,7 @@
       "blockedFiles": ["terrafusion_os_1.0 runtime and product paths"],
       "evidenceRequired": [
         {
-          "kind": "standalone-contract-parity",
+          "kind": "other",
           "description": "Four positive and three negative frozen fixtures plus polygon/centroid/unavailable projection proof."
         }
       ],
@@ -4486,13 +4486,13 @@
       ],
       "evidenceProduced": [
         {
-          "kind": "standalone-contract-parity",
-          "path": "docs/brain/workorders/evidence/WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
         }
       ],
       "stopConditions": [
         {
-          "type": "source-extraction",
+          "type": "scope_boundary",
           "description": "No product source extraction or ownership cutover is authorized by E2."
         }
       ],
@@ -4536,7 +4536,7 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "bounded-extraction-scope-audit",
+          "kind": "other",
           "description": "Exact file:line source evidence, source/destination paths, provenance, dependencies, parity plan, rollback, and R3 allowlist or a no-go verdict."
         }
       ],
@@ -4545,25 +4545,25 @@
           "name": "Exact source citations",
           "command": "Inspect committed source and record exact file:line evidence",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Exact docs-only scope",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         }
       ],
       "evidenceProduced": [],
       "stopConditions": [
         {
-          "type": "source-extraction",
+          "type": "scope_boundary",
           "description": "E3 cannot copy, delete, wire, cut over, or retire product source."
         }
       ],
