@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005B-E2",
+  "generatedBy": "WO-SR-005B-E3",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after sovereign and standalone Atlas parity proof. WO-SR-005B-E2 is complete and WO-SR-005B-E3 read-only extraction scope audit is active; runtime adoption and extraction remain blocked.",
+  "description": "Five-suite registry after the Atlas extraction audit rejected direct copying. WO-SR-005B-E3 is complete and WO-SR-005B-F1 built-fresh standalone projection foundation is active; runtime adoption and extraction remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4511,7 +4511,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Name and prove the smallest exact Atlas source slice eligible for a later bounded R3 extraction.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005B-E2", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -4545,16 +4545,106 @@
           "name": "Exact source citations",
           "command": "Inspect committed source and record exact file:line evidence",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Exact docs-only scope",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005B-E3-ATLAS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "E3 cannot copy, delete, wire, cut over, or retire product source."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B-F1",
+          "reason": "Promote the E2-proven projection behavior into a built-fresh standalone product module without runtime wiring.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-F1",
+      "title": "Atlas Standalone Spatial Projection Foundation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Create the first built-fresh Atlas product-source module from already-proven provider-neutral projection behavior.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005B-E3", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Atlas built-fresh offline spatial projection module and tests"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Sovereign source copying, runtime consumers, providers, network access, package or workflow changes"
+        },
+        {
+          "name": "County, PACS, SQL, credentials, secrets, live services, production, deployment, cutover, or ownership transfer"
+        }
+      ],
+      "allowedFiles": [
+        "src/spatial-read/project-atlas-feature.mjs",
+        "test/project-atlas-feature.test.mjs",
+        "scripts/verify-atlas-spatial-read.mjs",
+        "scripts/verify-atlas-spatial-read.test.mjs",
+        "AGENTS.md",
+        "operations/work-orders/WO-SR-005B-F1-atlas-standalone-spatial-projection-foundation.md",
+        "operations/evidence/WO-SR-005B-F1-ATLAS-STANDALONE-SPATIAL-PROJECTION-FOUNDATION.md"
+      ],
+      "blockedFiles": [
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**",
+        "provider and runtime-consumer files",
+        "terrafusion_os_1.0 source files"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Direct product-module parity, unchanged hash-pinned contract proof, exact scope, and no-runtime-consumer evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Atlas projection module tests",
+          "command": "node --test test/project-atlas-feature.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Standalone Atlas verifier tests",
+          "command": "node --test scripts/verify-atlas-spatial-read.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Standalone Atlas verifier",
+          "command": "node scripts/verify-atlas-spatial-read.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Exact destination scope",
           "command": "git diff --check and inspect changed paths",
           "required": true,
           "result": "not_run"
@@ -4564,17 +4654,10 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "E3 cannot copy, delete, wire, cut over, or retire product source."
+          "description": "Any source copy, runtime consumer, provider, package, workflow, network, protected resource, deployment, or cutover is outside F1."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "WO-SR-005B",
-          "reason": "Admit only the exact bounded R3 Atlas extraction proved by E3.",
-          "riskClass": "R3",
-          "blocked": true
-        }
-      ]
+      "nextCandidates": []
     }
   ]
 }
