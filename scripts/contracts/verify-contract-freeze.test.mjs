@@ -235,6 +235,9 @@ function validateJsonSchema(root, schema, value, location = '$') {
     if (schema.minItems !== undefined && value.length < schema.minItems) {
       errors.push(`${location}: array has fewer than ${schema.minItems} items`);
     }
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) {
+      errors.push(`${location}: array has more than ${schema.maxItems} items`);
+    }
     if (schema.items) {
       value.forEach((item, index) => {
         errors.push(...validateJsonSchema(root, schema.items, item, `${location}[${index}]`));
@@ -511,6 +514,26 @@ test('GPT grounded context negative fixtures fail closed', () => {
   const excerptPii = gptFixture('grounded-two-citations');
   excerptPii.result.citations[0].excerpt = 'Contact jane@example.gov';
   assert.notDeepEqual(validateGptSemantics(excerptPii), [], 'citation PII must fail closed');
+
+  const groundedWithoutCitations = gptFixture('grounded-two-citations');
+  groundedWithoutCitations.result.citations = [];
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, groundedWithoutCitations),
+    [],
+    'GROUNDED requires at least one citation in the schema'
+  );
+
+  for (const name of ['no-relevant-context', 'denied-dataset']) {
+    const terminalWithCitation = gptFixture(name);
+    terminalWithCitation.result.citations = [
+      gptFixture('grounded-two-citations').result.citations[0],
+    ];
+    assert.notDeepEqual(
+      validateJsonSchema(schema, schema, terminalWithCitation),
+      [],
+      `${name} forbids citations in the schema`
+    );
+  }
 
   const unresolvedTie = gptFixture('grounded-two-citations');
   Object.assign(unresolvedTie.result.citations[0], {

@@ -248,7 +248,7 @@
         },
         {
           "path": "contracts/gpt.grounded-context.v1.schema.json",
-          "sha256": "672a507a11e03fdc2b214a4e85935a91d0097f7841aa13197a9a26de579a2abe"
+          "sha256": "da9a923e2ef92f63a728edcb19d726a9a29ceb39203464dbe6ee426e94a69019"
         },
         {
           "path": "contracts/fixtures/gpt.grounded-context.v1.citation-without-source.synthetic.json",

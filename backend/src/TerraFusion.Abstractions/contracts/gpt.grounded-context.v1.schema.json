@@ -83,6 +83,22 @@
       },
       "allOf": [
         {
+          "if": { "properties": { "status": { "const": "GROUNDED" } } },
+          "then": {
+            "properties": { "citations": { "minItems": 1 } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "enum": ["NO_RELEVANT_CONTEXT", "DENIED"] }
+            }
+          },
+          "then": {
+            "properties": { "citations": { "maxItems": 0 } }
+          }
+        },
+        {
           "if": { "properties": { "status": { "const": "DENIED" } } },
           "then": { "required": ["denialCode"] }
         },
