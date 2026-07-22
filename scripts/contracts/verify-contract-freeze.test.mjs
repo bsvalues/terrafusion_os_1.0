@@ -150,8 +150,14 @@ function validateGptSemantics(exchange) {
     errors.push('response datasetKey must match request datasetKey');
   if (request?.traceId !== result?.traceId)
     errors.push('response traceId must match request traceId');
-  if (/\b\d{3}-\d{2}-\d{4}\b/.test(request?.queryText ?? ''))
-    errors.push('queryText must not contain raw SSN-like PII');
+  const queryText = request?.queryText ?? '';
+  const rawPiiPatterns = [
+    /\b\d{3}-\d{2}-\d{4}\b/,
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+    /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/,
+  ];
+  if (rawPiiPatterns.some(pattern => pattern.test(queryText)))
+    errors.push('queryText must not contain raw SSN, email, or phone PII');
 
   const citations = result?.citations ?? [];
   if (result?.status === 'GROUNDED' && citations.length === 0)
@@ -474,6 +480,12 @@ test('GPT grounded context negative fixtures fail closed', () => {
     'unstable-order',
   ]) {
     assert.notDeepEqual(validateGptSemantics(gptFixture(name)), [], name);
+  }
+
+  for (const queryText of ['Contact jane@example.gov', 'Call 509-555-1212']) {
+    const fixture = gptFixture('denied-dataset');
+    fixture.request.queryText = queryText;
+    assert.notDeepEqual(validateGptSemantics(fixture), [], queryText);
   }
 });
 
