@@ -114,15 +114,19 @@ function validateDossierSemantics(exchange) {
   for (let index = 1; index < records.length; index += 1) {
     const previous = records[index - 1];
     const current = records[index];
+    const previousInstant = Date.parse(previous.createdAt);
+    const currentInstant = Date.parse(current.createdAt);
     if (
-      previous.createdAt < current.createdAt ||
-      (previous.createdAt === current.createdAt && previous.evidenceId > current.evidenceId)
+      previousInstant < currentInstant ||
+      (previousInstant === currentInstant && previous.evidenceId > current.evidenceId)
     ) {
       errors.push('results must sort by createdAt descending then evidenceId ascending');
     }
   }
   if (result && result.hasMore !== result.offset + records.length < result.total)
     errors.push('hasMore is inconsistent with page bounds');
+  if (result && result.offset + records.length > result.total)
+    errors.push('page rows exceed total');
   if (result && records.length > result.limit) errors.push('result count exceeds limit');
   return errors;
 }
@@ -374,6 +378,20 @@ test('Dossier evidence registry negative fixtures fail closed', () => {
   ]) {
     assert.notDeepEqual(validateDossierSemantics(dossierFixture(name)), [], name);
   }
+
+  const rowsExceedTotal = dossierFixture('next-page');
+  rowsExceedTotal.result.total = 1;
+  rowsExceedTotal.result.hasMore = false;
+  assert.notDeepEqual(validateDossierSemantics(rowsExceedTotal), [], 'rows cannot exceed total');
+
+  const fractionalOutOfOrder = dossierFixture('two-record-page');
+  fractionalOutOfOrder.result.results[0].createdAt = '2026-01-01T00:00:00Z';
+  fractionalOutOfOrder.result.results[1].createdAt = '2026-01-01T00:00:00.001Z';
+  assert.notDeepEqual(
+    validateDossierSemantics(fractionalOutOfOrder),
+    [],
+    'timestamp ordering compares instants'
+  );
 });
 
 test('a modified frozen hash fails closed', () => {
