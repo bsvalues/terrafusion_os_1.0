@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-F1 merged the built-fresh Atlas projection foundation in standalone
-PR #2 without runtime adoption. `WO-SR-005C-P` is active to prepare exact Dais domain-contract ownership
-and county-isolation proof from read-only source evidence. Dais extraction/implementation, protected
-data, runtime changes, package/workflow changes, cutover, and the remaining suite lanes stay gated.
+**Current state:** WO-SR-005C-P verified real county-isolated Dais workflow proof and selected appeals
+as the smallest coherent contract cohort. `WO-SR-005C-C` is active to decompose the exact
+`dais.appeal-workflow@1.0.0` boundary. Dais extraction/implementation, protected data, runtime
+changes, package/workflow changes, cutover, and the remaining suite lanes stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
