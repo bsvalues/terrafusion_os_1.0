@@ -56,9 +56,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE ON MERGE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
-| WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
-| WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
-| WO-SR-005E GPT Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; governed-AI contract and grounding proof required |
+| WO-SR-005C Dais Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and runtime adoption remain unproven |
+| WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and custody-safe runtime adoption remain unproven |
+| WO-SR-005E GPT Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; provider-neutral adapter parity, exact extraction scope, and runtime adoption remain unproven |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -200,11 +200,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-005C-C:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Atlas F1 is complete and unwired; Dais implementation is authority-gated, and
-No R2 five-suite slice remains dependency-cleared. Exact Dais, Dossier, or GPT contract
-implementation authority is required before execution. Extraction,
-runtime adoption, protected data, providers, package/workflow changes, and cutover remain blocked.
+**Portfolio result after WO-SR-005E-I merge:** `PORTFOLIO_RECONCILIATION`. The foreign OMEN lane
+remains removed. Atlas F1 is complete and unwired; the Dais, Dossier, and GPT read-only contracts
+are implemented and hash-frozen. No extraction or runtime-adoption slice is implied or currently
+admitted. Exact later scope, parity evidence, and applicable authority remain required for
+extraction, runtime adoption, protected data, providers, package/workflow changes, and cutover.
 
 ---
 
