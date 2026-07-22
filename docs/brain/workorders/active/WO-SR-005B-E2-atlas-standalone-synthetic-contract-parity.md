@@ -65,4 +65,5 @@ without extracting product source or adopting the sovereign adapter at runtime.
 - No product source, runtime, provider, package, lockfile, county, PACS, SQL, secret, or production
   surface changed.
 - Completion evidence: [WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md](../evidence/WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md).
-- `WO-SR-005B-E3` is active as a read-only extraction-scope audit; R3 extraction remains blocked.
+- `WO-SR-005B-E3` completed with no safe direct-copy slice; `WO-SR-005B-F1` is active as the exact
+  built-fresh standalone projection foundation. Runtime adoption and extraction remain blocked.

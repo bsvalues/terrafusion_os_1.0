@@ -47,10 +47,11 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-E1 completed the pure unwired adapter, and WO-SR-005B-E2 merged the
-hash-pinned standalone synthetic parity harness in Atlas PR #1. `WO-SR-005B-E3` is active to audit
-the exact bounded extraction scope; runtime adoption, source copying, cutover, and the remaining
-suite lanes stay gated.
+**Current state:** WO-SR-005B-E3 rejected direct source copying because the audited sovereign
+candidates cross OS, provider, county, valuation, or sovereign-assembly boundaries.
+`WO-SR-005B-F1` is active to promote the proven standalone projection behavior into a built-fresh
+product module; runtime adoption, providers, source copying, package/workflow changes, cutover, and
+the remaining suite lanes stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
