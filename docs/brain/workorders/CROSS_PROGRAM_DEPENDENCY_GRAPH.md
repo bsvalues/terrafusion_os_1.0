@@ -86,7 +86,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005B-E2 standalone synthetic parity is complete
   WO-SR-005B-E3 bounded extraction scope audit is complete with no safe direct-copy slice
   WO-SR-005B-F1 built-fresh standalone spatial projection foundation is complete
-  WO-SR-005C-P Dais domain-contract and county-isolation preparation is active
+  WO-SR-005C-P Dais domain-contract and county-isolation preparation is complete
+  WO-SR-005C-C Dais appeal-workflow contract decomposition is active
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 
@@ -96,7 +97,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005B-F1 | SR-005C-P Dais domain-contract and county-isolation preparation | Read-only source/contract/test evidence; no extraction, implementation, or protected data | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005C-P | SR-005C-C Dais appeal-workflow contract decomposition | Exact docs/evidence design; no contract artifact, extraction, implementation, or protected data | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -114,11 +115,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005C-P is the admitted dependency-cleared node after Atlas F1 merged standalone and unwired.
+1. WO-SR-005C-C is the admitted dependency-cleared node after Dais preparation selected appeals.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through the exact Dais read-only preparation slice; keep extraction, implementation,
-   runtime adoption, protected data, package/workflow changes, and cutover blocked.
+4. Continue through exact Dais appeal contract decomposition; keep contract implementation,
+   extraction, runtime adoption, protected data, package/workflow changes, and cutover blocked.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 

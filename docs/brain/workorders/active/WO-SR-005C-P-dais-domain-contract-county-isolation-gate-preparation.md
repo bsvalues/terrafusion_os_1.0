@@ -2,12 +2,12 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE |
+| Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Repository | `bsvalues/terrafusion_os_1.0` with read-only `bsvalues/terrafusion-dais` inspection |
 | Risk | R2 read-only discovery and governance evidence |
 | Dependency | WO-SR-005B-F1 complete |
-| Next | A bounded Dais contract-decomposition WO only if evidence returns implementation-ready |
+| Next | WO-SR-005C-C - Dais Appeal Workflow Contract Decomposition |
 
 ## Objective
 
@@ -55,3 +55,13 @@ any Dais extraction or destination implementation can be admitted.
 ## Stop Type
 
 `DAIS_DOMAIN_CONTRACT_COUNTY_ISOLATION_GATE_PREPARED`
+
+## Completion
+
+- Verdict: `COMPLETE_DECOMPOSITION_REQUIRED_APPEAL_COHORT_SELECTED`.
+- Sovereign source audited at `26c8eae1ef9c2b397cfa731dc6505a54dd62a822`.
+- Standalone Dais bootstrap audited at `1404db1947587d4f8c868092798c4d71c23bb62d`.
+- The appeal cohort is the smallest boundary with entity, service, county-denial, persistence,
+  endpoint, audit, and write-lane proof.
+- No Dais contract group exists in the frozen manifest; no source was copied or implemented.
+- Evidence: [WO-SR-005C-P-DAIS-DOMAIN-CONTRACT-COUNTY-ISOLATION-GATE-PREPARATION.md](../evidence/WO-SR-005C-P-DAIS-DOMAIN-CONTRACT-COUNTY-ISOLATION-GATE-PREPARATION.md).

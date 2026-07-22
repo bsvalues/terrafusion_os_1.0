@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005C-P Dais domain-contract and county-isolation preparation active
+**Status:** Active; WO-SR-005C-C Dais appeal-workflow contract decomposition active
 
 ## Ratified topology
 
@@ -38,7 +38,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005B-E2 | Implement standalone synthetic contract/parity harness | Complete; Atlas PR #1, 8/8 hash parity, required checks passed |
 | WO-SR-005B-E3 | Audit the exact bounded Atlas extraction scope | Complete; no safe direct-copy slice found |
 | WO-SR-005B-F1 | Build the standalone spatial projection foundation | Complete; Atlas PR #2 / merge `6c530f1b`, standalone and unwired |
-| WO-SR-005C-P | Prepare the Dais domain contract and county-isolation gate | Active; R2 read-only evidence, no extraction or implementation |
+| WO-SR-005C-P | Prepare the Dais domain contract and county-isolation gate | Complete; appeal cohort selected, decomposition required |
+| WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Active; R2 docs/evidence design, no contract implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -81,6 +82,7 @@ extraction. Atlas has a frozen read contract, a proven unwired sovereign adapter
 standalone synthetic parity harness. E3 rejected direct source copying because every sovereign
 candidate crosses OS, provider, county, valuation, or sovereign-assembly boundaries. F1 merged the
 proven projection behavior as a built-fresh standalone product module in Atlas PR #2 without runtime
-wiring. WO-SR-005C-P now prepares the exact Dais domain-contract and county-isolation gate before
-any Dais extraction or implementation. The other suite repositories remain valid bootstraps, not
-claims of extracted or standalone product capability.
+wiring. WO-SR-005C-P found real county-isolated Dais workflow proof, selected appeals as the smallest
+coherent cohort, and rejected direct extraction before a frozen contract exists. WO-SR-005C-C now
+decomposes that appeal-workflow contract without changing runtime or contract artifacts. The other
+suite repositories remain valid bootstraps, not claims of extracted or standalone product capability.

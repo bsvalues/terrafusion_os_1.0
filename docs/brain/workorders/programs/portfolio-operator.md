@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Five-suite program active at WO-SR-005C-P
+**Status:** Five-suite program active at WO-SR-005C-C
 
 ## Purpose
 
@@ -62,8 +62,8 @@ implementation sequence. WO-SR-005B-E1 completed the pure unwired adapter with 3
 a zero-warning solution build. WO-SR-005B-E2 merged the standalone synthetic parity harness in
 Atlas PR #1. WO-SR-005B-E3 rejected direct source copying because no sovereign candidate has a clean
 suite-only boundary. WO-SR-005B-F1 merged the built-fresh standalone projection foundation in Atlas
-PR #2 without runtime adoption. WO-SR-005C-P is the dependency-cleared read-only Dais
-domain-contract and county-isolation preparation slice; Dais extraction/implementation and
-protected resources remain blocked.
+PR #2 without runtime adoption. WO-SR-005C-P verified county-isolated Dais workflow truth and
+selected appeals as the first contract cohort. WO-SR-005C-C is the dependency-cleared docs/evidence
+decomposition slice; Dais extraction/implementation and protected resources remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`
