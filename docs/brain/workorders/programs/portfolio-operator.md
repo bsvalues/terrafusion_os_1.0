@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Five-suite program active at WO-SR-005E-P
+**Status:** Five-suite program active at WO-SR-005E-C
 
 ## Purpose
 
@@ -64,8 +64,9 @@ Atlas PR #1. WO-SR-005B-E3 rejected direct source copying because no sovereign c
 suite-only boundary. WO-SR-005B-F1 merged the built-fresh standalone projection foundation in Atlas
 PR #2 without runtime adoption. WO-SR-005C-P verified county-isolated Dais workflow truth and
 selected appeals as the first contract cohort. WO-SR-005C-C completed the read-only decomposition;
-WO-SR-005C-I and WO-SR-005D-I are implementation-ready but authority-gated. WO-SR-005D-C2
-completed the Dossier evidence-registry read decomposition. WO-SR-005E-P is the dependency-cleared
-GPT preparation slice. Provider calls, extraction, runtime adoption, and protected resources remain blocked.
+WO-SR-005C-I and WO-SR-005D-I are implementation-ready but authority-gated. WO-SR-005E-P selected
+the grounded-context cohort and proved the current adapter is not parity-safe. WO-SR-005E-C is the
+dependency-cleared GPT decomposition slice. Provider calls, extraction, runtime adoption, and
+protected resources remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`

@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005D-C2",
+  "generatedBy": "WO-SR-005E-P",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-005D-C2 defined the Dossier evidence-registry read contract. Dossier and Dais implementation remain authority-gated; WO-SR-005E-P GPT preparation is active.",
+  "description": "Five-suite registry after WO-SR-005E-P selected grounded context and proved the current GPT adapter is not county/privacy parity-safe. WO-SR-005E-C decomposition is active; provider calls and implementation remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -5278,7 +5278,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Inventory GPT/RAG ownership, grounding, citation, county, privacy, and provider truth and select the smallest coherent contract cohort.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005D-C2", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -5320,6 +5320,90 @@
           "name": "Exact GPT source reconciliation",
           "command": "Reconcile committed GPT/RAG source, tests, contracts, pack governance, and standalone bootstrap",
           "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Exact docs-only scope",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "gpt-contract-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-P-GPT-GOVERNED-AI-CONTRACT-GROUNDING-GATE-PREPARATION.md",
+          "description": "Exact GPT ownership, retrieval, county, grounding, citation, PII, provider, proof, standalone, and selected-cohort evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "WO-SR-005E-P cannot implement, call providers, copy source, access protected data, publish, deploy, cut over, or delete."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-C",
+          "reason": "Define the exact county-scoped grounded-context contract while provider calls and runtime implementation remain blocked.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-C",
+      "title": "GPT Grounded Context Contract Decomposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact provider-neutral, county-scoped GPT grounded-context contract and later implementation allowlist or return NO_GO.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005E-P", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Committed GPT/RAG source, tests, contract policy, and governance evidence in read-only design mode"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Contract artifacts, provider calls, adapters, runtime, API, entities, services, tests, destination source, packages, or workflows"
+        },
+        {
+          "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, or deployment"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005E-C-gpt-grounded-context-contract-decomposition.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-C-GPT-GROUNDED-CONTEXT-CONTRACT-DECOMPOSITION.md",
+        "docs/brain/workorders governance and routing required for WO-SR-005E-C"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "suite product-source paths",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact grounded-context request/result/citation records, county and dataset selectors, PII rules, grounding vocabulary, fixtures, parity gate, and implementation allowlist or no-go verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Exact source reconciliation",
+          "command": "Reconcile the proposed contract against committed GPT/RAG source and tests",
+          "required": true,
           "result": "not_run"
         },
         {
@@ -5339,7 +5423,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "WO-SR-005E-P cannot implement, call providers, copy source, access protected data, publish, deploy, cut over, or delete."
+          "description": "WO-SR-005E-C cannot implement a contract or adapter, call providers, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source."
         }
       ],
       "nextCandidates": []
