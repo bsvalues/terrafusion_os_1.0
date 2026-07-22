@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005D-C2 defined the persistent
-`dossier.evidence-registry-read@1.0.0` boundary; implementation is proposed but authority-gated.
-`WO-SR-005E-P` is active to prepare the GPT governed-AI contract and grounding gate. Extraction,
-runtime adoption, provider calls, protected data, package/workflow changes, and cutover stay gated.
+**Current state:** WO-SR-005E-P selected a provider-neutral grounded-context read cohort and proved
+the current adapter is not county/privacy parity-safe. `WO-SR-005E-C` is active to decompose
+`gpt.grounded-context@1.0.0`. Extraction, runtime adoption, provider calls, protected data,
+package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
