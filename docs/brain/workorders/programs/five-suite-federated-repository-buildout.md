@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active with exact R3 contract-implementation authority boundary
+**Status:** Active under bounded sequential R3 contract-freeze authority
 
 ## Ratified topology
 
@@ -40,11 +40,11 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005B-F1 | Build the standalone spatial projection foundation | Complete; Atlas PR #2 / merge `6c530f1b`, standalone and unwired |
 | WO-SR-005C-P | Prepare the Dais domain contract and county-isolation gate | Complete; appeal cohort selected, decomposition required |
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
-| WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Proposed; implementation-ready but exact non-core source authority required |
+| WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Complete; `dais.appeal-workflow@1.0.0`, no runtime adoption |
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
-| WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Proposed; implementation-ready but exact non-core source authority required |
+| WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Active under sequential R3 envelope |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Proposed; implementation-ready but exact non-core source authority required |
@@ -92,10 +92,10 @@ candidate crosses OS, provider, county, valuation, or sovereign-assembly boundar
 proven projection behavior as a built-fresh standalone product module in Atlas PR #2 without runtime
 wiring. WO-SR-005C-P found real county-isolated Dais workflow proof, selected appeals as the smallest
 coherent cohort, and rejected direct extraction before a frozen contract exists. WO-SR-005C-C then
-defined a read-only contract boundary. WO-SR-005C-I is implementation-ready but authority-gated;
+defined a read-only contract boundary. WO-SR-005C-I implemented and froze that contract without runtime adoption;
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
 WO-SR-005D-C2 defined the persistent Dossier evidence-registry read boundary. WO-SR-005D-I is
-implementation-ready but authority-gated. WO-SR-005E-P selected grounded context while proving the
+active under the sequential R3 envelope. WO-SR-005E-P selected grounded context while proving the
 current adapter is not parity-safe; WO-SR-005E-C defined the exact contract. Dais, Dossier, and GPT
-implementation cohorts are now proposed/authority-gated. The other suite repositories
+implementation cohorts are now sequenced Dossier then GPT under the bounded envelope. The other suite repositories
 remain valid bootstraps, not claims of extracted or standalone product capability.

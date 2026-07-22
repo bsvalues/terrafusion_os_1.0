@@ -4851,7 +4851,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Implement and hash-freeze dais.appeal-workflow@1.0.0 without runtime adoption.",
       "riskClass": "R3",
-      "status": "proposed",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "TerraFusion.Abstractions Dais contract source" },
@@ -4912,29 +4912,41 @@
           "name": "Dais contract freeze verifier",
           "command": "node scripts/contracts/verify-contract-freeze.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Dais schema and fixture tests",
           "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Abstractions contract build",
           "command": "dotnet build backend/src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj -c Release",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "contract-freeze",
+          "path": "docs/brain/workorders/evidence/WO-SR-005C-I-DAIS-APPEAL-WORKFLOW-CONTRACT-FREEZE.md"
+        }
+      ],
       "stopConditions": [
         {
           "type": "runtime-adoption",
           "description": "Any consumer, write command, persistence, extraction, or behavior change requires a later Work Order."
         }
       ],
-      "nextCandidates": []
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-I",
+          "reason": "Continue the owner-authorized sequential R3 contract-freeze envelope.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ]
     },
     {
       "id": "WO-SR-005D-P",
@@ -5201,8 +5213,11 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Implement and hash-freeze dossier.evidence-registry-read@1.0.0 without runtime adoption.",
       "riskClass": "R3",
-      "status": "proposed",
-      "dependencies": [{ "id": "WO-SR-005D-C2", "status": "satisfied" }],
+      "status": "in_progress",
+      "dependencies": [
+        { "id": "WO-SR-005D-C2", "status": "satisfied" },
+        { "id": "WO-SR-005C-I", "status": "satisfied" }
+      ],
       "allowedSystems": [
         { "name": "TerraFusion.Abstractions Dossier contract source" },
         { "name": "Contract freeze verifier" },

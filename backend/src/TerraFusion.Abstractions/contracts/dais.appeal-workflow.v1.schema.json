@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/contracts/dais.appeal-workflow.v1.schema.json",
+  "title": "Dais Appeal Workflow Read Exchange",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "result"],
+  "properties": {
+    "request": { "$ref": "#/definitions/request" },
+    "result": { "$ref": "#/definitions/result" }
+  },
+  "definitions": {
+    "identifier": { "type": "string", "minLength": 1 },
+    "taxYear": { "type": "integer", "minimum": 1900, "maximum": 2200 },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "appealId": { "$ref": "#/definitions/identifier" },
+        "parcelId": { "$ref": "#/definitions/identifier" },
+        "taxYear": { "$ref": "#/definitions/taxYear" }
+      },
+      "anyOf": [
+        {
+          "required": ["appealId"],
+          "not": {
+            "anyOf": [{ "required": ["parcelId"] }, { "required": ["taxYear"] }]
+          }
+        },
+        {
+          "required": ["parcelId"],
+          "not": {
+            "anyOf": [{ "required": ["appealId"] }, { "required": ["taxYear"] }]
+          }
+        },
+        {
+          "required": ["taxYear"],
+          "not": {
+            "anyOf": [
+              { "required": ["appealId"] },
+              { "required": ["parcelId"] }
+            ]
+          }
+        }
+      ]
+    },
+    "appeal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "appealId",
+        "parcelId",
+        "taxYear",
+        "ground",
+        "status",
+        "filedAt"
+      ],
+      "properties": {
+        "appealId": { "$ref": "#/definitions/identifier" },
+        "parcelId": { "$ref": "#/definitions/identifier" },
+        "taxYear": { "$ref": "#/definitions/taxYear" },
+        "ground": {
+          "type": "string",
+          "enum": [
+            "MARKET_VALUE",
+            "UNIFORMITY",
+            "CLASSIFICATION",
+            "EXEMPTION_DENIAL",
+            "CLERICAL_ERROR"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["filed", "scheduled", "heard", "decided", "withdrawn"]
+        },
+        "filedAt": { "type": "string", "minLength": 20 },
+        "hearingAt": { "type": "string", "minLength": 20 },
+        "decisionAt": { "type": "string", "minLength": 20 }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "countyId", "selector"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/identifier" },
+        "selector": { "$ref": "#/definitions/selector" },
+        "traceId": { "$ref": "#/definitions/identifier" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "countyId", "appeals"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/identifier" },
+        "appeals": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/appeal" }
+        },
+        "traceId": { "$ref": "#/definitions/identifier" }
+      }
+    }
+  }
+}

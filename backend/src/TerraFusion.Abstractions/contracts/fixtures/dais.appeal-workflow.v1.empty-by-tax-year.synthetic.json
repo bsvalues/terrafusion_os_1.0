@@ -1,0 +1,12 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "selector": { "taxYear": 2024 }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "appeals": []
+  }
+}
