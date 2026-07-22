@@ -12,7 +12,7 @@ adoption. This completes the sequential Dais, Dossier, and GPT R3 contract-freez
 - Result states: `GROUNDED`, `NO_RELEVANT_CONTEXT`, or `DENIED` with a closed denial vocabulary.
 - Grounding: every grounded result has one or more bounded citations with stable source/chunk
   identity; empty and denied results never substitute fallback truth.
-- Ordering: score descending, then source ID ascending, then chunk index ascending.
+- Ordering: score descending, then source ID, chunk index, and chunk ID ascending.
 - Exclusions: generated answers, full documents, provider/model identity, embeddings, prompts,
   credentials, auth claims, suite records, tool authority, and trace-store mutation.
 

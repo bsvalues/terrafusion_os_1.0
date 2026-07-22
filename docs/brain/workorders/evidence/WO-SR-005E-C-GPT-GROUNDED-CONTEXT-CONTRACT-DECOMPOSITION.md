@@ -50,7 +50,7 @@ only for `NO_RELEVANT_CONTEXT` or `DENIED`; they must never be replaced with fal
 - `denialCode`: `COUNTY_CONTEXT_MISSING`, `COUNTY_MISMATCH`, `DATASET_NOT_ALLOWED`,
   `QUERY_REJECTED`, `SOURCE_NOT_AUTHORIZED`.
 - Unknown values fail closed.
-- Citations sort by score descending, then `sourceId` ascending, then `chunkIndex` ascending.
+- Citations sort by score descending, then `sourceId`, `chunkIndex`, and `chunkId` ascending.
 - Duplicate `(sourceId, chunkId)` identities, malformed scores, unstable ordering, and selector or
   trace mismatch fail closed.
 - `GROUNDED` requires at least one citation and every returned excerpt must have stable source and

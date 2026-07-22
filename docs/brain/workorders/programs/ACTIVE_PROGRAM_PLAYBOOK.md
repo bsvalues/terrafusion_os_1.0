@@ -121,10 +121,10 @@ Atlas PR #1. WO-SR-005B-E3 then rejected direct copying because no sovereign can
 suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into built-fresh product
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
 boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
-read-only boundary. WO-SR-005C-I is complete under the recorded exact non-core source
-authority. WO-SR-005D-C2 defined the exact Dossier evidence-registry read boundary; WO-SR-005E-C
-defined the exact GPT grounded-context boundary. All remaining Dais, Dossier, and GPT implementation
-cohorts are proposed/authority-gated; no lower-risk five-suite node remains admitted.
+read-only boundary, and WO-SR-005C-I froze it. WO-SR-005D-C2 defined the exact Dossier
+evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005E-C defined the exact GPT
+grounded-context boundary and WO-SR-005E-I freezes it on merge. The sequential contract cohort is
+complete; only later extraction, adapter parity, provider, and runtime-adoption work remains gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 

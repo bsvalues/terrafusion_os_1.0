@@ -69,4 +69,4 @@ suite-contract design completed. The sequential R3 envelope is consumed. Provide
 extraction, runtime adoption, and protected resources remain blocked; portfolio reconciliation must
 derive any later bounded node without treating contract completion as runtime authority.
 
-STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`
+STOP_TYPE: `PORTFOLIO_RECONCILIATION`

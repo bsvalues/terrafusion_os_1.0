@@ -170,6 +170,8 @@ function validateGptSemantics(exchange) {
   if (new Set(identities).size !== identities.length)
     errors.push('citation sourceId/chunkId identities must be unique');
   for (const citation of citations) {
+    if (rawPiiPatterns.some(pattern => pattern.test(citation.excerpt ?? '')))
+      errors.push('citation excerpt must not contain raw SSN, email, or phone PII');
     if (citation.score < request.scoreThreshold)
       errors.push('citation score must meet scoreThreshold');
   }
@@ -181,10 +183,14 @@ function validateGptSemantics(exchange) {
       (previous.score === current.score && previous.sourceId > current.sourceId) ||
       (previous.score === current.score &&
         previous.sourceId === current.sourceId &&
-        previous.chunkIndex > current.chunkIndex)
+        previous.chunkIndex > current.chunkIndex) ||
+      (previous.score === current.score &&
+        previous.sourceId === current.sourceId &&
+        previous.chunkIndex === current.chunkIndex &&
+        previous.chunkId > current.chunkId)
     ) {
       errors.push(
-        'citations must sort by score descending, sourceId ascending, chunkIndex ascending'
+        'citations must sort by score descending, sourceId ascending, chunkIndex ascending, chunkId ascending'
       );
     }
   }
@@ -501,6 +507,25 @@ test('GPT grounded context negative fixtures fail closed', () => {
     [],
     'citations below scoreThreshold must fail closed'
   );
+
+  const excerptPii = gptFixture('grounded-two-citations');
+  excerptPii.result.citations[0].excerpt = 'Contact jane@example.gov';
+  assert.notDeepEqual(validateGptSemantics(excerptPii), [], 'citation PII must fail closed');
+
+  const unresolvedTie = gptFixture('grounded-two-citations');
+  Object.assign(unresolvedTie.result.citations[0], {
+    sourceId: 'source-a',
+    chunkId: 'chunk-z',
+    chunkIndex: 1,
+    score: 0.9,
+  });
+  Object.assign(unresolvedTie.result.citations[1], {
+    sourceId: 'source-a',
+    chunkId: 'chunk-a',
+    chunkIndex: 1,
+    score: 0.9,
+  });
+  assert.notDeepEqual(validateGptSemantics(unresolvedTie), [], 'chunkId tie-breaker');
 });
 
 test('a modified frozen hash fails closed', () => {
