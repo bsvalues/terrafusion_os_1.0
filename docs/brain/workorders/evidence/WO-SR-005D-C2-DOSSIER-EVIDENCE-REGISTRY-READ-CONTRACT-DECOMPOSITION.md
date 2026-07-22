@@ -98,7 +98,17 @@ accept/reject result before adapter or extraction work is admitted.
 
 - `backend/src/TerraFusion.Abstractions/DTOs/DossierEvidenceRegistryReadDto.cs`
 - `backend/src/TerraFusion.Abstractions/contracts/dossier.evidence-registry-read.v1.schema.json`
-- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.*.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.two-record-page.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.empty-page.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.next-page.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.county-mismatch.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.parcel-mismatch.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.unknown-evidence-type.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.unknown-integrity.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.duplicate-evidence-id.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.unstable-tie-order.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.pagination-inconsistent.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.evidence-registry-read.v1.cross-lane-fields.synthetic.json`
 - `backend/src/TerraFusion.Abstractions/contracts.freeze.json`
 - `backend/src/TerraFusion.Abstractions/CONTRACTS.md`
 - `scripts/contracts/verify-contract-freeze.mjs`

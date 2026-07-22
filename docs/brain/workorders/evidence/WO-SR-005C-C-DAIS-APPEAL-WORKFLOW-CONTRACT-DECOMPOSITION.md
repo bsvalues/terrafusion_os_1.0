@@ -90,7 +90,15 @@ accept/reject result before adapter or extraction work is admitted.
 
 - `backend/src/TerraFusion.Abstractions/DTOs/DaisAppealWorkflowDto.cs`
 - `backend/src/TerraFusion.Abstractions/contracts/dais.appeal-workflow.v1.schema.json`
-- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.*.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.filed-by-parcel.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.decided-by-id.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.empty-by-tax-year.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.county-mismatch.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.missing-county.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.invalid-status.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.cross-lane-fields.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.ambiguous-selector.synthetic.json`
+- `backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.selector-mismatch.synthetic.json`
 - `backend/src/TerraFusion.Abstractions/contracts.freeze.json`
 - `backend/src/TerraFusion.Abstractions/CONTRACTS.md`
 - `scripts/contracts/verify-contract-freeze.mjs`
