@@ -2,11 +2,11 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE |
+| Status | COMPLETE - NO_GO |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R2 docs/evidence contract design |
 | Dependency | WO-SR-005D-P complete |
-| Next | A bounded contract implementation/freeze WO only if decomposition is implementation-ready and exact source authority exists |
+| Next | WO-SR-005D-C2 - Dossier Evidence Registry Read Contract Decomposition |
 
 ## Objective
 
@@ -45,3 +45,10 @@ the smallest later implementation allowlist without changing contract artifacts 
 ## Stop Type
 
 `DOSSIER_EVIDENCE_SNAPSHOT_CONTRACT_DECOMPOSED`
+
+## Result
+
+`NO_GO_SNAPSHOT_CROSSES_FORGE_DAIS_AND_OS_COMPOSITION`. The endpoint is a composed property
+snapshot containing Property, Forge valuation, levies, and notes rather than a Dossier-owned
+evidence record projection. `dossier.evidence-snapshot@1.0.0` is rejected. The dependency-cleared
+successor is a docs-only decomposition of the persistent Dossier evidence registry read surface.

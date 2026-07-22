@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005D-P proved a real read-only Dossier evidence snapshot and separated it
-from legally significant custody mutation and retention semantics. `WO-SR-005D-C` is active to
-decompose `dossier.evidence-snapshot@1.0.0`. Dais implementation, extraction, runtime adoption,
-protected data, package/workflow changes, and cutover stay gated.
+**Current state:** WO-SR-005D-C rejected the mixed-domain evidence snapshot because it composes
+Property, Forge valuation, levies, and notes. `WO-SR-005D-C2` is active to decompose the persistent
+`dossier.evidence-registry-read@1.0.0` boundary. Dais implementation, extraction, runtime adoption,
+custody mutation, protected data, package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

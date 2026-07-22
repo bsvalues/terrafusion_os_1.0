@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005D-P",
+  "generatedBy": "WO-SR-005D-C",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Dossier preparation selected the read-only evidence snapshot and excluded custody mutation. WO-SR-005D-P is complete and WO-SR-005D-C decomposition is active; Dais implementation remains authority-gated.",
+  "description": "Five-suite registry after WO-SR-005D-C rejected the mixed-domain Dossier snapshot. WO-SR-005D-C2 evidence-registry read decomposition is active; custody mutation and Dais implementation remain authority-gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4992,7 +4992,7 @@
       "nextCandidates": [
         {
           "id": "WO-SR-005D-C",
-          "reason": "Define the exact read-only evidence-snapshot contract before any contract implementation or custody work.",
+          "reason": "Audit the proposed snapshot boundary and return an exact contract design or NO_GO before implementation.",
           "riskClass": "R2",
           "blocked": false
         }
@@ -5004,7 +5004,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the exact provider-neutral, county-scoped Dossier evidence-snapshot contract and later implementation allowlist.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005D-P", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "Committed Dossier snapshot source, tests, contract policy, and governance evidence in read-only design mode" }
@@ -5035,13 +5035,73 @@
         }
       ],
       "validationGates": [
-        { "name": "Exact source reconciliation", "command": "Reconcile the proposed contract against committed Dossier source and tests", "required": true, "result": "not_run" },
+        { "name": "Exact source reconciliation", "command": "Reconcile the proposed contract against committed Dossier source and tests", "required": true, "result": "pass" },
+        { "name": "Work Order query", "command": "node docs/brain/workorders/tools/wo-query.mjs --json", "required": true, "result": "pass" },
+        { "name": "Exact docs-only scope", "command": "git diff --check and inspect changed paths", "required": true, "result": "pass" }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "contract-decomposition-no-go",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-C-DOSSIER-EVIDENCE-SNAPSHOT-CONTRACT-DECOMPOSITION.md",
+          "description": "Exact source proof that the snapshot crosses Property, Forge, levy, and note boundaries, with a NO_GO verdict and bounded successor."
+        }
+      ],
+      "stopConditions": [
+        { "type": "scope_boundary", "description": "WO-SR-005D-C cannot implement a contract or adapter, mutate custody, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source." }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-C2",
+          "reason": "Decompose the persistent Dossier evidence-registry read surface after rejecting the mixed-domain snapshot.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005D-C2",
+      "title": "Dossier Evidence Registry Read Contract Decomposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact provider-neutral, county-scoped Dossier evidence-registry read contract and later implementation allowlist or return NO_GO.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005D-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Committed Dossier evidence registry reads, entities, tests, contract policy, and governance evidence in read-only design mode" }
+      ],
+      "blockedSystems": [
+        { "name": "Contract artifacts, custody mutation, adapters, runtime, API, entities, services, tests, destination source, packages, or workflows" },
+        { "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, or deployment" }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005D-C2-dossier-evidence-registry-read-contract-decomposition.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-C2-DOSSIER-EVIDENCE-REGISTRY-READ-CONTRACT-DECOMPOSITION.md",
+        "docs/brain/workorders governance and routing required for WO-SR-005D-C2"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "suite product-source paths",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact registry-read records, selectors, county/parcel semantics, ordering, evidence vocabulary, privacy exclusions, fixtures, parity gate, and implementation allowlist or no-go verdict."
+        }
+      ],
+      "validationGates": [
+        { "name": "Exact source reconciliation", "command": "Reconcile the proposed contract against committed Dossier evidence registry source and tests", "required": true, "result": "not_run" },
         { "name": "Work Order query", "command": "node docs/brain/workorders/tools/wo-query.mjs --json", "required": true, "result": "not_run" },
         { "name": "Exact docs-only scope", "command": "git diff --check and inspect changed paths", "required": true, "result": "not_run" }
       ],
       "evidenceProduced": [],
       "stopConditions": [
-        { "type": "scope_boundary", "description": "WO-SR-005D-C cannot implement a contract or adapter, mutate custody, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source." }
+        { "type": "scope_boundary", "description": "WO-SR-005D-C2 cannot implement a contract or adapter, mutate custody, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source." }
       ],
       "nextCandidates": []
     }

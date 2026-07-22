@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005D-C Dossier evidence-snapshot contract decomposition active
+**Status:** Active; WO-SR-005D-C2 Dossier evidence-registry read contract decomposition active
 
 ## Ratified topology
 
@@ -41,8 +41,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-P | Prepare the Dais domain contract and county-isolation gate | Complete; appeal cohort selected, decomposition required |
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Proposed; implementation-ready but exact non-core source authority required |
-| WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete; evidence snapshot selected, custody mutation excluded |
-| WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Active; R2 docs/evidence design, no implementation |
+| WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
+| WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
+| WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Active; R2 docs/evidence design, no implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -88,6 +89,6 @@ proven projection behavior as a built-fresh standalone product module in Atlas P
 wiring. WO-SR-005C-P found real county-isolated Dais workflow proof, selected appeals as the smallest
 coherent cohort, and rejected direct extraction before a frozen contract exists. WO-SR-005C-C then
 defined a read-only contract boundary. WO-SR-005C-I is implementation-ready but authority-gated;
-WO-SR-005D-P selected the read-only evidence snapshot and excluded custody mutation; WO-SR-005D-C
-now decomposes that contract boundary. The other suite repositories
+WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
+WO-SR-005D-C2 now decomposes the persistent Dossier evidence-registry read boundary. The other suite repositories
 remain valid bootstraps, not claims of extracted or standalone product capability.

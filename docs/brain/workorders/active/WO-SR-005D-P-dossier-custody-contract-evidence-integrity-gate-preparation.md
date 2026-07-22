@@ -6,7 +6,7 @@
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R2 read-only discovery and governance evidence |
 | Dependency | WO-SR-005C-C complete |
-| Next | WO-SR-005D-C - Dossier Evidence Snapshot Contract Decomposition |
+| Next | WO-SR-005D-C2 - Dossier Evidence Registry Read Contract Decomposition after WO-SR-005D-C snapshot NO_GO |
 
 ## Objective
 
@@ -46,6 +46,7 @@ product, contract, runtime, destination, package, or workflow source.
 
 ## Result
 
-`COMPLETE_DECOMPOSITION_REQUIRED_EVIDENCE_SNAPSHOT_SELECTED`. The existing read-only evidence
-snapshot is the smallest coherent first contract cohort. Custody mutations, retention, documents,
-packets, notes, and runtime adoption remain excluded. See the [evidence packet](../evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md).
+`COMPLETE_WITH_POST_MERGE_COHORT_CORRECTION`. Preparation correctly separated custody mutation and
+retention, but WO-SR-005D-C proved the selected snapshot crosses Property, Forge valuation, levies,
+and notes. The snapshot cohort is superseded by `NO_GO`; the persistent evidence registry read
+surface is the next bounded candidate. See the [evidence packet](../evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md).
