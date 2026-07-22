@@ -1,4 +1,5 @@
 using FluentAssertions;
+using System.Text.Json;
 using TerraFusion.Abstractions.DTOs;
 using TerraFusion.API.Adapters;
 using TerraFusion.Core.DTOs.GisTf;
@@ -36,6 +37,37 @@ public sealed class AtlasSpatialReadAdapterTests
             new AtlasCoordinate { Longitude = -119.2m, Latitude = 46.2m });
         result.Layers.Zoning.Should().BeNull();
         result.Layers.Flood.Should().BeNull();
+    }
+
+    [Fact]
+    public void Adapt_ThrowsForNullRequest()
+    {
+        var action = () => AtlasSpatialReadAdapter.Adapt(null!, CreateSource());
+
+        action.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Adapt_ThrowsForNullSource()
+    {
+        var action = () => AtlasSpatialReadAdapter.Adapt(CreateRequest(), null!);
+
+        action.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Serialize_OmitsAbsentOptionalEvidenceUnderContractPolicy()
+    {
+        using var json = JsonDocument.Parse(
+            AtlasSpatialReadAdapter.Serialize(CreateRequest(), CreateSource()));
+        var root = json.RootElement;
+        var boundary = root.GetProperty("boundary");
+        var layers = root.GetProperty("layers");
+
+        root.GetProperty("schemaVersion").GetString().Should().Be("1.0.0");
+        boundary.TryGetProperty("dimensions", out _).Should().BeFalse();
+        layers.TryGetProperty("zoning", out _).Should().BeFalse();
+        layers.TryGetProperty("flood", out _).Should().BeFalse();
     }
 
     [Theory]

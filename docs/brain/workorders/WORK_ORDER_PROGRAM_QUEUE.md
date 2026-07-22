@@ -14,7 +14,7 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout is active. WO-SR-005B-E1 implemented the pure unwired
-adapter over the authenticated, county-isolated canonical geometry DTO and proved it with 27 tests
+adapter over the authenticated, county-isolated canonical geometry DTO and proved it with 30 tests
 and a zero-warning backend build. `WO-SR-005B-E2` is active for standalone, synthetic-only contract
 parity. Runtime adoption and Atlas extraction remain blocked.
 
@@ -41,7 +41,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005B-C Atlas Read Contract Decomposition | DONE | Exact records, county semantics, exclusions, compatibility, and fixtures defined |
 | WO-SR-005B-I Atlas Read Contract Implementation and Freeze | DONE | `atlas.spatial-read@1.0.0`; 3 groups / 14 files frozen; 8/8 tests; no runtime adoption |
 | WO-SR-005B-A Atlas Adapter and Standalone Parity Preparation | DONE | Canonical source selected; two-repository implementation sequence admitted |
-| WO-SR-005B-E1 Atlas Sovereign Spatial Read Adapter Implementation | DONE | 27/27 adapter tests; backend build 0 warnings/errors; no runtime wiring |
+| WO-SR-005B-E1 Atlas Sovereign Spatial Read Adapter Implementation | DONE | 30/30 adapter tests; backend build 0 warnings/errors; no runtime wiring |
 | **WO-SR-005B-E2 Atlas Standalone Synthetic Contract Parity Harness** | **ACTIVE** | Destination synthetic contract/parity only; no product source extraction |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED ON ADAPTER/PARITY IMPLEMENTATION | Stable contract exists; E1 and E2 must pass before extraction |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |

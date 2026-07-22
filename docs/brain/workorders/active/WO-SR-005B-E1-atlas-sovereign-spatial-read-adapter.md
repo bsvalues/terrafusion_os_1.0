@@ -55,7 +55,8 @@ Do not wire the adapter into runtime behavior.
 
 - The pure adapter is implemented without DI registration, endpoint wiring, provider/database
   access, or a runtime consumer.
-- The targeted adapter suite passes 27 tests.
+- The targeted adapter suite passes 30 tests, including null-input and contract-safe serialization
+  proof.
 - The canonical backend solution builds with 0 warnings and 0 errors.
 - Frozen-contract and Work Order governance validation pass.
 - Completion evidence: [WO-SR-005B-E1-ATLAS-SOVEREIGN-SPATIAL-READ-ADAPTER.md](../evidence/WO-SR-005B-E1-ATLAS-SOVEREIGN-SPATIAL-READ-ADAPTER.md).

@@ -115,7 +115,7 @@ defined the parity gate. WO-SR-005B-C decomposed an exact provider-neutral, coun
 contract, and WO-SR-005B-I implemented and froze it with synthetic proof. WO-SR-005B-A selected the
 authenticated canonical geometry DTO, rejected the unsafe legacy GIS surface, and admitted E1/E2 as
 the bounded adapter and standalone parity sequence without authorizing runtime adoption.
-WO-SR-005B-E1 then implemented that pure unwired adapter with 27 passing tests and a zero-warning
+WO-SR-005B-E1 then implemented that pure unwired adapter with 30 passing tests and a zero-warning
 solution build. WO-SR-005B-E2 now owns only the standalone synthetic contract-compat proof.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).

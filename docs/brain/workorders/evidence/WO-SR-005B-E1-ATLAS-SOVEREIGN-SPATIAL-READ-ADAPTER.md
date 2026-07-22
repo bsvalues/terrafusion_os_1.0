@@ -15,12 +15,15 @@ county-isolated `ParcelGeometryResponse` to frozen `atlas.spatial-read@1.0.0`:
 The adapter enforces exact canonical county and parcel identity, active source state, finite and
 range-valid centroid/area values, and one closed simple WGS-84 polygon outer ring. It emits only
 canonical contract evidence. Zoning, flood, and dimensions remain absent rather than fabricated.
+The adapter-owned serializer omits those optional null members explicitly because the API-wide MVC
+serializer preserves nulls. Future runtime adoption must use this serializer or prove an equivalent
+scoped contract policy; default MVC return behavior is not authorized by E1.
 
 ## Validation Evidence
 
 | Gate | Result |
 | --- | --- |
-| Targeted Atlas adapter suite | PASS - 27 passed, 0 failed |
+| Targeted Atlas adapter suite | PASS - 30 passed, 0 failed |
 | `dotnet build backend/TerraFusion.sln -c Release` | PASS - 0 warnings, 0 errors |
 | `node scripts/contracts/verify-contract-freeze.mjs` | PASS |
 | `node --test scripts/contracts/verify-contract-freeze.test.mjs` | PASS |

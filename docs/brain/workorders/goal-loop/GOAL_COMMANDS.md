@@ -48,7 +48,7 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 ```
 
 **Current state:** WO-SR-005B-E1 completed the pure unwired adapter over the authenticated canonical
-geometry DTO with 27 passing tests and a zero-warning backend build. `WO-SR-005B-E2` is active for
+geometry DTO with 30 passing tests and a zero-warning backend build. `WO-SR-005B-E2` is active for
 standalone synthetic contract parity; runtime adoption, extraction, and the remaining suite lanes
 stay gated.
 

@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using TerraFusion.Abstractions.DTOs;
 using TerraFusion.Core.DTOs.GisTf;
@@ -13,6 +15,10 @@ public static partial class AtlasSpatialReadAdapter
 {
     private const string SchemaVersion = "1.0.0";
     private const decimal SquareFeetPerAcre = 43_560m;
+    private static readonly JsonSerializerOptions ContractSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
 
     public static AtlasParcelSpatialReadResult Adapt(
         AtlasParcelSpatialReadRequest request,
@@ -59,6 +65,16 @@ public static partial class AtlasSpatialReadAdapter
             },
         };
     }
+
+    /// <summary>
+    /// Serializes the frozen contract with absent optional evidence omitted. The API-wide JSON
+    /// policy preserves nulls, so a future runtime consumer must use this contract-safe path (or
+    /// prove an equivalent scoped policy) rather than return the DTO through default MVC JSON.
+    /// </summary>
+    public static string Serialize(
+        AtlasParcelSpatialReadRequest request,
+        ParcelGeometryResponse source) =>
+        JsonSerializer.Serialize(Adapt(request, source), ContractSerializerOptions);
 
     private static void RequireCanonicalIdentity(string value, Guid expected, string parameterName)
     {
