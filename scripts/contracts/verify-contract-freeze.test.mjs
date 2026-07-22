@@ -154,7 +154,7 @@ function validateGptSemantics(exchange) {
   const rawPiiPatterns = [
     /\b\d{3}-\d{2}-\d{4}\b/,
     /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
-    /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/,
+    /(?:\+?1[.\s-]?)?(?:\(\d{3}\)|\d{3})[.\s-]?\d{3}[.\s-]?\d{4}\b/,
   ];
   if (rawPiiPatterns.some(pattern => pattern.test(queryText)))
     errors.push('queryText must not contain raw SSN, email, or phone PII');
@@ -482,7 +482,13 @@ test('GPT grounded context negative fixtures fail closed', () => {
     assert.notDeepEqual(validateGptSemantics(gptFixture(name)), [], name);
   }
 
-  for (const queryText of ['Contact jane@example.gov', 'Call 509-555-1212']) {
+  for (const queryText of [
+    'Contact jane@example.gov',
+    'Call 509-555-1212',
+    'Call 5095551212',
+    'Call (509)555-1212',
+    'Call +15095551212',
+  ]) {
     const fixture = gptFixture('denied-dataset');
     fixture.request.queryText = queryText;
     assert.notDeepEqual(validateGptSemantics(fixture), [], queryText);

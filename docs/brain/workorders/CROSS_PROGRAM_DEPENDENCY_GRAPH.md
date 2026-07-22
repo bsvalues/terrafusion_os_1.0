@@ -97,7 +97,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005E-C GPT grounded-context contract decomposition is complete
   WO-SR-005E-I GPT grounded-context implementation/freeze is complete on merge
   Sequential R3 contract-freeze envelope is consumed; portfolio reconciliation follows
-  WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
+  WO-SR-005B through WO-SR-005E extraction/runtime adoption remains gated by exact scope and parity proof
 ```
 
 ---
@@ -106,7 +106,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-C | SR-005C-I / SR-005D-I / SR-005E-I bounded contract implementation | Exact R3 non-core source authority; runtime/provider adoption blocked | ACTIVE / AUTHORITY BOUNDARY |
+| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract-freeze cohort | Portfolio reconciliation | Exact later extraction scope, parity evidence, and authority; runtime/provider adoption blocked | CONTRACT COHORT COMPLETE |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -124,11 +124,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. No R2 five-suite node remains admitted; exact Dais/Dossier/GPT contract implementation authority is required.
-2. Do not rerun completed Work Orders to avoid an honest parked state.
-3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Resume only through an exact contract implementation cohort; keep provider calls, custody mutation, Dais/Dossier
-   implementation, extraction, runtime adoption, protected data, package/workflow changes, and cutover blocked.
+1. The Dais, Dossier, and GPT contract-freeze cohort is complete; portfolio reconciliation is next.
+2. Do not treat frozen contracts as authority for extraction, adapters, providers, or runtime adoption.
+3. Do not rerun completed Work Orders or ask the owner to dispatch routine reconciliation.
+4. Any later extraction cohort requires exact scope, parity evidence, and applicable authority; keep provider calls,
+   custody mutation, runtime adoption, protected data, publication/workflow changes, and cutover blocked.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
