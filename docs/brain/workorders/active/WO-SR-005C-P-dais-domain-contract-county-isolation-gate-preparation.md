@@ -17,10 +17,13 @@ any Dais extraction or destination implementation can be admitted.
 ## Allowed Scope
 
 - Read committed Dais source, tests, domain packs, shared contracts, and standalone bootstrap files.
+- Reverify the canonical Dais local path, remote, default branch, privacy, clean status, and exact head
+  from `PATH_CANON_REGISTER.md` before cross-repository inspection.
 - Record exact source paths and file-line evidence.
 - Classify domain ownership, county context, isolation semantics, cross-lane exclusions,
   compatibility/versioning requirements, synthetic fixtures, adapter boundaries, and parity gates.
 - Update only `docs/brain/workorders/**` governance and evidence required for this Work Order.
+- Update `PATH_CANON_REGISTER.md` only for the exact Dais repository identity prerequisite.
 
 ## Blocked
 

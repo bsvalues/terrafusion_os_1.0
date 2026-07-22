@@ -51,4 +51,6 @@ integration. It proves only the built-fresh standalone projection foundation.
 ## Next
 
 `WO-SR-005C-P - Dais Domain Contract and County-Isolation Gate Preparation` is admitted as the next
-dependency-cleared R2 evidence slice. Dais extraction and implementation remain blocked.
+dependency-cleared R2 evidence slice. Its canonical read-only clone is registered at
+`D:\terrafusion-dais`, remote `github.com/bsvalues/terrafusion-dais`, `main` head
+`1404db1947587d4f8c868092798c4d71c23bb62d`. Dais extraction and implementation remain blocked.

@@ -4693,6 +4693,7 @@
         }
       ],
       "allowedFiles": [
+        "PATH_CANON_REGISTER.md",
         "docs/brain/workorders/active/WO-SR-005C-P-dais-domain-contract-county-isolation-gate-preparation.md",
         "docs/brain/workorders/evidence/WO-SR-005C-P-DAIS-DOMAIN-CONTRACT-COUNTY-ISOLATION-GATE-PREPARATION.md",
         "docs/brain/workorders governance and routing required for WO-SR-005C-P"
