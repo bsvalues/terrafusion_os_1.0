@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005D-C rejected the mixed-domain evidence snapshot because it composes
-Property, Forge valuation, levies, and notes. `WO-SR-005D-C2` is active to decompose the persistent
-`dossier.evidence-registry-read@1.0.0` boundary. Dais implementation, extraction, runtime adoption,
-custody mutation, protected data, package/workflow changes, and cutover stay gated.
+**Current state:** WO-SR-005D-C2 defined the persistent
+`dossier.evidence-registry-read@1.0.0` boundary; implementation is proposed but authority-gated.
+`WO-SR-005E-P` is active to prepare the GPT governed-AI contract and grounding gate. Extraction,
+runtime adoption, provider calls, protected data, package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

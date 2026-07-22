@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005D-C2 Dossier evidence-registry read contract decomposition active
+**Status:** Active; WO-SR-005E-P GPT governed-AI contract and grounding preparation active
 
 ## Ratified topology
 
@@ -43,7 +43,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Proposed; implementation-ready but exact non-core source authority required |
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
-| WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Active; R2 docs/evidence design, no implementation |
+| WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
+| WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Proposed; implementation-ready but exact non-core source authority required |
+| WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Active; read-only evidence, no provider calls or implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -90,5 +92,6 @@ wiring. WO-SR-005C-P found real county-isolated Dais workflow proof, selected ap
 coherent cohort, and rejected direct extraction before a frozen contract exists. WO-SR-005C-C then
 defined a read-only contract boundary. WO-SR-005C-I is implementation-ready but authority-gated;
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
-WO-SR-005D-C2 now decomposes the persistent Dossier evidence-registry read boundary. The other suite repositories
+WO-SR-005D-C2 defined the persistent Dossier evidence-registry read boundary. WO-SR-005D-I is
+implementation-ready but authority-gated, so WO-SR-005E-P advances GPT preparation. The other suite repositories
 remain valid bootstraps, not claims of extracted or standalone product capability.
