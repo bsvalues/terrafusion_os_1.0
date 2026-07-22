@@ -18,7 +18,7 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | WO-SR-005D-I active; WO-SR-005E-I follows under the sequential R3 envelope | NO - recorded bounded authority applies | `program`, `once`, `evidence` |
+| `program-next` | Five-Suite Federated Repository Buildout | WO-SR-005E-I active under the sequential R3 envelope | NO - recorded bounded authority applies | `program`, `once`, `evidence` |
 | `suite-repositories` | Five-Suite Federated Repository Buildout | Contract design complete; implementation cohort authority-gated | YES - exact R3 non-core source grant | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |

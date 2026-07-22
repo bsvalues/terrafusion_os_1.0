@@ -44,10 +44,10 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
-| WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Active under sequential R3 envelope |
+| WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Complete; `dossier.evidence-registry-read@1.0.0`, no runtime adoption |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
-| WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Proposed; implementation-ready but exact non-core source authority required |
+| WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Active under sequential R3 envelope |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 

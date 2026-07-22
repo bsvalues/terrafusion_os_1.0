@@ -1,0 +1,19 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-200",
+    "limit": 25,
+    "offset": 0
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-200",
+    "results": [],
+    "total": 0,
+    "hasMore": false,
+    "limit": 25,
+    "offset": 0
+  }
+}

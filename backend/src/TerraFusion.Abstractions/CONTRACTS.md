@@ -11,12 +11,14 @@ published by WO-SR-002.
 | `forge.valuation` | `1.0.0` | Suite | Forge | `CostMatrixDto`, `PropertyValuationInputDto`, `UpdateCostMatrixDto`, `ValuationResultDto` |
 | `atlas.spatial-read` | `1.0.0` | Suite | Atlas | Provider-neutral parcel spatial-read DTO, schema, and synthetic fixture corpus |
 | `dais.appeal-workflow` | `1.0.0` | Suite | Dais | County-scoped read-only appeal lifecycle DTO, schema, and synthetic fixture corpus |
+| `dossier.evidence-registry-read` | `1.0.0` | Suite | Dossier | County/parcel-scoped evidence registry read DTO, schema, and synthetic fixture corpus |
 | `crosscut.audit` | `1.0.0` | Cross-cutting | Forge, Atlas, Dais, Dossier, GPT | `IAuditLogger` |
 
 The machine source of truth is `contracts.freeze.json`. It pins every frozen file by SHA-256 and
 classifies every other C# file in this project as either deferred or OS-internal. The Atlas fixture
-and Dais fixture corpora are synthetic and fail-closed: county mismatches, invalid geometry or
-selectors, selector mismatches, and cross-lane fields are negative evidence, not accepted payloads.
+and Dais/Dossier fixture corpora are synthetic and fail-closed: county or selector mismatches,
+invalid geometry, pagination, identity, ordering, vocabulary, and cross-lane fields are negative
+evidence, not accepted payloads.
 
 ## Compatibility
 
@@ -34,7 +36,8 @@ selectors, selector mismatches, and cross-lane fields are negative evidence, not
 
 The current implementation uses a project reference to `TerraFusion.Abstractions`. Future package
 IDs are reserved as `TerraFusion.Contracts.Forge`, `TerraFusion.Contracts.Atlas`, and
-`TerraFusion.Contracts.Dais`, and `TerraFusion.Contracts.CrossCutting`, but their status is
+`TerraFusion.Contracts.Dais`, `TerraFusion.Contracts.Dossier`, and
+`TerraFusion.Contracts.CrossCutting`, but their status is
 `planned_not_published`. Package creation,
 registry publication, credentials, and source extraction are separate Work Orders.
 

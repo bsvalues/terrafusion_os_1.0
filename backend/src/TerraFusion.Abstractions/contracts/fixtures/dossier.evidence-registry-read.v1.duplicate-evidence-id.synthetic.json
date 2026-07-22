@@ -1,0 +1,32 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "c",
+    "parcelId": "p",
+    "limit": 10,
+    "offset": 0
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "c",
+    "parcelId": "p",
+    "results": [
+      {
+        "evidenceId": "00000000-0000-4000-8000-000000000006",
+        "evidenceType": "photo",
+        "integrity": "verified",
+        "createdAt": "2026-02-01T00:00:00Z"
+      },
+      {
+        "evidenceId": "00000000-0000-4000-8000-000000000006",
+        "evidenceType": "photo",
+        "integrity": "verified",
+        "createdAt": "2026-01-01T00:00:00Z"
+      }
+    ],
+    "total": 2,
+    "hasMore": false,
+    "limit": 10,
+    "offset": 0
+  }
+}

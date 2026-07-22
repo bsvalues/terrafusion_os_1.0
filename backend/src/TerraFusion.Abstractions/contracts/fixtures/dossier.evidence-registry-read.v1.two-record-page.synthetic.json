@@ -1,0 +1,32 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-100",
+    "limit": 50,
+    "offset": 0
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-100",
+    "results": [
+      {
+        "evidenceId": "00000000-0000-4000-8000-000000000002",
+        "evidenceType": "photo",
+        "integrity": "verified",
+        "createdAt": "2026-02-02T12:00:00Z"
+      },
+      {
+        "evidenceId": "00000000-0000-4000-8000-000000000001",
+        "evidenceType": "field-inspection",
+        "integrity": "pending",
+        "createdAt": "2026-02-01T12:00:00Z"
+      }
+    ],
+    "total": 2,
+    "hasMore": false,
+    "limit": 50,
+    "offset": 0
+  }
+}

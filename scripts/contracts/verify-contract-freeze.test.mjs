@@ -16,6 +16,10 @@ const atlasContractRoot = path.join(repoRoot, 'backend/src/TerraFusion.Abstracti
 const atlasSchemaPath = path.join(atlasContractRoot, 'atlas.spatial-read.v1.schema.json');
 const atlasFixtureRoot = path.join(atlasContractRoot, 'fixtures');
 const daisSchemaPath = path.join(atlasContractRoot, 'dais.appeal-workflow.v1.schema.json');
+const dossierSchemaPath = path.join(
+  atlasContractRoot,
+  'dossier.evidence-registry-read.v1.schema.json'
+);
 
 function atlasFixture(name) {
   return JSON.parse(
@@ -30,6 +34,15 @@ function daisFixture(name) {
   return JSON.parse(
     fs.readFileSync(
       path.join(atlasFixtureRoot, `dais.appeal-workflow.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function dossierFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `dossier.evidence-registry-read.v1.${name}.synthetic.json`),
       'utf8'
     )
   );
@@ -83,6 +96,38 @@ function validateDaisSemantics(exchange) {
       errors.push('decisionAt must not precede filedAt');
     }
   }
+  return errors;
+}
+
+function validateDossierSemantics(exchange) {
+  const errors = [];
+  const { request, result } = exchange;
+  if (request?.countyId !== result?.countyId)
+    errors.push('response countyId must match request countyId');
+  if (request?.parcelId !== result?.parcelId)
+    errors.push('response parcelId must match request parcelId');
+  if (request?.limit !== result?.limit || request?.offset !== result?.offset)
+    errors.push('response pagination must match request');
+  const records = result?.results ?? [];
+  if (new Set(records.map(record => record.evidenceId)).size !== records.length)
+    errors.push('evidenceId values must be unique');
+  for (let index = 1; index < records.length; index += 1) {
+    const previous = records[index - 1];
+    const current = records[index];
+    const previousInstant = Date.parse(previous.createdAt);
+    const currentInstant = Date.parse(current.createdAt);
+    if (
+      previousInstant < currentInstant ||
+      (previousInstant === currentInstant && previous.evidenceId > current.evidenceId)
+    ) {
+      errors.push('results must sort by createdAt descending then evidenceId ascending');
+    }
+  }
+  if (result && result.hasMore !== result.offset + records.length < result.total)
+    errors.push('hasMore is inconsistent with page bounds');
+  if (result && result.offset + records.length > result.total)
+    errors.push('page rows exceed total');
+  if (result && records.length > result.limit) errors.push('result count exceeds limit');
   return errors;
 }
 
@@ -234,8 +279,8 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 4,
-    frozenFiles: 25,
+    groups: 5,
+    frozenFiles: 38,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -310,6 +355,45 @@ test('Dais appeal workflow negative fixtures fail closed', () => {
   );
 });
 
+test('Dossier evidence registry positive fixtures satisfy schema and list semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(dossierSchemaPath, 'utf8'));
+  for (const name of ['two-record-page', 'empty-page', 'next-page']) {
+    const fixture = dossierFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateDossierSemantics(fixture), [], name);
+  }
+});
+
+test('Dossier evidence registry negative fixtures fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(dossierSchemaPath, 'utf8'));
+  for (const name of ['unknown-evidence-type', 'unknown-integrity', 'cross-lane-fields']) {
+    assert.notDeepEqual(validateJsonSchema(schema, schema, dossierFixture(name)), [], name);
+  }
+  for (const name of [
+    'county-mismatch',
+    'parcel-mismatch',
+    'duplicate-evidence-id',
+    'unstable-tie-order',
+    'pagination-inconsistent',
+  ]) {
+    assert.notDeepEqual(validateDossierSemantics(dossierFixture(name)), [], name);
+  }
+
+  const rowsExceedTotal = dossierFixture('next-page');
+  rowsExceedTotal.result.total = 1;
+  rowsExceedTotal.result.hasMore = false;
+  assert.notDeepEqual(validateDossierSemantics(rowsExceedTotal), [], 'rows cannot exceed total');
+
+  const fractionalOutOfOrder = dossierFixture('two-record-page');
+  fractionalOutOfOrder.result.results[0].createdAt = '2026-01-01T00:00:00Z';
+  fractionalOutOfOrder.result.results[1].createdAt = '2026-01-01T00:00:00.001Z';
+  assert.notDeepEqual(
+    validateDossierSemantics(fractionalOutOfOrder),
+    [],
+    'timestamp ordering compares instants'
+  );
+});
+
 test('a modified frozen hash fails closed', () => {
   const altered = withManifest(manifest => {
     manifest.frozen[0].files[0].sha256 = '0'.repeat(64);
@@ -362,8 +446,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 4,
-      frozenFiles: 25,
+      groups: 5,
+      frozenFiles: 38,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -454,8 +538,8 @@ test('a genuine type declaration still passes the content check', () => {
   assert.deepEqual(
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
-      groups: 4,
-      frozenFiles: 25,
+      groups: 5,
+      frozenFiles: 38,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

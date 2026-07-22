@@ -1,0 +1,26 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-300",
+    "limit": 1,
+    "offset": 1
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "parcelId": "P-300",
+    "results": [
+      {
+        "evidenceId": "00000000-0000-4000-8000-000000000003",
+        "evidenceType": "legal-document",
+        "integrity": "verified",
+        "createdAt": "2026-01-01T00:00:00Z"
+      }
+    ],
+    "total": 3,
+    "hasMore": true,
+    "limit": 1,
+    "offset": 1
+  }
+}
