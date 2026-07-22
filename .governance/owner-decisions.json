@@ -710,6 +710,46 @@
         "merged_pr": 1333,
         "merge_commit": "111032979a794324c3b217185bb4d7bafb568232"
       }
+    },
+    {
+      "id": "OWNER-SEC-MEMORY-001-SAVE-STATE-LANE-20260722",
+      "program": "Session Continuity / Save-State",
+      "goal": "GOAL-SESSION-STATE-HANDOFF",
+      "loop": "LOOP-SESSION-STATE-HANDOFF",
+      "work_order": "WO-SEC-MEMORY-001",
+      "work_order_routing": "No docs/brain/workorders record exists for this id; it is a descriptive label, not a canonical Brain Work Order. Authorized by the owner's direct 'close out the session and save state' directive and the repo-shipped .claude/skills/save-state skill whose stated purpose is writing this snapshot. program/goal/loop are descriptive, not Brain-registered identifiers.",
+      "status": "active",
+      "authority_class": "R3-bounded-session-state-handoff",
+      "effective_base_sha": "db072fbe7b6c48acc1994dc815df1f035d4621fa",
+      "terminal_condition": "Remains active for session save-state snapshots until the owner revokes or narrows it; the first exercise is PR #1349.",
+      "authorized_actions": [
+        "write the end-of-session handoff snapshot to .claude/memory/project_current_state.md (overwrite-in-place) and update the .claude/memory/MEMORY.md index",
+        "record this grant in .governance/owner-decisions.json"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        ".claude/memory/project_current_state.md",
+        ".claude/memory/MEMORY.md"
+      ],
+      "writelane_note": ".claude/memory/** is outside the AGENTS.md core-surface allow-list. This grant authorizes the save-state handoff write lane, which the repository already relies on via the .claude/skills/save-state skill and prior committed snapshots.",
+      "explicitly_denied": [
+        "any .claude change outside .claude/memory/** and this decision's .governance entry",
+        "runtime, backend, frontend, product, manifest, lockfile, or CI changes",
+        "production, county, PACS, SQL, credential, secret, or protected-data authority",
+        "required-check, branch-protection, review, or exact-head bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check bypass or failure",
+        "unresolved review thread at merge time",
+        "protected-boundary access or conflicting authority"
+      ],
+      "decision_basis": "Owner directed 'close out the session and save state' and 'ping me when #1349 merges'; the repository ships .claude/skills/save-state for exactly this write.",
+      "completion": {
+        "target_pr": 1349,
+        "effective_on_merge": true
+      }
     }
   ]
 }
