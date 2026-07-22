@@ -4,6 +4,10 @@
 
 `IMPLEMENTATION_READY_READ_ONLY_WITHOUT_RUNTIME_ADOPTION`
 
+Governance remediation and evidence maintenance are covered by the active
+`OWNER-TF-STANDING-OPERATOR-AUTHORITY` record in `.governance/owner-decisions.json`. That authority
+does not activate or authorize the proposed R3 implementation Work Order.
+
 The smallest safe Dais contract is `dais.appeal-workflow@1.0.0`, a provider-neutral, county-scoped,
 read-only lifecycle projection. The first version does not authorize create/update commands, runtime
 adoption, persistence, extraction, publication, or destination product source.
