@@ -511,7 +511,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-005C-I through WO-SR-005E-I sequentially",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-sequential-contract-freeze",
       "effective_base_sha": "db072fbe7b6c48acc1994dc815df1f035d4621fa",
       "scope_source": "Each Work Order allowedFiles list in docs/brain/workorders/registry/work-order-registry.seed.json",
@@ -538,7 +538,20 @@
         "protected-boundary access or conflicting authority"
       ],
       "terminal_condition": "Consumed after WO-SR-005E-I is merged and post-merge verification succeeds.",
-      "decision_basis": "Owner rejected the duplicate authority stop and explicitly authorized the sequential Dais, Dossier, and GPT R3 contract-freeze envelope."
+      "decision_basis": "Owner rejected the duplicate authority stop and explicitly authorized the sequential Dais, Dossier, and GPT R3 contract-freeze envelope.",
+      "completion_evidence": [
+        "docs/brain/workorders/evidence/WO-SR-005C-I-DAIS-APPEAL-WORKFLOW-CONTRACT-FREEZE.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-I-DOSSIER-EVIDENCE-REGISTRY-READ-CONTRACT-FREEZE.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-I-GPT-GROUNDED-CONTEXT-CONTRACT-FREEZE.md"
+      ],
+      "completion": {
+        "terminal_work_order": "WO-SR-005E-I",
+        "effective_on_merge": true,
+        "terminal_condition_satisfied": "The exact-scope WO-SR-005E-I pull request carrying this record merged to main",
+        "authority_consumed": true,
+        "evidence": "docs/brain/workorders/evidence/WO-SR-005E-I-GPT-GROUNDED-CONTEXT-CONTRACT-FREEZE.md",
+        "merge_commit_source": "GitHub pull request metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate pull request"
+      }
     },
     {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",

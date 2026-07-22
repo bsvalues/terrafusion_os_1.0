@@ -1,0 +1,35 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "queryText": "How are agricultural improvements classified?",
+    "topK": 2,
+    "scoreThreshold": 0.7,
+    "traceId": "trace-gpt-001"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "status": "GROUNDED",
+    "traceId": "trace-gpt-001",
+    "citations": [
+      {
+        "sourceId": "manual-2026",
+        "chunkId": "manual-2026-14",
+        "chunkIndex": 14,
+        "excerpt": "Agricultural improvements are classified by their actual use.",
+        "score": 0.94,
+        "sourceTitle": "Assessment Manual"
+      },
+      {
+        "sourceId": "policy-17",
+        "chunkId": "policy-17-3",
+        "chunkIndex": 3,
+        "excerpt": "Document the use observed as of the assessment date.",
+        "score": 0.86
+      }
+    ]
+  }
+}

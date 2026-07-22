@@ -33,6 +33,11 @@
       "groups": ["dossier.evidence-registry-read"]
     },
     {
+      "id": "TerraFusion.Contracts.Gpt",
+      "status": "planned_not_published",
+      "groups": ["gpt.grounded-context"]
+    },
+    {
       "id": "TerraFusion.Contracts.CrossCutting",
       "status": "planned_not_published",
       "groups": ["crosscut.audit"]
@@ -228,6 +233,70 @@
         {
           "path": "contracts/fixtures/dossier.evidence-registry-read.v1.unstable-tie-order.synthetic.json",
           "sha256": "caf891ee8adbc92fe001441c416946f2bef0f307d33dafff4166a98f7c551316"
+        }
+      ]
+    },
+    {
+      "group": "gpt.grounded-context",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["gpt"],
+      "files": [
+        {
+          "path": "DTOs/GptGroundedContextDto.cs",
+          "sha256": "a4b28ea6e0aa4001cec938104127a46492c6d68bff18014154ca0e81035e023e"
+        },
+        {
+          "path": "contracts/gpt.grounded-context.v1.schema.json",
+          "sha256": "672a507a11e03fdc2b214a4e85935a91d0097f7841aa13197a9a26de579a2abe"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.citation-without-source.synthetic.json",
+          "sha256": "3bdad4afa519f4869a74dd0b98577a1a06b7f82eaf7f246deedc2e3bc4123aaa"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.county-mismatch.synthetic.json",
+          "sha256": "04a70106108a1e8770b475ee093fb5e24ecff6f7a467134fa3ce242b18f3645b"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.dataset-mismatch.synthetic.json",
+          "sha256": "103f884cd8349372d0f79ccd4278ee00e970a0ddf2004695c22dbc135e70253c"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.denied-dataset.synthetic.json",
+          "sha256": "eef7a134bd6e354145c4fef8a882bf179472132737ee52066c118bd275508a60"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.duplicate-citation.synthetic.json",
+          "sha256": "f68693c30607a804f6ec75dddb6dd7e68d1ec9cd0790cb428f3dbabac1757bf0"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.full-text-or-provider-leak.synthetic.json",
+          "sha256": "c341b4522f238f2ff6ec7f6699481c92938e360cd4333ddf9d019f07efe4bbfc"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.grounded-two-citations.synthetic.json",
+          "sha256": "30f0f8d82604ae5caa1fb3008022dc36f27d350d19e87d0e26693ff209b62ed4"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.no-relevant-context.synthetic.json",
+          "sha256": "02554973cc1d81ae7226a9c2c8f92b8d369e9e64c71b6e049deedc343a08231d"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.raw-pii-query.synthetic.json",
+          "sha256": "bf5f664253ca1c89b308816934b2434be22edbe018d80106b7b3b61bc2854ce6"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.trace-mismatch.synthetic.json",
+          "sha256": "2176ddda72986420d337cdaa8b7b26be8f5ec3ad2d27007fb485f0b425273774"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.unknown-status.synthetic.json",
+          "sha256": "1b326816948cc025c9c4ecd2ea72f2449254696bdff9c8033f8b3b1726c3f426"
+        },
+        {
+          "path": "contracts/fixtures/gpt.grounded-context.v1.unstable-order.synthetic.json",
+          "sha256": "1f0f386cc708e37c485c4cc047588f0327234e3f75c654ca87358c305e1bd9ae"
         }
       ]
     }

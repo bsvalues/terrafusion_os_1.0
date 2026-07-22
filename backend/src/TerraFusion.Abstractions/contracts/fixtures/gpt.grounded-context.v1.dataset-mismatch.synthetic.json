@@ -1,0 +1,19 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "queryText": "What is the policy?",
+    "topK": 1,
+    "scoreThreshold": 0.7,
+    "traceId": "trace-gpt-005"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "different-dataset",
+    "status": "NO_RELEVANT_CONTEXT",
+    "citations": [],
+    "traceId": "trace-gpt-005"
+  }
+}

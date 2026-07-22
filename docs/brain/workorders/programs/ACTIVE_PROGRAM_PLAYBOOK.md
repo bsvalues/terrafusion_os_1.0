@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active with exact R3 contract-implementation authority boundary |
-| Current | `WO-SR-005E-I` active under the sequential R3 contract-freeze envelope; Dais and Dossier complete |
-| Next | Resume bounded contract implementation only under exact non-core source authority |
+| Status | Contract-freeze cohort complete on WO-SR-005E-I merge; broader extraction remains gated |
+| Current | Dais, Dossier, and GPT read-only contracts complete and hash-frozen |
+| Next | Portfolio reconciliation; no adapter or runtime adoption implied |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -575,9 +575,9 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-I` active |
-| Next WO | Dais, Dossier, and GPT bounded contract implementation under exact R3 authority |
+| Selected program | Portfolio reconciliation after Five-Suite contract-freeze completion |
+| Current WO | `WO-SR-005E-I` complete on merge |
+| Next WO | Recompute from canonical evidence; protected extraction/runtime boundaries remain gated |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

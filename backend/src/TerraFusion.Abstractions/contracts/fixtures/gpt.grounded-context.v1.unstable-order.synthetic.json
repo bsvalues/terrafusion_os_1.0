@@ -1,0 +1,34 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "queryText": "What is the policy?",
+    "topK": 2,
+    "scoreThreshold": 0.7,
+    "traceId": "trace-gpt-011"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "status": "GROUNDED",
+    "traceId": "trace-gpt-011",
+    "citations": [
+      {
+        "sourceId": "source-b",
+        "chunkId": "chunk-2",
+        "chunkIndex": 2,
+        "excerpt": "Lower score first.",
+        "score": 0.8
+      },
+      {
+        "sourceId": "source-a",
+        "chunkId": "chunk-1",
+        "chunkIndex": 1,
+        "excerpt": "Higher score second.",
+        "score": 0.9
+      }
+    ]
+  }
+}

@@ -64,9 +64,9 @@ Atlas PR #1. WO-SR-005B-E3 rejected direct source copying because no sovereign c
 suite-only boundary. WO-SR-005B-F1 merged the built-fresh standalone projection foundation in Atlas
 PR #2 without runtime adoption. WO-SR-005C-P verified county-isolated Dais workflow truth and
 selected appeals as the first contract cohort. WO-SR-005C-C completed the read-only decomposition;
-WO-SR-005C-I and WO-SR-005D-I are complete; WO-SR-005E-I is active under the recorded sequential R3 envelope after all
-R2 suite-contract design completed. No lower-risk five-suite node remains admitted. Provider calls,
-extraction, runtime adoption, and protected resources remain blocked; resumption requires an exact
-R3 grant for the listed Abstractions and contract-verifier files, not generic runtime authority.
+WO-SR-005C-I, WO-SR-005D-I, and WO-SR-005E-I are complete on terminal merge after all R2
+suite-contract design completed. The sequential R3 envelope is consumed. Provider calls,
+extraction, runtime adoption, and protected resources remain blocked; portfolio reconciliation must
+derive any later bounded node without treating contract completion as runtime authority.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`
