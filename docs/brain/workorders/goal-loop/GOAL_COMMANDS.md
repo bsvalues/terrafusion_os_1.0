@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005C-P verified real county-isolated Dais workflow proof and selected appeals
-as the smallest coherent contract cohort. `WO-SR-005C-C` is active to decompose the exact
-`dais.appeal-workflow@1.0.0` boundary. Dais extraction/implementation, protected data, runtime
-changes, package/workflow changes, cutover, and the remaining suite lanes stay gated.
+**Current state:** WO-SR-005C-C defined the exact read-only, county-scoped
+`dais.appeal-workflow@1.0.0` boundary. WO-SR-005C-I is implementation-ready but authority-gated;
+`WO-SR-005D-P` is active for read-only Dossier custody/evidence-integrity preparation. Extraction,
+runtime adoption, protected data, package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

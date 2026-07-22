@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005C-P",
+  "generatedBy": "WO-SR-005C-C",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Dais preparation verified county-isolated workflow truth and selected appeals as the first contract cohort. WO-SR-005C-P is complete and WO-SR-005C-C appeal-workflow contract decomposition is active; contract implementation, extraction, and runtime adoption remain blocked.",
+  "description": "Five-suite registry after Dais appeal-workflow decomposition defined a read-only county-scoped contract. WO-SR-005C-C is complete, WO-SR-005C-I is implementation-ready but authority-gated, and WO-SR-005D-P read-only Dossier preparation is active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4761,7 +4761,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the exact provider-neutral, county-scoped Dais appeal-workflow contract and later implementation allowlist.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005C-P", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -4802,6 +4802,165 @@
           "name": "Exact source reconciliation",
           "command": "Reconcile the proposed contract against committed Dais source and tests",
           "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Exact docs-only scope",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "dais-contract-decomposition",
+          "location": "docs/brain/workorders/evidence/WO-SR-005C-C-DAIS-APPEAL-WORKFLOW-CONTRACT-DECOMPOSITION.md",
+          "description": "Exact read-only records, county and selector semantics, lifecycle vocabulary, exclusions, fixture corpus, parity gate, and bounded implementation allowlist."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "WO-SR-005C-C cannot implement a contract or adapter, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005C-I",
+          "reason": "Implement and hash-freeze the decomposed Dais appeal-workflow read contract without runtime adoption.",
+          "riskClass": "R3",
+          "blocked": true
+        },
+        {
+          "id": "WO-SR-005D-P",
+          "reason": "Prepare the Dossier custody/evidence-integrity contract boundary while Dais implementation awaits exact source authority.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005C-I",
+      "title": "Dais Appeal Workflow Contract Implementation and Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and hash-freeze dais.appeal-workflow@1.0.0 without runtime adoption.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "TerraFusion.Abstractions Dais contract source" },
+        { "name": "Contract freeze verifier" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime contract adoption or Dais mutations" },
+        { "name": "Dais extraction or destination runtime" },
+        { "name": "Package publication or workflows" },
+        { "name": "County, PACS, SQL, provider, production, and secrets" }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Abstractions/DTOs/DaisAppealWorkflowDto.cs",
+        "backend/src/TerraFusion.Abstractions/contracts/dais.appeal-workflow.v1.schema.json",
+        "backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-workflow.v1.*.synthetic.json",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "scripts/contracts/verify-contract-freeze.mjs",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.Core/**",
+        "backend/src/TerraFusion.API/**",
+        "backend/src/TerraFusion.Data/**",
+        "backend/tests/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        { "kind": "contract-build", "description": "Abstractions project builds with the new DTO." },
+        { "kind": "schema-fixtures", "description": "Positive and negative synthetic fixture validation." },
+        { "kind": "contract-freeze", "description": "Exact hashes and unchanged prior groups." }
+      ],
+      "validationGates": [
+        {
+          "name": "Dais contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Dais schema and fixture tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Abstractions contract build",
+          "command": "dotnet build backend/src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj -c Release",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any consumer, write command, persistence, extraction, or behavior change requires a later Work Order."
+        }
+      ],
+      "nextCandidates": []
+    },
+    {
+      "id": "WO-SR-005D-P",
+      "title": "Dossier Custody Contract and Evidence-Integrity Gate Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Inventory Dossier custody and evidence-integrity truth and select the smallest coherent contract cohort.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Committed Dossier source, tests, contracts, pack governance, and standalone bootstrap in read-only mode" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Contract, runtime, API, service, persistence, test, or destination implementation" },
+        { "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, or deployment" }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005D-P-dossier-custody-contract-evidence-integrity-gate-preparation.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md",
+        "docs/brain/workorders governance and routing required for WO-SR-005D-P"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "suite product-source paths",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact ownership, custody, integrity, county, cross-suite, synthetic-proof, contract-cohort, and next-slice evidence or a no-go verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Exact Dossier source reconciliation",
+          "command": "Reconcile committed Dossier source, tests, contracts, pack governance, and standalone bootstrap",
+          "required": true,
           "result": "not_run"
         },
         {
@@ -4821,7 +4980,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "WO-SR-005C-C cannot implement a contract or adapter, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source."
+          "description": "WO-SR-005D-P cannot implement, copy source, access protected data, publish, deploy, cut over, or delete."
         }
       ],
       "nextCandidates": []
