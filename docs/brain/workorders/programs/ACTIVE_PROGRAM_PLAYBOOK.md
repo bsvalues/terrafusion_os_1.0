@@ -98,8 +98,8 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Dossier preparation complete and evidence-snapshot decomposition admitted |
-| Current | `WO-SR-005D-C - Dossier Evidence Snapshot Contract Decomposition` |
+| Status | Active; mixed-domain Dossier snapshot rejected and registry-read decomposition admitted |
+| Current | `WO-SR-005D-C2 - Dossier Evidence Registry Read Contract Decomposition` |
 | Next | Bounded contract implementation only if decomposition and exact authority pass |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -122,8 +122,8 @@ suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into bu
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
 boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
 read-only boundary. WO-SR-005C-I is implementation-ready but requires exact non-core source
-authority. WO-SR-005D-P selected the read-only evidence snapshot and excluded custody mutation;
-WO-SR-005D-C now owns exact contract decomposition.
+authority. WO-SR-005D-C rejected the mixed-domain snapshot because it crosses Property, Forge,
+levy, and note boundaries; WO-SR-005D-C2 now owns evidence-registry read decomposition.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -575,7 +575,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005D-C - Dossier Evidence Snapshot Contract Decomposition` |
+| Current WO | `WO-SR-005D-C2 - Dossier Evidence Registry Read Contract Decomposition` |
 | Next WO | Bounded contract implementation only if decomposition and exact authority pass |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the

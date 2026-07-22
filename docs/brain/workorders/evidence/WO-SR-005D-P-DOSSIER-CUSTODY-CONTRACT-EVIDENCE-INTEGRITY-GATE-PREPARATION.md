@@ -70,3 +70,12 @@ provider-neutral, read-only projection.
 R2 slice. It must define exact records, fields, hash basis, ordering, privacy exclusions, enums,
 fixtures, and a later implementation allowlist or return `NO_GO`. No contract artifact or runtime
 implementation is admitted by this preparation.
+
+## Post-Merge Correction
+
+WO-SR-005D-C returned `NO_GO_SNAPSHOT_CROSSES_FORGE_DAIS_AND_OS_COMPOSITION`. Exact source review
+proved `EvidenceSnapshotDto` contains Property, Forge valuation, levies, and notes, so the endpoint
+is an OS composition projection rather than a Dossier-owned evidence contract. This correction
+supersedes only the selected cohort; the ownership, county-boundary, custody, integrity, and
+standalone-state evidence above remains valid. The next candidate is the persistent Dossier evidence
+registry read surface and no snapshot implementation is authorized.
