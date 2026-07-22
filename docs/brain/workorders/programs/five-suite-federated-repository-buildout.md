@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-005E-C GPT grounded-context contract decomposition active
+**Status:** Active with exact R3 contract-implementation authority boundary
 
 ## Ratified topology
 
@@ -46,7 +46,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
 | WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Proposed; implementation-ready but exact non-core source authority required |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
-| WO-SR-005E-C | Decompose the GPT grounded-context contract | Active; R2 docs/evidence design, no provider calls or implementation |
+| WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
+| WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Proposed; implementation-ready but exact non-core source authority required |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -95,5 +96,6 @@ defined a read-only contract boundary. WO-SR-005C-I is implementation-ready but 
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
 WO-SR-005D-C2 defined the persistent Dossier evidence-registry read boundary. WO-SR-005D-I is
 implementation-ready but authority-gated. WO-SR-005E-P selected grounded context while proving the
-current adapter is not parity-safe; WO-SR-005E-C now owns exact decomposition. The other suite repositories
+current adapter is not parity-safe; WO-SR-005E-C defined the exact contract. Dais, Dossier, and GPT
+implementation cohorts are now proposed/authority-gated. The other suite repositories
 remain valid bootstraps, not claims of extracted or standalone product capability.
