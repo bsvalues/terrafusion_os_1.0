@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Five-suite program active at WO-SR-005B-E2
+**Status:** Five-suite program active at WO-SR-005B-E3
 
 ## Purpose
 
@@ -59,7 +59,8 @@ WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five s
 WO-SR-005B-I implemented and hash-froze the Atlas read boundary without runtime adoption.
 WO-SR-005B-A selected the safe canonical adapter source and admitted the two-repository E1/E2
 implementation sequence. WO-SR-005B-E1 completed the pure unwired adapter with 30 passing tests and
-a zero-warning solution build. WO-SR-005B-E2 is the dependency-cleared standalone synthetic parity
-node; runtime adoption and Atlas extraction remain blocked.
+a zero-warning solution build. WO-SR-005B-E2 merged the standalone synthetic parity harness in
+Atlas PR #1. WO-SR-005B-E3 is the dependency-cleared read-only extraction scope audit; runtime
+adoption and Atlas extraction remain blocked.
 
 STOP_TYPE: `ACTIVE_PROGRAM_EXECUTING`

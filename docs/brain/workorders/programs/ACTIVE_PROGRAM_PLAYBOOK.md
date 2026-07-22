@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; sovereign Atlas adapter proven, extraction still blocked |
-| Current | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
-| Next | Bounded Atlas extraction remains blocked pending E2 proof and exact R3 admission |
+| Status | Active; Atlas adapter and standalone parity proven, extraction still blocked |
+| Current | `WO-SR-005B-E3 - Atlas Bounded Extraction Scope Audit` |
+| Next | Exact R3 Atlas extraction only if E3 proves a bounded slice |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -116,7 +116,8 @@ contract, and WO-SR-005B-I implemented and froze it with synthetic proof. WO-SR-
 authenticated canonical geometry DTO, rejected the unsafe legacy GIS surface, and admitted E1/E2 as
 the bounded adapter and standalone parity sequence without authorizing runtime adoption.
 WO-SR-005B-E1 then implemented that pure unwired adapter with 30 passing tests and a zero-warning
-solution build. WO-SR-005B-E2 now owns only the standalone synthetic contract-compat proof.
+solution build. WO-SR-005B-E2 merged the hash-pinned standalone synthetic contract-compat proof in
+Atlas PR #1. WO-SR-005B-E3 now owns a read-only audit of the smallest exact R3 extraction slice.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -568,8 +569,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005B-E2 - Atlas Standalone Synthetic Contract Parity Harness` |
-| Next WO | Bounded Atlas extraction remains blocked pending E2 proof and exact R3 admission |
+| Current WO | `WO-SR-005B-E3 - Atlas Bounded Extraction Scope Audit` |
+| Next WO | Exact R3 Atlas extraction only if E3 proves a bounded slice |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

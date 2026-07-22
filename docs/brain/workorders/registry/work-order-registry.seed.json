@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005B-E1",
+  "generatedBy": "WO-SR-005B-E2",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after sovereign Atlas adapter proof. WO-SR-005B-E1 is complete and WO-SR-005B-E2 standalone synthetic parity is active; runtime adoption and extraction remain blocked.",
+  "description": "Five-suite registry after sovereign and standalone Atlas parity proof. WO-SR-005B-E2 is complete and WO-SR-005B-E3 read-only extraction scope audit is active; runtime adoption and extraction remain blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4421,7 +4421,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove standalone contract compatibility and provider-neutral map projection using only the frozen synthetic corpus.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005B-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -4457,34 +4457,39 @@
           "name": "Standalone Atlas verifier tests",
           "command": "node --test scripts/verify-atlas-spatial-read.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Standalone Atlas verifier",
           "command": "node scripts/verify-atlas-spatial-read.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Frozen source and destination hash parity",
           "command": "Verify manifest SHA-256 entries against atlas.spatial-read@1.0.0 source artifacts",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Exact destination scope inspection",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Standalone required checks",
           "command": "suite-ci, contract-compat, governance-gate",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "standalone-contract-parity",
+          "path": "docs/brain/workorders/evidence/WO-SR-005B-E2-ATLAS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+        }
+      ],
       "stopConditions": [
         {
           "type": "source-extraction",
@@ -4493,8 +4498,79 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-005B-E",
-          "reason": "Admit the exact bounded Atlas extraction only after E1 and E2 pass.",
+          "id": "WO-SR-005B-E3",
+          "reason": "Audit and prove the exact bounded extraction scope before admitting R3 source copying.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005B-E3",
+      "title": "Atlas Bounded Extraction Scope Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Name and prove the smallest exact Atlas source slice eligible for a later bounded R3 extraction.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005B-E2", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Committed sovereign and standalone Atlas source, tests, package metadata, and governance evidence in read-only mode"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Source copying, runtime adoption, ownership cutover, or duplicate retirement"
+        },
+        {
+          "name": "Provider, county, PACS, SQL, credentials, secrets, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005B-E3-atlas-bounded-extraction-scope-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-005B-E3-ATLAS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders governance and routing required for E3"
+      ],
+      "blockedFiles": [
+        "Runtime, product, package, lockfile, workflow, deployment, provider, and destination product-source paths"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "description": "Exact file:line source evidence, source/destination paths, provenance, dependencies, parity plan, rollback, and R3 allowlist or a no-go verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Exact source citations",
+          "command": "Inspect committed source and record exact file:line evidence",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Exact docs-only scope",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "source-extraction",
+          "description": "E3 cannot copy, delete, wire, cut over, or retire product source."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005B",
+          "reason": "Admit only the exact bounded R3 Atlas extraction proved by E3.",
           "riskClass": "R3",
           "blocked": true
         }
