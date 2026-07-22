@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005D-C closeout
+**Authority:** WO-SR-005D-C2 closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,9 +15,10 @@
 
 The Five-Suite Federated Repository Buildout is active. WO-SR-005C-C defined the exact read-only,
 county-scoped Dais appeal-workflow contract and its bounded implementation allowlist.
-WO-SR-005C-I remains implementation-ready but authority-gated. WO-SR-005D-C rejected the existing
-mixed-domain snapshot and kept custody mutation and retention excluded. `WO-SR-005D-C2` is active
-for exact evidence-registry read decomposition. Extraction, runtime adoption, and protected access remain blocked.
+WO-SR-005C-I and WO-SR-005D-I remain implementation-ready but authority-gated. WO-SR-005D-C2
+defined the exact evidence-registry read boundary and kept custody mutation excluded. `WO-SR-005E-P`
+is active for GPT governed-AI contract and grounding preparation. Extraction, provider calls,
+runtime adoption, and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -51,7 +52,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
-| **WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition** | **ACTIVE** | R2 docs/evidence contract design; no implementation |
+| WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
+| WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
+| **WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation** | **ACTIVE** | R2 read-only evidence; no provider calls or implementation |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
@@ -199,7 +202,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 **Portfolio result after WO-SR-005C-C:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
 removed. Atlas F1 is complete and unwired; Dais implementation is authority-gated, and
-WO-SR-005D-C2 is the dependency-cleared Dossier evidence-registry read decomposition slice. Extraction,
+WO-SR-005E-P is the dependency-cleared GPT governed-AI preparation slice. Extraction,
 runtime adoption, protected data, providers, package/workflow changes, and cutover remain blocked.
 
 ---
