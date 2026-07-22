@@ -1,0 +1,20 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "queryText": "Find taxpayer SSN 123-45-6789",
+    "topK": 1,
+    "scoreThreshold": 0.7,
+    "traceId": "trace-gpt-007"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "assessment-guidance",
+    "status": "DENIED",
+    "citations": [],
+    "traceId": "trace-gpt-007",
+    "denialCode": "QUERY_REJECTED"
+  }
+}

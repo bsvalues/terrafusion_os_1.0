@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active with exact R3 contract-implementation authority boundary |
-| Current | `WO-SR-005E-I` active under the sequential R3 contract-freeze envelope; Dais and Dossier complete |
-| Next | Resume bounded contract implementation only under exact non-core source authority |
+| Status | Contract-freeze cohort complete on WO-SR-005E-I merge; broader extraction remains gated |
+| Current | Dais, Dossier, and GPT read-only contracts complete and hash-frozen |
+| Next | Portfolio reconciliation; no adapter or runtime adoption implied |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -121,10 +121,10 @@ Atlas PR #1. WO-SR-005B-E3 then rejected direct copying because no sovereign can
 suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into built-fresh product
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
 boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
-read-only boundary. WO-SR-005C-I is complete under the recorded exact non-core source
-authority. WO-SR-005D-C2 defined the exact Dossier evidence-registry read boundary; WO-SR-005E-C
-defined the exact GPT grounded-context boundary. All remaining Dais, Dossier, and GPT implementation
-cohorts are proposed/authority-gated; no lower-risk five-suite node remains admitted.
+read-only boundary, and WO-SR-005C-I froze it. WO-SR-005D-C2 defined the exact Dossier
+evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005E-C defined the exact GPT
+grounded-context boundary and WO-SR-005E-I freezes it on merge. The sequential contract cohort is
+complete; only later extraction, adapter parity, provider, and runtime-adoption work remains gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -575,9 +575,9 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-I` active |
-| Next WO | Dais, Dossier, and GPT bounded contract implementation under exact R3 authority |
+| Selected program | Portfolio reconciliation after Five-Suite contract-freeze completion |
+| Current WO | `WO-SR-005E-I` complete on merge |
+| Next WO | Recompute from canonical evidence; protected extraction/runtime boundaries remain gated |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

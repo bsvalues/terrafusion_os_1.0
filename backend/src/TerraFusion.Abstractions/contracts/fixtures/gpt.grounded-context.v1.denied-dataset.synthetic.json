@@ -1,0 +1,20 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "restricted-legal",
+    "queryText": "Summarize the policy.",
+    "topK": 3,
+    "scoreThreshold": 0.75,
+    "traceId": "trace-gpt-003"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "benton",
+    "datasetKey": "restricted-legal",
+    "status": "DENIED",
+    "citations": [],
+    "traceId": "trace-gpt-003",
+    "denialCode": "DATASET_NOT_ALLOWED"
+  }
+}

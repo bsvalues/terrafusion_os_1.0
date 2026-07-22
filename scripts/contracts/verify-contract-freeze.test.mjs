@@ -20,6 +20,7 @@ const dossierSchemaPath = path.join(
   atlasContractRoot,
   'dossier.evidence-registry-read.v1.schema.json'
 );
+const gptSchemaPath = path.join(atlasContractRoot, 'gpt.grounded-context.v1.schema.json');
 
 function atlasFixture(name) {
   return JSON.parse(
@@ -43,6 +44,15 @@ function dossierFixture(name) {
   return JSON.parse(
     fs.readFileSync(
       path.join(atlasFixtureRoot, `dossier.evidence-registry-read.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function gptFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `gpt.grounded-context.v1.${name}.synthetic.json`),
       'utf8'
     )
   );
@@ -131,6 +141,62 @@ function validateDossierSemantics(exchange) {
   return errors;
 }
 
+function validateGptSemantics(exchange) {
+  const errors = [];
+  const { request, result } = exchange;
+  if (request?.countyId !== result?.countyId)
+    errors.push('response countyId must match request countyId');
+  if (request?.datasetKey !== result?.datasetKey)
+    errors.push('response datasetKey must match request datasetKey');
+  if (request?.traceId !== result?.traceId)
+    errors.push('response traceId must match request traceId');
+  const queryText = request?.queryText ?? '';
+  const rawPiiPatterns = [
+    /\b\d{3}-\d{2}-\d{4}\b/,
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+    /(?:\+?1[.\s-]?)?(?:\(\d{3}\)|\d{3})[.\s-]?\d{3}[.\s-]?\d{4}\b/,
+  ];
+  if (rawPiiPatterns.some(pattern => pattern.test(queryText)))
+    errors.push('queryText must not contain raw SSN, email, or phone PII');
+
+  const citations = result?.citations ?? [];
+  if (result?.status === 'GROUNDED' && citations.length === 0)
+    errors.push('GROUNDED requires at least one citation');
+  if (['NO_RELEVANT_CONTEXT', 'DENIED'].includes(result?.status) && citations.length !== 0)
+    errors.push(`${result.status} requires empty citations`);
+  if (citations.length > (request?.topK ?? 0)) errors.push('citation count exceeds topK');
+
+  const identities = citations.map(citation => `${citation.sourceId}\0${citation.chunkId}`);
+  if (new Set(identities).size !== identities.length)
+    errors.push('citation sourceId/chunkId identities must be unique');
+  for (const citation of citations) {
+    if (rawPiiPatterns.some(pattern => pattern.test(citation.excerpt ?? '')))
+      errors.push('citation excerpt must not contain raw SSN, email, or phone PII');
+    if (citation.score < request.scoreThreshold)
+      errors.push('citation score must meet scoreThreshold');
+  }
+  for (let index = 1; index < citations.length; index += 1) {
+    const previous = citations[index - 1];
+    const current = citations[index];
+    if (
+      previous.score < current.score ||
+      (previous.score === current.score && previous.sourceId > current.sourceId) ||
+      (previous.score === current.score &&
+        previous.sourceId === current.sourceId &&
+        previous.chunkIndex > current.chunkIndex) ||
+      (previous.score === current.score &&
+        previous.sourceId === current.sourceId &&
+        previous.chunkIndex === current.chunkIndex &&
+        previous.chunkId > current.chunkId)
+    ) {
+      errors.push(
+        'citations must sort by score descending, sourceId ascending, chunkIndex ascending, chunkId ascending'
+      );
+    }
+  }
+  return errors;
+}
+
 // The governed-spine job intentionally runs this test without installing workspace dependencies.
 // Keep the evaluator limited to the Draft-07 keywords used by the frozen Atlas schema.
 function validateJsonSchema(root, schema, value, location = '$') {
@@ -151,6 +217,9 @@ function validateJsonSchema(root, schema, value, location = '$') {
   if (typeof value === 'string' && schema.minLength && value.length < schema.minLength) {
     errors.push(`${location}: string is shorter than ${schema.minLength}`);
   }
+  if (typeof value === 'string' && schema.maxLength && value.length > schema.maxLength) {
+    errors.push(`${location}: string is longer than ${schema.maxLength}`);
+  }
   if (typeof value === 'string' && schema.pattern && !new RegExp(schema.pattern).test(value)) {
     errors.push(`${location}: string does not match pattern`);
   }
@@ -165,6 +234,9 @@ function validateJsonSchema(root, schema, value, location = '$') {
   if (Array.isArray(value)) {
     if (schema.minItems !== undefined && value.length < schema.minItems) {
       errors.push(`${location}: array has fewer than ${schema.minItems} items`);
+    }
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) {
+      errors.push(`${location}: array has more than ${schema.maxItems} items`);
     }
     if (schema.items) {
       value.forEach((item, index) => {
@@ -279,8 +351,8 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 5,
-    frozenFiles: 38,
+    groups: 6,
+    frozenFiles: 52,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -394,6 +466,91 @@ test('Dossier evidence registry negative fixtures fail closed', () => {
   );
 });
 
+test('GPT grounded context positive fixtures satisfy schema and grounding semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(gptSchemaPath, 'utf8'));
+  for (const name of ['grounded-two-citations', 'no-relevant-context', 'denied-dataset']) {
+    const fixture = gptFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateGptSemantics(fixture), [], name);
+  }
+});
+
+test('GPT grounded context negative fixtures fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(gptSchemaPath, 'utf8'));
+  for (const name of ['unknown-status', 'citation-without-source', 'full-text-or-provider-leak']) {
+    assert.notDeepEqual(validateJsonSchema(schema, schema, gptFixture(name)), [], name);
+  }
+  for (const name of [
+    'county-mismatch',
+    'dataset-mismatch',
+    'trace-mismatch',
+    'raw-pii-query',
+    'duplicate-citation',
+    'unstable-order',
+  ]) {
+    assert.notDeepEqual(validateGptSemantics(gptFixture(name)), [], name);
+  }
+
+  for (const queryText of [
+    'Contact jane@example.gov',
+    'Call 509-555-1212',
+    'Call 5095551212',
+    'Call (509)555-1212',
+    'Call +15095551212',
+  ]) {
+    const fixture = gptFixture('denied-dataset');
+    fixture.request.queryText = queryText;
+    assert.notDeepEqual(validateGptSemantics(fixture), [], queryText);
+  }
+
+  const belowThreshold = gptFixture('grounded-two-citations');
+  belowThreshold.result.citations[1].score = belowThreshold.request.scoreThreshold - 0.01;
+  assert.notDeepEqual(
+    validateGptSemantics(belowThreshold),
+    [],
+    'citations below scoreThreshold must fail closed'
+  );
+
+  const excerptPii = gptFixture('grounded-two-citations');
+  excerptPii.result.citations[0].excerpt = 'Contact jane@example.gov';
+  assert.notDeepEqual(validateGptSemantics(excerptPii), [], 'citation PII must fail closed');
+
+  const groundedWithoutCitations = gptFixture('grounded-two-citations');
+  groundedWithoutCitations.result.citations = [];
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, groundedWithoutCitations),
+    [],
+    'GROUNDED requires at least one citation in the schema'
+  );
+
+  for (const name of ['no-relevant-context', 'denied-dataset']) {
+    const terminalWithCitation = gptFixture(name);
+    terminalWithCitation.result.citations = [
+      gptFixture('grounded-two-citations').result.citations[0],
+    ];
+    assert.notDeepEqual(
+      validateJsonSchema(schema, schema, terminalWithCitation),
+      [],
+      `${name} forbids citations in the schema`
+    );
+  }
+
+  const unresolvedTie = gptFixture('grounded-two-citations');
+  Object.assign(unresolvedTie.result.citations[0], {
+    sourceId: 'source-a',
+    chunkId: 'chunk-z',
+    chunkIndex: 1,
+    score: 0.9,
+  });
+  Object.assign(unresolvedTie.result.citations[1], {
+    sourceId: 'source-a',
+    chunkId: 'chunk-a',
+    chunkIndex: 1,
+    score: 0.9,
+  });
+  assert.notDeepEqual(validateGptSemantics(unresolvedTie), [], 'chunkId tie-breaker');
+});
+
 test('a modified frozen hash fails closed', () => {
   const altered = withManifest(manifest => {
     manifest.frozen[0].files[0].sha256 = '0'.repeat(64);
@@ -446,8 +603,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 5,
-      frozenFiles: 38,
+      groups: 6,
+      frozenFiles: 52,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -538,8 +695,8 @@ test('a genuine type declaration still passes the content check', () => {
   assert.deepEqual(
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
-      groups: 5,
-      frozenFiles: 38,
+      groups: 6,
+      frozenFiles: 52,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

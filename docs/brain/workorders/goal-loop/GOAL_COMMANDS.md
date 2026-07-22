@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005E-C defined `gpt.grounded-context@1.0.0`; all dependency-cleared R2
-suite-contract preparation/decomposition is complete. Dais, Dossier, and GPT contract implementation
-WOs are proposed but require exact R3 non-core source authority. Runtime/provider adoption,
-extraction, protected data, package/workflow changes, and cutover stay gated.
+**Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete on
+WO-SR-005E-I merge. The sequential R3 envelope is consumed and routing returns to portfolio
+reconciliation. Runtime/provider adoption, extraction, protected data, package/workflow changes, and
+cutover remain gated by exact later scope, parity evidence, and applicable authority.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
