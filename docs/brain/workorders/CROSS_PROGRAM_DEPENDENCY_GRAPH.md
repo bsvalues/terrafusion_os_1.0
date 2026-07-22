@@ -92,10 +92,10 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005D-P Dossier custody/evidence-integrity preparation is complete with cohort correction
   WO-SR-005D-C Dossier evidence-snapshot decomposition is complete with NO_GO
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
-  WO-SR-005D-I Dossier evidence-registry read implementation/freeze is active
+  WO-SR-005D-I Dossier evidence-registry read implementation/freeze is complete
   WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
   WO-SR-005E-C GPT grounded-context contract decomposition is complete
-  WO-SR-005E-I GPT grounded-context implementation/freeze follows Dossier under the sequential R3 envelope
+  WO-SR-005E-I GPT grounded-context implementation/freeze is active under the sequential R3 envelope
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 

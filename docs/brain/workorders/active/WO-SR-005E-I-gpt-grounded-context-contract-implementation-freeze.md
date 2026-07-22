@@ -2,10 +2,10 @@
 
 | Field | Value |
 | --- | --- |
-| Status | PROPOSED / AUTHORITY GATED |
+| Status | ACTIVE / AUTHORIZED |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded contract implementation; no provider/runtime adoption |
-| Dependency | WO-SR-005E-C complete |
+| Dependency | WO-SR-005E-C and WO-SR-005D-I complete |
 | Next | GPT adapter and standalone parity preparation only after contract proof |
 
 ## Objective
@@ -37,8 +37,7 @@ synthetic fixtures defined by WO-SR-005E-C.
 
 `GPT_GROUNDED_CONTEXT_CONTRACT_IMPLEMENTED_AND_FROZEN`
 
-## Authority Gate
+## Authority
 
-This Work Order must not execute until recorded authority explicitly covers the exact
-`TerraFusion.Abstractions` and contract-verifier paths listed by WO-SR-005E-C. Its proposal does not
-expand the root governance write scope.
+`OWNER-SR-R3-CONTRACT-FREEZE-ENVELOPE-20260722` covers the exact registry allowlist and sequential
+continuation through GPT. Provider/runtime adoption and every protected boundary remain denied.

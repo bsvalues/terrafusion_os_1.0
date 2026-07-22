@@ -2,11 +2,11 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE / AUTHORIZED |
+| Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded contract implementation; no runtime adoption |
 | Dependency | WO-SR-005D-C2 and WO-SR-005C-I complete |
-| Next | Dossier adapter and standalone parity preparation only after contract proof |
+| Next | WO-SR-005E-I under the active sequential R3 contract-freeze envelope |
 
 ## Objective
 
@@ -40,4 +40,5 @@ schema, and synthetic fixtures defined by WO-SR-005D-C2.
 ## Authority
 
 `OWNER-SR-R3-CONTRACT-FREEZE-ENVELOPE-20260722` covers the exact registry allowlist and sequential
-continuation from Dais to Dossier to GPT. Runtime adoption and every protected boundary remain denied.
+continuation from Dais to Dossier to GPT. The contract and freeze evidence are complete; runtime
+adoption and every protected boundary remain denied.

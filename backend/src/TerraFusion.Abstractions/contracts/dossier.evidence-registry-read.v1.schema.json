@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/contracts/dossier.evidence-registry-read.v1.schema.json",
+  "title": "Dossier Evidence Registry Read Exchange",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "result"],
+  "properties": {
+    "request": { "$ref": "#/definitions/request" },
+    "result": { "$ref": "#/definitions/result" }
+  },
+  "definitions": {
+    "id": { "type": "string", "minLength": 1 },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "evidenceType", "integrity", "createdAt"],
+      "properties": {
+        "evidenceId": { "$ref": "#/definitions/uuid" },
+        "evidenceType": {
+          "type": "string",
+          "enum": [
+            "field-inspection",
+            "valuation-record",
+            "legal-document",
+            "tax-record",
+            "correspondence",
+            "photo"
+          ]
+        },
+        "integrity": {
+          "type": "string",
+          "enum": ["pending", "verified", "disputed"]
+        },
+        "createdAt": { "$ref": "#/definitions/timestamp" },
+        "documentId": { "$ref": "#/definitions/uuid" }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "countyId", "parcelId", "limit", "offset"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/id" },
+        "parcelId": { "$ref": "#/definitions/id" },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "offset": { "type": "integer", "minimum": 0 },
+        "traceId": { "$ref": "#/definitions/id" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "countyId",
+        "parcelId",
+        "results",
+        "total",
+        "hasMore",
+        "limit",
+        "offset"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/id" },
+        "parcelId": { "$ref": "#/definitions/id" },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/record" }
+        },
+        "total": { "type": "integer", "minimum": 0 },
+        "hasMore": { "type": "boolean" },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "offset": { "type": "integer", "minimum": 0 },
+        "traceId": { "$ref": "#/definitions/id" }
+      }
+    }
+  }
+}

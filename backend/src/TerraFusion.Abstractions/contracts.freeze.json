@@ -28,6 +28,11 @@
       "groups": ["dais.appeal-workflow"]
     },
     {
+      "id": "TerraFusion.Contracts.Dossier",
+      "status": "planned_not_published",
+      "groups": ["dossier.evidence-registry-read"]
+    },
+    {
       "id": "TerraFusion.Contracts.CrossCutting",
       "status": "planned_not_published",
       "groups": ["crosscut.audit"]
@@ -163,6 +168,66 @@
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.selector-mismatch.synthetic.json",
           "sha256": "99828201845dfceccb2ed2392d6ae4f1927918ac78ca652d2cc9a83d9789e8cc"
+        }
+      ]
+    },
+    {
+      "group": "dossier.evidence-registry-read",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dossier"],
+      "files": [
+        {
+          "path": "DTOs/DossierEvidenceRegistryReadDto.cs",
+          "sha256": "414fd158cd7a0f1e483ab44a83b93a64e4180300561f53088830583220566b7f"
+        },
+        {
+          "path": "contracts/dossier.evidence-registry-read.v1.schema.json",
+          "sha256": "f658bc2bda718f58bd0353e9635524d5dbd376be515b543da3442b0094e52270"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.county-mismatch.synthetic.json",
+          "sha256": "de0054c63d3362d72711061de10f71ab7c3f3b3afd0a7366bd12348312ef7209"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.cross-lane-fields.synthetic.json",
+          "sha256": "1e2044fd6af4dea9d421089f1a8f0d3efc500a995fcd6a5f565c2a008f15bfed"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.duplicate-evidence-id.synthetic.json",
+          "sha256": "6ff3402449723295946493532356a12155f235dc2054fcc08783c7912372f1a5"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.empty-page.synthetic.json",
+          "sha256": "76c70831cacf44a1e76d878eafa64129cdf6c471b632527240e0f17bc32cdaa2"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.next-page.synthetic.json",
+          "sha256": "7ab5404b6138ed940fbc790af55435b8a6f383a4eb62f4d3dea79c9c96d5be7f"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.pagination-inconsistent.synthetic.json",
+          "sha256": "9eff7f8a36efdd1945828bc530de05fbf4fcdb69ea34d6cf131665b6a4b74790"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.parcel-mismatch.synthetic.json",
+          "sha256": "4fbf99544359faa62e18712a647574f7007baf1a7633be45a8f9651058f59dca"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.two-record-page.synthetic.json",
+          "sha256": "5e6929890dcf9f58d780e187f6c6d8f7ed2951d78a13bbc445c74b61e5aeb6e3"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.unknown-evidence-type.synthetic.json",
+          "sha256": "c84a6c040d46f019b36313a7d8c97cb046dea5690c4be898eddd094664d61da2"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.unknown-integrity.synthetic.json",
+          "sha256": "3ed7e2822e1971e731d0551786a9c7740ce81fbc80d27e3f80d270d56abe8c69"
+        },
+        {
+          "path": "contracts/fixtures/dossier.evidence-registry-read.v1.unstable-tie-order.synthetic.json",
+          "sha256": "caf891ee8adbc92fe001441c416946f2bef0f307d33dafff4166a98f7c551316"
         }
       ]
     }

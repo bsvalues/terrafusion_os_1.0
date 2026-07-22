@@ -1,0 +1,19 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "c",
+    "parcelId": "p",
+    "limit": 1,
+    "offset": 0
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "c",
+    "parcelId": "p",
+    "results": [],
+    "total": 2,
+    "hasMore": false,
+    "limit": 1,
+    "offset": 0
+  }
+}

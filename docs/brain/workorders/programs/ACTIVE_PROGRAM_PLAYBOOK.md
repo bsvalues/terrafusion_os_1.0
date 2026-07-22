@@ -99,7 +99,7 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active with exact R3 contract-implementation authority boundary |
-| Current | `WO-SR-005D-I` active under the sequential R3 contract-freeze envelope; Dais C-I complete |
+| Current | `WO-SR-005E-I` active under the sequential R3 contract-freeze envelope; Dais and Dossier complete |
 | Next | Resume bounded contract implementation only under exact non-core source authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -576,7 +576,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005D-I` active; `WO-SR-005E-I` next |
+| Current WO | `WO-SR-005E-I` active |
 | Next WO | Dais, Dossier, and GPT bounded contract implementation under exact R3 authority |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the

@@ -15,8 +15,8 @@
 
 The Five-Suite Federated Repository Buildout is active. WO-SR-005C-C defined the exact read-only,
 county-scoped Dais appeal-workflow contract and its bounded implementation allowlist.
-WO-SR-005C-I is complete and `dais.appeal-workflow@1.0.0` is hash-frozen. WO-SR-005D-I is active;
-WO-SR-005E-I follows it under the recorded sequential R3 envelope. Extraction, provider calls,
+WO-SR-005C-I and WO-SR-005D-I are complete and hash-frozen. WO-SR-005E-I is active under the
+recorded sequential R3 envelope. Extraction, provider calls,
 runtime adoption, publication, and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
@@ -52,10 +52,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
-| WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | ACTIVE | Next sequential R3 contract-freeze node |
+| WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | DONE | `dossier.evidence-registry-read@1.0.0`; 5 groups / 38 files frozen |
 | WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation | DONE | Grounded-context cohort selected; current adapter not parity-safe |
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
-| WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
+| WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | ACTIVE | Final sequential R3 contract-freeze node |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
