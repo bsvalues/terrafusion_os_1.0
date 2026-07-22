@@ -47,10 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005C-C defined the exact read-only, county-scoped
-`dais.appeal-workflow@1.0.0` boundary. WO-SR-005C-I is implementation-ready but authority-gated;
-`WO-SR-005D-P` is active for read-only Dossier custody/evidence-integrity preparation. Extraction,
-runtime adoption, protected data, package/workflow changes, and cutover stay gated.
+**Current state:** WO-SR-005D-P proved a real read-only Dossier evidence snapshot and separated it
+from legally significant custody mutation and retention semantics. `WO-SR-005D-C` is active to
+decompose `dossier.evidence-snapshot@1.0.0`. Dais implementation, extraction, runtime adoption,
+protected data, package/workflow changes, and cutover stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

@@ -89,7 +89,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005C-P Dais domain-contract and county-isolation preparation is complete
   WO-SR-005C-C Dais appeal-workflow contract decomposition is complete
   WO-SR-005C-I Dais appeal-workflow contract implementation/freeze is authority-gated
-  WO-SR-005D-P Dossier custody/evidence-integrity preparation is active
+  WO-SR-005D-P Dossier custody/evidence-integrity preparation is complete
+  WO-SR-005D-C Dossier evidence-snapshot contract decomposition is active
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 
@@ -99,7 +100,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005C-C | SR-005D-P Dossier custody/evidence-integrity preparation | Read-only evidence; Dais implementation remains authority-gated | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005D-P | SR-005D-C Dossier evidence-snapshot contract decomposition | Exact docs/evidence design; custody mutation and implementation blocked | ACTIVE / EXECUTING |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -117,11 +118,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005D-P is the admitted dependency-cleared node after Dais appeal decomposition completed.
+1. WO-SR-005D-C is the admitted dependency-cleared node after Dossier preparation selected the evidence snapshot.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through Dossier custody/evidence-integrity preparation; keep Dais implementation,
-   extraction, adapter/runtime adoption, protected data, package/workflow changes, and cutover blocked.
+4. Continue through Dossier evidence-snapshot decomposition; keep custody mutation, Dais
+   implementation, extraction, runtime adoption, protected data, package/workflow changes, and cutover blocked.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
