@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005C-C",
+  "generatedBy": "WO-SR-005D-P",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after Dais appeal-workflow decomposition defined a read-only county-scoped contract. WO-SR-005C-C is complete, WO-SR-005C-I is implementation-ready but authority-gated, and WO-SR-005D-P read-only Dossier preparation is active.",
+  "description": "Five-suite registry after Dossier preparation selected the read-only evidence snapshot and excluded custody mutation. WO-SR-005D-P is complete and WO-SR-005D-C decomposition is active; Dais implementation remains authority-gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -4925,7 +4925,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Inventory Dossier custody and evidence-integrity truth and select the smallest coherent contract cohort.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005C-C", "status": "satisfied" }],
       "allowedSystems": [
         { "name": "Committed Dossier source, tests, contracts, pack governance, and standalone bootstrap in read-only mode" },
@@ -4961,27 +4961,87 @@
           "name": "Exact Dossier source reconciliation",
           "command": "Reconcile committed Dossier source, tests, contracts, pack governance, and standalone bootstrap",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Exact docs-only scope",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "dossier-contract-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md",
+          "description": "Exact Dossier ownership, custody/integrity boundary, snapshot proof, standalone state, gaps, and selected contract cohort."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "WO-SR-005D-P cannot implement, copy source, access protected data, publish, deploy, cut over, or delete."
         }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-C",
+          "reason": "Define the exact read-only evidence-snapshot contract before any contract implementation or custody work.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005D-C",
+      "title": "Dossier Evidence Snapshot Contract Decomposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact provider-neutral, county-scoped Dossier evidence-snapshot contract and later implementation allowlist.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005D-P", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "Committed Dossier snapshot source, tests, contract policy, and governance evidence in read-only design mode" }
+      ],
+      "blockedSystems": [
+        { "name": "Contract artifacts, custody mutation, adapters, runtime, API, entities, services, tests, destination source, packages, or workflows" },
+        { "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, or deployment" }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005D-C-dossier-evidence-snapshot-contract-decomposition.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-C-DOSSIER-EVIDENCE-SNAPSHOT-CONTRACT-DECOMPOSITION.md",
+        "docs/brain/workorders governance and routing required for WO-SR-005D-C"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        "suite product-source paths",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        ".github/workflows/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact snapshot records, hash basis, county/parcel semantics, ordering, integrity vocabulary, privacy exclusions, fixtures, parity gate, and implementation allowlist or no-go verdict."
+        }
+      ],
+      "validationGates": [
+        { "name": "Exact source reconciliation", "command": "Reconcile the proposed contract against committed Dossier source and tests", "required": true, "result": "not_run" },
+        { "name": "Work Order query", "command": "node docs/brain/workorders/tools/wo-query.mjs --json", "required": true, "result": "not_run" },
+        { "name": "Exact docs-only scope", "command": "git diff --check and inspect changed paths", "required": true, "result": "not_run" }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        { "type": "scope_boundary", "description": "WO-SR-005D-C cannot implement a contract or adapter, mutate custody, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source." }
       ],
       "nextCandidates": []
     }

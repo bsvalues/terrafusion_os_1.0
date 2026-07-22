@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005C-C closeout
+**Authority:** WO-SR-005D-P closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,9 +15,9 @@
 
 The Five-Suite Federated Repository Buildout is active. WO-SR-005C-C defined the exact read-only,
 county-scoped Dais appeal-workflow contract and its bounded implementation allowlist.
-WO-SR-005C-I is implementation-ready but authority-gated because its exact source paths sit outside
-the root governance scope. `WO-SR-005D-P` is active for read-only Dossier custody/evidence-integrity
-preparation. Dais extraction, adapter/runtime adoption, and protected county/PACS/SQL access remain blocked.
+WO-SR-005C-I remains implementation-ready but authority-gated. WO-SR-005D-P selected the existing
+read-only evidence snapshot and excluded custody mutation and retention. `WO-SR-005D-C` is active
+for exact contract decomposition. Extraction, runtime adoption, and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -49,7 +49,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation | DONE | Appeal cohort selected; county isolation proven; contract decomposition required |
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
-| **WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation** | **ACTIVE** | R2 read-only discovery and governance evidence |
+| WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE | Evidence snapshot selected; custody mutation/retention excluded |
+| **WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition** | **ACTIVE** | R2 docs/evidence contract design; no implementation |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
@@ -196,9 +197,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
 **Portfolio result after WO-SR-005C-C:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Atlas F1 is complete and unwired; Dais contract implementation is authority-gated, and
-WO-SR-005D-P is the dependency-cleared read-only Dossier preparation slice. Extraction, runtime
-adoption, protected data, providers, package/workflow changes, and cutover remain blocked.
+removed. Atlas F1 is complete and unwired; Dais implementation is authority-gated, and
+WO-SR-005D-C is the dependency-cleared Dossier evidence-snapshot decomposition slice. Extraction,
+runtime adoption, protected data, providers, package/workflow changes, and cutover remain blocked.
 
 ---
 

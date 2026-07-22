@@ -2,11 +2,11 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE |
+| Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R2 read-only discovery and governance evidence |
 | Dependency | WO-SR-005C-C complete |
-| Next | Exact Dossier contract decomposition only if a coherent cohort is proven |
+| Next | WO-SR-005D-C - Dossier Evidence Snapshot Contract Decomposition |
 
 ## Objective
 
@@ -43,3 +43,9 @@ product, contract, runtime, destination, package, or workflow source.
 ## Stop Type
 
 `DOSSIER_CUSTODY_CONTRACT_PREPARATION_COMPLETE`
+
+## Result
+
+`COMPLETE_DECOMPOSITION_REQUIRED_EVIDENCE_SNAPSHOT_SELECTED`. The existing read-only evidence
+snapshot is the smallest coherent first contract cohort. Custody mutations, retention, documents,
+packets, notes, and runtime adoption remain excluded. See the [evidence packet](../evidence/WO-SR-005D-P-DOSSIER-CUSTODY-CONTRACT-EVIDENCE-INTEGRITY-GATE-PREPARATION.md).
