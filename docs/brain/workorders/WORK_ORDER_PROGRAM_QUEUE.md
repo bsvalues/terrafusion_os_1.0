@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005B-E3 closeout
+**Authority:** WO-SR-005B-F1 closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. WO-SR-005B-E3 found no safe direct-copy
-slice in the sovereign source. `WO-SR-005B-F1` is active to promote the already-proven standalone
-projection behavior into a built-fresh product module. Runtime adoption, providers, source copying,
-package/workflow changes, and Atlas cutover remain blocked.
+The Five-Suite Federated Repository Buildout is active. WO-SR-005B-F1 merged the built-fresh Atlas
+projection foundation in standalone PR #2 without runtime adoption. `WO-SR-005C-P` is active to
+prepare the Dais domain-contract and county-isolation gate using read-only evidence. Dais extraction,
+contract implementation, runtime changes, and protected county/PACS/SQL access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -44,7 +44,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005B-E1 Atlas Sovereign Spatial Read Adapter Implementation | DONE | 30/30 adapter tests; backend build 0 warnings/errors; no runtime wiring |
 | WO-SR-005B-E2 Atlas Standalone Synthetic Contract Parity Harness | DONE | Atlas PR #1; 8/8 hash parity; 6/6 verifier tests; all required checks passed |
 | WO-SR-005B-E3 Atlas Bounded Extraction Scope Audit | DONE | No safe direct-copy slice; built-fresh projection foundation identified |
-| **WO-SR-005B-F1 Atlas Standalone Spatial Projection Foundation** | **ACTIVE** | Exact seven-file R3 built-fresh destination slice; no runtime consumer |
+| WO-SR-005B-F1 Atlas Standalone Spatial Projection Foundation | DONE | Atlas PR #2 / merge `6c530f1b`; direct and existing parity proof passed; no runtime consumer |
+| **WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation** | **ACTIVE** | R2 read-only source/contract/test inventory; no extraction or implementation |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
@@ -190,10 +191,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-005B-E3:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Direct Atlas source copying is rejected; WO-SR-005B-F1 is the dependency-cleared built-fresh
-standalone foundation. Runtime adoption, providers, package/workflow changes, and Atlas cutover
-remain blocked.
+**Portfolio result after WO-SR-005B-F1:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
+removed. Atlas F1 is complete and unwired; WO-SR-005C-P is the dependency-cleared Dais preparation
+slice. Dais extraction/implementation, protected data, runtime adoption, providers,
+package/workflow changes, and cutover remain blocked.
 
 ---
 

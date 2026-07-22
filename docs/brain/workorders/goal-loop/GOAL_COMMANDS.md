@@ -47,11 +47,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** WO-SR-005B-E3 rejected direct source copying because the audited sovereign
-candidates cross OS, provider, county, valuation, or sovereign-assembly boundaries.
-`WO-SR-005B-F1` is active to promote the proven standalone projection behavior into a built-fresh
-product module; runtime adoption, providers, source copying, package/workflow changes, cutover, and
-the remaining suite lanes stay gated.
+**Current state:** WO-SR-005B-F1 merged the built-fresh Atlas projection foundation in standalone
+PR #2 without runtime adoption. `WO-SR-005C-P` is active to prepare exact Dais domain-contract ownership
+and county-isolation proof from read-only source evidence. Dais extraction/implementation, protected
+data, runtime changes, package/workflow changes, cutover, and the remaining suite lanes stay gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
