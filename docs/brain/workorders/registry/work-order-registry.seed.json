@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-P",
+  "generatedBy": "WO-SR-005E-C",
   "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-005E-P selected grounded context and proved the current GPT adapter is not county/privacy parity-safe. WO-SR-005E-C decomposition is active; provider calls and implementation remain blocked.",
+  "description": "Five-suite registry after WO-SR-005E-C completed all dependency-cleared R2 contract design. Dais, Dossier, and GPT bounded contract implementation remains proposed and exact R3 authority-gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -5363,7 +5363,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the exact provider-neutral, county-scoped GPT grounded-context contract and later implementation allowlist or return NO_GO.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-P", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -5404,17 +5404,116 @@
           "name": "Exact source reconciliation",
           "command": "Reconcile the proposed contract against committed GPT/RAG source and tests",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Exact docs-only scope",
           "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "contract-decomposition",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-C-GPT-GROUNDED-CONTEXT-CONTRACT-DECOMPOSITION.md",
+          "description": "Exact county-scoped grounded-context contract, citation and privacy rules, fixtures, parity gaps, and bounded implementation slice."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "WO-SR-005E-C cannot implement a contract or adapter, call providers, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-I",
+          "reason": "Implement and hash-freeze the decomposed GPT grounded-context read contract without provider or runtime adoption.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-I",
+      "title": "GPT Grounded Context Contract Implementation and Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and hash-freeze gpt.grounded-context@1.0.0 without provider or runtime adoption.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-005E-C", "status": "satisfied" }],
+      "allowedSystems": [
+        { "name": "TerraFusion.Abstractions GPT contract source" },
+        { "name": "Contract freeze verifier" },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Provider, model, embedding, runtime contract adoption, or GPT source adapter"
+        },
+        { "name": "GPT extraction or destination runtime" },
+        { "name": "Package publication or workflows" },
+        { "name": "County, PACS, SQL, production, credentials, and secrets" }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Abstractions/DTOs/GptGroundedContextDto.cs",
+        "backend/src/TerraFusion.Abstractions/contracts/gpt.grounded-context.v1.schema.json",
+        "backend/src/TerraFusion.Abstractions/contracts/fixtures/gpt.grounded-context.v1.*.synthetic.json",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "scripts/contracts/verify-contract-freeze.mjs",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.AI/**",
+        "backend/src/TerraFusion.API/**",
+        "backend/src/TerraFusion.Core/**",
+        "backend/src/TerraFusion.Data/**",
+        "backend/tests/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "contract-build",
+          "description": "Abstractions project builds with the new DTO."
+        },
+        {
+          "kind": "schema-fixtures",
+          "description": "Positive and negative synthetic fixture validation."
+        },
+        {
+          "kind": "contract-freeze",
+          "description": "Exact hashes and unchanged prior groups."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "GPT contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "GPT schema and fixture tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Abstractions contract build",
+          "command": "dotnet build backend/src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj -c Release",
           "required": true,
           "result": "not_run"
         }
@@ -5422,8 +5521,8 @@
       "evidenceProduced": [],
       "stopConditions": [
         {
-          "type": "scope_boundary",
-          "description": "WO-SR-005E-C cannot implement a contract or adapter, call providers, modify runtime/tests, copy source, access protected data, deploy, cut over, or retire source."
+          "type": "runtime-adoption",
+          "description": "Any provider call, consumer, adapter, tool action, persistence, extraction, or behavior change requires a later Work Order."
         }
       ],
       "nextCandidates": []

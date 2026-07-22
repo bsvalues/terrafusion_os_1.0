@@ -94,7 +94,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
   WO-SR-005D-I Dossier evidence-registry read implementation/freeze is authority-gated
   WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
-  WO-SR-005E-C GPT grounded-context contract decomposition is active
+  WO-SR-005E-C GPT grounded-context contract decomposition is complete
+  WO-SR-005E-I GPT grounded-context implementation/freeze is authority-gated
   WO-SR-005B through WO-SR-005E remain gated by suite-specific contracts and parity proof
 ```
 
@@ -104,7 +105,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-P | SR-005E-C GPT grounded-context contract decomposition | Exact docs/evidence design; provider calls and implementation blocked | ACTIVE / EXECUTING |
+| five-suite-federated-repository-buildout | SR-001 through SR-005E-C | SR-005C-I / SR-005D-I / SR-005E-I bounded contract implementation | Exact R3 non-core source authority; runtime/provider adoption blocked | ACTIVE / AUTHORITY BOUNDARY |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -122,10 +123,10 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. WO-SR-005E-C is the admitted dependency-cleared node after GPT preparation selected grounded context.
+1. No R2 five-suite node remains admitted; exact Dais/Dossier/GPT contract implementation authority is required.
 2. Do not rerun completed Work Orders to avoid an honest parked state.
 3. Do not ask the owner to dispatch routine engineering when the graph is parked.
-4. Continue through GPT grounded-context decomposition; keep provider calls, custody mutation, Dais/Dossier
+4. Resume only through an exact contract implementation cohort; keep provider calls, custody mutation, Dais/Dossier
    implementation, extraction, runtime adoption, protected data, package/workflow changes, and cutover blocked.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
