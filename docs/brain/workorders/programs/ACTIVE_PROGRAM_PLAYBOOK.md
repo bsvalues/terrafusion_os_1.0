@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Dais preparation complete and appeal contract decomposition admitted |
-| Current | `WO-SR-005C-C - Dais Appeal Workflow Contract Decomposition` |
-| Next | Bounded contract implementation/freeze only if decomposition is implementation-ready |
+| Status | Active; Dais appeal decomposition complete and contract implementation admitted |
+| Current | `WO-SR-005C-I - Dais Appeal Workflow Contract Implementation and Freeze` |
+| Next | Dais adapter and standalone parity preparation after contract proof |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -120,8 +120,8 @@ solution build. WO-SR-005B-E2 merged the hash-pinned standalone synthetic contra
 Atlas PR #1. WO-SR-005B-E3 then rejected direct copying because no sovereign candidate had a clean
 suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into built-fresh product
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
-boundary and selected appeals as the first contract cohort. WO-SR-005C-C now owns exact
-appeal-workflow contract decomposition without contract or runtime implementation.
+boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
+read-only boundary; WO-SR-005C-I now owns bounded contract implementation/freeze without runtime adoption.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -573,8 +573,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005C-C - Dais Appeal Workflow Contract Decomposition` |
-| Next WO | Bounded contract implementation/freeze only if decomposition is implementation-ready |
+| Current WO | `WO-SR-005C-I - Dais Appeal Workflow Contract Implementation and Freeze` |
+| Next WO | Dais adapter and standalone parity preparation after contract proof |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

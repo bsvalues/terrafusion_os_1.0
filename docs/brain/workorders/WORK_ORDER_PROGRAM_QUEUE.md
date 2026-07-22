@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-20
-**Authority:** WO-SR-005C-P closeout
+**Authority:** WO-SR-005C-C closeout
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active. WO-SR-005C-P verified real county-isolated
-Dais workflow source and selected appeals as the smallest coherent contract cohort.
-`WO-SR-005C-C` is active to define the exact appeal-workflow contract. Dais extraction, contract
-implementation, runtime changes, and protected county/PACS/SQL access remain blocked.
+The Five-Suite Federated Repository Buildout is active. WO-SR-005C-C defined the exact read-only,
+county-scoped Dais appeal-workflow contract and its bounded implementation allowlist.
+`WO-SR-005C-I` is active to implement and hash-freeze only that contract. Dais extraction,
+adapter/runtime adoption, and protected county/PACS/SQL access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -46,7 +46,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005B-E3 Atlas Bounded Extraction Scope Audit | DONE | No safe direct-copy slice; built-fresh projection foundation identified |
 | WO-SR-005B-F1 Atlas Standalone Spatial Projection Foundation | DONE | Atlas PR #2 / merge `6c530f1b`; direct and existing parity proof passed; no runtime consumer |
 | WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation | DONE | Appeal cohort selected; county isolation proven; contract decomposition required |
-| **WO-SR-005C-C Dais Appeal Workflow Contract Decomposition** | **ACTIVE** | R2 docs/evidence contract design; no contract or runtime implementation |
+| WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
+| **WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze** | **ACTIVE** | R3 bounded contract artifacts only; no runtime adoption |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; Dais domain contract and county-isolation proof required |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON DOMAIN CONTRACT | Bootstrap complete; custody contract and evidence-integrity proof required |
@@ -192,10 +193,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 
-**Portfolio result after WO-SR-005C-P:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
-removed. Atlas F1 is complete and unwired; WO-SR-005C-C is the dependency-cleared Dais appeal
-contract-decomposition slice. Dais extraction/implementation, protected data, runtime adoption,
-providers, package/workflow changes, and cutover remain blocked.
+**Portfolio result after WO-SR-005C-C:** `ACTIVE_PROGRAM_EXECUTING`. The foreign OMEN lane remains
+removed. Atlas F1 is complete and unwired; WO-SR-005C-I is the dependency-cleared Dais contract
+implementation/freeze slice. Dais extraction, adapter/runtime adoption, protected data, providers,
+package/workflow changes, and cutover remain blocked.
 
 ---
 
