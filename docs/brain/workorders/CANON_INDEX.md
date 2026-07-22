@@ -45,5 +45,5 @@ amendments. It proves why the amendments exist but does not grant authority.
 ## Unavailable Canon
 
 Root [`PATH_CANON_REGISTER.md`](../../../PATH_CANON_REGISTER.md) now records exact local path, remote,
-default branch, and scope identity for the OS and sovereign Sync repositories. Cross-repository
-dispatch remains fail-closed unless live identity matches that register.
+default branch, and scope identity for the OS, sovereign Sync, and standalone Atlas repositories.
+Cross-repository dispatch remains fail-closed unless live identity matches that register.
