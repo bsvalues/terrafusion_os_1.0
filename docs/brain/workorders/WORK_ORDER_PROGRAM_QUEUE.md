@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-20
-**Authority:** WO-SR-005E-C closeout
+**Date:** 2026-07-22
+**Authority:** OWNER-SR-R3-CONTRACT-FREEZE-ENVELOPE-20260722
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -15,9 +15,9 @@
 
 The Five-Suite Federated Repository Buildout is active. WO-SR-005C-C defined the exact read-only,
 county-scoped Dais appeal-workflow contract and its bounded implementation allowlist.
-WO-SR-005C-I, WO-SR-005D-I, and WO-SR-005E-I are implementation-ready but authority-gated. All
-dependency-cleared R2 contract preparation/decomposition is complete. No lower-risk five-suite node
-is admitted. Extraction, provider calls, runtime adoption, and protected access remain blocked.
+WO-SR-005C-I is complete and `dais.appeal-workflow@1.0.0` is hash-frozen. WO-SR-005D-I is active;
+WO-SR-005E-I follows it under the recorded sequential R3 envelope. Extraction, provider calls,
+runtime adoption, publication, and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -48,11 +48,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005B-F1 Atlas Standalone Spatial Projection Foundation | DONE | Atlas PR #2 / merge `6c530f1b`; direct and existing parity proof passed; no runtime consumer |
 | WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation | DONE | Appeal cohort selected; county isolation proven; contract decomposition required |
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
-| WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
+| WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
-| WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |
+| WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | ACTIVE | Next sequential R3 contract-freeze node |
 | WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation | DONE | Grounded-context cohort selected; current adapter not parity-safe |
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | PROPOSED / AUTHORITY GATED | Exact contract artifacts only; root write scope not expanded |

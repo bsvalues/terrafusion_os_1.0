@@ -506,6 +506,41 @@
       }
     },
     {
+      "id": "OWNER-SR-R3-CONTRACT-FREEZE-ENVELOPE-20260722",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005C-I through WO-SR-005E-I sequentially",
+      "status": "active",
+      "authority_class": "R3-bounded-sequential-contract-freeze",
+      "effective_base_sha": "db072fbe7b6c48acc1994dc815df1f035d4621fa",
+      "scope_source": "Each Work Order allowedFiles list in docs/brain/workorders/registry/work-order-registry.seed.json",
+      "authorized_actions": [
+        "sequential implementation, validation, evidence, and in-scope remediation",
+        "branches, commits, pushes, pull requests, review remediation, and Mode B merge",
+        "post-merge verification and automatic routing from Dais to Dossier to GPT"
+      ],
+      "authorized_files": [
+        "WO-SR-005C-I allowedFiles",
+        "WO-SR-005D-I allowedFiles",
+        "WO-SR-005E-I allowedFiles",
+        ".governance/owner-decisions.json for this durable authority record"
+      ],
+      "explicitly_denied": [
+        "runtime adoption, consumers, adapters, providers, models, embeddings, packages, or publication",
+        "workflow, deployment, production, county, PACS, SQL, credential, secret, migration, or persistence changes"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside a Work Order allowlist",
+        "required-check failure or bypass",
+        "unresolved review thread or exact-head assurance failure",
+        "protected-boundary access or conflicting authority"
+      ],
+      "terminal_condition": "Consumed after WO-SR-005E-I is merged and post-merge verification succeeds.",
+      "decision_basis": "Owner rejected the duplicate authority stop and explicitly authorized the sequential Dais, Dossier, and GPT R3 contract-freeze envelope."
+    },
+    {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
       "program": "all current and future ratified TerraFusion programs",
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",

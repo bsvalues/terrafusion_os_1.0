@@ -1,0 +1,23 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "selector": { "appealId": "A-200" }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "appeals": [
+      {
+        "appealId": "A-200",
+        "parcelId": "P-200",
+        "taxYear": 2025,
+        "ground": "UNIFORMITY",
+        "status": "decided",
+        "filedAt": "2025-02-01T16:00:00Z",
+        "hearingAt": "2025-03-01T16:00:00Z",
+        "decisionAt": "2025-03-05T20:00:00Z"
+      }
+    ]
+  }
+}

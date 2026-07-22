@@ -1,0 +1,23 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "selector": { "parcelId": "P-100" },
+    "traceId": "trace-filed"
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county",
+    "appeals": [
+      {
+        "appealId": "A-100",
+        "parcelId": "P-100",
+        "taxYear": 2026,
+        "ground": "MARKET_VALUE",
+        "status": "filed",
+        "filedAt": "2026-01-10T18:30:00Z"
+      }
+    ],
+    "traceId": "trace-filed"
+  }
+}

@@ -15,11 +15,21 @@ const manifestPath = path.join(
 const atlasContractRoot = path.join(repoRoot, 'backend/src/TerraFusion.Abstractions/contracts');
 const atlasSchemaPath = path.join(atlasContractRoot, 'atlas.spatial-read.v1.schema.json');
 const atlasFixtureRoot = path.join(atlasContractRoot, 'fixtures');
+const daisSchemaPath = path.join(atlasContractRoot, 'dais.appeal-workflow.v1.schema.json');
 
 function atlasFixture(name) {
   return JSON.parse(
     fs.readFileSync(
       path.join(atlasFixtureRoot, `atlas.spatial-read.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function daisFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `dais.appeal-workflow.v1.${name}.synthetic.json`),
       'utf8'
     )
   );
@@ -39,7 +49,41 @@ function matchesType(type, value) {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
   if (type === 'array') return Array.isArray(value);
   if (type === 'number') return typeof value === 'number' && Number.isFinite(value);
+  if (type === 'integer') return Number.isInteger(value);
   return typeof value === type;
+}
+
+function validateDaisSemantics(exchange) {
+  const errors = [];
+  if (exchange.request?.countyId !== exchange.result?.countyId) {
+    errors.push('response countyId must match request countyId');
+  }
+
+  const selector = exchange.request?.selector ?? {};
+  const selected = ['appealId', 'parcelId', 'taxYear'].filter(key => Object.hasOwn(selector, key));
+  if (selected.length !== 1) errors.push('selector must contain exactly one identity');
+
+  for (const appeal of exchange.result?.appeals ?? []) {
+    const key = selected[0];
+    if (key && appeal[key] !== selector[key]) {
+      errors.push(`appeal ${appeal.appealId ?? '<unknown>'} must match selector ${key}`);
+    }
+    for (const timestamp of ['filedAt', 'hearingAt', 'decisionAt']) {
+      if (
+        appeal[timestamp] &&
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(appeal[timestamp])
+      ) {
+        errors.push(`${timestamp} must be RFC 3339 UTC`);
+      }
+    }
+    if (appeal.hearingAt && Date.parse(appeal.hearingAt) < Date.parse(appeal.filedAt)) {
+      errors.push('hearingAt must not precede filedAt');
+    }
+    if (appeal.decisionAt && Date.parse(appeal.decisionAt) < Date.parse(appeal.filedAt)) {
+      errors.push('decisionAt must not precede filedAt');
+    }
+  }
+  return errors;
 }
 
 // The governed-spine job intentionally runs this test without installing workspace dependencies.
@@ -61,6 +105,9 @@ function validateJsonSchema(root, schema, value, location = '$') {
   }
   if (typeof value === 'string' && schema.minLength && value.length < schema.minLength) {
     errors.push(`${location}: string is shorter than ${schema.minLength}`);
+  }
+  if (typeof value === 'string' && schema.pattern && !new RegExp(schema.pattern).test(value)) {
+    errors.push(`${location}: string does not match pattern`);
   }
   if (typeof value === 'number') {
     if (schema.minimum !== undefined && value < schema.minimum) {
@@ -187,8 +234,8 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 3,
-    frozenFiles: 14,
+    groups: 4,
+    frozenFiles: 25,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -227,6 +274,39 @@ test('Atlas spatial read negative fixtures fail closed', () => {
     validateJsonSchema(schema, schema, crossLaneFields),
     [],
     'cross-lane fields must be rejected'
+  );
+});
+
+test('Dais appeal workflow positive fixtures satisfy schema and lifecycle semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(daisSchemaPath, 'utf8'));
+  for (const name of ['filed-by-parcel', 'decided-by-id', 'empty-by-tax-year']) {
+    const fixture = daisFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateDaisSemantics(fixture), [], name);
+  }
+});
+
+test('Dais appeal workflow negative fixtures fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(daisSchemaPath, 'utf8'));
+  for (const name of [
+    'missing-county',
+    'invalid-status',
+    'cross-lane-fields',
+    'ambiguous-selector',
+  ]) {
+    assert.notDeepEqual(validateJsonSchema(schema, schema, daisFixture(name)), [], name);
+  }
+  for (const name of ['county-mismatch', 'selector-mismatch']) {
+    const fixture = daisFixture(name);
+    assert.notDeepEqual(validateDaisSemantics(fixture), [], name);
+  }
+
+  const invalidTimestamp = daisFixture('filed-by-parcel');
+  invalidTimestamp.result.appeals[0].filedAt = '2026-01-10 18:30:00 local';
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, invalidTimestamp),
+    [],
+    'non-UTC timestamp must be rejected by the schema'
   );
 });
 
@@ -282,8 +362,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 3,
-      frozenFiles: 14,
+      groups: 4,
+      frozenFiles: 25,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -318,7 +398,8 @@ function withDegradedFrozenFile(content) {
 test('a zero-byte frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('');
   assert.throws(
-    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () =>
+      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -326,7 +407,8 @@ test('a zero-byte frozen contract fails closed', () => {
 test('a whitespace-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('   \n\t  \r\n');
   assert.throws(
-    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () =>
+      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -334,7 +416,8 @@ test('a whitespace-only frozen contract fails closed', () => {
 test('a comment-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('// only a line comment\n/* and a\n   block comment */\n');
   assert.throws(
-    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () =>
+      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /no meaningful content/
   );
 });
@@ -342,7 +425,8 @@ test('a comment-only frozen contract fails closed', () => {
 test('a typeless namespace-only frozen contract fails closed', () => {
   const fixture = withDegradedFrozenFile('namespace TerraFusion.Abstractions.DTOs;\n');
   assert.throws(
-    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () =>
+      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /declares no C# type/
   );
 });
@@ -356,7 +440,8 @@ test('a typeless file with a construct keyword only inside a string literal fail
       "// grouping = 'e'; // enum-ish\n"
   );
   assert.throws(
-    () => verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
+    () =>
+      verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     /declares no C# type/
   );
 });
@@ -369,8 +454,8 @@ test('a genuine type declaration still passes the content check', () => {
   assert.deepEqual(
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
-      groups: 3,
-      frozenFiles: 14,
+      groups: 4,
+      frozenFiles: 25,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

@@ -1,0 +1,21 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county-a",
+    "selector": { "appealId": "A-300" }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "countyId": "synthetic-county-b",
+    "appeals": [
+      {
+        "appealId": "A-300",
+        "parcelId": "P-300",
+        "taxYear": 2026,
+        "ground": "CLASSIFICATION",
+        "status": "filed",
+        "filedAt": "2026-01-01T00:00:00Z"
+      }
+    ]
+  }
+}

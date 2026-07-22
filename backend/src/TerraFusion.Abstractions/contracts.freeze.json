@@ -23,6 +23,11 @@
       "groups": ["atlas.spatial-read"]
     },
     {
+      "id": "TerraFusion.Contracts.Dais",
+      "status": "planned_not_published",
+      "groups": ["dais.appeal-workflow"]
+    },
+    {
       "id": "TerraFusion.Contracts.CrossCutting",
       "status": "planned_not_published",
       "groups": ["crosscut.audit"]
@@ -106,6 +111,58 @@
         {
           "path": "contracts/fixtures/atlas.spatial-read.v1.unavailable.synthetic.json",
           "sha256": "013ed10debe485695fc4b5d826da194ce12ee29beae17d5b0c139556ef7ec245"
+        }
+      ]
+    },
+    {
+      "group": "dais.appeal-workflow",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dais"],
+      "files": [
+        {
+          "path": "DTOs/DaisAppealWorkflowDto.cs",
+          "sha256": "c9bb02054fc5a211ed609a3e9d7fe604e34cd0613701a57f6f2788d312348f47"
+        },
+        {
+          "path": "contracts/dais.appeal-workflow.v1.schema.json",
+          "sha256": "b66579eda680849b9bfc998c9cb89b33079ff3ef87a20ad499643b5f9249dd8c"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.ambiguous-selector.synthetic.json",
+          "sha256": "3ff0de0c5ea92916afb63de5a3a9166c8c620e68b41dc8bfb6a39aa992cdea17"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.county-mismatch.synthetic.json",
+          "sha256": "58e9b3e9b5198b83cf0f35cf8e5f0c8d10d1039bb71a73da6349975250e940ce"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.cross-lane-fields.synthetic.json",
+          "sha256": "f290364ae814e241d75d92d4ee230740526a15a64ea077247fe42910315a8aff"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.decided-by-id.synthetic.json",
+          "sha256": "8bce4af4bca4b75a5d8d274fdbea55732b62c091d426a9776e357494fd124d10"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.empty-by-tax-year.synthetic.json",
+          "sha256": "711fabf84f640befaaf2bf8ce3bef1f6ba5a7f3bded2e080123d283bd975ea7d"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.filed-by-parcel.synthetic.json",
+          "sha256": "3b5196ccd2e6080a357279297f53a23c996a29db87071a0237f829d9b2cf6a3e"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.invalid-status.synthetic.json",
+          "sha256": "5db538ba1e89ac17b45f40df6922cd27d3b5a0ee5368ed466ff8aa89ec55ad05"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.missing-county.synthetic.json",
+          "sha256": "a05e064f6fa43d5778870b88413b94a111b07f3c5d019e9338820914ecb6c849"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-workflow.v1.selector-mismatch.synthetic.json",
+          "sha256": "99828201845dfceccb2ed2392d6ae4f1927918ac78ca652d2cc9a83d9789e8cc"
         }
       ]
     }

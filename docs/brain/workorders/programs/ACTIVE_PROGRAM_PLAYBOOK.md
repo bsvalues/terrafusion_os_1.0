@@ -99,7 +99,7 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active with exact R3 contract-implementation authority boundary |
-| Current | `WO-SR-005E-I` proposed/authority-gated; Dais and Dossier implementation cohorts also gated |
+| Current | `WO-SR-005D-I` active under the sequential R3 contract-freeze envelope; Dais C-I complete |
 | Next | Resume bounded contract implementation only under exact non-core source authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -121,7 +121,7 @@ Atlas PR #1. WO-SR-005B-E3 then rejected direct copying because no sovereign can
 suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into built-fresh product
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
 boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
-read-only boundary. WO-SR-005C-I is implementation-ready but requires exact non-core source
+read-only boundary. WO-SR-005C-I is complete under the recorded exact non-core source
 authority. WO-SR-005D-C2 defined the exact Dossier evidence-registry read boundary; WO-SR-005E-C
 defined the exact GPT grounded-context boundary. All remaining Dais, Dossier, and GPT implementation
 cohorts are proposed/authority-gated; no lower-risk five-suite node remains admitted.
@@ -576,7 +576,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-I` proposed/authority-gated |
+| Current WO | `WO-SR-005D-I` active; `WO-SR-005E-I` next |
 | Next WO | Dais, Dossier, and GPT bounded contract implementation under exact R3 authority |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
