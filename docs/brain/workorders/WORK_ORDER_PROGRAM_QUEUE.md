@@ -48,6 +48,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation | DONE | Appeal cohort selected; county isolation proven; contract decomposition required |
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
+| WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
@@ -56,7 +57,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE ON MERGE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
-| WO-SR-005C Dais Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and runtime adoption remain unproven |
+| WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — BUILD-FRESH ADMITTED | Owner authorized (2026-07-23); E3 audit returned `PASS_NO_DIRECT_EXTRACTION`; next is WO-SR-005C-F1 build-fresh appeal-workflow foundation in `bsvalues/terrafusion-dais`; runtime adoption / providers / cutover still blocked |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and custody-safe runtime adoption remain unproven |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; provider-neutral adapter parity, exact extraction scope, and runtime adoption remain unproven |
 
