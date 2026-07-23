@@ -34,17 +34,17 @@ sovereign freeze SHA. Correcting that declaration belongs to E2, not this read-o
 | --- | --- |
 | `DossierEvidenceRegistryReadDto.cs` | `414fd158cd7a0f1e483ab44a83b93a64e4180300561f53088830583220566b7f` |
 | `dossier.evidence-registry-read.v1.schema.json` | `f658bc2bda718f58bd0353e9635524d5dbd376be515b543da3442b0094e52270` |
-| `two-record-page.synthetic.json` | `5e6929aabfca65732246793b2be1bbf3e34929470108960f0a2df5f5b299b6e3` |
-| `empty-page.synthetic.json` | `76c70863e09c53efb090d5564c40419bba57b3edab4ce419e1538cf0d4056aa2` |
-| `next-page.synthetic.json` | `7ab540b9f3b70f24ff0bf9021ed329bed6b5feb0510a94faf2db88535a4fbe7f` |
-| `county-mismatch.synthetic.json` | `de0054cf469e0ecacbf8e523ab714db55cb951ed36ed9e3351e09153f83b7209` |
-| `parcel-mismatch.synthetic.json` | `4fbf99f1826c0993d40201eb04dfbc12c11a0735904815752e3e8d7775599dca` |
-| `unknown-evidence-type.synthetic.json` | `c84a6ca3843607ef8a2940038a5e2e1cd4aad958827a4ca650915376092f1da2` |
-| `unknown-integrity.synthetic.json` | `3ed7e2c7a2078d3bb8aa9fe69b5f86b755a86d788fe066a65f33ca42b8f38c69` |
-| `duplicate-evidence-id.synthetic.json` | `6ff340e2862675689d22bcbd68c728ac09a66b4ed55fcb222f205eec44071a5` |
-| `unstable-tie-order.synthetic.json` | `caf8910ecbbbf9b4205594042100878b8cfe9007d7c22c244db850e139c41316` |
-| `pagination-inconsistent.synthetic.json` | `9eff7f3835818c89149e7bda0a094585829c46a530d305861924bb989b9d4790` |
-| `cross-lane-fields.synthetic.json` | `1e2044f3d1ca628339f69ba74f77e7db475f2c0f15a60baa112e92d471e7bfed` |
+| `two-record-page.synthetic.json` | `5e6929890dcf9f58d780e187f6c6d8f7ed2951d78a13bbc445c74b61e5aeb6e3` |
+| `empty-page.synthetic.json` | `76c70831cacf44a1e76d878eafa64129cdf6c471b632527240e0f17bc32cdaa2` |
+| `next-page.synthetic.json` | `7ab5404b6138ed940fbc790af55435b8a6f383a4eb62f4d3dea79c9c96d5be7f` |
+| `county-mismatch.synthetic.json` | `de0054c63d3362d72711061de10f71ab7c3f3b3afd0a7366bd12348312ef7209` |
+| `parcel-mismatch.synthetic.json` | `4fbf99544359faa62e18712a647574f7007baf1a7633be45a8f9651058f59dca` |
+| `unknown-evidence-type.synthetic.json` | `c84a6c040d46f019b36313a7d8c97cb046dea5690c4be898eddd094664d61da2` |
+| `unknown-integrity.synthetic.json` | `3ed7e2822e1971e731d0551786a9c7740ce81fbc80d27e3f80d270d56abe8c69` |
+| `duplicate-evidence-id.synthetic.json` | `6ff3402449723295946493532356a12155f235dc2054fcc08783c7912372f1a5` |
+| `unstable-tie-order.synthetic.json` | `caf891ee8adbc92fe001441c416946f2bef0f307d33dafff4166a98f7c551316` |
+| `pagination-inconsistent.synthetic.json` | `9eff7f8a36efdd1945828bc530de05fbf4fcdb69ea34d6cf131665b6a4b74790` |
+| `cross-lane-fields.synthetic.json` | `1e2044fd6af4dea9d421089f1a8f0d3efc500a995fcd6a5f565c2a008f15bfed` |
 
 The frozen verifier requires exact county and parcel identity, stable ordering by `createdAt`
 descending then `evidenceId` ascending, unique evidence IDs, exact request/result pagination
@@ -60,7 +60,7 @@ beyond total.
 | Persistence entity and fields | `backend/src/TerraFusion.Core/Entities/DossierEvidence.cs:1-31` |
 | County- and parcel-filtered list query | `backend/src/TerraFusion.API/Controllers/DossierController.cs:1855-1900` |
 | Pagination normalization | `backend/src/TerraFusion.API/Controllers/DossierController.cs:2268-2279` |
-| Existing list evidence tests | `backend/tests/TerraFusion.Unit.Tests/Stage2/DossierEndpointContractTests.cs:5414-5538` |
+| Existing list evidence test | `backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5CxR1ClosureTests.cs:5448-5469` |
 | Frozen DTO | `backend/src/TerraFusion.Abstractions/DTOs/DossierEvidenceRegistryReadDto.cs` |
 | Frozen schema | `backend/src/TerraFusion.Abstractions/contracts/dossier.evidence-registry-read.v1.schema.json` |
 
