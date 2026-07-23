@@ -189,7 +189,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-16 by WO-PORTFOLIO-003 reconciliation)*
+*(Updated 2026-07-23 by WO-PORTFOLIO-014 post-contract-freeze reconciliation; every prior wall remains in effect and the five-suite extraction and p8-management-dashboard walls are added below so this canonical ledger carries the full authorization backlog)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
@@ -199,12 +199,21 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
+| five-suite-federated-repository-buildout | WO-SR-005B/C/D/E bounded extraction, WO-SR-006 cutover | SW-05 / sovereign extraction boundary | contract-freeze cohort complete; each suite needs an E3 exact-scope + parity gate; suite repos already exist (SR-003 COMPLETE) so repo creation is not a blocker; credential re-binds only for WO-SR-006 cutover | `evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md` |
+| p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005E-I merge:** `PORTFOLIO_RECONCILIATION`. The foreign OMEN lane
 remains removed. Atlas F1 is complete and unwired; the Dais, Dossier, and GPT read-only contracts
 are implemented and hash-frozen. No extraction or runtime-adoption slice is implied or currently
 admitted. Exact later scope, parity evidence, and applicable authority remain required for
 extraction, runtime adoption, protected data, providers, package/workflow changes, and cutover.
+
+**Reconciliation result (WO-PORTFOLIO-014, 2026-07-23):** `ALL_LANES_PARKED`. Every active program is
+COMPLETE/EXHAUSTED or PARKED behind a protected wall; the registry holds zero non-terminal Work Orders
+and there are zero open PRs. No safe, dependency-cleared, non-walled next Work Order exists. The
+autonomous run is legitimately complete pending owner authorization of one or more walls above. Full
+terminal report and ranked unblock options:
+[`evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md`](evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md).
 
 ---
 

@@ -5590,6 +5590,113 @@
         }
       ],
       "nextCandidates": []
+    },
+    {
+      "id": "WO-PORTFOLIO-014",
+      "title": "Post-Contract-Freeze Portfolio Reconciliation",
+      "program": "Portfolio Operator",
+      "goal": "Reconcile the live portfolio after the five-suite contract-freeze cohort terminated at WO-SR-005E-I and emit the All-Lanes-Parked terminal report surfacing the authorization backlog.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005E-I",
+          "status": "satisfied",
+          "evidence": [
+            "The five-suite contract-freeze cohort completed at WO-SR-005E-I (merged into origin/main at e57b1eca9, #1352), consuming the sequential R3 contract-freeze envelope and triggering portfolio reconciliation."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": [
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Extraction, providers, adapters, runtime adoption, publication, cutover, credentials, runtime, product, package, CI, deployment, county, PACS, SQL, secrets, production, or external-resource mutation"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-PORTFOLIO-014-post-contract-freeze-portfolio-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "portfolio-reconciliation",
+          "description": "Prove every active program's next node is COMPLETE/EXHAUSTED or PARKED behind a protected wall, that the registry holds zero non-terminal Work Orders, and that no wall was crossed or protected resource mutated."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run",
+          "note": "Requires ajv from a full workspace install; runs in CI. Not run in the authoring sandbox (ERR_MODULE_NOT_FOUND: ajv)."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "portfolio-reconciliation",
+          "location": "docs/brain/workorders/evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md",
+          "description": "ALL_LANES_PARKED verdict, per-program candidate classification, open-PR reconciliation (zero open), the AUTONOMOUS_CONTINUATION_GATE section 4 terminal report, ranked unblock options, and non-mutation proof."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "true_portfolio_boundary",
+          "description": "No dependency-cleared, non-walled next Work Order remains in any active program; every remaining candidate crosses an exact protected wall requiring owner authorization."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing portfolio authority covers this read-only governance reconciliation only; it authorizes no wall it lists and no capability lane."
+      },
+      "provenance": {
+        "createdAt": "2026-07-23T00:00:00Z",
+        "source": "Portfolio reconciliation computed against the current registry, queue, program playbooks, cross-program dependency graph, and open-PR state after the WO-SR-005E-I contract-freeze cohort completion.",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }
