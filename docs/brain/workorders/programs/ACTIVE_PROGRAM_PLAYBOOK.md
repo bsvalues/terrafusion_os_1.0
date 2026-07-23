@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; Dais adapter/parity preparation complete |
-| Current | `WO-SR-005C-A` and E3 audits complete; no direct-copy Dais slice |
-| Next | `WO-SR-005C-E1` proposed; E2 follows, while F1 remains a later separately gated node |
+| Status | Active in owner-authorized Dais E1/E2 adapter/parity cohort |
+| Current | `WO-SR-005C-E1` complete; pure unwired sovereign adapter proven |
+| Next | `WO-SR-005C-E2` active; F1 remains a later separately gated node |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -579,8 +579,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005C-A` and `WO-SR-005C-E3` complete |
-| Next WO | `WO-SR-005C-E1` proposed / exact bounded R3 envelope required; F1 remains later |
+| Current WO | `WO-SR-005C-E1` complete |
+| Next WO | `WO-SR-005C-E2` active under the bounded R3 envelope; F1 remains later |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

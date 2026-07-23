@@ -5034,9 +5034,230 @@
           "id": "WO-SR-005C-E1",
           "reason": "Implement the pure unwired sovereign Dais appeal-workflow read adapter over already-materialized county-scoped records.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
+    },
+    {
+      "id": "WO-SR-005C-E1",
+      "title": "Dais Sovereign Appeal Workflow Read Adapter",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and prove a pure unwired adapter from already-materialized county-scoped appeals to dais.appeal-workflow@1.0.0.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005C-A", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Pure Dais appeal-workflow read adapter and synthetic unit tests"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime registration, controller, endpoint, service, persistence, or consumer adoption"
+        },
+        {
+          "name": "Provider, database, county, PACS, SQL, live, production, credential, or secret access"
+        },
+        {
+          "name": "Frontend, destination product implementation, extraction, packages, publication, workflows, deployment, or cutover"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Adapters/DaisAppealWorkflowReadAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dais/DaisAppealWorkflowReadAdapterTests.cs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Controllers/**",
+        "backend/src/TerraFusion.Core/Services/**",
+        "backend/src/TerraFusion.Data/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-proof",
+          "description": "Positive field mapping plus fail-closed county, selector, vocabulary, timestamp, lifecycle, and cross-lane exclusion tests."
+        },
+        {
+          "kind": "no-runtime-adoption",
+          "description": "No DI, controller, endpoint, service, database, provider, or consumer reference to the adapter."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Targeted Dais adapter tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~DaisAppealWorkflowReadAdapterTests",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005C-E1-DAIS-SOVEREIGN-APPEAL-WORKFLOW-READ-ADAPTER.md"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any runtime wiring, source extraction, provider/database call, endpoint/service change, destination product implementation, or F1 work is outside E1."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005C-E2",
+          "reason": "Materialize and prove the frozen contract in the standalone Dais repository after the sovereign adapter passes.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Owner-authorized bounded Dais E1/E2 R3 envelope anchored to WO-SR-005C-A merge 62cde7bd6a984b96b13c0b7f58e9caa0213cb529; authority continues sequentially to E2 but excludes F1."
+      }
+    },
+    {
+      "id": "WO-SR-005C-E2",
+      "title": "Dais Standalone Synthetic Contract Parity",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove hash-pinned standalone compatibility with dais.appeal-workflow@1.0.0 using only the frozen synthetic corpus.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005C-E1", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Dais standalone contract-compat material and synthetic verifier"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product source extraction, F1, runtime adoption, persistence, or ownership cutover"
+        },
+        {
+          "name": "Provider, county, PACS, SQL, credentials, secrets, network, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        ".github/workflows/suite-ci.yml (contract-compat job only)",
+        "canon/CONTRACT_DEPENDENCY.md",
+        "contract-compat/dais.appeal-workflow.v1/manifest.json",
+        "contract-compat/dais.appeal-workflow.v1/dais.appeal-workflow.v1.schema.json",
+        "contract-compat/dais.appeal-workflow.v1/fixtures/*.json",
+        "scripts/verify-dais-appeal-workflow.mjs",
+        "scripts/verify-dais-appeal-workflow.test.mjs",
+        "operations/work-orders/WO-SR-005C-E2-dais-standalone-synthetic-contract-parity.md",
+        "operations/evidence/WO-SR-005C-E2-DAIS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+      ],
+      "blockedFiles": [
+        "terrafusion_os_1.0 runtime and product paths",
+        "src/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-contract-parity",
+          "description": "All frozen hashes match; three positive fixtures pass; six negative fixtures fail closed with county, selector, lifecycle, ordering, and UTC semantics preserved."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Standalone Dais verifier tests",
+          "command": "node --test scripts/verify-dais-appeal-workflow.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone Dais verifier",
+          "command": "node scripts/verify-dais-appeal-workflow.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frozen source and destination hash parity",
+          "command": "Verify manifest SHA-256 entries against dais.appeal-workflow@1.0.0 source artifacts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Exact destination scope inspection",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "No product source extraction, F1, runtime adoption, persistence, provider access, package publication, deployment, or ownership cutover is authorized by E2."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Second and final node in the owner-authorized bounded Dais E1/E2 R3 envelope anchored to 62cde7bd6a984b96b13c0b7f58e9caa0213cb529. F1 is not included."
+      }
     },
     {
       "id": "WO-SR-005D-P",
