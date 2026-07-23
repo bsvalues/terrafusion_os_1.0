@@ -4,9 +4,9 @@
 
 **ALL_LANES_PARKED — NO NEXT WORK ADMITTED.** After the Five-Suite Federated Repository Buildout
 contract-freeze cohort terminated at `WO-SR-005E-I`, no active program has a safe, dependency-cleared,
-non-walled next Work Order. Every lane is COMPLETE/EXHAUSTED or PARKED behind a protected authority
-wall. The registry contains zero non-terminal Work Orders. The autonomous run is legitimately complete
-pending owner authorization of one or more walls.
+non-walled next Work Order. Every lane is terminal — COMPLETE/EXHAUSTED, PARKED behind a protected
+authority wall, or OUT_OF_SCOPE (non-TerraFusion). The registry contains zero non-terminal Work Orders.
+The autonomous run is legitimately complete pending owner authorization of one or more walls.
 
 ## Candidate Classification
 
@@ -62,9 +62,11 @@ WALL_LEDGER:
 PR_QUEUE:                 none (0 open PRs)
 MERGED:                   none this run
 NEXT_UNBLOCK_OPTIONS (ranked, each with the WO it reopens):
-  1. Extraction/parity + sovereign-repo authority  -> reopens five-suite WO-SR-005B bounded extraction
-     (the program's own next phase; also needs the suite-repo creation credential previously blocked
-     at EXECUTION_CREDENTIAL_BOUNDARY).
+  1. Extraction/parity + SW-05 sovereign authority -> reopens five-suite bounded extraction (built-fresh,
+     unwired slices per the Atlas F1 pattern; each suite needs an E3 exact-scope + parity audit first).
+     NOTE: the suite repos already exist (SR-003 manifest COMPLETE 2026-07-19; Atlas already merged
+     PRs #1 and #2), so repo creation is NOT a blocker; the credential wall only re-binds for
+     WO-SR-006 source-ownership cutover / duplicate retirement.
   2. SW-01/SW-04 live-deploy authority             -> reopens benton-demo WO-DEPLOY-BENTON-003D.
   3. SW-01/SW-03/SW-04 azure/county authority       -> reopens azure-county-runtime WO-AZURE-004+.
   4. SW-02/SW-03/SW-08 protected-data authority      -> reopens a benton-data-quality remediation packet.
@@ -88,5 +90,17 @@ OPERATOR_ACTION_REQUIRED: authorize one or more walls above to reopen a lane; ot
 
 The autonomous run is legitimately complete. The next capability-delivering step requires the owner to
 authorize one or more of the walls in `NEXT_UNBLOCK_OPTIONS`. The canonical highest-value unblock is
-option 1 (five-suite bounded extraction), which additionally depends on the suite-repository creation
-credential recorded as blocked at the earlier `EXECUTION_CREDENTIAL_BOUNDARY`.
+option 1 (five-suite bounded extraction). Credential/repo status (corrected):
+
+```
+SUITE_REPOSITORIES_CREATED: true
+EXECUTION_CREDENTIAL_BOUNDARY: cleared
+NEXT_SUITE: DAIS
+EXTERNAL_TARGET: bsvalues/terrafusion-dais
+CURRENT_SESSION_WRITE_ACCESS: available
+```
+
+The five suite repos already exist (SR-003 manifest COMPLETE 2026-07-19; Atlas already merged PRs #1
+and #2), so repo creation is NOT a blocker. The residual wall for extraction is SW-05 sovereign
+authority plus each suite's E3 exact-scope + parity gate; the credential boundary re-binds only for
+WO-SR-006 source-ownership cutover / duplicate retirement.

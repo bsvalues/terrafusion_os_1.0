@@ -5603,7 +5603,7 @@
           "id": "WO-SR-005E-I",
           "status": "satisfied",
           "evidence": [
-            "The five-suite contract-freeze cohort completed at WO-SR-005E-I (merged into origin/main at base cecc2c1b), consuming the sequential R3 contract-freeze envelope and triggering portfolio reconciliation."
+            "The five-suite contract-freeze cohort completed at WO-SR-005E-I (merged into origin/main at e57b1eca9, #1352), consuming the sequential R3 contract-freeze envelope and triggering portfolio reconciliation."
           ]
         }
       ],
@@ -5664,7 +5664,8 @@
           "name": "Wave planner tests",
           "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pass"
+          "result": "not_run",
+          "note": "Requires ajv from a full workspace install; runs in CI. Not run in the authoring sandbox (ERR_MODULE_NOT_FOUND: ajv)."
         }
       ],
       "evidenceProduced": [

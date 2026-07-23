@@ -5,7 +5,8 @@
 | Status | COMPLETE |
 | Program | Portfolio Operator |
 | Risk | R1 governance reconciliation (read-only) |
-| Dependency | WO-SR-005E-I merged at `cecc2c1b` base (five-suite contract-freeze cohort complete) |
+| Dependency | WO-SR-005E-I merged at `e57b1eca9` (#1352); reconciliation branch based on `cecc2c1b` (#1349) |
+| Authority | `OWNER-TF-STANDING-OPERATOR-AUTHORITY` (.governance/standing-operator-authority.json) — routine reconciliation and routing/evidence updates under `docs/brain/workorders/**` are within its `routine_operator_actions`; this is the portfolio-operator's own canonical work surface |
 | Result | ALL_LANES_PARKED — no dependency-cleared, non-walled next Work Order in any active program |
 
 ## Objective
