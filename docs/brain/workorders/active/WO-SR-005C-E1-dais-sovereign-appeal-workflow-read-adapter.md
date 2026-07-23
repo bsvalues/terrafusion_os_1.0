@@ -51,7 +51,7 @@ exclusion behavior without wiring a runtime consumer.
 
 ## Completion
 
-The adapter and 31-test synthetic matrix pass without introducing registration, consumers, external
+The adapter and 32-test synthetic matrix pass without introducing registration, consumers, external
 calls, or runtime behavior. Completion evidence is recorded in
 [WO-SR-005C-E1-DAIS-SOVEREIGN-APPEAL-WORKFLOW-READ-ADAPTER.md](../evidence/WO-SR-005C-E1-DAIS-SOVEREIGN-APPEAL-WORKFLOW-READ-ADAPTER.md).
 The same owner-authorized envelope now continues to E2. E1 does not authorize F1.

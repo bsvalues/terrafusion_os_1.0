@@ -5165,6 +5165,101 @@
       }
     },
     {
+      "id": "WO-SR-005C-E2",
+      "title": "Dais Standalone Synthetic Contract Parity",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove hash-pinned standalone compatibility with dais.appeal-workflow@1.0.0 using only the frozen synthetic corpus.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [{ "id": "WO-SR-005C-E1", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Dais standalone contract-compat material and synthetic verifier"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product source extraction, F1, runtime adoption, persistence, or ownership cutover"
+        },
+        {
+          "name": "Provider, county, PACS, SQL, credentials, secrets, network, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        ".github/workflows/suite-ci.yml (contract-compat job only)",
+        "canon/CONTRACT_DEPENDENCY.md",
+        "contract-compat/dais.appeal-workflow.v1/manifest.json",
+        "contract-compat/dais.appeal-workflow.v1/dais.appeal-workflow.v1.schema.json",
+        "contract-compat/dais.appeal-workflow.v1/fixtures/*.json",
+        "scripts/verify-dais-appeal-workflow.mjs",
+        "scripts/verify-dais-appeal-workflow.test.mjs",
+        "operations/work-orders/WO-SR-005C-E2-dais-standalone-synthetic-contract-parity.md",
+        "operations/evidence/WO-SR-005C-E2-DAIS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+      ],
+      "blockedFiles": [
+        "terrafusion_os_1.0 runtime and product paths",
+        "src/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-contract-parity",
+          "description": "All frozen hashes match; three positive fixtures pass; six negative fixtures fail closed with county, selector, lifecycle, ordering, and UTC semantics preserved."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Standalone Dais verifier tests",
+          "command": "node --test scripts/verify-dais-appeal-workflow.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone Dais verifier",
+          "command": "node scripts/verify-dais-appeal-workflow.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frozen source and destination hash parity",
+          "command": "Verify manifest SHA-256 entries against dais.appeal-workflow@1.0.0 source artifacts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Exact destination scope inspection",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "No product source extraction, F1, runtime adoption, persistence, provider access, package publication, deployment, or ownership cutover is authorized by E2."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Second and final node in the owner-authorized bounded Dais E1/E2 R3 envelope anchored to 62cde7bd6a984b96b13c0b7f58e9caa0213cb529. F1 is not included."
+      }
+    },
+    {
       "id": "WO-SR-005D-P",
       "title": "Dossier Custody Contract and Evidence-Integrity Gate Preparation",
       "program": "Five-Suite Federated Repository Buildout",

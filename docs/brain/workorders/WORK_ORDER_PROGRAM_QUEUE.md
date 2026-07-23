@@ -49,7 +49,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
 | WO-SR-005C-A Dais Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; no extraction or runtime adoption |
-| WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; 31 synthetic tests; no DI, service, database, controller, or consumer |
+| WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; 32 synthetic tests; no DI, service, database, controller, or consumer |
 | WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | ACTIVE / AUTHORIZED | Exact standalone contract-compat harness; no product extraction or runtime |
 | WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |

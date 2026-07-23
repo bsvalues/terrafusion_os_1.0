@@ -113,6 +113,27 @@ public sealed class DaisAppealWorkflowReadAdapterTests
     }
 
     [Fact]
+    public void Serialize_EmitsSchemaValidUtcZTimestampStrings()
+    {
+        var source = CreateAppeal(
+            hearingDate: new DateTime(2026, 2, 10, 18, 30, 0, DateTimeKind.Utc),
+            decisionDate: new DateTime(2026, 3, 10, 18, 30, 0, DateTimeKind.Utc));
+
+        using var json = JsonDocument.Parse(DaisAppealWorkflowReadAdapter.Serialize(
+            CreateRequest(new DaisAppealSelector { TaxYear = 2026 }),
+            [source]));
+        var appeal = json.RootElement.GetProperty("appeals")[0];
+
+        foreach (var field in new[] { "filedAt", "hearingAt", "decisionAt" })
+        {
+            var timestamp = appeal.GetProperty(field).GetString();
+            timestamp.Should().NotBeNull();
+            timestamp.Should().EndWith("Z");
+            timestamp.Should().NotContain("+00:00");
+        }
+    }
+
+    [Fact]
     public void Map_RejectsNullInputs()
     {
         var requestAction = () => DaisAppealWorkflowReadAdapter.Map(null!, []);

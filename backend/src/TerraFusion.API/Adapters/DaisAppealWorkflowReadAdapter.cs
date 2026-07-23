@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TerraFusion.Abstractions.DTOs;
@@ -17,6 +18,7 @@ public static class DaisAppealWorkflowReadAdapter
     private static readonly JsonSerializerOptions ContractSerializerOptions = new(JsonSerializerDefaults.Web)
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new UtcDateTimeOffsetJsonConverter() },
     };
 
     public static DaisAppealWorkflowReadResult Map(
@@ -219,4 +221,26 @@ public static class DaisAppealWorkflowReadAdapter
     }
 
     private sealed record ValidatedSelector(string? AppealId, string? ParcelId, int? TaxYear);
+
+    private sealed class UtcDateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
+    {
+        public override DateTimeOffset Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options) =>
+            throw new NotSupportedException("The Dais contract serializer is write-only.");
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            DateTimeOffset value,
+            JsonSerializerOptions options)
+        {
+            if (value.Offset != TimeSpan.Zero)
+            {
+                throw new JsonException("Dais contract timestamps must be UTC.");
+            }
+
+            writer.WriteStringValue(value.UtcDateTime.ToString("O", CultureInfo.InvariantCulture));
+        }
+    }
 }

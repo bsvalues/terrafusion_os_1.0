@@ -21,7 +21,8 @@ WO-SR-005C-A. It neither redefines the contract nor calls the service or persist
 - Contract tax-year limits, closed ground/status vocabulary, UTC timestamps, and lifecycle ordering
   are enforced.
 - Input order is preserved without claiming production ordering semantics.
-- The adapter serializer omits absent trace/hearing/decision values.
+- The adapter serializer omits absent trace/hearing/decision values and emits UTC timestamps with
+  the schema-required `Z` suffix.
 - Petitioner, value, notes, audit, provider, token, and persistence metadata never cross the DTO.
 
 No DI registration, controller, endpoint, service call, database/provider access, runtime consumer,
@@ -32,7 +33,7 @@ introduced.
 
 | Gate | Result |
 | --- | --- |
-| Targeted Dais adapter suite | PASS - 31 passed, 0 failed |
+| Targeted Dais adapter suite | PASS - 32 passed, 0 failed |
 | `dotnet build backend/TerraFusion.sln -c Release` | PASS - 0 warnings, 0 errors |
 | `node scripts/contracts/verify-contract-freeze.mjs` | PASS |
 | `node --test scripts/contracts/verify-contract-freeze.test.mjs` | PASS |

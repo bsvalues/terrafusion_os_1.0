@@ -42,7 +42,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Complete; `dais.appeal-workflow@1.0.0`, no runtime adoption |
 | WO-SR-005C-A | Prepare the Dais adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
-| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 31 synthetic tests, no runtime consumer |
+| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 32 synthetic tests, no runtime consumer |
 | WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Active under the bounded E1/E2 R3 envelope |
 | WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
 | WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
