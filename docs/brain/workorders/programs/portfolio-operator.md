@@ -68,6 +68,7 @@ WO-SR-005C-I, WO-SR-005D-I, and WO-SR-005E-I are complete after all R2 suite-con
 completed. The contract-freeze envelope is consumed. Portfolio reconciliation admitted
 WO-SR-005C-A, which completed with an implementation-ready pure-adapter then standalone-parity
 sequence. E1 remains blocked on its exact proposed R3 envelope. Provider calls, extraction, runtime
-adoption, and protected resources remain blocked.
+adoption, and protected resources remain blocked. WO-SR-005C-E3 separately confirmed there is no
+safe direct-copy Dais source and left F1 as a later built-fresh candidate after parity.
 
 STOP_TYPE: `PORTFOLIO_RECONCILIATION`

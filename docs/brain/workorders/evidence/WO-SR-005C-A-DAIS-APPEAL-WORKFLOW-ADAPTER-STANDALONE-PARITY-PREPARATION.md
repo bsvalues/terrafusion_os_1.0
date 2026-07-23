@@ -25,6 +25,10 @@ Dais source extraction and runtime adoption remain blocked after both slices.
 The standalone contract declaration still identifies only `crosscut.audit@1.0.0` and an older
 sovereign freeze SHA. Correcting that declaration belongs to E2, not this read-only preparation.
 
+After this source audit, WO-SR-005C-E3 independently returned `PASS_NO_DIRECT_EXTRACTION` and
+defined a later built-fresh F1 allowlist. That result reinforces this packet's no-extraction
+boundary. It does not replace E1/E2 parity proof or activate F1 implementation.
+
 ## Canonical Source Findings
 
 ### Exact source proof

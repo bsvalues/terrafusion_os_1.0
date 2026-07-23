@@ -92,6 +92,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005C-A Dais adapter/standalone-parity preparation is complete with an implementation-ready verdict
   WO-SR-005C-E1 pure unwired sovereign adapter is proposed and blocked on its exact R3 envelope
   WO-SR-005C-E2 standalone synthetic parity remains dependency-blocked on E1
+  WO-SR-005C-E3 exact extraction audit is complete with PASS_NO_DIRECT_EXTRACTION
+  WO-SR-005C-F1 built-fresh standalone foundation remains later than E2 and separately authority-gated
   WO-SR-005D-P Dossier custody/evidence-integrity preparation is complete with cohort correction
   WO-SR-005D-C Dossier evidence-snapshot decomposition is complete with NO_GO
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
@@ -109,7 +111,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A preparation | WO-SR-005C-E1 proposed | Exact bounded R3 adapter/parity authority; extraction and runtime/provider adoption remain blocked | ACTIVE BETWEEN COHORTS |
+| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A/E3 audits | WO-SR-005C-E1 proposed | Exact bounded R3 adapter/parity authority; F1, extraction, and runtime/provider adoption remain separately gated | ACTIVE BETWEEN COHORTS |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |

@@ -52,6 +52,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-A Dais Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; no extraction or runtime adoption |
 | WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | PROPOSED / R3 AUTHORITY REQUIRED | Exact two-file backend/test slice plus governed evidence; no DI, service, database, controller, or consumer |
 | WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | DEPENDENCY BLOCKED BY E1 | Exact standalone contract-compat harness; no product extraction or runtime |
+| WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
@@ -60,7 +61,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE ON MERGE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
-| WO-SR-005C Dais Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and runtime adoption remain unproven |
+| WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and custody-safe runtime adoption remain unproven |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; provider-neutral adapter parity, exact extraction scope, and runtime adoption remain unproven |
 

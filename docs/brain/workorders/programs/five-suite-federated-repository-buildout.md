@@ -44,6 +44,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-A | Prepare the Dais adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
 | WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Proposed; blocked on exact bounded R3 envelope |
 | WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Proposed; dependency-blocked on E1 |
+| WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
+| WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
@@ -99,6 +101,8 @@ defined a read-only contract boundary. WO-SR-005C-I implemented and froze that c
 runtime adoption. WO-SR-005C-A then rejected the raw persistence entity as a contract-safe API,
 selected the county-scoped service result as the canonical source, and defined an unwired sovereign
 adapter followed by standalone synthetic parity. Its E1/E2 R3 envelope is proposed but not active;
+WO-SR-005C-E3 independently confirmed that no sovereign Dais source has a safe direct-copy boundary
+and defined F1 as a later built-fresh candidate after parity;
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
 WO-SR-005D-C2 defined the persistent Dossier evidence-registry read boundary and WO-SR-005D-I froze
 it without runtime adoption. WO-SR-005E-P selected grounded context while proving the current
