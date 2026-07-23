@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-22
+**Date:** 2026-07-23
 **Authority:** OWNER-SR-R3-CONTRACT-FREEZE-ENVELOPE-20260722
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout contract-freeze cohort is complete on WO-SR-005E-I
-merge. Dais, Dossier, and GPT now have hash-frozen read-only contract boundaries. The sequential R3
-envelope is consumed; extraction, provider calls, runtime adoption, publication, and protected
-access remain blocked pending portfolio reconciliation and exact later authority.
+The Five-Suite Federated Repository Buildout remains active between implementation cohorts.
+WO-SR-005C-A completed the first post-freeze reconciliation slice and found a bounded Dais
+two-repository adapter/parity sequence. `WO-SR-005C-E1` is proposed but blocked pending activation
+of its exact R3 envelope. Extraction, provider calls, runtime adoption, publication, and protected
+access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -48,6 +49,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-P Dais Domain Contract and County-Isolation Gate Preparation | DONE | Appeal cohort selected; county isolation proven; contract decomposition required |
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
+| WO-SR-005C-A Dais Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; no extraction or runtime adoption |
+| WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | PROPOSED / R3 AUTHORITY REQUIRED | Exact two-file backend/test slice plus governed evidence; no DI, service, database, controller, or consumer |
+| WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | DEPENDENCY BLOCKED BY E1 | Exact standalone contract-compat harness; no product extraction or runtime |
 | WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
@@ -57,7 +61,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE ON MERGE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
-| WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — BUILD-FRESH ADMITTED | Owner authorized (2026-07-23); E3 audit returned `PASS_NO_DIRECT_EXTRACTION`; next is WO-SR-005C-F1 build-fresh appeal-workflow foundation in `bsvalues/terrafusion-dais`; runtime adoption / providers / cutover still blocked |
+| WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and custody-safe runtime adoption remain unproven |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; provider-neutral adapter parity, exact extraction scope, and runtime adoption remain unproven |
 
@@ -203,11 +207,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | five-suite-federated-repository-buildout | WO-SR-005B/C/D/E bounded extraction, WO-SR-006 cutover | SW-05 / sovereign extraction boundary | contract-freeze cohort complete; each suite needs an E3 exact-scope + parity gate; suite repos already exist (SR-003 COMPLETE) so repo creation is not a blocker; credential re-binds only for WO-SR-006 cutover | `evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
-**Portfolio result after WO-SR-005E-I merge:** `PORTFOLIO_RECONCILIATION`. The foreign OMEN lane
-remains removed. Atlas F1 is complete and unwired; the Dais, Dossier, and GPT read-only contracts
-are implemented and hash-frozen. No extraction or runtime-adoption slice is implied or currently
-admitted. Exact later scope, parity evidence, and applicable authority remain required for
-extraction, runtime adoption, protected data, providers, package/workflow changes, and cutover.
+**Portfolio result after WO-SR-005C-A:** `IMPLEMENTATION_READY_AS_TWO_REPOSITORY_SEQUENCE`.
+`WO-SR-005C-E1` is the exact proposed next node and requires the bounded R3 envelope recorded in its
+preparation evidence. E2 remains dependency-blocked on E1. No extraction or runtime-adoption slice
+is implied. Exact later scope and applicable authority remain required for extraction, runtime
+adoption, protected data, providers, publication, workflow changes, and cutover.
 
 **Reconciliation result (WO-PORTFOLIO-014, 2026-07-23):** `ALL_LANES_PARKED`. Every active program is
 COMPLETE/EXHAUSTED or PARKED behind a protected wall; the registry holds zero non-terminal Work Orders

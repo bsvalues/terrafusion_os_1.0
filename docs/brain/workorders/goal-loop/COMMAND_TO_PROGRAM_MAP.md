@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | Reconcile after terminal Dais/Dossier/GPT contract freeze | NO - operator reconciliation applies | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | Contract-freeze cohort complete; extraction/runtime adoption remain gated | YES - exact later scope grant | `program`, `once`, `evidence` |
+| `program-next` | Portfolio Operator | WO-SR-005C-E1 proposed after Dais preparation | YES - exact bounded R3 envelope required | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | WO-SR-005C-A complete; E1/E2 implementation-ready sequence proposed | YES - exact bounded R3 adapter/parity envelope | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

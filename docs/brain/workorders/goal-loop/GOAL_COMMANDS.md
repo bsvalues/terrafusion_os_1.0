@@ -47,10 +47,11 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete on
-WO-SR-005E-I merge. The sequential R3 envelope is consumed and routing returns to portfolio
-reconciliation. Runtime/provider adoption, extraction, protected data, package/workflow changes, and
-cutover remain gated by exact later scope, parity evidence, and applicable authority.
+**Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
+WO-SR-005C-A completed the first post-freeze reconciliation slice and defined an exact pure
+sovereign adapter followed by standalone synthetic parity. WO-SR-005C-E1 is proposed but blocked on
+its bounded R3 envelope; E2 depends on E1. Runtime/provider adoption, extraction, protected data,
+publication/workflow changes, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

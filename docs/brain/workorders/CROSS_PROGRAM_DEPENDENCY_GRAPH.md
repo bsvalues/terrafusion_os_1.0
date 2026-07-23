@@ -89,6 +89,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005C-P Dais domain-contract and county-isolation preparation is complete
   WO-SR-005C-C Dais appeal-workflow contract decomposition is complete
   WO-SR-005C-I Dais appeal-workflow contract implementation/freeze is complete
+  WO-SR-005C-A Dais adapter/standalone-parity preparation is complete with an implementation-ready verdict
+  WO-SR-005C-E1 pure unwired sovereign adapter is proposed and blocked on its exact R3 envelope
+  WO-SR-005C-E2 standalone synthetic parity remains dependency-blocked on E1
+  WO-SR-005C-E3 exact extraction audit is complete with PASS_NO_DIRECT_EXTRACTION
+  WO-SR-005C-F1 built-fresh standalone foundation remains later than E2 and separately authority-gated
   WO-SR-005D-P Dossier custody/evidence-integrity preparation is complete with cohort correction
   WO-SR-005D-C Dossier evidence-snapshot decomposition is complete with NO_GO
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
@@ -96,7 +101,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
   WO-SR-005E-C GPT grounded-context contract decomposition is complete
   WO-SR-005E-I GPT grounded-context implementation/freeze is complete on merge
-  Sequential R3 contract-freeze envelope is consumed; portfolio reconciliation follows
+  Sequential R3 contract-freeze envelope is consumed; the later Dais E1/E2 envelope is proposed, not active
   WO-SR-005B through WO-SR-005E extraction/runtime adoption remains gated by exact scope and parity proof
 ```
 
@@ -106,7 +111,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract-freeze cohort | Portfolio reconciliation | Exact later extraction scope, parity evidence, and authority; runtime/provider adoption blocked | CONTRACT COHORT COMPLETE |
+| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A/E3 audits | WO-SR-005C-E1 proposed | Exact bounded R3 adapter/parity authority; F1, extraction, and runtime/provider adoption remain separately gated | ACTIVE BETWEEN COHORTS |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -124,10 +129,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. The Dais, Dossier, and GPT contract-freeze cohort is complete; portfolio reconciliation is next.
+1. The contract-freeze cohort is complete and Dais preparation found an exact E1/E2 sequence.
 2. Do not treat frozen contracts as authority for extraction, adapters, providers, or runtime adoption.
 3. Do not rerun completed Work Orders or ask the owner to dispatch routine reconciliation.
-4. Any later extraction cohort requires exact scope, parity evidence, and applicable authority; keep provider calls,
+4. E1/E2 require the exact bounded R3 envelope recorded by WO-SR-005C-A. Any later extraction
+   cohort requires a separate exact scope, parity evidence, and applicable authority; keep provider calls,
    custody mutation, runtime adoption, protected data, publication/workflow changes, and cutover blocked.
 5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
