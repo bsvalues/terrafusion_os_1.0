@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-C",
-  "generatedAt": "2026-07-20T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-005E-C completed all dependency-cleared R2 contract design. Dais, Dossier, and GPT bounded contract implementation remains proposed and exact R3 authority-gated.",
+  "generatedBy": "WO-SR-005C-E2",
+  "generatedAt": "2026-07-23T00:00:00Z",
+  "description": "Five-suite registry after the bounded Dais E1/E2 R3 adapter and standalone synthetic parity envelope completed. F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -5170,7 +5170,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove hash-pinned standalone compatibility with dais.appeal-workflow@1.0.0 using only the frozen synthetic corpus.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005C-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -5213,34 +5213,49 @@
           "name": "Standalone Dais verifier tests",
           "command": "node --test scripts/verify-dais-appeal-workflow.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Standalone Dais verifier",
           "command": "node scripts/verify-dais-appeal-workflow.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Frozen source and destination hash parity",
           "command": "Verify manifest SHA-256 entries against dais.appeal-workflow@1.0.0 source artifacts",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Exact destination scope inspection",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Standalone required checks",
           "command": "suite-ci, contract-compat, governance-gate",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005C-E2-DAIS-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+        },
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion-dais/pull/1",
+          "summary": "Merged standalone Dais contract-compat proof at exact head ea19a3588a29075eed88caa4b0a719d1ea126a62."
+        },
+        {
+          "kind": "commit",
+          "location": "2768cd8dfe1ac53456389c60b5b58bc506aa2b55",
+          "summary": "Dais PR #1 squash merge on protected main."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
@@ -5256,7 +5271,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Second and final node in the owner-authorized bounded Dais E1/E2 R3 envelope anchored to 62cde7bd6a984b96b13c0b7f58e9caa0213cb529. F1 is not included."
+        "notes": "Second and final node in the owner-authorized bounded Dais E1/E2 R3 envelope anchored to 62cde7bd6a984b96b13c0b7f58e9caa0213cb529. Completed in Dais PR #1; the envelope is consumed and F1 is not included."
       }
     },
     {

@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout remains active in the bounded Dais adapter/parity
-cohort. WO-SR-005C-E1 completed the pure unwired sovereign adapter under the owner-authorized E1/E2
-R3 envelope. `WO-SR-005C-E2` is now active in `bsvalues/terrafusion-dais`. Extraction, F1, provider
-calls, runtime adoption, publication, and protected access remain blocked.
+The Five-Suite Federated Repository Buildout remains active between bounded cohorts.
+WO-SR-005C-E1 completed the pure unwired sovereign adapter and WO-SR-005C-E2 completed standalone
+synthetic parity in `bsvalues/terrafusion-dais` PR #1. The owner-authorized E1/E2 R3 envelope is
+consumed. Portfolio reconciliation is current; extraction, F1, provider calls, runtime adoption,
+publication, cutover, and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -50,7 +51,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
 | WO-SR-005C-A Dais Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; no extraction or runtime adoption |
 | WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; 32 synthetic tests; no DI, service, database, controller, or consumer |
-| WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | ACTIVE / AUTHORIZED | Exact standalone contract-compat harness; no product extraction or runtime |
+| WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | DONE | Dais PR #1 / merge `2768cd8d`; 10/10 hash pins, 3 positive and 6 fail-closed negative fixtures, all required checks passed |
 | WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
@@ -206,8 +207,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | five-suite-federated-repository-buildout | WO-SR-005B/C/D/E bounded extraction, WO-SR-006 cutover | SW-05 / sovereign extraction boundary | contract-freeze cohort complete; each suite needs an E3 exact-scope + parity gate; suite repos already exist (SR-003 COMPLETE) so repo creation is not a blocker; credential re-binds only for WO-SR-006 cutover | `evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
-**Portfolio result after WO-SR-005C-E1:** `SOVEREIGN_ADAPTER_COMPLETE_E2_ACTIVE`.
-The owner-authorized bounded R3 envelope continues directly to E2. No extraction, F1, or
+**Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
+The owner-authorized bounded R3 envelope is complete and consumed. No extraction, F1, or
 runtime-adoption slice is implied. Exact later scope and applicable authority remain required for
 extraction, runtime adoption, protected data, providers, publication, unrelated workflow changes,
 and cutover.
