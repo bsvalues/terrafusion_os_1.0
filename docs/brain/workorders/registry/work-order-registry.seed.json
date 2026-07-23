@@ -5034,9 +5034,135 @@
           "id": "WO-SR-005C-E1",
           "reason": "Implement the pure unwired sovereign Dais appeal-workflow read adapter over already-materialized county-scoped records.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
+    },
+    {
+      "id": "WO-SR-005C-E1",
+      "title": "Dais Sovereign Appeal Workflow Read Adapter",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and prove a pure unwired adapter from already-materialized county-scoped appeals to dais.appeal-workflow@1.0.0.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005C-A", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Pure Dais appeal-workflow read adapter and synthetic unit tests"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime registration, controller, endpoint, service, persistence, or consumer adoption"
+        },
+        {
+          "name": "Provider, database, county, PACS, SQL, live, production, credential, or secret access"
+        },
+        {
+          "name": "Frontend, destination product implementation, extraction, packages, publication, workflows, deployment, or cutover"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Adapters/DaisAppealWorkflowReadAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dais/DaisAppealWorkflowReadAdapterTests.cs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Controllers/**",
+        "backend/src/TerraFusion.Core/Services/**",
+        "backend/src/TerraFusion.Data/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-proof",
+          "description": "Positive field mapping plus fail-closed county, selector, vocabulary, timestamp, lifecycle, and cross-lane exclusion tests."
+        },
+        {
+          "kind": "no-runtime-adoption",
+          "description": "No DI, controller, endpoint, service, database, provider, or consumer reference to the adapter."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Targeted Dais adapter tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~DaisAppealWorkflowReadAdapterTests",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005C-E1-DAIS-SOVEREIGN-APPEAL-WORKFLOW-READ-ADAPTER.md"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any runtime wiring, source extraction, provider/database call, endpoint/service change, destination product implementation, or F1 work is outside E1."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005C-E2",
+          "reason": "Materialize and prove the frozen contract in the standalone Dais repository after the sovereign adapter passes.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Owner-authorized bounded Dais E1/E2 R3 envelope anchored to WO-SR-005C-A merge 62cde7bd6a984b96b13c0b7f58e9caa0213cb529; authority continues sequentially to E2 but excludes F1."
+      }
     },
     {
       "id": "WO-SR-005D-P",

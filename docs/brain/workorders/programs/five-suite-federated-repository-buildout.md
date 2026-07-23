@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Dais adapter/parity preparation complete and bounded R3 implementation proposed
+**Status:** Active in the owner-authorized Dais E1/E2 adapter/parity cohort
 
 ## Ratified topology
 
@@ -42,8 +42,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Complete; `dais.appeal-workflow@1.0.0`, no runtime adoption |
 | WO-SR-005C-A | Prepare the Dais adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
-| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Proposed; blocked on exact bounded R3 envelope |
-| WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Proposed; dependency-blocked on E1 |
+| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 31 synthetic tests, no runtime consumer |
+| WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Active under the bounded E1/E2 R3 envelope |
 | WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
 | WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
@@ -100,7 +100,9 @@ coherent cohort, and rejected direct extraction before a frozen contract exists.
 defined a read-only contract boundary. WO-SR-005C-I implemented and froze that contract without
 runtime adoption. WO-SR-005C-A then rejected the raw persistence entity as a contract-safe API,
 selected the county-scoped service result as the canonical source, and defined an unwired sovereign
-adapter followed by standalone synthetic parity. Its E1/E2 R3 envelope is proposed but not active;
+adapter followed by standalone synthetic parity. The owner activated its bounded E1/E2 R3 envelope,
+and E1 implemented the pure adapter with fail-closed synthetic proof and no runtime consumer. E2 is
+now active in the standalone Dais repository;
 WO-SR-005C-E3 independently confirmed that no sovereign Dais source has a safe direct-copy boundary
 and defined F1 as a later built-fresh candidate after parity;
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
