@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between bounded cohorts; Dais E1/E2 complete |
-| Current | `WO-SR-005C-E2` complete; standalone synthetic parity proven |
-| Next | Portfolio reconciliation; F1 remains a later separately gated and unauthorized node |
+| Status | Active between bounded cohorts; Dossier preparation complete |
+| Current | `WO-SR-005D-A` complete with an implementation-ready two-repository verdict |
+| Next | `WO-SR-005D-E1` proposed / R3 gated; continue portfolio reconciliation without inferring authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -127,7 +127,10 @@ blocked. WO-SR-005C-E1 then merged the pure unwired sovereign adapter, and WO-SR
 hash-pinned standalone parity proof in Dais PR #1. Their bounded envelope is consumed.
 WO-SR-005C-E3 independently confirmed that no direct-copy extraction is safe and defined a
 later built-fresh F1 allowlist. WO-SR-005D-C2 defined the exact Dossier
-evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005E-C defined the exact GPT
+evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005D-A then defined an exact pure,
+unwired sovereign adapter and standalone synthetic parity sequence while preserving custody,
+persistence, extraction, and runtime blocks. Its proposed E1/E2 R3 envelope remains inactive.
+WO-SR-005E-C defined the exact GPT
 grounded-context boundary and WO-SR-005E-I freezes it on merge. The sequential contract cohort is
 complete; only later extraction, adapter parity, provider, and runtime-adoption work remains gated.
 
@@ -581,8 +584,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005C-E2` complete |
-| Next WO | Portfolio reconciliation; F1 remains later and unauthorized |
+| Current WO | `WO-SR-005D-A` complete |
+| Next WO | `WO-SR-005D-E1` proposed / R3 gated; continue portfolio reconciliation |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

@@ -5644,6 +5644,98 @@
       ]
     },
     {
+      "id": "WO-SR-005D-A",
+      "title": "Dossier Evidence Registry Adapter and Standalone Parity Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact pure sovereign adapter and standalone synthetic parity sequence for dossier.evidence-registry-read@1.0.0.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005D-I", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Read-only Dossier source, tests, contract, and destination bootstrap inspection"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Backend, runtime, test, adapter, or destination implementation"
+        },
+        {
+          "name": "Dossier custody mutation, persistence, extraction, or runtime adoption"
+        },
+        { "name": "Package publication, workflows, or deployment" },
+        {
+          "name": "County, PACS, SQL, provider, production, credentials, and secrets"
+        }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-boundary",
+          "description": "Exact county- and parcel-scoped source-to-contract mapping with custody, cross-lane, and privacy exclusions."
+        },
+        {
+          "kind": "standalone-parity-plan",
+          "description": "Synthetic-only destination contract-compat plan, exact scope, rollback, and validation."
+        },
+        {
+          "kind": "implementation-verdict",
+          "description": "IMPLEMENTATION_READY_AS_TWO_REPOSITORY_SEQUENCE, DECOMPOSITION_REQUIRED, or NO_GO with exact evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "dossier-adapter-parity-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-A-DOSSIER-EVIDENCE-REGISTRY-ADAPTER-STANDALONE-PARITY-PREPARATION.md",
+          "description": "Canonical source selection, rejected controller projection, exact mapping, two-repository R3 sequence, provenance, rollback, and validation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "r3-implementation-authority",
+          "description": "Any adapter, test, destination contract harness, workflow, extraction, custody, persistence, consumer, database, package, or runtime change requires the proposed bounded R3 envelope."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-E1",
+          "reason": "Implement the pure unwired sovereign Dossier evidence-registry read adapter over an already-materialized county- and parcel-scoped page.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
       "id": "WO-SR-005E-P",
       "title": "GPT Governed-AI Contract and Grounding Gate Preparation",
       "program": "Five-Suite Federated Repository Buildout",

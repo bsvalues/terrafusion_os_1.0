@@ -14,10 +14,10 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout remains active between bounded cohorts.
-WO-SR-005C-E1 completed the pure unwired sovereign adapter and WO-SR-005C-E2 completed standalone
-synthetic parity in `bsvalues/terrafusion-dais` PR #1. The owner-authorized E1/E2 R3 envelope is
-consumed. Portfolio reconciliation is current; extraction, F1, provider calls, runtime adoption,
-publication, cutover, and protected access remain blocked.
+WO-SR-005D-A completed the Dossier evidence-registry adapter and standalone-parity preparation with
+an implementation-ready two-repository verdict. Its proposed E1/E2 R3 envelope is not active.
+Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
+and protected access remain blocked.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -50,19 +50,20 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-C Dais Appeal Workflow Contract Decomposition | DONE | Read-only county-scoped contract defined; runtime adoption excluded |
 | WO-SR-005C-I Dais Appeal Workflow Contract Implementation and Freeze | DONE | `dais.appeal-workflow@1.0.0`; 4 groups / 25 files frozen; no runtime adoption |
 | WO-SR-005C-A Dais Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; no extraction or runtime adoption |
-| WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; 32 synthetic tests; no DI, service, database, controller, or consumer |
+| WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; 31 targeted adapter tests per preserved PR #1357 output; no DI, service, database, controller, or consumer |
 | WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | DONE | Dais PR #1 / merge `2768cd8d`; 10/10 hash pins, 3 positive and 6 fail-closed negative fixtures, all required checks passed |
 | WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
 | WO-SR-005D-I Dossier Evidence Registry Read Contract Implementation and Freeze | DONE | `dossier.evidence-registry-read@1.0.0`; 5 groups / 38 files frozen |
+| WO-SR-005D-A Dossier Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity; E1/E2 require a bounded R3 envelope |
 | WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation | DONE | Grounded-context cohort selected; current adapter not parity-safe |
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE ON MERGE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
-| WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter parity, exact extraction scope, and custody-safe runtime adoption remain unproven |
+| WO-SR-005D Dossier Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; adapter/parity sequence prepared but not authorized, exact extraction scope and custody-safe runtime adoption remain unproven |
 | WO-SR-005E GPT Bounded Extraction | BLOCKED ON EXTRACTION/PARITY AUTHORITY | Contract frozen; provider-neutral adapter parity, exact extraction scope, and runtime adoption remain unproven |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
