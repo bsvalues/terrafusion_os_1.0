@@ -5697,6 +5697,115 @@
         "source": "Portfolio reconciliation computed against the current registry, queue, program playbooks, cross-program dependency graph, and open-PR state after the WO-SR-005E-I contract-freeze cohort completion.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-005C-E3",
+      "title": "Dais Bounded Extraction Scope Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Decide whether any committed sovereign Dais/appeal source can be directly extracted into bsvalues/terrafusion-dais, or whether the dais.appeal-workflow@1.0.0 module must be built fresh; produce the exact F1 allowlist.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005C-I",
+          "status": "satisfied",
+          "evidence": [
+            "dais.appeal-workflow@1.0.0 was implemented and frozen at PR #1350 (verify-contract-freeze.mjs PASS; verify-contract-freeze.test.mjs 16/16). The 11 frozen files hash-match contracts.freeze.json at sovereign base e57b1eca9."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": [
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frozen contract artifacts, Dais product source, providers, PACS, persistence, county/SQL, credentials, runtime, packages, workflows, deployment, and any external suite-repo write"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-SR-005C-E3-dais-bounded-extraction-scope-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-005C-E3-DAIS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "description": "Inventory every sovereign Dais candidate, classify each, pin the sovereign anchor SHA and the 11 frozen artifact hashes, prove zero provably provider-neutral direct-copy candidates, and produce the exact F1 build-fresh allowlist."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run",
+          "note": "Requires ajv from a full workspace install; runs in CI. Not run in the authoring sandbox (ERR_MODULE_NOT_FOUND: ajv)."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "location": "docs/brain/workorders/evidence/WO-SR-005C-E3-DAIS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+          "description": "PASS_NO_DIRECT_EXTRACTION verdict, 11 hash-verified frozen files, full candidate inventory (0 provably provider-neutral), dependency/ownership boundary, NO DIRECT COPY decision, and the exact F1 build-fresh allowlist for bsvalues/terrafusion-dais."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "PASS_NO_DIRECT_EXTRACTION authorizes only the fresh-build F1 slice; WO-SR-005C-E2 parity, WO-SR-005C-F1 implementation, runtime adoption, providers, persistence, and WO-SR-006 cutover each require their own later Work Order."
+        }
+      ],
+      "nextCandidates": [
+        "WO-SR-005C-F1"
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Owner authorized five-suite bounded extraction (2026-07-23); this sovereign-side scope audit writes only docs/brain/workorders/** under standing operator authority and touches no sovereign source or contract artifact."
+      },
+      "provenance": {
+        "createdAt": "2026-07-23T00:00:00Z",
+        "source": "Read-only classification of the sovereign Dais/appeal source surface against frozen dais.appeal-workflow@1.0.0 at sovereign base e57b1eca9, mirroring the Atlas WO-SR-005B-E3 scope audit.",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }
