@@ -4949,6 +4949,96 @@
       ]
     },
     {
+      "id": "WO-SR-005C-A",
+      "title": "Dais Appeal Workflow Adapter and Standalone Parity Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact pure sovereign adapter and standalone synthetic parity sequence for dais.appeal-workflow@1.0.0.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005C-I", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Read-only Dais source, tests, contract, and destination bootstrap inspection"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Backend, runtime, test, adapter, or destination implementation"
+        },
+        { "name": "Dais source extraction or runtime adoption" },
+        { "name": "Package publication, workflows, or deployment" },
+        {
+          "name": "County, PACS, SQL, provider, production, credentials, and secrets"
+        }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-boundary",
+          "description": "Exact county-scoped source-to-contract mapping with cross-lane and PII exclusions."
+        },
+        {
+          "kind": "standalone-parity-plan",
+          "description": "Synthetic-only destination contract-compat plan, exact scope, rollback, and validation."
+        },
+        {
+          "kind": "implementation-verdict",
+          "description": "IMPLEMENTATION_READY, DECOMPOSITION_REQUIRED, or NO_GO with exact evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "dais-adapter-parity-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005C-A-DAIS-APPEAL-WORKFLOW-ADAPTER-STANDALONE-PARITY-PREPARATION.md",
+          "description": "Canonical source selection, rejected raw entity surface, exact mapping, two-repository R3 sequence, provenance, rollback, and validation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "r3-implementation-authority",
+          "description": "Any adapter, test, destination contract harness, workflow, extraction, consumer, service, database, package, or runtime change requires the proposed bounded R3 envelope."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005C-E1",
+          "reason": "Implement the pure unwired sovereign Dais appeal-workflow read adapter over already-materialized county-scoped records.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
       "id": "WO-SR-005D-P",
       "title": "Dossier Custody Contract and Evidence-Integrity Gate Preparation",
       "program": "Five-Suite Federated Repository Buildout",

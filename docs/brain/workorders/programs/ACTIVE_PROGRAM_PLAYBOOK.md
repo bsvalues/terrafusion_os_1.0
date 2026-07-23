@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Contract-freeze cohort complete on WO-SR-005E-I merge; broader extraction remains gated |
-| Current | Dais, Dossier, and GPT read-only contracts complete and hash-frozen |
-| Next | Portfolio reconciliation; no adapter or runtime adoption implied |
+| Status | Active between cohorts; Dais adapter/parity preparation complete |
+| Current | `WO-SR-005C-A` complete with implementation-ready E1/E2 sequence |
+| Next | `WO-SR-005C-E1` proposed; exact bounded R3 envelope required |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -121,7 +121,9 @@ Atlas PR #1. WO-SR-005B-E3 then rejected direct copying because no sovereign can
 suite-only boundary. WO-SR-005B-F1 merged the proven projection behavior into built-fresh product
 source in Atlas PR #2 without a runtime consumer. WO-SR-005C-P verified the Dais county-isolation
 boundary and selected appeals as the first contract cohort. WO-SR-005C-C defined the exact
-read-only boundary, and WO-SR-005C-I froze it. WO-SR-005D-C2 defined the exact Dossier
+read-only boundary, and WO-SR-005C-I froze it. WO-SR-005C-A then defined the exact pure unwired
+adapter and standalone synthetic parity sequence while keeping extraction and runtime adoption
+blocked. WO-SR-005D-C2 defined the exact Dossier
 evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005E-C defined the exact GPT
 grounded-context boundary and WO-SR-005E-I freezes it on merge. The sequential contract cohort is
 complete; only later extraction, adapter parity, provider, and runtime-adoption work remains gated.
@@ -575,9 +577,9 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Portfolio reconciliation after Five-Suite contract-freeze completion |
-| Current WO | `WO-SR-005E-I` complete on merge |
-| Next WO | Recompute from canonical evidence; protected extraction/runtime boundaries remain gated |
+| Selected program | Five-Suite Federated Repository Buildout |
+| Current WO | `WO-SR-005C-A` complete |
+| Next WO | `WO-SR-005C-E1` proposed / exact bounded R3 envelope required |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
