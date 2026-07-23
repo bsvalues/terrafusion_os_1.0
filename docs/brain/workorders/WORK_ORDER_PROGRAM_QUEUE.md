@@ -189,7 +189,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-16 by WO-PORTFOLIO-003 reconciliation)*
+*(Updated 2026-07-23 by WO-PORTFOLIO-014 post-contract-freeze reconciliation; wall ledger unchanged from WO-PORTFOLIO-003 — every listed wall remains in effect)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
@@ -205,6 +205,13 @@ remains removed. Atlas F1 is complete and unwired; the Dais, Dossier, and GPT re
 are implemented and hash-frozen. No extraction or runtime-adoption slice is implied or currently
 admitted. Exact later scope, parity evidence, and applicable authority remain required for
 extraction, runtime adoption, protected data, providers, package/workflow changes, and cutover.
+
+**Reconciliation result (WO-PORTFOLIO-014, 2026-07-23):** `ALL_LANES_PARKED`. Every active program is
+COMPLETE/EXHAUSTED or PARKED behind a protected wall; the registry holds zero non-terminal Work Orders
+and there are zero open PRs. No safe, dependency-cleared, non-walled next Work Order exists. The
+autonomous run is legitimately complete pending owner authorization of one or more walls above. Full
+terminal report and ranked unblock options:
+[`evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md`](evidence/WO-PORTFOLIO-014-POST-CONTRACT-FREEZE-PORTFOLIO-RECONCILIATION.md).
 
 ---
 
