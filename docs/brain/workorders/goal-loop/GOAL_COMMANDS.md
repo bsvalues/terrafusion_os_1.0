@@ -48,10 +48,11 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 ```
 
 **Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
-WO-SR-005C-E1 completed the pure unwired sovereign Dais adapter and WO-SR-005C-E2 completed the
-hash-pinned standalone synthetic parity proof in Dais PR #1. The E1/E2 envelope is consumed and
-portfolio reconciliation is current. Runtime/provider adoption, extraction, F1, protected data,
-publication/unrelated workflow changes, and cutover remain gated.
+WO-SR-005D-A completed the Dossier adapter/standalone-parity preparation with an
+implementation-ready two-repository verdict. Its proposed E1/E2 R3 envelope is not active.
+Portfolio reconciliation remains current. Runtime/provider adoption, extraction, custody or
+persistence mutation, protected data, publication/unrelated workflow changes, and cutover remain
+gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

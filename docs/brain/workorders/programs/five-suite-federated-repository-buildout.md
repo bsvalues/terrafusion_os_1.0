@@ -42,7 +42,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Complete; `dais.appeal-workflow@1.0.0`, no runtime adoption |
 | WO-SR-005C-A | Prepare the Dais adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
-| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 32 synthetic tests, no runtime consumer |
+| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 31 targeted adapter tests per preserved PR #1357 output, no runtime consumer |
 | WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Complete; Dais PR #1 / merge `2768cd8d`, all required checks passed |
 | WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
 | WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
@@ -50,6 +50,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
 | WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Complete; `dossier.evidence-registry-read@1.0.0`, no runtime adoption |
+| WO-SR-005D-A | Prepare the Dossier adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence, E1/E2 not activated |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete on merge; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
@@ -108,7 +109,10 @@ WO-SR-005C-E3 independently confirmed that no sovereign Dais source has a safe d
 and defined F1 as a later built-fresh candidate after parity;
 WO-SR-005D-C rejected the mixed-domain evidence snapshot and preserved custody mutation as blocked;
 WO-SR-005D-C2 defined the persistent Dossier evidence-registry read boundary and WO-SR-005D-I froze
-it without runtime adoption. WO-SR-005E-P selected grounded context while proving the current
+it without runtime adoption. WO-SR-005D-A then rejected the current controller projection as
+contract parity, selected an already-materialized county/parcel page as the pure adapter input, and
+defined an unwired sovereign adapter followed by standalone synthetic parity. Its proposed E1/E2
+R3 envelope remains inactive. WO-SR-005E-P selected grounded context while proving the current
 adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I freezes it on
 merge. The Dais, Dossier, and GPT contract cohort is complete and the sequential authority is
 consumed. The suite repositories remain valid bootstraps, not claims of extracted or standalone
