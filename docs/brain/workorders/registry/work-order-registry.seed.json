@@ -5806,6 +5806,125 @@
         "source": "Read-only classification of the sovereign Dais/appeal source surface against frozen dais.appeal-workflow@1.0.0 at sovereign base e57b1eca9, mirroring the Atlas WO-SR-005B-E3 scope audit.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-005C-E2F1",
+      "title": "Dais Standalone E2+F1 Execution Package (Sovereign-Side Routing Handoff)",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Emit a turnkey, locally-validated E2 (hash-pinned synthetic contract parity) + F1 (build-fresh provider-neutral read-only appeal-workflow projection) execution package for bsvalues/terrafusion-dais, so a dais-capable context executes it mechanically. This session's tooling is hard-scoped to terrafusion_os_1.0 and provably cannot write the suite repo, so the sovereign-side deliverable is the routing/evidence package, not the suite-repo commit.",
+      "riskClass": "R1",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005C-E3",
+          "status": "satisfied",
+          "evidence": [
+            "WO-SR-005C-E3 returned PASS_NO_DIRECT_EXTRACTION (merged #1355 at 6bfff78d). The F1 build-fresh allowlist and the 11 frozen dais.appeal-workflow@1.0.0 hashes are pinned in its evidence."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": [
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Any write to bsvalues/terrafusion-dais or another external repo from this session; frozen contract artifacts; providers, PACS, persistence, county/SQL, credentials, runtime, packages, workflows, deployment, cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-005C-E2F1-dais-standalone-execution-package.md",
+        "docs/brain/workorders/evidence/WO-SR-005C-E2F1-DAIS-STANDALONE-EXECUTION-PACKAGE.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-execution-package-handoff",
+          "description": "Full source of every allowlisted F1 file (projection module + product tests) and E2 file (hash-pinned verifier + verifier tests + contract-compat manifest), locally validated to 3-accept/6-reject parity against the 9 hash-pinned synthetic fixtures, plus exact materialization/parity/no-touch instructions for a dais-capable context, plus an honest statement of this session's terrafusion-dais access limitation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Brain query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Packaged F1 product-module tests (validated in authoring sandbox)",
+          "command": "node --test test/project-dais-appeal-workflow.test.mjs",
+          "required": true,
+          "result": "pass",
+          "note": "10/10 in the authoring sandbox against the exact module source embedded in the package; runs in the suite repo at F1 execution time."
+        },
+        {
+          "name": "Packaged E2 verifier + parity tests (validated in authoring sandbox)",
+          "command": "node scripts/verify-dais-appeal-workflow.mjs && node --test scripts/verify-dais-appeal-workflow.test.mjs",
+          "required": true,
+          "result": "pass",
+          "note": "Verifier: 10 artifacts (schema pin + 9 fixtures), 3 positive / 6 negative, PARITY OK. Verifier tests 3/3. All 9 fixture SHA-256 equal the contracts.freeze.json pins."
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": false,
+          "result": "not_run",
+          "note": "Requires ajv from a full workspace install; runs in CI. Not run in the authoring sandbox (ERR_MODULE_NOT_FOUND: ajv)."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "standalone-execution-package-handoff",
+          "location": "docs/brain/workorders/evidence/WO-SR-005C-E2F1-DAIS-STANDALONE-EXECUTION-PACKAGE.md",
+          "description": "Turnkey E2+F1 package: embedded full source for src/appeal-workflow/project-dais-appeal-workflow.mjs, test/project-dais-appeal-workflow.test.mjs, scripts/verify-dais-appeal-workflow.mjs, scripts/verify-dais-appeal-workflow.test.mjs, contract-compat/dais.appeal-workflow.v1/fixtures.manifest.json, canon/CONTRACT_DEPENDENCY.md, plus suite-repo WO/evidence templates, fixture materialization by hash-pinned copy from the sovereign frozen blobs, the exact allowlist / no-touch list / parity gate, and the terrafusion-dais session-access limitation statement."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "external-repo-write-boundary",
+          "description": "This package does not itself write terrafusion-dais, adopt any runtime, transfer contract ownership, or authorize WO-SR-006 cutover. Executing it in the suite repo is a separate act performed by a dais-capable context (or this session once terrafusion-dais is added to its allowed-repos scope)."
+        }
+      ],
+      "nextCandidates": [
+        "WO-SR-005C-F1"
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Owner authorized five-suite bounded extraction (2026-07-23) and directed E2->F1 without further confirmation; this sovereign-side routing package writes only docs/brain/workorders/** under standing operator authority and touches no sovereign source or contract artifact. Merge of the suite-repo work is out of this session's reach."
+      },
+      "provenance": {
+        "createdAt": "2026-07-23T00:00:00Z",
+        "source": "Authored and locally validated the F1 build-fresh module + E2 hash-pinned parity harness against the 9 frozen dais.appeal-workflow@1.0.0 synthetic fixtures at sovereign base e57b1eca9 / branch head 6bfff78d, then packaged as a sovereign-side routing handoff because the session's GitHub and git tooling are hard-scoped to bsvalues/terrafusion_os_1.0 and deny bsvalues/terrafusion-dais.",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }
