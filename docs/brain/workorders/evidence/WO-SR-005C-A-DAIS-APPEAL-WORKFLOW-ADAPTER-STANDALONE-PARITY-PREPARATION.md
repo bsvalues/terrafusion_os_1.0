@@ -91,7 +91,7 @@ The adapter is a pure static transformation with no DI registration or runtime c
 | result `countyId` | request county ID | reject any source record with another county |
 | result `traceId` | preserve request value when present | never synthesize |
 | `appealId` | `Appeal.Id.ToString("D")` | reject mismatch for appeal-ID selector |
-| `parcelId` | `Appeal.ParcelId.ToString("D")` | reject mismatch for parcel selector |
+| `parcelId` | preserve the non-empty `Appeal.ParcelId` string | reject blank values or exact mismatch for parcel selector |
 | `taxYear` | `Appeal.TaxYear` | reject mismatch for tax-year selector |
 | `ground` | closed contract value from `AppealGround` | reject unknown value |
 | `status` | closed contract value from `AppealStatus` | reject unknown value |
