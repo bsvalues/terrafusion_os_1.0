@@ -2,12 +2,18 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE |
+| Status | COMPLETE / RESULT SUPERSEDED BY WO-SR-005C-A |
 | Program | Portfolio Operator |
 | Risk | R1 governance reconciliation (read-only) |
 | Dependency | WO-SR-005E-I merged at `e57b1eca9` (#1352); reconciliation branch based on `cecc2c1b` (#1349) |
 | Authority | `OWNER-TF-STANDING-OPERATOR-AUTHORITY` (.governance/standing-operator-authority.json) — routine reconciliation and routing/evidence updates under `docs/brain/workorders/**` are within its `routine_operator_actions`; this is the portfolio-operator's own canonical work surface |
-| Result | ALL_LANES_PARKED — no dependency-cleared, non-walled next Work Order in any active program |
+| Result | Historical `ALL_LANES_PARKED` snapshot; superseded when WO-SR-005C-A was admitted |
+
+> **Supersession note:** This reconciliation correctly preserved extraction/runtime walls but
+> incorrectly treated bounded adapter/parity preparation as extraction implementation. The later
+> read-only source audit in WO-SR-005C-A found and completed an R2 preparation node, then proposed
+> E1/E2 behind an exact R3 implementation envelope. This document remains historical evidence and
+> no longer controls current routing.
 
 ## Objective
 
@@ -37,11 +43,12 @@ authorization backlog. Read-only governance act; no capability lane is entered a
 
 ## Result
 
-`ALL_LANES_PARKED`. Every active program is either **COMPLETE / EXHAUSTED** (closed baseline, no
+Historical result: `ALL_LANES_PARKED`. At this snapshot, every active program was classified as
+either **COMPLETE / EXHAUSTED** (closed baseline, no
 registered successor) or **PARKED** behind a protected authority wall. The registry contains zero
 non-terminal Work Orders. The only thing the `WO-SR-005E-I` merge unblocked is this reconciliation
 act itself — a read-only operator step, not a selectable delivery lane. The autonomous run is
-legitimately complete pending owner authorization of one or more walls.
+no longer terminal because WO-SR-005C-A subsequently established a bounded preparation path.
 
 ## Validation
 

@@ -2,11 +2,17 @@
 
 ## Verdict
 
-**ALL_LANES_PARKED — NO NEXT WORK ADMITTED.** After the Five-Suite Federated Repository Buildout
-contract-freeze cohort terminated at `WO-SR-005E-I`, no active program has a safe, dependency-cleared,
-non-walled next Work Order. Every lane is terminal — COMPLETE/EXHAUSTED, PARKED behind a protected
-authority wall, or OUT_OF_SCOPE (non-TerraFusion). The registry contains zero non-terminal Work Orders.
-The autonomous run is legitimately complete pending owner authorization of one or more walls.
+**HISTORICAL RESULT SUPERSEDED BY WO-SR-005C-A.** This packet originally recorded
+`ALL_LANES_PARKED — NO NEXT WORK ADMITTED` after the Five-Suite Federated Repository Buildout
+contract-freeze cohort terminated at `WO-SR-005E-I`. It found no safe, dependency-cleared,
+non-walled next Work Order: every lane was COMPLETE/EXHAUSTED, PARKED behind a protected authority
+wall, or OUT_OF_SCOPE (non-TerraFusion), and the registry contained zero non-terminal Work Orders.
+That was the honest snapshot before WO-SR-005C-A, but it is not current routing truth.
+
+WO-SR-005C-A subsequently proved that read-only adapter/parity preparation did not cross the
+extraction wall, completed that R2 node, and proposed E1/E2 behind an exact bounded R3 implementation
+envelope. The extraction and runtime-adoption walls below remain valid; the terminal portfolio
+classification does not.
 
 ## Candidate Classification
 
@@ -88,9 +94,9 @@ OPERATOR_ACTION_REQUIRED: authorize one or more walls above to reopen a lane; ot
 
 ## Next
 
-The autonomous run is legitimately complete. The next capability-delivering step requires the owner to
-authorize one or more of the walls in `NEXT_UNBLOCK_OPTIONS`. The canonical highest-value unblock is
-option 1 (five-suite bounded extraction). Credential/repo status (corrected):
+This historical terminal conclusion is superseded by WO-SR-005C-A. The current next proposed node is
+WO-SR-005C-E1 under the exact bounded R3 adapter/parity envelope recorded by that Work Order.
+Extraction remains a later, separate wall. Credential/repo status remains:
 
 ```
 SUITE_REPOSITORIES_CREATED: true
