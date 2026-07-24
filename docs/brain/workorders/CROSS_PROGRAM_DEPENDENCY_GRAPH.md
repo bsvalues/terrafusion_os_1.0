@@ -99,8 +99,8 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
   WO-SR-005D-I Dossier evidence-registry read implementation/freeze is complete
   WO-SR-005D-A Dossier adapter/standalone-parity preparation is complete with an implementation-ready verdict
-  WO-SR-005D-E1 pure unwired sovereign adapter is complete under the bounded E1/E2 envelope
-  WO-SR-005D-E2 standalone synthetic parity is active after E1
+  WO-SR-005D-E1 pure unwired sovereign adapter is complete
+  WO-SR-005D-E2 standalone synthetic parity is complete in Dossier PR #1; E1/E2 authority consumed
   WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
   WO-SR-005E-C GPT grounded-context contract decomposition is complete
   WO-SR-005E-I GPT grounded-context implementation/freeze is complete on merge

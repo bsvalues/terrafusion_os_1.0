@@ -52,6 +52,7 @@ unchanged.
 
 ## Next
 
-Continue automatically to `WO-SR-005D-E2` in `bsvalues/terrafusion-dossier` under the same bounded
-R3 envelope. Direct extraction, F1, runtime adoption, custody mutation, persistence, publication,
+`WO-SR-005D-E2` completed in `bsvalues/terrafusion-dossier` PR #1 with squash merge
+`dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf`. The bounded E1/E2 R3 envelope is complete
+and consumed. Direct extraction, F1, runtime adoption, custody mutation, persistence, publication,
 deployment, and cutover remain unauthorized.
