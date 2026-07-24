@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; GPT source-identity decomposition |
-| Current | `WO-SR-005E-A2` ready |
-| Next | GPT grounded source-identity projection verdict |
+| Status | Active between GPT cohorts |
+| Current | `WO-SR-005E-A2` complete |
+| Next | `WO-SR-005E-E0` proposed; bounded R3 authority required |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -133,9 +133,10 @@ persistence, extraction, and runtime blocks. The bounded E1/E2 R3 envelope compl
 unwired adapter and standalone hash-pinned parity proof and is now consumed.
 WO-SR-005E-C defined the exact GPT grounded-context boundary and WO-SR-005E-I froze it.
 WO-SR-005E-A then found that the committed RAG result drops the county, dataset, trace,
-authorization, and source-to-chunk identity required for safe adaptation. WO-SR-005E-A2 is the
-current docs/evidence-only R2 design node. Adapter implementation, extraction, providers, and
-runtime adoption remain gated.
+authorization, and source-to-chunk identity required for safe adaptation. WO-SR-005E-A2 found no
+safe existing source boundary and defined an exact build-fresh pure unwired source-identity
+projection. `WO-SR-005E-E0` is proposed R3 work and requires exact bounded authority. Adapter
+implementation, standalone parity, extraction, providers, and runtime adoption remain gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -587,8 +588,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-A2` ready |
-| Next WO | GPT grounded source-identity projection verdict |
+| Current WO | `WO-SR-005E-A2` complete |
+| Next WO | `WO-SR-005E-E0` proposed; bounded R3 authority required |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

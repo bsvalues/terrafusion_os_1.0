@@ -6343,7 +6343,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Identify an already-materialized source boundary or define a build-fresh provider-neutral projection that preserves grounded-context identity before adaptation.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-A", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -6386,6 +6386,111 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A2-GPT-GROUNDED-SOURCE-IDENTITY-PROJECTION-DESIGN.md"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "implementation-boundary",
+          "description": "A2 may design and evidence only; adapter, projection, provider, model, runtime, test, destination, workflow, extraction, or protected-resource changes require separate exact authority."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-E0",
+          "reason": "Implement the exact build-fresh pure unwired source-identity validation and ordering boundary defined by A2.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-E0",
+      "title": "GPT Grounded Source Identity Projection Foundation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Create a pure unwired projection that validates explicit host-proven grounded source identity and authorization without provider, persistence, or runtime behavior.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-005E-A2", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Build-fresh provider-neutral GPT source-identity records, pure validation and deterministic ordering, focused synthetic tests, and governed evidence"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Adapters, DI, controllers, services, runtime consumers, providers, models, embeddings, persistence, databases, HTTP, logging, or network behavior"
+        },
+        {
+          "name": "Standalone parity, extraction, packages, publication, workflows, deployment, production, cutover, county/PACS/SQL, credentials, secrets, migrations, or source retirement"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.AI/Models/GptGroundedSourceIdentityProjection.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedSourceIdentityProjectionTests.cs",
+        "docs/brain/workorders/active/WO-SR-005E-E0-gpt-grounded-source-identity-projection-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E0-GPT-GROUNDED-SOURCE-IDENTITY-PROJECTION-FOUNDATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.AI/Controllers/**",
+        "backend/src/TerraFusion.AI/Services/**",
+        "backend/src/TerraFusion.AI/Repositories/**",
+        "backend/src/TerraFusion.API/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "source-identity-projection",
+          "description": "Pure deterministic proof for county, dataset, trace, authorization, denial, source, chunk, excerpt, score, status, ordering, and duplicate rejection."
+        },
+        {
+          "kind": "no-runtime-consumer",
+          "description": "Exact-scope proof that E0 adds no adapter, DI registration, controller, service, provider, persistence, network, logging, workflow, destination, or runtime consumer."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused GPT source-identity projection tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~GptGroundedSourceIdentityProjectionTests",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln --no-restore",
+          "required": true,
           "result": "not_run"
         },
         {
@@ -6399,13 +6504,26 @@
           "command": "node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
           "result": "not_run"
+        },
+        {
+          "name": "Exact scope and diff check",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "not_run"
         }
       ],
       "evidenceProduced": [],
+      "blockers": [
+        {
+          "type": "IMPLEMENTATION_AUTH_REQUIRED",
+          "status": "open",
+          "description": "A2 proves the exact R3 implementation boundary but does not authorize backend source or test creation."
+        }
+      ],
       "stopConditions": [
         {
-          "type": "implementation-boundary",
-          "description": "A2 may design and evidence only; adapter, projection, provider, model, runtime, test, destination, workflow, extraction, or protected-resource changes require separate exact authority."
+          "type": "scope_boundary",
+          "description": "Any adapter, runtime consumer, provider, persistence, workflow, standalone, extraction, protected resource, deployment, or cutover work is outside E0."
         }
       ],
       "nextCandidates": []

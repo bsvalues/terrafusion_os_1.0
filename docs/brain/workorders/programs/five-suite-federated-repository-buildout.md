@@ -57,7 +57,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
 | WO-SR-005E-A | Prepare the GPT adapter and standalone parity boundary | Complete; decomposition required because committed RAG output loses contract identity |
-| WO-SR-005E-A2 | Design the GPT grounded source-identity projection | Current R2 node; docs/evidence only, no provider/runtime implementation |
+| WO-SR-005E-A2 | Design the GPT grounded source-identity projection | Complete; exact pure unwired projection defined |
+| WO-SR-005E-E0 | Build the GPT grounded source-identity projection foundation | Proposed R3; exact bounded authority required |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -121,7 +122,9 @@ and no runtime consumer. E2 merged the hash-pinned standalone parity proof in Do
 E1/E2 envelope is complete and consumed. WO-SR-005E-P selected grounded context while proving the
 current adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I froze
 it. WO-SR-005E-A then proved that the committed RAG result cannot preserve the frozen county,
-dataset, trace, authorization, and source-to-chunk identity. WO-SR-005E-A2 is the current R2
-source-identity projection design node. The Dais, Dossier, and GPT contract cohort is complete and
+dataset, trace, authorization, and source-to-chunk identity. WO-SR-005E-A2 found no safe existing
+boundary and defined an exact build-fresh pure unwired projection as proposed WO-SR-005E-E0.
+E0 requires one bounded R3 implementation envelope and grants no adapter, runtime, provider, or
+extraction authority. The Dais, Dossier, and GPT contract cohort is complete and
 the sequential authority is consumed. The suite repositories remain valid bootstraps, not claims
 of extracted or standalone product capability.
