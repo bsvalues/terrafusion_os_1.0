@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between bounded cohorts; Dossier E1/E2 complete |
-| Current | `WO-SR-005D-E2` complete in Dossier PR #1 |
-| Next | Portfolio reconciliation for the next bounded dependency-cleared cohort |
+| Status | Active; GPT source-identity decomposition |
+| Current | `WO-SR-005E-A2` ready |
+| Next | GPT grounded source-identity projection verdict |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -131,9 +131,11 @@ evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005D-A then def
 unwired sovereign adapter and standalone synthetic parity sequence while preserving custody,
 persistence, extraction, and runtime blocks. The bounded E1/E2 R3 envelope completed the pure
 unwired adapter and standalone hash-pinned parity proof and is now consumed.
-WO-SR-005E-C defined the exact GPT
-grounded-context boundary and WO-SR-005E-I freezes it on merge. The sequential contract cohort is
-complete; only later extraction, adapter parity, provider, and runtime-adoption work remains gated.
+WO-SR-005E-C defined the exact GPT grounded-context boundary and WO-SR-005E-I froze it.
+WO-SR-005E-A then found that the committed RAG result drops the county, dataset, trace,
+authorization, and source-to-chunk identity required for safe adaptation. WO-SR-005E-A2 is the
+current docs/evidence-only R2 design node. Adapter implementation, extraction, providers, and
+runtime adoption remain gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -585,8 +587,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005D-E2` complete |
-| Next WO | Portfolio reconciliation for the next bounded cohort |
+| Current WO | `WO-SR-005E-A2` ready |
+| Next WO | GPT grounded source-identity projection verdict |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
