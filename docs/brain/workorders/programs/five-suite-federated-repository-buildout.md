@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active in Dossier E1/E2 cohort; E1 complete and E2 current
+**Status:** Active between bounded cohorts; Dossier E1/E2 complete
 
 ## Ratified topology
 
@@ -52,7 +52,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-I | Implement and freeze the Dossier evidence-registry read contract | Complete; `dossier.evidence-registry-read@1.0.0`, no runtime adoption |
 | WO-SR-005D-A | Prepare the Dossier adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
 | WO-SR-005D-E1 | Implement the pure unwired sovereign evidence-registry adapter | Complete; 31 targeted tests and no runtime consumer |
-| WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Current under the bounded E1/E2 envelope |
+| WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Complete; Dossier PR #1 / merge `dcd8a1a3`, all required checks passed |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete on merge; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
@@ -115,7 +115,8 @@ it without runtime adoption. WO-SR-005D-A then rejected the current controller p
 contract parity, selected an already-materialized county/parcel page as the pure adapter input, and
 defined an unwired sovereign adapter followed by standalone synthetic parity. The owner activated
 the bounded E1/E2 R3 envelope, and E1 implemented the pure adapter with fail-closed synthetic proof
-and no runtime consumer. E2 is current for standalone hash-pinned parity. WO-SR-005E-P selected
+and no runtime consumer. E2 merged the hash-pinned standalone parity proof in Dossier PR #1. The
+E1/E2 envelope is complete and consumed. WO-SR-005E-P selected
 grounded context while proving the current
 adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I freezes it on
 merge. The Dais, Dossier, and GPT contract cohort is complete and the sequential authority is

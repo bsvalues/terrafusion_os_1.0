@@ -99,12 +99,12 @@ FIVE-SUITE FEDERATED REPOSITORIES
   WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
   WO-SR-005D-I Dossier evidence-registry read implementation/freeze is complete
   WO-SR-005D-A Dossier adapter/standalone-parity preparation is complete with an implementation-ready verdict
-  WO-SR-005D-E1 pure unwired sovereign adapter is complete under the bounded E1/E2 envelope
-  WO-SR-005D-E2 standalone synthetic parity is active after E1
+  WO-SR-005D-E1 pure unwired sovereign adapter is complete
+  WO-SR-005D-E2 standalone synthetic parity is complete in Dossier PR #1; E1/E2 authority consumed
   WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
   WO-SR-005E-C GPT grounded-context contract decomposition is complete
   WO-SR-005E-I GPT grounded-context implementation/freeze is complete on merge
-  Sequential R3 contract-freeze and Dais E1/E2 envelopes are complete and consumed
+  Sequential R3 contract-freeze, Dais E1/E2, and Dossier E1/E2 envelopes are complete and consumed
   WO-SR-005B through WO-SR-005E extraction/runtime adoption remains gated by exact scope and parity proof
 ```
 
@@ -114,7 +114,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A/E1/E2/E3 | portfolio reconciliation | F1, extraction, and runtime/provider adoption remain separately gated and unauthorized | ACTIVE BETWEEN COHORTS |
+| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A/E1/E2/E3 and SR-005D-A/E1/E2 | portfolio reconciliation | F1, extraction, and runtime/provider adoption remain separately gated and unauthorized | ACTIVE BETWEEN COHORTS |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
