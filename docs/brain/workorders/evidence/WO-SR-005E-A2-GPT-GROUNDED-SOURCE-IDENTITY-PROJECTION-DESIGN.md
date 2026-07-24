@@ -67,7 +67,7 @@ Required records:
 - request: canonical `countyId`, exact frozen `datasetKey`, and `traceId`;
 - authorization: `ALLOWED` or `DENIED`, with the frozen denial code when denied;
 - candidate: stable `sourceId`, stable `chunkId`, non-negative `chunkIndex`, bounded sanitized
-  `excerpt`, finite score in `[0,1]`, and optional bounded `sourceTitle`; and
+  `excerpt`, finite score in `[0,1]`, and optional `sourceTitle` of at most 200 characters; and
 - result: the same county, dataset, trace, authorization/status identity plus canonical candidates.
 
 The projection input is an assertion boundary, not proof that the current runtime already supplies
@@ -105,7 +105,7 @@ E0 tests must reject:
 - denial without a code, allowed output with a denial code, or denied output with candidates;
 - negative chunk indexes;
 - non-finite, negative, or greater-than-one scores;
-- excerpts longer than 500 characters or source titles that exceed the bounded design;
+- excerpts longer than 500 characters or source titles longer than 200 characters;
 - duplicate source/chunk identity;
 - raw query, full text, source URL, provider, model, embedding, prompt, token, credential, or
   persistence fields;
