@@ -5867,7 +5867,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove hash-pinned standalone compatibility with dossier.evidence-registry-read@1.0.0 using only the frozen synthetic corpus.",
       "riskClass": "R3",
-      "status": "active",
+      "status": "in_progress",
       "dependencies": [{ "id": "WO-SR-005D-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
