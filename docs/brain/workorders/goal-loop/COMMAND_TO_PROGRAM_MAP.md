@@ -19,7 +19,7 @@ resolves.
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
 | `program-next` | Portfolio Operator | Dossier adapter/parity preparation complete; reconcile the next bounded cohort | YES if every candidate crosses a new protected boundary | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-005D-A` complete; Dossier E1 proposed / R3 gated | YES for E1/E2, F1, or any other ungranted R3/protected scope | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-005D-E1` complete; `WO-SR-005D-E2` active | YES for extraction, runtime/custody adoption, F1, or scope outside the bounded E1/E2 envelope | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

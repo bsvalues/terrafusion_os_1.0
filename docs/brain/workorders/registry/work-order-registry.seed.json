@@ -5731,9 +5731,230 @@
           "id": "WO-SR-005D-E1",
           "reason": "Implement the pure unwired sovereign Dossier evidence-registry read adapter over an already-materialized county- and parcel-scoped page.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
+    },
+    {
+      "id": "WO-SR-005D-E1",
+      "title": "Dossier Sovereign Evidence Registry Read Adapter",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement and prove a pure unwired adapter from an already-materialized county- and parcel-scoped evidence page to dossier.evidence-registry-read@1.0.0.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005D-A", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Pure Dossier evidence-registry read adapter and synthetic unit tests"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime registration, controller, endpoint, service, persistence, custody mutation, or consumer adoption"
+        },
+        {
+          "name": "Provider, database, county, PACS, SQL, live, production, credential, or secret access"
+        },
+        {
+          "name": "Frontend, destination product implementation, extraction, packages, publication, workflows, deployment, or cutover"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Adapters/DossierEvidenceRegistryReadAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dossier/DossierEvidenceRegistryReadAdapterTests.cs",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Controllers/**",
+        "backend/src/TerraFusion.Core/Services/**",
+        "backend/src/TerraFusion.Data/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-proof",
+          "description": "Positive field mapping plus fail-closed county, parcel, vocabulary, ordering, pagination, timestamp, identity, and cross-lane exclusion tests."
+        },
+        {
+          "kind": "no-runtime-adoption",
+          "description": "No DI, controller, endpoint, service, database, provider, custody mutation, or consumer reference to the adapter."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Targeted Dossier adapter tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~DossierEvidenceRegistryReadAdapterTests",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze verifier",
+          "command": "node scripts/contracts/verify-contract-freeze.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Contract freeze tests",
+          "command": "node --test scripts/contracts/verify-contract-freeze.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005D-E1-DOSSIER-SOVEREIGN-EVIDENCE-REGISTRY-READ-ADAPTER.md"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "runtime-adoption",
+          "description": "Any runtime wiring, custody mutation, source extraction, provider/database call, endpoint/service change, destination product implementation, or F1 work is outside E1."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-E2",
+          "reason": "Materialize and prove the frozen contract in the standalone Dossier repository after the sovereign adapter passes.",
+          "riskClass": "R3",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Owner-authorized bounded Dossier E1/E2 R3 envelope anchored to WO-SR-005D-A merge 6b9ccb29fac6065264792c03880298347477e8d0; authority continues sequentially to E2 but excludes extraction, runtime adoption, custody mutation, and F1."
+      }
+    },
+    {
+      "id": "WO-SR-005D-E2",
+      "title": "Dossier Standalone Synthetic Contract Parity",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove hash-pinned standalone compatibility with dossier.evidence-registry-read@1.0.0 using only the frozen synthetic corpus.",
+      "riskClass": "R3",
+      "status": "active",
+      "dependencies": [{ "id": "WO-SR-005D-E1", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Dossier standalone contract-compat material and synthetic verifier"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product source extraction, F1, runtime adoption, persistence, custody mutation, or ownership cutover"
+        },
+        {
+          "name": "Provider, county, PACS, SQL, credentials, secrets, network, live services, or production resources"
+        }
+      ],
+      "allowedFiles": [
+        ".github/workflows/suite-ci.yml (contract-compat job only)",
+        "canon/CONTRACT_DEPENDENCY.md",
+        "contract-compat/dossier.evidence-registry-read.v1/manifest.json",
+        "contract-compat/dossier.evidence-registry-read.v1/dossier.evidence-registry-read.v1.schema.json",
+        "contract-compat/dossier.evidence-registry-read.v1/fixtures/*.json",
+        "scripts/verify-dossier-evidence-registry-read.mjs",
+        "scripts/verify-dossier-evidence-registry-read.test.mjs",
+        "operations/work-orders/WO-SR-005D-E2-dossier-standalone-synthetic-contract-parity.md",
+        "operations/evidence/WO-SR-005D-E2-DOSSIER-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+      ],
+      "blockedFiles": [
+        "terrafusion_os_1.0 runtime and product paths",
+        "src/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-contract-parity",
+          "description": "All frozen hashes match; three positive fixtures pass; eight negative fixtures fail closed with county, parcel, vocabulary, ordering, pagination, and privacy semantics preserved."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Standalone Dossier verifier tests",
+          "command": "node --test scripts/verify-dossier-evidence-registry-read.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone Dossier verifier",
+          "command": "node scripts/verify-dossier-evidence-registry-read.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Frozen source and destination hash parity",
+          "command": "Verify manifest SHA-256 entries against dossier.evidence-registry-read@1.0.0 source artifacts",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Exact destination scope inspection",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Standalone required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope-boundary",
+          "description": "Any source extraction, runtime adoption, custody mutation, persistence, network/provider call, package publication, deployment, or F1 work is outside E2."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Owner-authorized bounded Dossier E1/E2 R3 envelope; E2 begins only after E1 protected merge and post-merge verification."
+      }
     },
     {
       "id": "WO-SR-005E-P",
