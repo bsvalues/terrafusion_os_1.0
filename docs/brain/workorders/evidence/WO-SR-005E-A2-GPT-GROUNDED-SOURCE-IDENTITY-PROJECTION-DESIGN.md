@@ -124,7 +124,8 @@ Implementation authority, if granted, is limited to:
 - `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`;
 - `docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md`;
 - `docs/brain/workorders/programs/five-suite-federated-repository-buildout.md`;
-- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`; and
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`;
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`; and
 - `docs/brain/workorders/registry/work-order-registry.seed.json`.
 
 The source file contains only immutable records, closed internal vocabularies, and pure validation
