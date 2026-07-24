@@ -6238,6 +6238,176 @@
           "description": "Any provider call, consumer, adapter, tool action, persistence, extraction, or behavior change requires a later Work Order."
         }
       ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-A",
+          "reason": "Inspect the committed GPT source and define the exact adapter and standalone parity boundary for the frozen grounded-context contract.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-A",
+      "title": "GPT Grounded Context Adapter and Standalone Parity Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Determine whether committed GPT/RAG source can safely map to gpt.grounded-context@1.0.0 and define exact sovereign and standalone parity scopes.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-005E-I", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Read-only committed GPT/RAG source, tests, frozen contract, and standalone bootstrap inspection"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Backend, runtime, provider, model, embedding, adapter, test, or destination implementation"
+        },
+        {
+          "name": "Extraction, packages, publication, workflows, deployment, county, PACS, SQL, credentials, secrets, live services, or production"
+        }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-boundary",
+          "description": "Exact source-to-contract mapping or exact identity gap with unsafe inferred mappings rejected."
+        },
+        {
+          "kind": "standalone-parity-plan",
+          "description": "Deferred synthetic-only destination contract-compat scope, provenance, rollback, and validation."
+        },
+        {
+          "kind": "implementation-verdict",
+          "description": "IMPLEMENTATION_READY_AS_TWO_REPOSITORY_SEQUENCE, DECOMPOSITION_REQUIRED, or NO_GO with exact evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "gpt-adapter-parity-preparation",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A-GPT-GROUNDED-CONTEXT-ADAPTER-STANDALONE-PARITY-PREPARATION.md",
+          "description": "Exact source inspection, rejected inferred mappings, missing source-identity proof, deferred standalone scope, provenance, rollback, and validation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "source-identity-decomposition",
+          "description": "No adapter or R3 envelope may be admitted until a provider-neutral projection preserves county, dataset, trace, authorization, and source-to-chunk identity."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-A2",
+          "reason": "Identify or define the provider-neutral source-identity projection required before a pure grounded-context adapter can be specified.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-A2",
+      "title": "GPT Grounded Source Identity Projection Design",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Identify an already-materialized source boundary or define a build-fresh provider-neutral projection that preserves grounded-context identity before adaptation.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [{ "id": "WO-SR-005E-A", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Read-only committed GPT/RAG source, tests, frozen contract, and governance evidence inspection"
+        },
+        { "name": "Docs and governance", "paths": ["docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Backend, runtime, provider, model, embedding, adapter, test, destination, package, workflow, or deployment implementation"
+        },
+        {
+          "name": "County, PACS, SQL, credentials, secrets, live services, production, migrations, extraction, or source retirement"
+        }
+      ],
+      "allowedFiles": ["docs/brain/workorders/**"],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/sync/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "source-identity-projection",
+          "description": "Exact committed source point or exact future pure projection carrying county, dataset, trace, authorization, source, chunk, excerpt, score, status, and denial identity."
+        },
+        {
+          "kind": "implementation-verdict",
+          "description": "One exact bounded implementation proposal or NO_GO if identity cannot be established without protected or runtime access."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work-order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work-order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "implementation-boundary",
+          "description": "A2 may design and evidence only; adapter, projection, provider, model, runtime, test, destination, workflow, extraction, or protected-resource changes require separate exact authority."
+        }
+      ],
       "nextCandidates": []
     },
     {

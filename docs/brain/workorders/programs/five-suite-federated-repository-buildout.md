@@ -42,7 +42,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-C | Decompose the Dais appeal-workflow contract | Complete; read-only county-scoped boundary defined |
 | WO-SR-005C-I | Implement and freeze the Dais appeal-workflow contract | Complete; `dais.appeal-workflow@1.0.0`, no runtime adoption |
 | WO-SR-005C-A | Prepare the Dais adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
-| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; 31 targeted adapter tests per preserved PR #1357 output, no runtime consumer |
+| WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; preserved test output is authoritative at 32 passed, 0 failed, no runtime consumer |
 | WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Complete; Dais PR #1 / merge `2768cd8d`, all required checks passed |
 | WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
 | WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
@@ -55,7 +55,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Complete; Dossier PR #1 / merge `dcd8a1a3`, all required checks passed |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
-| WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete on merge; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
+| WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
+| WO-SR-005E-A | Prepare the GPT adapter and standalone parity boundary | Complete; decomposition required because committed RAG output loses contract identity |
+| WO-SR-005E-A2 | Design the GPT grounded source-identity projection | Current R2 node; docs/evidence only, no provider/runtime implementation |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -116,9 +118,10 @@ contract parity, selected an already-materialized county/parcel page as the pure
 defined an unwired sovereign adapter followed by standalone synthetic parity. The owner activated
 the bounded E1/E2 R3 envelope, and E1 implemented the pure adapter with fail-closed synthetic proof
 and no runtime consumer. E2 merged the hash-pinned standalone parity proof in Dossier PR #1. The
-E1/E2 envelope is complete and consumed. WO-SR-005E-P selected
-grounded context while proving the current
-adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I freezes it on
-merge. The Dais, Dossier, and GPT contract cohort is complete and the sequential authority is
-consumed. The suite repositories remain valid bootstraps, not claims of extracted or standalone
-product capability.
+E1/E2 envelope is complete and consumed. WO-SR-005E-P selected grounded context while proving the
+current adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I froze
+it. WO-SR-005E-A then proved that the committed RAG result cannot preserve the frozen county,
+dataset, trace, authorization, and source-to-chunk identity. WO-SR-005E-A2 is the current R2
+source-identity projection design node. The Dais, Dossier, and GPT contract cohort is complete and
+the sequential authority is consumed. The suite repositories remain valid bootstraps, not claims
+of extracted or standalone product capability.

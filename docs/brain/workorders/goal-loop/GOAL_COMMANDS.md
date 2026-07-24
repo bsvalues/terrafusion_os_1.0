@@ -48,9 +48,9 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 ```
 
 **Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
-WO-SR-005D-E1 completed the pure unwired Dossier evidence-registry adapter, and WO-SR-005D-E2
-merged the standalone hash-pinned synthetic parity proof in Dossier PR #1. The bounded E1/E2
-envelope is complete and consumed; portfolio reconciliation is current.
+WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
+WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
+grounded-context contract. `WO-SR-005E-A2` is the current R2 source-identity projection design node.
 Runtime/provider adoption, extraction, custody or
 persistence mutation, protected data, publication/unrelated workflow changes, and cutover remain
 gated.

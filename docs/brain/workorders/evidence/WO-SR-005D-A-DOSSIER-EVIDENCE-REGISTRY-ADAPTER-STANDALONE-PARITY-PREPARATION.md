@@ -190,10 +190,11 @@ persistence-navigation fields.
 
 ## Dais Test-Count Reconciliation
 
-The preserved PR #1357 body is the authoritative command-output record and reports **31 targeted
-adapter tests passed**. The queue and program playbook had drifted to 32 without preserved output
-support. This Work Order normalizes both canonical references to 31. The discrepancy affects no
-Dais contract, adapter, parity, or closeout result.
+The preserved E1 validation output in
+`WO-SR-005C-E1-DAIS-SOVEREIGN-APPEAL-WORKFLOW-READ-ADAPTER.md` is the authoritative command-output
+record and reports **32 targeted adapter tests passed, 0 failed**. PR #1357's body reported 31 and
+is stale. The queue and program playbook are normalized to the preserved 32-pass result. The
+discrepancy affects no Dais contract, adapter, parity, or closeout result.
 
 ## Proposed Bounded R3 Envelope
 
