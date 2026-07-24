@@ -6386,19 +6386,19 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Work-order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Work-order tooling tests",
           "command": "node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         }
       ],
       "evidenceProduced": [],
