@@ -52,9 +52,11 @@ WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standa
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
 `WO-SR-005E-E0` implemented the exact pure unwired boundary with 52 focused synthetic cases. E0's
-bounded R3 authority is consumed. `WO-SR-005E-A3` is ready as R2 reconciliation only.
-Runtime/provider adoption, E1/E2 implementation, extraction, custody or persistence mutation,
-protected data, publication/unrelated workflow changes, and cutover remain gated.
+bounded R3 authority is consumed. `WO-SR-005E-A3` completed R2 reconciliation and defined an exact
+pure E1 adapter followed by hash-pinned standalone E2 parity. Both implementation slices remain
+proposed pending one bounded R3 envelope. Runtime/provider adoption, E1/E2 implementation,
+extraction, custody or persistence mutation, protected data, publication/unrelated workflow
+changes, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
