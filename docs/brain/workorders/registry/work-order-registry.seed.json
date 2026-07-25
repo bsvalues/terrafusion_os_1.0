@@ -6659,7 +6659,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Establish and register the exact local path, remote, default branch, and read-only shared-checkout rule for bsvalues/terrafusion-gpt.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-A3", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -6711,22 +6711,28 @@
           "name": "Live repository identity",
           "command": "Verify local git toplevel, origin remote, branch, origin/main, GitHub repository identity, visibility, and default branch without reading credential values",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work-order query and tooling tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Exact scope and diff check",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "repository-path-canon",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+          "result": "GPT_PATH_CANON_REGISTERED"
+        }
+      ],
       "blockers": [],
       "stopConditions": [
         {
@@ -6750,7 +6756,7 @@
       "goal": "Map an already-validated E0 source-identity result to gpt.grounded-context@1.0.0 through a pure unwired fail-closed adapter.",
       "riskClass": "R3",
       "status": "proposed",
-      "dependencies": [{ "id": "WO-SR-005E-A4", "status": "pending" }],
+      "dependencies": [{ "id": "WO-SR-005E-A4", "status": "satisfied" }],
       "allowedSystems": [
         {
           "name": "Build-fresh pure unwired GPT grounded-context adapter, focused synthetic tests, canonical authority record, and governed evidence/routing"

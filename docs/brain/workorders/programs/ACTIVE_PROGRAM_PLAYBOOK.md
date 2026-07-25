@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active in GPT path-canon reconciliation |
-| Current | `WO-SR-005E-A3` complete |
-| Next | `WO-SR-005E-A4` ready |
+| Status | Active between GPT cohorts |
+| Current | `WO-SR-005E-A4` complete |
+| Next | `WO-SR-005E-E1` proposed; exact R3 envelope required |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -138,10 +138,10 @@ safe existing source boundary and defined an exact build-fresh pure unwired sour
 projection. `WO-SR-005E-E0` implemented that boundary with deterministic fail-closed proof and no
 runtime consumer. Its bounded R3 authority is consumed. `WO-SR-005E-A3` then proved an exact pure
 unwired E1 adapter and hash-pinned standalone E2 parity sequence, but found the standalone GPT
-repository absent from the canonical path register. `WO-SR-005E-A4` is ready to register exact path
-truth under R2 authority. `WO-SR-005E-E1` and E2 remain proposed behind A4 and one exact bounded R3
-envelope. Adapter implementation, standalone parity, extraction, providers, and runtime adoption
-remain gated.
+repository absent from the canonical path register. `WO-SR-005E-A4` established and registered the
+clean read-only `D:\terrafusion-gpt` checkout at exact `origin/main`. `WO-SR-005E-E1` is now
+dependency-cleared but remains proposed with E2 behind one exact bounded R3 envelope. Adapter
+implementation, standalone parity, extraction, providers, and runtime adoption remain gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -593,8 +593,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-A3` complete |
-| Next WO | `WO-SR-005E-A4` ready |
+| Current WO | `WO-SR-005E-A4` complete |
+| Next WO | `WO-SR-005E-E1` proposed; exact R3 envelope required |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

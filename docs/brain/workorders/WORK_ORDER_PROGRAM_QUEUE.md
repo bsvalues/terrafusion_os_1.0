@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-25
-**Authority:** WO-SR-005E-A3 standing R2 reconciliation authority
+**Authority:** WO-SR-005E-A4 standing R2 path-canon authority
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout remains active in GPT R2 reconciliation.
+The Five-Suite Federated Repository Buildout remains active between GPT cohorts.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
 Dossier E1/E2 envelope is complete and consumed. WO-SR-005E-A proved that the committed GPT/RAG
@@ -22,9 +22,10 @@ an exact build-fresh pure source-identity projection and returned
 `IMPLEMENTATION_READY_AS_PURE_UNWIRED_SOURCE_PROJECTION`.
 WO-SR-005E-E0 completed the exact pure unwired projection with 52 focused synthetic cases and no
 runtime consumer. Its bounded R3 authority is consumed. WO-SR-005E-A3 bounded the technical E1/E2
-sequence but found the standalone GPT repository absent from `PATH_CANON_REGISTER.md`.
-WO-SR-005E-A4 is the dependency-cleared R2 path-canon registration node. E1 remains proposed behind
-A4 and one exact bounded R3 E1/E2 authority envelope; E2 remains dependency-blocked on E1.
+sequence and identified missing GPT path canon. WO-SR-005E-A4 established the clean read-only
+`D:\terrafusion-gpt` checkout and registered its exact private repository identity at
+`10295e9b534cce7ba9d428a91fb966bd58963c77`. E1 is now dependency-cleared but remains proposed behind
+one exact bounded R3 E1/E2 authority envelope; E2 remains dependency-blocked on E1.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 
@@ -76,13 +77,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-A2 GPT Grounded Source Identity Projection Design | DONE / IMPLEMENTATION_READY | No existing safe boundary; exact pure unwired source-identity projection defined |
 | WO-SR-005E-E0 GPT Grounded Source Identity Projection Foundation | DONE | Build-fresh pure validation and ordering; 52 focused cases; no runtime/provider consumer |
 | WO-SR-005E-A3 GPT Adapter and Standalone Parity Reconciliation | DONE / DECOMPOSITION_REQUIRED | Technical E1/E2 scope bounded; GPT repository path canon missing |
-| WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | READY / R2 | Register exact repository, local path, remote, default branch, and read-only shared-checkout rule |
-| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | PROPOSED / DEPENDENCY + R3 BLOCKED | A4 and exact E1/E2 owner envelope required; no implementation authority currently active |
+| WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
+| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | PROPOSED / R3 BLOCKED | Dependency cleared; exact E1/E2 owner envelope required; no implementation authority currently active |
 | WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | PROPOSED / DEPENDENCY BLOCKED | Depends on E1 and the same future exact envelope |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | E1/E2 COMPLETE / BETWEEN COHORTS | Contract, unwired adapter, and standalone parity proven; extraction and custody-safe runtime adoption remain unproven and unauthorized |
-| WO-SR-005E GPT Bounded Extraction | A3 COMPLETE / A4 READY | Technical E1/E2 boundaries defined; path canon must land before implementation authority can be considered |
+| WO-SR-005E GPT Bounded Extraction | A4 COMPLETE / BETWEEN COHORTS | Path canon and technical E1/E2 boundaries are complete; exact R3 implementation authority remains required |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
