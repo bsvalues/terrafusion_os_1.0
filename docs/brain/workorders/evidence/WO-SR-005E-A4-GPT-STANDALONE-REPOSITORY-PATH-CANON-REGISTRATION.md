@@ -55,10 +55,10 @@ The sovereign change is limited to the exact ten-file A4 allowlist:
 - live local and GitHub identity inspection: PASS
 - GPT shared checkout clean and read-only: PASS
 - repository path canon registered: PASS
-- Work Order query: required before merge
-- Work Order tooling tests: required before merge
-- exact scope inspection: required before merge
-- `git diff --check`: required before merge
+- Work Order query: PASS; A4 complete, E1 blocked only by R3 authority, E2 dependency/protected-system blocked
+- Work Order tooling tests: PASS; 46 passed, 0 failed
+- exact scope inspection: PASS; ten authorized A4 files only
+- `git diff --check`: PASS
 - runtime/backend/frontend/workflow/destination changes: none
 
 ## Next Boundary
