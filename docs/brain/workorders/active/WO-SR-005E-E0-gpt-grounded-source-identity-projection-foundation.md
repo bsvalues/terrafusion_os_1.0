@@ -5,7 +5,7 @@
 | Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded implementation |
-| Dependency | WO-SR-005E-A2 complete; exact owner envelope granted |
+| Dependency | WO-SR-005E-A2 complete; `OWNER-SR-005E-E0-R3-GPT-SOURCE-IDENTITY-20260725` granted |
 | Result | GPT_SOURCE_IDENTITY_PROJECTION_FOUNDATION_COMPLETE |
 | Next | WO-SR-005E-A3 - GPT Adapter and Standalone Parity Reconciliation (R2) |
 

@@ -554,6 +554,56 @@
       }
     },
     {
+      "id": "OWNER-SR-005E-E0-R3-GPT-SOURCE-IDENTITY-20260725",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005E-E0",
+      "status": "active",
+      "authority_class": "R3-bounded-gpt-source-identity-projection",
+      "effective_base_sha": "80c51579458b96d956c20f2e0b81311fd1b68e16",
+      "scope_source": "WO-SR-005E-E0 allowedFiles in docs/brain/workorders/registry/work-order-registry.seed.json",
+      "authorized_actions": [
+        "implement the exact build-fresh provider-neutral pure unwired GPT grounded source identity projection defined by WO-SR-005E-A2",
+        "add focused synthetic tests and exact Work Order evidence and routing reconciliation",
+        "perform the complete governed delivery lifecycle through PR #1364 merge and post-merge verification"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.AI/Models/GptGroundedSourceIdentityProjection.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedSourceIdentityProjectionTests.cs",
+        "docs/brain/workorders/active/WO-SR-005E-E0-gpt-grounded-source-identity-projection-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E0-GPT-GROUNDED-SOURCE-IDENTITY-PROJECTION-FOUNDATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "WO-SR-005E-E1, WO-SR-005E-E2, adapter implementation, standalone GPT parity work, runtime consumers, or DI wiring",
+        "provider or model calls, embeddings, database, persistence, HTTP, network, query or content logging, county, PACS, SQL, credentials, or secrets",
+        "source extraction or copying, packages, publication, workflow changes, deployment, production, cutover, or source retirement"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check bypass or failure",
+        "unresolved review thread or exact-head assurance failure",
+        "protected-boundary access or conflicting authority"
+      ],
+      "terminal_condition": "Consumed after PR #1364 is merged and post-merge verification succeeds.",
+      "decision_basis": "Owner granted the exact WO-SR-005E-E0 bounded R3 implementation envelope and later authorized adding this canonical authority record to PR #1364.",
+      "completion": {
+        "target_pr": 1364,
+        "effective_on_merge": true,
+        "authority_consumed_on_verified_merge": true,
+        "evidence": "docs/brain/workorders/evidence/WO-SR-005E-E0-GPT-GROUNDED-SOURCE-IDENTITY-PROJECTION-FOUNDATION.md"
+      }
+    },
+    {
       "id": "OWNER-TF-STANDING-OPERATOR-AUTHORITY",
       "program": "all current and future ratified TerraFusion programs",
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",

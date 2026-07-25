@@ -10,13 +10,13 @@ from numeric IDs, names, titles, URLs, or list position.
 
 - authority anchor: WO-SR-005E-A2;
 - anchor merge: `80c51579458b96d956c20f2e0b81311fd1b68e16`;
-- authority: exact owner-granted E0 R3 envelope;
+- authority: `OWNER-SR-005E-E0-R3-GPT-SOURCE-IDENTITY-20260725`;
 - changed source:
   `backend/src/TerraFusion.AI/Models/GptGroundedSourceIdentityProjection.cs`;
 - changed tests:
   `backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedSourceIdentityProjectionTests.cs`;
-- governance changes: the nine exact E0 Work Order, evidence, queue, register, playbook, routing, and
-  registry files in the recorded allowlist.
+- governance changes: the canonical owner-decision record plus the nine exact E0 Work Order,
+  evidence, queue, register, playbook, routing, and registry files in the recorded allowlist.
 
 No adapter, service, controller, DI, provider, model, embedding, persistence, database, HTTP,
 network, logger, runtime consumer, destination repository, workflow, deployment, county/PACS/SQL,

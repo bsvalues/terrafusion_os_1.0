@@ -6444,6 +6444,7 @@
         }
       ],
       "allowedFiles": [
+        ".governance/owner-decisions.json",
         "backend/src/TerraFusion.AI/Models/GptGroundedSourceIdentityProjection.cs",
         "backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedSourceIdentityProjectionTests.cs",
         "docs/brain/workorders/active/WO-SR-005E-E0-gpt-grounded-source-identity-projection-foundation.md",
