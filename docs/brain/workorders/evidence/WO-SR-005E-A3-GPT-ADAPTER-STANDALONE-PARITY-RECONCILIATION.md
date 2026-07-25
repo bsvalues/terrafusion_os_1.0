@@ -2,13 +2,13 @@
 
 ## Verdict
 
-`IMPLEMENTATION_READY_AS_TWO_REPOSITORY_SEQUENCE`
+`DECOMPOSITION_REQUIRED_PATH_CANON_REGISTRATION`
 
 The completed E0 projection supplies a safe, already-materialized input for a pure unwired adapter
-to `gpt.grounded-context@1.0.0`. The frozen contract can then be proven independently in
-`bsvalues/terrafusion-gpt` through a hash-pinned synthetic corpus. Neither slice requires retrieval,
-authorization, provider, model, embedding, persistence, network, runtime, extraction, publication,
-or protected-resource access.
+to `gpt.grounded-context@1.0.0`, and the frozen contract has a bounded standalone synthetic-parity
+shape. However, `PATH_CANON_REGISTER.md` does not register `bsvalues/terrafusion-gpt`. The root
+routing rule forbids cross-repository dispatch until repository, canonical local path, remote, and
+default branch all match a committed entry.
 
 The proposed sequence is:
 
@@ -17,7 +17,9 @@ The proposed sequence is:
 2. `WO-SR-005E-E2` - materialize and verify the frozen schema and twelve synthetic exchanges in the
    standalone GPT repository, then reconcile sovereign routing and consume the envelope.
 
-This packet proposes that bounded R3 sequence. It does not activate E1 or E2.
+The technical E1/E2 sequence below is conditional. WO-SR-005E-A4 must first establish and register
+the GPT repository path truth. This packet does not activate A4 implementation beyond its admitted
+R2 scope and does not activate E1 or E2.
 
 ## Inspection Basis
 
@@ -30,6 +32,7 @@ This packet proposes that bounded R3 sequence. It does not activate E1 or E2.
 | Frozen schema | SHA-256 `da9a923e2ef92f63a728edcb19d726a9a29ceb39203464dbe6ee426e94a69019` | Closed state/denial vocabularies, bounded citations, ordering, and privacy exclusions fixed |
 | Standalone GPT | `10295e9b534cce7ba9d428a91fb966bd58963c77` | Private bootstrap only; no product or contract-compat source exists |
 | Standalone required checks | `.github/workflows/suite-ci.yml` | `suite-ci`, `contract-compat`, and `governance-gate` exist; E2 may narrow only the existing `contract-compat` job |
+| Repository path canon | `PATH_CANON_REGISTER.md` at sovereign base | GPT entry absent; cross-repository dispatch is blocked |
 
 The GPT domain pack, standalone `AGENTS.md`, contract dependency, intake rules, provenance ledger,
 workflow, and bootstrap inventory were inspected read-only. No provider, model, embedding, database,
@@ -57,6 +60,34 @@ quarantined source was accessed.
 
 The corpus contains three accepted exchanges and nine fail-closed cases. Sovereign and standalone
 verifiers must agree on each exact artifact and semantic result.
+
+## Required A4 Path-Canon Slice
+
+`WO-SR-005E-A4 - GPT Standalone Repository Path Canon Registration` must:
+
+- establish one stable shared-checkout location for `bsvalues/terrafusion-gpt`;
+- verify its remote, private repository identity, default branch, and exact `origin/main`;
+- add the repository, canonical local path, remote, default branch, and suite scope to
+  `PATH_CANON_REGISTER.md`;
+- record that the shared checkout is read-only and future workers require isolated worktrees;
+- update A4 evidence and routing without changing standalone repository content; and
+- leave E1/E2 proposed until one exact bounded R3 envelope is granted.
+
+A4 may modify only:
+
+- `PATH_CANON_REGISTER.md`;
+- `docs/brain/workorders/active/WO-SR-005E-A4-gpt-standalone-repository-path-canon-registration.md`;
+- `docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md`;
+- `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`;
+- `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`;
+- `docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md`;
+- `docs/brain/workorders/programs/five-suite-federated-repository-buildout.md`;
+- `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`;
+- `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`; and
+- `docs/brain/workorders/registry/work-order-registry.seed.json`.
+
+No GPT repository file, backend/runtime source, workflow, provider, persistence, extraction, package,
+deployment, protected resource, or production surface is writable in A4.
 
 ## Exact E1 Adapter Boundary
 
@@ -196,7 +227,7 @@ cutover, or conflicting authority.
 
 ## Next
 
-`WO-SR-005E-E1 - GPT Grounded Context Sovereign Adapter` is proposed and blocked pending one exact
-bounded E1/E2 R3 envelope. E2 remains dependency-blocked on E1. No runtime, provider, persistence,
-extraction, package, publication, deployment, production, cutover, or source-retirement authority
-is implied.
+`WO-SR-005E-A4 - GPT Standalone Repository Path Canon Registration` is the next dependency-cleared
+R2 node. E1 is dependency-blocked on A4 and then requires one exact bounded E1/E2 R3 envelope. E2
+remains dependency-blocked on E1. No adapter, standalone, runtime, provider, persistence, extraction,
+package, publication, deployment, production, cutover, or source-retirement authority is implied.
