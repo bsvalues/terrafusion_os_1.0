@@ -59,7 +59,10 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-A | Prepare the GPT adapter and standalone parity boundary | Complete; decomposition required because committed RAG output loses contract identity |
 | WO-SR-005E-A2 | Design the GPT grounded source-identity projection | Complete; exact pure unwired projection defined |
 | WO-SR-005E-E0 | Build the GPT grounded source-identity projection foundation | Complete; 52 focused cases, pure and unwired |
-| WO-SR-005E-A3 | Reconcile the GPT adapter and standalone parity boundaries | Ready R2; E1/E2 implementation remains unauthorized |
+| WO-SR-005E-A3 | Reconcile the GPT adapter and standalone parity boundaries | Complete; technical sequence bounded, path canon missing |
+| WO-SR-005E-A4 | Register the standalone GPT repository path canon | Ready R2; no destination content change |
+| WO-SR-005E-E1 | Implement the pure unwired GPT grounded-context adapter | Proposed R3; depends on A4 and exact E1/E2 envelope |
+| WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Proposed R3; depends on E1 and the same envelope |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -126,7 +129,10 @@ it. WO-SR-005E-A then proved that the committed RAG result cannot preserve the f
 dataset, trace, authorization, and source-to-chunk identity. WO-SR-005E-A2 found no safe existing
 boundary and defined an exact build-fresh pure unwired projection. WO-SR-005E-E0 implemented that
 projection with 52 focused synthetic cases and no runtime consumer. Its bounded R3 envelope is
-consumed. WO-SR-005E-A3 is ready for R2 reconciliation only and grants no adapter, standalone
-parity, runtime, provider, or extraction authority. The Dais, Dossier, and GPT contract cohort is complete and
-the sequential authority is consumed. The suite repositories remain valid bootstraps, not claims
-of extracted or standalone product capability.
+consumed. WO-SR-005E-A3 then defined an exact pure adapter and hash-pinned standalone parity
+sequence but found `bsvalues/terrafusion-gpt` absent from the canonical path register.
+WO-SR-005E-A4 is ready as a bounded R2 registration node. E1 and E2 remain proposed pending A4 and
+one exact bounded R3 envelope; no adapter, standalone, runtime, provider, or extraction
+implementation authority exists now. The Dais, Dossier, and GPT contract cohort is complete and its
+sequential authority is consumed. The suite repositories remain valid bootstraps, not claims of
+extracted or standalone product capability.

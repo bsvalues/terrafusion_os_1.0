@@ -6553,7 +6553,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Determine whether the completed E0 projection can support exact pure E1 adapter and standalone E2 parity boundaries without runtime, provider, persistence, or extraction authority.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-E0", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -6610,11 +6610,112 @@
           "name": "Work-order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work-order tooling tests",
           "command": "node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Exact scope and diff check",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "adapter-boundary",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A3-GPT-ADAPTER-STANDALONE-PARITY-RECONCILIATION.md",
+          "result": "DECOMPOSITION_REQUIRED_PATH_CANON_REGISTRATION"
+        },
+        {
+          "kind": "standalone-parity-boundary",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A3-GPT-ADAPTER-STANDALONE-PARITY-RECONCILIATION.md",
+          "result": "Exact hash-pinned schema, twelve-fixture corpus, verifier, tests, constrained contract-compat job, and sovereign closeout scopes defined."
+        }
+      ],
+      "blockers": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Any E1/E2 implementation, runtime/provider/persistence, standalone product source, workflow, extraction, protected resource, deployment, or cutover work is outside A3."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-A4",
+          "reason": "Establish and register the exact standalone GPT repository path truth before any cross-repository E2 dispatch.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-A4",
+      "title": "GPT Standalone Repository Path Canon Registration",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Establish and register the exact local path, remote, default branch, and read-only shared-checkout rule for bsvalues/terrafusion-gpt.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [{ "id": "WO-SR-005E-A3", "status": "satisfied" }],
+      "allowedSystems": [
+        {
+          "name": "Read-only local and GitHub repository identity inspection, stable shared-checkout establishment, root path-canon registration, and Work Order evidence/routing"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Standalone repository content modification, E1/E2 implementation, runtime consumers, providers, models, embeddings, persistence, databases, HTTP product behavior, extraction, packages, publication, workflows, deployment, production, or cutover"
+        },
+        {
+          "name": "County/PACS/SQL, credentials or secret values, migrations, source copying, ownership transfer, or source retirement"
+        }
+      ],
+      "allowedFiles": [
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/active/WO-SR-005E-A4-gpt-standalone-repository-path-canon-registration.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "files inside the terrafusion-gpt shared checkout"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "repository-path-canon",
+          "description": "Exact local path, remote, private repository identity, default branch, origin/main head, and read-only shared-checkout rule for bsvalues/terrafusion-gpt."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Live repository identity",
+          "command": "Verify local git toplevel, origin remote, branch, origin/main, GitHub repository identity, visibility, and default branch without reading credential values",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work-order query and tooling tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
           "result": "not_run"
         },
@@ -6630,7 +6731,238 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Any E1/E2 implementation, runtime/provider/persistence, standalone product source, workflow, extraction, protected resource, deployment, or cutover work is outside A3."
+          "description": "Any destination content write, adapter/parity implementation, runtime/provider/persistence, workflow, extraction, protected resource, deployment, or cutover work is outside A4."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-E1",
+          "reason": "After path canon is verified, request one exact bounded E1/E2 R3 envelope for the pure adapter and standalone parity sequence.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-E1",
+      "title": "GPT Grounded Context Sovereign Adapter",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Map an already-validated E0 source-identity result to gpt.grounded-context@1.0.0 through a pure unwired fail-closed adapter.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-005E-A4", "status": "pending" }],
+      "allowedSystems": [
+        {
+          "name": "Build-fresh pure unwired GPT grounded-context adapter, focused synthetic tests, canonical authority record, and governed evidence/routing"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime consumers, DI, controllers, services, endpoints, retrieval, authorization, providers, models, embeddings, persistence, databases, HTTP, logging, or network behavior"
+        },
+        {
+          "name": "Standalone implementation before E1 merge, extraction, packages, publication, unrelated workflows, deployment, production, cutover, county/PACS/SQL, credentials, secrets, migrations, or source retirement"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Adapters/GptGroundedContextAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedContextAdapterTests.cs",
+        "docs/brain/workorders/active/WO-SR-005E-E1-gpt-grounded-context-sovereign-adapter.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E1-GPT-GROUNDED-CONTEXT-SOVEREIGN-ADAPTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Controllers/**",
+        "backend/src/TerraFusion.API/Services/**",
+        "backend/src/TerraFusion.AI/Services/**",
+        "backend/src/TerraFusion.AI/Repositories/**",
+        "backend/src/TerraFusion.AI/Models/GptGroundedSourceIdentityProjection.cs",
+        "backend/src/TerraFusion.Abstractions/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "adapter-parity",
+          "description": "Accepted and fail-closed synthetic proof for exact identity, state, denial, citation, ordering, uniqueness, text, and deterministic score conversion semantics."
+        },
+        {
+          "kind": "no-runtime-consumer",
+          "description": "Exact-scope proof that E1 adds no retrieval, authorization, provider, persistence, network, logging, DI, controller, service, endpoint, or runtime consumer."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused GPT grounded-context adapter tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~GptGroundedContextAdapterTests",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Canonical backend build",
+          "command": "dotnet build backend/TerraFusion.sln --no-restore",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Frozen GPT contract hashes",
+          "command": "Verify DTO, schema, and twelve fixture hashes against gpt.grounded-context@1.0.0",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work-order query and tooling tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/*.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Exact scope and diff check",
+          "command": "git diff --check and inspect changed paths",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "blockers": [
+        {
+          "type": "IMPLEMENTATION_AUTH_REQUIRED",
+          "status": "pending",
+          "description": "A4 path-canon registration must complete, then one exact bounded E1/E2 R3 envelope must authorize the canonical decision record, sovereign E1 files, standalone E2 files, and terminal sovereign closeout."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Any runtime/provider/persistence, source projection change, standalone work before E1 merge, extraction, protected resource, unrelated workflow, deployment, or cutover work is outside E1."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-E2",
+          "reason": "Materialize and prove the frozen GPT contract in the standalone repository after the sovereign adapter passes.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": "WO-SR-005E-E2",
+      "title": "GPT Standalone Synthetic Contract Parity",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove hash-pinned standalone compatibility with gpt.grounded-context@1.0.0 using only the frozen synthetic corpus.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [{ "id": "WO-SR-005E-E1", "status": "pending" }],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion GPT standalone contract-compat material, synthetic verifier, constrained existing contract-compat job, and terminal sovereign evidence reconciliation"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product source extraction, runtime adoption, providers, models, embeddings, persistence, packages, publication, or ownership cutover"
+        },
+        {
+          "name": "County, PACS, SQL, credentials, secrets, external network or live services, deployment, production, or protected resources"
+        }
+      ],
+      "allowedFiles": [
+        ".github/workflows/suite-ci.yml (contract-compat job only)",
+        "canon/CONTRACT_DEPENDENCY.md",
+        "contract-compat/gpt.grounded-context.v1/manifest.json",
+        "contract-compat/gpt.grounded-context.v1/gpt.grounded-context.v1.schema.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/*.json",
+        "scripts/verify-gpt-grounded-context.mjs",
+        "scripts/verify-gpt-grounded-context.test.mjs",
+        "operations/work-orders/WO-SR-005E-E2-gpt-standalone-synthetic-contract-parity.md",
+        "operations/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md",
+        ".governance/owner-decisions.json (sovereign terminal closeout only)",
+        "docs/brain/workorders/active/WO-SR-005E-E2-gpt-standalone-synthetic-contract-parity.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "terrafusion_os_1.0 runtime and product paths",
+        "terrafusion-gpt src/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "workflow changes outside the existing contract-compat job"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "standalone-contract-parity",
+          "description": "All fourteen frozen hashes match; three accepted fixtures pass; nine fail-closed fixtures reject with identity, vocabulary, ordering, uniqueness, score, and privacy semantics preserved."
+        },
+        {
+          "kind": "authority-closeout",
+          "description": "Exact standalone PR/head/merge and post-merge checks are recorded in sovereign evidence and the bounded E1/E2 authority is consumed."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Standalone GPT verifier tests",
+          "command": "node --test scripts/verify-gpt-grounded-context.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Standalone GPT verifier",
+          "command": "node scripts/verify-gpt-grounded-context.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Frozen source and destination hash parity",
+          "command": "Verify manifest SHA-256 entries against gpt.grounded-context@1.0.0 source artifacts",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Exact destination and sovereign closeout scope",
+          "command": "git diff --check and inspect changed paths in each repository",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Standalone required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "blockers": [
+        {
+          "type": "DEPENDENCY_AND_IMPLEMENTATION_AUTH_REQUIRED",
+          "status": "pending",
+          "description": "E1 must merge and the same exact bounded E1/E2 envelope must remain active."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Any source extraction, runtime/provider/persistence work, package publication, unrelated workflow, deployment, production, protected-resource access, or successor implementation is outside E2."
         }
       ],
       "nextCandidates": []
