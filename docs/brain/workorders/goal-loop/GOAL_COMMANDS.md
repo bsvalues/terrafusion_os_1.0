@@ -50,10 +50,11 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 **Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
-grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design and
-defined `WO-SR-005E-E0` as exact proposed R3 work. E0 requires bounded implementation authority.
-Runtime/provider adoption, adapter parity, extraction, custody or persistence mutation, protected
-data, publication/unrelated workflow changes, and cutover remain gated.
+grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
+`WO-SR-005E-E0` implemented the exact pure unwired boundary with 52 focused synthetic cases. E0's
+bounded R3 authority is consumed. `WO-SR-005E-A3` is ready as R2 reconciliation only.
+Runtime/provider adoption, E1/E2 implementation, extraction, custody or persistence mutation,
+protected data, publication/unrelated workflow changes, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
