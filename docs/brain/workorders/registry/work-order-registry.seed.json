@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-E3",
+  "generatedBy": "WO-SR-005D-A4",
   "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after the R2 GPT bounded-extraction audit found no executable direct-copy source for the Node-only standalone repository and recorded concurrently merged GPT PR #3 as an unratified F1 destination mutation. WO-SR-005D-A4 is the next unrelated same-risk path-canon prerequisite; F1 disposition, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after Dossier A4 registered the exact private shared-checkout identity and classified Dossier PR #2 plus GPT PR #3 as unratified F1 destination mutations. The bounded R2 queue is exhausted; retain/revert disposition, F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7238,7 +7238,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Establish and register the exact local path, remote, default branch, and read-only shared-checkout rule for bsvalues/terrafusion-dossier before any later cross-repository F1 dispatch.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-005D-E3",
@@ -7298,29 +7298,48 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order tooling tests",
           "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs && node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+          "summary": "Registers the exact Dossier repository identity and classifies PR #2 as an unratified F1 destination mutation."
+        }
+      ],
       "stopConditions": [
         {
           "type": "scope_boundary",
           "description": "Path registration may not modify the Dossier checkout, implement F1, extract source, wire runtime behavior, change custody or persistence, access protected resources, publish, deploy, cut over, or retire source."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-F1",
+          "reason": "Dossier PR #2 merged an F1-like destination foundation without matching sovereign authority; exact retain-or-revert disposition is required.",
+          "riskClass": "R3",
+          "blocked": true
+        },
+        {
+          "id": "WO-SR-005E-F1",
+          "reason": "GPT PR #3 remains an unratified F1-like destination foundation requiring exact retain-or-revert disposition.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -7333,7 +7352,68 @@
       },
       "provenance": {
         "createdAt": "2026-07-26T00:00:00Z",
-        "source": "Admitted by portfolio reconciliation after WO-SR-005D-E3 and WO-SR-005E-E3 completed their exact-scope audits.",
+        "source": "Live local and GitHub identity verification at D:/terrafusion-dossier plus comparison of E2 anchor dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf to live main ccdc227812264ec52f4ec506de49693ac91d0a9d.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005D-F1",
+      "title": "Dossier Standalone Evidence-Registry Foundation Disposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Obtain an exact retain-or-revert disposition for the F1-like foundation merged by Dossier PR #2 without matching canonical F1 authority.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-SR-005D-A4",
+          "status": "satisfied",
+          "evidence": [
+            "A4 registered the exact Dossier path canon and recorded PR #2 at merge ccdc227812264ec52f4ec506de49693ac91d0a9d as an unratified destination mutation."
+          ]
+        }
+      ],
+      "allowedSystems": [],
+      "blockedSystems": [
+        {
+          "name": "Dossier F1 retain, revert, wiring, extension, runtime adoption, custody, persistence, publication, deployment, cutover, and source retirement pending exact owner disposition"
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [
+        "bsvalues/terrafusion-dossier/**",
+        "backend/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact decision to retain as governed F1 or revert Dossier PR #2, including the five changed paths, validation, rollback, and terminal condition."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "No active owner decision or sovereign authority record covers Dossier F1; no mutation may proceed."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Observed destination state only. This record grants no retain, revert, remediation, or successor authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "WO-SR-005D-A4 live Dossier identity verification, PR #2 comparison, and sovereign owner-decision search.",
         "schemaVersion": "0.1.0"
       }
     },
