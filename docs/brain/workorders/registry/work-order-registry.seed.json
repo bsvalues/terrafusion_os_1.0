@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-E2",
+  "generatedBy": "WO-SR-005D-E3",
   "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after the bounded GPT E1/E2 adapter and standalone synthetic parity envelope completed and was consumed. Portfolio reconciliation is current; extraction, runtime adoption, providers, F1, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after the R2 Dossier bounded-extraction audit found no safe direct-copy source and proposed a separately gated build-fresh F1 candidate. WO-SR-005E-E3 is the next same-risk audit; extraction, runtime adoption, providers, F1, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7100,6 +7100,231 @@
       "provenance": {
         "createdAt": "2026-07-23T00:00:00Z",
         "source": "Portfolio reconciliation computed against the current registry, queue, program playbooks, cross-program dependency graph, and open-PR state after the WO-SR-005E-I contract-freeze cohort completion.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005E-E3",
+      "title": "GPT Bounded Extraction Scope Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Decide whether committed sovereign GPT grounded-context source can be directly extracted into bsvalues/terrafusion-gpt or must remain a build-fresh standalone foundation against gpt.grounded-context@1.0.0.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-005E-E1",
+          "status": "satisfied",
+          "evidence": [
+            "Sovereign PR #1367 implemented the pure unwired GPT grounded-context adapter with 37 focused cases and no runtime consumer."
+          ]
+        },
+        {
+          "id": "WO-SR-005E-E2",
+          "status": "satisfied",
+          "evidence": [
+            "GPT PR #1 and Unicode remediation PR #2 completed 13 mirrored hash pins, three accepted fixtures, nine fail-closed fixtures, 13 verifier tests, and required checks."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "GPT source, frozen contracts, providers, models, embeddings, retrieval, persistence, runtime, protected resources, publication, deployment, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-005E-E3-gpt-bounded-extraction-scope-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E3-GPT-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "description": "Pin current sovereign and standalone anchors, verify the frozen GPT hashes, classify source candidates, prove the direct-copy count, and record the exact next boundary."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs && node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "implementation-authority",
+          "description": "The R2 audit may not implement F1, extract source, wire runtime behavior, invoke providers/models/embeddings, access persistence or protected resources, publish, deploy, cut over, or retire source."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The ratified five-suite program and standing operator authority cover this dependency-cleared R2 read-only source classification only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "Admitted by portfolio reconciliation after GPT E1/E2 closeout and the analogous Dossier E3 audit.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005D-E3",
+      "title": "Dossier Bounded Extraction Scope Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Decide whether committed sovereign Dossier evidence-registry source can be directly extracted into bsvalues/terrafusion-dossier or must be built fresh against dossier.evidence-registry-read@1.0.0.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005D-E2",
+          "status": "satisfied",
+          "evidence": [
+            "Dossier E1 implemented a pure unwired sovereign adapter with 31 targeted tests; Dossier E2 merged 12 hash pins, three accepted fixtures, eight fail-closed fixtures, and required checks at dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Dossier source, frozen contracts, standalone repository implementation, custody, persistence, runtime, providers, protected resources, publication, deployment, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-005D-E3-dossier-bounded-extraction-scope-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "description": "Pin current sovereign and standalone anchors, verify all 13 frozen hashes, classify Dossier source candidates, prove the direct-copy count, and record the later build-fresh boundary."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+          "description": "PASS_NO_DIRECT_EXTRACTION verdict, 13 hash-verified frozen files, zero eligible direct-copy candidates, ownership/provenance decision, proposed later F1 build-fresh allowlist, and an explicit HOLD on F1 dispatch until Dossier path canon is registered."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "implementation-authority",
+          "description": "This R2 audit does not authorize F1, source extraction, runtime adoption, custody or persistence changes, protected-resource access, publication, deployment, cutover, or source retirement."
+        }
+      ],
+      "nextCandidates": ["WO-SR-005E-E3", "WO-SR-005D-A4"],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The ratified five-suite program and standing operator authority cover this R2 read-only source classification and exact governance allowlist; no implementation or protected-resource authority is created."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "Current-base read-only classification of sovereign Dossier source against dossier.evidence-registry-read@1.0.0 and the standalone parity anchor dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf.",
         "schemaVersion": "0.1.0"
       }
     },

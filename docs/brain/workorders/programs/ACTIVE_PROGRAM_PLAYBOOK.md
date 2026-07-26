@@ -99,8 +99,8 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active between cohorts |
-| Current | `WO-SR-005E-E2` complete; E1/E2 envelope consumed |
-| Next | Portfolio reconciliation; no successor implementation admitted |
+| Current | `WO-SR-005D-E3` complete; no direct-copy Dossier slice |
+| Next | `WO-SR-005E-E3` GPT bounded extraction scope audit (R2) |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -131,6 +131,10 @@ evidence-registry read boundary and WO-SR-005D-I froze it. WO-SR-005D-A then def
 unwired sovereign adapter and standalone synthetic parity sequence while preserving custody,
 persistence, extraction, and runtime blocks. The bounded E1/E2 R3 envelope completed the pure
 unwired adapter and standalone hash-pinned parity proof and is now consumed.
+WO-SR-005D-E3 then audited the exact sovereign source boundary and found zero direct-copy
+candidates: the controller, entity, adapter dependencies, frontend services, and Workbench surfaces
+remain coupled to persistence, custody, auth, contract, write-lane, trace, or shell composition.
+It proposed a separately gated build-fresh F1 candidate without implementing or extracting source.
 WO-SR-005E-C defined the exact GPT grounded-context boundary and WO-SR-005E-I froze it.
 WO-SR-005E-A then found that the committed RAG result drops the county, dataset, trace,
 authorization, and source-to-chunk identity required for safe adaptation. WO-SR-005E-A2 found no
@@ -595,8 +599,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-E2` complete; E1/E2 envelope consumed |
-| Next WO | Portfolio reconciliation; no successor implementation admitted |
+| Current WO | `WO-SR-005D-E3` complete; no direct-copy Dossier slice |
+| Next WO | `WO-SR-005E-E3` GPT bounded extraction scope audit (R2) |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
