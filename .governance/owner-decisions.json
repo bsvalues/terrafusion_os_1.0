@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-005E-E1 -> WO-SR-005E-E2",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-sequential-gpt-grounded-context-adapter-parity",
       "effective_base_sha": "f996ca5cf30d23e998bcbcd940eddfbf53c7af43",
       "scope_source": "WO-SR-005E-A3 exact E1/E2 allowlists and the owner authorization recorded on 2026-07-25",
@@ -70,7 +70,17 @@
         "e1_target": "WO-SR-005E-E1",
         "e2_target": "WO-SR-005E-E2",
         "authority_consumed_on_verified_terminal_closeout": true,
-        "evidence": "docs/brain/workorders/evidence/WO-SR-005E-E1-GPT-GROUNDED-CONTEXT-SOVEREIGN-ADAPTER.md"
+        "e1_pr": 1367,
+        "e1_head": "87a2d7f8c53b10f986921483e5d8ec0385811ad8",
+        "e1_merge_commit": "3b588b231098e7e4ce25056a4025e6f10ffbd0d6",
+        "e2_repository": "bsvalues/terrafusion-gpt",
+        "e2_pr": 1,
+        "e2_head": "995c87c62a7b529240404b7cb67bf8fddc4ef3f4",
+        "e2_merge_commit": "2ed58e65cd4928a2a94f1cecf8010facc1d4edb1",
+        "e2_remediation_pr": 2,
+        "e2_remediation_head": "60ab8bd24303f76e2c00869c7b184341d5962fc4",
+        "e2_remediation_merge_commit": "49cd4adca8d353de45147082cf9946f18ead0c77",
+        "evidence": "docs/brain/workorders/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
       }
     },
     {

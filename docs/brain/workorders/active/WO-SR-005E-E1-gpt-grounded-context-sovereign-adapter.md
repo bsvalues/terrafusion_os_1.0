@@ -5,9 +5,9 @@
 | Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded implementation |
-| Dependency | WO-SR-005E-A4 complete; sequential E1/E2 authority active |
+| Dependency | WO-SR-005E-A4 complete; sequential E1/E2 authority consumed |
 | Result | GPT_GROUNDED_CONTEXT_SOVEREIGN_ADAPTER_COMPLETE |
-| Next | WO-SR-005E-E2 - GPT Standalone Synthetic Contract Parity |
+| Next | E2 complete; portfolio reconciliation |
 
 ## Objective
 
@@ -37,12 +37,11 @@ service, endpoint, or runtime-consumer surface.
 - Work Order query and tooling tests: required before merge;
 - exact allowlist and `git diff --check`: required before merge.
 
-## Next Boundary
+## Terminal State
 
-After verified E1 merge, the same bounded sequential authority activates E2 in
-`bsvalues/terrafusion-gpt`. E2 may prove only standalone synthetic contract compatibility. It may
-not extract source, adopt runtime behavior, invoke providers, access persistence, publish packages,
-deploy, or activate a successor.
+E2 and its Unicode schema-length remediation are merged in `bsvalues/terrafusion-gpt`. The bounded
+sequential authority is consumed. No source extraction, runtime adoption, provider, persistence,
+package, deployment, F1, or successor implementation is admitted.
 
 ## Stop Type
 

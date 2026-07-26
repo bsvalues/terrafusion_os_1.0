@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-E1",
+  "generatedBy": "WO-SR-005E-E2",
   "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after the bounded GPT E1 sovereign adapter completed and E2 became the authorized next slice. Extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after the bounded GPT E1/E2 adapter and standalone synthetic parity envelope completed and was consumed. Portfolio reconciliation is current; extraction, runtime adoption, providers, F1, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -6877,7 +6877,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove hash-pinned standalone compatibility with gpt.grounded-context@1.0.0 using only the frozen synthetic corpus.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -6897,7 +6897,18 @@
         "canon/CONTRACT_DEPENDENCY.md",
         "contract-compat/gpt.grounded-context.v1/manifest.json",
         "contract-compat/gpt.grounded-context.v1/gpt.grounded-context.v1.schema.json",
-        "contract-compat/gpt.grounded-context.v1/fixtures/*.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/citation-without-source.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/county-mismatch.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/dataset-mismatch.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/denied-dataset.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/duplicate-citation.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/full-text-or-provider-leak.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/grounded-two-citations.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/no-relevant-context.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/raw-pii-query.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/trace-mismatch.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/unknown-status.synthetic.json",
+        "contract-compat/gpt.grounded-context.v1/fixtures/unstable-order.synthetic.json",
         "scripts/verify-gpt-grounded-context.mjs",
         "scripts/verify-gpt-grounded-context.test.mjs",
         "operations/work-orders/WO-SR-005E-E2-gpt-standalone-synthetic-contract-parity.md",
@@ -6935,39 +6946,48 @@
           "name": "Standalone GPT verifier tests",
           "command": "node --test scripts/verify-gpt-grounded-context.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Standalone GPT verifier",
           "command": "node scripts/verify-gpt-grounded-context.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Frozen source and destination hash parity",
           "command": "Verify manifest SHA-256 entries against gpt.grounded-context@1.0.0 source artifacts",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Exact destination and sovereign closeout scope",
           "command": "git diff --check and inspect changed paths in each repository",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Standalone required checks",
           "command": "suite-ci, contract-compat, governance-gate",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "standalone-implementation-evidence",
+          "path": "bsvalues/terrafusion-gpt:operations/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+        },
+        {
+          "kind": "sovereign-closeout-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+        }
+      ],
       "blockers": [
         {
           "type": "DEPENDENCY_AND_IMPLEMENTATION_AUTH_REQUIRED",
           "status": "resolved",
-          "description": "E1 completes on this merge and the same exact bounded E1/E2 envelope remains active for standalone parity."
+          "description": "E1 merged in sovereign PR #1367 and E2 merged in GPT PR #1; the exact bounded E1/E2 envelope is completed and consumed."
         }
       ],
       "stopConditions": [
