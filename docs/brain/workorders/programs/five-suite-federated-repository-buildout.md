@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; GPT E1/E2 complete and authority consumed
+**Status:** Active between cohorts; GPT E3 complete, Dossier path-canon reconciliation next
 
 ## Ratified topology
 
@@ -64,6 +64,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-A4 | Register the standalone GPT repository path canon | Complete R2; exact private checkout registered, no destination content change |
 | WO-SR-005E-E1 | Implement the pure unwired GPT grounded-context adapter | Complete R3; 37 focused cases, pure and unwired |
 | WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Complete; GPT PR #1 plus PR #2 remediation, 13 mirrored hashes, 13 verifier tests |
+| WO-SR-005E-E3 | Audit the exact bounded GPT extraction scope | Complete; no executable direct-copy slice; build-fresh Node F1 candidate proposed |
+| WO-SR-005D-A4 | Register the standalone Dossier repository path canon | Next R2 prerequisite before any later Dossier F1 dispatch |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -137,6 +139,9 @@ sequence but found `bsvalues/terrafusion-gpt` absent from the canonical path reg
 WO-SR-005E-A4 established `D:\terrafusion-gpt` as the clean read-only canonical checkout at exact
   private `origin/main`. The exact sequential E1/E2 R3 envelope completed the pure unwired
   public-result adapter in sovereign PR #1367 and the hash-pinned standalone parity proof in GPT PR
-  #1. GPT PR #2 remediated Unicode schema-length parity. The envelope is consumed. Extraction,
+  #1. GPT PR #2 remediated Unicode schema-length parity. The envelope is consumed. WO-SR-005E-E3
+confirmed that the pure E0 C# source cannot become an executable capability by direct copy into the
+Node-only standalone repository and proposed a separately gated build-fresh Node F1 candidate.
+Extraction,
 providers, persistence, runtime
 adoption, packages, deployment, cutover, and successor implementation remain unauthorized.
