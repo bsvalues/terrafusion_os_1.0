@@ -147,8 +147,10 @@ repository absent from the canonical path register. `WO-SR-005E-A4` established 
   completed the pure unwired adapter in sovereign PR #1367 and the hash-pinned standalone parity
   corpus in GPT PR #1. GPT PR #2 remediated Unicode schema-length parity. The envelope is consumed.
 WO-SR-005E-E3 then confirmed that E0 is pure but cannot be copied as an executable capability into
-the Node-only standalone repository without adding a new `.NET` project and workflow surface. It
-proposed a separately gated build-fresh Node F1 candidate. Dossier path canon is the next bounded R2
+the Node-only standalone repository without adding a new `.NET` project and workflow surface.
+Exact-head assurance found GPT PR #3 had concurrently merged a build-fresh F1-like module without a
+matching canonical F1 authority record. That destination mutation is not accepted as capability and
+requires later exact owner disposition. Dossier path canon remains the next unrelated bounded R2
 prerequisite.
 Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.

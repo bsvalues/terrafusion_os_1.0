@@ -7,7 +7,7 @@
 | Risk | R2 read-only source classification and governance evidence |
 | Dependency | `WO-SR-005E-E1` and `WO-SR-005E-E2` complete; `gpt.grounded-context@1.0.0` frozen |
 | Authority | Ratified five-suite program plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY` |
-| Result | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION` - build fresh; no source can be copied into the current standalone build surface as an executable capability |
+| Result | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1` |
 
 ## Objective
 
@@ -39,7 +39,7 @@ candidate without implementing it.
 
 ## Result
 
-`PASS_NO_EXECUTABLE_DIRECT_EXTRACTION`. The E0 projection is pure, deterministic, provider-neutral,
+`PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`. The E0 projection is pure, deterministic, provider-neutral,
 and unwired, but it is C# source owned by the sovereign `.NET` solution. The standalone GPT
 repository has a Node-based contract verifier and no `.NET` project, package, or compile gate.
 Copying E0 there would create inert source; making it executable would require new project and
@@ -47,9 +47,11 @@ workflow surfaces outside this audit. The E1 adapter additionally imports the so
 Existing RAG services cross provider, embedding, persistence, HTTP, DI, controller, or runtime
 boundaries.
 
-The later candidate is a build-fresh, offline, unwired Node projection in
-`bsvalues/terrafusion-gpt` that consumes only explicit host-proven assertions and the already
-mirrored hash-pinned schema and synthetic corpus. This Work Order does not authorize it.
+During exact-head assurance, live GPT PR #3 was found merged with a build-fresh, offline Node
+foundation matching the later F1 shape. No active owner decision, issue, or sovereign authority
+record grants GPT F1; the recorded GPT envelope ended at E2 and explicitly denied F1. The code is
+therefore observed but not accepted as governed TerraFusion capability. This audit does not
+authorize retaining, reverting, wiring, or extending it.
 
 ## Validation
 

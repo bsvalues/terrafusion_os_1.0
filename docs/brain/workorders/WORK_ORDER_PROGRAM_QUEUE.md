@@ -29,9 +29,11 @@ sovereign PR #1367 and E2 in GPT PR #1. GPT PR #2 remediated Unicode schema-leng
 unwired adapter has 37 focused cases; the standalone
 parity harness has 13 tests, 13 mirrored hash-pinned artifacts, three accepted fixtures, and nine
 fail-closed fixtures. The envelope is consumed. WO-SR-005E-E3 then found one pure sovereign source
-candidate but no executable direct-copy slice for the Node-only standalone repository, and proposed
-a separately gated build-fresh F1 foundation. Portfolio reconciliation advances to the bounded R2
-Dossier path-canon prerequisite.
+candidate but no executable direct-copy slice for the Node-only standalone repository. Exact-head
+assurance also found GPT PR #3 had concurrently merged an F1-like foundation without matching
+canonical F1 authority. That destination change is observed but not accepted as TerraFusion
+capability. Portfolio reconciliation advances to the unrelated bounded R2 Dossier path-canon
+prerequisite.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 
@@ -87,12 +89,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
 | WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 37 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
 | WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | DONE / R3 | GPT PR #1 plus PR #2 remediation; 13/13 mirrored hashes, 3 accepted and 9 fail-closed fixtures, 13 verifier tests, all required checks passed |
-| WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION`; E0 is pure C# but the standalone repository is Node-only; build-fresh F1 candidate proposed; no source or destination changed |
+| WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`; GPT PR #3 drift recorded without accepting capability |
+| WO-SR-005E-F1 GPT Standalone Grounded-Context Foundation | BLOCKED / OWNER DISPOSITION | GPT PR #3 merged at `614f6293` without matching canonical F1 authority; retain/revert/wire/extend are not authorized |
 | WO-SR-005D-A4 Dossier Standalone Repository Path Canon Registration | NEXT / R2 | Register the exact private Dossier checkout identity before any later cross-repository F1 dispatch |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | E3 COMPLETE - NO DIRECT COPY | Contract, unwired adapter, and standalone parity proven; E3 found no safe direct-copy source and proposed a separately gated build-fresh F1 candidate |
-| WO-SR-005E GPT Bounded Extraction | E3 COMPLETE - NO EXECUTABLE DIRECT COPY | E3 found the pure C# projection cannot become an executable Node-suite capability by direct copy; a separately gated build-fresh F1 candidate remains unauthorized |
+| WO-SR-005E GPT Bounded Extraction | E3 COMPLETE - F1 INCIDENT OPEN | E3 found no executable direct-copy slice; concurrent GPT PR #3 is unratified and requires later exact disposition |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
