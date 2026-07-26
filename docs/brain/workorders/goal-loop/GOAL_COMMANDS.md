@@ -55,8 +55,9 @@ grounded-context contract. `WO-SR-005E-A2` completed the source-identity project
 bounded R3 authority is consumed. `WO-SR-005E-A3` completed R2 reconciliation and defined an exact
 pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` registered the clean
   read-only `D:\terrafusion-gpt` checkout. The exact sequential R3 envelope completed
-  `WO-SR-005E-E1` in sovereign PR #1367 and `WO-SR-005E-E2` in GPT PR #1, then was consumed.
-  Portfolio reconciliation is current. Runtime/provider adoption, extraction, custody or persistence mutation,
+  `WO-SR-005E-E1` in sovereign PR #1367 and `WO-SR-005E-E2` in GPT PR #1. GPT PR #2 remediated
+  Unicode schema-length parity; the envelope was then consumed. Portfolio reconciliation is current.
+Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`

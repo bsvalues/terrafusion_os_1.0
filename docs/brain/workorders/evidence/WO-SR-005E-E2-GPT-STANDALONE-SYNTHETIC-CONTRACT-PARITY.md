@@ -46,6 +46,8 @@ protected-resource, cutover, or successor implementation.
 
 ## Rollback
 
-Revert PR #1367 and GPT PRs #2 and #1 independently, then revert this closeout. Neither slice
-introduced a runtime consumer, so rollback requires no runtime, data, provider, package, deployment,
-or production mutation.
+Revert GPT PR #2 before GPT PR #1 so the remediation is removed before its verifier base, then
+revert sovereign PR #1367 before reverting this closeout record. This reverse dependency order
+avoids retaining remediation for a removed verifier or parity evidence for a removed adapter.
+Neither slice introduced a runtime consumer, so rollback requires no runtime, data, provider,
+package, deployment, or production mutation.
