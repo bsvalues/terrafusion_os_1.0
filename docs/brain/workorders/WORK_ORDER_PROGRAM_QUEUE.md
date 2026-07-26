@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-25
-**Authority:** OWNER-SR-005E-E1-E2-R3-GPT-GROUNDED-CONTEXT-20260725
+**Date:** 2026-07-26
+**Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout remains active between GPT cohorts.
+The Five-Suite Federated Repository Buildout remains active between cohorts.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
 Dossier E1/E2 envelope is complete and consumed. WO-SR-005E-A proved that the committed GPT/RAG
@@ -24,9 +24,11 @@ WO-SR-005E-E0 completed the exact pure unwired projection with 52 focused synthe
 runtime consumer. Its bounded R3 authority is consumed. WO-SR-005E-A3 bounded the technical E1/E2
 sequence and identified missing GPT path canon. WO-SR-005E-A4 established the clean read-only
 `D:\terrafusion-gpt` checkout and registered its exact private repository identity at
-`10295e9b534cce7ba9d428a91fb966bd58963c77`. The exact sequential R3 envelope is active, and
-WO-SR-005E-E1 has completed the pure unwired adapter with 37 focused cases. E2 is now the authorized
-next slice after the E1 merge is verified.
+`10295e9b534cce7ba9d428a91fb966bd58963c77`. The exact sequential R3 envelope completed E1 in
+sovereign PR #1367 and E2 in GPT PR #1. GPT PR #2 remediated Unicode schema-length parity. The pure
+unwired adapter has 37 focused cases; the standalone
+parity harness has 13 tests, 13 mirrored hash-pinned artifacts, three accepted fixtures, and nine
+fail-closed fixtures. The envelope is consumed and portfolio reconciliation is current.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 
@@ -80,11 +82,11 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-A3 GPT Adapter and Standalone Parity Reconciliation | DONE / DECOMPOSITION_REQUIRED | Technical E1/E2 scope bounded; GPT repository path canon missing |
 | WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
 | WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 37 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
-| WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | AUTHORIZED NEXT / R3 | Sequential envelope active; starts only after verified E1 merge |
+| WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | DONE / R3 | GPT PR #1 plus PR #2 remediation; 13/13 mirrored hashes, 3 accepted and 9 fail-closed fixtures, 13 verifier tests, all required checks passed |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | E1/E2 COMPLETE / BETWEEN COHORTS | Contract, unwired adapter, and standalone parity proven; extraction and custody-safe runtime adoption remain unproven and unauthorized |
-| WO-SR-005E GPT Bounded Extraction | E1 COMPLETE / E2 NEXT | Pure sovereign adapter complete; standalone synthetic parity is next; extraction and runtime adoption remain unauthorized |
+| WO-SR-005E GPT Bounded Extraction | E1/E2 COMPLETE / BETWEEN COHORTS | Pure sovereign adapter and standalone synthetic parity complete; envelope consumed; extraction, providers, runtime adoption, F1, publication, and cutover remain unauthorized |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
