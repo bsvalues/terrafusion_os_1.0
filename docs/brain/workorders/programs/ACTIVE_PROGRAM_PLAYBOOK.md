@@ -140,7 +140,7 @@ runtime consumer. Its bounded R3 authority is consumed. `WO-SR-005E-A3` then pro
 unwired E1 adapter and hash-pinned standalone E2 parity sequence, but found the standalone GPT
 repository absent from the canonical path register. `WO-SR-005E-A4` established and registered the
 clean read-only `D:\terrafusion-gpt` checkout at exact `origin/main`. The exact sequential R3
-envelope is active. `WO-SR-005E-E1` completed the pure unwired adapter with 36 focused cases and no
+envelope is active. `WO-SR-005E-E1` completed the pure unwired adapter with 37 focused cases and no
 runtime consumer. `WO-SR-005E-E2` is next after verified E1 merge. Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.
 

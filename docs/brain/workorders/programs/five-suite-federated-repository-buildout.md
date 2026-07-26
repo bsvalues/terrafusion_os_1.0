@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between GPT cohorts; A4 path canon complete
+**Status:** Active in GPT E1/E2 cohort; E1 complete and E2 authorized next
 
 ## Ratified topology
 
@@ -61,7 +61,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-E0 | Build the GPT grounded source-identity projection foundation | Complete; 52 focused cases, pure and unwired |
 | WO-SR-005E-A3 | Reconcile the GPT adapter and standalone parity boundaries | Complete; technical sequence bounded, path canon missing |
 | WO-SR-005E-A4 | Register the standalone GPT repository path canon | Complete R2; exact private checkout registered, no destination content change |
-| WO-SR-005E-E1 | Implement the pure unwired GPT grounded-context adapter | Complete R3; 36 focused cases, pure and unwired |
+| WO-SR-005E-E1 | Implement the pure unwired GPT grounded-context adapter | Complete R3; 37 focused cases, pure and unwired |
 | WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Authorized next under the active sequential envelope after verified E1 merge |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
@@ -133,6 +133,6 @@ consumed. WO-SR-005E-A3 then defined an exact pure adapter and hash-pinned stand
 sequence but found `bsvalues/terrafusion-gpt` absent from the canonical path register.
 WO-SR-005E-A4 established `D:\terrafusion-gpt` as the clean read-only canonical checkout at exact
 private `origin/main`. The exact sequential E1/E2 R3 envelope is active. WO-SR-005E-E1 completed the
-pure unwired public-result adapter with 36 focused cases and no runtime consumer. E2 is the next
+pure unwired public-result adapter with 37 focused cases and no runtime consumer. E2 is the next
 authorized slice after the E1 merge is verified. Extraction, providers, persistence, runtime
 adoption, packages, deployment, cutover, and successor implementation remain unauthorized.

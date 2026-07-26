@@ -49,7 +49,7 @@ The focused suite covers:
 - duplicate source/chunk pairs; and
 - score and tie-order violations rejected without reranking.
 
-Focused result: 36 passed, 0 failed, 0 skipped.
+Focused result: 37 passed, 0 failed, 0 skipped.
 
 ## Frozen Contract Proof
 
@@ -64,7 +64,7 @@ Both hashes remain unchanged from A3.
 
 - restore/build/test artifacts redirected process-locally to `D:\tf-build\sr-005e-e1`;
 - canonical backend build: PASS, 0 warnings and 0 errors;
-- focused adapter tests: PASS, 36/36;
+- focused adapter tests: PASS, 37/37;
 - frozen contract hashes: PASS;
 - Work Order query: PASS; E1 complete and E2 correctly remains mechanically protected at R3;
 - Work Order tooling tests: PASS, 46/46;

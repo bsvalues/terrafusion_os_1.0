@@ -275,6 +275,24 @@ public sealed class GptGroundedContextAdapterTests
     }
 
     [Fact]
+    public void Map_RejectsScoreConversionCollisionThatInvalidatesEmittedOrdering()
+    {
+        var higherScore = 0.9;
+        var lowerScore = Math.BitDecrement(higherScore);
+        ((decimal)higherScore).Should().Be((decimal)lowerScore);
+
+        var action = () => GptGroundedContextAdapter.Map(CreateResult(
+            status: "GROUNDED",
+            candidates:
+            [
+                Candidate("source-z", "chunk-z", score: higherScore),
+                Candidate("source-a", "chunk-a", score: lowerScore),
+            ]));
+
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
     public void Map_HasOnlyTheCompletedE0ResultAsInput()
     {
         var method = typeof(GptGroundedContextAdapter).GetMethod(nameof(GptGroundedContextAdapter.Map));

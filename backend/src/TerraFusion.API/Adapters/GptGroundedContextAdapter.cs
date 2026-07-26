@@ -39,7 +39,7 @@ public static class GptGroundedContextAdapter
 
         var citations = new List<GptGroundedCitation>(source.Candidates.Count);
         var identities = new HashSet<(string SourceId, string ChunkId)>();
-        GptGroundedSourceCandidate? previous = null;
+        GptGroundedCitation? previous = null;
 
         foreach (var candidate in source.Candidates)
         {
@@ -58,14 +58,7 @@ public static class GptGroundedContextAdapter
                     nameof(source));
             }
 
-            if (previous is not null && CompareCandidates(previous, candidate) > 0)
-            {
-                throw new ArgumentException(
-                    "Source candidates must already be in canonical order.",
-                    nameof(source));
-            }
-
-            citations.Add(new GptGroundedCitation
+            var citation = new GptGroundedCitation
             {
                 SourceId = candidate.SourceId,
                 ChunkId = candidate.ChunkId,
@@ -73,8 +66,17 @@ public static class GptGroundedContextAdapter
                 Excerpt = candidate.Excerpt,
                 Score = ConvertScore(candidate.Score),
                 SourceTitle = candidate.SourceTitle,
-            });
-            previous = candidate;
+            };
+
+            if (previous is not null && CompareCitations(previous, citation) > 0)
+            {
+                throw new ArgumentException(
+                    "Source candidates must remain in canonical order after score conversion.",
+                    nameof(source));
+            }
+
+            citations.Add(citation);
+            previous = citation;
         }
 
         return new GptGroundedContextResult
@@ -205,9 +207,9 @@ public static class GptGroundedContextAdapter
         }
     }
 
-    private static int CompareCandidates(
-        GptGroundedSourceCandidate left,
-        GptGroundedSourceCandidate right)
+    private static int CompareCitations(
+        GptGroundedCitation left,
+        GptGroundedCitation right)
     {
         var score = right.Score.CompareTo(left.Score);
         if (score != 0)

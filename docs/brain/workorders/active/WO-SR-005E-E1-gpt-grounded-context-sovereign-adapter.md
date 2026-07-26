@@ -23,7 +23,7 @@ unwired adapter.
 - all three frozen result states and all five denial codes;
 - fail-closed state/cardinality, identity, text, index, score, duplicate, and ordering validation;
 - rejection of shuffled inputs instead of silent reranking; and
-- 36 focused synthetic cases.
+- 37 focused synthetic cases.
 
 The adapter has one input: the completed E0 result. It has no request query, retrieval,
 authorization, provider, model, embedding, database, persistence, HTTP, logging, DI, controller,
@@ -31,7 +31,7 @@ service, endpoint, or runtime-consumer surface.
 
 ## Validation
 
-- focused adapter tests: PASS, 36/36;
+- focused adapter tests: PASS, 37/37;
 - canonical backend build: PASS, 0 warnings and 0 errors;
 - frozen DTO and schema hashes: unchanged;
 - Work Order query and tooling tests: required before merge;

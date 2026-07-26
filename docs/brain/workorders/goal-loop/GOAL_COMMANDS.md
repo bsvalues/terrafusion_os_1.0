@@ -55,7 +55,7 @@ grounded-context contract. `WO-SR-005E-A2` completed the source-identity project
 bounded R3 authority is consumed. `WO-SR-005E-A3` completed R2 reconciliation and defined an exact
 pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` registered the clean
 read-only `D:\terrafusion-gpt` checkout. The exact sequential R3 envelope is active, and
-`WO-SR-005E-E1` completed the pure unwired adapter with 36 focused cases. `WO-SR-005E-E2` is next
+`WO-SR-005E-E1` completed the pure unwired adapter with 37 focused cases. `WO-SR-005E-E2` is next
 after verified E1 merge. Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 

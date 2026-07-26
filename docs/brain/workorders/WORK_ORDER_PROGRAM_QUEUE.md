@@ -25,7 +25,7 @@ runtime consumer. Its bounded R3 authority is consumed. WO-SR-005E-A3 bounded th
 sequence and identified missing GPT path canon. WO-SR-005E-A4 established the clean read-only
 `D:\terrafusion-gpt` checkout and registered its exact private repository identity at
 `10295e9b534cce7ba9d428a91fb966bd58963c77`. The exact sequential R3 envelope is active, and
-WO-SR-005E-E1 has completed the pure unwired adapter with 36 focused cases. E2 is now the authorized
+WO-SR-005E-E1 has completed the pure unwired adapter with 37 focused cases. E2 is now the authorized
 next slice after the E1 merge is verified.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
@@ -79,7 +79,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-E0 GPT Grounded Source Identity Projection Foundation | DONE | Build-fresh pure validation and ordering; 52 focused cases; no runtime/provider consumer |
 | WO-SR-005E-A3 GPT Adapter and Standalone Parity Reconciliation | DONE / DECOMPOSITION_REQUIRED | Technical E1/E2 scope bounded; GPT repository path canon missing |
 | WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
-| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 36 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
+| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 37 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
 | WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | AUTHORIZED NEXT / R3 | Sequential envelope active; starts only after verified E1 merge |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
