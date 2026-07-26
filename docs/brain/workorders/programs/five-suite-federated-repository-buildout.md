@@ -53,6 +53,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-A | Prepare the Dossier adapter and standalone parity boundary | Complete; implementation-ready two-repository sequence |
 | WO-SR-005D-E1 | Implement the pure unwired sovereign evidence-registry adapter | Complete; 31 targeted tests and no runtime consumer |
 | WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Complete; Dossier PR #1 / merge `dcd8a1a3`, all required checks passed |
+| WO-SR-005D-E3 | Audit the exact bounded Dossier extraction scope | Complete; no safe direct-copy slice found; build-fresh F1 candidate proposed |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
@@ -123,7 +124,9 @@ contract parity, selected an already-materialized county/parcel page as the pure
 defined an unwired sovereign adapter followed by standalone synthetic parity. The owner activated
 the bounded E1/E2 R3 envelope, and E1 implemented the pure adapter with fail-closed synthetic proof
 and no runtime consumer. E2 merged the hash-pinned standalone parity proof in Dossier PR #1. The
-E1/E2 envelope is complete and consumed. WO-SR-005E-P selected grounded context while proving the
+E1/E2 envelope is complete and consumed. WO-SR-005D-E3 then confirmed that no sovereign Dossier
+source has a safe direct-copy boundary and proposed a separately gated build-fresh F1 candidate.
+WO-SR-005E-P selected grounded context while proving the
 current adapter is not parity-safe; WO-SR-005E-C defined the exact contract and WO-SR-005E-I froze
 it. WO-SR-005E-A then proved that the committed RAG result cannot preserve the frozen county,
 dataset, trace, authorization, and source-to-chunk identity. WO-SR-005E-A2 found no safe existing
