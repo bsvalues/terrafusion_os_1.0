@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2026-07-25
-**Authority:** WO-SR-005E-A4 standing R2 path-canon authority
+**Authority:** OWNER-SR-005E-E1-E2-R3-GPT-GROUNDED-CONTEXT-20260725
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -24,8 +24,9 @@ WO-SR-005E-E0 completed the exact pure unwired projection with 52 focused synthe
 runtime consumer. Its bounded R3 authority is consumed. WO-SR-005E-A3 bounded the technical E1/E2
 sequence and identified missing GPT path canon. WO-SR-005E-A4 established the clean read-only
 `D:\terrafusion-gpt` checkout and registered its exact private repository identity at
-`10295e9b534cce7ba9d428a91fb966bd58963c77`. E1 is now dependency-cleared but remains proposed behind
-one exact bounded R3 E1/E2 authority envelope; E2 remains dependency-blocked on E1.
+`10295e9b534cce7ba9d428a91fb966bd58963c77`. The exact sequential R3 envelope is active, and
+WO-SR-005E-E1 has completed the pure unwired adapter with 37 focused cases. E2 is now the authorized
+next slice after the E1 merge is verified.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 
@@ -78,12 +79,12 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-E0 GPT Grounded Source Identity Projection Foundation | DONE | Build-fresh pure validation and ordering; 52 focused cases; no runtime/provider consumer |
 | WO-SR-005E-A3 GPT Adapter and Standalone Parity Reconciliation | DONE / DECOMPOSITION_REQUIRED | Technical E1/E2 scope bounded; GPT repository path canon missing |
 | WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
-| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | PROPOSED / R3 BLOCKED | Dependency cleared; exact E1/E2 owner envelope required; no implementation authority currently active |
-| WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | PROPOSED / DEPENDENCY BLOCKED | Depends on E1 and the same future exact envelope |
+| WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 37 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
+| WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | AUTHORIZED NEXT / R3 | Sequential envelope active; starts only after verified E1 merge |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | E1/E2 COMPLETE / BETWEEN COHORTS | Contract, unwired adapter, and standalone parity proven; extraction and custody-safe runtime adoption remain unproven and unauthorized |
-| WO-SR-005E GPT Bounded Extraction | A4 COMPLETE / BETWEEN COHORTS | Path canon and technical E1/E2 boundaries are complete; exact R3 implementation authority remains required |
+| WO-SR-005E GPT Bounded Extraction | E1 COMPLETE / E2 NEXT | Pure sovereign adapter complete; standalone synthetic parity is next; extraction and runtime adoption remain unauthorized |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

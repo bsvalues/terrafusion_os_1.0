@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005C-E2",
-  "generatedAt": "2026-07-23T00:00:00Z",
-  "description": "Five-suite registry after the bounded Dais E1/E2 R3 adapter and standalone synthetic parity envelope completed. F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "generatedBy": "WO-SR-005E-E1",
+  "generatedAt": "2026-07-26T00:00:00Z",
+  "description": "Five-suite registry after the bounded GPT E1 sovereign adapter completed and E2 became the authorized next slice. Extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -6755,7 +6755,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Map an already-validated E0 source-identity result to gpt.grounded-context@1.0.0 through a pure unwired fail-closed adapter.",
       "riskClass": "R3",
-      "status": "proposed",
+      "status": "complete",
       "dependencies": [{ "id": "WO-SR-005E-A4", "status": "satisfied" }],
       "allowedSystems": [
         {
@@ -6816,39 +6816,44 @@
           "name": "Focused GPT grounded-context adapter tests",
           "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~GptGroundedContextAdapterTests",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Canonical backend build",
           "command": "dotnet build backend/TerraFusion.sln --no-restore",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Frozen GPT contract hashes",
           "command": "Verify DTO, schema, and twelve fixture hashes against gpt.grounded-context@1.0.0",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Work-order query and tooling tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/*.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         },
         {
           "name": "Exact scope and diff check",
           "command": "git diff --check and inspect changed paths",
           "required": true,
-          "result": "not_run"
+          "result": "passed"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "implementation-evidence",
+          "path": "docs/brain/workorders/evidence/WO-SR-005E-E1-GPT-GROUNDED-CONTEXT-SOVEREIGN-ADAPTER.md"
+        }
+      ],
       "blockers": [
         {
           "type": "IMPLEMENTATION_AUTH_REQUIRED",
-          "status": "pending",
-          "description": "A4 path-canon registration must complete, then one exact bounded E1/E2 R3 envelope must authorize the canonical decision record, sovereign E1 files, standalone E2 files, and terminal sovereign closeout."
+          "status": "resolved",
+          "description": "A4 path-canon registration completed and OWNER-SR-005E-E1-E2-R3-GPT-GROUNDED-CONTEXT-20260725 authorizes the exact sequential E1/E2 scope."
         }
       ],
       "stopConditions": [
@@ -6862,7 +6867,7 @@
           "id": "WO-SR-005E-E2",
           "reason": "Materialize and prove the frozen GPT contract in the standalone repository after the sovereign adapter passes.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ]
     },
@@ -6872,8 +6877,8 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove hash-pinned standalone compatibility with gpt.grounded-context@1.0.0 using only the frozen synthetic corpus.",
       "riskClass": "R3",
-      "status": "proposed",
-      "dependencies": [{ "id": "WO-SR-005E-E1", "status": "pending" }],
+      "status": "ready",
+      "dependencies": [{ "id": "WO-SR-005E-E1", "status": "satisfied" }],
       "allowedSystems": [
         {
           "name": "TerraFusion GPT standalone contract-compat material, synthetic verifier, constrained existing contract-compat job, and terminal sovereign evidence reconciliation"
@@ -6961,8 +6966,8 @@
       "blockers": [
         {
           "type": "DEPENDENCY_AND_IMPLEMENTATION_AUTH_REQUIRED",
-          "status": "pending",
-          "description": "E1 must merge and the same exact bounded E1/E2 envelope must remain active."
+          "status": "resolved",
+          "description": "E1 completes on this merge and the same exact bounded E1/E2 envelope remains active for standalone parity."
         }
       ],
       "stopConditions": [

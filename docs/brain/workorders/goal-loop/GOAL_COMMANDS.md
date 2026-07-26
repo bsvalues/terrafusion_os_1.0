@@ -53,12 +53,11 @@ WO-SR-005E-A then found that the committed GPT/RAG result drops identity require
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
 `WO-SR-005E-E0` implemented the exact pure unwired boundary with 52 focused synthetic cases. E0's
 bounded R3 authority is consumed. `WO-SR-005E-A3` completed R2 reconciliation and defined an exact
-pure E1 adapter followed by hash-pinned standalone E2 parity, but found the GPT repository absent
-from path canon. `WO-SR-005E-A4` registered the clean read-only `D:\terrafusion-gpt` checkout and
-cleared the path dependency. Both implementation slices remain proposed pending one bounded R3
-envelope. Runtime/provider adoption, E1/E2 implementation,
-extraction, custody or persistence mutation, protected data, publication/unrelated workflow
-changes, and cutover remain gated.
+pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` registered the clean
+read-only `D:\terrafusion-gpt` checkout. The exact sequential R3 envelope is active, and
+`WO-SR-005E-E1` completed the pure unwired adapter with 37 focused cases. `WO-SR-005E-E2` is next
+after verified E1 merge. Runtime/provider adoption, extraction, custody or persistence mutation,
+protected data, publication/unrelated workflow changes, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
