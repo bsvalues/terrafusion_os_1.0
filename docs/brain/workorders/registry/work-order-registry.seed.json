@@ -7104,6 +7104,116 @@
       }
     },
     {
+      "id": "WO-SR-005E-E3",
+      "title": "GPT Bounded Extraction Scope Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Decide whether committed sovereign GPT grounded-context source can be directly extracted into bsvalues/terrafusion-gpt or must remain a build-fresh standalone foundation against gpt.grounded-context@1.0.0.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-005E-E1",
+          "status": "satisfied",
+          "evidence": [
+            "Sovereign PR #1367 implemented the pure unwired GPT grounded-context adapter with 37 focused cases and no runtime consumer."
+          ]
+        },
+        {
+          "id": "WO-SR-005E-E2",
+          "status": "satisfied",
+          "evidence": [
+            "GPT PR #1 and Unicode remediation PR #2 completed 13 mirrored hash pins, three accepted fixtures, nine fail-closed fixtures, 13 verifier tests, and required checks."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance and routing",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "GPT source, frozen contracts, providers, models, embeddings, retrieval, persistence, runtime, protected resources, publication, deployment, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-005E-E3-gpt-bounded-extraction-scope-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E3-GPT-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "bounded-extraction-scope-audit",
+          "description": "Pin current sovereign and standalone anchors, verify the frozen GPT hashes, classify source candidates, prove the direct-copy count, and record the exact next boundary."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs && node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "implementation-authority",
+          "description": "The R2 audit may not implement F1, extract source, wire runtime behavior, invoke providers/models/embeddings, access persistence or protected resources, publish, deploy, cut over, or retire source."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The ratified five-suite program and standing operator authority cover this dependency-cleared R2 read-only source classification only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "Admitted by portfolio reconciliation after GPT E1/E2 closeout and the analogous Dossier E3 audit.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-SR-005D-E3",
       "title": "Dossier Bounded Extraction Scope Audit",
       "program": "Five-Suite Federated Repository Buildout",
