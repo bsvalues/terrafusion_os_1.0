@@ -99,8 +99,8 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active between cohorts |
-| Current | `WO-SR-005D-E3` complete; no direct-copy Dossier slice |
-| Next | `WO-SR-005E-E3` GPT bounded extraction scope audit (R2) |
+| Current | `WO-SR-005E-E3` complete; no executable direct-copy GPT slice |
+| Next | `WO-SR-005D-A4` Dossier path-canon registration (R2) |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -146,6 +146,12 @@ repository absent from the canonical path register. `WO-SR-005E-A4` established 
   clean read-only `D:\terrafusion-gpt` checkout at exact `origin/main`. The sequential R3 envelope
   completed the pure unwired adapter in sovereign PR #1367 and the hash-pinned standalone parity
   corpus in GPT PR #1. GPT PR #2 remediated Unicode schema-length parity. The envelope is consumed.
+WO-SR-005E-E3 then confirmed that E0 is pure but cannot be copied as an executable capability into
+the Node-only standalone repository without adding a new `.NET` project and workflow surface.
+Exact-head assurance found GPT PR #3 had concurrently merged a build-fresh F1-like module without a
+matching canonical F1 authority record. That destination mutation is not accepted as capability and
+requires later exact owner disposition. Dossier path canon remains the next unrelated bounded R2
+prerequisite.
 Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.
 
@@ -599,8 +605,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005D-E3` complete; no direct-copy Dossier slice |
-| Next WO | `WO-SR-005E-E3` GPT bounded extraction scope audit (R2) |
+| Current WO | `WO-SR-005E-E3` complete; no executable direct-copy GPT slice |
+| Next WO | `WO-SR-005D-A4` Dossier path-canon registration (R2) |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

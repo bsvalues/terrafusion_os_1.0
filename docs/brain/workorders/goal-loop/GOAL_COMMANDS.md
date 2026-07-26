@@ -57,8 +57,9 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   read-only `D:\terrafusion-gpt` checkout. The exact sequential R3 envelope completed
   `WO-SR-005E-E1` in sovereign PR #1367 and `WO-SR-005E-E2` in GPT PR #1. GPT PR #2 remediated
   Unicode schema-length parity; the envelope was then consumed. `WO-SR-005D-E3` completed the
-  Dossier exact-scope audit with no safe direct-copy candidate. `WO-SR-005E-E3` is the next bounded
-  R2 source-scope audit.
+  Dossier exact-scope audit with no safe direct-copy candidate. `WO-SR-005E-E3` completed the GPT
+  audit with no executable direct-copy slice in the Node-only destination. `WO-SR-005D-A4` is the
+  next bounded R2 Dossier path-canon prerequisite.
 Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 

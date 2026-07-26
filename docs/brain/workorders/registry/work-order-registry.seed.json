@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005D-E3",
+  "generatedBy": "WO-SR-005E-E3",
   "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after the R2 Dossier bounded-extraction audit found no safe direct-copy source and proposed a separately gated build-fresh F1 candidate. WO-SR-005E-E3 is the next same-risk audit; extraction, runtime adoption, providers, F1, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after the R2 GPT bounded-extraction audit found no executable direct-copy source for the Node-only standalone repository and recorded concurrently merged GPT PR #3 as an unratified F1 destination mutation. WO-SR-005D-A4 is the next unrelated same-risk path-canon prerequisite; F1 disposition, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7109,7 +7109,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Decide whether committed sovereign GPT grounded-context source can be directly extracted into bsvalues/terrafusion-gpt or must remain a build-fresh standalone foundation against gpt.grounded-context@1.0.0.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-005E-E1",
@@ -7165,7 +7165,7 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "bounded-extraction-scope-audit",
+          "kind": "other",
           "description": "Pin current sovereign and standalone anchors, verify the frozen GPT hashes, classify source candidates, prove the direct-copy count, and record the exact next boundary."
         }
       ],
@@ -7174,29 +7174,48 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
-          "name": "Work Order tooling tests",
-          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs && node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "name": "Work Order query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-E3-GPT-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+          "summary": "PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1 verdict, 14 hash-verified frozen files, zero executable direct-copy candidates in the Node-only destination, and exact-head evidence that GPT PR #3 merged an F1-like module without matching canonical authority."
+        }
+      ],
       "stopConditions": [
         {
-          "type": "implementation-authority",
+          "type": "scope_boundary",
           "description": "The R2 audit may not implement F1, extract source, wire runtime behavior, invoke providers/models/embeddings, access persistence or protected resources, publish, deploy, cut over, or retire source."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005D-A4",
+          "reason": "Dossier E3 identified path canon as the remaining R2 prerequisite before any later cross-repository F1 dispatch.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -7209,7 +7228,173 @@
       },
       "provenance": {
         "createdAt": "2026-07-26T00:00:00Z",
-        "source": "Admitted by portfolio reconciliation after GPT E1/E2 closeout and the analogous Dossier E3 audit.",
+        "source": "Current-base read-only classification of sovereign GPT source against gpt.grounded-context@1.0.0, audit-start standalone anchor 49cd4adca8d353de45147082cf9946f18ead0c77, and assurance-time live destination 614f62933e6f8cdb4fa8a76eac6305c0e3134070.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005D-A4",
+      "title": "Dossier Standalone Repository Path Canon Registration",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Establish and register the exact local path, remote, default branch, and read-only shared-checkout rule for bsvalues/terrafusion-dossier before any later cross-repository F1 dispatch.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-005D-E3",
+          "status": "satisfied",
+          "evidence": [
+            "Dossier E3 proved no safe direct-copy source and recorded path canon as the remaining prerequisite before any later build-fresh F1 dispatch."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Repository identity canon and TerraFusion Work Order governance",
+          "paths": ["PATH_CANON_REGISTER.md", "docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Dossier source, contracts, standalone repository content, F1, runtime, custody, persistence, protected resources, packages, workflows, deployment, production, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-005D-A4-dossier-standalone-repository-path-canon-registration.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**",
+        "files inside the terrafusion-dossier shared checkout"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact local path, private remote, default branch, origin/main head, clean status, and read-only shared-checkout rule for bsvalues/terrafusion-dossier."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order tooling tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs && node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Path registration may not modify the Dossier checkout, implement F1, extract source, wire runtime behavior, change custody or persistence, access protected resources, publish, deploy, cut over, or retire source."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Standing operator authority covers this dependency-cleared R2 identity registration only; the standalone shared checkout remains read-only."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "Admitted by portfolio reconciliation after WO-SR-005D-E3 and WO-SR-005E-E3 completed their exact-scope audits.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005E-F1",
+      "title": "GPT Standalone Grounded-Context Foundation Disposition",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Obtain an exact retain-or-revert disposition for the F1-like foundation merged by GPT PR #3 without matching canonical F1 authority.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-SR-005E-E3",
+          "status": "satisfied",
+          "evidence": [
+            "E3 found zero executable direct-copy candidates and recorded GPT PR #3 at merge 614f62933e6f8cdb4fa8a76eac6305c0e3134070 as an unratified destination mutation."
+          ]
+        }
+      ],
+      "allowedSystems": [],
+      "blockedSystems": [
+        {
+          "name": "GPT F1 retain, revert, wiring, extension, runtime adoption, providers, persistence, publication, deployment, cutover, and source retirement pending exact owner disposition"
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [
+        "bsvalues/terrafusion-gpt/**",
+        "backend/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact decision to retain as governed F1 or revert GPT PR #3, including the five changed paths, validation, rollback, and terminal condition."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "No active owner decision or sovereign authority record covers GPT F1; no mutation may proceed."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Observed destination state only. This record grants no retain, revert, remediation, or successor authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-26T00:00:00Z",
+        "source": "Independent exact-head assurance for sovereign PR #1370 plus live GPT PR #3 and owner-decision search.",
         "schemaVersion": "0.1.0"
       }
     },
@@ -7311,7 +7496,7 @@
           "description": "This R2 audit does not authorize F1, source extraction, runtime adoption, custody or persistence changes, protected-resource access, publication, deployment, cutover, or source retirement."
         }
       ],
-      "nextCandidates": ["WO-SR-005E-E3", "WO-SR-005D-A4"],
+      "nextCandidates": ["WO-SR-005E-E3"],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
