@@ -630,7 +630,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-005E-E0",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-gpt-source-identity-projection",
       "effective_base_sha": "80c51579458b96d956c20f2e0b81311fd1b68e16",
       "scope_source": "WO-SR-005E-E0 allowedFiles in docs/brain/workorders/registry/work-order-registry.seed.json",
@@ -671,6 +671,8 @@
         "target_pr": 1364,
         "effective_on_merge": true,
         "authority_consumed_on_verified_merge": true,
+        "merged_head": "4dc3275023297c1358fa4c981b32224856eb76c9",
+        "merge_commit": "1120c6d86f08f2ed4dcf0d82e60e99761256567b",
         "evidence": "docs/brain/workorders/evidence/WO-SR-005E-E0-GPT-GROUNDED-SOURCE-IDENTITY-PROJECTION-FOUNDATION.md"
       }
     },
