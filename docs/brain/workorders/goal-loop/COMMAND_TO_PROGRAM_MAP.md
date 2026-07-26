@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | `WO-SR-005E-E1` proposed; exact bounded E1/E2 R3 envelope required | YES - new R3 implementation authority | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-005E-A4` complete; E1 dependency-cleared but R3 blocked | YES for E1/E2 implementation, extraction, runtime/provider adoption, F1, or any new R3/protected scope | `program`, `once`, `evidence` |
+| `program-next` | Portfolio Operator | `WO-SR-005E-E2` authorized next after verified E1 merge | NO for the recorded E2 scope; YES for successor/protected scope | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-005E-E1` complete; E2 next under active sequential envelope | NO for exact E2; YES for extraction, runtime/provider adoption, F1, successor R3, or protected scope | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

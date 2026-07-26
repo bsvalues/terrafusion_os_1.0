@@ -3,6 +3,77 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-005E-E1-E2-R3-GPT-GROUNDED-CONTEXT-20260725",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005E-E1 -> WO-SR-005E-E2",
+      "status": "active",
+      "authority_class": "R3-bounded-sequential-gpt-grounded-context-adapter-parity",
+      "effective_base_sha": "f996ca5cf30d23e998bcbcd940eddfbf53c7af43",
+      "scope_source": "WO-SR-005E-A3 exact E1/E2 allowlists and the owner authorization recorded on 2026-07-25",
+      "authorized_actions": [
+        "implement and merge the pure unwired sovereign GPT grounded-context adapter with focused synthetic proof",
+        "after verified E1 merge, implement and merge the hash-pinned standalone GPT synthetic contract-parity corpus and verifier",
+        "perform exact-scope remediation, exact-head assurance, Mode B squash merges, post-merge verification, and terminal sovereign closeout"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Adapters/GptGroundedContextAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Gpt/GptGroundedContextAdapterTests.cs",
+        "docs/brain/workorders/active/WO-SR-005E-E1-gpt-grounded-context-sovereign-adapter.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E1-GPT-GROUNDED-CONTEXT-SOVEREIGN-ADAPTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "bsvalues/terrafusion-gpt:.github/workflows/suite-ci.yml (contract-compat job only)",
+        "bsvalues/terrafusion-gpt:canon/CONTRACT_DEPENDENCY.md",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/manifest.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/gpt.grounded-context.v1.schema.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/citation-without-source.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/county-mismatch.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/dataset-mismatch.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/denied-dataset.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/duplicate-citation.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/full-text-or-provider-leak.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/grounded-two-citations.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/no-relevant-context.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/raw-pii-query.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/trace-mismatch.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/unknown-status.synthetic.json",
+        "bsvalues/terrafusion-gpt:contract-compat/gpt.grounded-context.v1/fixtures/unstable-order.synthetic.json",
+        "bsvalues/terrafusion-gpt:scripts/verify-gpt-grounded-context.mjs",
+        "bsvalues/terrafusion-gpt:scripts/verify-gpt-grounded-context.test.mjs",
+        "bsvalues/terrafusion-gpt:operations/work-orders/WO-SR-005E-E2-gpt-standalone-synthetic-contract-parity.md",
+        "bsvalues/terrafusion-gpt:operations/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md",
+        "docs/brain/workorders/active/WO-SR-005E-E2-gpt-standalone-synthetic-contract-parity.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E2-GPT-STANDALONE-SYNTHETIC-CONTRACT-PARITY.md"
+      ],
+      "explicitly_denied": [
+        "runtime consumers, DI, controllers, endpoints, services, providers, models, embeddings, persistence, databases, HTTP product behavior, raw query or full-text handling",
+        "source extraction or Git-history import, packages, publication, workflow changes outside the constrained contract-compat job, runtime adoption, or F1",
+        "county, PACS, SQL, credentials, secrets, deployment, production, cutover, source retirement, or successor implementation authority"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the exact E1/E2 allowlists",
+        "required-check bypass or failure, unresolved review, or exact-head assurance failure",
+        "frozen-contract hash drift, protected-resource access, provider/runtime/persistence work, or conflicting authority"
+      ],
+      "terminal_condition": "Consumed after E1 and E2 are merged, their exact post-merge evidence is reconciled in the sovereign repository, and the terminal closeout is verified.",
+      "decision_basis": "Owner granted the exact sequential GPT E1/E2 R3 envelope anchored to WO-SR-005E-A3 and origin/main f996ca5cf30d23e998bcbcd940eddfbf53c7af43.",
+      "completion": {
+        "e1_target": "WO-SR-005E-E1",
+        "e2_target": "WO-SR-005E-E2",
+        "authority_consumed_on_verified_terminal_closeout": true,
+        "evidence": "docs/brain/workorders/evidence/WO-SR-005E-E1-GPT-GROUNDED-CONTEXT-SOVEREIGN-ADAPTER.md"
+      }
+    },
+    {
       "id": "OWNER-MAO-001-R5-GOVERNANCE-AMENDMENT",
       "program": "PROGRAM-MAO-001",
       "goal": "GOAL-MAO-001",
