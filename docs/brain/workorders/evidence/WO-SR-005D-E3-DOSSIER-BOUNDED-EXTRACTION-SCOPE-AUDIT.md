@@ -15,8 +15,9 @@ a separate R3 build-fresh, offline, unwired projection. No implementation author
 | Sovereign base audited | `e41c828c512c76d4faf5d9bc80d149308e696da2` |
 | Frozen contract | `dossier.evidence-registry-read@1.0.0` |
 | Frozen files | 13/13 SHA-256 values match `backend/src/TerraFusion.Abstractions/contracts.freeze.json` |
-| Standalone repository | `github.com/bsvalues/terrafusion-dossier` |
-| Standalone `main` | `dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf` |
+| Standalone repository observation | GitHub API resolves private `github.com/bsvalues/terrafusion-dossier` |
+| Standalone `main` observation | GitHub API resolves `dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf` |
+| Path-canon status | **UNRESOLVED** - `PATH_CANON_REGISTER.md` does not register Dossier; F1 dispatch is blocked pending an R2 path-canon registration |
 | Existing standalone proof | Dossier PR #1; 12 mirrored pins, three accepted fixtures, eight fail-closed fixtures |
 
 ## Frozen Contract Classification
@@ -89,12 +90,18 @@ production, cutover, or source-retirement change is included.
 | --- | --- |
 | Current-base source/import inspection | PASS |
 | Frozen contract hash check | PASS - 13/13 |
-| Standalone repository identity and `main` SHA | PASS |
+| Standalone remote identity and `main` SHA observation | PASS - live GitHub API observation only |
+| Reproducible path-canon registration | HOLD - Dossier is absent from `PATH_CANON_REGISTER.md` |
 | Direct-copy candidates | PASS - 0 eligible |
 | Runtime/backend/frontend/contract/destination changes | NONE |
 | Protected-resource access | NONE |
-| `git diff --check` | Run before commit |
-| Work Order query and tooling tests | Run before commit |
+| `git diff --check` | PASS |
+| `node docs/brain/workorders/tools/wo-query.mjs --json` | PASS - GPT E3 is the sole eligible next node |
+| Work Order query tests | PASS - 12/12 |
+| Wave planner tests | PASS - 29/29 |
+| Contract freeze verifier | PASS - 6 groups, 52 frozen; Dossier 13/13 pins match |
+| Strict pre-push unit tests | PASS - 164/164 |
+| Strict pre-push backend build | PASS - 0 warnings, 0 errors |
 
 ## Rollback and Non-Claims
 
@@ -104,6 +111,8 @@ custody mutation, persistence, publication, deployment, cutover, or duplicate re
 
 ## Next
 
-Portfolio reconciliation continues. `WO-SR-005D-F1` remains a separately gated R3 candidate.
+Portfolio reconciliation continues. Before `WO-SR-005D-F1` can be dispatched, a bounded R2
+Dossier path-canon registration must establish its reproducible local checkout identity; F1 also
+remains a separately gated R3 candidate.
 `WO-SR-005E-E3` is the next analogous dependency-cleared R2 source-scope audit because GPT E1/E2 are
 complete and its extraction boundary remains unproven.

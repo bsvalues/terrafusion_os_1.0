@@ -7302,7 +7302,7 @@
         {
           "kind": "bounded-extraction-scope-audit",
           "location": "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
-          "description": "PASS_NO_DIRECT_EXTRACTION verdict, 13 hash-verified frozen files, zero eligible direct-copy candidates, ownership/provenance decision, and proposed later F1 build-fresh allowlist."
+          "description": "PASS_NO_DIRECT_EXTRACTION verdict, 13 hash-verified frozen files, zero eligible direct-copy candidates, ownership/provenance decision, proposed later F1 build-fresh allowlist, and an explicit HOLD on F1 dispatch until Dossier path canon is registered."
         }
       ],
       "stopConditions": [
@@ -7311,7 +7311,7 @@
           "description": "This R2 audit does not authorize F1, source extraction, runtime adoption, custody or persistence changes, protected-resource access, publication, deployment, cutover, or source retirement."
         }
       ],
-      "nextCandidates": ["WO-SR-005E-E3", "WO-SR-005D-F1"],
+      "nextCandidates": ["WO-SR-005E-E3", "WO-SR-005D-A4"],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
