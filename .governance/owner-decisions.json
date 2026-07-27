@@ -15,7 +15,7 @@
       "authorized_actions": [
         "retain the exact five-file Dossier PR #2 foundation conditionally while correcting createdAt ordering by exact timestamp instant",
         "add focused fractional-precision, equivalent-instant, invalid-instant, ordering, and non-mutation proof",
-        "validate, review, merge Dossier PR #3, resolve the two original PR #2 findings, and perform the exact ten-file sovereign ratification closeout"
+        "validate, review, merge Dossier PR #3, resolve the two original PR #2 findings, and perform the exact eleven-file sovereign ratification closeout"
       ],
       "authorized_files": [
         "bsvalues/terrafusion-dossier:src/evidence-registry/project-dossier-evidence-registry-read.mjs",
@@ -32,7 +32,8 @@
         "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
-        "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md"
+        "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "PATH_CANON_REGISTER.md"
       ],
       "explicitly_denied": [
         "GPT F1, Dais F1, runtime consumers, persistence, databases, custody mutation, providers, network access, source extraction, packages, publication, workflows, deployment, production, county, PACS, SQL, credentials, secrets, or cutover",
@@ -54,6 +55,12 @@
         "corrective_pr": 3,
         "corrective_head": "a185278fa1171927951e47dbdd3cb27275b21eef",
         "corrective_merge": "7558cfebfeea0c7b536251769b1d779c4558a763",
+        "path_canon_amendment": {
+          "decision_id": "OWNER-SR-005D-F1-RETAIN-REMEDIATE-AMENDMENT-001",
+          "status": "consumed_on_merge",
+          "authorized_file": "PATH_CANON_REGISTER.md",
+          "final_capability_classification": "RETAINED_PURE_UNWIRED_F1"
+        },
         "original_review_findings_resolved": 2,
         "effective_on_merge": true,
         "authority_consumed": true,

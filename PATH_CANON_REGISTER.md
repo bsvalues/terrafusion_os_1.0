@@ -45,8 +45,12 @@ checkout is a read-only synchronization surface.
 
 On 2026-07-26, `D:\terrafusion-dossier` resolved to remote
 `git@github.com:bsvalues/terrafusion-dossier.git`, default branch `main`, at `origin/main`
-`ccdc227812264ec52f4ec506de49693ac91d0a9d`. GitHub reports the repository as private.
+`7558cfebfeea0c7b536251769b1d779c4558a763`. GitHub reports the repository as private.
 Cross-repository Dossier workers must branch from an isolated worktree attached to this canonical
-repository; the shared checkout is a read-only synchronization surface. The registered head
-includes Dossier PR #2, which sovereign governance classifies as an unratified destination mutation
-pending exact disposition rather than accepted capability.
+repository; the shared checkout is a read-only synchronization surface. Dossier PR #2 at head
+`2a3b3f9e228b4fad1c20d3a9619d16eb9724aca3` merged as
+`ccdc227812264ec52f4ec506de49693ac91d0a9d` and is recorded as historically unratified. Corrective
+Dossier PR #3 at head `a185278fa1171927951e47dbdd3cb27275b21eef` merged as
+`7558cfebfeea0c7b536251769b1d779c4558a763`, which is the current Dossier `origin/main`. The final
+capability classification is `RETAINED_PURE_UNWIRED_F1`; no runtime, custody, persistence, provider,
+deployment, or protected-resource authority follows from the retained module.
