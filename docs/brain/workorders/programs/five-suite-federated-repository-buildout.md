@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; GPT E3 complete, Dossier path-canon reconciliation next
+**Status:** Active between cohorts; Dossier A4 complete; Dossier and GPT F1 disposition next
 
 ## Ratified topology
 
@@ -54,6 +54,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-E1 | Implement the pure unwired sovereign evidence-registry adapter | Complete; 31 targeted tests and no runtime consumer |
 | WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Complete; Dossier PR #1 / merge `dcd8a1a3`, all required checks passed |
 | WO-SR-005D-E3 | Audit the exact bounded Dossier extraction scope | Complete; no safe direct-copy slice found; build-fresh F1 candidate proposed |
+| WO-SR-005D-A4 | Register the standalone Dossier repository path canon | Complete R2; exact private checkout registered; PR #2 recorded as unratified F1 mutation |
+| WO-SR-005D-F1 | Build the standalone evidence-registry foundation | Blocked pending exact owner disposition; Dossier PR #2 merged without matching canonical F1 authority |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |
@@ -66,7 +68,6 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Complete; GPT PR #1 plus PR #2 remediation, 13 mirrored hashes, 13 verifier tests |
 | WO-SR-005E-E3 | Audit the exact bounded GPT extraction scope | Complete; no executable direct-copy slice; concurrent unratified GPT PR #3 recorded |
 | WO-SR-005E-F1 | Build the standalone grounded-context foundation | Blocked pending exact owner disposition; GPT PR #3 merged without matching canonical F1 authority |
-| WO-SR-005D-A4 | Register the standalone Dossier repository path canon | Next R2 prerequisite before any later Dossier F1 dispatch |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 

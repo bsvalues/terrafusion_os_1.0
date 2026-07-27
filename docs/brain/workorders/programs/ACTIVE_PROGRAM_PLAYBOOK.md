@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts |
-| Current | `WO-SR-005E-E3` complete; no executable direct-copy GPT slice |
-| Next | `WO-SR-005D-A4` Dossier path-canon registration (R2) |
+| Status | Active between cohorts; bounded R2 queue exhausted |
+| Current | `WO-SR-005D-A4` complete; Dossier and GPT F1 incidents open |
+| Next | Exact bounded F1 retain-or-revert disposition authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -149,9 +149,11 @@ repository absent from the canonical path register. `WO-SR-005E-A4` established 
 WO-SR-005E-E3 then confirmed that E0 is pure but cannot be copied as an executable capability into
 the Node-only standalone repository without adding a new `.NET` project and workflow surface.
 Exact-head assurance found GPT PR #3 had concurrently merged a build-fresh F1-like module without a
-matching canonical F1 authority record. That destination mutation is not accepted as capability and
-requires later exact owner disposition. Dossier path canon remains the next unrelated bounded R2
-prerequisite.
+matching canonical F1 authority record. `WO-SR-005D-A4` then registered the clean read-only
+`D:\terrafusion-dossier` checkout at exact live `origin/main`. Its live reconciliation found Dossier
+PR #2 had likewise merged an F1-like module without matching sovereign authority. Neither
+destination mutation is accepted as capability. Both require exact retain-or-revert disposition,
+and no bounded R2 successor remains admitted.
 Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.
 
@@ -605,8 +607,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-E3` complete; no executable direct-copy GPT slice |
-| Next WO | `WO-SR-005D-A4` Dossier path-canon registration (R2) |
+| Current WO | `WO-SR-005D-A4` complete; Dossier and GPT F1 incidents open |
+| Next WO | Exact bounded F1 retain-or-revert disposition authority |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

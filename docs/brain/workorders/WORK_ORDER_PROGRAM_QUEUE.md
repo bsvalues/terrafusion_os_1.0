@@ -79,6 +79,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005D-E1 Dossier Sovereign Evidence Registry Read Adapter | DONE | Pure unwired adapter; 31 targeted tests; no DI, controller, database, custody mutation, or runtime consumer |
 | WO-SR-005D-E2 Dossier Standalone Synthetic Contract Parity | DONE | Dossier PR #1 / merge `dcd8a1a3`; 12/12 hash pins, 3 positive and 8 fail-closed negative fixtures, all required checks passed |
 | WO-SR-005D-E3 Dossier Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_DIRECT_EXTRACTION`; 0 eligible direct-copy candidates; live remote observed but Dossier path canon remains unresolved before any later F1; no source or destination changed |
+| WO-SR-005D-A4 Dossier Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-dossier` registered at private `origin/main` `ccdc2278`; Dossier PR #2 classified as unratified F1 mutation |
+| WO-SR-005D-F1 Dossier Standalone Evidence-Registry Foundation | BLOCKED / OWNER DISPOSITION | Dossier PR #2 merged at `ccdc2278` without matching canonical F1 authority; retain/revert/wire/extend are not authorized |
 | WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation | DONE | Grounded-context cohort selected; current adapter not parity-safe |
 | WO-SR-005E-C GPT Grounded Context Contract Decomposition | DONE | Provider-neutral county-scoped contract defined; adapter parity unproven |
 | WO-SR-005E-I GPT Grounded Context Contract Implementation and Freeze | DONE | `gpt.grounded-context@1.0.0`; 6 groups / 52 files frozen |
@@ -91,10 +93,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | DONE / R3 | GPT PR #1 plus PR #2 remediation; 13/13 mirrored hashes, 3 accepted and 9 fail-closed fixtures, 13 verifier tests, all required checks passed |
 | WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`; GPT PR #3 drift recorded without accepting capability |
 | WO-SR-005E-F1 GPT Standalone Grounded-Context Foundation | BLOCKED / OWNER DISPOSITION | GPT PR #3 merged at `614f6293` without matching canonical F1 authority; retain/revert/wire/extend are not authorized |
-| WO-SR-005D-A4 Dossier Standalone Repository Path Canon Registration | NEXT / R2 | Register the exact private Dossier checkout identity before any later cross-repository F1 dispatch |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
-| WO-SR-005D Dossier Bounded Extraction | E3 COMPLETE - NO DIRECT COPY | Contract, unwired adapter, and standalone parity proven; E3 found no safe direct-copy source and proposed a separately gated build-fresh F1 candidate |
+| WO-SR-005D Dossier Bounded Extraction | A4 COMPLETE - F1 INCIDENT OPEN | Path canon registered; Dossier PR #2 is an unratified destination mutation requiring exact disposition |
 | WO-SR-005E GPT Bounded Extraction | E3 COMPLETE - F1 INCIDENT OPEN | E3 found no executable direct-copy slice; concurrent GPT PR #3 is unratified and requires later exact disposition |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)

@@ -58,8 +58,11 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   `WO-SR-005E-E1` in sovereign PR #1367 and `WO-SR-005E-E2` in GPT PR #1. GPT PR #2 remediated
   Unicode schema-length parity; the envelope was then consumed. `WO-SR-005D-E3` completed the
   Dossier exact-scope audit with no safe direct-copy candidate. `WO-SR-005E-E3` completed the GPT
-  audit with no executable direct-copy slice in the Node-only destination. `WO-SR-005D-A4` is the
-  next bounded R2 Dossier path-canon prerequisite.
+  audit with no executable direct-copy slice in the Node-only destination. `WO-SR-005D-A4`
+  registered the clean read-only `D:\terrafusion-dossier` checkout. Live reconciliation found
+  Dossier PR #2 and GPT PR #3 had each merged F1-like destination foundations without matching
+  sovereign authority. Both remain unratified pending exact disposition; no bounded R2 successor
+  remains admitted.
 Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 

@@ -8,6 +8,7 @@
 | `bsvalues/terrafusion-os` | `C:\Users\bsval\terrafusion-os` | `github.com/bsvalues/terrafusion-os` | `main` | Sovereign Sync workbook tooling and contract estate |
 | `bsvalues/terrafusion-atlas` | `C:\Users\bsval\terrafusion-atlas` | `github.com/bsvalues/terrafusion-atlas` | `main` | Standalone Atlas suite product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite bootstrap, future product source, contract compatibility, and evidence |
+| `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite bootstrap, future product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-gpt` | `D:\terrafusion-gpt` | `github.com/bsvalues/terrafusion-gpt` | `main` | Standalone GPT suite bootstrap, future product source, contract compatibility, and evidence |
 
 ## Routing Rule
@@ -41,3 +42,11 @@ On 2026-07-25, `D:\terrafusion-gpt` resolved to remote
 `10295e9b534cce7ba9d428a91fb966bd58963c77`. GitHub reports the repository as private. Cross-repository
 GPT workers must branch from an isolated worktree attached to this canonical repository; the shared
 checkout is a read-only synchronization surface.
+
+On 2026-07-26, `D:\terrafusion-dossier` resolved to remote
+`git@github.com:bsvalues/terrafusion-dossier.git`, default branch `main`, at `origin/main`
+`ccdc227812264ec52f4ec506de49693ac91d0a9d`. GitHub reports the repository as private.
+Cross-repository Dossier workers must branch from an isolated worktree attached to this canonical
+repository; the shared checkout is a read-only synchronization surface. The registered head
+includes Dossier PR #2, which sovereign governance classifies as an unratified destination mutation
+pending exact disposition rather than accepted capability.
