@@ -3,6 +3,72 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005C-F1",
+      "status": "completed",
+      "authority_class": "R3-bounded-dais-f1-retain-remediate-ratification",
+      "effective_base_sha": "c6e89f8d50d23d397d00918d694c92c7654016ee",
+      "scope_source": "Owner authorization recorded on 2026-07-27 after portfolio reconciliation classified Dais PR #3 as an unratified destination mutation.",
+      "authorized_actions": [
+        "retain the exact five-file Dais PR #3 foundation conditionally while correcting UTC calendar and lifecycle validation",
+        "add focused impossible-date, leap-day, leap-second, fractional-ordering, lifecycle-ordering, and non-mutation proof",
+        "validate, review, merge Dais PR #4, resolve the original PR #3 authority finding, and perform the exact twelve-file sovereign ratification closeout"
+      ],
+      "authorized_files": [
+        "bsvalues/terrafusion-dais:src/appeal-workflow/project-dais-appeal-workflow.mjs",
+        "bsvalues/terrafusion-dais:test/project-dais-appeal-workflow.test.mjs",
+        "bsvalues/terrafusion-dais:scripts/verify-dais-appeal-workflow.mjs",
+        "bsvalues/terrafusion-dais:operations/work-orders/WO-SR-005C-F1-dais-standalone-appeal-workflow-foundation.md",
+        "bsvalues/terrafusion-dais:operations/evidence/WO-SR-005C-F1-DAIS-STANDALONE-APPEAL-WORKFLOW-FOUNDATION.md",
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/active/WO-SR-005C-F1-dais-standalone-appeal-workflow-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-005C-F1-DAIS-STANDALONE-APPEAL-WORKFLOW-FOUNDATION.md",
+        "docs/brain/workorders/evidence/WO-SR-005C-E3-DAIS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "runtime consumers, DI, controllers, endpoints, services, providers, models, persistence, databases, source extraction, contract mutation, packages, publication, workflows, deployment, production, county, PACS, SQL, credentials, secrets, cutover, or source retirement",
+        "rewriting Dais PR #3 as originally authorized or retaining its defective timestamp validation without remediation",
+        "scope expansion beyond the exact Dais validation, remediation, and sovereign closeout files"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check failure or bypass",
+        "unresolved substantive review thread or exact-head assurance failure",
+        "runtime, protected-resource, or conflicting-authority access"
+      ],
+      "decision_basis": "The build-fresh five-file foundation is deterministic, provider-neutral, and worth retaining, but the original merge lacked canonical F1 authority and accepted calendar-invalid timestamps.",
+      "completion": {
+        "original_unratified_pr": 3,
+        "original_unratified_head": "be1a7676fc79f13d7cd3a3516cafa0ad7f3d624f",
+        "original_unratified_merge": "4ed92e35d3debc4a43b127087703a1e2bc731203",
+        "corrective_pr": 4,
+        "corrective_head": "93ee267f3258e8989a5acf27fc40c5bb0d24f695",
+        "corrective_merge": "29a34b0feeab32984a4dedf1af853239993b4a26",
+        "final_capability_classification": "RETAINED_PURE_UNWIRED_F1",
+        "original_review_findings_resolved": 1,
+        "corrective_review_findings_resolved": 1,
+        "effective_on_merge": true,
+        "authority_consumed": true,
+        "terminal_condition_satisfied": "Dais PR #4 merged with all checks passing and exact-head assurance satisfied; the original PR #3 authority finding is resolved and this exact-scope sovereign closeout merges to main.",
+        "evidence": [
+          "docs/brain/workorders/evidence/WO-SR-005C-F1-DAIS-STANDALONE-APPEAL-WORKFLOW-FOUNDATION.md",
+          "docs/brain/workorders/evidence/WO-SR-005C-E3-DAIS-BOUNDED-EXTRACTION-SCOPE-AUDIT.md"
+        ]
+      }
+    },
+    {
       "id": "OWNER-SR-005E-F1-RETAIN-RATIFY-20260727",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

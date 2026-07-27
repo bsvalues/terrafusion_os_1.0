@@ -3,7 +3,7 @@
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
-**Date:** 2026-07-18
+**Date:** 2026-07-27
 **Authority:** TerraFusion Brain / WO-WOE-009
 **Classification:** Operator Doctrine — canonical planning surface
 
@@ -19,11 +19,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-19 - WO-SR-003/004 created, bootstrapped, and verified all five suite repositories)*
+*(Updated 2026-07-27 - Dais F1 retained after bounded remediation; all four suite F1 foundations are complete and unwired)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active between cohorts; Dossier and GPT F1 retained after remediation | `WO-SR-005E-F1` complete | Portfolio reconciliation; separately authorized Dais F1 only | Reconcile automatically when new bounded authority lands | Stop on Dais F1, extraction, runtime/provider/persistence adoption, packages/publication, unrelated workflows, county/PACS/SQL, credentials, secrets, deployment, cutover, or new scope |
+| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active between cohorts; Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations complete | `WO-SR-005C-F1` complete | Portfolio reconciliation | Reconcile automatically; admit only dependency-cleared bounded work | Stop on extraction, runtime/provider/persistence adoption, packages/publication, unrelated workflows, county/PACS/SQL, credentials, secrets, deployment, cutover, or new scope |
 | [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Closed - PASS_WITH_GAPS; continuation envelope completed and consumed | `WO-MAO-007` complete | Portfolio reconciliation | No MAO continuation authority survives closeout | Future execution requires new applicable authority; protected boundaries remain denied |
 | [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Portfolio reconciliation | Operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closed | `WO-REL-006` complete | Portfolio reconciliation | No automatic Release Engineering successor after closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |

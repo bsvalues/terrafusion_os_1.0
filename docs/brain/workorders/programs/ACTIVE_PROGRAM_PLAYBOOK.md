@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-07-16
+**Last Updated:** 2026-07-27
 **Base:** `origin/main` at `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` or later
 
 ---
@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; Dossier and GPT F1 retained after remediation |
-| Current | `WO-SR-005E-F1` complete |
-| Next | Portfolio reconciliation; separately authorized Dais F1 only |
+| Status | Active between cohorts; Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations complete |
+| Current | `WO-SR-005C-F1` complete |
+| Next | Portfolio reconciliation |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -161,6 +161,12 @@ authorized exact validation and remediation of GPT PR #3. Corrective GPT PR #4 r
 verifier compatibility export, passed 30 focused and parity checks, and resolved both original
 review findings. The GPT five-file foundation is retained as pure and unwired; PR #3 remains
 unratified history and the bounded authority is consumed. No bounded R2 successor remains admitted.
+`OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727` then authorized exact remediation of historical Dais
+PR #3. Corrective Dais PR #4 enforced calendar-valid UTC timestamps, known leap-second boundaries,
+fractional ordering, and the full filed/hearing/decision lifecycle; it passed all remote gates and
+exact-head assurance and merged as `29a34b0f`. Dais F1 is retained as pure and unwired, PR #3
+remains unratified history, and the authority is consumed. The four standalone suite foundations
+are complete at the pure-unwired F1 layer. No bounded R2 successor is currently admitted.
 Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.
 
@@ -614,8 +620,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005E-F1` complete |
-| Next WO | Portfolio reconciliation; separately authorized Dais F1 only |
+| Current WO | `WO-SR-005C-F1` complete |
+| Next WO | Portfolio reconciliation |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

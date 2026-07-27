@@ -123,13 +123,22 @@ every accept/reject: **3 positive** (`filed-by-parcel`, `decided-by-id`, `empty-
 
 - No Dais product source was extracted, copied, or moved by this audit.
 - No frozen contract artifact was modified; the DTO and schema stay sovereign-owned.
-- No F1 module was implemented here — this WO only produces the scope verdict and the F1 allowlist.
+- This audit did not implement F1. Historical Dais PR #3 later introduced the five-file foundation
+  without matching sovereign authority; corrective PR #4 is the ratified retained head under
+  `OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727`.
 - No provider, county, PACS, SQL, persistence, credential, runtime, or deployment resource was touched.
-- `PASS_NO_DIRECT_EXTRACTION` authorizes only the fresh-build F1 slice; it does not authorize
-  WO-SR-005C-E2 parity execution, WO-SR-005C-F1 implementation, runtime adoption, or WO-SR-006 cutover.
+- `PASS_NO_DIRECT_EXTRACTION` and the completed F1 disposition do not authorize runtime adoption,
+  providers, persistence, source extraction, publication, deployment, or WO-SR-006 cutover.
 
-## Next
+## Final F1 Disposition
 
-`WO-SR-005C-E2` (Dais standalone contract parity) and `WO-SR-005C-F1` (Dais standalone appeal-workflow
-foundation) execute in `bsvalues/terrafusion-dais` using the allowlist above. Rollback for this audit
-is revert-only and repo-local (`git revert`); it changes no sovereign source and no contract.
+Historical Dais PR #3 at head `be1a7676fc79f13d7cd3a3516cafa0ad7f3d624f` merged as
+`4ed92e35d3debc4a43b127087703a1e2bc731203` and remains recorded as originally unratified.
+Corrective Dais PR #4 at exact head `93ee267f3258e8989a5acf27fc40c5bb0d24f695` fixed UTC
+calendar validity, leap-second handling, fractional ordering, and lifecycle ordering; all required
+checks and exact-head assurance passed. It merged as
+`29a34b0feeab32984a4dedf1af853239993b4a26`.
+
+Final classification: `RETAINED_PURE_UNWIRED_F1`. The bounded authority is consumed on sovereign
+closeout. Portfolio reconciliation is next; no runtime, extraction, provider, persistence,
+publication, deployment, protected-resource, or cutover authority follows.

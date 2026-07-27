@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Dossier and GPT F1 retained after remediation; portfolio reconciliation current
+**Status:** Active between cohorts; Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations complete; portfolio reconciliation current
 
 ## Ratified topology
 
@@ -45,7 +45,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005C-E1 | Implement the pure unwired sovereign appeal-workflow adapter | Complete; preserved test output is authoritative at 32 passed, 0 failed, no runtime consumer |
 | WO-SR-005C-E2 | Implement standalone synthetic contract/parity harness | Complete; Dais PR #1 / merge `2768cd8d`, all required checks passed |
 | WO-SR-005C-E3 | Audit the exact bounded Dais extraction scope | Complete; no safe direct-copy slice found |
-| WO-SR-005C-F1 | Build the standalone appeal-workflow foundation | Later candidate; after E2 parity and exact implementation authority |
+| WO-SR-005C-F1 | Retain and remediate the standalone appeal-workflow foundation | Complete; Dais PR #3 preserved as unratified history, corrective PR #4 / merge `29a34b0f` passed, pure unwired F1 retained, authority consumed |
 | WO-SR-005D-P | Prepare Dossier custody contract and evidence-integrity gate | Complete with cohort correction; custody mutation excluded |
 | WO-SR-005D-C | Decompose the Dossier evidence-snapshot contract | Complete; NO_GO because snapshot crosses Property, Forge, levies, and notes |
 | WO-SR-005D-C2 | Decompose the Dossier evidence-registry read contract | Complete; read-only county/parcel boundary defined |
@@ -149,6 +149,12 @@ F1-like build-fresh module without matching canonical F1 authority.
 restored the verifier compatibility export, passed 30 focused and parity checks, and resolved both
 original findings. The five-file foundation is now retained as pure and unwired; PR #3 remains
 unratified history and the bounded authority is consumed.
+`OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727` then authorized exact correction of historical Dais
+PR #3. Corrective PR #4 validated real UTC calendar instants, known leap seconds, arbitrary
+fractional precision, and complete filed/hearing/decision ordering; all remote gates and exact-head
+assurance passed. It merged as `29a34b0f`, retaining the five-file module as pure and unwired while
+preserving PR #3 as unratified history. The Dais authority is consumed. Atlas, Dais, Dossier, and
+GPT now each have a completed pure-unwired standalone F1 foundation.
 Extraction,
 providers, persistence, runtime
 adoption, packages, deployment, cutover, and successor implementation remain unauthorized.
