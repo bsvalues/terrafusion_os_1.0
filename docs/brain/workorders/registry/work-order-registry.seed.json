@@ -7554,7 +7554,8 @@
         "notes": "The bounded authority is consumed on the verified sovereign closeout merge. This completed record grants no runtime or successor authority."
       },
       "provenance": {
-        "createdAt": "2026-07-27T00:00:00Z",
+        "createdAt": "2026-07-26T00:00:00Z",
+        "updatedAt": "2026-07-27T00:00:00Z",
         "source": "OWNER-SR-005E-F1-RETAIN-RATIFY-20260727; GPT PR #3 historical merge; corrective PR #4 exact head, checks, review resolution, and merge verification.",
         "schemaVersion": "0.1.0"
       }
