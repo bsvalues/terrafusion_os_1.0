@@ -73,8 +73,9 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   exact-head assurance, and merged as `29a34b0f`. Dais PR #3 remains unratified history and the
   bounded authority is consumed. Atlas, Dais, Dossier, and GPT are complete at the pure-unwired F1
   layer. `WO-SR-006-P` completed the current-main cutover dependency audit and selected Forge as the
-  first shadow-consumption candidate. `WO-SR-006A` is blocked on exact cross-repository CI and
-  private-artifact authority.
+  first shadow-consumption candidate. `WO-SR-006A-P` registered the clean read-only Forge checkout
+  at `D:\terrafusion-forge`. `WO-SR-006A` is blocked on exact cross-repository CI and
+  private-artifact authority; path identity is no longer a blocker.
 Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
 publication, deployment, source retirement, and cutover remain gated.
 

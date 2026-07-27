@@ -69,6 +69,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-E3 | Audit the exact bounded GPT extraction scope | Complete; no executable direct-copy slice; concurrent unratified GPT PR #3 recorded |
 | WO-SR-005E-F1 | Retain and ratify the standalone grounded-context foundation | Complete; GPT PR #3 preserved as unratified history, corrective PR #4 merged, pure unwired F1 retained, authority consumed |
 | WO-SR-006-P | Reconcile cutover readiness and runtime-adoption dependencies | Complete R2; Forge selected as first shadow-consumption candidate |
+| WO-SR-006A-P | Register the standalone Forge repository path canon | Complete R2; exact private checkout registered, no destination content change |
 | WO-SR-006A | Prove a pinned Forge standalone artifact through sovereign shadow consumption | Blocked on exact CI/private-artifact authority; no runtime switch or source retirement |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
@@ -160,7 +161,9 @@ GPT now each have a completed pure-unwired standalone F1 foundation.
 `WO-SR-006-P` reconciled the live repository heads, runtime-adoption gaps, rollback gaps, and stale
 wall-ledger language. Forge is the first successor because its valuation-kernel source is
 byte-identical in the sovereign and standalone repositories with standalone test parity.
-`WO-SR-006A` is the smallest safe next gate: publish or
+`WO-SR-006A-P` then established `D:\terrafusion-forge` as the clean read-only canonical checkout at
+exact private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`. `WO-SR-006A` is the
+smallest safe next gate: publish or
 transfer a pinned private artifact into a non-production sovereign shadow test without changing the
 configured runtime. It remains blocked because it requires cross-repository CI and credential-mediated
 artifact access. Extraction, providers, persistence, runtime adoption, packages, deployment, cutover,
