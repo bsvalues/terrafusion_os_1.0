@@ -3,7 +3,7 @@
 
 > **WO-MAO-001 audit basis:** `docs/brain/evidence/WO-MAO-000-proof.md`
 **Version:** 1.0
-**Date:** 2026-07-18
+**Date:** 2026-07-27
 **Authority:** TerraFusion Brain / WO-WOE-009
 **Classification:** Operator Doctrine — canonical planning surface
 
@@ -19,7 +19,7 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-19 - WO-SR-003/004 created, bootstrapped, and verified all five suite repositories)*
+*(Updated 2026-07-27 - Dais F1 retained after bounded remediation; all four suite F1 foundations are complete and unwired)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|

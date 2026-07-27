@@ -7443,14 +7443,14 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The bounded authority is consumed on the verified sovereign closeout merge. This completed record grants no runtime or successor authority."
+        "notes": "OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727 is consumed on the verified sovereign closeout merge. This completed record is non-executable and grants no write, delivery, runtime, or successor authority."
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",

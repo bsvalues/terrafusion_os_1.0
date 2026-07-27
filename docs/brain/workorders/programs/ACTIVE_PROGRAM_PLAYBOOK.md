@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-07-16
+**Last Updated:** 2026-07-27
 **Base:** `origin/main` at `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` or later
 
 ---
