@@ -8039,6 +8039,7 @@
       "goal": "Create and register a clean read-only Forge shared checkout so future cross-repository dispatch is bound to an exact local path, remote, branch, and head.",
       "riskClass": "R2",
       "status": "complete",
+      "authorityBasis": "Ratified Five-Suite Federated Repository Buildout plus OWNER-TF-STANDING-OPERATOR-AUTHORITY next-WO selection and delivery authority; WO-SR-006-P and PR #1375 explicitly recorded Forge path-canon registration as the remaining operator-owned prerequisite.",
       "dependencies": [
         {
           "id": "WO-SR-006-P",
@@ -8095,7 +8096,7 @@
       "validationGates": [
         {
           "name": "Forge repository identity",
-          "command": "git -C D:\\terrafusion-forge rev-parse --show-toplevel && git -C D:\\terrafusion-forge remote get-url origin && git -C D:\\terrafusion-forge rev-parse HEAD && git -C D:\\terrafusion-forge rev-parse origin/main && git -C D:\\terrafusion-forge status --short",
+          "command": "git -C D:\\terrafusion-forge rev-parse --show-toplevel && git -C D:\\terrafusion-forge remote get-url origin && git -C D:\\terrafusion-forge branch --show-current && git -C D:\\terrafusion-forge rev-parse HEAD && git -C D:\\terrafusion-forge rev-parse origin/main && git -C D:\\terrafusion-forge status --short && gh repo view bsvalues/terrafusion-forge --json nameWithOwner,isPrivate,defaultBranchRef",
           "required": true,
           "result": "pass"
         },

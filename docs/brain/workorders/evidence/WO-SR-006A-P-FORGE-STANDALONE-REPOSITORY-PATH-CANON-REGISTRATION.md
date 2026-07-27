@@ -35,6 +35,15 @@ This closes the path-canon prerequisite identified by WO-SR-006-P and PR #1375 r
 authorize artifact transfer, workflow changes, shadow consumption, runtime configuration, source
 retirement, publication, deployment, production, or cutover.
 
+## Admission Authority
+
+This Work Order does not create a new program or material product scope. The already-ratified
+Five-Suite Federated Repository Buildout owns repository identity and cross-repository routing.
+`WO-SR-006-P`, merged in PR #1375, explicitly required Forge path-canon registration before
+dispatch. Active decision `OWNER-TF-STANDING-OPERATOR-AUTHORITY` authorizes next-WO selection and
+delivery for dependency-cleared work inside that separately ratified scope. This R2 decomposition
+only closes that recorded prerequisite and grants no protected R3 action.
+
 ## Scope Proof
 
 The sovereign change is limited to the exact ten-file A-P allowlist:

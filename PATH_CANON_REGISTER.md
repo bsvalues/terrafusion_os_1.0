@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- |
 | `bsvalues/terrafusion_os_1.0` | `C:\Users\bsval\terrafusion_os_1.0` | `github.com/bsvalues/terrafusion_os_1.0` | `main` | TerraFusion OS product and Brain governance |
 | `bsvalues/terrafusion-os` | `C:\Users\bsval\terrafusion-os` | `github.com/bsvalues/terrafusion-os` | `main` | Sovereign Sync workbook tooling and contract estate |
-| `bsvalues/terrafusion-forge` | `D:\terrafusion-forge` | `github.com/bsvalues/terrafusion-forge` | `main` | Standalone Forge suite product source, valuation-kernel parity, and evidence |
+| `bsvalues/terrafusion-forge` | `D:\terrafusion-forge` | `git@github.com:bsvalues/terrafusion-forge.git` | `main` | Standalone Forge suite product source, valuation-kernel parity, and evidence |
 | `bsvalues/terrafusion-atlas` | `C:\Users\bsval\terrafusion-atlas` | `github.com/bsvalues/terrafusion-atlas` | `main` | Standalone Atlas suite product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite bootstrap, future product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite bootstrap, future product source, contract compatibility, and evidence |

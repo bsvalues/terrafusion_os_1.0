@@ -5,6 +5,7 @@
 | Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R2 read-only repository identity and governance |
+| Authority | Ratified five-suite program plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`; WO-SR-006-P and PR #1375 explicitly identified Forge path-canon registration as the remaining operator-owned prerequisite |
 | Dependency | WO-SR-006-P complete |
 | Result | FORGE_PATH_CANON_REGISTERED |
 | Next | WO-SR-006A exact bounded CI/private-artifact authority decision |
