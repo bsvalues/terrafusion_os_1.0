@@ -72,9 +72,11 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   PR #4 added calendar-valid UTC and complete lifecycle-ordering proof, passed all gates and
   exact-head assurance, and merged as `29a34b0f`. Dais PR #3 remains unratified history and the
   bounded authority is consumed. Atlas, Dais, Dossier, and GPT are complete at the pure-unwired F1
-  layer. No bounded R2 successor remains admitted; portfolio reconciliation is current.
-Runtime/provider adoption, extraction, custody or persistence mutation,
-protected data, publication/unrelated workflow changes, and cutover remain gated.
+  layer. `WO-SR-006-P` completed the current-main cutover dependency audit and selected Forge as the
+  first shadow-consumption candidate. `WO-SR-006A` is blocked on exact cross-repository CI and
+  private-artifact authority.
+Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
+publication, deployment, source retirement, and cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

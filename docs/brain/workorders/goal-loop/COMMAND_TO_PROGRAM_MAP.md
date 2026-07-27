@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | Portfolio reconciliation | NO - four pure-unwired standalone F1 foundations complete; operator must reconcile before admitting further work | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | Portfolio reconciliation | YES - extraction/runtime/provider/persistence/protected scope remains gated after F1-layer completion | `program`, `once`, `evidence` |
+| `program-next` | Portfolio Operator | `WO-SR-006A` protected successor | YES - exact CI/private-artifact authority required after completed R2 reconciliation | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-006A` Forge shadow-consumption gate | YES - cross-repository CI and credential-mediated artifact access require an exact bounded grant | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
