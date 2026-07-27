@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006-P federated cutover readiness audit",
+  "generatedBy": "WO-SR-006A-P Forge repository path canon registration",
   "generatedAt": "2026-07-27T00:00:00Z",
-  "description": "Five-suite registry after the pure-unwired F1 layer and WO-SR-006-P cutover dependency audit. Forge is the first protected shadow-consumption candidate; cross-repository CI, credential-mediated artifact access, runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after the pure-unwired F1 layer, WO-SR-006-P cutover dependency audit, and Forge path-canon registration. Forge is the first protected shadow-consumption candidate; cross-repository CI, credential-mediated artifact access, runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -8010,10 +8010,10 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-006A",
-          "reason": "Forge alone has byte-identical kernel source plus standalone test parity and is the smallest safe candidate for pinned non-production shadow consumption.",
-          "riskClass": "R3",
-          "blocked": true
+          "id": "WO-SR-006A-P",
+          "reason": "Forge is the selected protected successor, but its exact local repository identity must be registered before cross-repository dispatch.",
+          "riskClass": "R2",
+          "blocked": false
         }
       ],
       "authority": {
@@ -8033,6 +8033,123 @@
       }
     },
     {
+      "id": "WO-SR-006A-P",
+      "title": "Forge Standalone Repository Path Canon Registration",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Create and register a clean read-only Forge shared checkout so future cross-repository dispatch is bound to an exact local path, remote, branch, and head.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-006-P",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1375 merged as 358c1ab2742b0aa28c16931cfa472b440455c98d and identified Forge path registration as the remaining operator-owned prerequisite."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only Forge repository identity and sovereign path-canon governance",
+          "paths": [
+            "D:\\terrafusion-forge",
+            "PATH_CANON_REGISTER.md",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Forge source mutation, artifact transfer, workflows, runtime consumers, packages, publication, deployment, source retirement, cutover, protected resources, credentials, and secret values"
+        }
+      ],
+      "allowedFiles": [
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/active/WO-SR-006A-P-forge-standalone-repository-path-canon-registration.md",
+        "docs/brain/workorders/evidence/WO-SR-006A-P-FORGE-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "D:\\terrafusion-forge\\**",
+        ".github/workflows/**",
+        "backend/**",
+        "frontend/**",
+        "packages/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact local path, remote, visibility, default branch, HEAD/origin-main equality, clean status, read-only checkout rule, and no destination-content mutation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Forge repository identity",
+          "command": "git -C D:\\terrafusion-forge rev-parse --show-toplevel && git -C D:\\terrafusion-forge remote get-url origin && git -C D:\\terrafusion-forge branch --show-current && git -C D:\\terrafusion-forge rev-parse HEAD && git -C D:\\terrafusion-forge rev-parse origin/main && git -C D:\\terrafusion-forge status --short && gh repo view bsvalues/terrafusion-forge --json nameWithOwner,isPrivate,defaultBranchRef",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query and tooling",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Diff and exact scope",
+          "command": "git diff --check && inspect exact changed paths",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-006A-P-FORGE-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+          "summary": "Clean private Forge checkout at D:\\terrafusion-forge, exact origin/main 2430b483f20e07a6ff9a66e493caab0e39db64ef, and read-only routing rule."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before artifact transfer, workflow changes, runtime adoption, publication, deployment, source retirement, cutover, protected-resource access, credential changes, or secret-value inspection."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-006A",
+          "reason": "Forge path identity is now canonical; the remaining shadow-consumption work requires exact cross-repository CI and private-artifact authority.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Admission derives from the ratified Five-Suite Federated Repository Buildout, OWNER-TF-STANDING-OPERATOR-AUTHORITY next-WO selection and delivery authority, and the WO-SR-006-P / PR #1375 requirement to register Forge before dispatch. The completed R2 registration is non-executable and grants no artifact, workflow, runtime, or successor authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-27T00:00:00Z",
+        "source": "Ratified Five-Suite Federated Repository Buildout plus OWNER-TF-STANDING-OPERATOR-AUTHORITY; WO-SR-006-P and PR #1375 recorded the prerequisite. Live Forge identity inspection at sovereign base 358c1ab2742b0aa28c16931cfa472b440455c98d and private Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-SR-006A",
       "title": "Forge Standalone Kernel Artifact and Shadow-Consumer Gate",
       "program": "Five-Suite Federated Repository Buildout",
@@ -8041,10 +8158,10 @@
       "status": "blocked",
       "dependencies": [
         {
-          "id": "WO-SR-006-P",
+          "id": "WO-SR-006A-P",
           "status": "satisfied",
           "evidence": [
-            "WO-SR-006-P selected Forge as the first protected successor and defined the exact workflow, test, proof, rollback, and denial boundaries."
+            "WO-SR-006A-P registered D:\\terrafusion-forge at private origin/main 2430b483f20e07a6ff9a66e493caab0e39db64ef and preserved the read-only shared-checkout rule."
           ]
         }
       ],
@@ -8056,7 +8173,6 @@
         {
           "name": "Sovereign non-production Forge kernel shadow gate",
           "paths": [
-            "PATH_CANON_REGISTER.md",
             ".github/workflows/terraforge-kernels.yml",
             "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
             "docs/brain/workorders/**"
@@ -8072,7 +8188,6 @@
         "bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml",
         "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006A-forge-standalone-kernel-artifact.md",
         "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
-        "PATH_CANON_REGISTER.md",
         ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
         "The exact sovereign governance, Work Order, evidence, registry, and routing files admitted by the future authority packet"
@@ -8129,11 +8244,11 @@
         "mayMarkReady": false,
         "mayMerge": false,
         "mayCleanup": false,
-        "notes": "No implementation authority exists. Activate only through an exact bounded owner decision tied to the WO-SR-006-P evidence."
+        "notes": "No implementation authority exists. Activate only through an exact bounded owner decision tied to the WO-SR-006-P and WO-SR-006A-P evidence."
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
-        "source": "WO-SR-006-P exact readiness decomposition at sovereign base f96bc0919f8c9091c5205fae8b5352a6d19253bd and Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
+        "source": "WO-SR-006-P readiness decomposition plus WO-SR-006A-P exact Forge path registration at sovereign base 358c1ab2742b0aa28c16931cfa472b440455c98d and Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
         "schemaVersion": "0.1.0"
       }
     }

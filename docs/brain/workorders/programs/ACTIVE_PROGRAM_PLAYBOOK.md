@@ -98,8 +98,8 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; F1 layer and cutover dependency audit complete |
-| Current | `WO-SR-006-P` complete |
+| Status | Active between cohorts; F1 layer, cutover dependency audit, and Forge path canon complete |
+| Current | `WO-SR-006A-P` complete |
 | Next | `WO-SR-006A` blocked on exact CI/private-artifact authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -172,6 +172,9 @@ byte-identical kernel source plus standalone test parity. `WO-SR-006A` requires 
 cross-repository artifact and CI authority before a non-production shadow test can run. Extraction,
 providers, persistence, runtime adoption, publication, deployment, source retirement, and cutover
 remain gated.
+`WO-SR-006A-P` registered `D:\terrafusion-forge` as the clean read-only canonical checkout at
+private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`. Future workers require
+isolated Forge worktrees; the registration grants no implementation or delivery authority.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -623,7 +626,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-006-P` complete |
+| Current WO | `WO-SR-006A-P` complete |
 | Next WO | `WO-SR-006A` blocked on exact CI/private-artifact authority |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the

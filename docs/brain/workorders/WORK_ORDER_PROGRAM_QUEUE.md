@@ -54,6 +54,9 @@ evidence. Forge is the first cutover candidate because it alone has byte-identic
 standalone test parity. `WO-SR-006A` is blocked pending exact authority for private cross-repository
 artifact access and two narrowly bounded CI workflow changes; runtime switching and source
 retirement remain later gates.
+`WO-SR-006A-P` registered the clean read-only `D:\terrafusion-forge` checkout at exact private
+`origin/main` `2430b483`. The path-canon prerequisite is complete; it grants no artifact, workflow,
+runtime, publication, deployment, or cutover authority.
 
 `WO-MAO-000` through `WO-MAO-004` are complete. The two-lane pilot merged PRs #1281 and #1280,
 received independent exact-head and post-merge assurance, and recorded zero founder queue-routing
@@ -117,6 +120,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005D Dossier Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | Path canon registered; original PR #2 incident preserved; corrective PR #3 verified; pure unwired F1 retained with no runtime, custody, persistence, extraction, or cutover authority |
 | WO-SR-005E GPT Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | E3 found no executable direct-copy slice; original GPT PR #3 remains unratified history, corrective PR #4 verified, and pure unwired F1 is retained with no runtime/provider/persistence authority |
 | WO-SR-006-P Federated Cutover Readiness Audit | DONE / R2 | Live heads and evidence reconciled; no further unprotected R2 implementation node remains; Forge selected as the smallest shadow-consumption candidate |
+| WO-SR-006A-P Forge Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-forge` registered at exact private `origin/main` `2430b483`; destination content unchanged |
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | BLOCKED / R3 | Requires exact cross-repository CI and private-artifact authority; no runtime switch, deployment, publication, or source retirement is included |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)

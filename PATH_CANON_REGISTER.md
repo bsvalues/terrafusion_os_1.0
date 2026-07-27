@@ -6,6 +6,7 @@
 | --- | --- | --- | --- | --- |
 | `bsvalues/terrafusion_os_1.0` | `C:\Users\bsval\terrafusion_os_1.0` | `github.com/bsvalues/terrafusion_os_1.0` | `main` | TerraFusion OS product and Brain governance |
 | `bsvalues/terrafusion-os` | `C:\Users\bsval\terrafusion-os` | `github.com/bsvalues/terrafusion-os` | `main` | Sovereign Sync workbook tooling and contract estate |
+| `bsvalues/terrafusion-forge` | `D:\terrafusion-forge` | `git@github.com:bsvalues/terrafusion-forge.git` | `main` | Standalone Forge suite product source, valuation-kernel parity, and evidence |
 | `bsvalues/terrafusion-atlas` | `C:\Users\bsval\terrafusion-atlas` | `github.com/bsvalues/terrafusion-atlas` | `main` | Standalone Atlas suite product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite bootstrap, future product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite bootstrap, future product source, contract compatibility, and evidence |
@@ -19,6 +20,12 @@ The shared checkouts remain read-only synchronization surfaces; workers still re
 worktrees in the target repository.
 
 ## Current Verification
+
+On 2026-07-27, `D:\terrafusion-forge` resolved to remote
+`git@github.com:bsvalues/terrafusion-forge.git`, default branch `main`, at `HEAD = origin/main =
+2430b483f20e07a6ff9a66e493caab0e39db64ef`. GitHub reports the repository as private. The checkout
+was clean after clone and remains a read-only synchronization surface. Cross-repository Forge
+workers must use isolated worktrees attached to this canonical repository.
 
 On 2026-07-17, `C:\Users\bsval\terrafusion-os` resolved to remote
 `https://github.com/bsvalues/terrafusion-os.git`, default branch `main`, at `origin/main`
