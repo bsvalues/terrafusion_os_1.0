@@ -167,8 +167,8 @@ fractional ordering, and the full filed/hearing/decision lifecycle; it passed al
 exact-head assurance and merged as `29a34b0f`. Dais F1 is retained as pure and unwired, PR #3
 remains unratified history, and the authority is consumed. The four standalone suite foundations
 are complete at the pure-unwired F1 layer. `WO-SR-006-P` then completed the dependency-cleared R2
-cutover audit. It selected Forge as the first protected successor because Forge alone has a
-byte-identical executable in both repositories. `WO-SR-006A` requires exact private
+cutover audit. It selected Forge as the first protected successor because Forge alone has
+byte-identical kernel source plus standalone test parity. `WO-SR-006A` requires exact private
 cross-repository artifact and CI authority before a non-production shadow test can run. Extraction,
 providers, persistence, runtime adoption, publication, deployment, source retirement, and cutover
 remain gated.

@@ -158,8 +158,9 @@ assurance passed. It merged as `29a34b0f`, retaining the five-file module as pur
 preserving PR #3 as unratified history. The Dais authority is consumed. Atlas, Dais, Dossier, and
 GPT now each have a completed pure-unwired standalone F1 foundation.
 `WO-SR-006-P` reconciled the live repository heads, runtime-adoption gaps, rollback gaps, and stale
-wall-ledger language. Forge is the first successor because its valuation kernel is byte-identical in
-the sovereign and standalone repositories. `WO-SR-006A` is the smallest safe next gate: publish or
+wall-ledger language. Forge is the first successor because its valuation-kernel source is
+byte-identical in the sovereign and standalone repositories with standalone test parity.
+`WO-SR-006A` is the smallest safe next gate: publish or
 transfer a pinned private artifact into a non-production sovereign shadow test without changing the
 configured runtime. It remains blocked because it requires cross-repository CI and credential-mediated
 artifact access. Extraction, providers, persistence, runtime adoption, packages, deployment, cutover,

@@ -7983,7 +7983,7 @@
       "nextCandidates": [
         {
           "id": "WO-SR-006A",
-          "reason": "Forge alone has a byte-identical executable in both repositories and is the smallest safe candidate for pinned non-production shadow consumption.",
+          "reason": "Forge alone has byte-identical kernel source plus standalone test parity and is the smallest safe candidate for pinned non-production shadow consumption.",
           "riskClass": "R3",
           "blocked": true
         }

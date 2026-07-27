@@ -30,7 +30,7 @@ checkout remained quarantined and the audit ran in a dedicated current-main work
 
 | Suite | Existing proof | Missing before cutover | Current classification |
 | --- | --- | --- | --- |
-| Forge | Byte-identical Rust valuation kernel in sovereign and standalone repositories; 2/2 parity; required suite checks | Standalone artifact publication or transfer contract, sovereign shadow consumption, deployment-neutral path contract, rollback rehearsal, ownership transfer | First protected successor |
+| Forge | Byte-identical Rust valuation-kernel source in sovereign and standalone repositories; 2/2 standalone test parity; required suite checks | Standalone artifact publication or transfer contract, sovereign shadow consumption, deployment-neutral path contract, rollback rehearsal, ownership transfer | First protected successor |
 | Atlas | Frozen `atlas.spatial-read@1.0.0`, unwired sovereign adapter, standalone projection and hash-pinned synthetic parity | Runtime provider/consumer, package boundary, integration parity, rollback, ownership transfer | Pure-unwired F1 only |
 | Dais | Frozen `dais.appeal-workflow@1.0.0`, unwired sovereign adapter, corrected standalone lifecycle foundation and parity | Runtime service/consumer, persistence boundary, county-safe integration proof, rollback, ownership transfer | Pure-unwired F1 only |
 | Dossier | Frozen `dossier.evidence-registry-read@1.0.0`, unwired sovereign adapter, corrected standalone evidence foundation and parity | Runtime consumer, custody/persistence boundary, integration proof, rollback, ownership transfer | Pure-unwired F1 only |
@@ -52,8 +52,9 @@ These are real gaps, not failed tests. Existing F1 evidence explicitly denied th
 
 ## Why Forge is first
 
-Forge is the only suite whose standalone executable is an exact byte-proven copy of a sovereign
-runtime component. The sovereign API currently invokes
+Forge is the only suite whose standalone kernel source is an exact byte-proven copy of sovereign
+kernel source and whose standalone repository independently passes the two-case parity corpus. The
+sovereign API currently invokes
 `packages/terrabuild/kernels/target/release/terraforge-kernel-valuation.exe` through
 `ValuationKernelClient`. The standalone repository contains the same kernel source at exact main
 `2430b483f20e07a6ff9a66e493caab0e39db64ef`.

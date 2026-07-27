@@ -60,7 +60,7 @@ runtime adoption, publication, deployment, ownership transfer, or source retirem
 `DECOMPOSITION_COMPLETE_R3_CROSS_REPOSITORY_ARTIFACT_AUTHORITY_REQUIRED`
 
 All five suite repositories are healthy, private, and have no open pull requests. Forge is the first
-cutover candidate because it alone has a byte-identical executable extracted from sovereign source.
+cutover candidate because it alone has byte-identical kernel source plus standalone test parity.
 Atlas, Dais, Dossier, and GPT have contract-backed, pure-unwired standalone foundations but no
 runtime consumer.
 

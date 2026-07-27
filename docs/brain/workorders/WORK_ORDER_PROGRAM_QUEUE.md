@@ -50,8 +50,8 @@ standalone F1 foundations (Atlas, Dais, Dossier, GPT) are now complete at the pu
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 `WO-SR-006-P` then reconciled the cutover prerequisites against live suite heads and the preserved
-evidence. Forge is the first cutover candidate because it alone has a byte-identical executable in
-both repositories. `WO-SR-006A` is blocked pending exact authority for private cross-repository
+evidence. Forge is the first cutover candidate because it alone has byte-identical kernel source plus
+standalone test parity. `WO-SR-006A` is blocked pending exact authority for private cross-repository
 artifact access and two narrowly bounded CI workflow changes; runtime switching and source
 retirement remain later gates.
 
