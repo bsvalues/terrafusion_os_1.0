@@ -68,7 +68,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Complete; GPT PR #1 plus PR #2 remediation, 13 mirrored hashes, 13 verifier tests |
 | WO-SR-005E-E3 | Audit the exact bounded GPT extraction scope | Complete; no executable direct-copy slice; concurrent unratified GPT PR #3 recorded |
 | WO-SR-005E-F1 | Retain and ratify the standalone grounded-context foundation | Complete; GPT PR #3 preserved as unratified history, corrective PR #4 merged, pure unwired F1 retained, authority consumed |
-| WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
+| WO-SR-006-P | Reconcile cutover readiness and runtime-adoption dependencies | Complete R2; Forge selected as first shadow-consumption candidate |
+| WO-SR-006A | Prove a pinned Forge standalone artifact through sovereign shadow consumption | Blocked on exact CI/private-artifact authority; no runtime switch or source retirement |
+| WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
 ## Extraction and provenance policy
@@ -155,6 +157,11 @@ fractional precision, and complete filed/hearing/decision ordering; all remote g
 assurance passed. It merged as `29a34b0f`, retaining the five-file module as pure and unwired while
 preserving PR #3 as unratified history. The Dais authority is consumed. Atlas, Dais, Dossier, and
 GPT now each have a completed pure-unwired standalone F1 foundation.
-Extraction,
-providers, persistence, runtime
-adoption, packages, deployment, cutover, and successor implementation remain unauthorized.
+`WO-SR-006-P` reconciled the live repository heads, runtime-adoption gaps, rollback gaps, and stale
+wall-ledger language. Forge is the first successor because its valuation-kernel source is
+byte-identical in the sovereign and standalone repositories with standalone test parity.
+`WO-SR-006A` is the smallest safe next gate: publish or
+transfer a pinned private artifact into a non-production sovereign shadow test without changing the
+configured runtime. It remains blocked because it requires cross-repository CI and credential-mediated
+artifact access. Extraction, providers, persistence, runtime adoption, packages, deployment, cutover,
+and source retirement remain unauthorized.

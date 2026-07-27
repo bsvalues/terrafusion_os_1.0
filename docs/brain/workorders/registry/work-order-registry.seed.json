@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005C-F1 retain-and-remediate closeout",
+  "generatedBy": "WO-SR-006-P federated cutover readiness audit",
   "generatedAt": "2026-07-27T00:00:00Z",
-  "description": "Five-suite registry after Dais PR #4 corrected the unratified PR #3 foundation and the bounded owner decision retained it as an unwired F1 baseline. Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations are complete; extraction, runtime adoption, providers, persistence, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after the pure-unwired F1 layer and WO-SR-006-P cutover dependency audit. Forge is the first protected shadow-consumption candidate; cross-repository CI, credential-mediated artifact access, runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7879,6 +7879,261 @@
       "provenance": {
         "createdAt": "2026-07-23T00:00:00Z",
         "source": "Read-only classification of the sovereign Dais/appeal source surface against frozen dais.appeal-workflow@1.0.0 at sovereign base e57b1eca9, mirroring the Atlas WO-SR-005B-E3 scope audit.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-006-P",
+      "title": "Federated Cutover Readiness and Runtime-Adoption Dependency Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Reconcile all five suite foundations and identify the smallest evidence-backed successor toward ownership cutover without crossing runtime, CI, credential, deployment, or protected-resource boundaries.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005A",
+          "status": "satisfied",
+          "evidence": [
+            "Forge extraction closeout and destination parity are recorded at standalone main 2430b483f20e07a6ff9a66e493caab0e39db64ef."
+          ]
+        },
+        {
+          "id": "WO-SR-005B-F1",
+          "status": "satisfied",
+          "evidence": [
+            "The Atlas standalone spatial projection foundation is complete with direct module and standalone verifier parity."
+          ]
+        },
+        {
+          "id": "WO-SR-005C-F1",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1374 merged at f96bc0919f8c9091c5205fae8b5352a6d19253bd, completing and ratifying the final pure-unwired F1 foundation."
+          ]
+        },
+        {
+          "id": "WO-SR-005D-F1",
+          "status": "satisfied",
+          "evidence": [
+            "Corrective Dossier PR #3 merged at 7558cfebfeea0c7b536251769b1d779c4558a763 with the retained pure-unwired F1 foundation."
+          ]
+        },
+        {
+          "id": "WO-SR-005E-F1",
+          "status": "satisfied",
+          "evidence": [
+            "Corrective GPT PR #4 merged at e0856e46807844a95d57aaef49d3350c1bc38a33 with the retained pure-unwired F1 foundation."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "TerraFusion Work Order governance, suite evidence, and read-only GitHub repository identity",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Source, contracts, packages, workflows, branch protection, runtime consumers, providers, persistence, private artifact transfer, credentials, deployment, source retirement, cutover, and protected resources"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-006-P-federated-cutover-readiness-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-006-P-FEDERATED-CUTOVER-READINESS-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Pin sovereign and suite heads, reconcile F1 and parity evidence, enumerate missing adoption and rollback proof, correct stale wall state, and identify the smallest protected successor."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-006-P-FEDERATED-CUTOVER-READINESS-AUDIT.md",
+          "summary": "Live five-repository readiness matrix, shared missing-proof inventory, corrected wall state, and exact Forge shadow-consumption authority boundary."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before workflow modification, private cross-repository artifact access, runtime adoption, package publication, deployment, source retirement, ownership transfer, cutover, or protected-resource access."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-006A",
+          "reason": "Forge alone has byte-identical kernel source plus standalone test parity and is the smallest safe candidate for pinned non-production shadow consumption.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "The completed R2 audit is non-executable. Standing authority delivered this exact nine-file governance scope and grants no successor implementation authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-27T00:00:00Z",
+        "source": "Current-main portfolio reconciliation at f96bc0919f8c9091c5205fae8b5352a6d19253bd plus live suite GitHub heads and completed Forge, Atlas, Dais, Dossier, and GPT evidence.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-006A",
+      "title": "Forge Standalone Kernel Artifact and Shadow-Consumer Gate",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove a hash-pinned private Forge valuation-kernel artifact through the sovereign non-production integration harness without switching runtime configuration or retiring source.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-SR-006-P",
+          "status": "satisfied",
+          "evidence": [
+            "WO-SR-006-P selected Forge as the first protected successor and defined the exact workflow, test, proof, rollback, and denial boundaries."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Private Forge suite CI artifact build",
+          "paths": ["bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml"]
+        },
+        {
+          "name": "Sovereign non-production Forge kernel shadow gate",
+          "paths": [
+            "PATH_CANON_REGISTER.md",
+            ".github/workflows/terraforge-kernels.yml",
+            "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime configuration or source changes, appsettings, provider or persistence changes, public publication, deployment, production, county/PACS/SQL, secret-value inspection, source retirement, ownership transfer, and WO-SR-006 cutover"
+        }
+      ],
+      "allowedFiles": [
+        "bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml",
+        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006A-forge-standalone-kernel-artifact.md",
+        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
+        "PATH_CANON_REGISTER.md",
+        ".github/workflows/terraforge-kernels.yml",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "The exact sovereign governance, Work Order, evidence, registry, and routing files admitted by the future authority packet"
+      ],
+      "blockedFiles": [
+        "backend/src/**",
+        "backend/**/appsettings*.json",
+        "packages/terrabuild/kernels/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact standalone source SHA, artifact SHA-256, private retrieval proof, sovereign and standalone output parity, fail-closed parity, unchanged runtime path, and revert-only rollback."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Forge suite required checks",
+          "command": "suite-ci, contract-compat, governance-gate",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Sovereign Forge shadow parity",
+          "command": "future exact-head workflow and integration-test command",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order query and planner tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Blocked until one bounded owner decision authorizes the exact private cross-repository artifact access and two workflow changes. No runtime switch, publication, deployment, source retirement, or cutover is implied."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "No implementation authority exists. Activate only through an exact bounded owner decision tied to the WO-SR-006-P evidence."
+      },
+      "provenance": {
+        "createdAt": "2026-07-27T00:00:00Z",
+        "source": "WO-SR-006-P exact readiness decomposition at sovereign base f96bc0919f8c9091c5205fae8b5352a6d19253bd and Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
         "schemaVersion": "0.1.0"
       }
     }

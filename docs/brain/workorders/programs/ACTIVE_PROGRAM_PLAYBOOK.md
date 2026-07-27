@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations complete |
-| Current | `WO-SR-005C-F1` complete |
-| Next | Portfolio reconciliation |
+| Status | Active between cohorts; F1 layer and cutover dependency audit complete |
+| Current | `WO-SR-006-P` complete |
+| Next | `WO-SR-006A` blocked on exact CI/private-artifact authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -166,9 +166,12 @@ PR #3. Corrective Dais PR #4 enforced calendar-valid UTC timestamps, known leap-
 fractional ordering, and the full filed/hearing/decision lifecycle; it passed all remote gates and
 exact-head assurance and merged as `29a34b0f`. Dais F1 is retained as pure and unwired, PR #3
 remains unratified history, and the authority is consumed. The four standalone suite foundations
-are complete at the pure-unwired F1 layer. No bounded R2 successor is currently admitted.
-Extraction, providers,
-persistence, runtime adoption, publication, deployment, and cutover remain gated.
+are complete at the pure-unwired F1 layer. `WO-SR-006-P` then completed the dependency-cleared R2
+cutover audit. It selected Forge as the first protected successor because Forge alone has
+byte-identical kernel source plus standalone test parity. `WO-SR-006A` requires exact private
+cross-repository artifact and CI authority before a non-production shadow test can run. Extraction,
+providers, persistence, runtime adoption, publication, deployment, source retirement, and cutover
+remain gated.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -620,8 +623,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005C-F1` complete |
-| Next WO | Portfolio reconciliation |
+| Current WO | `WO-SR-006-P` complete |
+| Next WO | `WO-SR-006A` blocked on exact CI/private-artifact authority |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
