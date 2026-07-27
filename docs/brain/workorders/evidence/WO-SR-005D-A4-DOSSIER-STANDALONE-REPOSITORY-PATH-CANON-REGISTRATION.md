@@ -80,7 +80,31 @@ The sovereign change is limited to the exact ten-file A4 allowlist:
 
 ## Next Boundary
 
-No bounded R2 node remains admitted after A4. Dossier PR #2 and GPT PR #3 each require an exact
-retain-or-revert disposition before either F1-like destination module can be accepted, changed, or
-used as a dependency. Dais F1 also remains separately gated. No runtime, provider, persistence,
-publication, deployment, production, or cutover authority exists.
+No bounded R2 node remained admitted after A4. The owner subsequently issued
+`OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726`.
+
+## Final Dossier F1 Disposition
+
+| Field | Value |
+| --- | --- |
+| Original unratified PR | Dossier PR #2 |
+| Original reviewed head | `2a3b3f9e228b4fad1c20d3a9619d16eb9724aca3` |
+| Original merge | `ccdc227812264ec52f4ec506de49693ac91d0a9d` |
+| Original substantive findings | Missing canonical F1 admission; lexical rather than instant-based `createdAt` ordering |
+| Corrective PR | Dossier PR #3 |
+| Corrective exact head | `a185278fa1171927951e47dbdd3cb27275b21eef` |
+| Corrective merge | `7558cfebfeea0c7b536251769b1d779c4558a763` |
+| Corrective validation | 20 direct module tests; 6 standalone verifier tests; 12 hash pins; 3 positive and 8 negative corpus verdicts; suite-ci, contract-compat, governance-gate, and `git diff --check` passed |
+| Review disposition | Both original PR #2 threads resolved after direct replies and verified corrective merge |
+| Final status | `RETAINED_PURE_UNWIRED_F1` |
+| Authority | Consumed on verified sovereign closeout |
+
+The correction compares exact UTC instants, preserves arbitrary fractional precision, uses
+`evidenceId` ordinal ascending for equal instants, rejects invalid instants, and never mutates or
+reorders caller data. Historical truth is unchanged: PR #2 was not authorized when it merged.
+Retention accepts only the remediated head now on Dossier `main`; it does not authorize runtime,
+custody, persistence, extraction, provider, publication, deployment, protected-resource, or cutover
+work.
+
+GPT PR #3 remains an unratified F1-like destination mutation requiring exact disposition. Dais F1
+also remains separately gated.

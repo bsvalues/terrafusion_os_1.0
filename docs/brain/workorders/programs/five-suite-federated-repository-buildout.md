@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Dossier A4 complete; Dossier and GPT F1 disposition next
+**Status:** Active between cohorts; Dossier F1 retained after remediation; GPT F1 disposition next
 
 ## Ratified topology
 
@@ -55,7 +55,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005D-E2 | Implement standalone synthetic contract/parity harness | Complete; Dossier PR #1 / merge `dcd8a1a3`, all required checks passed |
 | WO-SR-005D-E3 | Audit the exact bounded Dossier extraction scope | Complete; no safe direct-copy slice found; build-fresh F1 candidate proposed |
 | WO-SR-005D-A4 | Register the standalone Dossier repository path canon | Complete R2; exact private checkout registered; PR #2 recorded as unratified F1 mutation |
-| WO-SR-005D-F1 | Build the standalone evidence-registry foundation | Blocked pending exact owner disposition; Dossier PR #2 merged without matching canonical F1 authority |
+| WO-SR-005D-F1 | Build the standalone evidence-registry foundation | Complete after retain-and-remediate disposition; original PR #2 remains unratified history, corrective PR #3 / merge `7558cfeb` passed and retained the pure unwired module |
 | WO-SR-005E-P | Prepare GPT governed-AI contract and grounding gate | Complete; grounded-context selected, current adapter not parity-safe |
 | WO-SR-005E-C | Decompose the GPT grounded-context contract | Complete; provider-neutral read-only boundary defined |
 | WO-SR-005E-I | Implement and freeze the GPT grounded-context contract | Complete; `gpt.grounded-context@1.0.0`, no provider/runtime adoption |

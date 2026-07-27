@@ -111,8 +111,12 @@ custody mutation, persistence, publication, deployment, cutover, or duplicate re
 
 ## Next
 
-Portfolio reconciliation continues. Before `WO-SR-005D-F1` can be dispatched, a bounded R2
-Dossier path-canon registration must establish its reproducible local checkout identity; F1 also
-remains a separately gated R3 candidate.
-`WO-SR-005E-E3` is the next analogous dependency-cleared R2 source-scope audit because GPT E1/E2 are
-complete and its extraction boundary remains unproven.
+WO-SR-005D-A4 later registered the exact Dossier path canon and discovered Dossier PR #2 had already
+merged the proposed five-file F1 shape without canonical authority. The original merge remains
+recorded as unratified. `OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726` authorized conditional
+retention, exact timestamp-ordering remediation, and sovereign ratification. Corrective Dossier PR
+#3 at head `a185278fa1171927951e47dbdd3cb27275b21eef` merged as
+`7558cfebfeea0c7b536251769b1d779c4558a763`, passed all required checks, and resolved both original
+review findings. The corrected module is retained as the pure unwired F1 baseline. No runtime,
+custody, persistence, extraction, provider, publication, deployment, protected-resource, or cutover
+authority follows from that retention.
