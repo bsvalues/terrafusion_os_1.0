@@ -7862,10 +7862,10 @@
       "stopConditions": [
         {
           "type": "runtime-adoption",
-          "description": "PASS_NO_DIRECT_EXTRACTION authorizes only the fresh-build F1 slice; WO-SR-005C-E2 parity, WO-SR-005C-F1 implementation, runtime adoption, providers, persistence, and WO-SR-006 cutover each require their own later Work Order."
+          "description": "E3 did not authorize implementation. WO-SR-005C-F1 later completed under OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727; runtime adoption, providers, persistence, extraction, publication, deployment, protected resources, and WO-SR-006 cutover remain unauthorized."
         }
       ],
-      "nextCandidates": ["WO-SR-005C-F1"],
+      "nextCandidates": [],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
