@@ -85,16 +85,19 @@ Standalone Forge repository:
 
 Sovereign repository:
 
-1. `.github/workflows/terraforge-kernels.yml` - pinned private-repository artifact retrieval and
+1. `PATH_CANON_REGISTER.md` - verify and register the exact Forge local path, remote, and default
+   branch before cross-repository dispatch
+2. `.github/workflows/terraforge-kernels.yml` - pinned private-repository artifact retrieval and
    shadow-parity job only
-2. `backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs` -
+3. `backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs` -
    explicit test-only artifact path and parity assertions
-3. the exact governance, Work Order, evidence, registry, and routing files admitted by the future
+4. the exact governance, Work Order, evidence, registry, and routing files admitted by the future
    packet
 
 ### Required proof
 
 - exact standalone source SHA and artifact SHA-256;
+- exact Forge repository, local path, remote, and default-branch registration before dispatch;
 - private artifact retrieval succeeds without exposing credential values;
 - existing sovereign kernel remains the configured runtime;
 - standalone artifact passes the existing valuation integration corpus;
@@ -105,9 +108,11 @@ Sovereign repository:
 
 ### Why standing authority does not cover it
 
-The successor changes two CI workflow surfaces and requires authenticated access to an artifact from
-a private sibling repository. Both CI wiring and credential-mediated cross-repository access are
-protected boundaries under root governance. The current R2 Work Order cannot create that authority.
+The successor must first register Forge in the root path canon, then change two CI workflow surfaces
+and use authenticated access to an artifact from a private sibling repository. CI wiring and
+credential-mediated cross-repository access are protected boundaries under root governance. The
+current exact nine-file R2 Work Order cannot change the root path canon or create those protected
+authorities.
 
 ### Explicit denials
 

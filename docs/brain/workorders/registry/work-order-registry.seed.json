@@ -7891,10 +7891,38 @@
       "status": "complete",
       "dependencies": [
         {
+          "id": "WO-SR-005A",
+          "status": "satisfied",
+          "evidence": [
+            "Forge extraction closeout and destination parity are recorded at standalone main 2430b483f20e07a6ff9a66e493caab0e39db64ef."
+          ]
+        },
+        {
+          "id": "WO-SR-005B-F1",
+          "status": "satisfied",
+          "evidence": [
+            "The Atlas standalone spatial projection foundation is complete with direct module and standalone verifier parity."
+          ]
+        },
+        {
           "id": "WO-SR-005C-F1",
           "status": "satisfied",
           "evidence": [
             "PR #1374 merged at f96bc0919f8c9091c5205fae8b5352a6d19253bd, completing and ratifying the final pure-unwired F1 foundation."
+          ]
+        },
+        {
+          "id": "WO-SR-005D-F1",
+          "status": "satisfied",
+          "evidence": [
+            "Corrective Dossier PR #3 merged at 7558cfebfeea0c7b536251769b1d779c4558a763 with the retained pure-unwired F1 foundation."
+          ]
+        },
+        {
+          "id": "WO-SR-005E-F1",
+          "status": "satisfied",
+          "evidence": [
+            "Corrective GPT PR #4 merged at e0856e46807844a95d57aaef49d3350c1bc38a33 with the retained pure-unwired F1 foundation."
           ]
         }
       ],
@@ -8028,6 +8056,7 @@
         {
           "name": "Sovereign non-production Forge kernel shadow gate",
           "paths": [
+            "PATH_CANON_REGISTER.md",
             ".github/workflows/terraforge-kernels.yml",
             "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
             "docs/brain/workorders/**"
@@ -8043,6 +8072,7 @@
         "bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml",
         "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006A-forge-standalone-kernel-artifact.md",
         "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
+        "PATH_CANON_REGISTER.md",
         ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
         "The exact sovereign governance, Work Order, evidence, registry, and routing files admitted by the future authority packet"

@@ -66,8 +66,10 @@ runtime consumer.
 
 The smallest next step is `WO-SR-006A - Forge Standalone Kernel Artifact and Shadow-Consumer Gate`.
 It must prove a pinned standalone artifact can be built and exercised by sovereign non-production
-tests before any runtime configuration changes or source retirement. It crosses the CI and private
-cross-repository artifact boundary, so it remains blocked pending a bounded owner decision.
+tests before any runtime configuration changes or source retirement. Forge must first receive an
+exact root path-canon registration. The successor then crosses the CI and private cross-repository
+artifact boundary, so it remains blocked pending one bounded owner decision covering those exact
+surfaces.
 
 ## Validation
 

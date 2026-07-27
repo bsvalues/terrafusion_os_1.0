@@ -70,7 +70,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-F1 | Retain and ratify the standalone grounded-context foundation | Complete; GPT PR #3 preserved as unratified history, corrective PR #4 merged, pure unwired F1 retained, authority consumed |
 | WO-SR-006-P | Reconcile cutover readiness and runtime-adoption dependencies | Complete R2; Forge selected as first shadow-consumption candidate |
 | WO-SR-006A | Prove a pinned Forge standalone artifact through sovereign shadow consumption | Blocked on exact CI/private-artifact authority; no runtime switch or source retirement |
-| WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
+| WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
 ## Extraction and provenance policy
