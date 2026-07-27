@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-26
+**Date:** 2026-07-27
 **Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -41,6 +41,12 @@ Dossier PR #3 fixed instant ordering at exact head `a185278f`, merged as `7558cf
 both original PR #2 findings. The corrected pure unwired Dossier F1 foundation is retained; the
 original PR #2 remains recorded as unratified history and the bounded authority is consumed on this
 sovereign closeout.
+`OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727` then authorized the same exact disposition for the
+Dais foundation. Historical Dais PR #3 remains unratified history. Corrective PR #4 at exact head
+`93ee267f` added calendar-valid UTC, leap-second, fractional, and complete lifecycle-ordering proof,
+passed all remote gates and exact-head assurance, and merged as `29a34b0f`. Dais F1 is retained as
+pure and unwired; its bounded authority is consumed on this sovereign closeout. All four
+standalone F1 foundations (Atlas, Dais, Dossier, GPT) are now complete at the pure-unwired layer.
 Extraction, custody mutation, persistence, provider calls, runtime adoption, publication, cutover,
 and protected access remain blocked.
 
@@ -78,6 +84,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005C-E1 Dais Sovereign Appeal Workflow Read Adapter | DONE | Pure unwired adapter; preserved test output is authoritative at 32 passed, 0 failed (the PR-body count of 31 was stale); no DI, service, database, controller, or consumer |
 | WO-SR-005C-E2 Dais Standalone Synthetic Contract Parity | DONE | Dais PR #1 / merge `2768cd8d`; 10/10 hash pins, 3 positive and 6 fail-closed negative fixtures, all required checks passed |
 | WO-SR-005C-E3 Dais Bounded Extraction Scope Audit | DONE | `PASS_NO_DIRECT_EXTRACTION`; 0 provably provider-neutral candidates; F1 build-fresh allowlist defined for `bsvalues/terrafusion-dais`; no sovereign source copied |
+| WO-SR-005C-F1 Dais Standalone Appeal-Workflow Foundation | DONE / RETAINED AFTER REMEDIATION | Original PR #3 remains unratified history; corrective PR #4 / merge `29a34b0f` fixed UTC calendar and lifecycle validation, preserved frozen parity, resolved findings, and retained the pure unwired F1 baseline |
 | WO-SR-005D-P Dossier Custody Contract and Evidence-Integrity Gate Preparation | DONE / CORRECTED | Custody mutation/retention excluded; initial snapshot cohort superseded |
 | WO-SR-005D-C Dossier Evidence Snapshot Contract Decomposition | DONE / NO-GO | Snapshot crosses Property, Forge valuation, levies, and notes |
 | WO-SR-005D-C2 Dossier Evidence Registry Read Contract Decomposition | DONE | Read-only county/parcel-scoped contract defined; adapter parity unproven |
@@ -101,7 +108,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`; GPT PR #3 preserved as historical unratified mutation |
 | WO-SR-005E-F1 GPT Standalone Grounded-Context Foundation | DONE / RETAINED AFTER REMEDIATION | GPT PR #4 restored verifier compatibility, passed 30 focused/parity checks, resolved both original findings, and retained the pure unwired five-file foundation |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
-| WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
+| WO-SR-005C Dais Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | E3 rejected direct copy; original PR #3 incident is preserved; corrective PR #4 verified; pure unwired F1 retained with no runtime, provider, persistence, extraction, or cutover authority |
 | WO-SR-005D Dossier Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | Path canon registered; original PR #2 incident preserved; corrective PR #3 verified; pure unwired F1 retained with no runtime, custody, persistence, extraction, or cutover authority |
 | WO-SR-005E GPT Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | E3 found no executable direct-copy slice; original GPT PR #3 remains unratified history, corrective PR #4 verified, and pure unwired F1 is retained with no runtime/provider/persistence authority |
 

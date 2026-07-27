@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005E-F1 retain-and-ratify closeout",
+  "generatedBy": "WO-SR-005C-F1 retain-and-remediate closeout",
   "generatedAt": "2026-07-27T00:00:00Z",
-  "description": "Five-suite registry after GPT PR #4 corrected the unratified PR #3 foundation and the bounded owner decision retained it as an unwired F1 baseline. Dossier and GPT F1 are retained; Dais F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after Dais PR #4 corrected the unratified PR #3 foundation and the bounded owner decision retained it as an unwired F1 baseline. Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations are complete; extraction, runtime adoption, providers, persistence, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7353,6 +7353,108 @@
       "provenance": {
         "createdAt": "2026-07-26T00:00:00Z",
         "source": "Live local and GitHub identity verification at D:/terrafusion-dossier plus comparison of E2 anchor dcd8a1a3066101597bcc64de1d9bf60ee7f8e9cf to live main ccdc227812264ec52f4ec506de49693ac91d0a9d.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-005C-F1",
+      "title": "Dais Standalone Appeal-Workflow Foundation Retain and Remediate",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Retain the narrow Dais PR #3 foundation only after UTC calendar and lifecycle remediation, review resolution, and sovereign ratification.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-005C-E3",
+          "status": "satisfied",
+          "evidence": [
+            "E3 found zero safe direct-copy candidates and defined the build-fresh F1 boundary; Dais PR #3 later merged at 4ed92e35d3debc4a43b127087703a1e2bc731203 without matching sovereign F1 authority."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Exact Dais F1 remediation and sovereign ratification",
+          "paths": [
+            "bsvalues/terrafusion-dais exact five-file remediation scope",
+            ".governance/owner-decisions.json",
+            "PATH_CANON_REGISTER.md",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime consumers, providers, persistence, extraction, contract mutation, publication, workflows, deployment, cutover, protected resources, and any successor implementation"
+        }
+      ],
+      "allowedFiles": [
+        "The exact five Dais files and twelve sovereign closeout files recorded by OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Original unratified merge, exact corrective head and merge, timestamp and lifecycle regression proof, review resolution, retained F1 status, and consumed authority."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Dais direct module tests",
+          "command": "node --test test/project-dais-appeal-workflow.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Dais frozen parity verifier",
+          "command": "node --test scripts/verify-dais-appeal-workflow.test.mjs && node scripts/verify-dais-appeal-workflow.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Sovereign Work Order query and tooling",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion-dais/pull/4",
+          "summary": "Corrective Dais PR at head 93ee267f3258e8989a5acf27fc40c5bb0d24f695 and merge 29a34b0feeab32984a4dedf1af853239993b4a26."
+        },
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005C-F1-DAIS-STANDALONE-APPEAL-WORKFLOW-FOUNDATION.md",
+          "summary": "Historical incident, corrective proof, retained classification, denials, and rollback."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Retained F1 remains pure and unwired; any runtime, provider, persistence, extraction, publication, workflow, deployment, protected-resource, or cutover work requires separate authority."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "The bounded authority is consumed on the verified sovereign closeout merge. This completed record grants no runtime or successor authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-27T00:00:00Z",
+        "source": "OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727; Dais PR #3 historical merge; corrective PR #4 exact head, checks, review resolution, and merge verification.",
         "schemaVersion": "0.1.0"
       }
     },

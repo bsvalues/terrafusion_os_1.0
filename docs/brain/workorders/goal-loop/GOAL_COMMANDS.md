@@ -68,7 +68,11 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   retained the GPT five-file foundation after corrective PR #4 restored verifier compatibility,
   passed 30 focused and parity checks, and resolved both original findings. GPT F1 is pure and
   unwired, its original unratified merge remains historical, and the bounded authority is consumed.
-  No bounded R2 successor remains admitted.
+  `OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727` then retained the Dais foundation after corrective
+  PR #4 added calendar-valid UTC and complete lifecycle-ordering proof, passed all gates and
+  exact-head assurance, and merged as `29a34b0f`. Dais PR #3 remains unratified history and the
+  bounded authority is consumed. Atlas, Dais, Dossier, and GPT are complete at the pure-unwired F1
+  layer. No bounded R2 successor remains admitted; portfolio reconciliation is current.
 Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 
