@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005D-A4",
+  "generatedBy": "WO-SR-005D-F1 retain-and-remediate closeout",
   "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after Dossier A4 registered the exact private shared-checkout identity and classified Dossier PR #2 plus GPT PR #3 as unratified F1 destination mutations. The bounded R2 queue is exhausted; retain/revert disposition, F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after Dossier PR #3 corrected the unratified PR #2 foundation and the bounded owner decision retained it as an unwired F1 baseline. GPT PR #3 remains unratified. Dais/GPT F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7358,11 +7358,11 @@
     },
     {
       "id": "WO-SR-005D-F1",
-      "title": "Dossier Standalone Evidence-Registry Foundation Disposition",
+      "title": "Dossier Standalone Evidence-Registry Foundation Retain and Remediate",
       "program": "Five-Suite Federated Repository Buildout",
-      "goal": "Obtain an exact retain-or-revert disposition for the F1-like foundation merged by Dossier PR #2 without matching canonical F1 authority.",
+      "goal": "Retain the narrow Dossier PR #2 foundation only after exact timestamp-ordering remediation, review resolution, and sovereign ratification.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-005D-A4",
@@ -7372,15 +7372,25 @@
           ]
         }
       ],
-      "allowedSystems": [],
-      "blockedSystems": [
+      "allowedSystems": [
         {
-          "name": "Dossier F1 retain, revert, wiring, extension, runtime adoption, custody, persistence, publication, deployment, cutover, and source retirement pending exact owner disposition"
+          "name": "Exact Dossier F1 remediation and sovereign ratification",
+          "paths": [
+            "bsvalues/terrafusion-dossier exact five-file remediation scope",
+            ".governance/owner-decisions.json",
+            "docs/brain/workorders/**"
+          ]
         }
       ],
-      "allowedFiles": [],
+      "blockedSystems": [
+        {
+          "name": "Runtime consumers, custody mutation, persistence, providers, extraction, publication, deployment, cutover, protected resources, and any GPT or Dais F1 work"
+        }
+      ],
+      "allowedFiles": [
+        "The exact five Dossier files and ten sovereign closeout files recorded by OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726"
+      ],
       "blockedFiles": [
-        "bsvalues/terrafusion-dossier/**",
         "backend/**",
         "frontend/**",
         ".github/workflows/**",
@@ -7389,31 +7399,68 @@
       "evidenceRequired": [
         {
           "kind": "other",
-          "description": "Exact decision to retain as governed F1 or revert Dossier PR #2, including the five changed paths, validation, rollback, and terminal condition."
+          "description": "Original unratified merge, exact corrective head and merge, both review findings, passing regression proof, retained F1 status, and consumed authority."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Dossier direct module tests",
+          "command": "node --test test/project-dossier-evidence-registry-read.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Dossier frozen parity verifier",
+          "command": "node --test scripts/verify-dossier-evidence-registry-read.test.mjs && node scripts/verify-dossier-evidence-registry-read.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Sovereign Work Order query and tooling",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion-dossier/pull/3",
+          "summary": "Corrective Dossier PR at head a185278fa1171927951e47dbdd3cb27275b21eef and merge 7558cfebfeea0c7b536251769b1d779c4558a763."
+        },
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+          "summary": "Historical incident and final retain-and-remediate disposition."
+        }
+      ],
       "stopConditions": [
         {
-          "type": "authority_wall",
-          "description": "No active owner decision or sovereign authority record covers Dossier F1; no mutation may proceed."
+          "type": "scope_boundary",
+          "description": "Retained F1 remains pure and unwired; any runtime, custody, persistence, extraction, provider, publication, deployment, protected-resource, or successor F1 work requires separate authority."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-005E-F1",
+          "reason": "GPT PR #3 remains an unratified destination mutation requiring exact disposition.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Observed destination state only. This record grants no retain, revert, remediation, or successor authority."
+        "notes": "The bounded authority is consumed on the verified sovereign closeout merge. This completed record grants no runtime or successor authority."
       },
       "provenance": {
         "createdAt": "2026-07-26T00:00:00Z",
-        "source": "WO-SR-005D-A4 live Dossier identity verification, PR #2 comparison, and sovereign owner-decision search.",
+        "source": "OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726; Dossier PR #2 historical merge; corrective PR #3 exact head, checks, review resolution, and merge verification.",
         "schemaVersion": "0.1.0"
       }
     },

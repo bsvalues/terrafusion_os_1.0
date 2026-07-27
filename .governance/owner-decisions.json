@@ -3,6 +3,75 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005D-F1",
+      "status": "completed",
+      "authority_class": "R3-bounded-dossier-f1-retain-remediate-ratification",
+      "effective_base_sha": "75e3a68f3d04ab68fec9a26b373acaa6886a4f10",
+      "scope_source": "Owner retain-and-remediate authorization recorded on 2026-07-26 after WO-SR-005D-A4 classified Dossier PR #2 as an unratified destination mutation.",
+      "authorized_actions": [
+        "retain the exact five-file Dossier PR #2 foundation conditionally while correcting createdAt ordering by exact timestamp instant",
+        "add focused fractional-precision, equivalent-instant, invalid-instant, ordering, and non-mutation proof",
+        "validate, review, merge Dossier PR #3, resolve the two original PR #2 findings, and perform the exact eleven-file sovereign ratification closeout"
+      ],
+      "authorized_files": [
+        "bsvalues/terrafusion-dossier:src/evidence-registry/project-dossier-evidence-registry-read.mjs",
+        "bsvalues/terrafusion-dossier:test/project-dossier-evidence-registry-read.test.mjs",
+        "bsvalues/terrafusion-dossier:scripts/verify-dossier-evidence-registry-read.mjs",
+        "bsvalues/terrafusion-dossier:operations/work-orders/WO-SR-005D-F1-dossier-standalone-evidence-registry-foundation.md",
+        "bsvalues/terrafusion-dossier:operations/evidence/WO-SR-005D-F1-DOSSIER-STANDALONE-EVIDENCE-REGISTRY-FOUNDATION.md",
+        ".governance/owner-decisions.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "PATH_CANON_REGISTER.md"
+      ],
+      "explicitly_denied": [
+        "GPT F1, Dais F1, runtime consumers, persistence, databases, custody mutation, providers, network access, source extraction, packages, publication, workflows, deployment, production, county, PACS, SQL, credentials, secrets, or cutover",
+        "rewriting Dossier PR #2 as originally authorized or accepting its defective head as capability",
+        "scope expansion beyond the exact Dossier remediation and sovereign closeout files"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check failure or bypass",
+        "unresolved substantive review thread or exact-head assurance failure",
+        "runtime, protected-resource, or conflicting-authority access"
+      ],
+      "decision_basis": "The narrow build-fresh module remained worth retaining, but raw lexical createdAt comparison mishandled contract-valid timestamp representations and the original merge lacked canonical F1 authority.",
+      "completion": {
+        "original_unratified_pr": 2,
+        "original_unratified_head": "2a3b3f9e228b4fad1c20d3a9619d16eb9724aca3",
+        "original_unratified_merge": "ccdc227812264ec52f4ec506de49693ac91d0a9d",
+        "corrective_pr": 3,
+        "corrective_head": "a185278fa1171927951e47dbdd3cb27275b21eef",
+        "corrective_merge": "7558cfebfeea0c7b536251769b1d779c4558a763",
+        "path_canon_amendment": {
+          "decision_id": "OWNER-SR-005D-F1-RETAIN-REMEDIATE-AMENDMENT-001",
+          "status": "consumed_on_merge",
+          "authorized_file": "PATH_CANON_REGISTER.md",
+          "final_capability_classification": "RETAINED_PURE_UNWIRED_F1"
+        },
+        "original_review_findings_resolved": 2,
+        "effective_on_merge": true,
+        "authority_consumed": true,
+        "terminal_condition_satisfied": "Dossier PR #3 merged with all checks passing and both original PR #2 findings resolved; the exact-scope sovereign closeout carrying this record merges to main.",
+        "evidence": [
+          "docs/brain/workorders/evidence/WO-SR-005D-E3-DOSSIER-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+          "docs/brain/workorders/evidence/WO-SR-005D-A4-DOSSIER-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md"
+        ]
+      }
+    },
+    {
       "id": "OWNER-SR-005E-E1-E2-R3-GPT-GROUNDED-CONTEXT-20260725",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

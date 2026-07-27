@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; bounded R2 queue exhausted |
-| Current | `WO-SR-005D-A4` complete; Dossier and GPT F1 incidents open |
-| Next | Exact bounded F1 retain-or-revert disposition authority |
+| Status | Active between cohorts; Dossier F1 retained after remediation |
+| Current | `WO-SR-005D-F1` complete; GPT F1 incident open |
+| Next | Exact GPT F1 disposition or separately authorized Dais F1 |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -151,9 +151,13 @@ the Node-only standalone repository without adding a new `.NET` project and work
 Exact-head assurance found GPT PR #3 had concurrently merged a build-fresh F1-like module without a
 matching canonical F1 authority record. `WO-SR-005D-A4` then registered the clean read-only
 `D:\terrafusion-dossier` checkout at exact live `origin/main`. Its live reconciliation found Dossier
-PR #2 had likewise merged an F1-like module without matching sovereign authority. Neither
-destination mutation is accepted as capability. Both require exact retain-or-revert disposition,
-and no bounded R2 successor remains admitted.
+PR #2 had likewise merged an F1-like module without matching sovereign authority.
+`OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726` authorized conditional retention and exact remediation.
+Dossier PR #3 corrected instant ordering, preserved arbitrary fractional precision, rejected invalid
+instants, passed the frozen corpus, and resolved both original review findings. The corrected pure
+unwired Dossier F1 baseline is retained; the original PR #2 remains unratified history and the
+authority is consumed on sovereign closeout. GPT PR #3 remains unratified, and no bounded R2
+successor remains admitted.
 Extraction, providers,
 persistence, runtime adoption, publication, deployment, and cutover remain gated.
 
@@ -607,8 +611,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-005D-A4` complete; Dossier and GPT F1 incidents open |
-| Next WO | Exact bounded F1 retain-or-revert disposition authority |
+| Current WO | `WO-SR-005D-F1` complete; GPT F1 incident open |
+| Next WO | Exact GPT F1 disposition or separately authorized Dais F1 |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
