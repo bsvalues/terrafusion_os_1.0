@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; GPT E3 complete, Dossier path-canon reconciliation next
+**Status:** Active between cohorts; Dossier A4 complete; Dossier and GPT F1 disposition next
 
 ## Ratified topology
 
