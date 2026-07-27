@@ -82,7 +82,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005D-A Dossier Adapter and Standalone Parity Preparation | DONE / IMPLEMENTATION_READY | Pure unwired sovereign adapter followed by synthetic standalone parity |
 | WO-SR-005D-E1 Dossier Sovereign Evidence Registry Read Adapter | DONE | Pure unwired adapter; 31 targeted tests; no DI, controller, database, custody mutation, or runtime consumer |
 | WO-SR-005D-E2 Dossier Standalone Synthetic Contract Parity | DONE | Dossier PR #1 / merge `dcd8a1a3`; 12/12 hash pins, 3 positive and 8 fail-closed negative fixtures, all required checks passed |
-| WO-SR-005D-E3 Dossier Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_DIRECT_EXTRACTION`; 0 eligible direct-copy candidates; live remote observed but Dossier path canon remains unresolved before any later F1; no source or destination changed |
+| WO-SR-005D-E3 Dossier Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_DIRECT_EXTRACTION`; 0 eligible direct-copy candidates; A4 subsequently registered the Dossier path canon; no sovereign source was copied |
 | WO-SR-005D-A4 Dossier Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-dossier` registered at private `origin/main` `ccdc2278`; Dossier PR #2 classified as unratified F1 mutation |
 | WO-SR-005D-F1 Dossier Standalone Evidence-Registry Foundation | DONE / RETAINED AFTER REMEDIATION | Original PR #2 remains unratified history; corrective PR #3 / merge `7558cfeb` fixed exact instant ordering, preserved the frozen corpus, resolved both findings, and retained the pure unwired F1 baseline |
 | WO-SR-005E-P GPT Governed-AI Contract and Grounding Gate Preparation | DONE | Grounded-context cohort selected; current adapter not parity-safe |
