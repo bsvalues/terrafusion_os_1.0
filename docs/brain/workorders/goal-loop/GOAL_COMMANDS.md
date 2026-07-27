@@ -64,8 +64,11 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   sovereign authority. `OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726` conditionally retained the
   Dossier module; corrective PR #3 fixed exact instant ordering, preserved the frozen corpus, and
   resolved both original findings. Dossier F1 is now retained as pure and unwired, with the original
-  unratified merge preserved in history. GPT F1 remains unratified; no bounded R2 successor remains
-  admitted.
+  unratified merge preserved in history. `OWNER-SR-005E-F1-RETAIN-RATIFY-20260727` likewise
+  retained the GPT five-file foundation after corrective PR #4 restored verifier compatibility,
+  passed 30 focused and parity checks, and resolved both original findings. GPT F1 is pure and
+  unwired, its original unratified merge remains historical, and the bounded authority is consumed.
+  No bounded R2 successor remains admitted.
 Runtime/provider adoption, extraction, custody or persistence mutation,
 protected data, publication/unrelated workflow changes, and cutover remain gated.
 

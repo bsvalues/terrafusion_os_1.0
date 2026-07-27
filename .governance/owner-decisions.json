@@ -3,6 +3,70 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-005E-F1-RETAIN-RATIFY-20260727",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-005E-F1",
+      "status": "completed",
+      "authority_class": "R3-bounded-gpt-f1-retain-remediate-ratification",
+      "effective_base_sha": "0dda2a3ff53779ea4538adf5bbda8f34c26dccc0",
+      "scope_source": "Owner authorization recorded on 2026-07-27 after WO-SR-005E-E3 classified GPT PR #3 as an unratified destination mutation.",
+      "authorized_actions": [
+        "validate the exact five-file GPT PR #3 foundation as a pure unwired F1 candidate",
+        "restore the verifier compatibility export and add focused regression proof without changing the projection module",
+        "validate, review, merge GPT PR #4, resolve the two original PR #3 findings, and perform the exact eleven-file sovereign ratification closeout"
+      ],
+      "authorized_files": [
+        "bsvalues/terrafusion-gpt:operations/evidence/WO-SR-005E-F1-GPT-STANDALONE-GROUNDED-CONTEXT-FOUNDATION.md",
+        "bsvalues/terrafusion-gpt:operations/work-orders/WO-SR-005E-F1-gpt-standalone-grounded-context-foundation.md",
+        "bsvalues/terrafusion-gpt:scripts/verify-gpt-grounded-context.mjs",
+        "bsvalues/terrafusion-gpt:src/grounded-context/project-gpt-grounded-context.mjs",
+        "bsvalues/terrafusion-gpt:test/project-gpt-grounded-context.test.mjs",
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+        "docs/brain/workorders/evidence/WO-SR-005E-E3-GPT-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "Dais F1, runtime consumers, DI, controllers, endpoints, services, providers, models, embeddings, persistence, databases, HTTP product behavior, network access, source extraction, packages, publication, workflows, deployment, production, county, PACS, SQL, credentials, secrets, cutover, or source retirement",
+        "rewriting GPT PR #3 as originally authorized or accepting its defective verifier compatibility surface without remediation",
+        "scope expansion beyond the exact GPT validation, remediation, and sovereign closeout files"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the authorized files or actions",
+        "required-check failure or bypass",
+        "unresolved substantive review thread or exact-head assurance failure",
+        "runtime, protected-resource, or conflicting-authority access"
+      ],
+      "decision_basis": "The build-fresh five-file foundation is deterministic, provider-neutral, and worth retaining, but the original merge lacked canonical F1 authority and removed a verifier compatibility export.",
+      "completion": {
+        "original_unratified_pr": 3,
+        "original_unratified_head": "31eba7e9426f86739d31cece6c0e981bd448d7d2",
+        "original_unratified_merge": "614f62933e6f8cdb4fa8a76eac6305c0e3134070",
+        "corrective_pr": 4,
+        "corrective_head": "d2f34ce75549bb606539d44bb114d0d5aed4fa1e",
+        "corrective_merge": "e0856e46807844a95d57aaef49d3350c1bc38a33",
+        "final_capability_classification": "RETAINED_PURE_UNWIRED_F1",
+        "original_review_findings_resolved": 2,
+        "effective_on_merge": true,
+        "authority_consumed": true,
+        "terminal_condition_satisfied": "GPT PR #4 merged with all checks passing and both original PR #3 findings resolved; the exact-scope sovereign closeout carrying this record merges to main.",
+        "evidence": [
+          "docs/brain/workorders/evidence/WO-SR-005E-E3-GPT-BOUNDED-EXTRACTION-SCOPE-AUDIT.md",
+          "docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md"
+        ]
+      }
+    },
+    {
       "id": "OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

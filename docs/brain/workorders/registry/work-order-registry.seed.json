@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-005D-F1 retain-and-remediate closeout",
-  "generatedAt": "2026-07-26T00:00:00Z",
-  "description": "Five-suite registry after Dossier PR #3 corrected the unratified PR #2 foundation and the bounded owner decision retained it as an unwired F1 baseline. GPT PR #3 remains unratified. Dais/GPT F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
+  "generatedBy": "WO-SR-005E-F1 retain-and-ratify closeout",
+  "generatedAt": "2026-07-27T00:00:00Z",
+  "description": "Five-suite registry after GPT PR #4 corrected the unratified PR #3 foundation and the bounded owner decision retained it as an unwired F1 baseline. Dossier and GPT F1 are retained; Dais F1, extraction, runtime adoption, providers, publication, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -7440,14 +7440,7 @@
           "description": "Retained F1 remains pure and unwired; any runtime, custody, persistence, extraction, provider, publication, deployment, protected-resource, or successor F1 work requires separate authority."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "WO-SR-005E-F1",
-          "reason": "GPT PR #3 remains an unratified destination mutation requiring exact disposition.",
-          "riskClass": "R3",
-          "blocked": true
-        }
-      ],
+      "nextCandidates": [],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -7466,11 +7459,11 @@
     },
     {
       "id": "WO-SR-005E-F1",
-      "title": "GPT Standalone Grounded-Context Foundation Disposition",
+      "title": "GPT Standalone Grounded-Context Foundation Retain and Ratify",
       "program": "Five-Suite Federated Repository Buildout",
-      "goal": "Obtain an exact retain-or-revert disposition for the F1-like foundation merged by GPT PR #3 without matching canonical F1 authority.",
+      "goal": "Retain the narrow GPT PR #3 foundation only after verifier-compatibility remediation, review resolution, and sovereign ratification.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-005E-E3",
@@ -7480,15 +7473,26 @@
           ]
         }
       ],
-      "allowedSystems": [],
-      "blockedSystems": [
+      "allowedSystems": [
         {
-          "name": "GPT F1 retain, revert, wiring, extension, runtime adoption, providers, persistence, publication, deployment, cutover, and source retirement pending exact owner disposition"
+          "name": "Exact GPT F1 validation, remediation, and sovereign ratification",
+          "paths": [
+            "bsvalues/terrafusion-gpt exact five-file foundation scope",
+            ".governance/owner-decisions.json",
+            "PATH_CANON_REGISTER.md",
+            "docs/brain/workorders/**"
+          ]
         }
       ],
-      "allowedFiles": [],
+      "blockedSystems": [
+        {
+          "name": "Runtime consumers, providers, models, embeddings, persistence, extraction, publication, workflows, deployment, cutover, protected resources, and any Dais F1 work"
+        }
+      ],
+      "allowedFiles": [
+        "The exact five GPT files and eleven sovereign closeout files recorded by OWNER-SR-005E-F1-RETAIN-RATIFY-20260727"
+      ],
       "blockedFiles": [
-        "bsvalues/terrafusion-gpt/**",
         "backend/**",
         "frontend/**",
         ".github/workflows/**",
@@ -7497,31 +7501,61 @@
       "evidenceRequired": [
         {
           "kind": "other",
-          "description": "Exact decision to retain as governed F1 or revert GPT PR #3, including the five changed paths, validation, rollback, and terminal condition."
+          "description": "Original unratified merge, exact corrective head and merge, both review findings, passing compatibility regression and parity proof, retained F1 status, and consumed authority."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "GPT direct module tests",
+          "command": "node --test test/project-gpt-grounded-context.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "GPT frozen parity verifier",
+          "command": "node --test scripts/verify-gpt-grounded-context.test.mjs && node scripts/verify-gpt-grounded-context.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Sovereign Work Order query and tooling",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "pr",
+          "location": "https://github.com/bsvalues/terrafusion-gpt/pull/4",
+          "summary": "Corrective GPT PR at head d2f34ce75549bb606539d44bb114d0d5aed4fa1e and merge e0856e46807844a95d57aaef49d3350c1bc38a33."
+        },
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-005E-A4-GPT-STANDALONE-REPOSITORY-PATH-CANON-REGISTRATION.md",
+          "summary": "Historical incident and final retain-and-ratify disposition."
+        }
+      ],
       "stopConditions": [
         {
-          "type": "authority_wall",
-          "description": "No active owner decision or sovereign authority record covers GPT F1; no mutation may proceed."
+          "type": "scope_boundary",
+          "description": "Retained F1 remains pure and unwired; any runtime, provider, model, embedding, persistence, extraction, publication, workflow, deployment, protected-resource, or successor F1 work requires separate authority."
         }
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Observed destination state only. This record grants no retain, revert, remediation, or successor authority."
+        "notes": "The bounded authority is consumed on the verified sovereign closeout merge. This completed record grants no runtime or successor authority."
       },
       "provenance": {
-        "createdAt": "2026-07-26T00:00:00Z",
-        "source": "Independent exact-head assurance for sovereign PR #1370 plus live GPT PR #3 and owner-decision search.",
+        "createdAt": "2026-07-27T00:00:00Z",
+        "source": "OWNER-SR-005E-F1-RETAIN-RATIFY-20260727; GPT PR #3 historical merge; corrective PR #4 exact head, checks, review resolution, and merge verification.",
         "schemaVersion": "0.1.0"
       }
     },

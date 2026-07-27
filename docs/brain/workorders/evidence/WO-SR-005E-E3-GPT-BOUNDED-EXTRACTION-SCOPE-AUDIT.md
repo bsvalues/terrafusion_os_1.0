@@ -132,3 +132,22 @@ retirement.
 Portfolio reconciliation continues with `WO-SR-005D-A4`, the dependency-cleared R2 Dossier
 path-canon registration required before any later Dossier F1 dispatch. GPT F1 remains a separately
 gated owner disposition because an unratified implementation now exists in the destination.
+
+## Final F1 Disposition
+
+The E3 audit verdict remains historically correct: no executable direct-copy slice existed, and GPT
+PR #3 was unratified when discovered. The later bounded decision
+`OWNER-SR-005E-F1-RETAIN-RATIFY-20260727` authorized validation and remediation of that exact
+five-file destination foundation without authorizing extraction or runtime adoption.
+
+GPT PR #4 at head `d2f34ce75549bb606539d44bb114d0d5aed4fa1e` restored the verifier's
+`validateJsonSchema` compatibility export, added focused regression proof, passed 17 direct module
+tests and 13 verifier tests, and merged as `e0856e46807844a95d57aaef49d3350c1bc38a33`.
+All 13 frozen artifact hashes, three accepted fixtures, and nine fail-closed fixtures passed. Both
+original PR #3 findings are resolved.
+
+The final classification is `RETAINED_PURE_UNWIRED_F1`. Original GPT PR #3 remains recorded as
+historically unratified; corrective PR #4 and this sovereign closeout establish the governed
+retention. The bounded authority is consumed on closeout. No runtime consumer, provider, model,
+embedding, persistence, extraction, publication, workflow, deployment, production, protected
+resource, cutover, or successor authority follows.

@@ -37,11 +37,17 @@ On 2026-07-21, `D:\terrafusion-dais` resolved to remote
 Dais workers must branch from an isolated worktree attached to this canonical repository; the shared
 checkout is a read-only synchronization surface.
 
-On 2026-07-25, `D:\terrafusion-gpt` resolved to remote
+On 2026-07-27, `D:\terrafusion-gpt` resolved to remote
 `git@github.com:bsvalues/terrafusion-gpt.git`, default branch `main`, at `origin/main`
-`10295e9b534cce7ba9d428a91fb966bd58963c77`. GitHub reports the repository as private. Cross-repository
-GPT workers must branch from an isolated worktree attached to this canonical repository; the shared
-checkout is a read-only synchronization surface.
+`e0856e46807844a95d57aaef49d3350c1bc38a33`. GitHub reports the repository as private.
+Cross-repository GPT workers must branch from an isolated worktree attached to this canonical
+repository; the shared checkout is a read-only synchronization surface. GPT PR #3 at head
+`31eba7e9426f86739d31cece6c0e981bd448d7d2` merged as
+`614f62933e6f8cdb4fa8a76eac6305c0e3134070` and is recorded as historically unratified. Corrective
+GPT PR #4 at head `d2f34ce75549bb606539d44bb114d0d5aed4fa1e` merged as
+`e0856e46807844a95d57aaef49d3350c1bc38a33`, which is the current GPT `origin/main`. The final
+capability classification is `RETAINED_PURE_UNWIRED_F1`; no runtime, provider, model, embedding,
+persistence, publication, deployment, or protected-resource authority follows from the retained module.
 
 On 2026-07-26, `D:\terrafusion-dossier` resolved to remote
 `git@github.com:bsvalues/terrafusion-dossier.git`, default branch `main`, at `origin/main`
