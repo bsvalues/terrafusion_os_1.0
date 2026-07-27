@@ -8039,7 +8039,6 @@
       "goal": "Create and register a clean read-only Forge shared checkout so future cross-repository dispatch is bound to an exact local path, remote, branch, and head.",
       "riskClass": "R2",
       "status": "complete",
-      "authorityBasis": "Ratified Five-Suite Federated Repository Buildout plus OWNER-TF-STANDING-OPERATOR-AUTHORITY next-WO selection and delivery authority; WO-SR-006-P and PR #1375 explicitly recorded Forge path-canon registration as the remaining operator-owned prerequisite.",
       "dependencies": [
         {
           "id": "WO-SR-006-P",
@@ -8142,11 +8141,11 @@
         "mayMarkReady": false,
         "mayMerge": false,
         "mayCleanup": false,
-        "notes": "The completed R2 registration is non-executable and grants no artifact, workflow, runtime, or successor authority."
+        "notes": "Admission derives from the ratified Five-Suite Federated Repository Buildout, OWNER-TF-STANDING-OPERATOR-AUTHORITY next-WO selection and delivery authority, and the WO-SR-006-P / PR #1375 requirement to register Forge before dispatch. The completed R2 registration is non-executable and grants no artifact, workflow, runtime, or successor authority."
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
-        "source": "Live Forge identity inspection at sovereign base 358c1ab2742b0aa28c16931cfa472b440455c98d and private Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
+        "source": "Ratified Five-Suite Federated Repository Buildout plus OWNER-TF-STANDING-OPERATOR-AUTHORITY; WO-SR-006-P and PR #1375 recorded the prerequisite. Live Forge identity inspection at sovereign base 358c1ab2742b0aa28c16931cfa472b440455c98d and private Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
         "schemaVersion": "0.1.0"
       }
     },
