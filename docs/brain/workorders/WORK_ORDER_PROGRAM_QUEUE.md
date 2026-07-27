@@ -31,8 +31,11 @@ parity harness has 13 tests, 13 mirrored hash-pinned artifacts, three accepted f
 fail-closed fixtures. The envelope is consumed. WO-SR-005E-E3 then found one pure sovereign source
 candidate but no executable direct-copy slice for the Node-only standalone repository. Exact-head
 assurance also found GPT PR #3 had concurrently merged an F1-like foundation without matching
-canonical F1 authority. That destination change remains observed but not accepted as TerraFusion
-capability. WO-SR-005D-A4 registered the exact Dossier path canon and classified Dossier PR #2 the
+canonical F1 authority. `OWNER-SR-005E-F1-RETAIN-RATIFY-20260727` authorized exact validation and
+remediation. GPT PR #4 restored the verifier compatibility export, passed 30 focused and parity
+checks, resolved both original findings, and merged as `e0856e46`. The five-file foundation is
+retained as pure and unwired; PR #3 remains unratified history and the bounded authority is
+consumed. WO-SR-005D-A4 registered the exact Dossier path canon and classified Dossier PR #2 the
 same way. `OWNER-SR-005D-F1-RETAIN-REMEDIATE-20260726` then authorized a bounded correction:
 Dossier PR #3 fixed instant ordering at exact head `a185278f`, merged as `7558cfeb`, and resolved
 both original PR #2 findings. The corrected pure unwired Dossier F1 foundation is retained; the
@@ -95,12 +98,12 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E-A4 GPT Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-gpt` registered at exact private `origin/main`; destination content unchanged |
 | WO-SR-005E-E1 GPT Grounded Context Sovereign Adapter | DONE / R3 | Pure unwired mapper; 37 focused cases; no retrieval, provider, persistence, DI, controller, service, endpoint, or runtime consumer |
 | WO-SR-005E-E2 GPT Standalone Synthetic Contract Parity | DONE / R3 | GPT PR #1 plus PR #2 remediation; 13/13 mirrored hashes, 3 accepted and 9 fail-closed fixtures, 13 verifier tests, all required checks passed |
-| WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`; GPT PR #3 drift recorded without accepting capability |
-| WO-SR-005E-F1 GPT Standalone Grounded-Context Foundation | BLOCKED / OWNER DISPOSITION | GPT PR #3 merged at `614f6293` without matching canonical F1 authority; retain/revert/wire/extend are not authorized |
+| WO-SR-005E-E3 GPT Bounded Extraction Scope Audit | DONE / R2 | `PASS_NO_EXECUTABLE_DIRECT_EXTRACTION_WITH_UNRATIFIED_DESTINATION_F1`; GPT PR #3 preserved as historical unratified mutation |
+| WO-SR-005E-F1 GPT Standalone Grounded-Context Foundation | DONE / RETAINED AFTER REMEDIATION | GPT PR #4 restored verifier compatibility, passed 30 focused/parity checks, resolved both original findings, and retained the pure unwired five-file foundation |
 | WO-SR-005B Atlas Bounded Extraction | BLOCKED / NO-GO | Direct extraction rejected by E3; reconsider only after a later exact-scope audit |
 | WO-SR-005C Dais Bounded Extraction | E3 COMPLETE — NO DIRECT COPY | E3 returned `PASS_NO_DIRECT_EXTRACTION`; F1 is a later build-fresh candidate after E2 parity and exact implementation authority; runtime adoption / providers / cutover remain blocked |
 | WO-SR-005D Dossier Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | Path canon registered; original PR #2 incident preserved; corrective PR #3 verified; pure unwired F1 retained with no runtime, custody, persistence, extraction, or cutover authority |
-| WO-SR-005E GPT Bounded Extraction | E3 COMPLETE - F1 INCIDENT OPEN | E3 found no executable direct-copy slice; concurrent GPT PR #3 is unratified and requires later exact disposition |
+| WO-SR-005E GPT Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | E3 found no executable direct-copy slice; original GPT PR #3 remains unratified history, corrective PR #4 verified, and pure unwired F1 is retained with no runtime/provider/persistence authority |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

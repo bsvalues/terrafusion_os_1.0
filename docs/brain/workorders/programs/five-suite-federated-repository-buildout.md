@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Dossier F1 retained after remediation; GPT F1 disposition next
+**Status:** Active between cohorts; Dossier and GPT F1 retained after remediation; portfolio reconciliation current
 
 ## Ratified topology
 
@@ -67,7 +67,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005E-E1 | Implement the pure unwired GPT grounded-context adapter | Complete R3; 37 focused cases, pure and unwired |
 | WO-SR-005E-E2 | Implement standalone synthetic contract/parity harness | Complete; GPT PR #1 plus PR #2 remediation, 13 mirrored hashes, 13 verifier tests |
 | WO-SR-005E-E3 | Audit the exact bounded GPT extraction scope | Complete; no executable direct-copy slice; concurrent unratified GPT PR #3 recorded |
-| WO-SR-005E-F1 | Build the standalone grounded-context foundation | Blocked pending exact owner disposition; GPT PR #3 merged without matching canonical F1 authority |
+| WO-SR-005E-F1 | Retain and ratify the standalone grounded-context foundation | Complete; GPT PR #3 preserved as unratified history, corrective PR #4 merged, pure unwired F1 retained, authority consumed |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Blocked on E3 exact-scope proof and suite-specific gates |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -144,8 +144,11 @@ WO-SR-005E-A4 established `D:\terrafusion-gpt` as the clean read-only canonical 
   #1. GPT PR #2 remediated Unicode schema-length parity. The envelope is consumed. WO-SR-005E-E3
 confirmed that the pure E0 C# source cannot become an executable capability by direct copy into the
 Node-only standalone repository. Exact-head assurance found GPT PR #3 had concurrently merged an
-F1-like build-fresh module without matching canonical F1 authority. The destination mutation is
-observed but not accepted as governed capability.
+F1-like build-fresh module without matching canonical F1 authority.
+`OWNER-SR-005E-F1-RETAIN-RATIFY-20260727` authorized exact validation and correction. GPT PR #4
+restored the verifier compatibility export, passed 30 focused and parity checks, and resolved both
+original findings. The five-file foundation is now retained as pure and unwired; PR #3 remains
+unratified history and the bounded authority is consumed.
 Extraction,
 providers, persistence, runtime
 adoption, packages, deployment, cutover, and successor implementation remain unauthorized.

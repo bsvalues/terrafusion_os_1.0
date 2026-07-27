@@ -66,3 +66,22 @@ The sovereign change is limited to the exact ten-file A4 allowlist:
 WO-SR-005E-E1 is now dependency-cleared but remains proposed R3 implementation. One exact bounded,
 sequential E1/E2 authority envelope is required before implementation. E2 remains dependent on a
 verified E1 merge.
+
+## 2026-07-27 F1 Disposition Reconciliation
+
+The original A4 identity proof remains the historical registration anchor. The live canonical GPT
+`origin/main` is now `e0856e46807844a95d57aaef49d3350c1bc38a33`.
+
+- GPT PR #3 head `31eba7e9426f86739d31cece6c0e981bd448d7d2` merged as
+  `614f62933e6f8cdb4fa8a76eac6305c0e3134070` and remains historically unratified.
+- `OWNER-SR-005E-F1-RETAIN-RATIFY-20260727` authorized exact validation and remediation.
+- Corrective GPT PR #4 head `d2f34ce75549bb606539d44bb114d0d5aed4fa1e` restored the
+  verifier compatibility export and merged as `e0856e46807844a95d57aaef49d3350c1bc38a33`.
+- Direct module and verifier validation passed 30 tests. All 13 frozen hashes, three accepted
+  fixtures, and nine fail-closed fixtures passed. Both original PR #3 findings are resolved.
+- Final capability classification: `RETAINED_PURE_UNWIRED_F1`.
+
+The shared checkout remains read-only and workers still require isolated worktrees. This
+reconciliation grants no runtime consumer, provider, model, embedding, persistence, publication,
+workflow, deployment, production, county, PACS, SQL, credential, secret, cutover, or successor
+implementation authority.
