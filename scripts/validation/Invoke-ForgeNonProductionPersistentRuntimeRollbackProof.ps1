@@ -168,6 +168,16 @@ try {
     if (Test-Path -LiteralPath $ForgeProofWorktree) {
         throw "Forge proof worktree path already exists: $ForgeProofWorktree"
     }
+    $nugetGlobalOutput = (& dotnet nuget locals global-packages --list) -join "`n"
+    if ($LASTEXITCODE -ne 0 -or
+        $nugetGlobalOutput -notmatch '^global-packages:\s*(?<path>.+)$') {
+        throw 'Unable to resolve the existing local NuGet global-packages source.'
+    }
+    $nugetOfflineSource = $Matches.path.Trim()
+    if (-not [IO.Path]::IsPathFullyQualified($nugetOfflineSource) -or
+        -not (Test-Path -LiteralPath $nugetOfflineSource)) {
+        throw "NuGet offline source is unavailable: $nugetOfflineSource"
+    }
 
     Invoke-Checked -Command git -Arguments @(
         '-C', $SharedForgeCheckout, 'worktree', 'add', '--detach',
@@ -264,6 +274,8 @@ try {
         executableSha256 = $forgeSha256
         priorExecutableSha256 = $priorArtifactSha256
         reproducibilityClassification = $reproducibility
+        nugetRestoreSource = $nugetOfflineSource
+        nugetRestoreNetworkRequired = $false
         sovereignExecutablePath = $sovereignBinary
         sovereignComparisonBinarySha256 = $sovereignSha256
     } | ConvertTo-Json -Depth 8 |
@@ -294,7 +306,15 @@ try {
     $testProject =
         Join-Path $sovereignRepository 'backend\TerraFusion.API.Tests\TerraFusion.API.Tests.csproj'
     Invoke-Checked -Command dotnet -Arguments @(
-        'restore', $testProject, '--packages', $nugetPackages, '--artifacts-path', $dotnetArtifacts
+        'restore',
+        $testProject,
+        '--source',
+        $nugetOfflineSource,
+        '--packages',
+        $nugetPackages,
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '--no-cache'
     )
 
     Invoke-RehearsalHost `
