@@ -72,6 +72,9 @@ does not claim reproducible binary output.
 
 ## Merge and Closeout
 
-The implementation PR must preserve this exact scope, pass exact-head assurance, pass all required
-checks, and have zero unresolved substantive review threads. After verified merge, the bounded
-authority is completed and consumed and routing returns to portfolio reconciliation.
+PR #1380 preserved the exact twelve-file scope and merged exact reviewed head
+`f23f97202e74376ae0fa82ded22f425026c65ce5` as
+`e1e249c9bb7eb7ea4bd5bc6dfdd0e345e88df230`. Exact-head assurance passed, all required checks
+completed green or acceptably neutral/skipped, and unresolved substantive review threads were zero.
+Post-merge verification confirmed `origin/main` at the merge commit. The bounded authority is
+completed and consumed, and routing returns to portfolio reconciliation.

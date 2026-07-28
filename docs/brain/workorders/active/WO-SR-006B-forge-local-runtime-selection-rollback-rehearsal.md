@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | COMPLETE ON MERGE |
+| Status | COMPLETE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded non-production process-local runtime rehearsal |
 | Authority | `OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728` |
@@ -11,6 +11,9 @@
 | Dependency | WO-SR-006A complete |
 | Merge mode | Mode B, bounded exact scope |
 | Terminal condition | `FORGE_LOCAL_RUNTIME_SELECTION_AND_ROLLBACK_REHEARSAL_PROVEN_NO_PERSISTENT_SWITCH` |
+| Implementation PR | `#1380` |
+| Exact reviewed head | `f23f97202e74376ae0fa82ded22f425026c65ce5` |
+| Merge commit | `e1e249c9bb7eb7ea4bd5bc6dfdd0e345e88df230` |
 
 ## Objective
 
