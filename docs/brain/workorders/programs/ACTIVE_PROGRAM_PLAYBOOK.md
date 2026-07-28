@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; bounded Forge shadow-consumption envelope granted |
-| Current | `WO-SR-006A` authority activation |
-| Next | Forge producer, then sovereign shadow consumer |
+| Status | Active between cohorts; Forge local sovereign shadow proof complete |
+| Current | Portfolio reconciliation |
+| Next | Highest-value dependency-cleared bounded node, if any |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -168,15 +168,16 @@ exact-head assurance and merged as `29a34b0f`. Dais F1 is retained as pure and u
 remains unratified history, and the authority is consumed. The four standalone suite foundations
 are complete at the pure-unwired F1 layer. `WO-SR-006-P` then completed the dependency-cleared R2
 cutover audit. It selected Forge as the first protected successor because Forge alone has
-byte-identical kernel source plus standalone test parity. `WO-SR-006A` requires exact private
-cross-repository artifact and CI authority before a non-production shadow test can run. Extraction,
-providers, persistence, runtime adoption, publication, deployment, source retirement, and cutover
-remain gated.
+byte-identical kernel source plus standalone test parity. `WO-SR-006A` completed an exact-commit
+local sovereign shadow proof. GitHub records the producer PR and historical CI artifact, but local
+build, disposable hash-pinned transfer, local execution, and local parity evidence are the sovereign
+trust path. Extraction, providers, persistence, runtime adoption, publication, deployment, source
+retirement, and cutover remain gated.
 `WO-SR-006A-P` registered `D:\terrafusion-forge` as the clean read-only canonical checkout at
 private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`. Future workers require
-isolated Forge worktrees. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` now authorizes one
-sequential private merged-main artifact producer and sovereign non-production shadow consumer
-without changing the configured runtime.
+isolated Forge worktrees. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` is consumed on the
+verified closeout. The configured runtime did not change, and no credential or GitHub artifact
+transfer was used.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -628,8 +629,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-006A` active |
-| Next WO | Forge producer, then sovereign shadow consumer under the active bounded envelope |
+| Current WO | Portfolio reconciliation after `WO-SR-006A` |
+| Next WO | Select from the refreshed dependency graph; no cutover is automatically admitted |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

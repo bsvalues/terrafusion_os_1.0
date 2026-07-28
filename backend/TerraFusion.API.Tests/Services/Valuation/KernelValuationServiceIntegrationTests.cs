@@ -1,5 +1,8 @@
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
@@ -8,6 +11,18 @@ using TerraFusion.Core.DTOs.Kernel;
 using Xunit;
 
 namespace TerraFusion.API.Tests.Services.Valuation;
+
+public sealed class LocalForgeShadowFactAttribute : FactAttribute
+{
+    public LocalForgeShadowFactAttribute()
+    {
+        if (string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_SHADOW_KERNEL_PATH")))
+        {
+            Skip = "Local sovereign shadow proof requires TERRAFUSION_FORGE_SHADOW_KERNEL_PATH.";
+        }
+    }
+}
 
 public class KernelValuationServiceIntegrationTests
 {
@@ -121,6 +136,90 @@ public class KernelValuationServiceIntegrationTests
         Assert.NotEqual(r1.Provenance.CostAuditEventId, r2.Provenance.CostAuditEventId);
         Assert.NotEqual(r1.Provenance.ValuationAuditEventId, r2.Provenance.ValuationAuditEventId);
     }
+
+    [LocalForgeShadowFact]
+    public void LocalForgeShadowKernel_MatchesSovereignAcceptedAndFailClosedBehavior()
+    {
+        var forgePath = RequireEnvironmentPath("TERRAFUSION_FORGE_SHADOW_KERNEL_PATH");
+        var sovereignPath = RequireEnvironmentPath("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_PATH");
+
+        const string acceptedInput =
+            """
+            {"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"local-shadow-accepted","action":"valuate","payload":{"subject":{"parcelId":"SYNTHETIC-LOCAL-001","attributes":{}},"costBreakdown":{"replacementCost":309551.25,"depreciation":30955.125,"rcnld":278596.125},"model":{"landValue":65000.0,"adjustmentFactors":{"neighborhood":1.05,"location":0.98}}}}
+            """;
+        const string failClosedInput =
+            """
+            {"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"local-shadow-denied","action":"not-authorized","payload":{}}
+            """;
+
+        AssertKernelParity(sovereignPath, forgePath, acceptedInput);
+        AssertKernelParity(sovereignPath, forgePath, failClosedInput);
+
+        var first = RunKernel(forgePath, acceptedInput);
+        var second = RunKernel(forgePath, acceptedInput);
+        Assert.Equal(0, first.ExitCode);
+        Assert.Equal(0, second.ExitCode);
+        Assert.Equal(NormalizeKernelOutput(first.Stdout), NormalizeKernelOutput(second.Stdout));
+    }
+
+    private static void AssertKernelParity(string sovereignPath, string forgePath, string input)
+    {
+        var sovereign = RunKernel(sovereignPath, input);
+        var forge = RunKernel(forgePath, input);
+
+        Assert.Equal(sovereign.ExitCode, forge.ExitCode);
+        Assert.Equal(0, forge.ExitCode);
+        Assert.Equal(string.Empty, sovereign.Stderr);
+        Assert.Equal(string.Empty, forge.Stderr);
+        Assert.Equal(NormalizeKernelOutput(sovereign.Stdout), NormalizeKernelOutput(forge.Stdout));
+    }
+
+    private static string RequireEnvironmentPath(string name)
+    {
+        var path = Environment.GetEnvironmentVariable(name);
+        Assert.False(string.IsNullOrWhiteSpace(path), $"{name} is required.");
+        Assert.True(File.Exists(path), $"{name} does not identify an existing file: {path}");
+        return Path.GetFullPath(path!);
+    }
+
+    private static KernelProcessResult RunKernel(string path, string input)
+    {
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = path,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            },
+        };
+
+        process.Start();
+        process.StandardInput.Write(input);
+        process.StandardInput.Close();
+        var stdout = process.StandardOutput.ReadToEnd().Trim();
+        var stderr = process.StandardError.ReadToEnd().Trim();
+        if (!process.WaitForExit(10_000))
+        {
+            process.Kill(entireProcessTree: true);
+            throw new TimeoutException($"Kernel process timed out: {path}");
+        }
+
+        return new KernelProcessResult(process.ExitCode, stdout, stderr);
+    }
+
+    private static string NormalizeKernelOutput(string output)
+    {
+        var root = JsonNode.Parse(output)?.AsObject()
+            ?? throw new JsonException("Kernel output was not a JSON object.");
+        root.Remove("auditEvent");
+        return root.ToJsonString(new JsonSerializerOptions { WriteIndented = false });
+    }
+
+    private sealed record KernelProcessResult(int ExitCode, string Stdout, string Stderr);
 
     // Worktree-aware kernel locator. The worktree root may redirect cargo's
     // target-dir via `.cargo/config.toml`, so binaries can land at either the

@@ -52,9 +52,10 @@ and protected access remain blocked.
 `WO-SR-006-P` then reconciled the cutover prerequisites against live suite heads and the preserved
 evidence. Forge is the first cutover candidate because it alone has byte-identical kernel source plus
 standalone test parity. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` activates
-`WO-SR-006A` as one sequential bounded envelope: governance activation, a private merged-main Forge
-artifact producer, then a sovereign non-production shadow consumer. Runtime switching and source
-retirement remain later gates.
+`WO-SR-006A` as one sequential bounded envelope. Governance activation and the Forge producer merged.
+The owner then revoked GitHub artifact transfer and replaced it with an exact-commit local,
+disposable, hash-pinned sovereign shadow proof. That proof passed without a runtime switch. Runtime
+switching and source retirement remain later gates.
 `WO-SR-006A-P` registered the clean read-only `D:\terrafusion-forge` checkout at exact private
 `origin/main` `2430b483`. The path-canon prerequisite is complete; it grants no artifact, workflow,
 runtime, publication, deployment, or cutover authority.
@@ -122,7 +123,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-005E GPT Bounded Extraction | F1 RETAINED / AUTHORITY CONSUMED | E3 found no executable direct-copy slice; original GPT PR #3 remains unratified history, corrective PR #4 verified, and pure unwired F1 is retained with no runtime/provider/persistence authority |
 | WO-SR-006-P Federated Cutover Readiness Audit | DONE / R2 | Live heads and evidence reconciled; no further unprotected R2 implementation node remains; Forge selected as the smallest shadow-consumption candidate |
 | WO-SR-006A-P Forge Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-forge` registered at exact private `origin/main` `2430b483`; destination content unchanged |
-| WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | ACTIVE / R3 | Bounded private merged-main artifact producer followed by sovereign non-production shadow consumption; no runtime switch, deployment, publication, or source retirement |
+| WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -263,7 +264,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | WO-SR-006A shadow consumption, then WO-SR-006 cutover | SW-01 / SW-05 / sovereign integration boundary | E3, parity, pure-unwired F1 proof, and exact Forge path canon are complete; the bounded Forge producer/shadow-consumer envelope is active | `evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md` |
+| five-suite-federated-repository-buildout | portfolio reconciliation; WO-SR-006 cutover remains gated | SW-01 / SW-05 / sovereign integration boundary | WO-SR-006A local shadow proof is complete and consumed; runtime adoption, source retirement, and cutover remain protected | `evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -273,11 +274,11 @@ extraction, runtime adoption, protected data, providers, publication, unrelated 
 and cutover.
 
 **Current reconciliation result (WO-SR-006A, 2026-07-28):**
-`FORGE_SHADOW_CONSUMPTION_R3_AUTHORIZED`. The F1 layer, exact-scope audits, and Forge path canon are
-complete. The active bounded sequence is a merged-main Forge artifact producer followed by sovereign
-non-production shadow consumption. Continue inside
-`OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728`; do not request the superseded
-`FORGE_SHADOW_CONSUMPTION_EXACT_AUTHORITY_REQUIRED` decision again. See
+`FORGE_LOCAL_SOVEREIGN_SHADOW_CONSUMPTION_PROVEN_WITHOUT_RUNTIME_SWITCH`. The exact merged Forge
+commit was built locally, transferred through a disposable hash-pinned directory, compared with the
+sovereign kernel, and removed. GitHub artifact transfer and credential provisioning are not part of
+the sovereign proof. The authority is consumed on this closeout merge; return to portfolio
+reconciliation without implying WO-SR-006 cutover authority. See
 [`evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md`](evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md).
 
 ---

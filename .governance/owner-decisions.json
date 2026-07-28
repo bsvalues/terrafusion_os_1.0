@@ -1102,15 +1102,14 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-006A",
-      "status": "active",
-      "authority_class": "R3-bounded-private-artifact-and-non-production-shadow-consumption",
+      "status": "completed",
+      "authority_class": "R3-bounded-local-artifact-and-non-production-shadow-consumption",
       "effective_base_sha": "5f9955ca9d1dd09ed3485ebcea0587794a831f20",
-      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006A-P registered the private Forge checkout and WO-SR-006-P selected Forge as the smallest safe shadow-consumption boundary.",
-      "terminal_condition": "FORGE_SHADOW_CONSUMPTION_PROVEN_WITHOUT_RUNTIME_SWITCH and the exact-scope sovereign closeout is merged and verified.",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006A-P registered the private Forge checkout and WO-SR-006-P selected Forge as the smallest safe shadow-consumption boundary. The owner subsequently revoked GitHub artifact transfer and credential provisioning and directed an exact-commit local sovereign proof.",
+      "terminal_condition": "FORGE_LOCAL_SOVEREIGN_SHADOW_CONSUMPTION_PROVEN_WITHOUT_RUNTIME_SWITCH and the exact-scope sovereign closeout is merged and verified.",
       "authorized_actions": [
         "activate WO-SR-006A in a governance-only sovereign PR before implementation begins",
-        "build and upload a temporary private GitHub Actions valuation-kernel artifact from exact merged Forge main with a machine-readable source and SHA-256 manifest",
-        "retrieve the exact pinned artifact through existing GitHub Actions identities, verify its SHA-256 before execution, and run it only through the authorized sovereign non-production shadow integration test",
+        "build the exact merged Forge commit locally, transfer it through a disposable local directory, verify its SHA-256 before execution, and run it only through the authorized sovereign non-production shadow integration test",
         "validate accepted and fail-closed parity, unchanged runtime configuration, rollback, exact-head assurance, governed Mode B merges, terminal closeout, and portfolio reconciliation"
       ],
       "authorized_files": [
@@ -1118,6 +1117,7 @@
         "PATH_CANON_REGISTER.md",
         ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "scripts/validation/Invoke-ForgeLocalShadowProof.ps1",
         "docs/brain/workorders/active/WO-SR-006A-forge-standalone-kernel-artifact-shadow-consumer-gate.md",
         "docs/brain/workorders/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
@@ -1134,27 +1134,34 @@
       "explicitly_denied": [
         "backend/src/**, appsettings files, runtime configuration, runtime switching, consumer adoption, source deletion or retirement, ownership cutover, or Cargo workspace removal",
         "public packages, releases, registries, persistent artifact distribution, deployment, production, county, PACS, SQL, secret-value inspection, or credential provisioning",
-        "Atlas, Dais, Dossier, GPT, WO-SR-006 cutover, pull_request_target, fork artifacts, untrusted revisions, mutable latest-artifact selection, or required-check bypass"
+        "GitHub artifact download or execution, cross-repository credentials, Atlas, Dais, Dossier, GPT, WO-SR-006 cutover, pull_request_target, fork artifacts, untrusted revisions, mutable latest-artifact selection, or required-check bypass"
       ],
       "merge_mode": "B-standing-bounded-exact-scope",
       "revocation_triggers": [
         "scope expansion outside the exact authorized files or actions",
         "required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
-        "new credential or permission requirement, secret exposure, artifact or hash mismatch, runtime-path mutation, public publication, protected-resource access, or conflicting authority"
+        "credential or permission requirement, network artifact transfer, secret exposure, artifact or hash mismatch, runtime-path mutation, public publication, protected-resource access, or conflicting authority"
       ],
-      "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The authorized next step is temporary private artifact production and non-production shadow consumption without changing the configured sovereign runtime.",
+      "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The corrected sovereign path builds the exact Forge commit locally, verifies a hash-pinned disposable transfer, and performs non-production shadow consumption without GitHub credentials, network artifact transfer, or a configured-runtime change.",
       "completion": {
-        "authority_activation_pr": null,
-        "forge_producer_pr": null,
-        "forge_producer_head": null,
-        "forge_producer_merge": null,
-        "forge_artifact_run_id": null,
-        "forge_artifact_name": null,
-        "forge_artifact_sha256": null,
+        "authority_activation_pr": 1377,
+        "authority_activation_head": "df15cc53cf9c820ca32037275cb6880149316436",
+        "authority_activation_merge": "5feba52f222422d8cc93a900bb335cacd5230913",
+        "forge_producer_pr": 2,
+        "forge_producer_head": "468b21714abea071bef82eb05b4febbda7e9ff82",
+        "forge_producer_merge": "24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_run_id": "30365590537",
+        "forge_artifact_name": "terraforge-valuation-kernel-windows-x64-24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_sha256": "c33ca863be6a1c09ba4e2bb434d9d110facb13462a1c95c0f13dc3c41e8a62be",
+        "github_artifact_path_classification": "historical CI evidence only; not the sovereign transfer or trust path",
+        "local_forge_commit": "24059c3642339f36877cb454ca63683180915b71",
+        "local_artifact_sha256": "a584bbf1765da73237a844fb2d02849c5fc33f88dcbd3af5aeeccf43cff48f4d",
+        "local_shadow_proof": "accepted, fail-closed, exit, and deterministic normalized parity passed; disposable artifact removed; runtime configuration unchanged",
         "sovereign_shadow_pr": null,
         "sovereign_shadow_head": null,
         "sovereign_shadow_merge": null,
-        "authority_consumed": false
+        "effective_on_sovereign_shadow_merge": true,
+        "authority_consumed": true
       }
     }
   ]
