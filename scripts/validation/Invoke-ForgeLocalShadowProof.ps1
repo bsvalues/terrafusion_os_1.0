@@ -7,6 +7,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $expectedForgeCommit = '24059c3642339f36877cb454ca63683180915b71'
+$authorizedSovereignBase = '5feba52f222422d8cc93a900bb335cacd5230913'
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
 $result = $null
@@ -41,7 +42,11 @@ try {
     if ($LASTEXITCODE -ne 0 -or $forgeHead -ne $expectedForgeCommit) {
         throw "Forge worktree must be pinned to $expectedForgeCommit; found $forgeHead."
     }
-    if (git -C $ForgeRepository status --short) {
+    $forgeStatus = git -C $ForgeRepository status --short
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to determine Forge worktree status (exit code $LASTEXITCODE)."
+    }
+    if ($forgeStatus) {
         throw "Forge proof worktree is not clean."
     }
 
@@ -141,10 +146,13 @@ try {
     )
 
     $protectedDelta = @(
-        git -C $sovereignRepository diff --name-only -- `
+        git -C $sovereignRepository diff $authorizedSovereignBase --name-only -- `
             'backend/src' `
             ':(glob)backend/**/appsettings*.json'
     )
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to compute protected runtime/configuration delta (exit code $LASTEXITCODE)."
+    }
     if ($protectedDelta.Count -gt 0) {
         throw "Protected runtime/configuration delta detected: $($protectedDelta -join ', ')"
     }

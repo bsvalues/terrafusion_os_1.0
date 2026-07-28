@@ -167,6 +167,6 @@ that repository to `24059c3642339f36877cb454ca63683180915b71`. `WO-SR-006A` then
 exact commit locally and proved a disposable hash-pinned artifact against the sovereign valuation
 kernel without changing the configured runtime. The owner revoked the GitHub artifact-transfer path;
 the Actions artifact is historical evidence only. Decision
-`OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` is consumed on closeout.
+`OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` is consumed on closeout.
 Extraction, providers, persistence, runtime adoption, packages, deployment, cutover, and source
 retirement remain unauthorized.

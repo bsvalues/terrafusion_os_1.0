@@ -200,14 +200,22 @@ public class KernelValuationServiceIntegrationTests
         process.Start();
         process.StandardInput.Write(input);
         process.StandardInput.Close();
-        var stdout = process.StandardOutput.ReadToEnd().Trim();
-        var stderr = process.StandardError.ReadToEnd().Trim();
-        if (!process.WaitForExit(10_000))
+        var stdoutTask = process.StandardOutput.ReadToEndAsync();
+        var stderrTask = process.StandardError.ReadToEndAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try
+        {
+            process.WaitForExitAsync(timeout.Token).GetAwaiter().GetResult();
+        }
+        catch (OperationCanceledException)
         {
             process.Kill(entireProcessTree: true);
             throw new TimeoutException($"Kernel process timed out: {path}");
         }
 
+        Task.WhenAll(stdoutTask, stderrTask).GetAwaiter().GetResult();
+        var stdout = stdoutTask.Result.Trim();
+        var stderr = stderrTask.Result.Trim();
         return new KernelProcessResult(process.ExitCode, stdout, stderr);
     }
 

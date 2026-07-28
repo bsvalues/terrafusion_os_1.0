@@ -51,11 +51,12 @@ Extraction, custody mutation, persistence, provider calls, runtime adoption, pub
 and protected access remain blocked.
 `WO-SR-006-P` then reconciled the cutover prerequisites against live suite heads and the preserved
 evidence. Forge is the first cutover candidate because it alone has byte-identical kernel source plus
-standalone test parity. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` activates
-`WO-SR-006A` as one sequential bounded envelope. Governance activation and the Forge producer merged.
-The owner then revoked GitHub artifact transfer and replaced it with an exact-commit local,
-disposable, hash-pinned sovereign shadow proof. That proof passed without a runtime switch. Runtime
-switching and source retirement remain later gates.
+standalone test parity. The original
+`OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` envelope activated `WO-SR-006A`, and its
+governance activation and Forge producer merged. The owner then revoked GitHub artifact transfer.
+`OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` replaced Phase 2 with an exact-commit
+local, disposable, hash-pinned sovereign shadow proof. That proof passed without a runtime switch.
+Runtime switching and source retirement remain later gates.
 `WO-SR-006A-P` registered the clean read-only `D:\terrafusion-forge` checkout at exact private
 `origin/main` `2430b483`. The path-canon prerequisite is complete; it grants no artifact, workflow,
 runtime, publication, deployment, or cutover authority.

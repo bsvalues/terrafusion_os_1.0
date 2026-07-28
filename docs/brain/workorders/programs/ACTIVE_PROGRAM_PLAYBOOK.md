@@ -174,9 +174,10 @@ build, disposable hash-pinned transfer, local execution, and local parity eviden
 trust path. Extraction, providers, persistence, runtime adoption, publication, deployment, source
 retirement, and cutover remain gated.
 `WO-SR-006A-P` registered `D:\terrafusion-forge` as the clean read-only canonical checkout at
-private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`. Future workers require
-isolated Forge worktrees. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` is consumed on the
-verified closeout. The configured runtime did not change, and no credential or GitHub artifact
+historical private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`; the exact local proof
+used current Forge `origin/main` `24059c3642339f36877cb454ca63683180915b71`. Future workers require
+isolated Forge worktrees. `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` is consumed on
+the verified closeout. The configured runtime did not change, and no credential or GitHub artifact
 transfer was used.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).

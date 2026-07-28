@@ -8259,7 +8259,7 @@
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
-        "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P path registration, PR #1377 authority activation, Forge PR #2 merge 24059c3642339f36877cb454ca63683180915b71, and final remediation proof-run local artifact SHA-256 d25a7e6f7d75132a3367d1ef6038accdedcf1c00e78547a113e9ba5374bd434c.",
+        "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P path registration, PR #1377 authority activation, Forge PR #2 merge 24059c3642339f36877cb454ca63683180915b71, and final review-remediation proof-run local artifact SHA-256 86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba.",
         "schemaVersion": "0.1.0"
       }
     }

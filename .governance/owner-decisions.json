@@ -1203,7 +1203,7 @@
       "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The corrected sovereign path builds the exact Forge commit locally, verifies a hash-pinned disposable transfer, and performs non-production shadow consumption without GitHub credentials, network artifact transfer, or a configured-runtime change.",
       "completion": {
         "local_forge_commit": "24059c3642339f36877cb454ca63683180915b71",
-        "local_artifact_sha256": "d25a7e6f7d75132a3367d1ef6038accdedcf1c00e78547a113e9ba5374bd434c",
+        "local_artifact_sha256": "86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba",
         "local_shadow_proof": "accepted, fail-closed, exit, and deterministic normalized parity passed; disposable artifact removed; runtime configuration unchanged",
         "sovereign_shadow_pr": 1378,
         "sovereign_shadow_head": null,

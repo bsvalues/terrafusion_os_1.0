@@ -6,9 +6,9 @@
 
 ## Authority
 
-Owner decision `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` grants one sequential R3
-envelope at sovereign base `5f9955ca9d1dd09ed3485ebcea0587794a831f20` and Forge base
-`2430b483f20e07a6ff9a66e493caab0e39db64ef`.
+Owner decision `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` grants the corrected local
+R3 closeout at sovereign base `5feba52f222422d8cc93a900bb335cacd5230913` and exact Forge proof
+commit `24059c3642339f36877cb454ca63683180915b71`.
 
 The owner revoked GitHub artifact transfer and credential provisioning before sovereign Phase 2.
 The completed envelope uses one governance activation PR, one exact three-file Forge producer PR
@@ -34,7 +34,7 @@ runtime switch, source retirement, publication, deployment, protected-data acces
 - copied the executable only through a disposable local directory;
 - wrote and re-read a local manifest before execution;
 - verified local executable SHA-256
-  `d25a7e6f7d75132a3367d1ef6038accdedcf1c00e78547a113e9ba5374bd434c`
+  `86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba`
   for the exact artifact executed by the final local proof run;
 - built the matching sovereign valuation source in the disposable directory without modifying or
   creating a repository lockfile;
