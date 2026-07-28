@@ -1,12 +1,14 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
 using TerraFusion.API.Services.Valuation;
+using TerraFusion.API.Services.Valuation.KernelContracts;
 using TerraFusion.Core.DTOs.Kernel;
 using Xunit;
 
@@ -20,6 +22,24 @@ public sealed class LocalForgeShadowFactAttribute : FactAttribute
                 Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_SHADOW_KERNEL_PATH")))
         {
             Skip = "Local sovereign shadow proof requires TERRAFUSION_FORGE_SHADOW_KERNEL_PATH.";
+        }
+    }
+}
+
+public sealed class LocalForgeRuntimeRollbackFactAttribute : FactAttribute
+{
+    public LocalForgeRuntimeRollbackFactAttribute()
+    {
+        if (string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_RUNTIME_KERNEL_PATH")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_PATH")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_RUNTIME_KERNEL_SHA256")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_SHA256")))
+        {
+            Skip = "Local runtime rollback proof requires Forge and sovereign kernel paths.";
         }
     }
 }
@@ -160,6 +180,109 @@ public class KernelValuationServiceIntegrationTests
         Assert.Equal(0, first.ExitCode);
         Assert.Equal(0, second.ExitCode);
         Assert.Equal(NormalizeKernelOutput(first.Stdout), NormalizeKernelOutput(second.Stdout));
+    }
+
+    [LocalForgeRuntimeRollbackFact]
+    public async Task LocalForgeRuntimeSelectionAndRollback_UsesClientHostBoundary()
+    {
+        var forgePath = RequireEnvironmentPath("TERRAFUSION_FORGE_RUNTIME_KERNEL_PATH");
+        var sovereignPath = RequireEnvironmentPath("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_PATH");
+        var forgeSha256 = ComputeFileSha256(forgePath);
+        var sovereignSha256 = ComputeFileSha256(sovereignPath);
+        Assert.Equal(
+            RequireEnvironmentValue("TERRAFUSION_FORGE_RUNTIME_KERNEL_SHA256"),
+            forgeSha256);
+        Assert.Equal(
+            RequireEnvironmentValue("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_SHA256"),
+            sovereignSha256);
+        var payload = CreateRuntimeRollbackPayload();
+
+        var (forgeClient, forgeHost) = CreateValuationClient(forgePath);
+        var forgeAccepted = await forgeClient.ValuateAsync(payload);
+
+        Assert.True(forgeAccepted.Success, forgeAccepted.ErrorMessage);
+        Assert.NotNull(forgeAccepted.Data);
+        Assert.Equal(351675.412625, forgeAccepted.Data!.TotalValue, 6);
+        Assert.Equal(65000.0, forgeAccepted.Data.Components.Land, 6);
+        Assert.Equal(286675.412625, forgeAccepted.Data.Components.Building, 6);
+        Assert.Equal(forgeSha256, forgeAccepted.KernelBinarySha256);
+        Assert.StartsWith("git:", forgeAccepted.KernelVersion);
+
+        var deniedInvocation = new KernelInvocation<ValuationKernelPayload>(
+            ContractPackVersion: "1.0.0",
+            ModuleApiVersion: "1.0.0",
+            RequestId: "local-runtime-denied",
+            Action: "not-authorized",
+            Payload: payload);
+        var forgeDenied =
+            await forgeHost.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+                forgePath,
+                "terraforge.kernel.valuation",
+                deniedInvocation);
+
+        Assert.False(forgeDenied.Success);
+        Assert.Equal(KernelFailureMode.KernelReportedError, forgeDenied.FailureMode);
+        Assert.Equal(forgeSha256, forgeDenied.KernelBinarySha256);
+
+        var (sovereignClient, _) = CreateValuationClient(sovereignPath);
+        var rollbackAccepted = await sovereignClient.ValuateAsync(payload);
+
+        Assert.True(rollbackAccepted.Success, rollbackAccepted.ErrorMessage);
+        Assert.NotNull(rollbackAccepted.Data);
+        Assert.Equal(forgeAccepted.Data.TotalValue, rollbackAccepted.Data!.TotalValue);
+        Assert.Equal(forgeAccepted.Data.Components, rollbackAccepted.Data.Components);
+        Assert.Equal(sovereignSha256, rollbackAccepted.KernelBinarySha256);
+        Assert.StartsWith("git:", rollbackAccepted.KernelVersion);
+    }
+
+    private static (ValuationKernelClient Client, RustKernelProcessHost Host)
+        CreateValuationClient(string valuationKernelPath)
+    {
+        var options = Options.Create(new RustKernelsOptions
+        {
+            ValuationKernelPath = valuationKernelPath,
+            TimeoutMs = 10000,
+            ContractPackVersion = "1.0.0",
+            ModuleApiVersion = "1.0.0",
+        });
+        var host = new RustKernelProcessHost(
+            options,
+            NullLogger<RustKernelProcessHost>.Instance);
+        var client = new ValuationKernelClient(
+            host,
+            options,
+            NullLogger<ValuationKernelClient>.Instance);
+        return (client, host);
+    }
+
+    private static ValuationKernelPayload CreateRuntimeRollbackPayload()
+    {
+        return new ValuationKernelPayload(
+            new ValuationSubject(
+                "SYNTHETIC-LOCAL-RUNTIME-001",
+                JsonDocument.Parse("{}").RootElement.Clone()),
+            new ValuationCostBreakdown(
+                ReplacementCost: 309551.25,
+                Depreciation: 30955.125,
+                Rcnld: 278596.125),
+            new ValuationModel(
+                LandValue: 65000.0,
+                AdjustmentFactors: new AdjustmentFactors(
+                    Neighborhood: 1.05,
+                    Location: 0.98)));
+    }
+
+    private static string ComputeFileSha256(string path)
+    {
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+    }
+
+    private static string RequireEnvironmentValue(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        Assert.False(string.IsNullOrWhiteSpace(value), $"{name} is required.");
+        return value!.ToLowerInvariant();
     }
 
     private static void AssertKernelParity(string sovereignPath, string forgePath, string input)

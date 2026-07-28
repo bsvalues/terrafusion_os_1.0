@@ -19,11 +19,11 @@ This register is the canonical source of truth for all active TerraFusion work o
 
 ## Current Program Summary
 
-*(Updated 2026-07-28 - Forge shadow-consumption envelope active after F1 and path-canon completion)*
+*(Updated 2026-07-28 - Forge local runtime-selection and rollback rehearsal complete on merge)*
 
 | Program | Goal | Loop | Status | Current WO | Next WO | Continuation | Stop Rules |
 |---------|------|------|--------|------------|---------|--------------|------------|
-| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active between cohorts; Forge local shadow proof complete | `WO-SR-006A` complete | Portfolio reconciliation | Recompute the graph; no cutover authority implied | Stop on runtime adoption, source retirement, deployment, protected resources, credentials, or new scope |
+| [Five-Suite Federated Repository Buildout](programs/five-suite-federated-repository-buildout.md) | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` | Active; Forge process-local selection and rollback proven on merge | `WO-SR-006B` complete on merge | Portfolio reconciliation | Recompute the graph; no persistent adoption or cutover authority implied | Stop on persistent runtime adoption, source retirement, deployment, protected resources, credentials, or new scope |
 | [Governed Multi-Agent Operator Activation](programs/governed-multi-agent-operator-activation.md) | `GOAL-MAO-001` | `LOOP-MAO-001` | Closed - PASS_WITH_GAPS; continuation envelope completed and consumed | `WO-MAO-007` complete | Portfolio reconciliation | No MAO continuation authority survives closeout | Future execution requires new applicable authority; protected boundaries remain denied |
 | [Codex Operator Autonomy](programs/codex-operator-autonomy.md) | `GOAL-TF-CODEX-OPERATOR-AUTONOMY-001` | `LOOP-TF-CODEX-OPERATOR-AUTONOMY-001` | Governing autonomy baseline | `WO-OP-AUTO-000` through `WO-OP-AUTO-012` | Portfolio reconciliation | Operator model governs recorded-authority continuation | Stop on branch/merge conflict, scope expansion, runtime/CI/deployment/protected-resource changes, destructive operations, or conflicting canon |
 | [Release Engineering](programs/release-engineering.md) | `GOAL-TF-RELEASE-ENGINEERING-001` | `LOOP-TF-RELEASE-ENGINEERING-001` | Closed | `WO-REL-006` complete | Portfolio reconciliation | No automatic Release Engineering successor after closeout | Stop on CI/workflow/deployment/runtime/schema/secrets/county/PACS/live-resource scope |

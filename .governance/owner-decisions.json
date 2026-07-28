@@ -1212,6 +1212,63 @@
         "post_merge_verified": true,
         "authority_consumed": true
       }
+    },
+    {
+      "id": "OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-006B",
+      "status": "active",
+      "authority_class": "R3-bounded-nonproduction-process-local-runtime-rehearsal",
+      "effective_base_sha": "0d1167fce6e887e1f49f4e75963f441e9f04ab06",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006A proved local sovereign shadow parity without a runtime switch. The owner authorized one process-local client/host runtime-selection and rollback rehearsal and explicitly denied persistent runtime configuration, source retirement, ownership transfer, and WO-SR-006 cutover.",
+      "terminal_condition": "FORGE_LOCAL_RUNTIME_SELECTION_AND_ROLLBACK_REHEARSAL_PROVEN_NO_PERSISTENT_SWITCH and the exact-scope implementation PR is merged and verified.",
+      "authorized_actions": [
+        "build exact Forge commit 24059c3642339f36877cb454ca63683180915b71 in an isolated read-only worktree, create and verify a disposable local manifest, and select the rebuilt binary only through process-local test options",
+        "prove accepted and typed fail-closed behavior through ValuationKernelClient and RustKernelProcessHost, reconstruct those components with the unchanged sovereign binary, and prove rollback",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify closeout, consume the bounded authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "scripts/validation/Invoke-ForgeLocalRuntimeRollbackProof.ps1",
+        "docs/brain/workorders/active/WO-SR-006B-forge-local-runtime-selection-rollback-rehearsal.md",
+        "docs/brain/workorders/evidence/WO-SR-006B-FORGE-LOCAL-RUNTIME-SELECTION-ROLLBACK-REHEARSAL.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "backend/src/**, appsettings files, persistent runtime configuration, production runtime switching, source retirement, ownership transfer, or WO-SR-006 cutover",
+        "packages, publication, GitHub workflow changes, network artifact transfer, deployment, production, county, PACS, SQL, credentials, or secrets",
+        "Atlas, Dais, Dossier, or GPT adoption; required-check bypass; unresolved substantive review; or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "source or manifest hash mismatch, unexplained source drift, persistent runtime or configuration mutation, environment restoration failure, or disposable artifact residue",
+        "backend/src change, scope expansion, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "production, deployment, protected-resource, credential, secret, source-retirement, ownership-transfer, or cutover access"
+      ],
+      "decision_basis": "WO-SR-006A invoked both binaries directly and did not prove the actual ValuationKernelClient to RustKernelProcessHost selection boundary or rollback. This bounded rehearsal proves that boundary without persistent configuration or product-runtime changes.",
+      "completion": {
+        "forge_commit": "24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_sha256": "add713984f1a78ffbb87c88a6d9eedcab1cf3912c414d522127ff078c4267811",
+        "sovereign_artifact_sha256": "4896ae1308228619ee5898531ed0c05ca2f918394d264d178e510b476bbed818",
+        "prior_same_wo_forge_artifact_sha256": "c475eef7461275bed46f4150f8ca1155ef692323e103fb2aca9e52680d8985ac",
+        "prior_same_wo_sovereign_artifact_sha256": "4896ae1308228619ee5898531ed0c05ca2f918394d264d178e510b476bbed818",
+        "reproducibility_classification": "BINARY_HASH_CHANGED_REPRODUCIBILITY_NOT_CLAIMED",
+        "local_runtime_rehearsal": "accepted client/host invocation passed; typed fail-closed host invocation passed; sovereign rollback client/host invocation passed; selected binary provenance passed",
+        "persistent_runtime_changed": false,
+        "shared_forge_checkout_changed": false,
+        "environment_restored": true,
+        "disposable_directory_removed": true,
+        "authority_consumed": false
+      }
     }
   ]
 }

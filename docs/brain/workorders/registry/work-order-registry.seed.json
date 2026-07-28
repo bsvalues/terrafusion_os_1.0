@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006A local sovereign shadow closeout",
+  "generatedBy": "WO-SR-006B local runtime-selection and rollback rehearsal",
   "generatedAt": "2026-07-28T00:00:00Z",
-  "description": "Five-suite registry after the pure-unwired F1 layer and completed WO-SR-006A local sovereign shadow proof. GitHub artifact transfer was revoked; the exact Forge commit passed disposable local hash verification and parity without a runtime switch. Runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
+  "description": "Five-suite registry after WO-SR-006B proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary. Persistent runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -8256,6 +8256,116 @@
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
         "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P path registration, PR #1377 authority activation, Forge PR #2 merge 24059c3642339f36877cb454ca63683180915b71, and final fail-closed review-remediation proof-run local artifact SHA-256 7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-006B",
+      "title": "Forge Local Runtime-Selection and Rollback Rehearsal Gate",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove process-local selection of an exact-commit Forge kernel through the real sovereign client/host boundary and rollback to the unchanged sovereign kernel without a persistent runtime switch or cutover.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-006A",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1378 merged the exact-commit local Forge shadow proof as afc4fb6024616c1781b922c29bb848864f02609b; PR #1379 consumed its authority as 0d1167fce6e887e1f49f4e75963f441e9f04ab06."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only exact-commit Forge proof worktree and disposable build output",
+          "paths": ["D:\\.codex-worktrees\\sr-006b-forge-proof"]
+        },
+        {
+          "name": "Sovereign non-production process-local client/host rehearsal",
+          "paths": [
+            "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+            "scripts/validation/Invoke-ForgeLocalRuntimeRollbackProof.ps1",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "backend/src, appsettings, persistent runtime configuration, production switching, source retirement, ownership transfer, WO-SR-006 cutover, workflows, deployment, protected resources, credentials, and secrets"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "scripts/validation/Invoke-ForgeLocalRuntimeRollbackProof.ps1",
+        "docs/brain/workorders/active/WO-SR-006B-forge-local-runtime-selection-rollback-rehearsal.md",
+        "docs/brain/workorders/evidence/WO-SR-006B-FORGE-LOCAL-RUNTIME-SELECTION-ROLLBACK-REHEARSAL.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/src/**",
+        "backend/**/appsettings*.json",
+        ".github/workflows/**",
+        "packages/terrabuild/kernels/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact Forge commit and source hashes, complete disposable manifest, selected binary SHA provenance, accepted and typed fail-closed client/host proof, sovereign rollback proof, environment restoration, artifact removal, and unchanged persistent runtime/configuration."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Local Forge runtime-selection and rollback rehearsal",
+          "command": "scripts/validation/Invoke-ForgeLocalRuntimeRollbackProof.ps1",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query and planner tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on source or manifest hash mismatch, persistent runtime/configuration mutation, environment restoration failure, disposable residue, backend/src change, scope expansion, required-check failure or bypass, unresolved substantive review, protected-resource access, source retirement, ownership transfer, or cutover."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 authorizes the exact bounded rehearsal and Mode B delivery lifecycle. It grants no persistent runtime adoption, source retirement, ownership transfer, deployment, protected-resource access, or WO-SR-006 cutover."
+      },
+      "provenance": {
+        "createdAt": "2026-07-28T00:00:00Z",
+        "source": "Owner decision OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 at sovereign base 0d1167fce6e887e1f49f4e75963f441e9f04ab06, exact Forge commit 24059c3642339f36877cb454ca63683180915b71, and final local proof artifact SHA-256 add713984f1a78ffbb87c88a6d9eedcab1cf3912c414d522127ff078c4267811.",
         "schemaVersion": "0.1.0"
       }
     }
