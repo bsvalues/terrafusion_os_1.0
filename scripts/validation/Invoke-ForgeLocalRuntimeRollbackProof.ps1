@@ -140,25 +140,14 @@ try {
         Get-FileHash -Algorithm SHA256 -LiteralPath $artifactPath
     ).Hash.ToLowerInvariant()
 
-    $sovereignSource = Join-Path $proofRoot 'sovereign-source'
-    Copy-Item `
-        -Path (Join-Path $sovereignRepository 'packages\terrabuild\kernels\terraforge.kernel.valuation') `
-        -Destination $sovereignSource `
-        -Recurse
-    $sovereignManifest = Join-Path $sovereignSource 'Cargo.toml'
     $configuredSovereignTarget = Join-Path `
         $sovereignRepository `
         'packages\terrabuild\kernels\target'
-    $env:CARGO_TARGET_DIR = $configuredSovereignTarget
-    Invoke-Checked cargo generate-lockfile --offline --manifest-path $sovereignManifest
-    Invoke-Checked cargo test --locked --offline --manifest-path $sovereignManifest
-    Invoke-Checked cargo build --release --locked --offline --manifest-path $sovereignManifest
-
     $sovereignBinary = Join-Path `
         $configuredSovereignTarget `
         'release\terraforge-kernel-valuation.exe'
     if (-not (Test-Path -LiteralPath $sovereignBinary)) {
-        throw "Sovereign build did not produce the configured local executable $sovereignBinary."
+        throw "Configured sovereign executable is missing: $sovereignBinary. Build the committed sovereign kernels before running this proof."
     }
     $sovereignSha256 = (
         Get-FileHash -Algorithm SHA256 -LiteralPath $sovereignBinary
