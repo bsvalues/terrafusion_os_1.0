@@ -153,8 +153,17 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to compute protected runtime/configuration delta (exit code $LASTEXITCODE)."
     }
-    if ($protectedDelta.Count -gt 0) {
-        throw "Protected runtime/configuration delta detected: $($protectedDelta -join ', ')"
+    $untrackedProtected = @(
+        git -C $sovereignRepository ls-files --others --exclude-standard -- `
+            'backend/src' `
+            ':(glob)backend/**/appsettings*.json'
+    )
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to compute untracked protected runtime/configuration files (exit code $LASTEXITCODE)."
+    }
+    $protectedChanges = @($protectedDelta) + @($untrackedProtected)
+    if ($protectedChanges.Count -gt 0) {
+        throw "Protected runtime/configuration delta detected: $($protectedChanges -join ', ')"
     }
 
     $result = [ordered]@{

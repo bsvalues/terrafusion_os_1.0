@@ -6,7 +6,7 @@
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded local artifact and non-production shadow consumption |
 | Authority | `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` |
-| Sovereign base | `5f9955ca9d1dd09ed3485ebcea0587794a831f20` |
+| Sovereign base | `5feba52f222422d8cc93a900bb335cacd5230913` |
 | Forge proof commit | `24059c3642339f36877cb454ca63683180915b71` |
 | Dependency | WO-SR-006A-P complete |
 | Merge mode | Mode B, bounded exact scope |
@@ -43,7 +43,7 @@ or persistent distribution is part of the sovereign proof.
 - Manifest records repository, exact commit, source hashes, command, target, toolchain, filename, and
   executable SHA-256.
 - The local artifact manifest records exact Forge commit, source hashes, toolchain, filename, and
-  SHA-256 `86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba`
+  SHA-256 `7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88`
   for the exact artifact executed by the final local proof run.
 - The disposable local transfer verifies SHA-256 before execution and is removed afterward.
 - Accepted output, fail-closed output, exit behavior, and deterministic serialization match.

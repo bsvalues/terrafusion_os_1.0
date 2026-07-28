@@ -34,7 +34,7 @@ runtime switch, source retirement, publication, deployment, protected-data acces
 - copied the executable only through a disposable local directory;
 - wrote and re-read a local manifest before execution;
 - verified local executable SHA-256
-  `86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba`
+  `7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88`
   for the exact artifact executed by the final local proof run;
 - built the matching sovereign valuation source in the disposable directory without modifying or
   creating a repository lockfile;

@@ -8167,14 +8167,14 @@
       ],
       "allowedSystems": [
         {
-          "name": "Private Forge suite CI artifact build",
-          "paths": ["bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml"]
+          "name": "Read-only exact-commit local Forge source and disposable build output",
+          "paths": ["D:\\.codex-worktrees\\sr-006a-forge-local-proof"]
         },
         {
-          "name": "Sovereign non-production Forge kernel shadow gate",
+          "name": "Sovereign local non-production Forge kernel shadow gate",
           "paths": [
-            ".github/workflows/terraforge-kernels.yml",
             "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+            "scripts/validation/Invoke-ForgeLocalShadowProof.ps1",
             "docs/brain/workorders/**"
           ]
         }
@@ -8185,10 +8185,6 @@
         }
       ],
       "allowedFiles": [
-        "bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml",
-        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006A-forge-standalone-kernel-artifact.md",
-        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
-        ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
         "scripts/validation/Invoke-ForgeLocalShadowProof.ps1",
         ".governance/owner-decisions.json",
@@ -8217,7 +8213,7 @@
       "evidenceRequired": [
         {
           "kind": "other",
-          "description": "Exact standalone source SHA, artifact SHA-256, private retrieval proof, sovereign and standalone output parity, fail-closed parity, unchanged runtime path, and revert-only rollback."
+          "description": "Exact local Forge source SHA, source hashes, build target and toolchain, disposable artifact SHA-256 verification, sovereign and standalone output parity, fail-closed parity, unchanged runtime path, artifact removal, and revert-only rollback."
         }
       ],
       "validationGates": [
@@ -8259,7 +8255,7 @@
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
-        "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P path registration, PR #1377 authority activation, Forge PR #2 merge 24059c3642339f36877cb454ca63683180915b71, and final review-remediation proof-run local artifact SHA-256 86d5a0c34c6881c26352e7f344090366c19066dd93b9357d8f9ebf62e524abba.",
+        "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P path registration, PR #1377 authority activation, Forge PR #2 merge 24059c3642339f36877cb454ca63683180915b71, and final fail-closed review-remediation proof-run local artifact SHA-256 7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88.",
         "schemaVersion": "0.1.0"
       }
     }
