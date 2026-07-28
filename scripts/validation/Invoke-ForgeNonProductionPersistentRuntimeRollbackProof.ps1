@@ -22,6 +22,8 @@ $proofWorktreeCreated = $false
 $environmentRestored = $false
 $disposableDirectoryRemoved = $false
 $result = $null
+$primaryError = $null
+$cleanupErrors = [System.Collections.Generic.List[string]]::new()
 $sharedForgeHeadBefore = $null
 $sharedForgeStatusBefore = $null
 $preservedEnvironment = @{}
@@ -267,7 +269,9 @@ try {
         transport = 'local-disposable-directory'
         kernelSourceHashes = $sourceHashes
         buildCommand =
-            'cargo build --release --locked --manifest-path kernels/terraforge.kernel.valuation/Cargo.toml'
+            'cargo build --release --offline --locked --manifest-path kernels/terraforge.kernel.valuation/Cargo.toml'
+        sovereignBuildCommand =
+            'cargo build --release --offline --manifest-path <disposable-sovereign-copy>/Cargo.toml'
         toolchain = [ordered]@{ rustc = $rustc; cargo = $cargoVersion }
         executableFilename = 'terraforge-kernel-valuation.exe'
         executablePath = $artifactPath
@@ -396,31 +400,49 @@ try {
         persistentRuntimeChanged = $false
     }
 }
+catch {
+    $primaryError = $_
+}
 finally {
     try {
         & dotnet build-server shutdown | Out-Null
     }
     catch {
-        # Cleanup remains authoritative.
+        $cleanupErrors.Add("dotnet build-server shutdown: $($_.Exception.Message)")
     }
     foreach ($name in $preservedEnvironment.Keys) {
-        if ($preservedEnvironment[$name].Exists) {
-            [Environment]::SetEnvironmentVariable(
-                $name, $preservedEnvironment[$name].Value, 'Process')
+        try {
+            if ($preservedEnvironment[$name].Exists) {
+                [Environment]::SetEnvironmentVariable(
+                    $name, $preservedEnvironment[$name].Value, 'Process')
+            }
+            else {
+                [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+            }
         }
-        else {
-            [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+        catch {
+            $cleanupErrors.Add("restore environment $name`: $($_.Exception.Message)")
         }
     }
     $environmentRestored = $true
 
     if ($proofWorktreeCreated) {
-        Invoke-Checked -Command git -Arguments @(
-            '-C', $SharedForgeCheckout, 'worktree', 'remove', $ForgeProofWorktree
-        )
-        Invoke-Checked -Command git -Arguments @(
-            '-C', $SharedForgeCheckout, 'worktree', 'prune'
-        )
+        try {
+            Invoke-Checked -Command git -Arguments @(
+                '-C', $SharedForgeCheckout, 'worktree', 'remove', $ForgeProofWorktree
+            )
+        }
+        catch {
+            $cleanupErrors.Add("remove Forge proof worktree: $($_.Exception.Message)")
+        }
+        try {
+            Invoke-Checked -Command git -Arguments @(
+                '-C', $SharedForgeCheckout, 'worktree', 'prune'
+            )
+        }
+        catch {
+            $cleanupErrors.Add("prune Forge worktrees: $($_.Exception.Message)")
+        }
     }
     if (Test-Path -LiteralPath $proofRoot) {
         foreach ($attempt in 1..10) {
@@ -430,7 +452,8 @@ finally {
             }
             catch {
                 if ($attempt -eq 10) {
-                    throw
+                    $cleanupErrors.Add("remove proof root: $($_.Exception.Message)")
+                    break
                 }
                 Start-Sleep -Seconds 1
             }
@@ -438,11 +461,22 @@ finally {
     }
     if ((Test-Path -LiteralPath $proofRoot) -or
         (Test-Path -LiteralPath $ForgeProofWorktree)) {
-        throw 'Disposable rehearsal residue remains.'
+        $cleanupErrors.Add('Disposable rehearsal residue remains.')
     }
-    $disposableDirectoryRemoved = $true
+    else {
+        $disposableDirectoryRemoved = $true
+    }
 }
 
+if ($null -ne $primaryError) {
+    if ($cleanupErrors.Count -gt 0) {
+        Write-Warning ("Cleanup also reported: " + ($cleanupErrors -join '; '))
+    }
+    throw $primaryError
+}
+if ($cleanupErrors.Count -gt 0) {
+    throw ("Cleanup failed: " + ($cleanupErrors -join '; '))
+}
 if ($null -ne $result) {
     $result.environmentRestored = $environmentRestored
     $result.disposableDirectoryRemoved = $disposableDirectoryRemoved
