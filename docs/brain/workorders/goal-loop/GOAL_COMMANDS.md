@@ -79,7 +79,9 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   but is not the execution or trust plane. The bounded authority is consumed; return to portfolio
   reconciliation. `WO-SR-006B` then proves process-local selection through the real client/host
   boundary, typed fail-closed behavior, and rollback to the unchanged sovereign binary. Persistent
-  runtime adoption, source retirement, and cutover remain unauthorized.
+  runtime adoption, source retirement, and cutover remain unauthorized. `WO-SR-006C` is separately
+  authorized to prove only a disposable external `ForgeRehearsal` override across two isolated host
+  starts followed by sovereign rollback in a third; canonical configuration and cutover remain denied.
 Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
 publication, deployment, source retirement, and cutover remain gated.
 

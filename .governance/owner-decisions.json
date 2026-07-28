@@ -1276,6 +1276,50 @@
         "post_merge_verified": true,
         "authority_consumed": true
       }
+    },
+    {
+      "id": "OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-006C",
+      "status": "active",
+      "authority_class": "R3-bounded-local-nonproduction-persistent-selection-rehearsal",
+      "effective_base_sha": "6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006B proved process-local Forge selection and sovereign rollback without persistent configuration. This decision authorizes one disposable on-disk ForgeRehearsal override across isolated host restarts followed by rollback, and no deployment or cutover.",
+      "terminal_condition": "FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN and the exact-scope implementation and closeout PRs are merged and verified.",
+      "authorized_actions": [
+        "build exact Forge commit 24059c3642339f36877cb454ca63683180915b71 in an isolated read-only worktree and verify exact committed source and build inputs",
+        "create a disposable appsettings.ForgeRehearsal.local.json outside the repository that overrides only RustKernels:ValuationKernelPath, prove Forge selection across two isolated host starts, then prove rollback to the sovereign binary in a third start",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify closeout, consume the bounded authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "scripts/validation/Invoke-ForgeNonProductionPersistentRuntimeRollbackProof.ps1",
+        "docs/brain/workorders/active/WO-SR-006C-forge-nonproduction-persistent-runtime-adoption-rollback.md",
+        "docs/brain/workorders/evidence/WO-SR-006C-FORGE-NONPRODUCTION-PERSISTENT-RUNTIME-ADOPTION-ROLLBACK.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "backend/src/**, canonical appsettings files, production or county runtime, persistent Forge selection after rehearsal, source retirement, ownership transfer, sovereign implementation deletion, or WO-SR-006 cutover",
+        "packages, publication, GitHub workflow changes, network artifact transfer, deployment, county, PACS, SQL, credentials, or secrets",
+        "Atlas, Dais, Dossier, or GPT adoption; required-check bypass; unresolved substantive review; or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "source, build-input, manifest, or executable hash mismatch",
+        "canonical appsettings or backend/src change, persistent environment mutation, environment restoration failure, disposable residue, scope expansion, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "production, deployment, protected-resource, credential, secret, source-retirement, ownership-transfer, or cutover access"
+      ],
+      "decision_basis": "WO-SR-006B proved process-local selection and rollback but did not prove that an isolated on-disk configuration survives a host restart and then rolls back cleanly. This bounded rehearsal proves that distinction without modifying canonical configuration or deploying a runtime.",
+      "completion": null
     }
   ]
 }
