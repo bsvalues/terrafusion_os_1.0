@@ -1102,7 +1102,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-006A",
-      "status": "active",
+      "status": "revoked",
       "authority_class": "R3-bounded-private-artifact-and-non-production-shadow-consumption",
       "effective_base_sha": "5f9955ca9d1dd09ed3485ebcea0587794a831f20",
       "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006A-P registered the private Forge checkout and WO-SR-006-P selected Forge as the smallest safe shadow-consumption boundary.",
@@ -1143,15 +1143,69 @@
         "new credential or permission requirement, secret exposure, artifact or hash mismatch, runtime-path mutation, public publication, protected-resource access, or conflicting authority"
       ],
       "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The authorized next step is temporary private artifact production and non-production shadow consumption without changing the configured sovereign runtime.",
+      "revoked_by": "OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728",
+      "revocation_reason": "The owner revoked GitHub artifact transfer and credential provisioning before sovereign Phase 2.",
       "completion": {
-        "authority_activation_pr": null,
-        "forge_producer_pr": null,
-        "forge_producer_head": null,
-        "forge_producer_merge": null,
-        "forge_artifact_run_id": null,
-        "forge_artifact_name": null,
-        "forge_artifact_sha256": null,
-        "sovereign_shadow_pr": null,
+        "authority_activation_pr": 1377,
+        "authority_activation_head": "df15cc53cf9c820ca32037275cb6880149316436",
+        "authority_activation_merge": "5feba52f222422d8cc93a900bb335cacd5230913",
+        "forge_producer_pr": 2,
+        "forge_producer_head": "468b21714abea071bef82eb05b4febbda7e9ff82",
+        "forge_producer_merge": "24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_run_id": "30365590537",
+        "forge_artifact_name": "terraforge-valuation-kernel-windows-x64-24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_sha256": "c33ca863be6a1c09ba4e2bb434d9d110facb13462a1c95c0f13dc3c41e8a62be",
+        "github_artifact_path_classification": "historical CI evidence only; not the sovereign transfer or trust path",
+        "authority_consumed": false
+      }
+    },
+    {
+      "id": "OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-006A",
+      "status": "active",
+      "authority_class": "R3-bounded-local-artifact-and-non-production-shadow-consumption",
+      "effective_base_sha": "5feba52f222422d8cc93a900bb335cacd5230913",
+      "scope_source": "Owner decision REVOKE_GITHUB_ARTIFACT_TRANSFER_PATH recorded on 2026-07-28. The owner cancelled token and secret setup, revoked GitHub artifact transfer for sovereign Phase 2, and authorized an exact-commit local build, disposable transfer, hash verification, shadow proof, closeout, and portfolio reconciliation.",
+      "terminal_condition": "FORGE_LOCAL_SOVEREIGN_SHADOW_CONSUMPTION_PROVEN_WITHOUT_RUNTIME_SWITCH and PR #1378 is merged and verified.",
+      "authorized_actions": [
+        "build the exact merged Forge commit locally, transfer it through a disposable local directory, verify its SHA-256 before execution, and run it only through the authorized sovereign non-production shadow integration test",
+        "commit tests, evidence, governance, and the local validation script; validate, remediate, obtain exact-head assurance, merge under Mode B, verify closeout, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "scripts/validation/Invoke-ForgeLocalShadowProof.ps1",
+        "docs/brain/workorders/active/WO-SR-006A-forge-standalone-kernel-artifact-shadow-consumer-gate.md",
+        "docs/brain/workorders/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "backend/src/**, appsettings files, runtime configuration, runtime switching, consumer adoption, source deletion or retirement, ownership cutover, or Cargo workspace removal",
+        "public packages, releases, registries, persistent artifact distribution, deployment, production, county, PACS, SQL, secret-value inspection, or credential provisioning",
+        "GitHub artifact download or execution, cross-repository credentials, Atlas, Dais, Dossier, GPT, WO-SR-006 cutover, pull_request_target, fork artifacts, untrusted revisions, mutable latest-artifact selection, or required-check bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the exact authorized files or actions",
+        "required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "credential or permission requirement, network artifact transfer, secret exposure, artifact or hash mismatch, runtime-path mutation, public publication, protected-resource access, or conflicting authority"
+      ],
+      "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The corrected sovereign path builds the exact Forge commit locally, verifies a hash-pinned disposable transfer, and performs non-production shadow consumption without GitHub credentials, network artifact transfer, or a configured-runtime change.",
+      "completion": {
+        "local_forge_commit": "24059c3642339f36877cb454ca63683180915b71",
+        "local_artifact_sha256": "7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88",
+        "local_shadow_proof": "accepted, fail-closed, exit, and deterministic normalized parity passed; disposable artifact removed; runtime configuration unchanged",
+        "sovereign_shadow_pr": 1378,
         "sovereign_shadow_head": null,
         "sovereign_shadow_merge": null,
         "authority_consumed": false

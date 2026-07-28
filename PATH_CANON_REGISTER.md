@@ -21,11 +21,14 @@ worktrees in the target repository.
 
 ## Current Verification
 
-On 2026-07-27, `D:\terrafusion-forge` resolved to remote
+On 2026-07-28, `D:\terrafusion-forge` resolved to remote
 `git@github.com:bsvalues/terrafusion-forge.git`, default branch `main`, at `HEAD = origin/main =
-2430b483f20e07a6ff9a66e493caab0e39db64ef`. GitHub reports the repository as private. The checkout
-was clean after clone and remains a read-only synchronization surface. Cross-repository Forge
-workers must use isolated worktrees attached to this canonical repository.
+24059c3642339f36877cb454ca63683180915b71`. Forge PR #2 at head
+`468b21714abea071bef82eb05b4febbda7e9ff82` merged as that commit. Its merged-main workflow run
+`30365590537` is retained as historical CI evidence only; it is not the sovereign transfer or trust
+path. The local shadow proof built the exact Forge commit in an isolated worktree and transferred the
+hash-pinned executable through a disposable local directory. The shared checkout remains a read-only
+synchronization surface, and cross-repository Forge workers must use isolated worktrees.
 
 On 2026-07-17, `C:\Users\bsval\terrafusion-os` resolved to remote
 `https://github.com/bsvalues/terrafusion-os.git`, default branch `main`, at `origin/main`
