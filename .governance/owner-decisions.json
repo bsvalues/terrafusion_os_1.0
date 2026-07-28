@@ -1165,7 +1165,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-006A",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-local-artifact-and-non-production-shadow-consumption",
       "effective_base_sha": "5feba52f222422d8cc93a900bb335cacd5230913",
       "scope_source": "Owner decision REVOKE_GITHUB_ARTIFACT_TRANSFER_PATH recorded on 2026-07-28. The owner cancelled token and secret setup, revoked GitHub artifact transfer for sovereign Phase 2, and authorized an exact-commit local build, disposable transfer, hash verification, shadow proof, closeout, and portfolio reconciliation.",
@@ -1206,9 +1206,11 @@
         "local_artifact_sha256": "7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88",
         "local_shadow_proof": "accepted, fail-closed, exit, and deterministic normalized parity passed; disposable artifact removed; runtime configuration unchanged",
         "sovereign_shadow_pr": 1378,
-        "sovereign_shadow_head": null,
-        "sovereign_shadow_merge": null,
-        "authority_consumed": false
+        "sovereign_shadow_head": "980f264af079bd78f60230bb8ec9b6f5af13e25c",
+        "sovereign_shadow_merge": "afc4fb6024616c1781b922c29bb848864f02609b",
+        "post_merge_origin_main": "afc4fb6024616c1781b922c29bb848864f02609b",
+        "post_merge_verified": true,
+        "authority_consumed": true
       }
     }
   ]
