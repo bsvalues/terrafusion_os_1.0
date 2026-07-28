@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
@@ -40,6 +41,22 @@ public sealed class LocalForgeRuntimeRollbackFactAttribute : FactAttribute
                 Environment.GetEnvironmentVariable("TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_SHA256")))
         {
             Skip = "Local runtime rollback proof requires Forge and sovereign kernel paths.";
+        }
+    }
+}
+
+public sealed class LocalForgePersistentRuntimeRollbackFactAttribute : FactAttribute
+{
+    public LocalForgePersistentRuntimeRollbackFactAttribute()
+    {
+        if (string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_REHEARSAL_CONFIG_PATH")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_REHEARSAL_EXPECTED_SHA256")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_REHEARSAL_HOST")))
+        {
+            Skip = "Persistent runtime rehearsal requires the disposable config, expected SHA, and host label.";
         }
     }
 }
@@ -233,6 +250,61 @@ public class KernelValuationServiceIntegrationTests
         Assert.Equal(forgeAccepted.Data.Components, rollbackAccepted.Data.Components);
         Assert.Equal(sovereignSha256, rollbackAccepted.KernelBinarySha256);
         Assert.StartsWith("git:", rollbackAccepted.KernelVersion);
+    }
+
+    [LocalForgePersistentRuntimeRollbackFact]
+    public async Task LocalForgePersistentRuntimeSelection_BindsDisposableConfiguration()
+    {
+        var configPath = RequireEnvironmentPath("TERRAFUSION_FORGE_REHEARSAL_CONFIG_PATH");
+        var expectedSha256 =
+            RequireEnvironmentValue("TERRAFUSION_FORGE_REHEARSAL_EXPECTED_SHA256");
+        var hostLabel = RequireEnvironmentValue("TERRAFUSION_FORGE_REHEARSAL_HOST");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(configPath));
+        var rootProperties = document.RootElement.EnumerateObject().ToArray();
+        Assert.Single(rootProperties);
+        Assert.Equal(RustKernelsOptions.SectionName, rootProperties[0].Name);
+        var kernelProperties = rootProperties[0].Value.EnumerateObject().ToArray();
+        Assert.Single(kernelProperties);
+        Assert.Equal(nameof(RustKernelsOptions.ValuationKernelPath), kernelProperties[0].Name);
+
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.GetDirectoryName(configPath)!)
+            .AddJsonFile(Path.GetFileName(configPath), optional: false, reloadOnChange: false)
+            .Build();
+        var options = configuration
+            .GetSection(RustKernelsOptions.SectionName)
+            .Get<RustKernelsOptions>();
+
+        Assert.NotNull(options);
+        Assert.Equal(
+            Path.GetFullPath(kernelProperties[0].Value.GetString()!),
+            Path.GetFullPath(options!.ValuationKernelPath));
+        var selectedSha256 = ComputeFileSha256(options.ValuationKernelPath);
+        Assert.Equal(expectedSha256, selectedSha256);
+
+        var (client, host) = CreateValuationClient(options.ValuationKernelPath);
+        var accepted = await client.ValuateAsync(CreateRuntimeRollbackPayload());
+
+        Assert.True(accepted.Success, $"{hostLabel}: {accepted.ErrorMessage}");
+        Assert.NotNull(accepted.Data);
+        Assert.Equal(351675.412625, accepted.Data!.TotalValue, 6);
+        Assert.Equal(selectedSha256, accepted.KernelBinarySha256);
+
+        var deniedInvocation = new KernelInvocation<ValuationKernelPayload>(
+            ContractPackVersion: "1.0.0",
+            ModuleApiVersion: "1.0.0",
+            RequestId: $"persistent-rehearsal-{hostLabel}-denied",
+            Action: "not-authorized",
+            Payload: CreateRuntimeRollbackPayload());
+        var denied = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            options.ValuationKernelPath,
+            "terraforge.kernel.valuation",
+            deniedInvocation);
+
+        Assert.False(denied.Success);
+        Assert.Equal(KernelFailureMode.KernelReportedError, denied.FailureMode);
+        Assert.Equal(selectedSha256, denied.KernelBinarySha256);
     }
 
     private static (ValuationKernelClient Client, RustKernelProcessHost Host)
