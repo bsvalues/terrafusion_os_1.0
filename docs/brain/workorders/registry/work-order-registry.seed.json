@@ -8265,7 +8265,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove process-local selection of an exact-commit Forge kernel through the real sovereign client/host boundary and rollback to the unchanged sovereign kernel without a persistent runtime switch or cutover.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-006A",
@@ -8354,18 +8354,18 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
-        "mayCleanup": true,
-        "notes": "OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 authorizes the exact bounded rehearsal and Mode B delivery lifecycle. It grants no persistent runtime adoption, source retirement, ownership transfer, deployment, protected-resource access, or WO-SR-006 cutover."
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "PR #1380 merged exact reviewed head f23f97202e74376ae0fa82ded22f425026c65ce5 as e1e249c9bb7eb7ea4bd5bc6dfdd0e345e88df230. OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 is completed and consumed. This record grants no persistent runtime adoption, source retirement, ownership transfer, deployment, protected-resource access, or WO-SR-006 cutover."
       },
       "provenance": {
         "createdAt": "2026-07-28T00:00:00Z",
-        "source": "Owner decision OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 at sovereign base 0d1167fce6e887e1f49f4e75963f441e9f04ab06, exact Forge commit 24059c3642339f36877cb454ca63683180915b71, and final local proof artifact SHA-256 add713984f1a78ffbb87c88a6d9eedcab1cf3912c414d522127ff078c4267811.",
+        "source": "Owner decision OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 at sovereign base 0d1167fce6e887e1f49f4e75963f441e9f04ab06; exact Forge commit 24059c3642339f36877cb454ca63683180915b71; final local proof artifact SHA-256 add713984f1a78ffbb87c88a6d9eedcab1cf3912c414d522127ff078c4267811; and verified PR #1380 merge e1e249c9bb7eb7ea4bd5bc6dfdd0e345e88df230.",
         "schemaVersion": "0.1.0"
       }
     }

@@ -59,7 +59,8 @@ local, disposable, hash-pinned sovereign shadow proof. That proof passed without
 `OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728` then authorized one process-local
 client/host runtime-selection and rollback rehearsal. The accepted Forge selection, typed
 fail-closed invocation, and sovereign rollback passed with binary-hash provenance and no persistent
-runtime or configuration change. Source retirement remains a later gate.
+runtime or configuration change. PR #1380 merged the exact reviewed head as `e1e249c9b`; the
+authority is completed and consumed. Source retirement remains a later gate.
 `WO-SR-006A-P` registered the clean read-only `D:\terrafusion-forge` checkout at exact private
 `origin/main` `2430b483`. The path-canon prerequisite is complete; it grants no artifact, workflow,
 runtime, publication, deployment, or cutover authority.
@@ -128,7 +129,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006-P Federated Cutover Readiness Audit | DONE / R2 | Live heads and evidence reconciled; no further unprotected R2 implementation node remains; Forge selected as the smallest shadow-consumption candidate |
 | WO-SR-006A-P Forge Standalone Repository Path Canon Registration | DONE / R2 | `D:\terrafusion-forge` registered at exact private `origin/main` `2430b483`; destination content unchanged |
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
-| WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | COMPLETE ON MERGE / R3 | Process-local Forge selection, typed fail-closed behavior, and sovereign rollback passed through the real client/host boundary; no persistent switch or cutover |
+| WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -269,7 +270,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | WO-SR-006B complete on merge; portfolio reconciliation follows | SW-01 / SW-05 / sovereign integration boundary | Local process-only runtime selection and rollback are proven; persistent adoption, source retirement, and cutover remain protected | `evidence/WO-SR-006B-FORGE-LOCAL-RUNTIME-SELECTION-ROLLBACK-REHEARSAL.md` |
+| five-suite-federated-repository-buildout | WO-SR-006B complete; portfolio reconciliation current | SW-01 / SW-05 / sovereign integration boundary | Local process-only runtime selection and rollback are proven; persistent adoption, source retirement, and cutover remain protected | `evidence/WO-SR-006B-FORGE-LOCAL-RUNTIME-SELECTION-ROLLBACK-REHEARSAL.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.

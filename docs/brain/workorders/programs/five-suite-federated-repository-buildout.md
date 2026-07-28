@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; Forge process-local runtime selection and rollback proven on WO-SR-006B merge; portfolio reconciliation follows
+**Status:** Active between cohorts; Forge process-local runtime selection and rollback proven; portfolio reconciliation current
 
 ## Ratified topology
 
@@ -177,3 +177,5 @@ locally built exact Forge commit passed accepted and typed fail-closed execution
 unchanged sovereign binary passed rollback. Both selected binaries were identified by their
 reported SHA-256. The process environment was restored, disposable artifacts were removed, and no
 persistent application setting, runtime path, deployment, source ownership, or cutover changed.
+PR #1380 merged exact reviewed head `f23f97202` as `e1e249c9b`; the bounded authority is completed
+and consumed. Portfolio reconciliation is current and no `WO-SR-006` cutover authority follows.

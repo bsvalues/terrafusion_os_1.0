@@ -98,8 +98,8 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Forge local runtime-selection and rollback rehearsal complete on merge |
-| Current | `WO-SR-006B` |
+| Status | Active between cohorts; Forge local runtime-selection and rollback rehearsal complete |
+| Current | Portfolio reconciliation |
 | Next | Highest-value dependency-cleared bounded node, if any |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -636,7 +636,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-006B` complete on merge |
+| Current WO | `WO-SR-006B` complete; authority consumed |
 | Next WO | Portfolio reconciliation; no persistent adoption or cutover is automatically admitted |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the

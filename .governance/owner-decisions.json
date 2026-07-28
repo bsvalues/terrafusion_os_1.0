@@ -891,7 +891,7 @@
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",
       "loop": "LOOP-PORTFOLIO-OPERATOR-001",
       "work_order": "every dependency-cleared Work Order inside active ratified authority",
-      "status": "active",
+      "status": "completed",
       "authority_class": "standing-portfolio-delivery-lifecycle",
       "effective_base_sha": "4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3",
       "scope_source": "active ratified program and dependency-cleared Work Order",
@@ -1267,7 +1267,14 @@
         "shared_forge_checkout_changed": false,
         "environment_restored": true,
         "disposable_directory_removed": true,
-        "authority_consumed": false
+        "implementation_pr": 1380,
+        "implementation_exact_head": "f23f97202e74376ae0fa82ded22f425026c65ce5",
+        "implementation_merge": "e1e249c9bb7eb7ea4bd5bc6dfdd0e345e88df230",
+        "required_checks": "green",
+        "unresolved_review_threads": 0,
+        "exact_head_assurance": "pass",
+        "post_merge_verified": true,
+        "authority_consumed": true
       }
     }
   ]
