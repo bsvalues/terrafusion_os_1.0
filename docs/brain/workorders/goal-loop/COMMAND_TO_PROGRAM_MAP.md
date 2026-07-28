@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Portfolio Operator | `WO-SR-006A` protected successor | YES - path canon is complete; exact CI/private-artifact authority remains required | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-006A` Forge shadow-consumption gate | YES - Forge is registered; cross-repository CI and credential-mediated artifact access require an exact bounded grant | `program`, `once`, `evidence` |
+| `program-next` | Portfolio Operator | `WO-SR-006A` active Forge shadow-consumption sequence | NO - exact bounded R3 authority is active | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-006A` Forge producer, then sovereign shadow consumer | NO - continue inside `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

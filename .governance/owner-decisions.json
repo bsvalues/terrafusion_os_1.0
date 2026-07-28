@@ -1095,6 +1095,67 @@
         "target_pr": 1349,
         "effective_on_merge": true
       }
+    },
+    {
+      "id": "OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-006A",
+      "status": "active",
+      "authority_class": "R3-bounded-private-artifact-and-non-production-shadow-consumption",
+      "effective_base_sha": "5f9955ca9d1dd09ed3485ebcea0587794a831f20",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006A-P registered the private Forge checkout and WO-SR-006-P selected Forge as the smallest safe shadow-consumption boundary.",
+      "terminal_condition": "FORGE_SHADOW_CONSUMPTION_PROVEN_WITHOUT_RUNTIME_SWITCH and the exact-scope sovereign closeout is merged and verified.",
+      "authorized_actions": [
+        "activate WO-SR-006A in a governance-only sovereign PR before implementation begins",
+        "build and upload a temporary private GitHub Actions valuation-kernel artifact from exact merged Forge main with a machine-readable source and SHA-256 manifest",
+        "retrieve the exact pinned artifact through existing GitHub Actions identities, verify its SHA-256 before execution, and run it only through the authorized sovereign non-production shadow integration test",
+        "validate accepted and fail-closed parity, unchanged runtime configuration, rollback, exact-head assurance, governed Mode B merges, terminal closeout, and portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        ".github/workflows/terraforge-kernels.yml",
+        "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
+        "docs/brain/workorders/active/WO-SR-006A-forge-standalone-kernel-artifact-shadow-consumer-gate.md",
+        "docs/brain/workorders/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "bsvalues/terrafusion-forge:.github/workflows/suite-ci.yml",
+        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006A-forge-standalone-kernel-artifact.md",
+        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md"
+      ],
+      "explicitly_denied": [
+        "backend/src/**, appsettings files, runtime configuration, runtime switching, consumer adoption, source deletion or retirement, ownership cutover, or Cargo workspace removal",
+        "public packages, releases, registries, persistent artifact distribution, deployment, production, county, PACS, SQL, secret-value inspection, or credential provisioning",
+        "Atlas, Dais, Dossier, GPT, WO-SR-006 cutover, pull_request_target, fork artifacts, untrusted revisions, mutable latest-artifact selection, or required-check bypass"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "scope expansion outside the exact authorized files or actions",
+        "required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "new credential or permission requirement, secret exposure, artifact or hash mismatch, runtime-path mutation, public publication, protected-resource access, or conflicting authority"
+      ],
+      "decision_basis": "The Forge valuation-kernel source already has byte-level sovereign/standalone proof. The authorized next step is temporary private artifact production and non-production shadow consumption without changing the configured sovereign runtime.",
+      "completion": {
+        "authority_activation_pr": null,
+        "forge_producer_pr": null,
+        "forge_producer_head": null,
+        "forge_producer_merge": null,
+        "forge_artifact_run_id": null,
+        "forge_artifact_name": null,
+        "forge_artifact_sha256": null,
+        "sovereign_shadow_pr": null,
+        "sovereign_shadow_head": null,
+        "sovereign_shadow_merge": null,
+        "authority_consumed": false
+      }
     }
   ]
 }
