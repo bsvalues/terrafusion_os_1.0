@@ -72,7 +72,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006A-P | Register the standalone Forge repository path canon | Complete R2; exact private checkout registered, no destination content change |
 | WO-SR-006A | Prove a pinned Forge standalone artifact through sovereign shadow consumption | Complete R3; exact local build, disposable hash-pinned transfer, parity proof, no runtime switch, authority consumed |
 | WO-SR-006B | Rehearse process-local Forge runtime selection and sovereign rollback | Complete R3; authority consumed; real client/host boundary, typed fail-closed proof, no persistent switch or cutover |
-| WO-SR-006C | Prove disposable non-production persistent Forge selection across restart and sovereign rollback | Active R3; exact bounded authority; no canonical configuration, deployment, source retirement, or cutover |
+| WO-SR-006C | Prove disposable non-production persistent Forge selection across restart and sovereign rollback | Complete R3; PR #1383 merged; authority consumed; no canonical configuration, deployment, source retirement, or cutover |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -180,8 +180,9 @@ reported SHA-256. The process environment was restored, disposable artifacts wer
 persistent application setting, runtime path, deployment, source ownership, or cutover changed.
 PR #1380 merged exact reviewed head `f23f97202` as `e1e249c9b`; the bounded authority is completed
 and consumed. Portfolio reconciliation is current and no `WO-SR-006` cutover authority follows.
-`OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728` separately authorizes a
-disposable `ForgeRehearsal` configuration outside the repository. It must persist Forge selection
-across two isolated host starts and then prove rollback to the sovereign binary in a third start.
-The grant changes no canonical appsettings and provides no production, deployment, source-retirement,
+`WO-SR-006C` proved a disposable `ForgeRehearsal` configuration outside the repository persisted
+Forge selection across two isolated host starts and then rolled back to the sovereign binary in a
+third start. PR #1383 merged exact reviewed head `eaa9890cc` as `bbacef062`; the authority is
+completed and consumed. The proof changed no canonical appsettings and provides no production,
+deployment, source-retirement,
 ownership-transfer, or cutover authority.

@@ -185,10 +185,11 @@ invocations through `ValuationKernelClient` and `RustKernelProcessHost`; reconst
 components with the unchanged sovereign binary passed rollback. The selected binary SHA was proven
 in both states. Persistent runtime configuration, source ownership, deployment, and cutover did not
 change.
-`OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728` now authorizes the next exact
-R3 proof: a disposable external `ForgeRehearsal` override must select Forge across two isolated host
-starts and then roll back to the sovereign binary in a third. Canonical appsettings, production,
-deployment, source retirement, ownership transfer, and cutover remain denied.
+`WO-SR-006C` then proved that a disposable external `ForgeRehearsal` override selected Forge across
+two isolated host starts and rolled back to the unchanged sovereign binary in a third. PR #1383
+merged exact reviewed head `eaa9890cc` as `bbacef062`; the bounded authority is completed and
+consumed. Canonical appsettings, production, deployment, source retirement, ownership transfer, and
+cutover remain denied.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -640,9 +641,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed WO | `WO-SR-006B`; authority consumed |
-| Current WO | `WO-SR-006C`; exact bounded R3 authority active |
-| Next WO | Portfolio reconciliation after terminal closeout; no cutover is automatically admitted |
+| Last completed WO | `WO-SR-006C`; authority consumed |
+| Current WO | Portfolio reconciliation |
+| Next WO | No successor automatically admitted; no cutover authority follows |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
