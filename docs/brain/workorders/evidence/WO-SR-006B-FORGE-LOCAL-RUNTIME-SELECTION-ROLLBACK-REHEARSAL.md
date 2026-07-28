@@ -21,6 +21,8 @@ The proof ran from isolated sovereign and Forge worktrees. It:
 - passed the focused client/host runtime-selection and rollback test: 1 passed, 0 failed, 0 skipped;
 - proved accepted Forge invocation, typed fail-closed Forge invocation, and accepted sovereign
   rollback invocation;
+- built and exercised the sovereign comparison executable at the established configured local path
+  `packages/terrabuild/kernels/target/release/terraforge-kernel-valuation.exe`;
 - matched `KernelBinarySha256` to the selected binary in every state;
 - restored process environment values and removed the disposable proof directory;
 - produced no `backend/src/**` or `appsettings*.json` delta.
@@ -33,10 +35,10 @@ The proof ran from isolated sovereign and Forge worktrees. It:
 | Evidence | Value |
 | --- | --- |
 | Forge commit | `24059c3642339f36877cb454ca63683180915b71` |
-| Final Forge rehearsal artifact SHA-256 | `4338df9e3de262b72b674b672d0b2ac7fc83ca5a80d1ddbec7b418522a733147` |
-| Final sovereign comparison artifact SHA-256 | `4a096063b82de3644a9036125dc3b1c9b55323e1074c35f764311f33fd4af2bc` |
-| Prior same-WO Forge artifact SHA-256 | `26086a4904b2c7b34b2c53b9b3065ee520b89625dee09c3b5de26de7c139e5b9` |
-| Prior same-WO sovereign artifact SHA-256 | `d9eadc52b40a229a2b9075176e30df104293680091ee4d368ce0ac00f1a84575` |
+| Final Forge rehearsal artifact SHA-256 | `c475eef7461275bed46f4150f8ca1155ef692323e103fb2aca9e52680d8985ac` |
+| Final sovereign comparison artifact SHA-256 | `4896ae1308228619ee5898531ed0c05ca2f918394d264d178e510b476bbed818` |
+| Prior same-WO Forge artifact SHA-256 | `4338df9e3de262b72b674b672d0b2ac7fc83ca5a80d1ddbec7b418522a733147` |
+| Prior same-WO sovereign artifact SHA-256 | `4a096063b82de3644a9036125dc3b1c9b55323e1074c35f764311f33fd4af2bc` |
 | Prior WO-SR-006A artifact SHA-256 | `7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88` |
 | Reproducibility classification | `BINARY_HASH_CHANGED_REPRODUCIBILITY_NOT_CLAIMED` |
 | Current Rust compiler | `rustc 1.92.0 (ded5c06cf 2025-12-08)` |
@@ -46,11 +48,10 @@ The proof ran from isolated sovereign and Forge worktrees. It:
 
 The binary mismatch does not invalidate the rehearsal. All source hashes match the exact pinned
 Forge commit, each new manifest hash verified before execution, accepted and fail-closed behavior
-passed, and rollback passed. Two WO-SR-006B runs under the same recorded current source hashes and
-toolchain produced different Forge and sovereign binary hashes. The observed execution-environment
-differences were the disposable build roots (`20260728T175929589Z` and `20260728T181405323Z`) and
-invocation times. This evidence does not infer that those differences caused the hash change and
-does not claim reproducible binary output.
+passed, and rollback passed. Multiple WO-SR-006B runs under the same recorded current source hashes
+and toolchain produced different Forge and sovereign binary hashes. The final assurance-remediation
+run used disposable build root `20260728T183338762Z` and the configured local sovereign target. This
+evidence does not infer the cause of the hash changes and does not claim reproducible binary output.
 
 ## Source Hashes
 

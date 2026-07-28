@@ -8365,7 +8365,7 @@
       },
       "provenance": {
         "createdAt": "2026-07-28T00:00:00Z",
-        "source": "Owner decision OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 at sovereign base 0d1167fce6e887e1f49f4e75963f441e9f04ab06, exact Forge commit 24059c3642339f36877cb454ca63683180915b71, and final local proof artifact SHA-256 4338df9e3de262b72b674b672d0b2ac7fc83ca5a80d1ddbec7b418522a733147.",
+        "source": "Owner decision OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728 at sovereign base 0d1167fce6e887e1f49f4e75963f441e9f04ab06, exact Forge commit 24059c3642339f36877cb454ca63683180915b71, and final local proof artifact SHA-256 c475eef7461275bed46f4150f8ca1155ef692323e103fb2aca9e52680d8985ac.",
         "schemaVersion": "0.1.0"
       }
     }

@@ -74,8 +74,9 @@ function Get-GitScalar {
 
 try {
     $sovereignHead = Get-GitScalar -Repository $sovereignRepository -Arguments @('rev-parse', 'HEAD')
-    if ($sovereignHead -ne $authorizedSovereignBase) {
-        throw "Sovereign worktree must start at $authorizedSovereignBase; found $sovereignHead."
+    & git -C $sovereignRepository merge-base --is-ancestor $authorizedSovereignBase $sovereignHead
+    if ($LASTEXITCODE -ne 0) {
+        throw "Sovereign HEAD $sovereignHead does not descend from authorized base $authorizedSovereignBase."
     }
 
     $forgeHead = Get-GitScalar -Repository $ForgeRepository -Arguments @('rev-parse', 'HEAD')
@@ -97,7 +98,6 @@ try {
 
     New-Item -ItemType Directory -Force -Path $proofRoot | Out-Null
     $forgeTarget = Join-Path $proofRoot 'forge-target'
-    $sovereignTarget = Join-Path $proofRoot 'sovereign-target'
     $transfer = Join-Path $proofRoot 'transfer'
     $dotnetArtifacts = Join-Path $proofRoot 'dotnet-artifacts'
     $dotnetHome = Join-Path $proofRoot 'dotnet-home'
@@ -146,14 +146,19 @@ try {
         -Destination $sovereignSource `
         -Recurse
     $sovereignManifest = Join-Path $sovereignSource 'Cargo.toml'
-    $env:CARGO_TARGET_DIR = $sovereignTarget
+    $configuredSovereignTarget = Join-Path `
+        $sovereignRepository `
+        'packages\terrabuild\kernels\target'
+    $env:CARGO_TARGET_DIR = $configuredSovereignTarget
     Invoke-Checked cargo generate-lockfile --offline --manifest-path $sovereignManifest
     Invoke-Checked cargo test --locked --offline --manifest-path $sovereignManifest
     Invoke-Checked cargo build --release --locked --offline --manifest-path $sovereignManifest
 
-    $sovereignBinary = Join-Path $sovereignTarget 'release\terraforge-kernel-valuation.exe'
+    $sovereignBinary = Join-Path `
+        $configuredSovereignTarget `
+        'release\terraforge-kernel-valuation.exe'
     if (-not (Test-Path -LiteralPath $sovereignBinary)) {
-        throw "Sovereign build did not produce $sovereignBinary."
+        throw "Sovereign build did not produce the configured local executable $sovereignBinary."
     }
     $sovereignSha256 = (
         Get-FileHash -Algorithm SHA256 -LiteralPath $sovereignBinary
@@ -205,6 +210,7 @@ try {
         executableSha256 = $artifactSha256
         priorExecutableSha256 = $priorArtifactSha256
         reproducibilityClassification = $reproducibility
+        sovereignConfiguredExecutable = $sovereignBinary
         sovereignComparisonBinarySha256 = $sovereignSha256
     }
     $manifestPath = Join-Path $transfer 'manifest.json'
