@@ -77,7 +77,9 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   at `D:\terrafusion-forge`. `WO-SR-006A` completed the exact-commit local Forge build, disposable
   hash-pinned transfer, and sovereign non-production shadow proof. GitHub records PR and CI history
   but is not the execution or trust plane. The bounded authority is consumed; return to portfolio
-  reconciliation.
+  reconciliation. `WO-SR-006B` then proves process-local selection through the real client/host
+  boundary, typed fail-closed behavior, and rollback to the unchanged sovereign binary. Persistent
+  runtime adoption, source retirement, and cutover remain unauthorized.
 Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
 publication, deployment, source retirement, and cutover remain gated.
 

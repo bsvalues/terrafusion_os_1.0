@@ -98,8 +98,8 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; Forge local sovereign shadow proof complete |
-| Current | Portfolio reconciliation |
+| Status | Active; Forge local runtime-selection and rollback rehearsal complete on merge |
+| Current | `WO-SR-006B` |
 | Next | Highest-value dependency-cleared bounded node, if any |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -179,6 +179,12 @@ used current Forge `origin/main` `24059c3642339f36877cb454ca63683180915b71`. Fut
 isolated Forge worktrees. `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` is consumed on
 the verified closeout. The configured runtime did not change, and no credential or GitHub artifact
 transfer was used.
+`OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728` then authorized one process-local
+selection and rollback rehearsal. The exact Forge commit passed accepted and typed fail-closed
+invocations through `ValuationKernelClient` and `RustKernelProcessHost`; reconstructing those
+components with the unchanged sovereign binary passed rollback. The selected binary SHA was proven
+in both states. Persistent runtime configuration, source ownership, deployment, and cutover did not
+change.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -630,8 +636,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | Portfolio reconciliation after `WO-SR-006A` |
-| Next WO | Select from the refreshed dependency graph; no cutover is automatically admitted |
+| Current WO | `WO-SR-006B` complete on merge |
+| Next WO | Portfolio reconciliation; no persistent adoption or cutover is automatically admitted |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

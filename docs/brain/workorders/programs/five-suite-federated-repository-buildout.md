@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Atlas, Dais, Dossier, and GPT pure-unwired F1 foundations complete; portfolio reconciliation current
+**Status:** Active; Forge process-local runtime selection and rollback proven on WO-SR-006B merge; portfolio reconciliation follows
 
 ## Ratified topology
 
@@ -71,6 +71,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006-P | Reconcile cutover readiness and runtime-adoption dependencies | Complete R2; Forge selected as first shadow-consumption candidate |
 | WO-SR-006A-P | Register the standalone Forge repository path canon | Complete R2; exact private checkout registered, no destination content change |
 | WO-SR-006A | Prove a pinned Forge standalone artifact through sovereign shadow consumption | Complete R3; exact local build, disposable hash-pinned transfer, parity proof, no runtime switch, authority consumed |
+| WO-SR-006B | Rehearse process-local Forge runtime selection and sovereign rollback | Complete on merge R3; real client/host boundary, typed fail-closed proof, no persistent switch or cutover |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
 
@@ -170,3 +171,9 @@ the Actions artifact is historical evidence only. Decision
 `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` is consumed on closeout.
 Extraction, providers, persistence, runtime adoption, packages, deployment, cutover, and source
 retirement remain unauthorized.
+`OWNER-SR-006B-R3-FORGE-LOCAL-RUNTIME-ROLLBACK-20260728` authorized the next narrow proof. The
+locally built exact Forge commit passed accepted and typed fail-closed execution through
+`ValuationKernelClient` and `RustKernelProcessHost`; reconstructing the client/host against the
+unchanged sovereign binary passed rollback. Both selected binaries were identified by their
+reported SHA-256. The process environment was restored, disposable artifacts were removed, and no
+persistent application setting, runtime path, deployment, source ownership, or cutover changed.
