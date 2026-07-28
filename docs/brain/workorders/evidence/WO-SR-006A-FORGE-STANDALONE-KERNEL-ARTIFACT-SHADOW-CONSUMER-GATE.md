@@ -62,6 +62,16 @@ Revert the local validation script, local-only test, and closeout/routing change
 kernel, Forge kernel, runtime configuration, application settings, and production resources did not
 change.
 
+## Post-Merge Verification
+
+- Sovereign PR #1378 exact head `980f264af079bd78f60230bb8ec9b6f5af13e25c` passed exact-head
+  assurance, all required checks, and zero unresolved substantive review threads.
+- PR #1378 squash-merged as `afc4fb6024616c1781b922c29bb848864f02609b`.
+- `origin/main` resolved to the same merge commit and contains the local proof script, focused shadow
+  test, evidence, and local-only routing.
+- `OWNER-SR-006A-LOCAL-SOVEREIGN-SHADOW-CORRECTION-20260728` is completed and consumed.
+- Portfolio routing remains reconciliation-only; WO-SR-006 cutover is not authorized.
+
 ## Stop Type
 
 `NONE`; authority is consumed when this exact closeout merges.

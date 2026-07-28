@@ -891,7 +891,7 @@
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",
       "loop": "LOOP-PORTFOLIO-OPERATOR-001",
       "work_order": "every dependency-cleared Work Order inside active ratified authority",
-      "status": "active",
+      "status": "completed",
       "authority_class": "standing-portfolio-delivery-lifecycle",
       "effective_base_sha": "4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3",
       "scope_source": "active ratified program and dependency-cleared Work Order",
@@ -1206,9 +1206,11 @@
         "local_artifact_sha256": "7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88",
         "local_shadow_proof": "accepted, fail-closed, exit, and deterministic normalized parity passed; disposable artifact removed; runtime configuration unchanged",
         "sovereign_shadow_pr": 1378,
-        "sovereign_shadow_head": null,
-        "sovereign_shadow_merge": null,
-        "authority_consumed": false
+        "sovereign_shadow_head": "980f264af079bd78f60230bb8ec9b6f5af13e25c",
+        "sovereign_shadow_merge": "afc4fb6024616c1781b922c29bb848864f02609b",
+        "post_merge_origin_main": "afc4fb6024616c1781b922c29bb848864f02609b",
+        "post_merge_verified": true,
+        "authority_consumed": true
       }
     }
   ]
