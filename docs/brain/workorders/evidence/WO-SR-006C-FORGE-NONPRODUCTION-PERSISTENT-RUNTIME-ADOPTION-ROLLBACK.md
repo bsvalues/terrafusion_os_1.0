@@ -14,6 +14,9 @@ This activation record changes governance only. It does not claim the rehearsal 
 modify canonical configuration, and grants no deployment, source-retirement, ownership-transfer, or
 `WO-SR-006` cutover authority.
 
+Terminal condition after implementation and closeout:
+`FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN`.
+
 ## Evidence pending
 
 - exact Forge source and build-input hashes;

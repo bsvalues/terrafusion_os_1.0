@@ -8277,6 +8277,12 @@
       ],
       "allowedSystems": [
         {
+          "name": "Disposable external ForgeRehearsal configuration",
+          "paths": [
+            "Unique temporary directory outside the repository; appsettings.ForgeRehearsal.local.json only"
+          ]
+        },
+        {
           "name": "Read-only exact-commit Forge proof worktree and disposable build output",
           "paths": ["D:\\.codex-worktrees\\sr-006b-forge-proof"]
         },
@@ -8441,19 +8447,19 @@
           "name": "Forge non-production persistent-selection and rollback rehearsal",
           "command": "scripts/validation/Invoke-ForgeNonProductionPersistentRuntimeRollbackProof.ps1",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Work Order query and planner tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         }
       ],
       "stopConditions": [
