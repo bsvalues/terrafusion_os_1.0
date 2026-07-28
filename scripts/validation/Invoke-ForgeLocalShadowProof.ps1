@@ -2,14 +2,25 @@
 param(
     [Parameter(Mandatory)]
     [string]$ForgeRepository,
-    [string]$ExpectedForgeCommit = '24059c3642339f36877cb454ca63683180915b71',
     [string]$ProofRootBase = 'D:\tf-build\sr-006a-local-shadow'
 )
 
 $ErrorActionPreference = 'Stop'
+$expectedForgeCommit = '24059c3642339f36877cb454ca63683180915b71'
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
 $result = $null
+$preservedEnvironment = @{}
+foreach ($name in @(
+        'CARGO_TARGET_DIR',
+        'TERRAFUSION_FORGE_SHADOW_KERNEL_PATH',
+        'TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_PATH'
+    )) {
+    $preservedEnvironment[$name] = @{
+        Exists = Test-Path "Env:$name"
+        Value = [Environment]::GetEnvironmentVariable($name, 'Process')
+    }
+}
 
 function Invoke-Checked {
     param(
@@ -27,8 +38,8 @@ function Invoke-Checked {
 
 try {
     $forgeHead = (git -C $ForgeRepository rev-parse HEAD).Trim()
-    if ($LASTEXITCODE -ne 0 -or $forgeHead -ne $ExpectedForgeCommit) {
-        throw "Forge worktree must be pinned to $ExpectedForgeCommit; found $forgeHead."
+    if ($LASTEXITCODE -ne 0 -or $forgeHead -ne $expectedForgeCommit) {
+        throw "Forge worktree must be pinned to $expectedForgeCommit; found $forgeHead."
     }
     if (git -C $ForgeRepository status --short) {
         throw "Forge proof worktree is not clean."
@@ -70,12 +81,16 @@ try {
 
     $rustc = (rustc --version --verbose) -join "`n"
     if ($LASTEXITCODE -ne 0) { throw 'Unable to capture rustc version.' }
+    $rustTarget = ($rustc -split "`n" | Where-Object { $_ -like 'host:*' } | Select-Object -First 1)
+    if ([string]::IsNullOrWhiteSpace($rustTarget)) { throw 'Unable to capture rustc host target.' }
+    $rustTarget = $rustTarget.Substring('host:'.Length).Trim()
     $cargo = (cargo --version) -join "`n"
     if ($LASTEXITCODE -ne 0) { throw 'Unable to capture cargo version.' }
     $manifest = [ordered]@{
         schemaVersion = 1
         repository = 'bsvalues/terrafusion-forge'
         commit = $forgeHead
+        target = $rustTarget
         transport = 'local-disposable-directory'
         kernelSourceHashes = $sourceHashes
         buildCommand = 'cargo build --release --locked --manifest-path kernels/terraforge.kernel.valuation/Cargo.toml'
@@ -91,7 +106,8 @@ try {
 
     $manifestProof = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
     $verifiedSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $artifactPath).Hash.ToLowerInvariant()
-    if ($manifestProof.commit -ne $ExpectedForgeCommit -or
+    if ($manifestProof.commit -ne $expectedForgeCommit -or
+        $manifestProof.target -ne $rustTarget -or
         $manifestProof.executableSha256 -ne $verifiedSha256) {
         throw 'Local artifact provenance or SHA-256 verification failed.'
     }
@@ -146,9 +162,18 @@ try {
     }
 }
 finally {
-    Remove-Item Env:CARGO_TARGET_DIR -ErrorAction SilentlyContinue
-    Remove-Item Env:TERRAFUSION_FORGE_SHADOW_KERNEL_PATH -ErrorAction SilentlyContinue
-    Remove-Item Env:TERRAFUSION_SOVEREIGN_VALUATION_KERNEL_PATH -ErrorAction SilentlyContinue
+    foreach ($name in $preservedEnvironment.Keys) {
+        if ($preservedEnvironment[$name].Exists) {
+            [Environment]::SetEnvironmentVariable(
+                $name,
+                $preservedEnvironment[$name].Value,
+                'Process'
+            )
+        }
+        else {
+            [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+        }
+    }
     if (Test-Path -LiteralPath $proofRoot) {
         Remove-Item -LiteralPath $proofRoot -Recurse -Force
     }

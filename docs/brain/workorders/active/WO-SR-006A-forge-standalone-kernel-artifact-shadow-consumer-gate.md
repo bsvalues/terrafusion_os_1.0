@@ -43,7 +43,7 @@ or persistent distribution is part of the sovereign proof.
 - Manifest records repository, exact commit, source hashes, command, target, toolchain, filename, and
   executable SHA-256.
 - The local artifact manifest records exact Forge commit, source hashes, toolchain, filename, and
-  SHA-256 `a584bbf1765da73237a844fb2d02849c5fc33f88dcbd3af5aeeccf43cff48f4d`
+  SHA-256 `d25a7e6f7d75132a3367d1ef6038accdedcf1c00e78547a113e9ba5374bd434c`
   for the exact artifact executed by the final local proof run.
 - The disposable local transfer verifies SHA-256 before execution and is removed afterward.
 - Accepted output, fail-closed output, exit behavior, and deterministic serialization match.
