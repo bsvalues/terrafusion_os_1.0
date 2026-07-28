@@ -74,8 +74,9 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   bounded authority is consumed. Atlas, Dais, Dossier, and GPT are complete at the pure-unwired F1
   layer. `WO-SR-006-P` completed the current-main cutover dependency audit and selected Forge as the
   first shadow-consumption candidate. `WO-SR-006A-P` registered the clean read-only Forge checkout
-  at `D:\terrafusion-forge`. `WO-SR-006A` is blocked on exact cross-repository CI and
-  private-artifact authority; path identity is no longer a blocker.
+  at `D:\terrafusion-forge`. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` now authorizes
+  the exact sequential Forge producer and sovereign non-production shadow-consumer gate. Path
+  identity and implementation authority are no longer blockers inside that envelope.
 Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
 publication, deployment, source retirement, and cutover remain gated.
 

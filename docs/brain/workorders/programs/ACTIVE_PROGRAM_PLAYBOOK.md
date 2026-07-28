@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; F1 layer, cutover dependency audit, and Forge path canon complete |
-| Current | `WO-SR-006A-P` complete |
-| Next | `WO-SR-006A` blocked on exact CI/private-artifact authority |
+| Status | Active; bounded Forge shadow-consumption envelope granted |
+| Current | `WO-SR-006A` authority activation |
+| Next | Forge producer, then sovereign shadow consumer |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -174,7 +174,9 @@ providers, persistence, runtime adoption, publication, deployment, source retire
 remain gated.
 `WO-SR-006A-P` registered `D:\terrafusion-forge` as the clean read-only canonical checkout at
 private `origin/main` `2430b483f20e07a6ff9a66e493caab0e39db64ef`. Future workers require
-isolated Forge worktrees; the registration grants no implementation or delivery authority.
+isolated Forge worktrees. `OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728` now authorizes one
+sequential private merged-main artifact producer and sovereign non-production shadow consumer
+without changing the configured runtime.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -626,8 +628,8 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-006A-P` complete |
-| Next WO | `WO-SR-006A` blocked on exact CI/private-artifact authority |
+| Current WO | `WO-SR-006A` active |
+| Next WO | Forge producer, then sovereign shadow consumer under the active bounded envelope |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

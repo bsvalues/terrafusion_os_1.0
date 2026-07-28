@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006A-P Forge repository path canon registration",
-  "generatedAt": "2026-07-27T00:00:00Z",
-  "description": "Five-suite registry after the pure-unwired F1 layer, WO-SR-006-P cutover dependency audit, and Forge path-canon registration. Forge is the first protected shadow-consumption candidate; cross-repository CI, credential-mediated artifact access, runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
+  "generatedBy": "WO-SR-006A authority activation",
+  "generatedAt": "2026-07-28T00:00:00Z",
+  "description": "Five-suite registry after the pure-unwired F1 layer, WO-SR-006-P cutover dependency audit, Forge path-canon registration, and activation of the bounded WO-SR-006A private-artifact/non-production shadow-consumption envelope. Runtime adoption, source retirement, deployment, cutover, and protected access remain separately gated.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -8155,7 +8155,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove a hash-pinned private Forge valuation-kernel artifact through the sovereign non-production integration harness without switching runtime configuration or retiring source.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-006A-P",
@@ -8190,7 +8190,17 @@
         "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
         ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
-        "The exact sovereign governance, Work Order, evidence, registry, and routing files admitted by the future authority packet"
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/active/WO-SR-006A-forge-standalone-kernel-artifact-shadow-consumer-gate.md",
+        "docs/brain/workorders/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "blockedFiles": [
         "backend/src/**",
@@ -8232,23 +8242,23 @@
       "stopConditions": [
         {
           "type": "authority_wall",
-          "description": "Blocked until one bounded owner decision authorizes the exact private cross-repository artifact access and two workflow changes. No runtime switch, publication, deployment, source retirement, or cutover is implied."
+          "description": "Stop if execution requires scope expansion, new credentials or permissions, artifact/hash mismatch, required-check bypass, runtime mutation, public publication, deployment, protected-resource access, or conflicting authority."
         }
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
-        "mayCleanup": false,
-        "notes": "No implementation authority exists. Activate only through an exact bounded owner decision tied to the WO-SR-006-P and WO-SR-006A-P evidence."
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Active decision OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728 authorizes one governance activation PR, one exact three-file Forge producer PR, and one exact sovereign shadow-consumer/closeout PR under Mode B. Runtime switching, source retirement, publication, deployment, protected resources, and new credentials remain denied."
       },
       "provenance": {
         "createdAt": "2026-07-27T00:00:00Z",
-        "source": "WO-SR-006-P readiness decomposition plus WO-SR-006A-P exact Forge path registration at sovereign base 358c1ab2742b0aa28c16931cfa472b440455c98d and Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
+        "source": "WO-SR-006-P readiness decomposition, WO-SR-006A-P exact Forge path registration, and owner decision OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728 at sovereign base 5f9955ca9d1dd09ed3485ebcea0587794a831f20 and Forge main 2430b483f20e07a6ff9a66e493caab0e39db64ef.",
         "schemaVersion": "0.1.0"
       }
     }
