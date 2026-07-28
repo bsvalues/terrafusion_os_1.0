@@ -292,7 +292,7 @@ reconciliation without implying WO-SR-006 cutover authority. See
 commit passed the real `ValuationKernelClient` to `RustKernelProcessHost` boundary, typed fail-closed
 behavior, and reconstruction against the unchanged sovereign binary. No persistent configuration,
 deployment, source retirement, ownership transfer, or `WO-SR-006` cutover is implied. Return to
-portfolio reconciliation after verified merge.
+portfolio reconciliation is complete for this cohort; no successor is automatically admitted.
 
 ---
 

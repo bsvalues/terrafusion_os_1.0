@@ -636,7 +636,7 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Current WO | `WO-SR-006B` complete; authority consumed |
+| Last completed WO | `WO-SR-006B`; authority consumed |
 | Next WO | Portfolio reconciliation; no persistent adoption or cutover is automatically admitted |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
