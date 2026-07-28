@@ -51,4 +51,4 @@ exposing values. If those permissions cannot retrieve the private artifact, exec
 
 Stop only for scope expansion, new credential provisioning, artifact/hash mismatch, required-check
 failure or bypass, unresolved substantive review, runtime-path mutation, public publication, or
-protected-resource access.
+protected-resource access, or conflicting authority.

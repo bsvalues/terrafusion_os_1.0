@@ -8190,7 +8190,17 @@
         "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT.md",
         ".github/workflows/terraforge-kernels.yml",
         "backend/TerraFusion.API.Tests/Services/Valuation/KernelValuationServiceIntegrationTests.cs",
-        "The exact sovereign governance, Work Order, evidence, registry, and routing files admitted by the future authority packet"
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        "docs/brain/workorders/active/WO-SR-006A-forge-standalone-kernel-artifact-shadow-consumer-gate.md",
+        "docs/brain/workorders/evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "blockedFiles": [
         "backend/src/**",

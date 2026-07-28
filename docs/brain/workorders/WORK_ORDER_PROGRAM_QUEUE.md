@@ -272,12 +272,13 @@ runtime-adoption slice is implied. Exact later scope and applicable authority re
 extraction, runtime adoption, protected data, providers, publication, unrelated workflow changes,
 and cutover.
 
-**Current reconciliation result (WO-SR-006-P, 2026-07-27):**
-`FORGE_SHADOW_CONSUMPTION_EXACT_AUTHORITY_REQUIRED`. The F1 layer and exact-scope audits are complete.
-The next useful node is not generic extraction: it is a pinned Forge artifact and non-production
-shadow-consumption gate. It requires private sibling-repository artifact access and bounded CI wiring,
-which standing R2 authority does not grant. See
-[`evidence/WO-SR-006-P-FEDERATED-CUTOVER-READINESS-AUDIT.md`](evidence/WO-SR-006-P-FEDERATED-CUTOVER-READINESS-AUDIT.md).
+**Current reconciliation result (WO-SR-006A, 2026-07-28):**
+`FORGE_SHADOW_CONSUMPTION_R3_AUTHORIZED`. The F1 layer, exact-scope audits, and Forge path canon are
+complete. The active bounded sequence is a merged-main Forge artifact producer followed by sovereign
+non-production shadow consumption. Continue inside
+`OWNER-SR-006A-R3-FORGE-SHADOW-CONSUMPTION-20260728`; do not request the superseded
+`FORGE_SHADOW_CONSUMPTION_EXACT_AUTHORITY_REQUIRED` decision again. See
+[`evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md`](evidence/WO-SR-006A-FORGE-STANDALONE-KERNEL-ARTIFACT-SHADOW-CONSUMER-GATE.md).
 
 ---
 
