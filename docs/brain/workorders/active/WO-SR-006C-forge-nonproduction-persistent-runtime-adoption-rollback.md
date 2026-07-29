@@ -52,12 +52,11 @@ PR #1383 merged exact reviewed head
 `eaa9890cc09c8ee32026b91aa6bcd53f96032cbd` as
 `bbacef062445ffdf30b9e5ce8c4f8b3664a765bd`.
 
-The proof selected the locally built Forge binary through the same disposable on-disk
-`ForgeRehearsal` configuration in isolated host starts A and B, then rewrote that same configuration
-to the unchanged sovereign binary and proved rollback in host start C. Accepted and typed
-fail-closed cases passed in every start. Canonical configuration, persistent runtime state,
-`backend/src/**`, the shared Forge checkout, deployment, source ownership, and cutover remained
-unchanged.
+The proof wrote a disposable on-disk `ForgeRehearsal` configuration that selected the locally built
+Forge binary in isolated host starts A and B, then rewrote that disposable configuration to the
+unchanged sovereign binary and proved rollback in host start C. Accepted and typed fail-closed cases
+passed in every start. Canonical and production runtime configuration, `backend/src/**`, the shared
+Forge checkout, deployment, source ownership, and cutover remained unchanged.
 
 The Forge build hash changed across separate local builds, so reproducibility is explicitly not
 claimed. The recorded terminal hashes are evidence for the completed execution, not a stable binary

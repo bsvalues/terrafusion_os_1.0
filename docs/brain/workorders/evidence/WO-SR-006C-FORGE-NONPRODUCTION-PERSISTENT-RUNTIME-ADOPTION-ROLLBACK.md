@@ -32,16 +32,16 @@ non-production persistent-selection rehearsal at sovereign base
 
 ## Boundaries proven
 
-- The same disposable on-disk configuration selected the exact locally built Forge artifact across
-  two isolated host starts.
-- Rewriting that disposable configuration to the unchanged sovereign artifact restored sovereign
-  selection in a third isolated host start.
+- A disposable on-disk configuration was written to select the exact locally built Forge artifact
+  across two isolated host starts.
+- That disposable configuration was rewritten to the unchanged sovereign artifact and restored
+  sovereign selection in a third isolated host start.
 - Exact selected-binary provenance, accepted behavior, and typed fail-closed behavior passed in all
   three starts.
 - The process environment was restored and every disposable worktree, configuration, artifact,
   manifest, and log was removed.
-- Canonical `appsettings*.json`, persistent runtime configuration, `backend/src/**`, the shared Forge
-  checkout, deployment, source ownership, and `WO-SR-006` cutover did not change.
+- Canonical `appsettings*.json`, canonical and production runtime configuration, `backend/src/**`,
+  the shared Forge checkout, deployment, source ownership, and `WO-SR-006` cutover did not change.
 
 ## Intentional non-claim
 

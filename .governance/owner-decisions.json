@@ -1323,6 +1323,10 @@
         "implementation_pr": 1383,
         "implementation_exact_head": "eaa9890cc09c8ee32026b91aa6bcd53f96032cbd",
         "implementation_merge": "bbacef062445ffdf30b9e5ce8c4f8b3664a765bd",
+        "closeout_pr": 1384,
+        "closeout_effective_on_merge": true,
+        "closeout_merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR",
+        "post_merge_verification_required": true,
         "forge_commit": "24059c3642339f36877cb454ca63683180915b71",
         "forge_artifact_sha256": "203003aa7c2ec577b23d7cd26c2017b343c070bed44aa439b4d21a4d4373d4e3",
         "sovereign_artifact_sha256": "309df6a75191d7c60c1ba3c09902a9df63fbf85445a27fb2bd3660de167f4ac4",
@@ -1331,13 +1335,15 @@
         "host_b_forge_selection": "PASS",
         "host_c_sovereign_rollback": "PASS",
         "accepted_and_typed_fail_closed_proof": "PASS",
+        "disposable_override_written": true,
+        "disposable_override_rewritten_for_rollback": true,
         "canonical_configuration_changed": false,
-        "persistent_runtime_changed": false,
+        "canonical_persistent_runtime_configuration_changed": false,
         "backend_source_changed": false,
         "shared_forge_checkout_changed": false,
         "environment_restored": true,
         "disposable_residue_removed": true,
-        "authority_consumed": true,
+        "authority_consumed_on_closeout_merge": true,
         "terminal_condition_satisfied": "FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN"
       }
     }

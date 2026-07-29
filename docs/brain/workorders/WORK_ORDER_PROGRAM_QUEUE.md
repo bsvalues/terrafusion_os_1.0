@@ -299,9 +299,12 @@ commit passed the real `ValuationKernelClient` to `RustKernelProcessHost` bounda
 behavior, and reconstruction against the unchanged sovereign binary. No persistent configuration,
 deployment, source retirement, ownership transfer, or `WO-SR-006` cutover is implied. Return to
 portfolio reconciliation admitted only the separately authorized `WO-SR-006C` disposable
-non-production persistent-selection rehearsal. PR #1383 has now completed that rehearsal and
-consumed its authority. Portfolio reconciliation is current; no `WO-SR-006` cutover is automatically
-admitted.
+non-production persistent-selection rehearsal.
+
+**Current reconciliation result (WO-SR-006C, 2026-07-28):**
+`FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN`. PR #1383 completed the
+disposable persistent-selection rehearsal and this closeout consumes its authority on merge.
+Portfolio reconciliation is current; no `WO-SR-006` cutover is automatically admitted.
 
 ---
 
