@@ -1421,6 +1421,53 @@
         "effective_on_merge": true,
         "authority_consumed": true
       }
+    },
+    {
+      "id": "OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-007A",
+      "status": "active",
+      "authority_class": "R3-bounded-local-sovereign-shadow-projection-proof",
+      "effective_base_sha": "12019bce0850b28ded91e5e820d0f54d202a14cc",
+      "atlas_base_sha": "6c530f1b6b77d59225353dede929c0688f1587da",
+      "atlas_module": "src/spatial-read/project-atlas-feature.mjs",
+      "atlas_module_sha256": "3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46",
+      "scope_source": "Owner authorization recorded on 2026-07-29 after WO-SR-006 completed Forge-only canonical ownership transfer. This decision authorizes a local, disposable, hash-pinned Atlas projection shadow proof and explicitly denies runtime adoption or Atlas repository mutation.",
+      "terminal_condition": "ATLAS_LOCAL_SOVEREIGN_SHADOW_PROJECTION_PROVEN_WITHOUT_RUNTIME_ADOPTION and the authority activation, implementation proof, and terminal closeout PRs are merged and verified.",
+      "authorized_actions": [
+        "merge one governance-only authority activation before implementation begins",
+        "create an isolated read-only Atlas worktree at exact commit 6c530f1b6b77d59225353dede929c0688f1587da, copy only the approved projection module through a disposable local directory, verify exact hashes, execute local Node without network or install, and remove all disposable state",
+        "prove accepted polygon projection, bounded synthetic point and unavailable states, fail-closed identity and geometry handling, cross-lane exclusion, deterministic output, and pre-execution tamper rejection",
+        "commit, validate, remediate, obtain exact-head assurance, merge each phase under Mode B, verify terminal closeout, consume this bounded authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasLocalSovereignShadowProjectionTests.cs",
+        "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
+        "docs/brain/workorders/active/WO-SR-007A-atlas-local-sovereign-shadow-projection-proof.md",
+        "docs/brain/workorders/evidence/WO-SR-007A-ATLAS-LOCAL-SOVEREIGN-SHADOW-PROJECTION-PROOF.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "backend/src/**, runtime wiring, dependency injection, controllers, services, providers, databases, GIS services, HTTP or network access, persistent configuration, source extraction, Atlas repository mutation, runtime adoption, source retirement, ownership transfer, or cutover",
+        "workflow changes, packages, publication, deployment, production, county, PACS, SQL, credentials, secrets, or other-suite changes",
+        "required-check bypass, unresolved substantive review, exact-head assurance failure, mutable source selection, unverified module execution, retained disposable artifacts, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-sequential-staged-exact-scope",
+      "revocation_triggers": [
+        "sovereign base, Atlas base, module path, or module hash mismatch",
+        "shared Atlas checkout mutation, network or install activity, disposable residue, backend/src or runtime change, Atlas repository change, scope expansion, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "deployment, production, protected-resource, credential, secret, extraction, runtime-adoption, ownership-transfer, cutover, or conflicting-authority access"
+      ],
+      "decision_basis": "Atlas already has a frozen spatial-read contract, a pure unwired sovereign adapter, standalone parity, and a built-fresh standalone projection module. The smallest safe next proof is exact-commit local shadow consumption without runtime adoption or repository mutation."
     }
   ]
 }
