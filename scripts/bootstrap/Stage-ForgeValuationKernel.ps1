@@ -144,7 +144,9 @@ try {
     if ($sovereignStatus) {
         throw "Sovereign worktree must be clean before staging: $sovereignStatus"
     }
-    $ignored = (& git -C $sovereignRepository check-ignore $ArtifactSlot)
+    $ignored = (& git -C $sovereignRepository check-ignore (
+        Join-Path $ArtifactSlot 'manifest.json'
+    ))
     if ($LASTEXITCODE -ne 0) {
         throw "Artifact slot is not ignored by Git: $ArtifactSlot"
     }
