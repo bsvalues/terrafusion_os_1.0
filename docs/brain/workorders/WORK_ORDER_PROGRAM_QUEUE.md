@@ -144,6 +144,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 | WO-SR-006C Forge Non-Production Persistent Runtime Adoption and Rollback Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1383 proved disposable Forge selection across two host starts and sovereign rollback in a third; no canonical configuration or cutover |
 | WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
+| WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | ACTIVE / R3 | Governance activation first; then exact-commit local disposable projection proof and terminal closeout. No runtime adoption or Atlas mutation |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -284,7 +285,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | Portfolio reconciliation after completed WO-SR-006 | SW-01 / SW-05 / sovereign integration boundary | Forge-only R4 cutover is complete and consumed; any successor runtime/cutover work still requires applicable authority | `active/WO-SR-006-forge-canonical-runtime-ownership-cutover.md` |
+| five-suite-federated-repository-buildout | WO-SR-007A Atlas local sovereign shadow projection proof | exact R3 authority active | Local disposable proof only; runtime adoption, Atlas mutation, extraction, deployment, protected resources, and cutover remain denied | `active/WO-SR-007A-atlas-local-sovereign-shadow-projection-proof.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -322,6 +323,14 @@ head `cef9842d` as `b36c2e1`. Forge owns the canonical valuation source, the sov
 the runtime consumer and integration owner, the duplicate sovereign valuation source is retired,
 and the cost kernel and shared contracts remain sovereign. The bounded authority is consumed by
 this closeout; portfolio reconciliation is current.
+
+**Current execution state (WO-SR-007A, 2026-07-29):**
+`OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729` authorizes the exact three-stage local
+sovereign shadow projection proof. Phase 0 is governance-only. The implementation must use Atlas
+commit `6c530f1b6b77d59225353dede929c0688f1587da` and module SHA-256
+`3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`, leave the shared Atlas
+checkout unchanged, avoid network/install activity, remove all disposable state, and make no
+runtime-adoption or cutover claim.
 
 ---
 

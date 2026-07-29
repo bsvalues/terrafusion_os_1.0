@@ -86,7 +86,10 @@ rollback in a third. Its bounded authority is consumed. The separate
 kernel only. Sovereign PR #1386 merged the local manifest-bound cutover, fail-closed proof,
 duplicate-source retirement, cost-kernel preservation, and rollback as `827bb6051`. Forge PR #4
 finalized canonical valuation-source ownership as `b36c2e1`. This closeout consumes the authority
-and returns routing to portfolio reconciliation. Production, protected resources, workflows,
+and returned routing to portfolio reconciliation. The operator then admitted `WO-SR-007A` under
+the exact bounded Atlas local-shadow authority. Phase 0 is governance-only; Phase 1 may prove the
+hash-pinned standalone projection through a disposable local path, and Phase 2 closes the authority.
+No runtime adoption or Atlas repository mutation is authorized. Production, protected resources, workflows,
 deployment, publication, cost-kernel transfer, public API change, and other-suite cutover remain
 denied.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody

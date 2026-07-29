@@ -8630,6 +8630,127 @@
         "source": "Owner decision OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 at sovereign base af0e21eea55c3421ac55aad6c87605a57d6f85de; sovereign PR #1386 merged as 827bb60515403a96417bdea6ec7f6ecc3ca08926; Forge PR #4 merged as b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-007A",
+      "title": "Atlas Local Sovereign Shadow Projection Proof",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove the exact standalone Atlas spatial projection module through a local, disposable, hash-pinned sovereign test path without runtime adoption or Atlas repository mutation.",
+      "riskClass": "R3",
+      "status": "active",
+      "dependencies": [
+        {
+          "id": "WO-SR-006",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1387 merged WO-SR-006 terminal closeout as 12019bce0850b28ded91e5e820d0f54d202a14cc and returned the Five-Suite program to portfolio reconciliation."
+          ]
+        },
+        {
+          "id": "WO-SR-005B-F1",
+          "status": "satisfied",
+          "evidence": [
+            "Atlas PR #2 merged the pure unwired projection foundation as 6c530f1b6b77d59225353dede929c0688f1587da."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only exact-commit Atlas proof worktree and disposable local exchange",
+          "paths": [
+            "D:\\terrafusion-atlas",
+            "unique isolated Atlas worktree at 6c530f1b6b77d59225353dede929c0688f1587da",
+            "unique disposable local proof directory"
+          ]
+        },
+        {
+          "name": "Sovereign focused Atlas projection proof and governance",
+          "paths": [
+            "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasLocalSovereignShadowProjectionTests.cs",
+            "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
+            ".governance/owner-decisions.json",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "backend/src, runtime wiring, DI, controllers, services, providers, persistence, GIS services, network, Atlas mutation, extraction, workflows, packages, publication, deployment, production, protected resources, credentials, secrets, source retirement, ownership transfer, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasLocalSovereignShadowProjectionTests.cs",
+        "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
+        "docs/brain/workorders/active/WO-SR-007A-atlas-local-sovereign-shadow-projection-proof.md",
+        "docs/brain/workorders/evidence/WO-SR-007A-ATLAS-LOCAL-SOVEREIGN-SHADOW-PROJECTION-PROOF.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/src/**",
+        ".github/workflows/**",
+        "D:\\terrafusion-atlas\\**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "deployment/**",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact sovereign and Atlas bases, module hash, clean shared checkout, isolated worktree, complete disposable manifest, polygon/point/unavailable proof, pre-Node identity and geometry rejection, cross-lane exclusion, deterministic output, tamper rejection, no network/install, cleanup, focused tests, backend build, remote checks, exact-head assurance, and review resolution."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Atlas local sovereign shadow projection proof",
+          "command": "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query and planner tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on source/base/hash mismatch, Atlas checkout mutation, network/install activity, cleanup failure, backend/src or runtime change, Atlas repository change, scope expansion, required-check failure or bypass, protected-resource access, extraction, runtime adoption, ownership transfer, or cutover."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 grants the exact sequential activation, proof, and terminal closeout under Mode B. It grants no runtime adoption, Atlas mutation, extraction, deployment, protected-resource access, ownership transfer, or cutover."
+      },
+      "provenance": {
+        "createdAt": "2026-07-29T00:00:00Z",
+        "source": "Owner decision OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 at sovereign base 12019bce0850b28ded91e5e820d0f54d202a14cc and exact Atlas base 6c530f1b6b77d59225353dede929c0688f1587da.",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }
