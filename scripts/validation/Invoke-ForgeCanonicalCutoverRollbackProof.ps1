@@ -31,6 +31,7 @@ $expectedSourceBlobIds = [ordered]@{
 $preservedEnvironment = @{}
 foreach ($name in @(
         'CARGO_TARGET_DIR',
+        'DOTNET_CLI_USE_MSBUILD_SERVER',
         'DOTNET_CLI_HOME',
         'NUGET_PACKAGES',
         'NUGET_HTTP_CACHE_PATH',
@@ -151,6 +152,7 @@ try {
     }
     $nugetOfflineSource = $Matches.path.Trim()
     $env:DOTNET_CLI_HOME = $dotnetHome
+    $env:DOTNET_CLI_USE_MSBUILD_SERVER = '0'
     $env:NUGET_PACKAGES = $nugetPackages
     $env:NUGET_HTTP_CACHE_PATH = $nugetHttp
     $env:TEMP = $temp
@@ -181,7 +183,9 @@ try {
         (
             'FullyQualifiedName~RustKernelProcessHostTests|' +
             'FullyQualifiedName~RealKernels_ComputeExpectedValue'
-        )
+        ),
+        '-p:UseSharedCompilation=false',
+        '-nodeReuse:false'
     )
 
     $result = [ordered]@{
@@ -225,11 +229,20 @@ finally {
         }
     }
     if (Test-Path -LiteralPath $proofRoot) {
-        try {
-            Remove-Item -LiteralPath $proofRoot -Recurse -Force
-        }
-        catch {
-            $cleanupErrors.Add($_.Exception.Message)
+        $removed = $false
+        for ($attempt = 1; $attempt -le 5 -and -not $removed; $attempt++) {
+            try {
+                Remove-Item -LiteralPath $proofRoot -Recurse -Force
+                $removed = $true
+            }
+            catch {
+                if ($attempt -eq 5) {
+                    $cleanupErrors.Add($_.Exception.Message)
+                }
+                else {
+                    Start-Sleep -Seconds $attempt
+                }
+            }
         }
     }
 }
