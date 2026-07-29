@@ -30,7 +30,7 @@ OS-managed artifact slot is ignored by Git and contains no committed binary or m
 | `kernels/terraforge.kernel.valuation/Cargo.lock` | `087367b4a37c7a55700b4f9bec1ac073d5c6e8cc3932f1a4220a9abbba0b48bd` |
 | `kernels/terraforge.kernel.valuation/build.rs` | `9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6` |
 | `kernels/terraforge.kernel.valuation/src/main.rs` | `3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae` |
-| staged executable | `cbc4f9b0f13b05a1c92ff41fd2d7cca4c80ebd58d0ceda6e299414147478ce10` |
+| staged executable | `899b66675a29ff8dec33e2814315ba0f13bc2eb076765fa08d7cd6164046c0b0` |
 
 `Stage-ForgeValuationKernel.ps1` proved:
 
@@ -42,7 +42,8 @@ OS-managed artifact slot is ignored by Git and contains no committed binary or m
 - unchanged sovereign cost-kernel behavior;
 - no network artifact transfer.
 
-The focused canonical-path run passed 3 tests.
+The final focused canonical-path run passed 4 tests, including rejection of a manifest with a
+mismatched frozen source hash.
 
 The canonical Release solution restore/build ran with NuGet and artifacts redirected to `D:` and
 completed with 0 warnings and 0 errors.
@@ -54,7 +55,7 @@ that member from the sovereign Cargo workspace and lockfile, and retains
 `terraforge.kernel.cost`. No shared contract, public API, workflow, deployment, credential, secret,
 county/PACS/SQL, or other-suite surface changed.
 
-At candidate `014b3639540cbe202a240d4633968c805e1cc3c5`, the disposable sparse rollback worktree reversed
+At candidate `538eeaeb3b33fd67381a4a17af3b41a2d303c58c`, the disposable sparse rollback worktree reversed
 the complete cutover range to sovereign base `4e6a810c73b0e9e165a4e496f17dd9da44ec2449`. It restored
 the three exact valuation-source blobs, the original Cargo workspace member, and the original
 valuation runtime path. Four Rust tests and seven focused backend tests passed. The proof used no
