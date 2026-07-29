@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Atlas local sovereign shadow projection proof authorized |
-| Current | `WO-SR-007A` implementation proof |
-| Next | `WO-SR-007A` terminal closeout |
+| Status | Active between cohorts; WO-SR-007A complete |
+| Current | Portfolio reconciliation |
+| Next | Highest-value dependency-cleared bounded node |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -196,14 +196,15 @@ retirement, cost-kernel preservation, and rollback as
 ownership as `b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084`. This closeout consumes the authority.
 Production, protected resources, workflows, deployment, publication, cost-kernel transfer,
 shared-contract transfer, public API changes, and every other suite cutover remain denied.
-`OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729` authorizes one exact Atlas local
-sovereign shadow projection sequence. Phase 0 merged in PR #1388 as `30961af25`; the Phase 1
-candidate passed 13 focused cases. The sequence binds Atlas commit
+`OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729` completed one exact Atlas local
+sovereign shadow projection sequence. Phase 0 merged in PR #1388 as `30961af25`; Phase 1 passed
+13 focused cases and merged in PR #1389 as `3ff78dee1`. The sequence bound Atlas commit
 `6c530f1b6b77d59225353dede929c0688f1587da` and module SHA-256
 `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`, begins with a
-governance-only activation, and permits only a disposable local proof followed by terminal closeout.
-No runtime adoption, Atlas repository mutation, extraction, provider, persistence, deployment,
-protected-resource access, ownership transfer, or cutover follows.
+governance-only activation and permitted only a disposable local proof followed by terminal
+closeout. The authority is consumed by this closeout. No runtime adoption, Atlas repository
+mutation, extraction, provider, persistence, deployment, protected-resource access, ownership
+transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 

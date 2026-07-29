@@ -88,8 +88,8 @@ duplicate-source retirement, cost-kernel preservation, and rollback as `827bb605
 finalized canonical valuation-source ownership as `b36c2e1`. This closeout consumes the authority
 and returned routing to portfolio reconciliation. The operator then admitted `WO-SR-007A` under
 the exact bounded Atlas local-shadow authority. Phase 0 merged in PR #1388 as `30961af25`; the
-13-case Phase 1 candidate now awaits implementation merge, and Phase 2 closes the authority.
-No runtime adoption or Atlas repository mutation is authorized. Production, protected resources, workflows,
+13-case Phase 1 proof merged in PR #1389 as `3ff78dee1`, and Phase 2 consumes the authority.
+Portfolio reconciliation resumes. No runtime adoption or Atlas repository mutation is authorized. Production, protected resources, workflows,
 deployment, publication, cost-kernel transfer, public API change, and other-suite cutover remain
 denied.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody

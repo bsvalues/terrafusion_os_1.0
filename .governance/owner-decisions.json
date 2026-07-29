@@ -891,7 +891,7 @@
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",
       "loop": "LOOP-PORTFOLIO-OPERATOR-001",
       "work_order": "every dependency-cleared Work Order inside active ratified authority",
-      "status": "active",
+      "status": "completed",
       "authority_class": "standing-portfolio-delivery-lifecycle",
       "effective_base_sha": "4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3",
       "scope_source": "active ratified program and dependency-cleared Work Order",
@@ -1471,8 +1471,19 @@
         "activation_pr": "#1388",
         "activation_reviewed_head": "fb42c7c61f13ddc8196ea74e7eaf7b59ed8966c2",
         "activation_merge": "30961af25ff5df6d32850ce265d6276f1324f68b",
-        "implementation_candidate": "13 focused tests passed; exact Atlas source and copied-module hashes matched; shared Atlas checkout and backend/src remained unchanged; no network or install was used; disposable state was removed",
-        "terminal_closeout_pending": true
+        "implementation_pr": "#1389",
+        "implementation_reviewed_head": "a41ead004c9ac8242660c4cc58b3db598c07e1e4",
+        "implementation_merge": "3ff78dee1bde56b582bd1efeaca7cb38455edc99",
+        "implementation_result": "13 focused tests passed; exact Atlas source and copied-module hashes matched; shared Atlas checkout and backend/src remained unchanged; local-only restore and Node network-denial boundary were enforced; disposable state was removed",
+        "terminal_closeout_pending": false
+      },
+      "completion": {
+        "activation_pr": "#1388; reviewed head fb42c7c61f13ddc8196ea74e7eaf7b59ed8966c2; merge 30961af25ff5df6d32850ce265d6276f1324f68b",
+        "implementation_pr": "#1389; reviewed head a41ead004c9ac8242660c4cc58b3db598c07e1e4; merge 3ff78dee1bde56b582bd1efeaca7cb38455edc99",
+        "terminal_closeout_pr": "this exact-scope closeout PR; exact reviewed head and merge commit are bound from GitHub PR metadata",
+        "terminal_condition_satisfied": "ATLAS_LOCAL_SOVEREIGN_SHADOW_PROJECTION_PROVEN_WITHOUT_RUNTIME_ADOPTION when this closeout merges",
+        "effective_on_merge": true,
+        "authority_consumed": true
       },
       "decision_basis": "Atlas already has a frozen spatial-read contract, a pure unwired sovereign adapter, standalone parity, and a built-fresh standalone projection module. The smallest safe next proof is exact-commit local shadow consumption without runtime adoption or repository mutation."
     }

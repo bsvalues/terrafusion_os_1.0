@@ -8637,7 +8637,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove the exact standalone Atlas spatial projection module through a local, disposable, hash-pinned sovereign test path without runtime adoption or Atlas repository mutation.",
       "riskClass": "R3",
-      "status": "active",
+      "status": "completed",
       "dependencies": [
         {
           "id": "WO-SR-006",
@@ -8714,7 +8714,7 @@
           "name": "Atlas local sovereign shadow projection proof",
           "command": "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
           "required": true,
-          "result": "passed-local-candidate-13-tests"
+          "result": "passed-13-tests-pr-1389-merge-3ff78dee1bde56b582bd1efeaca7cb38455edc99"
         },
         {
           "name": "Backend build",
@@ -8726,7 +8726,7 @@
           "name": "Work Order query and planner tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "passed-wo-query-and-41-planner-query-tests"
         }
       ],
       "stopConditions": [
@@ -8744,7 +8744,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": true,
-        "notes": "OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 grants the exact sequential activation, proof, and terminal closeout under Mode B. It grants no runtime adoption, Atlas mutation, extraction, deployment, protected-resource access, ownership transfer, or cutover."
+        "notes": "OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 completed the exact sequential activation and proof under Mode B and is consumed by terminal closeout. It granted no runtime adoption, Atlas mutation, extraction, deployment, protected-resource access, ownership transfer, or cutover."
       },
       "provenance": {
         "createdAt": "2026-07-29T00:00:00Z",
