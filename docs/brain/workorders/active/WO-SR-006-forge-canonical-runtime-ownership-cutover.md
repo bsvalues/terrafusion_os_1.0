@@ -6,7 +6,7 @@
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R4 |
-| Status | Active - sovereign implementation and rollback proof ready for PR |
+| Status | Complete - terminal closeout effective on merge |
 | Authority | `OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` |
 | Sovereign base | `af0e21eea55c3421ac55aad6c87605a57d6f85de` |
 | Forge base | `24059c3642339f36877cb454ca63683180915b71` |
@@ -28,11 +28,12 @@ duplicate mutable sovereign valuation-kernel source.
 
 Phase 0 merged in sovereign PR #1385 as
 `4e6a810c73b0e9e165a4e496f17dd9da44ec2449`. Forge readiness merged in Forge PR #3 as
-`7a2716e5cd77992f5164e95e4bd9474d3b4150f8`. The sovereign implementation candidate now stages the
-exact Forge artifact locally, binds runtime selection to its manifest, retires only the duplicate
-valuation crate, preserves the cost crate, and passes the disposable repository rollback rehearsal.
-Canonical ownership is not claimed until the sovereign implementation, Forge finalization, and
-sovereign closeout PRs merge.
+`7a2716e5cd77992f5164e95e4bd9474d3b4150f8`. Sovereign implementation PR #1386 merged exact
+reviewed head `a7168fe9a7a48150e05a7e2beb05d8984e5e238f` as
+`827bb60515403a96417bdea6ec7f6ecc3ca08926`. Forge finalization PR #4 merged exact head
+`cef9842d3cabbf6aa2cd687a8bc084239b5d0b81` as
+`b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084`. Forge is the canonical valuation-kernel source owner;
+the sovereign OS remains the runtime consumer and integration owner.
 
 ## Required proof
 
@@ -60,3 +61,7 @@ package publication.
 ## Terminal condition
 
 `FORGE_CANONICAL_RUNTIME_OWNERSHIP_CUTOVER_AND_SOVEREIGN_DUPLICATE_RETIREMENT_PROVEN`
+
+The terminal condition is satisfied when this exact-scope sovereign closeout merges. The authority
+is consumed on that merge and grants no successor cutover, production, deployment, protected
+resource, cost-kernel, shared-contract, public-API, or other-suite authority.

@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; Forge canonical runtime ownership cutover Phase 2 ready for PR
+**Status:** Active between cohorts; Forge canonical valuation ownership cutover complete
 
 ## Ratified topology
 
@@ -74,7 +74,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006B | Rehearse process-local Forge runtime selection and sovereign rollback | Complete R3; authority consumed; real client/host boundary, typed fail-closed proof, no persistent switch or cutover |
 | WO-SR-006C | Prove disposable non-production persistent Forge selection across restart and sovereign rollback | Complete R3; PR #1383 merged; authority consumed; no canonical configuration, deployment, source retirement, or cutover |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
-| WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Active R4; Phase 0 and Forge readiness merged; sovereign implementation and rollback proof ready for PR; no cost-kernel or other-suite cutover |
+| WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Complete R4; sovereign PR #1386 and Forge PR #4 merged; authority consumed on closeout; no cost-kernel or other-suite cutover |
 
 ## Extraction and provenance policy
 
@@ -186,10 +186,10 @@ third start. PR #1383 merged exact reviewed head `eaa9890cc` as `bbacef062`; the
 completed and consumed. The proof changed no canonical appsettings and provides no production,
 deployment, source-retirement,
 ownership-transfer, or cutover authority.
-`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` separately authorizes `WO-SR-006` as a Forge-only
-R4 sequential cutover. Phase 0 merged in sovereign PR #1385, and Forge readiness merged in Forge
-PR #3. The sovereign candidate locally builds and verifies the exact Forge source, uses an ignored
-manifest-bound artifact slot, fails closed on missing or mismatched provenance, retires only the
-duplicate valuation source, preserves the cost kernel and shared contracts, and passes repository
-rollback proof. Cross-repository
-finalization and sovereign closeout consume the authority.
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` completed `WO-SR-006` as a Forge-only R4
+sequential cutover. Sovereign PR #1386 merged exact reviewed head `a7168fe9a` as `827bb6051`,
+locally consuming the exact Forge source through a manifest-bound artifact, failing closed on
+missing or mismatched provenance, retiring only the duplicate valuation source, preserving the
+cost kernel and shared contracts, and proving repository rollback. Forge PR #4 merged exact head
+`cef9842d` as `b36c2e1` and finalized canonical valuation-source ownership. This sovereign closeout
+consumes the authority and returns the active program to portfolio reconciliation.
