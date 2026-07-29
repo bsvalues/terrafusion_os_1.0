@@ -35,7 +35,7 @@ terminal condition.
 | Cross-lane fields | Excluded from bounded input |
 | Deterministic normalized output | PASS |
 | Tampered copy | Rejected before execution |
-| Network or install | None |
+| Network or install | None; local NuGet source and Node permission/network-denial boundary enforced |
 | Disposable cleanup | Complete |
 | Backend source/runtime adoption | None |
 | Focused build | Invocation-owned artifact path; 0 warnings, 0 errors |
@@ -47,8 +47,10 @@ proof script after the assertions completed. The full backend solution build als
 warnings and zero errors. Review remediation made the script self-contained: it restores only from
 the existing local NuGet package source, builds before testing in a unique invocation-owned
 directory, deletes only that directory, and compares protected source plus untracked source state
-to the authorized sovereign base. Work Order validation and remote PR gates remain required before
-merge.
+to the authorized sovereign base. Node receives only proof-root filesystem permissions, cannot
+spawn child processes or load addons, and has network built-ins plus global network APIs replaced
+with fail-closed guards. Each Node invocation also has a 30-second deadline with process-tree
+termination. Work Order validation and remote PR gates remain required before merge.
 
 ## Rollback
 

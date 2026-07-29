@@ -36,6 +36,7 @@ $manifestPath = Join-Path $exchangeRoot 'manifest.json'
 $result = $null
 $atlasWorktreeRegistered = $false
 $preservedEnvironment = @{}
+$cleanupErrors = [Collections.Generic.List[string]]::new()
 
 foreach ($name in @(
         'DOTNET_CLI_HOME',
@@ -89,6 +90,31 @@ function Get-LocalNuGetSource {
         throw "Local NuGet source is unavailable: $path"
     }
     return [IO.Path]::GetFullPath($path)
+}
+
+function Remove-OwnedDirectory {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [switch]$Recurse
+    )
+
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        if (-not (Test-Path -LiteralPath $Path)) {
+            return
+        }
+        try {
+            Remove-Item -LiteralPath $Path -Force -Recurse:$Recurse
+            return
+        }
+        catch {
+            if ($attempt -eq 5) {
+                $cleanupErrors.Add("$Path`: $($_.Exception.Message)")
+                return
+            }
+            Start-Sleep -Milliseconds (250 * $attempt)
+        }
+    }
 }
 
 try {
@@ -293,6 +319,7 @@ try {
         sharedAtlasCheckoutChanged = $false
         backendSourceChanged = $false
         runtimeAdopted = $false
+        networkIsolation = 'local NuGet source plus Node permission and network-denial boundary'
         networkOrInstallUsed = $false
     }
 }
@@ -321,22 +348,25 @@ finally {
         throw 'Failed to prune Atlas proof worktree metadata.'
     }
     if (Test-Path -LiteralPath $proofRoot) {
-        Remove-Item -LiteralPath $proofRoot -Recurse -Force
+        Remove-OwnedDirectory -Path $proofRoot -Recurse
     }
     if (
         (Test-Path -LiteralPath $ProofRootBase) -and
         @(Get-ChildItem -LiteralPath $ProofRootBase -Force).Count -eq 0
     ) {
-        Remove-Item -LiteralPath $ProofRootBase -Force
+        Remove-OwnedDirectory -Path $ProofRootBase
     }
     if (Test-Path -LiteralPath $dotnetRoot) {
-        Remove-Item -LiteralPath $dotnetRoot -Recurse -Force
+        Remove-OwnedDirectory -Path $dotnetRoot -Recurse
     }
     if (
         (Test-Path -LiteralPath $DotnetRootBase) -and
         @(Get-ChildItem -LiteralPath $DotnetRootBase -Force).Count -eq 0
     ) {
-        Remove-Item -LiteralPath $DotnetRootBase -Force
+        Remove-OwnedDirectory -Path $DotnetRootBase
+    }
+    if ($cleanupErrors.Count -gt 0) {
+        throw "Proof cleanup failed: $($cleanupErrors -join '; ')"
     }
 }
 

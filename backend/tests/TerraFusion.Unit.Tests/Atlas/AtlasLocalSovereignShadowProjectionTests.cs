@@ -191,7 +191,36 @@ public sealed class AtlasLocalSovereignShadowProjectionTests
         var runnerPath = Path.Combine(proofRoot, $"runner-{invocationId}.mjs");
         const string script = """
             import fs from 'node:fs';
+            import dgram from 'node:dgram';
+            import dns from 'node:dns';
+            import http from 'node:http';
+            import https from 'node:https';
+            import net from 'node:net';
+            import tls from 'node:tls';
+            import { syncBuiltinESMExports } from 'node:module';
             import { pathToFileURL } from 'node:url';
+            const denyNetwork = () => {
+              throw new Error('Network access is denied by the Atlas shadow proof.');
+            };
+            for (const [target, names] of [
+              [net, ['connect', 'createConnection', 'createServer']],
+              [http, ['get', 'request', 'createServer']],
+              [https, ['get', 'request', 'createServer']],
+              [tls, ['connect', 'createServer']],
+              [dgram, ['createSocket']],
+              [dns, ['lookup', 'resolve', 'resolve4', 'resolve6']],
+            ]) {
+              for (const name of names) {
+                target[name] = denyNetwork;
+              }
+            }
+            globalThis.fetch = denyNetwork;
+            globalThis.WebSocket = class {
+              constructor() {
+                denyNetwork();
+              }
+            };
+            syncBuiltinESMExports();
             const exchange = JSON.parse(fs.readFileSync(process.env.TF_ATLAS_INPUT_PATH, 'utf8'));
             const module = await import(pathToFileURL(process.env.TF_ATLAS_MODULE_PATH).href);
             fs.writeFileSync(
@@ -205,6 +234,9 @@ public sealed class AtlasLocalSovereignShadowProjectionTests
             RedirectStandardError = true,
             UseShellExecute = false,
         };
+        startInfo.ArgumentList.Add("--permission");
+        startInfo.ArgumentList.Add($"--allow-fs-read={proofRoot}");
+        startInfo.ArgumentList.Add($"--allow-fs-write={proofRoot}");
         startInfo.ArgumentList.Add(runnerPath);
         startInfo.Environment["TF_ATLAS_MODULE_PATH"] = modulePath;
         startInfo.Environment["TF_ATLAS_INPUT_PATH"] = inputPath;
@@ -216,8 +248,19 @@ public sealed class AtlasLocalSovereignShadowProjectionTests
             File.WriteAllText(runnerPath, script, Utf8WithoutBom);
             using var process = Process.Start(startInfo)
                 ?? throw new InvalidOperationException("Unable to start local Node projection.");
-            var error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
+            var errorTask = process.StandardError.ReadToEndAsync();
+            if (!process.WaitForExit(milliseconds: 30_000))
+            {
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                process.WaitForExit();
+                _ = errorTask.GetAwaiter().GetResult();
+                throw new InvalidOperationException(
+                    "Local Atlas projection exceeded the 30-second execution limit.");
+            }
+            var error = errorTask.GetAwaiter().GetResult();
 
             if (process.ExitCode != 0)
             {
