@@ -339,10 +339,35 @@ try {
         '--no-cache'
     )
     Invoke-Checked -Command dotnet -Arguments @(
+        'build',
+        $testProject,
+        '-c',
+        'Release',
+        '--no-restore',
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '/warnaserror',
+        '-p:CopyLocalLockFileAssemblies=false',
+        '-p:UseSharedCompilation=false',
+        '-nodeReuse:false'
+    )
+    $testOutput = Join-Path `
+        $dotnetArtifacts `
+        'bin\TerraFusion.API.Tests\release'
+    [ordered]@{
+        runtimeOptions = [ordered]@{
+            additionalProbingPaths = @($nugetPackages)
+        }
+    } | ConvertTo-Json -Depth 4 |
+        Set-Content -LiteralPath (
+            Join-Path $testOutput 'TerraFusion.API.Tests.runtimeconfig.dev.json'
+        ) -Encoding utf8
+    Invoke-Checked -Command dotnet -Arguments @(
         'test',
         $testProject,
         '-c',
         'Release',
+        '--no-build',
         '--no-restore',
         '--artifacts-path',
         $dotnetArtifacts,
@@ -351,6 +376,7 @@ try {
             'FullyQualifiedName~RealKernels_ComputeExpectedValue|' +
             'FullyQualifiedName~ValuationKernel_'
         ),
+        '-p:CopyLocalLockFileAssemblies=false',
         '-p:UseSharedCompilation=false',
         '-nodeReuse:false'
     )
