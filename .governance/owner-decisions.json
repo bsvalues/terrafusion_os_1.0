@@ -1467,6 +1467,13 @@
         "shared Atlas checkout mutation, network or install activity, disposable residue, backend/src or runtime change, Atlas repository change, scope expansion, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
         "deployment, production, protected-resource, credential, secret, extraction, runtime-adoption, ownership-transfer, cutover, or conflicting-authority access"
       ],
+      "progress": {
+        "activation_pr": "#1388",
+        "activation_reviewed_head": "fb42c7c61f13ddc8196ea74e7eaf7b59ed8966c2",
+        "activation_merge": "30961af25ff5df6d32850ce265d6276f1324f68b",
+        "implementation_candidate": "13 focused tests passed; exact Atlas source and copied-module hashes matched; shared Atlas checkout and backend/src remained unchanged; no network or install was used; disposable state was removed",
+        "terminal_closeout_pending": true
+      },
       "decision_basis": "Atlas already has a frozen spatial-read contract, a pure unwired sovereign adapter, standalone parity, and a built-fresh standalone projection module. The smallest safe next proof is exact-commit local shadow consumption without runtime adoption or repository mutation."
     }
   ]
