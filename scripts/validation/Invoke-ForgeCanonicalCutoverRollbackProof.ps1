@@ -11,7 +11,7 @@ $authorizedCutoverBase = '4e6a810c73b0e9e165a4e496f17dd9da44ec2449'
 $proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
 $rollbackWorktree = Join-Path $proofRoot 'sovereign-rollback'
 $cargoTarget = Join-Path $rollbackWorktree 'packages\terrabuild\kernels\target'
-$dotnetArtifacts = Join-Path $proofRoot 'dotnet-artifacts'
+$dotnetArtifacts = Join-Path $rollbackWorktree '.rollback-artifacts'
 $dotnetHome = Join-Path $proofRoot 'dotnet-home'
 $nugetPackages = Join-Path $proofRoot 'nuget'
 $nugetHttp = Join-Path $proofRoot 'nuget-http'
@@ -90,7 +90,6 @@ try {
 
     New-Item -ItemType Directory -Force -Path @(
         $proofRoot,
-        $dotnetArtifacts,
         $dotnetHome,
         $nugetPackages,
         $nugetHttp,
@@ -101,6 +100,7 @@ try {
         $rollbackWorktree, $CutoverCommit
     )
     $worktreeCreated = $true
+    New-Item -ItemType Directory -Force -Path $dotnetArtifacts | Out-Null
 
     [Array]::Reverse($cutoverCommits)
     foreach ($commit in $cutoverCommits) {
