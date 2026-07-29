@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006C authority activation",
+  "generatedBy": "WO-SR-006C terminal closeout",
   "generatedAt": "2026-07-28T00:00:00Z",
-  "description": "Five-suite registry with WO-SR-006C active under an exact bounded R3 envelope for disposable non-production persistent Forge selection across restart and sovereign rollback. Canonical configuration, production, deployment, source retirement, ownership transfer, cutover, and protected access remain denied.",
+  "description": "Five-suite registry after WO-SR-006C proved disposable non-production persistent Forge selection across restart and sovereign rollback. The exact R3 authority is consumed; portfolio reconciliation is current, and canonical configuration, production, deployment, source retirement, ownership transfer, cutover, and protected access remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -8381,7 +8381,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove a disposable local ForgeRehearsal configuration selects the exact-commit Forge kernel across two isolated host starts and then rolls back to the unchanged sovereign kernel in a third start.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-006B",
@@ -8447,19 +8447,19 @@
           "name": "Forge non-production persistent-selection and rollback rehearsal",
           "command": "scripts/validation/Invoke-ForgeNonProductionPersistentRuntimeRollbackProof.ps1",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query and planner tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
       "stopConditions": [
@@ -8470,18 +8470,18 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
-        "mayCleanup": true,
-        "notes": "OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728 is active. Only the exact disposable local non-production persistent-selection rehearsal is authorized; no canonical configuration, production, deployment, source retirement, ownership transfer, protected-resource access, or WO-SR-006 cutover."
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "PR #1383 merged exact reviewed head eaa9890cc09c8ee32026b91aa6bcd53f96032cbd as bbacef062445ffdf30b9e5ce8c4f8b3664a765bd. OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728 is completed and consumed. No canonical configuration, production, deployment, source retirement, ownership transfer, protected-resource access, or WO-SR-006 cutover authority survives."
       },
       "provenance": {
         "createdAt": "2026-07-28T00:00:00Z",
-        "source": "Owner decision OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728 at sovereign base 6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6 and exact Forge commit 24059c3642339f36877cb454ca63683180915b71.",
+        "source": "Owner decision OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728 at sovereign base 6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6; implementation PR #1383 merged exact reviewed head eaa9890cc09c8ee32026b91aa6bcd53f96032cbd as bbacef062445ffdf30b9e5ce8c4f8b3664a765bd.",
         "schemaVersion": "0.1.0"
       }
     }

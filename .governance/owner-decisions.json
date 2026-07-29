@@ -1283,7 +1283,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-006C",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-local-nonproduction-persistent-selection-rehearsal",
       "effective_base_sha": "6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6",
       "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006B proved process-local Forge selection and sovereign rollback without persistent configuration. This decision authorizes one disposable on-disk ForgeRehearsal override across isolated host restarts followed by rollback, and no deployment or cutover.",
@@ -1319,7 +1319,33 @@
         "production, deployment, protected-resource, credential, secret, source-retirement, ownership-transfer, or cutover access"
       ],
       "decision_basis": "WO-SR-006B proved process-local selection and rollback but did not prove that an isolated on-disk configuration survives a host restart and then rolls back cleanly. This bounded rehearsal proves that distinction without modifying canonical configuration or deploying a runtime.",
-      "completion": null
+      "completion": {
+        "implementation_pr": 1383,
+        "implementation_exact_head": "eaa9890cc09c8ee32026b91aa6bcd53f96032cbd",
+        "implementation_merge": "bbacef062445ffdf30b9e5ce8c4f8b3664a765bd",
+        "closeout_pr": 1384,
+        "closeout_effective_on_merge": true,
+        "closeout_merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR",
+        "post_merge_verification_required": true,
+        "forge_commit": "24059c3642339f36877cb454ca63683180915b71",
+        "forge_artifact_sha256": "203003aa7c2ec577b23d7cd26c2017b343c070bed44aa439b4d21a4d4373d4e3",
+        "sovereign_artifact_sha256": "309df6a75191d7c60c1ba3c09902a9df63fbf85445a27fb2bd3660de167f4ac4",
+        "reproducibility_classification": "BINARY_HASH_CHANGED_REPRODUCIBILITY_NOT_CLAIMED",
+        "host_a_forge_selection": "PASS",
+        "host_b_forge_selection": "PASS",
+        "host_c_sovereign_rollback": "PASS",
+        "accepted_and_typed_fail_closed_proof": "PASS",
+        "disposable_override_written": true,
+        "disposable_override_rewritten_for_rollback": true,
+        "canonical_configuration_changed": false,
+        "canonical_persistent_runtime_configuration_changed": false,
+        "backend_source_changed": false,
+        "shared_forge_checkout_changed": false,
+        "environment_restored": true,
+        "disposable_residue_removed": true,
+        "authority_consumed_on_closeout_merge": true,
+        "terminal_condition_satisfied": "FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN"
+      }
     }
   ]
 }
