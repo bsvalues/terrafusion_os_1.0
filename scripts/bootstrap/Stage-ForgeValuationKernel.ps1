@@ -472,17 +472,17 @@ finally {
 
     if (Test-Path -LiteralPath $proofRoot) {
         $removed = $false
-        for ($attempt = 1; $attempt -le 5 -and -not $removed; $attempt++) {
+        for ($attempt = 1; $attempt -le 12 -and -not $removed; $attempt++) {
             try {
                 Remove-Item -LiteralPath $proofRoot -Recurse -Force
                 $removed = $true
             }
             catch {
-                if ($attempt -eq 5) {
+                if ($attempt -eq 12) {
                     $cleanupErrors.Add($_.Exception.Message)
                 }
                 else {
-                    Start-Sleep -Seconds $attempt
+                    Start-Sleep -Seconds ([Math]::Min($attempt * 2, 15))
                 }
             }
         }
