@@ -28,7 +28,7 @@ public class ValuationKernelClientTests
 
         var opts = Options.Create(new RustKernelsOptions
         {
-            ValuationKernelPath = "/fake/valuation.exe",
+            ValuationKernelPath = @"C:\tf-tests\fake\valuation.exe",
         });
 
         var sut = new ValuationKernelClient(host.Object, opts, NullLogger<ValuationKernelClient>.Instance);
@@ -42,7 +42,7 @@ public class ValuationKernelClientTests
 
         Assert.True(result.Success);
         host.Verify(h => h.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
-            "/fake/valuation.exe",
+            Path.GetFullPath(@"C:\tf-tests\fake\valuation.exe"),
             "terraforge.kernel.valuation",
             It.Is<KernelInvocation<ValuationKernelPayload>>(i => i.Action == "valuate"),
             It.IsAny<CancellationToken>()),

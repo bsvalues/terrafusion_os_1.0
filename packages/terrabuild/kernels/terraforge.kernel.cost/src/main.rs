@@ -1,8 +1,8 @@
-use std::io::{self, Read};
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use chrono::Utc;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::io::{self, Read};
+use uuid::Uuid;
 
 // --- Contracts ---
 
@@ -86,14 +86,39 @@ fn calculate_cost(payload: &CostPayload) -> CostResult {
     let sqft = payload.subject.attributes.sqft;
     let base_rate = payload.tables.base_rate;
 
-    let quality = payload.subject.attributes.quality.as_deref().unwrap_or("Average");
-    let condition = payload.subject.attributes.condition.as_deref().unwrap_or("Average");
+    let quality = payload
+        .subject
+        .attributes
+        .quality
+        .as_deref()
+        .unwrap_or("Average");
+    let condition = payload
+        .subject
+        .attributes
+        .condition
+        .as_deref()
+        .unwrap_or("Average");
 
-    let mod_q = payload.tables.modifiers.get(quality).copied().unwrap_or(1.0);
-    let mod_c = payload.tables.modifiers.get(condition).copied().unwrap_or(1.0);
+    let mod_q = payload
+        .tables
+        .modifiers
+        .get(quality)
+        .copied()
+        .unwrap_or(1.0);
+    let mod_c = payload
+        .tables
+        .modifiers
+        .get(condition)
+        .copied()
+        .unwrap_or(1.0);
 
     let replacement_cost = sqft * base_rate * mod_q * mod_c;
-    let depr_rate = payload.tables.modifiers.get("DepreciationRate").copied().unwrap_or(0.10);
+    let depr_rate = payload
+        .tables
+        .modifiers
+        .get("DepreciationRate")
+        .copied()
+        .unwrap_or(0.10);
     let depreciation = depr_rate * replacement_cost;
     let rcnld = replacement_cost - depreciation;
 
@@ -206,10 +231,7 @@ mod tests {
 
     #[test]
     fn calculate_cost_uses_default_depreciation_rate() {
-        let modifiers = HashMap::from([
-            ("GOOD".to_string(), 1.15),
-            ("AVERAGE".to_string(), 1.0),
-        ]);
+        let modifiers = HashMap::from([("GOOD".to_string(), 1.15), ("AVERAGE".to_string(), 1.0)]);
         let result = calculate_cost(&payload_with_modifiers(modifiers));
 
         assert_close(result.replacement_cost, 309_551.25);

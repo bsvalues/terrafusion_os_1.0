@@ -1,8 +1,8 @@
-name: CI • TerraForge Rust Kernels (cost + valuation)
+name: CI • TerraForge Rust Kernel (cost)
 
-# Builds and tests the two deterministic math kernels at packages/terrabuild/kernels.
-# These kernels are invoked as subprocess JSON workers by the .NET backend's
-# KernelValuationService (POST /api/valuation/kernel-cost-approach).
+# Builds and tests the retained sovereign cost kernel at packages/terrabuild/kernels.
+# The canonical valuation kernel is owned by bsvalues/terrafusion-forge and is
+# staged through the local sovereign proof path; GitHub is not its artifact trust plane.
 #
 # Without this workflow, a deploy ships a .NET endpoint that 500s at subprocess
 # launch because the binaries were never built. This workflow is the safety net.
@@ -17,7 +17,7 @@ name: CI • TerraForge Rust Kernels (cost + valuation)
 #   2. cargo clippy --all-targets -- -D warnings (zero warnings)
 #   3. cargo test --workspace passes
 #   4. Release binaries build for linux + windows targets
-#   5. Binaries pass a smoke-test invocation (valid JSON in → valid JSON out)
+#   5. The cost binary passes a smoke-test invocation (valid JSON in → valid JSON out)
 
 on:
   push:
@@ -59,7 +59,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/terrabuild/kernels/target
+            target
           key: kernels-${{ runner.os }}-${{ hashFiles('packages/terrabuild/kernels/Cargo.lock') }}
           restore-keys: |
             kernels-${{ runner.os }}-
@@ -91,6 +91,12 @@ jobs:
       run:
         working-directory: packages/terrabuild/kernels
     steps:
+      - name: Enable long paths on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+        run: git config --global core.longpaths true
+
       - uses: actions/checkout@v4
 
       - name: Setup Rust (stable)
@@ -102,7 +108,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/terrabuild/kernels/target
+            target
           key: kernels-release-${{ runner.os }}-${{ hashFiles('packages/terrabuild/kernels/Cargo.lock') }}
           restore-keys: |
             kernels-release-${{ runner.os }}-
@@ -113,7 +119,7 @@ jobs:
       - name: Smoke test — cost kernel returns success JSON for a known input
         shell: bash
         run: |
-          COST_BIN="target/release/terraforge-kernel-cost${{ matrix.bin-ext }}"
+          COST_BIN="../../../target/release/terraforge-kernel-cost${{ matrix.bin-ext }}"
           if [ ! -f "$COST_BIN" ]; then
             echo "::error::Missing expected binary at $COST_BIN"
             exit 1
@@ -124,26 +130,11 @@ jobs:
           echo "$OUTPUT" | grep -q '"success":true' || { echo "::error::cost kernel did not return success"; exit 1; }
           echo "$OUTPUT" | grep -q '"replacementCost":309551' || { echo "::error::cost kernel produced unexpected replacementCost"; exit 1; }
 
-      - name: Smoke test — valuation kernel returns success JSON
-        shell: bash
-        run: |
-          VAL_BIN="target/release/terraforge-kernel-valuation${{ matrix.bin-ext }}"
-          if [ ! -f "$VAL_BIN" ]; then
-            echo "::error::Missing expected binary at $VAL_BIN"
-            exit 1
-          fi
-          INPUT='{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"ci-smoke-002","action":"valuate","payload":{"subject":{"parcelId":"CI-0001","attributes":{}},"costBreakdown":{"replacementCost":309551.25,"depreciation":30955.125,"rcnld":278596.125},"model":{"landValue":65000.0,"adjustmentFactors":{"neighborhood":1.05,"location":0.98}}}}'
-          OUTPUT=$(echo "$INPUT" | "$VAL_BIN")
-          echo "valuation kernel stdout: $OUTPUT"
-          echo "$OUTPUT" | grep -q '"success":true' || { echo "::error::valuation kernel did not return success"; exit 1; }
-
-      - name: Upload release binaries (main branch only)
+      - name: Upload retained cost binary (main branch only)
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: terraforge-kernels-${{ matrix.artifact-suffix }}
-          path: |
-            packages/terrabuild/kernels/target/release/terraforge-kernel-cost${{ matrix.bin-ext }}
-            packages/terrabuild/kernels/target/release/terraforge-kernel-valuation${{ matrix.bin-ext }}
+          name: terraforge-cost-kernel-${{ matrix.artifact-suffix }}
+          path: target/release/terraforge-kernel-cost${{ matrix.bin-ext }}
           retention-days: 30
           if-no-files-found: error

@@ -100,6 +100,7 @@ LEGACY_CODE_ARCHIVE/
 
 # Runtime data
 pids/
+/.terrafusion/runtime/forge/valuation/
 *.pid
 *.seed
 *.pid.lock
@@ -385,6 +386,7 @@ node_modules/
 .env.local
 target/
 **/Cargo.lock
+!packages/terrabuild/kernels/Cargo.lock
 
 ###############################################################################
 # TerraFusion Architecture Refactoring - Added October 2025
