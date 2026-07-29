@@ -8658,7 +8658,7 @@
         {
           "name": "Read-only exact-commit Atlas proof worktree and disposable local exchange",
           "paths": [
-            "D:\\terrafusion-atlas",
+            "C:\\Users\\bsval\\terrafusion-atlas",
             "unique isolated Atlas worktree at 6c530f1b6b77d59225353dede929c0688f1587da",
             "unique disposable local proof directory"
           ]
