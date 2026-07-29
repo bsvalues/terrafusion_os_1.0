@@ -891,7 +891,7 @@
       "goal": "GOAL-PORTFOLIO-OPERATOR-001",
       "loop": "LOOP-PORTFOLIO-OPERATOR-001",
       "work_order": "every dependency-cleared Work Order inside active ratified authority",
-      "status": "active",
+      "status": "completed",
       "authority_class": "standing-portfolio-delivery-lifecycle",
       "effective_base_sha": "4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3",
       "scope_source": "active ratified program and dependency-cleared Work Order",
@@ -1412,11 +1412,14 @@
       "completion": {
         "authority_activation": "PR #1385 exact reviewed head f02e376d344b5eb67573605b8c90f6a5030b377c merged as 4e6a810c73b0e9e165a4e496f17dd9da44ec2449",
         "forge_readiness_pr": "Forge PR #3 exact reviewed head ae552a14a2741ff5c513775a31f3f8b7a7cc4c99 merged as 7a2716e5cd77992f5164e95e4bd9474d3b4150f8",
-        "sovereign_implementation_pr": "pending",
+        "sovereign_implementation_pr": "PR #1386 exact reviewed head a7168fe9a7a48150e05a7e2beb05d8984e5e238f merged as 827bb60515403a96417bdea6ec7f6ecc3ca08926",
         "repository_rollback_proof": "PASS at sovereign candidate 538eeaeb3b33fd67381a4a17af3b41a2d303c58c; exact source, workspace, runtime path, four Rust tests, and seven focused backend tests restored in a disposable sparse worktree",
-        "forge_finalization_pr": "pending",
-        "sovereign_closeout_pr": "pending",
-        "authority_consumed": false
+        "forge_finalization_pr": "Forge PR #4 exact reviewed head cef9842d3cabbf6aa2cd687a8bc084239b5d0b81 merged as b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084",
+        "sovereign_closeout_pr": "This exact-scope closeout PR; effective on merge",
+        "sovereign_closeout_merge_commit_source": "GitHub PR metadata and post-merge origin/main verification; no future squash SHA is invented inside the candidate PR",
+        "terminal_condition_satisfied": "FORGE_CANONICAL_RUNTIME_OWNERSHIP_CUTOVER_AND_SOVEREIGN_DUPLICATE_RETIREMENT_PROVEN when this exact-scope sovereign closeout merges to main",
+        "effective_on_merge": true,
+        "authority_consumed": true
       }
     }
   ]

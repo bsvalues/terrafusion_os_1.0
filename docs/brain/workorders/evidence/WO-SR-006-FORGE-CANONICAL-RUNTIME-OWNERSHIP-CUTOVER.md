@@ -2,7 +2,7 @@
 
 ## Current state
 
-`SOVEREIGN_IMPLEMENTATION_AND_ROLLBACK_PROOF_READY_FOR_PR`
+`FORGE_CANONICAL_RUNTIME_OWNERSHIP_CUTOVER_AND_SOVEREIGN_DUPLICATE_RETIREMENT_PROVEN`
 
 Owner decision `OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` authorizes a Forge-only R4 canonical
 ownership transfer at sovereign base `af0e21eea55c3421ac55aad6c87605a57d6f85de` and exact Forge
@@ -17,6 +17,12 @@ base `24059c3642339f36877cb454ca63683180915b71`.
   `ae552a14a2741ff5c513775a31f3f8b7a7cc4c99`, merge
   `7a2716e5cd77992f5164e95e4bd9474d3b4150f8`.
 - Forge source commit: `24059c3642339f36877cb454ca63683180915b71`.
+- Sovereign implementation: PR #1386, exact reviewed head
+  `a7168fe9a7a48150e05a7e2beb05d8984e5e238f`, merge
+  `827bb60515403a96417bdea6ec7f6ecc3ca08926`.
+- Forge finalization: Forge PR #4, exact reviewed head
+  `cef9842d3cabbf6aa2cd687a8bc084239b5d0b81`, merge
+  `b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084`.
 
 ## Local canonical artifact proof
 
@@ -63,12 +69,24 @@ the three exact valuation-source blobs, the original Cargo workspace member, and
 valuation runtime path. Four Rust tests and seven focused backend tests passed. The proof used no
 production or protected resources and removed its disposable worktree and generated outputs.
 
-## Remaining interlocks
+## Terminal verification
 
-- Sovereign implementation PR review, required checks, exact-head assurance, merge, and
-  post-merge verification.
-- Forge documentation-only finalization after the sovereign implementation merge.
-- Sovereign authority closeout and portfolio reconciliation.
+- Sovereign PR #1386: `45` passing checks, `0` failures, `0` unresolved review threads, clean
+  exact-head squash merge.
+- Forge PR #4: `5` passing checks, `0` failures, `0` unresolved review threads, clean exact-head
+  squash merge.
+- Duplicate sovereign valuation source: absent from sovereign `main`.
+- Sovereign cost kernel and shared contracts: retained.
+- Forge valuation source: canonical at exact source commit
+  `24059c3642339f36877cb454ca63683180915b71`.
+- Runtime integration ownership: retained by the sovereign OS.
+- Production, deployment, county/PACS/SQL, credentials, secrets, publication, cost ownership,
+  public APIs, shared-contract ownership, and other suites: unchanged.
 
-No completion or cutover claim is made until all required phases merge and the terminal condition is
-verified.
+## Closeout
+
+`PASS`
+
+This exact-scope closeout consumes `OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` on merge and
+returns the Five-Suite program to portfolio reconciliation. No successor implementation or cutover
+authority is implied.

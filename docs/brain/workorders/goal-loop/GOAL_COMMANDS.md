@@ -82,14 +82,13 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
 runtime adoption, source retirement, and cutover remained unauthorized. `WO-SR-006C` proved a
 disposable external `ForgeRehearsal` override across two isolated host starts followed by sovereign
 rollback in a third. Its bounded authority is consumed. The separate
-`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` decision now activates `WO-SR-006` for the Forge
-valuation kernel only. Execute governance activation, Forge readiness, sovereign cutover and
-rollback proof, Forge finalization, and sovereign closeout sequentially. Production, protected
-resources, workflows, deployment, publication, cost-kernel transfer, public API change, and
-other-suite cutover remain denied.
-Phase 0 merged in sovereign PR #1385 and Forge readiness merged in Forge PR #3. The sovereign
-implementation candidate and disposable rollback proof are ready for PR; no completion claim is
-made until the remaining implementation and cross-repository finalization merges are verified.
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` completed `WO-SR-006` for the Forge valuation
+kernel only. Sovereign PR #1386 merged the local manifest-bound cutover, fail-closed proof,
+duplicate-source retirement, cost-kernel preservation, and rollback as `827bb6051`. Forge PR #4
+finalized canonical valuation-source ownership as `b36c2e1`. This closeout consumes the authority
+and returns routing to portfolio reconciliation. Production, protected resources, workflows,
+deployment, publication, cost-kernel transfer, public API change, and other-suite cutover remain
+denied.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody
 or persistence mutation, protected data, publication, production deployment, blind or out-of-scope
 source retirement, and other-suite cutover remain gated.

@@ -8495,7 +8495,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Transfer canonical valuation-kernel ownership to Forge, consume a locally built manifest-bound Forge artifact, and retire only the duplicate mutable sovereign valuation source.",
       "riskClass": "R4",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-006C",
@@ -8616,18 +8616,18 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
-        "mayCleanup": true,
-        "notes": "OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 authorizes sequential Mode B delivery across Forge readiness, sovereign implementation and rollback proof, Forge finalization, and sovereign closeout. No per-PR owner relay is required inside the exact envelope."
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "WO-SR-006 completed sovereign PR #1386 and Forge PR #4. OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 is consumed on this sovereign closeout merge. No successor cutover, runtime, production, protected-resource, cost-kernel, shared-contract, public-API, or other-suite authority survives."
       },
       "provenance": {
         "createdAt": "2026-07-28T00:00:00Z",
-        "source": "Owner decision OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 at sovereign base af0e21eea55c3421ac55aad6c87605a57d6f85de and exact Forge base 24059c3642339f36877cb454ca63683180915b71.",
+        "source": "Owner decision OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 at sovereign base af0e21eea55c3421ac55aad6c87605a57d6f85de; sovereign PR #1386 merged as 827bb60515403a96417bdea6ec7f6ecc3ca08926; Forge PR #4 merged as b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084.",
         "schemaVersion": "0.1.0"
       }
     }

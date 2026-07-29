@@ -21,21 +21,23 @@ worktrees in the target repository.
 
 ## Current Verification
 
-On 2026-07-28, `D:\terrafusion-forge` resolved to remote
+On 2026-07-29, `D:\terrafusion-forge` resolved to remote
 `git@github.com:bsvalues/terrafusion-forge.git`, default branch `main`, at `HEAD = origin/main =
-7a2716e5cd77992f5164e95e4bd9474d3b4150f8`. Forge PR #2 at head
+`b36c2e130fb3fe9b34d7e67c8880f5b6d25b3084`. Forge PR #2 at head
 `468b21714abea071bef82eb05b4febbda7e9ff82` merged as
 `24059c3642339f36877cb454ca63683180915b71`. Its merged-main workflow run
 `30365590537` is retained as historical CI evidence only; it is not the sovereign transfer or trust
 path. The local shadow proof built the exact Forge commit in an isolated worktree and transferred the
 hash-pinned executable through a disposable local directory. The shared checkout remains a read-only
 synchronization surface, and cross-repository Forge workers must use isolated worktrees.
-Forge PR #3 at exact head `ae552a14a2741ff5c513775a31f3f8b7a7cc4c99` merged as the current
-Forge head and accepted the documentation-only canonical-ownership readiness interlock. The
-valuation source remains pinned to Forge source commit
-`24059c3642339f36877cb454ca63683180915b71`; the later documentation merge did not alter product
-source. Canonical runtime ownership remains pending the sovereign implementation and both
-cross-repository closeout merges.
+Forge PR #3 at exact head `ae552a14a2741ff5c513775a31f3f8b7a7cc4c99` accepted the
+documentation-only readiness interlock. Sovereign PR #1386 at exact reviewed head
+`a7168fe9a7a48150e05a7e2beb05d8984e5e238f` merged as
+`827bb60515403a96417bdea6ec7f6ecc3ca08926`, completing the local manifest-bound runtime cutover
+and retiring the duplicate sovereign valuation source. Forge PR #4 at exact head
+`cef9842d3cabbf6aa2cd687a8bc084239b5d0b81` merged as the current Forge head and finalized Forge
+canonical source ownership for valuation commit `24059c3642339f36877cb454ca63683180915b71`.
+The sovereign OS remains the runtime consumer and integration owner.
 
 On 2026-07-17, `C:\Users\bsval\terrafusion-os` resolved to remote
 `https://github.com/bsvalues/terrafusion-os.git`, default branch `main`, at `origin/main`
