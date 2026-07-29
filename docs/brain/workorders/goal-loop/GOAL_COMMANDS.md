@@ -87,13 +87,15 @@ valuation kernel only. Execute governance activation, Forge readiness, sovereign
 rollback proof, Forge finalization, and sovereign closeout sequentially. Production, protected
 resources, workflows, deployment, publication, cost-kernel transfer, public API change, and
 other-suite cutover remain denied.
-Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
-publication, deployment, source retirement, and cutover remain gated.
+Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody
+or persistence mutation, protected data, publication, production deployment, blind or out-of-scope
+source retirement, and other-suite cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
-**Blocked:** package publication, blind extraction, duplicate mutable ownership, source deletion or
-cutover, secrets, county/PACS data, and production deployment.
+**Blocked:** package publication, blind extraction, duplicate mutable ownership outside the
+authorized Forge valuation-kernel transition, out-of-scope source deletion or cutover, secrets,
+county/PACS data, and production deployment.
 
 ### /goal codex-operator-autonomy
 

@@ -1395,7 +1395,7 @@
         "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "explicitly_denied": [
-        "production deployment or activation, county runtime, PACS, SQL, protected county data, credentials, secrets, GitHub artifact transfer, workflows, deployment pipelines, packages, publication, or releases",
+        "production deployment or activation, county runtime, PACS, SQL, protected county data, credentials, secrets, GitHub artifact transfer, workflows, deployment pipelines, package publication, or releases",
         "cost-kernel ownership transfer, controller or public API behavior changes, shared-contract ownership transfer, Atlas, Dais, Dossier, or GPT cutover, broad five-suite cutover, deletion of rollback history, or files outside the exact allowlist",
         "required-check bypass, unresolved substantive review, exact-head assurance failure, mutable or latest artifact selection, network artifact transfer, committed binaries or manifests, or machine-specific absolute paths"
       ],

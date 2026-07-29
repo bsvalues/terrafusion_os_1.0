@@ -2209,6 +2209,10 @@
         }
       ],
       "allowedFiles": [
+        "bsvalues/terrafusion-forge:canon/SUITE_DOMAIN_PACK.md",
+        "bsvalues/terrafusion-forge:EXTRACTED_FROM.md",
+        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006-forge-canonical-ownership-cutover.md",
+        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006-FORGE-CANONICAL-OWNERSHIP-CUTOVER.md",
         ".governance/owner-decisions.json",
         "packages/gis-pro/README.md",
         "packages/gis-pro/terrafusion-config.json",
