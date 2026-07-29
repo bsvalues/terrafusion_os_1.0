@@ -96,10 +96,17 @@ try {
         $temp
     ) | Out-Null
     Invoke-Checked -Command git -Arguments @(
-        '-C', $repository, 'worktree', 'add', '--detach',
+        '-C', $repository, 'worktree', 'add', '--detach', '--no-checkout',
         $rollbackWorktree, $CutoverCommit
     )
     $worktreeCreated = $true
+    Invoke-Checked -Command git -Arguments @(
+        '-C', $rollbackWorktree, 'sparse-checkout', 'set', '--no-cone',
+        '/.gitignore', '/backend/', '/packages/', '/scripts/'
+    )
+    Invoke-Checked -Command git -Arguments @(
+        '-C', $rollbackWorktree, 'checkout', '--detach', '--quiet', $CutoverCommit
+    )
     New-Item -ItemType Directory -Force -Path $dotnetArtifacts | Out-Null
 
     [Array]::Reverse($cutoverCommits)
