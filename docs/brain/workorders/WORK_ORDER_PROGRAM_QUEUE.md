@@ -286,7 +286,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | WO-SR-007B-P complete | `WO-SR-007B` exact R3 authority required | New Atlas process-host source, runtime adoption, mutation, extraction, deployment, protected resources, and cutover remain denied | `active/WO-SR-007B-P-atlas-runtime-adoption-boundary-preparation.md` |
+| five-suite-federated-repository-buildout | `WO-SR-007B` | exact R3 process-host foundation authority required; WO-SR-007B-P is complete evidence | New Atlas process-host source, runtime adoption, mutation, extraction, deployment, protected resources, and cutover remain denied | `active/WO-SR-007B-P-atlas-runtime-adoption-boundary-preparation.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
