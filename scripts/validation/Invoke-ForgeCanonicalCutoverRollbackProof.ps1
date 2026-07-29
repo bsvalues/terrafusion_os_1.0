@@ -7,6 +7,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$authorizedCutoverBase = '4e6a810c73b0e9e165a4e496f17dd9da44ec2449'
 $proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
 $rollbackWorktree = Join-Path $proofRoot 'sovereign-rollback'
 $cargoTarget = Join-Path $proofRoot 'cargo-target'
@@ -76,9 +77,16 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Cutover commit does not exist: $CutoverCommit"
     }
-    $parentCommit = Get-GitScalar -Repository $repository -Arguments @(
-        'rev-parse', "$CutoverCommit^"
+    & git -C $repository merge-base --is-ancestor $authorizedCutoverBase $CutoverCommit
+    if ($LASTEXITCODE -ne 0) {
+        throw "Cutover commit does not descend from $authorizedCutoverBase."
+    }
+    $cutoverCommits = @(
+        & git -C $repository rev-list --reverse "$authorizedCutoverBase..$CutoverCommit"
     )
+    if ($LASTEXITCODE -ne 0 -or $cutoverCommits.Count -eq 0) {
+        throw 'No cutover commits were found for rollback.'
+    }
 
     New-Item -ItemType Directory -Force -Path @(
         $proofRoot,
@@ -92,7 +100,10 @@ try {
     Invoke-Checked git -C $repository worktree add --detach $rollbackWorktree $CutoverCommit
     $worktreeCreated = $true
 
-    Invoke-Checked git -C $rollbackWorktree revert --no-commit $CutoverCommit
+    [Array]::Reverse($cutoverCommits)
+    foreach ($commit in $cutoverCommits) {
+        Invoke-Checked git -C $rollbackWorktree revert --no-commit $commit
+    }
 
     foreach ($relativePath in $expectedSourceBlobIds.Keys) {
         if (-not (Test-Path -LiteralPath (Join-Path $rollbackWorktree $relativePath))) {
@@ -166,7 +177,8 @@ try {
         result = 'PASS'
         terminalCondition = 'FORGE_CUTOVER_REPOSITORY_ROLLBACK_PROVEN'
         cutoverCommit = $CutoverCommit
-        restoredCommit = $parentCommit
+        restoredCommit = $authorizedCutoverBase
+        reversedCommits = $cutoverCommits
         sovereignValuationSourceRestored = $true
         sovereignRuntimePathRestored = $true
         cargoWorkspaceRestored = $true
