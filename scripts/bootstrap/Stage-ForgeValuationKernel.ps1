@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory)]
     [string]$ForgeRepository,
     [string]$BuildRootBase = 'D:\tf-build\sr-006-forge-canonical-cutover',
+    [string]$NuGetPackagesPath,
     [string]$ArtifactSlot
 )
 
@@ -44,15 +45,17 @@ $forgeTarget = Join-Path $proofRoot 'forge-target'
 $costTarget = Join-Path $proofRoot 'cost-target'
 $dotnetArtifacts = Join-Path $proofRoot 'dotnet-artifacts'
 $dotnetHome = Join-Path $proofRoot 'dotnet-home'
-$nugetPackages = Join-Path $proofRoot 'nuget'
+$nugetPackages = if ([string]::IsNullOrWhiteSpace($NuGetPackagesPath)) {
+    Join-Path $proofRoot 'nuget'
+}
+else {
+    [IO.Path]::GetFullPath($NuGetPackagesPath)
+}
 $nugetHttp = Join-Path $proofRoot 'nuget-http'
 $temp = Join-Path $proofRoot 'tmp'
 $candidateArtifactSlot = Join-Path $proofRoot 'candidate-artifact'
 $artifactParent = Split-Path -Parent $ArtifactSlot
-$artifactLeaf = Split-Path -Leaf $ArtifactSlot
-$publicationId = [Guid]::NewGuid().ToString('N')
-$publishSlot = Join-Path $artifactParent ".$artifactLeaf-publish-$publicationId"
-$backupSlot = Join-Path $artifactParent ".$artifactLeaf-backup-$publicationId"
+$backupSlot = Join-Path $proofRoot 'previous-artifact'
 $artifactBackedUp = $false
 $artifactPublished = $false
 $cleanupErrors = [Collections.Generic.List[string]]::new()
@@ -382,21 +385,40 @@ try {
     )
 
     New-Item -ItemType Directory -Force -Path $artifactParent | Out-Null
-    Copy-Item -LiteralPath $candidateArtifactSlot -Destination $publishSlot -Recurse
-    if (Test-Path -LiteralPath $ArtifactSlot) {
-        Move-Item -LiteralPath $ArtifactSlot -Destination $backupSlot
-        $artifactBackedUp = $true
-    }
-    try {
-        Move-Item -LiteralPath $publishSlot -Destination $ArtifactSlot
-        $artifactPublished = $true
-    }
-    catch {
-        if ($artifactBackedUp -and -not (Test-Path -LiteralPath $ArtifactSlot)) {
-            Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
-            $artifactBackedUp = $false
+    $liveExecutable = Join-Path $ArtifactSlot 'terraforge-kernel-valuation.exe'
+    $liveManifest = Join-Path $ArtifactSlot 'manifest.json'
+    $pairAlreadyCurrent =
+        (Test-Path -LiteralPath $liveExecutable) -and
+        (Test-Path -LiteralPath $liveManifest) -and
+        ((Get-FileHash -Algorithm SHA256 -LiteralPath $liveExecutable).Hash -eq
+            (Get-FileHash -Algorithm SHA256 -LiteralPath $executablePath).Hash) -and
+        ((Get-FileHash -Algorithm SHA256 -LiteralPath $liveManifest).Hash -eq
+            (Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath).Hash)
+    if (-not $pairAlreadyCurrent) {
+        if (Test-Path -LiteralPath $ArtifactSlot) {
+            Move-Item -LiteralPath $ArtifactSlot -Destination $backupSlot
+            $artifactBackedUp = $true
         }
-        throw
+        try {
+            Copy-Item -LiteralPath $candidateArtifactSlot -Destination $ArtifactSlot -Recurse
+            if ((Get-FileHash -Algorithm SHA256 -LiteralPath $liveExecutable).Hash -ne
+                    (Get-FileHash -Algorithm SHA256 -LiteralPath $executablePath).Hash -or
+                (Get-FileHash -Algorithm SHA256 -LiteralPath $liveManifest).Hash -ne
+                    (Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath).Hash) {
+                throw 'Published Forge artifact pair failed post-copy verification.'
+            }
+        }
+        catch {
+            if (Test-Path -LiteralPath $ArtifactSlot) {
+                Remove-Item -LiteralPath $ArtifactSlot -Recurse -Force
+            }
+            if ($artifactBackedUp) {
+                Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
+                $artifactBackedUp = $false
+            }
+            throw
+        }
+        $artifactPublished = $true
     }
     if ($artifactBackedUp) {
         Remove-Item -LiteralPath $backupSlot -Recurse -Force
@@ -423,14 +445,6 @@ finally {
         try {
             Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
             $artifactBackedUp = $false
-        }
-        catch {
-            $cleanupErrors.Add($_.Exception.Message)
-        }
-    }
-    if (Test-Path -LiteralPath $publishSlot) {
-        try {
-            Remove-Item -LiteralPath $publishSlot -Recurse -Force
         }
         catch {
             $cleanupErrors.Add($_.Exception.Message)
