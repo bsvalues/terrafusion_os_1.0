@@ -30,7 +30,7 @@ OS-managed artifact slot is ignored by Git and contains no committed binary or m
 | `kernels/terraforge.kernel.valuation/Cargo.lock` | `087367b4a37c7a55700b4f9bec1ac073d5c6e8cc3932f1a4220a9abbba0b48bd` |
 | `kernels/terraforge.kernel.valuation/build.rs` | `9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6` |
 | `kernels/terraforge.kernel.valuation/src/main.rs` | `3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae` |
-| staged executable | `899b66675a29ff8dec33e2814315ba0f13bc2eb076765fa08d7cd6164046c0b0` |
+| staged executable | `377f333f0478dd9046b9625b44fe6aee880b60ddb6b8a212a2d443fda1d2422c` |
 
 `Stage-ForgeValuationKernel.ps1` proved:
 
@@ -42,8 +42,8 @@ OS-managed artifact slot is ignored by Git and contains no committed binary or m
 - unchanged sovereign cost-kernel behavior;
 - no network artifact transfer.
 
-The final focused canonical-path run passed 4 tests, including rejection of a manifest with a
-mismatched frozen source hash.
+The final focused canonical-path run passed 5 tests, including deterministic repeated-output proof
+and rejection of a manifest with a mismatched frozen source hash.
 
 The canonical Release solution restore/build ran with NuGet and artifacts redirected to external
 local build storage and completed with 0 warnings and 0 errors.
