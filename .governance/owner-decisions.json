@@ -1357,12 +1357,13 @@
       "authority_class": "R4-bounded-forge-only-canonical-ownership-transfer",
       "effective_base_sha": "af0e21eea55c3421ac55aad6c87605a57d6f85de",
       "forge_base_sha": "24059c3642339f36877cb454ca63683180915b71",
-      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006C proved persistent non-production Forge selection across restart and sovereign rollback. The decision authorizes one sequential Forge-only canonical runtime ownership cutover and duplicate sovereign valuation-source retirement.",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006C proved persistent non-production Forge selection across restart and sovereign rollback. The decision authorizes one sequential Forge-only canonical runtime ownership cutover and duplicate sovereign valuation-source retirement. The owner's 2026-07-29 full-delivery direction authorizes exact in-scope PR remediation; for PR #1386 this is limited to removing the retired valuation binary from its sovereign CI workflow and applying rustfmt-only normalization to the retained cost source.",
       "terminal_condition": "FORGE_CANONICAL_RUNTIME_OWNERSHIP_CUTOVER_AND_SOVEREIGN_DUPLICATE_RETIREMENT_PROVEN and the Forge readiness, sovereign implementation, rollback proof, Forge finalization, and sovereign closeout PRs are merged and verified.",
       "authorized_actions": [
         "merge one governance-only sovereign authority activation and one Forge documentation-only readiness acceptance",
         "build exact Forge commit 24059c3642339f36877cb454ca63683180915b71 locally, verify source and build-input hashes, stage a manifest-bound executable in an ignored OS-managed local runtime artifact slot, and make canonical sovereign valuation runtime selection fail closed on missing or mismatched provenance",
         "remove only packages/terrabuild/kernels/terraforge.kernel.valuation/** from the sovereign repository, remove that crate from the sovereign Cargo workspace and lockfile, and preserve the sovereign cost kernel and all shared contracts",
+        "reconcile .github/workflows/terraforge-kernels.yml to validate and publish only the retained sovereign cost kernel after valuation-source retirement, and apply rustfmt-only normalization to packages/terrabuild/kernels/terraforge.kernel.cost/src/main.rs without changing cost behavior or ownership",
         "prove accepted, typed fail-closed, missing-artifact, mismatched-artifact, exact-binary provenance, fresh-worktree bootstrap, and repository-level rollback in disposable isolated worktrees",
         "commit, validate, remediate, obtain exact-head assurance, merge each phase under Mode B, merge Forge and sovereign finalization, consume this authority, and return to portfolio reconciliation"
       ],
@@ -1383,7 +1384,9 @@
         "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
         "packages/terrabuild/kernels/Cargo.toml",
         "packages/terrabuild/kernels/Cargo.lock",
+        "packages/terrabuild/kernels/terraforge.kernel.cost/src/main.rs",
         "packages/terrabuild/kernels/terraforge.kernel.valuation/**",
+        ".github/workflows/terraforge-kernels.yml",
         "docs/brain/workorders/active/WO-SR-006-*",
         "docs/brain/workorders/evidence/WO-SR-006-*",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
@@ -1395,15 +1398,15 @@
         "docs/brain/workorders/registry/work-order-registry.seed.json"
       ],
       "explicitly_denied": [
-        "production deployment or activation, county runtime, PACS, SQL, protected county data, credentials, secrets, GitHub artifact transfer, workflows, deployment pipelines, package publication, or releases",
-        "cost-kernel ownership transfer, controller or public API behavior changes, shared-contract ownership transfer, Atlas, Dais, Dossier, or GPT cutover, broad five-suite cutover, deletion of rollback history, or files outside the exact allowlist",
+        "production deployment or activation, county runtime, PACS, SQL, protected county data, credentials, secrets, GitHub artifact transfer, unrelated workflows, deployment pipelines, package publication, or releases",
+        "cost-kernel behavior or ownership transfer, controller or public API behavior changes, shared-contract ownership transfer, Atlas, Dais, Dossier, or GPT cutover, broad five-suite cutover, deletion of rollback history, or files outside the exact allowlist",
         "required-check bypass, unresolved substantive review, exact-head assurance failure, mutable or latest artifact selection, network artifact transfer, committed binaries or manifests, or machine-specific absolute paths"
       ],
       "merge_mode": "B-sequential-staged-exact-scope",
       "revocation_triggers": [
         "source, build-input, manifest, or executable integrity mismatch",
-        "scope expansion, cost-kernel or shared-contract drift, required-check failure or bypass, unresolved substantive review, exact-head assurance failure, or rollback-proof failure",
-        "production, deployment, protected-resource, credential, secret, other-suite, workflow, publication, or conflicting-authority access"
+        "scope expansion, cost-kernel behavior or shared-contract drift, required-check failure or bypass, unresolved substantive review, exact-head assurance failure, or rollback-proof failure",
+        "production, deployment, protected-resource, credential, secret, other-suite, unrelated workflow, publication, or conflicting-authority access"
       ],
       "decision_basis": "WO-SR-006A, WO-SR-006B, and WO-SR-006C proved exact local Forge build and parity, real client/host selection, persistence across isolated restarts, and sovereign rollback. The remaining protected action is the Forge-only canonical ownership transfer and duplicate valuation-source retirement.",
       "completion": {

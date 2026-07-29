@@ -43,15 +43,19 @@ sovereign closeout PRs merge.
   provenance behavior through the real client/host path.
 - Remove only `packages/terrabuild/kernels/terraforge.kernel.valuation/**`, remove that crate from
   the sovereign Cargo workspace and lockfile, and preserve the cost kernel and shared contracts.
+- Reconcile the existing TerraForge kernel workflow so it validates and publishes only the retained
+  sovereign cost kernel, with rustfmt-only normalization of the cost source and no behavior or
+  ownership change.
 - Prove a fresh-worktree bootstrap and a complete repository rollback rehearsal without committing
   binaries, manifests, build output, or machine-specific absolute paths.
 
 ## Explicit denials
 
 No production deployment or activation, county runtime, PACS, SQL, protected county data,
-credentials, secrets, GitHub artifact transfer, workflow or deployment-pipeline changes, cost-kernel
-ownership transfer, controller or public API behavior change, shared-contract ownership transfer,
-other-suite cutover, broad five-suite cutover, rollback-history deletion, or package publication.
+credentials, secrets, GitHub artifact transfer, unrelated workflow or deployment-pipeline changes,
+cost-kernel behavior or ownership transfer, controller or public API behavior change, shared-contract
+ownership transfer, other-suite cutover, broad five-suite cutover, rollback-history deletion, or
+package publication.
 
 ## Terminal condition
 

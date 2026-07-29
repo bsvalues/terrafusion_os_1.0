@@ -45,15 +45,17 @@ OS-managed artifact slot is ignored by Git and contains no committed binary or m
 The final focused canonical-path run passed 4 tests, including rejection of a manifest with a
 mismatched frozen source hash.
 
-The canonical Release solution restore/build ran with NuGet and artifacts redirected to `D:` and
-completed with 0 warnings and 0 errors.
+The canonical Release solution restore/build ran with NuGet and artifacts redirected to external
+local build storage and completed with 0 warnings and 0 errors.
 
 ## Source retirement and rollback proof
 
 The candidate removes only `packages/terrabuild/kernels/terraforge.kernel.valuation/**`, removes
 that member from the sovereign Cargo workspace and lockfile, and retains
-`terraforge.kernel.cost`. No shared contract, public API, workflow, deployment, credential, secret,
-county/PACS/SQL, or other-suite surface changed.
+`terraforge.kernel.cost`. The existing kernel workflow was narrowed to the retained cost kernel after
+CI exposed its stale valuation-binary expectation, and the cost source received rustfmt-only
+normalization. No cost behavior or ownership, shared contract, public API, deployment, credential,
+secret, county/PACS/SQL, or other-suite surface changed.
 
 At candidate `538eeaeb3b33fd67381a4a17af3b41a2d303c58c`, the disposable sparse rollback worktree reversed
 the complete cutover range to sovereign base `4e6a810c73b0e9e165a4e496f17dd9da44ec2449`. It restored
