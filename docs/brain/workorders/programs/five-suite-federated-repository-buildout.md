@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-007A Atlas local sovereign shadow projection proof authorized
+**Status:** Active; WO-SR-007A implementation proof complete locally, merge and closeout pending
 
 ## Ratified topology
 
@@ -75,7 +75,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006C | Prove disposable non-production persistent Forge selection across restart and sovereign rollback | Complete R3; PR #1383 merged; authority consumed; no canonical configuration, deployment, source retirement, or cutover |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Complete R4; sovereign PR #1386 and Forge PR #4 merged; authority consumed on closeout; no cost-kernel or other-suite cutover |
-| WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Active R3; governance activation precedes implementation; no runtime adoption or Atlas mutation |
+| WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Active R3; Phase 0 merged and 13-case local proof passed; implementation merge and terminal closeout pending; no runtime adoption or Atlas mutation |
 
 ## Extraction and provenance policy
 
@@ -196,6 +196,8 @@ cost kernel and shared contracts, and proving repository rollback. Forge PR #4 m
 consumes the authority and returns the active program to portfolio reconciliation.
 Portfolio reconciliation then admitted `WO-SR-007A` under
 `OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729`. The bounded sequence proves only the
-exact Atlas projection module through a local, disposable, hash-pinned sovereign test path. Runtime
-adoption, Atlas source mutation, extraction, network access, publication, deployment, protected
-resources, ownership transfer, and cutover remain denied.
+exact Atlas projection module through a local, disposable, hash-pinned sovereign test path. Phase 0
+merged in PR #1388 as `30961af25`. The Phase 1 candidate passed 13 focused cases, verified exact
+source and copied-module hashes, left the shared Atlas checkout unchanged, used no network or
+install, and removed all disposable state. Runtime adoption, Atlas source mutation, extraction,
+publication, deployment, protected resources, ownership transfer, and cutover remain denied.

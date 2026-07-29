@@ -8714,13 +8714,13 @@
           "name": "Atlas local sovereign shadow projection proof",
           "command": "scripts/validation/Invoke-AtlasLocalSovereignShadowProjectionProof.ps1",
           "required": true,
-          "result": "pending"
+          "result": "passed-local-candidate-13-tests"
         },
         {
           "name": "Backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "pending"
+          "result": "passed-0-warnings-0-errors"
         },
         {
           "name": "Work Order query and planner tests",

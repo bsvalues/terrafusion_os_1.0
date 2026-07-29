@@ -2,7 +2,7 @@
 
 ## Current Result
 
-`AUTHORITY_ACTIVATION_PENDING_MERGE`
+`IMPLEMENTATION_PROOF_PASS_PENDING_PR_AND_TERMINAL_CLOSEOUT`
 
 ## Bound Identity
 
@@ -16,24 +16,41 @@
 
 ## Phase 0
 
-This governance-only phase records the decision, exact allowlist, denials, three-stage sequence,
-validation gates, and fail-closed terminal condition. It creates no test, script, runtime consumer,
-Atlas mutation, or capability claim.
+PR #1388 merged exact reviewed head `fb42c7c61f13ddc8196ea74e7eaf7b59ed8966c2`
+as `30961af25ff5df6d32850ce265d6276f1324f68b`. The governance-only activation recorded the
+decision, exact allowlist, denials, three-stage sequence, validation gates, and fail-closed
+terminal condition.
 
-## Required Implementation Evidence
+## Phase 1 Candidate Evidence
 
-- Clean shared Atlas checkout and isolated exact-commit proof worktree.
-- Exact module hash before and after disposable local copy.
-- Local manifest containing repository, commit, path, hashes, Node version, timestamp, and disposable
-  paths.
-- Accepted polygon projection through the real sovereign adapter.
-- Synthetic point and unavailable projections without adapter claims.
-- Pre-Node identity and geometry rejection.
-- Cross-lane input exclusion, deterministic normalized output, and tamper rejection.
-- No network/install activity and complete cleanup of worktree, copied module, manifest, exchange,
-  output, and logs.
-- Focused tests, zero-warning backend build, Work Order validation, remote checks, exact-head
-  assurance, and zero unresolved substantive review threads.
+| Gate | Result |
+| --- | --- |
+| Shared Atlas checkout | Clean and unchanged |
+| Isolated source | Exact detached worktree at `6c530f1b6b77d59225353dede929c0688f1587da` |
+| Source and copied-module hash | `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46` |
+| Focused proof | 13 passed, 0 failed, 0 skipped |
+| Real adapter polygon | PASS |
+| Synthetic point and unavailable | PASS; no adapter claim |
+| Identity and geometry fail closed | PASS before Node |
+| Cross-lane fields | Excluded from bounded input |
+| Deterministic normalized output | PASS |
+| Tampered copy | Rejected before execution |
+| Network or install | None; local NuGet source and Node permission/network-denial boundary enforced |
+| Disposable cleanup | Complete |
+| Backend source/runtime adoption | None |
+| Focused build | Invocation-owned artifact path; 0 warnings, 0 errors |
+| Full backend solution build | 0 warnings, 0 errors |
+
+The generated local manifest bound repository, commit, module path, source and copy hashes, Node
+version, timestamp, and disposable paths. It and all disposable execution state were deleted by the
+proof script after the assertions completed. The full backend solution build also passed with zero
+warnings and zero errors. Review remediation made the script self-contained: it restores only from
+the existing local NuGet package source, builds before testing in a unique invocation-owned
+directory, deletes only that directory, and compares protected source plus untracked source state
+to the authorized sovereign base. Node receives only proof-root filesystem permissions, cannot
+spawn child processes or load addons, and has network built-ins plus global network APIs replaced
+with fail-closed guards. Each Node invocation also has a 30-second deadline with process-tree
+termination. Work Order validation and remote PR gates remain required before merge.
 
 ## Rollback
 

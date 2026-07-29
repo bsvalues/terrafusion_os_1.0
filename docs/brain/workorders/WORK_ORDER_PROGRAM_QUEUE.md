@@ -326,11 +326,12 @@ this closeout; portfolio reconciliation is current.
 
 **Current execution state (WO-SR-007A, 2026-07-29):**
 `OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729` authorizes the exact three-stage local
-sovereign shadow projection proof. Phase 0 is governance-only. The implementation must use Atlas
-commit `6c530f1b6b77d59225353dede929c0688f1587da` and module SHA-256
-`3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`, leave the shared Atlas
-checkout unchanged, avoid network/install activity, remove all disposable state, and make no
-runtime-adoption or cutover claim.
+sovereign shadow projection proof. Phase 0 merged in PR #1388 as `30961af25`. The Phase 1
+candidate passed 13 focused tests using Atlas commit
+`6c530f1b6b77d59225353dede929c0688f1587da` and module SHA-256
+`3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`, left the shared Atlas
+checkout unchanged, avoided network/install activity, removed all disposable state, and made no
+runtime-adoption or cutover claim. Implementation merge and terminal closeout remain current.
 
 ---
 
