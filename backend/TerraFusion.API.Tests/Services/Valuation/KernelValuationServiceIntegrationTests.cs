@@ -158,7 +158,7 @@ public class KernelValuationServiceIntegrationTests
         Assert.True(result.Provenance.ValuationDurationMs >= 0);
     }
 
-    [Fact]
+    [CanonicalForgeKernelFact]
     public async Task RealKernels_SameInputProducesSameOutput()
     {
         Assert.True(KernelsAvailable,
@@ -240,7 +240,8 @@ public class KernelValuationServiceIntegrationTests
             sovereignSha256);
         var payload = CreateRuntimeRollbackPayload();
 
-        var (forgeClient, forgeHost) = CreateValuationClient(forgePath);
+        using var forgeManifest = CreateTemporaryProvenanceManifest(forgePath);
+        var (forgeClient, forgeHost) = CreateValuationClient(forgePath, forgeManifest.Path);
         var forgeAccepted = await forgeClient.ValuateAsync(payload);
 
         Assert.True(forgeAccepted.Success, forgeAccepted.ErrorMessage);
@@ -267,7 +268,9 @@ public class KernelValuationServiceIntegrationTests
         Assert.Equal(KernelFailureMode.KernelReportedError, forgeDenied.FailureMode);
         Assert.Equal(forgeSha256, forgeDenied.KernelBinarySha256);
 
-        var (sovereignClient, _) = CreateValuationClient(sovereignPath);
+        using var sovereignManifest = CreateTemporaryProvenanceManifest(sovereignPath);
+        var (sovereignClient, _) =
+            CreateValuationClient(sovereignPath, sovereignManifest.Path);
         var rollbackAccepted = await sovereignClient.ValuateAsync(payload);
 
         Assert.True(rollbackAccepted.Success, rollbackAccepted.ErrorMessage);
@@ -309,7 +312,9 @@ public class KernelValuationServiceIntegrationTests
         var selectedSha256 = ComputeFileSha256(options.ValuationKernelPath);
         Assert.Equal(expectedSha256, selectedSha256);
 
-        var (client, host) = CreateValuationClient(options.ValuationKernelPath);
+        using var manifest = CreateTemporaryProvenanceManifest(options.ValuationKernelPath);
+        var (client, host) =
+            CreateValuationClient(options.ValuationKernelPath, manifest.Path);
         var accepted = await client.ValuateAsync(CreateRuntimeRollbackPayload());
 
         Assert.True(accepted.Success, $"{hostLabel}: {accepted.ErrorMessage}");
@@ -334,11 +339,13 @@ public class KernelValuationServiceIntegrationTests
     }
 
     private static (ValuationKernelClient Client, RustKernelProcessHost Host)
-        CreateValuationClient(string valuationKernelPath)
+        CreateValuationClient(string valuationKernelPath, string manifestPath)
     {
         var options = Options.Create(new RustKernelsOptions
         {
             ValuationKernelPath = valuationKernelPath,
+            ValuationKernelManifestPath = manifestPath,
+            ValuationKernelSourceCommit = ForgeCommit,
             TimeoutMs = 10000,
             ContractPackVersion = "1.0.0",
             ModuleApiVersion = "1.0.0",
@@ -351,6 +358,50 @@ public class KernelValuationServiceIntegrationTests
             options,
             NullLogger<ValuationKernelClient>.Instance);
         return (client, host);
+    }
+
+    private static TemporaryFile CreateTemporaryProvenanceManifest(string executablePath)
+    {
+        var path = Path.Combine(
+            Path.GetTempPath(),
+            $"tf-forge-provenance-{Guid.NewGuid():N}.json");
+        var manifest = new
+        {
+            schemaVersion = 1,
+            repository = "bsvalues/terrafusion-forge",
+            commit = ForgeCommit,
+            transport = "local-os-managed-artifact-slot",
+            sourceBlobSha256 = new Dictionary<string, string>
+            {
+                ["kernels/terraforge.kernel.valuation/Cargo.toml"] =
+                    "c27750c78f2ddf77e5cfca3fc6a020bd2bf5ddecb97fa10e44d2e20d2c5e2358",
+                ["kernels/terraforge.kernel.valuation/Cargo.lock"] =
+                    "087367b4a37c7a55700b4f9bec1ac073d5c6e8cc3932f1a4220a9abbba0b48bd",
+                ["kernels/terraforge.kernel.valuation/build.rs"] =
+                    "9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6",
+                ["kernels/terraforge.kernel.valuation/src/main.rs"] =
+                    "3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae",
+            },
+            executableFilename = Path.GetFileName(executablePath),
+            executableSha256 = ComputeFileSha256(executablePath),
+        };
+        File.WriteAllText(path, JsonSerializer.Serialize(manifest));
+        return new TemporaryFile(path);
+    }
+
+    private sealed class TemporaryFile : IDisposable
+    {
+        public TemporaryFile(string path) => Path = path;
+
+        public string Path { get; }
+
+        public void Dispose()
+        {
+            if (File.Exists(Path))
+            {
+                File.Delete(Path);
+            }
+        }
     }
 
     private static ValuationKernelPayload CreateRuntimeRollbackPayload()

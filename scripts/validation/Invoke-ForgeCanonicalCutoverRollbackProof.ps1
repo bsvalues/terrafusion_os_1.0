@@ -73,6 +73,27 @@ function Get-GitScalar {
     return ($value -join "`n").Trim()
 }
 
+function Get-LocalNuGetSource {
+    $lines = @(& dotnet nuget locals global-packages --list)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to query the local NuGet global-packages source.'
+    }
+    $entry = $lines |
+        Where-Object { $_ -match '^\s*global-packages:\s*(.+?)\s*$' } |
+        Select-Object -First 1
+    if ($null -eq $entry) {
+        throw 'Unable to resolve the local NuGet global-packages source.'
+    }
+    $path = ([regex]::Match(
+        $entry,
+        '^\s*global-packages:\s*(.+?)\s*$'
+    )).Groups[1].Value
+    if (-not (Test-Path -LiteralPath $path)) {
+        throw "Local NuGet source is unavailable: $path"
+    }
+    return [IO.Path]::GetFullPath($path)
+}
+
 try {
     & git -C $repository cat-file -e "$CutoverCommit`^{commit}"
     if ($LASTEXITCODE -ne 0) {
@@ -83,7 +104,7 @@ try {
         throw "Cutover commit does not descend from $authorizedCutoverBase."
     }
     $cutoverCommits = @(
-        & git -C $repository rev-list --reverse "$authorizedCutoverBase..$CutoverCommit"
+        & git -C $repository rev-list "$authorizedCutoverBase..$CutoverCommit"
     )
     if ($LASTEXITCODE -ne 0 -or $cutoverCommits.Count -eq 0) {
         throw 'No cutover commits were found for rollback.'
@@ -110,7 +131,6 @@ try {
     )
     New-Item -ItemType Directory -Force -Path $dotnetArtifacts | Out-Null
 
-    [Array]::Reverse($cutoverCommits)
     foreach ($commit in $cutoverCommits) {
         Invoke-Checked -Command git -Arguments @(
             '-C', $rollbackWorktree, 'revert', '--no-commit', $commit
@@ -134,6 +154,12 @@ try {
     if ($workspaceText -notmatch '"terraforge\.kernel\.valuation"') {
         throw 'Rollback did not restore the sovereign valuation workspace member.'
     }
+    $workspaceLock = Get-Content -Raw -LiteralPath (
+        Join-Path $rollbackWorktree 'packages\terrabuild\kernels\Cargo.lock'
+    )
+    if ($workspaceLock -notmatch 'name\s*=\s*"terraforge-kernel-valuation"') {
+        throw 'Rollback did not restore the sovereign valuation lock entry.'
+    }
     $appSettings = Get-Content -Raw -LiteralPath (
         Join-Path $rollbackWorktree 'backend\src\TerraFusion.API\appsettings.json'
     ) | ConvertFrom-Json
@@ -143,14 +169,14 @@ try {
     }
 
     $env:CARGO_TARGET_DIR = $cargoTarget
-    Invoke-Checked cargo test --offline --manifest-path $workspaceManifest
-    Invoke-Checked cargo build --release --offline --manifest-path $workspaceManifest
+    Invoke-Checked -Command cargo -Arguments @(
+        'test', '--offline', '--manifest-path', $workspaceManifest
+    )
+    Invoke-Checked -Command cargo -Arguments @(
+        'build', '--release', '--offline', '--manifest-path', $workspaceManifest
+    )
 
-    $nugetOutput = (& dotnet nuget locals global-packages --list) -join "`n"
-    if ($LASTEXITCODE -ne 0 -or $nugetOutput -notmatch '^global-packages:\s*(?<path>.+)$') {
-        throw 'Unable to resolve the local NuGet global-packages source.'
-    }
-    $nugetOfflineSource = $Matches.path.Trim()
+    $nugetOfflineSource = Get-LocalNuGetSource
     $env:DOTNET_CLI_HOME = $dotnetHome
     $env:DOTNET_CLI_USE_MSBUILD_SERVER = '0'
     $env:NUGET_PACKAGES = $nugetPackages

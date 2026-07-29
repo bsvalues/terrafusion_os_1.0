@@ -47,7 +47,15 @@ $dotnetHome = Join-Path $proofRoot 'dotnet-home'
 $nugetPackages = Join-Path $proofRoot 'nuget'
 $nugetHttp = Join-Path $proofRoot 'nuget-http'
 $temp = Join-Path $proofRoot 'tmp'
+$candidateArtifactSlot = Join-Path $proofRoot 'candidate-artifact'
+$artifactParent = Split-Path -Parent $ArtifactSlot
+$artifactLeaf = Split-Path -Leaf $ArtifactSlot
+$publicationId = [Guid]::NewGuid().ToString('N')
+$publishSlot = Join-Path $artifactParent ".$artifactLeaf-publish-$publicationId"
+$backupSlot = Join-Path $artifactParent ".$artifactLeaf-backup-$publicationId"
 $forgeWorktreeCreated = $false
+$artifactBackedUp = $false
+$artifactPublished = $false
 $cleanupErrors = [Collections.Generic.List[string]]::new()
 $result = $null
 
@@ -124,9 +132,10 @@ function Get-GitBlobSha256 {
     }
     $sha256 = [Security.Cryptography.SHA256]::Create()
     try {
+        $stderrTask = $process.StandardError.ReadToEndAsync()
         $hash = $sha256.ComputeHash($process.StandardOutput.BaseStream)
-        $stderr = $process.StandardError.ReadToEnd()
         $process.WaitForExit()
+        $stderr = $stderrTask.GetAwaiter().GetResult()
         if ($process.ExitCode -ne 0) {
             throw "git cat-file failed for $RevisionPath`: $stderr"
         }
@@ -138,6 +147,27 @@ function Get-GitBlobSha256 {
     }
 }
 
+function Get-LocalNuGetSource {
+    $lines = @(& dotnet nuget locals global-packages --list)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to query the local NuGet global-packages source.'
+    }
+    $entry = $lines |
+        Where-Object { $_ -match '^\s*global-packages:\s*(.+?)\s*$' } |
+        Select-Object -First 1
+    if ($null -eq $entry) {
+        throw 'Unable to resolve the local NuGet global-packages source.'
+    }
+    $path = ([regex]::Match(
+        $entry,
+        '^\s*global-packages:\s*(.+?)\s*$'
+    )).Groups[1].Value
+    if (-not (Test-Path -LiteralPath $path)) {
+        throw "Local NuGet source is unavailable: $path"
+    }
+    return [IO.Path]::GetFullPath($path)
+}
+
 try {
     $sovereignStatus = Get-GitScalar -Repository $sovereignRepository -Arguments @(
         'status', '--short'
@@ -145,9 +175,9 @@ try {
     if ($sovereignStatus) {
         throw "Sovereign worktree must be clean before staging: $sovereignStatus"
     }
-    $ignored = (& git -C $sovereignRepository check-ignore (
+    & git -C $sovereignRepository check-ignore (
         Join-Path $ArtifactSlot 'manifest.json'
-    ))
+    ) | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "Artifact slot is not ignored by Git: $ArtifactSlot"
     }
@@ -170,7 +200,7 @@ try {
         $nugetPackages,
         $nugetHttp,
         $temp,
-        $ArtifactSlot
+        $candidateArtifactSlot
     ) | Out-Null
 
     Invoke-Checked -Command git -Arguments @(
@@ -204,14 +234,18 @@ try {
 
     $forgeManifest = Join-Path $forgeWorktree 'kernels\terraforge.kernel.valuation\Cargo.toml'
     $env:CARGO_TARGET_DIR = $forgeTarget
-    Invoke-Checked cargo test --offline --locked --manifest-path $forgeManifest
-    Invoke-Checked cargo build --release --offline --locked --manifest-path $forgeManifest
+    Invoke-Checked -Command cargo -Arguments @(
+        'test', '--offline', '--locked', '--manifest-path', $forgeManifest
+    )
+    Invoke-Checked -Command cargo -Arguments @(
+        'build', '--release', '--offline', '--locked', '--manifest-path', $forgeManifest
+    )
     $builtExecutable = Join-Path $forgeTarget 'release\terraforge-kernel-valuation.exe'
     if (-not (Test-Path -LiteralPath $builtExecutable)) {
         throw "Forge build did not produce $builtExecutable."
     }
 
-    $executablePath = Join-Path $ArtifactSlot 'terraforge-kernel-valuation.exe'
+    $executablePath = Join-Path $candidateArtifactSlot 'terraforge-kernel-valuation.exe'
     Copy-Item -LiteralPath $builtExecutable -Destination $executablePath -Force
     $executableSha256 = (
         Get-FileHash -Algorithm SHA256 -LiteralPath $executablePath
@@ -228,7 +262,7 @@ try {
         throw 'Unable to capture the Rust host target.'
     }
 
-    $manifestPath = Join-Path $ArtifactSlot 'manifest.json'
+    $manifestPath = Join-Path $candidateArtifactSlot 'manifest.json'
     [ordered]@{
         schemaVersion = 1
         repository = $expectedRepository
@@ -259,22 +293,20 @@ try {
     }
 
     $env:CARGO_TARGET_DIR = $costTarget
-    Invoke-Checked cargo build --release --offline --locked --manifest-path (
-        Join-Path $sovereignRepository 'packages\terrabuild\kernels\Cargo.toml'
+    Invoke-Checked -Command cargo -Arguments @(
+        'build',
+        '--release',
+        '--offline',
+        '--locked',
+        '--manifest-path',
+        (Join-Path $sovereignRepository 'packages\terrabuild\kernels\Cargo.toml')
     )
     $costExecutable = Join-Path $costTarget 'release\terraforge-kernel-cost.exe'
     if (-not (Test-Path -LiteralPath $costExecutable)) {
         throw "Sovereign cost build did not produce $costExecutable."
     }
 
-    $nugetOutput = (& dotnet nuget locals global-packages --list) -join "`n"
-    if ($LASTEXITCODE -ne 0 -or $nugetOutput -notmatch '^global-packages:\s*(?<path>.+)$') {
-        throw 'Unable to resolve the local NuGet global-packages source.'
-    }
-    $nugetOfflineSource = $Matches.path.Trim()
-    if (-not (Test-Path -LiteralPath $nugetOfflineSource)) {
-        throw "Local NuGet source is unavailable: $nugetOfflineSource"
-    }
+    $nugetOfflineSource = Get-LocalNuGetSource
 
     $env:DOTNET_CLI_HOME = $dotnetHome
     $env:DOTNET_CLI_USE_MSBUILD_SERVER = '0'
@@ -317,6 +349,28 @@ try {
         '-nodeReuse:false'
     )
 
+    New-Item -ItemType Directory -Force -Path $artifactParent | Out-Null
+    Copy-Item -LiteralPath $candidateArtifactSlot -Destination $publishSlot -Recurse
+    if (Test-Path -LiteralPath $ArtifactSlot) {
+        Move-Item -LiteralPath $ArtifactSlot -Destination $backupSlot
+        $artifactBackedUp = $true
+    }
+    try {
+        Move-Item -LiteralPath $publishSlot -Destination $ArtifactSlot
+        $artifactPublished = $true
+    }
+    catch {
+        if ($artifactBackedUp -and -not (Test-Path -LiteralPath $ArtifactSlot)) {
+            Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
+            $artifactBackedUp = $false
+        }
+        throw
+    }
+    if ($artifactBackedUp) {
+        Remove-Item -LiteralPath $backupSlot -Recurse -Force
+        $artifactBackedUp = $false
+    }
+
     $result = [ordered]@{
         result = 'PASS'
         terminalCondition = 'FORGE_CANONICAL_LOCAL_ARTIFACT_STAGED_AND_VERIFIED'
@@ -333,6 +387,31 @@ try {
     }
 }
 finally {
+    if ($artifactBackedUp -and -not (Test-Path -LiteralPath $ArtifactSlot)) {
+        try {
+            Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
+            $artifactBackedUp = $false
+        }
+        catch {
+            $cleanupErrors.Add($_.Exception.Message)
+        }
+    }
+    if (Test-Path -LiteralPath $publishSlot) {
+        try {
+            Remove-Item -LiteralPath $publishSlot -Recurse -Force
+        }
+        catch {
+            $cleanupErrors.Add($_.Exception.Message)
+        }
+    }
+    if ($artifactPublished -and (Test-Path -LiteralPath $backupSlot)) {
+        try {
+            Remove-Item -LiteralPath $backupSlot -Recurse -Force
+        }
+        catch {
+            $cleanupErrors.Add($_.Exception.Message)
+        }
+    }
     foreach ($name in $preservedEnvironment.Keys) {
         if ($preservedEnvironment[$name].Exists) {
             [Environment]::SetEnvironmentVariable(

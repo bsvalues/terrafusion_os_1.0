@@ -67,7 +67,18 @@ public class RustKernelProcessHost : IRustKernelProcessHost
 
         if (string.Equals(kernelName, "terraforge.kernel.valuation", StringComparison.Ordinal))
         {
-            var provenanceFailure = ValidateValuationKernelProvenance(executablePath);
+            (KernelFailureMode Mode, string Message, string? BinarySha256)? provenanceFailure;
+            try
+            {
+                provenanceFailure = ValidateValuationKernelProvenance(executablePath);
+            }
+            catch (Exception ex)
+            {
+                provenanceFailure = (
+                    KernelFailureMode.NonZeroExit,
+                    $"Valuation kernel provenance validation failed closed: {ex.Message}",
+                    null);
+            }
             if (provenanceFailure != null)
             {
                 sw.Stop();
