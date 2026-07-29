@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-007A complete and portfolio reconciliation current
+**Status:** Active at exact protected boundary; WO-SR-007B-P complete
 
 ## Ratified topology
 
@@ -76,6 +76,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
 | WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Complete R4; sovereign PR #1386 and Forge PR #4 merged; authority consumed on closeout; no cost-kernel or other-suite cutover |
 | WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Complete R3; PR #1389 merged 13-case proof as `3ff78dee1`; authority consumed on closeout; no runtime adoption or Atlas mutation |
+| WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
 
 ## Extraction and provenance policy
 
@@ -203,3 +204,10 @@ install, and removed all disposable state. PR #1389 merged the proof as `3ff78de
 consumes the bounded authority and returns the program to portfolio reconciliation. Runtime
 adoption, Atlas source mutation, extraction, publication, deployment, protected resources,
 ownership transfer, and cutover remain denied.
+`WO-SR-007B-P` then inspected the live sovereign execution seams. The Atlas adapter remains pure and
+unwired, while the standalone module is invoked only by the completed local-shadow test harness.
+No Atlas process host, DI registration, or runtime consumer exists, and the Forge native-kernel host
+is not protocol-compatible. The smallest useful successor is therefore `WO-SR-007B`, an exact R3
+unwired Node process-host foundation. It requires a separate bounded grant because it creates
+`backend/src/**`; runtime adoption, persistent selection, deployment, ownership transfer, source
+retirement, and cutover remain later gates.
