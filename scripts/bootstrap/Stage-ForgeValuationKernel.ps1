@@ -53,7 +53,6 @@ $artifactLeaf = Split-Path -Leaf $ArtifactSlot
 $publicationId = [Guid]::NewGuid().ToString('N')
 $publishSlot = Join-Path $artifactParent ".$artifactLeaf-publish-$publicationId"
 $backupSlot = Join-Path $artifactParent ".$artifactLeaf-backup-$publicationId"
-$forgeWorktreeCreated = $false
 $artifactBackedUp = $false
 $artifactPublished = $false
 $cleanupErrors = [Collections.Generic.List[string]]::new()
@@ -204,10 +203,11 @@ try {
     ) | Out-Null
 
     Invoke-Checked -Command git -Arguments @(
-        '-C', $ForgeRepository, 'worktree', 'add', '--detach',
-        $forgeWorktree, $expectedForgeCommit
+        'clone', '--shared', '--no-checkout', $ForgeRepository, $forgeWorktree
     )
-    $forgeWorktreeCreated = $true
+    Invoke-Checked -Command git -Arguments @(
+        '-C', $forgeWorktree, 'checkout', '--detach', '--quiet', $expectedForgeCommit
+    )
 
     $forgeHead = Get-GitScalar -Repository $forgeWorktree -Arguments @('rev-parse', 'HEAD')
     $forgeStatus = Get-GitScalar -Repository $forgeWorktree -Arguments @('status', '--short')
@@ -424,19 +424,6 @@ finally {
         }
     }
 
-    if ($forgeWorktreeCreated) {
-        try {
-            Invoke-Checked -Command git -Arguments @(
-                '-C', $ForgeRepository, 'worktree', 'remove', $forgeWorktree
-            )
-            Invoke-Checked -Command git -Arguments @(
-                '-C', $ForgeRepository, 'worktree', 'prune'
-            )
-        }
-        catch {
-            $cleanupErrors.Add($_.Exception.Message)
-        }
-    }
     if (Test-Path -LiteralPath $proofRoot) {
         $removed = $false
         for ($attempt = 1; $attempt -le 5 -and -not $removed; $attempt++) {
