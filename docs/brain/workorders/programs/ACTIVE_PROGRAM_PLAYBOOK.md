@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; Forge local runtime-selection and rollback rehearsal complete |
-| Current | Portfolio reconciliation |
-| Next | Highest-value dependency-cleared bounded node, if any |
+| Status | Active; bounded Forge-only canonical runtime ownership cutover authorized |
+| Current | `WO-SR-006` Phase 0 authority activation |
+| Next | Forge documentation-only readiness acceptance |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -188,8 +188,13 @@ change.
 `WO-SR-006C` then proved that a disposable external `ForgeRehearsal` override selected Forge across
 two isolated host starts and rolled back to the unchanged sovereign binary in a third. PR #1383
 merged exact reviewed head `eaa9890cc` as `bbacef062`; the bounded authority is completed and
-consumed. Canonical appsettings, production, deployment, source retirement, ownership transfer, and
-cutover remain denied.
+consumed. That envelope did not authorize canonical cutover. The separate
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` decision now activates the Forge-only R4 transfer:
+Forge readiness documentation must merge first; sovereign implementation must use a local
+manifest-bound artifact, fail closed, retire only the duplicate valuation source, and pass a
+disposable repository rollback rehearsal; Forge and sovereign finalization then consume the
+authority. Production, protected resources, workflows, deployment, publication, cost-kernel
+transfer, shared-contract transfer, public API changes, and every other suite cutover remain denied.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
@@ -642,8 +647,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed WO | `WO-SR-006C`; authority consumed |
-| Current WO | Portfolio reconciliation |
-| Next WO | No successor automatically admitted; no cutover authority follows |
+| Current WO | `WO-SR-006` Forge Canonical Runtime Ownership Cutover |
+| Next WO | Forge readiness acceptance after Phase 0 merges |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

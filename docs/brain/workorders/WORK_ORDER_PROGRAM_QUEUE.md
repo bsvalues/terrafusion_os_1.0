@@ -65,7 +65,13 @@ authority is completed and consumed. Source retirement remains a later gate.
 followed by sovereign rollback in a third host start. PR #1383 merged exact reviewed head
 `eaa9890cc` as `bbacef062`; the bounded authority is completed and consumed. Canonical
 configuration, production, deployment, source retirement, ownership transfer, and `WO-SR-006`
-cutover remain denied.
+cutover remained denied by that consumed envelope.
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` now separately authorizes the Forge-only R4
+canonical valuation-kernel ownership transfer. `WO-SR-006` is active. Execution is sequential:
+governance activation, Forge documentation-only readiness acceptance, sovereign cutover plus
+repository rollback proof, Forge finalization, and sovereign closeout. Production, county/PACS/SQL,
+credentials, secrets, workflows, deployment, publication, cost-kernel transfer, shared-contract
+transfer, public API changes, and every other suite cutover remain denied.
 `WO-SR-006A-P` registered the clean read-only `D:\terrafusion-forge` checkout at exact private
 `origin/main` `2430b483`. The path-canon prerequisite is complete; it grants no artifact, workflow,
 runtime, publication, deployment, or cutover authority.
@@ -136,6 +142,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
 | WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 | WO-SR-006C Forge Non-Production Persistent Runtime Adoption and Rollback Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1383 proved disposable Forge selection across two host starts and sovereign rollback in a third; no canonical configuration or cutover |
+| WO-SR-006 Forge Canonical Runtime Ownership Cutover | ACTIVE / R4 / FORGE ONLY | Sequential Mode B cutover authorized at sovereign base `af0e21ee`; Forge readiness must merge before sovereign implementation; rollback proof and cross-repository finalization are mandatory |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -276,7 +283,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | Portfolio reconciliation after completed WO-SR-006C | SW-01 / SW-05 / sovereign integration boundary | Persistent-selection proof is complete; canonical configuration, production, source retirement, and cutover remain protected | `active/WO-SR-006C-forge-nonproduction-persistent-runtime-adoption-rollback.md` |
+| five-suite-federated-repository-buildout | WO-SR-006 Forge Canonical Runtime Ownership Cutover | SW-01 / SW-05 / sovereign integration boundary | Forge-only R4 cutover is active; production, protected resources, workflows, publication, cost-kernel transfer, and other-suite cutover remain protected | `active/WO-SR-006-forge-canonical-runtime-ownership-cutover.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -304,7 +311,13 @@ non-production persistent-selection rehearsal.
 **Current reconciliation result (WO-SR-006C, 2026-07-28):**
 `FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN`. PR #1383 completed the
 disposable persistent-selection rehearsal and this closeout consumes its authority on merge.
-Portfolio reconciliation is current; no `WO-SR-006` cutover is automatically admitted.
+Portfolio reconciliation subsequently admitted only the separately owner-authorized `WO-SR-006`
+Forge canonical ownership cutover. The consumed SR-006C authority did not imply that cutover.
+
+**Current execution state (WO-SR-006, 2026-07-28):**
+`FORGE_CANONICAL_CUTOVER_AUTHORIZED_PENDING_PHASED_EXECUTION`. Phase 0 changes governance only.
+Forge readiness acceptance must merge before sovereign source, configuration, Cargo, test, or
+validation-script changes begin.
 
 ---
 

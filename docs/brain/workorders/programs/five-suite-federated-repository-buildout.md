@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; Forge process-local runtime selection and rollback proven; portfolio reconciliation current
+**Status:** Active; Forge canonical runtime ownership cutover authorized and Phase 0 current
 
 ## Ratified topology
 
@@ -74,7 +74,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006B | Rehearse process-local Forge runtime selection and sovereign rollback | Complete R3; authority consumed; real client/host boundary, typed fail-closed proof, no persistent switch or cutover |
 | WO-SR-006C | Prove disposable non-production persistent Forge selection across restart and sovereign rollback | Complete R3; PR #1383 merged; authority consumed; no canonical configuration, deployment, source retirement, or cutover |
 | WO-SR-005B-E | Execute bounded extraction for the remaining suites | Superseded; all suite E3 audits and pure-unwired F1 foundations are complete, and adoption/cutover proof is now the live boundary |
-| WO-SR-006 | Cut over source ownership and retire duplicate mutable implementation | Depends on all suite-specific gates |
+| WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Active R4; exact sequential Forge-only authority recorded; no cost-kernel or other-suite cutover |
 
 ## Extraction and provenance policy
 
@@ -186,3 +186,10 @@ third start. PR #1383 merged exact reviewed head `eaa9890cc` as `bbacef062`; the
 completed and consumed. The proof changed no canonical appsettings and provides no production,
 deployment, source-retirement,
 ownership-transfer, or cutover authority.
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` now separately authorizes `WO-SR-006` as a
+Forge-only R4 sequential cutover. Phase 0 records governance only. Forge must next accept canonical
+ownership in a documentation-only PR before sovereign implementation begins. The sovereign phase
+must locally build and verify the exact Forge source, use an ignored manifest-bound artifact slot,
+fail closed on missing or mismatched provenance, retire only the duplicate valuation source, preserve
+the cost kernel and shared contracts, and pass repository rollback proof. Cross-repository
+finalization and sovereign closeout consume the authority.

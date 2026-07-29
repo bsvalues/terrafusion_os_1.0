@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006C terminal closeout",
+  "generatedBy": "WO-SR-006 authority activation",
   "generatedAt": "2026-07-28T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-006C proved disposable non-production persistent Forge selection across restart and sovereign rollback. The exact R3 authority is consumed; portfolio reconciliation is current, and canonical configuration, production, deployment, source retirement, ownership transfer, cutover, and protected access remain denied.",
+  "description": "Five-suite registry with WO-SR-006 active under a bounded Forge-only R4 canonical ownership-transfer decision. Execution is sequential and fail-closed; production, protected resources, other-suite cutover, workflows, deployment, publication, credentials, and secrets remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -2209,6 +2209,10 @@
         }
       ],
       "allowedFiles": [
+        "bsvalues/terrafusion-forge:canon/SUITE_DOMAIN_PACK.md",
+        "bsvalues/terrafusion-forge:EXTRACTED_FROM.md",
+        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006-forge-canonical-ownership-cutover.md",
+        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006-FORGE-CANONICAL-OWNERSHIP-CUTOVER.md",
         ".governance/owner-decisions.json",
         "packages/gis-pro/README.md",
         "packages/gis-pro/terrafusion-config.json",
@@ -8482,6 +8486,145 @@
       "provenance": {
         "createdAt": "2026-07-28T00:00:00Z",
         "source": "Owner decision OWNER-SR-006C-R3-FORGE-NONPROD-PERSISTENT-ADOPTION-ROLLBACK-20260728 at sovereign base 6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6; implementation PR #1383 merged exact reviewed head eaa9890cc09c8ee32026b91aa6bcd53f96032cbd as bbacef062445ffdf30b9e5ce8c4f8b3664a765bd.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-006",
+      "title": "Forge Canonical Runtime Ownership Cutover",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Transfer canonical valuation-kernel ownership to Forge, consume a locally built manifest-bound Forge artifact, and retire only the duplicate mutable sovereign valuation source.",
+      "riskClass": "R4",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-006C",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1383 merged exact reviewed head eaa9890cc09c8ee32026b91aa6bcd53f96032cbd as bbacef062445ffdf30b9e5ce8c4f8b3664a765bd; PR #1384 completed and consumed the bounded authority at af0e21eea55c3421ac55aad6c87605a57d6f85de."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Forge documentation-only readiness and finalization",
+          "paths": [
+            "bsvalues/terrafusion-forge:canon/SUITE_DOMAIN_PACK.md",
+            "bsvalues/terrafusion-forge:EXTRACTED_FROM.md",
+            "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006-forge-canonical-ownership-cutover.md",
+            "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006-FORGE-CANONICAL-OWNERSHIP-CUTOVER.md"
+          ]
+        },
+        {
+          "name": "Sovereign Forge valuation-kernel cutover and rollback proof",
+          "paths": [
+            "backend/src/TerraFusion.API/appsettings.json",
+            "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+            "backend/src/TerraFusion.API/Services/Valuation/ValuationKernelClient.cs",
+            "backend/src/TerraFusion.API/Services/Valuation/RustKernelProcessHost.cs",
+            "backend/TerraFusion.API.Tests/Services/Valuation/**",
+            "scripts/bootstrap/Stage-ForgeValuationKernel.ps1",
+            "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
+            "packages/terrabuild/kernels/Cargo.toml",
+            "packages/terrabuild/kernels/Cargo.lock",
+            "packages/terrabuild/kernels/terraforge.kernel.valuation/**",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Production, county/PACS/SQL, credentials, secrets, GitHub artifact transfer, workflows, deployment, publication, cost-kernel transfer, public API change, shared-contract transfer, other-suite cutover, and broad five-suite cutover"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        ".gitignore",
+        "backend/src/TerraFusion.API/appsettings.json",
+        "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/RustKernelProcessHost.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/**",
+        "scripts/bootstrap/Stage-ForgeValuationKernel.ps1",
+        "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
+        "packages/terrabuild/kernels/Cargo.toml",
+        "packages/terrabuild/kernels/Cargo.lock",
+        "packages/terrabuild/kernels/terraforge.kernel.valuation/**",
+        "docs/brain/workorders/active/WO-SR-006-*",
+        "docs/brain/workorders/evidence/WO-SR-006-*",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".github/workflows/**",
+        "backend/src/**/Controllers/**",
+        "packages/terrabuild/kernels/terrabuild.costforge/**",
+        "packages/contracts/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact source and build-input hashes, Forge readiness, local manifest-bound staging, fresh-worktree bootstrap, accepted and typed fail-closed runtime proof, missing/mismatched artifact rejection, exact executable provenance, valuation-source retirement, unchanged cost kernel and shared contracts, repository rollback rehearsal, cross-repository finalization, and post-merge verification."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Forge tests and pre-cutover parity",
+          "command": "cargo test --locked",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Forge canonical cutover and rollback proof",
+          "command": "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order query and planner tests",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on scope expansion, source/build-input/manifest mismatch, cost-kernel or shared-contract drift, rollback failure, required-check failure or bypass, unresolved substantive review, production/deployment/protected-resource access, credentials, secrets, workflow changes, publication, public API change, or other-suite cutover."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 authorizes sequential Mode B delivery across Forge readiness, sovereign implementation and rollback proof, Forge finalization, and sovereign closeout. No per-PR owner relay is required inside the exact envelope."
+      },
+      "provenance": {
+        "createdAt": "2026-07-28T00:00:00Z",
+        "source": "Owner decision OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728 at sovereign base af0e21eea55c3421ac55aad6c87605a57d6f85de and exact Forge base 24059c3642339f36877cb454ca63683180915b71.",
         "schemaVersion": "0.1.0"
       }
     }

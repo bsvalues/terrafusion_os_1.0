@@ -1346,6 +1346,75 @@
         "authority_consumed_on_closeout_merge": true,
         "terminal_condition_satisfied": "FORGE_NONPRODUCTION_PERSISTENT_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN"
       }
+    },
+    {
+      "id": "OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-006",
+      "status": "active",
+      "authority_class": "R4-bounded-forge-only-canonical-ownership-transfer",
+      "effective_base_sha": "af0e21eea55c3421ac55aad6c87605a57d6f85de",
+      "forge_base_sha": "24059c3642339f36877cb454ca63683180915b71",
+      "scope_source": "Owner authorization recorded on 2026-07-28 after WO-SR-006C proved persistent non-production Forge selection across restart and sovereign rollback. The decision authorizes one sequential Forge-only canonical runtime ownership cutover and duplicate sovereign valuation-source retirement.",
+      "terminal_condition": "FORGE_CANONICAL_RUNTIME_OWNERSHIP_CUTOVER_AND_SOVEREIGN_DUPLICATE_RETIREMENT_PROVEN and the Forge readiness, sovereign implementation, rollback proof, Forge finalization, and sovereign closeout PRs are merged and verified.",
+      "authorized_actions": [
+        "merge one governance-only sovereign authority activation and one Forge documentation-only readiness acceptance",
+        "build exact Forge commit 24059c3642339f36877cb454ca63683180915b71 locally, verify source and build-input hashes, stage a manifest-bound executable in an ignored OS-managed local runtime artifact slot, and make canonical sovereign valuation runtime selection fail closed on missing or mismatched provenance",
+        "remove only packages/terrabuild/kernels/terraforge.kernel.valuation/** from the sovereign repository, remove that crate from the sovereign Cargo workspace and lockfile, and preserve the sovereign cost kernel and all shared contracts",
+        "prove accepted, typed fail-closed, missing-artifact, mismatched-artifact, exact-binary provenance, fresh-worktree bootstrap, and repository-level rollback in disposable isolated worktrees",
+        "commit, validate, remediate, obtain exact-head assurance, merge each phase under Mode B, merge Forge and sovereign finalization, consume this authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        "bsvalues/terrafusion-forge:canon/SUITE_DOMAIN_PACK.md",
+        "bsvalues/terrafusion-forge:EXTRACTED_FROM.md",
+        "bsvalues/terrafusion-forge:operations/work-orders/WO-SR-006-forge-canonical-ownership-cutover.md",
+        "bsvalues/terrafusion-forge:operations/evidence/WO-SR-006-FORGE-CANONICAL-OWNERSHIP-CUTOVER.md",
+        ".governance/owner-decisions.json",
+        "PATH_CANON_REGISTER.md",
+        ".gitignore",
+        "backend/src/TerraFusion.API/appsettings.json",
+        "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/RustKernelProcessHost.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/**",
+        "scripts/bootstrap/Stage-ForgeValuationKernel.ps1",
+        "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
+        "packages/terrabuild/kernels/Cargo.toml",
+        "packages/terrabuild/kernels/Cargo.lock",
+        "packages/terrabuild/kernels/terraforge.kernel.valuation/**",
+        "docs/brain/workorders/active/WO-SR-006-*",
+        "docs/brain/workorders/evidence/WO-SR-006-*",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "production deployment or activation, county runtime, PACS, SQL, protected county data, credentials, secrets, GitHub artifact transfer, workflows, deployment pipelines, package publication, or releases",
+        "cost-kernel ownership transfer, controller or public API behavior changes, shared-contract ownership transfer, Atlas, Dais, Dossier, or GPT cutover, broad five-suite cutover, deletion of rollback history, or files outside the exact allowlist",
+        "required-check bypass, unresolved substantive review, exact-head assurance failure, mutable or latest artifact selection, network artifact transfer, committed binaries or manifests, or machine-specific absolute paths"
+      ],
+      "merge_mode": "B-sequential-staged-exact-scope",
+      "revocation_triggers": [
+        "source, build-input, manifest, or executable integrity mismatch",
+        "scope expansion, cost-kernel or shared-contract drift, required-check failure or bypass, unresolved substantive review, exact-head assurance failure, or rollback-proof failure",
+        "production, deployment, protected-resource, credential, secret, other-suite, workflow, publication, or conflicting-authority access"
+      ],
+      "decision_basis": "WO-SR-006A, WO-SR-006B, and WO-SR-006C proved exact local Forge build and parity, real client/host selection, persistence across isolated restarts, and sovereign rollback. The remaining protected action is the Forge-only canonical ownership transfer and duplicate valuation-source retirement.",
+      "completion": {
+        "authority_activation": "pending",
+        "forge_readiness_pr": "pending",
+        "sovereign_implementation_pr": "pending",
+        "repository_rollback_proof": "pending",
+        "forge_finalization_pr": "pending",
+        "sovereign_closeout_pr": "pending",
+        "authority_consumed": false
+      }
     }
   ]
 }

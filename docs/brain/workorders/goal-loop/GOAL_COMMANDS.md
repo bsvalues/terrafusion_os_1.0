@@ -79,17 +79,23 @@ pure E1 adapter followed by hash-pinned standalone E2 parity. `WO-SR-005E-A4` re
   but is not the execution or trust plane. The bounded authority is consumed; return to portfolio
   reconciliation. `WO-SR-006B` then proves process-local selection through the real client/host
   boundary, typed fail-closed behavior, and rollback to the unchanged sovereign binary. Persistent
-runtime adoption, source retirement, and cutover remain unauthorized. `WO-SR-006C` proved a
+runtime adoption, source retirement, and cutover remained unauthorized. `WO-SR-006C` proved a
 disposable external `ForgeRehearsal` override across two isolated host starts followed by sovereign
-rollback in a third. Its bounded authority is consumed; portfolio reconciliation is current, and
-canonical configuration and cutover remain denied.
-Runtime/provider adoption, extraction, custody or persistence mutation, protected data,
-publication, deployment, source retirement, and cutover remain gated.
+rollback in a third. Its bounded authority is consumed. The separate
+`OWNER-SR-006-FORGE-CANONICAL-CUTOVER-20260728` decision now activates `WO-SR-006` for the Forge
+valuation kernel only. Execute governance activation, Forge readiness, sovereign cutover and
+rollback proof, Forge finalization, and sovereign closeout sequentially. Production, protected
+resources, workflows, deployment, publication, cost-kernel transfer, public API change, and
+other-suite cutover remain denied.
+Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody
+or persistence mutation, protected data, publication, production deployment, blind or out-of-scope
+source retirement, and other-suite cutover remain gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
-**Blocked:** package publication, blind extraction, duplicate mutable ownership, source deletion or
-cutover, secrets, county/PACS data, and production deployment.
+**Blocked:** package publication, blind extraction, duplicate mutable ownership outside the
+authorized Forge valuation-kernel transition, out-of-scope source deletion or cutover, secrets,
+county/PACS data, and production deployment.
 
 ### /goal codex-operator-autonomy
 
