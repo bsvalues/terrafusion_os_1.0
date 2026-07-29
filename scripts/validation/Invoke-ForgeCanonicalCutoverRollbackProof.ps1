@@ -97,12 +97,17 @@ try {
         $nugetHttp,
         $temp
     ) | Out-Null
-    Invoke-Checked git -C $repository worktree add --detach $rollbackWorktree $CutoverCommit
+    Invoke-Checked -Command git -Arguments @(
+        '-C', $repository, 'worktree', 'add', '--detach',
+        $rollbackWorktree, $CutoverCommit
+    )
     $worktreeCreated = $true
 
     [Array]::Reverse($cutoverCommits)
     foreach ($commit in $cutoverCommits) {
-        Invoke-Checked git -C $rollbackWorktree revert --no-commit $commit
+        Invoke-Checked -Command git -Arguments @(
+            '-C', $rollbackWorktree, 'revert', '--no-commit', $commit
+        )
     }
 
     foreach ($relativePath in $expectedSourceBlobIds.Keys) {
@@ -202,8 +207,12 @@ finally {
 
     if ($worktreeCreated) {
         try {
-            Invoke-Checked git -C $repository worktree remove --force $rollbackWorktree
-            Invoke-Checked git -C $repository worktree prune
+            Invoke-Checked -Command git -Arguments @(
+                '-C', $repository, 'worktree', 'remove', '--force', $rollbackWorktree
+            )
+            Invoke-Checked -Command git -Arguments @(
+                '-C', $repository, 'worktree', 'prune'
+            )
         }
         catch {
             $cleanupErrors.Add($_.Exception.Message)
