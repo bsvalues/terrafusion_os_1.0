@@ -59,6 +59,7 @@ $backupSlot = Join-Path $proofRoot 'previous-artifact'
 $artifactBackedUp = $false
 $artifactPublished = $false
 $cleanupErrors = [Collections.Generic.List[string]]::new()
+$stagingError = $null
 $result = $null
 
 $preservedEnvironment = @{}
@@ -377,6 +378,7 @@ try {
         '--filter',
         (
             'FullyQualifiedName~RealKernels_ComputeExpectedValue|' +
+            'FullyQualifiedName~RealKernels_SameInputProducesSameOutput|' +
             'FullyQualifiedName~ValuationKernel_'
         ),
         '-p:CopyLocalLockFileAssemblies=false',
@@ -440,6 +442,9 @@ try {
         networkArtifactTransferUsed = $false
     }
 }
+catch {
+    $stagingError = $_
+}
 finally {
     if ($artifactBackedUp -and -not (Test-Path -LiteralPath $ArtifactSlot)) {
         try {
@@ -489,6 +494,17 @@ finally {
     }
 }
 
+if ($null -ne $stagingError) {
+    if ($cleanupErrors.Count -gt 0) {
+        throw [InvalidOperationException]::new(
+            (
+                "Staging failed: $($stagingError.Exception.Message) " +
+                "Cleanup also failed: $($cleanupErrors -join '; ')"
+            ),
+            $stagingError.Exception)
+    }
+    throw $stagingError
+}
 if ($cleanupErrors.Count -gt 0) {
     throw "Staging cleanup failed: $($cleanupErrors -join '; ')"
 }
