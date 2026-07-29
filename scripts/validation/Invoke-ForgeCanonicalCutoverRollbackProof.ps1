@@ -90,7 +90,6 @@ try {
 
     New-Item -ItemType Directory -Force -Path @(
         $proofRoot,
-        $cargoTarget,
         $dotnetArtifacts,
         $dotnetHome,
         $nugetPackages,
