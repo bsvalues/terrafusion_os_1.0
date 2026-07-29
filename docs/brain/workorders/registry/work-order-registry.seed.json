@@ -8637,7 +8637,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove the exact standalone Atlas spatial projection module through a local, disposable, hash-pinned sovereign test path without runtime adoption or Atlas repository mutation.",
       "riskClass": "R3",
-      "status": "completed",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-006",
@@ -8737,13 +8737,13 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
-        "mayCleanup": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
         "notes": "OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 completed the exact sequential activation and proof under Mode B and is consumed by terminal closeout. It granted no runtime adoption, Atlas mutation, extraction, deployment, protected-resource access, ownership transfer, or cutover."
       },
       "provenance": {
