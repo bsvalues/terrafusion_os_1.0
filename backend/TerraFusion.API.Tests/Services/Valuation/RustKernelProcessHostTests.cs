@@ -11,10 +11,18 @@ namespace TerraFusion.API.Tests.Services.Valuation;
 
 public class RustKernelProcessHostTests
 {
-    private static RustKernelProcessHost CreateSut(int timeoutMs = 5000) =>
-        new(
-            Options.Create(new RustKernelsOptions { TimeoutMs = timeoutMs }),
+    private const string ForgeCommit = "24059c3642339f36877cb454ca63683180915b71";
+
+    private static RustKernelProcessHost CreateSut(
+        int timeoutMs = 5000,
+        Action<RustKernelsOptions>? configure = null)
+    {
+        var options = new RustKernelsOptions { TimeoutMs = timeoutMs };
+        configure?.Invoke(options);
+        return new(
+            Options.Create(options),
             NullLogger<RustKernelProcessHost>.Instance);
+    }
 
     private static KernelInvocation<CostKernelPayload> SampleCostInvocation() =>
         new(
@@ -91,6 +99,47 @@ public class RustKernelProcessHostTests
     }
 
     [Fact]
+    public async Task ValuationKernel_MissingManifest_FailsClosedBeforeExecution()
+    {
+        using var fixture = ProvenanceFixture.Create();
+        var host = CreateSut(configure: options =>
+        {
+            options.ValuationKernelManifestPath = fixture.MissingManifestPath;
+            options.ValuationKernelSourceCommit = ForgeCommit;
+        });
+
+        var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            fixture.ExecutablePath,
+            "terraforge.kernel.valuation",
+            SampleValuationInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.ExecutableNotFound, result.FailureMode);
+        Assert.Contains("manifest not found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ValuationKernel_MismatchedExecutableHash_FailsClosedBeforeExecution()
+    {
+        using var fixture = ProvenanceFixture.Create(writeManifest: true, executableSha256: new string('0', 64));
+        var host = CreateSut(configure: options =>
+        {
+            options.ValuationKernelManifestPath = fixture.ManifestPath;
+            options.ValuationKernelSourceCommit = ForgeCommit;
+        });
+
+        var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            fixture.ExecutablePath,
+            "terraforge.kernel.valuation",
+            SampleValuationInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.NonZeroExit, result.FailureMode);
+        Assert.Contains("does not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.Matches("^[a-f0-9]{64}$", result.KernelBinarySha256 ?? string.Empty);
+    }
+
+    [Fact]
     public async Task RealKernel_ReturnsSuccessForValidCostInput()
     {
         // Locate kernel binary: try release first, then debug.
@@ -158,6 +207,67 @@ public class RustKernelProcessHostTests
             if (File.Exists(c)) return c;
         }
         return null;
+    }
+
+    private static KernelInvocation<ValuationKernelPayload> SampleValuationInvocation() =>
+        new(
+            ContractPackVersion: "1.0.0",
+            ModuleApiVersion: "1.0.0",
+            RequestId: "valuation-provenance-test",
+            Action: "valuate",
+            Payload: new ValuationKernelPayload(
+                new ValuationSubject("SYNTHETIC-001", JsonDocument.Parse("{}").RootElement.Clone()),
+                new ValuationCostBreakdown(100, 10, 90),
+                new ValuationModel(30, null)));
+
+    private sealed class ProvenanceFixture : IDisposable
+    {
+        private ProvenanceFixture(string root)
+        {
+            Root = root;
+            ExecutablePath = Path.Combine(root, "terraforge-kernel-valuation.exe");
+            ManifestPath = Path.Combine(root, "manifest.json");
+            MissingManifestPath = Path.Combine(root, "missing-manifest.json");
+        }
+
+        public string Root { get; }
+        public string ExecutablePath { get; }
+        public string ManifestPath { get; }
+        public string MissingManifestPath { get; }
+
+        public static ProvenanceFixture Create(
+            bool writeManifest = false,
+            string? executableSha256 = null)
+        {
+            var fixture = new ProvenanceFixture(
+                Path.Combine(Path.GetTempPath(), $"tf-forge-provenance-{Guid.NewGuid():N}"));
+            Directory.CreateDirectory(fixture.Root);
+            File.WriteAllText(fixture.ExecutablePath, "not-an-executable");
+
+            if (writeManifest)
+            {
+                var manifest = new
+                {
+                    schemaVersion = 1,
+                    repository = "bsvalues/terrafusion-forge",
+                    commit = ForgeCommit,
+                    transport = "local-os-managed-artifact-slot",
+                    executableFilename = Path.GetFileName(fixture.ExecutablePath),
+                    executableSha256,
+                };
+                File.WriteAllText(fixture.ManifestPath, JsonSerializer.Serialize(manifest));
+            }
+
+            return fixture;
+        }
+
+        public void Dispose()
+        {
+            if (Directory.Exists(Root))
+            {
+                Directory.Delete(Root, recursive: true);
+            }
+        }
     }
 
     private static string? FindRepoRoot()

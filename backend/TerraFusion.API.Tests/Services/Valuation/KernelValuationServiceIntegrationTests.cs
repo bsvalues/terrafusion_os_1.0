@@ -61,10 +61,34 @@ public sealed class LocalForgePersistentRuntimeRollbackFactAttribute : FactAttri
     }
 }
 
+public sealed class CanonicalForgeKernelFactAttribute : FactAttribute
+{
+    public CanonicalForgeKernelFactAttribute()
+    {
+        if (string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_CANONICAL_KERNEL_PATH")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_CANONICAL_MANIFEST_PATH")) ||
+            string.IsNullOrWhiteSpace(
+                Environment.GetEnvironmentVariable("TERRAFUSION_SOVEREIGN_COST_KERNEL_PATH")))
+        {
+            Skip = "Canonical Forge artifact and sovereign cost kernel were not staged.";
+        }
+    }
+}
+
 public class KernelValuationServiceIntegrationTests
 {
-    private static readonly string? CostKernelPath = TryFindKernel("terraforge-kernel-cost");
-    private static readonly string? ValuationKernelPath = TryFindKernel("terraforge-kernel-valuation");
+    private const string ForgeCommit = "24059c3642339f36877cb454ca63683180915b71";
+
+    private static readonly string? CostKernelPath =
+        Environment.GetEnvironmentVariable("TERRAFUSION_SOVEREIGN_COST_KERNEL_PATH") ??
+        TryFindKernel("terraforge-kernel-cost");
+    private static readonly string? ValuationKernelPath =
+        Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_CANONICAL_KERNEL_PATH") ??
+        TryFindKernel("terraforge-kernel-valuation");
+    private static readonly string? ValuationKernelManifestPath =
+        Environment.GetEnvironmentVariable("TERRAFUSION_FORGE_CANONICAL_MANIFEST_PATH");
 
     private static bool KernelsAvailable =>
         CostKernelPath != null && ValuationKernelPath != null;
@@ -75,6 +99,8 @@ public class KernelValuationServiceIntegrationTests
         {
             CostKernelPath = CostKernelPath!,
             ValuationKernelPath = ValuationKernelPath!,
+            ValuationKernelManifestPath = ValuationKernelManifestPath ?? string.Empty,
+            ValuationKernelSourceCommit = ForgeCommit,
             TimeoutMs = 10000,
             ContractPackVersion = "1.0.0",
             ModuleApiVersion = "1.0.0",
@@ -85,7 +111,7 @@ public class KernelValuationServiceIntegrationTests
         return new KernelValuationService(cost, valn, NullLogger<KernelValuationService>.Instance);
     }
 
-    [Fact]
+    [CanonicalForgeKernelFact]
     public async Task RealKernels_ComputeExpectedValue()
     {
         // Hard-fail if kernels not found — silent early-return would be a false pass.

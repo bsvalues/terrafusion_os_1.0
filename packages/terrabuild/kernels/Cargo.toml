@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "terraforge.kernel.cost",
-    "terraforge.kernel.valuation",
 ]
 resolver = "2"
 

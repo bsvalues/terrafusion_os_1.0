@@ -40,6 +40,30 @@ public class ValuationKernelClient : IValuationKernelClient
             KernelName, payload.Subject.ParcelId);
 
         return await _host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
-            opts.ValuationKernelPath, KernelName, invocation, ct);
+            ResolveRepositoryRelativePath(opts.ValuationKernelPath), KernelName, invocation, ct);
+    }
+
+    private static string ResolveRepositoryRelativePath(string path)
+    {
+        if (Path.IsPathFullyQualified(path))
+        {
+            return Path.GetFullPath(path);
+        }
+
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null)
+        {
+            var gitPath = Path.Combine(directory.FullName, ".git");
+            if (Directory.Exists(gitPath) ||
+                File.Exists(gitPath) ||
+                File.Exists(Path.Combine(directory.FullName, "terrafusion.app.json")))
+            {
+                return Path.GetFullPath(Path.Combine(directory.FullName, path));
+            }
+
+            directory = directory.Parent;
+        }
+
+        return Path.GetFullPath(path);
     }
 }

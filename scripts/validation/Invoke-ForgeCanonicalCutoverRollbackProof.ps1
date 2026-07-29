@@ -1,0 +1,203 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)]
+    [string]$CutoverCommit,
+    [string]$ProofRootBase = 'D:\tf-build\sr-006-forge-cutover-rollback'
+)
+
+$ErrorActionPreference = 'Stop'
+$repository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
+$rollbackWorktree = Join-Path $proofRoot 'sovereign-rollback'
+$cargoTarget = Join-Path $proofRoot 'cargo-target'
+$dotnetArtifacts = Join-Path $proofRoot 'dotnet-artifacts'
+$dotnetHome = Join-Path $proofRoot 'dotnet-home'
+$nugetPackages = Join-Path $proofRoot 'nuget'
+$nugetHttp = Join-Path $proofRoot 'nuget-http'
+$temp = Join-Path $proofRoot 'tmp'
+$worktreeCreated = $false
+$cleanupErrors = [Collections.Generic.List[string]]::new()
+$result = $null
+$expectedSourceBlobIds = [ordered]@{
+    'packages/terrabuild/kernels/terraforge.kernel.valuation/Cargo.toml' =
+        '8a0d20eca94a182e8578e97aee3cc9674adaf523'
+    'packages/terrabuild/kernels/terraforge.kernel.valuation/build.rs' =
+        'b61e54c728d8aa3d020c232b17921ee06fc80fd7'
+    'packages/terrabuild/kernels/terraforge.kernel.valuation/src/main.rs' =
+        'f108a3daab0ace2b67f4dadb766e9634947f625c'
+}
+
+$preservedEnvironment = @{}
+foreach ($name in @(
+        'CARGO_TARGET_DIR',
+        'DOTNET_CLI_HOME',
+        'NUGET_PACKAGES',
+        'NUGET_HTTP_CACHE_PATH',
+        'TEMP',
+        'TMP'
+    )) {
+    $preservedEnvironment[$name] = @{
+        Exists = Test-Path "Env:$name"
+        Value = [Environment]::GetEnvironmentVariable($name, 'Process')
+    }
+}
+
+function Invoke-Checked {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Command,
+        [Parameter(ValueFromRemainingArguments)]
+        [string[]]$Arguments
+    )
+
+    & $Command @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Command failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Get-GitScalar {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Repository,
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    $value = (& git -C $Repository @Arguments)
+    if ($LASTEXITCODE -ne 0) {
+        throw "git -C $Repository $($Arguments -join ' ') failed."
+    }
+    return ($value -join "`n").Trim()
+}
+
+try {
+    & git -C $repository cat-file -e "$CutoverCommit`^{commit}"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Cutover commit does not exist: $CutoverCommit"
+    }
+    $parentCommit = Get-GitScalar -Repository $repository -Arguments @(
+        'rev-parse', "$CutoverCommit^"
+    )
+
+    New-Item -ItemType Directory -Force -Path @(
+        $proofRoot,
+        $cargoTarget,
+        $dotnetArtifacts,
+        $dotnetHome,
+        $nugetPackages,
+        $nugetHttp,
+        $temp
+    ) | Out-Null
+    Invoke-Checked git -C $repository worktree add --detach $rollbackWorktree $CutoverCommit
+    $worktreeCreated = $true
+
+    Invoke-Checked git -C $rollbackWorktree revert --no-commit $CutoverCommit
+
+    foreach ($relativePath in $expectedSourceBlobIds.Keys) {
+        if (-not (Test-Path -LiteralPath (Join-Path $rollbackWorktree $relativePath))) {
+            throw "Rollback did not restore $relativePath."
+        }
+        $blobId = Get-GitScalar -Repository $rollbackWorktree -Arguments @(
+            'hash-object', $relativePath
+        )
+        if ($blobId -ne $expectedSourceBlobIds[$relativePath]) {
+            throw "Rollback restored an unexpected source blob for $relativePath."
+        }
+    }
+
+    $workspaceManifest = Join-Path $rollbackWorktree 'packages\terrabuild\kernels\Cargo.toml'
+    $workspaceText = Get-Content -Raw -LiteralPath $workspaceManifest
+    if ($workspaceText -notmatch '"terraforge\.kernel\.valuation"') {
+        throw 'Rollback did not restore the sovereign valuation workspace member.'
+    }
+    $appSettings = Get-Content -Raw -LiteralPath (
+        Join-Path $rollbackWorktree 'backend\src\TerraFusion.API\appsettings.json'
+    ) | ConvertFrom-Json
+    if ($appSettings.RustKernels.ValuationKernelPath -ne
+        '../../packages/terrabuild/kernels/target/release/terraforge-kernel-valuation.exe') {
+        throw 'Rollback did not restore the sovereign valuation runtime path.'
+    }
+
+    $env:CARGO_TARGET_DIR = $cargoTarget
+    Invoke-Checked cargo test --offline --manifest-path $workspaceManifest
+    Invoke-Checked cargo build --release --offline --manifest-path $workspaceManifest
+
+    $nugetOutput = (& dotnet nuget locals global-packages --list) -join "`n"
+    if ($LASTEXITCODE -ne 0 -or $nugetOutput -notmatch '^global-packages:\s*(?<path>.+)$') {
+        throw 'Unable to resolve the local NuGet global-packages source.'
+    }
+    $nugetOfflineSource = $Matches.path.Trim()
+    $env:DOTNET_CLI_HOME = $dotnetHome
+    $env:NUGET_PACKAGES = $nugetPackages
+    $env:NUGET_HTTP_CACHE_PATH = $nugetHttp
+    $env:TEMP = $temp
+    $env:TMP = $temp
+    $testProject = Join-Path `
+        $rollbackWorktree `
+        'backend\TerraFusion.API.Tests\TerraFusion.API.Tests.csproj'
+    Invoke-Checked dotnet restore $testProject `
+        --source $nugetOfflineSource `
+        --packages $nugetPackages `
+        --artifacts-path $dotnetArtifacts `
+        --no-cache
+    Invoke-Checked dotnet test $testProject `
+        -c Release `
+        --no-restore `
+        --artifacts-path $dotnetArtifacts `
+        --filter (
+            'FullyQualifiedName~RustKernelProcessHostTests|' +
+            'FullyQualifiedName~RealKernels_ComputeExpectedValue'
+        )
+
+    $result = [ordered]@{
+        result = 'PASS'
+        terminalCondition = 'FORGE_CUTOVER_REPOSITORY_ROLLBACK_PROVEN'
+        cutoverCommit = $CutoverCommit
+        restoredCommit = $parentCommit
+        sovereignValuationSourceRestored = $true
+        sovereignRuntimePathRestored = $true
+        cargoWorkspaceRestored = $true
+        cargoTests = 'PASS'
+        backendFocusedTests = 'PASS'
+        productionOrProtectedResourcesUsed = $false
+    }
+}
+finally {
+    foreach ($name in $preservedEnvironment.Keys) {
+        if ($preservedEnvironment[$name].Exists) {
+            [Environment]::SetEnvironmentVariable(
+                $name,
+                $preservedEnvironment[$name].Value,
+                'Process')
+        }
+        else {
+            [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+        }
+    }
+
+    if ($worktreeCreated) {
+        try {
+            Invoke-Checked git -C $repository worktree remove --force $rollbackWorktree
+            Invoke-Checked git -C $repository worktree prune
+        }
+        catch {
+            $cleanupErrors.Add($_.Exception.Message)
+        }
+    }
+    if (Test-Path -LiteralPath $proofRoot) {
+        try {
+            Remove-Item -LiteralPath $proofRoot -Recurse -Force
+        }
+        catch {
+            $cleanupErrors.Add($_.Exception.Message)
+        }
+    }
+}
+
+if ($cleanupErrors.Count -gt 0) {
+    throw "Rollback cleanup failed: $($cleanupErrors -join '; ')"
+}
+if ($null -ne $result) {
+    $result | ConvertTo-Json -Depth 8
+}

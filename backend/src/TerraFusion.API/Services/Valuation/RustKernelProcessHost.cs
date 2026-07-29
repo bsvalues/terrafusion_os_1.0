@@ -50,6 +50,23 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 startedAt, sw, kernelName, inputHash, kernelBinarySha256: null);
         }
 
+        if (string.Equals(kernelName, "terraforge.kernel.valuation", StringComparison.Ordinal))
+        {
+            var provenanceFailure = ValidateValuationKernelProvenance(executablePath);
+            if (provenanceFailure != null)
+            {
+                sw.Stop();
+                return Fail<TResp>(
+                    provenanceFailure.Value.Mode,
+                    provenanceFailure.Value.Message,
+                    startedAt,
+                    sw,
+                    kernelName,
+                    inputHash,
+                    provenanceFailure.Value.BinarySha256);
+            }
+        }
+
         try
         {
             var kernelBinarySha256 = ComputeFileSha256(executablePath);
@@ -166,6 +183,116 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 $"Unexpected: {ex.Message}",
                 startedAt, sw, kernelName, inputHash, kernelBinarySha256: null);
         }
+    }
+
+    private (KernelFailureMode Mode, string Message, string? BinarySha256)?
+        ValidateValuationKernelProvenance(string executablePath)
+    {
+        var options = _options.Value;
+        if (string.IsNullOrWhiteSpace(options.ValuationKernelManifestPath))
+        {
+            return (
+                KernelFailureMode.ExecutableNotFound,
+                "Valuation kernel provenance manifest is not configured.",
+                null);
+        }
+
+        var manifestPath = ResolveRepositoryRelativePath(options.ValuationKernelManifestPath);
+        if (!File.Exists(manifestPath))
+        {
+            return (
+                KernelFailureMode.ExecutableNotFound,
+                $"Valuation kernel provenance manifest not found: {manifestPath}",
+                null);
+        }
+
+        string binarySha256;
+        try
+        {
+            binarySha256 = ComputeFileSha256(executablePath);
+        }
+        catch (Exception ex)
+        {
+            return (
+                KernelFailureMode.NonZeroExit,
+                $"Unable to hash valuation kernel executable: {ex.Message}",
+                null);
+        }
+
+        try
+        {
+            using var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var root = manifest.RootElement;
+            var schemaVersion = root.GetProperty("schemaVersion").GetInt32();
+            var repository = root.GetProperty("repository").GetString();
+            var commit = root.GetProperty("commit").GetString();
+            var transport = root.GetProperty("transport").GetString();
+            var executableFilename = root.GetProperty("executableFilename").GetString();
+            var expectedBinarySha256 = root.GetProperty("executableSha256").GetString();
+
+            if (schemaVersion != 1 ||
+                !string.Equals(repository, "bsvalues/terrafusion-forge", StringComparison.Ordinal) ||
+                !string.Equals(
+                    commit,
+                    options.ValuationKernelSourceCommit,
+                    StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(
+                    transport,
+                    "local-os-managed-artifact-slot",
+                    StringComparison.Ordinal) ||
+                !string.Equals(
+                    executableFilename,
+                    Path.GetFileName(executablePath),
+                    StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(
+                    expectedBinarySha256,
+                    binarySha256,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return (
+                    KernelFailureMode.NonZeroExit,
+                    "Valuation kernel provenance manifest does not match the configured Forge artifact.",
+                    binarySha256);
+            }
+        }
+        catch (Exception ex) when (
+            ex is IOException ||
+            ex is UnauthorizedAccessException ||
+            ex is JsonException ||
+            ex is KeyNotFoundException ||
+            ex is InvalidOperationException)
+        {
+            return (
+                KernelFailureMode.NonZeroExit,
+                $"Valuation kernel provenance manifest is invalid: {ex.Message}",
+                binarySha256);
+        }
+
+        return null;
+    }
+
+    private static string ResolveRepositoryRelativePath(string path)
+    {
+        if (Path.IsPathFullyQualified(path))
+        {
+            return Path.GetFullPath(path);
+        }
+
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null)
+        {
+            var gitPath = Path.Combine(directory.FullName, ".git");
+            if (Directory.Exists(gitPath) ||
+                File.Exists(gitPath) ||
+                File.Exists(Path.Combine(directory.FullName, "terrafusion.app.json")))
+            {
+                return Path.GetFullPath(Path.Combine(directory.FullName, path));
+            }
+
+            directory = directory.Parent;
+        }
+
+        return Path.GetFullPath(path);
     }
 
     private static KernelInvocationResult<TResp> Fail<TResp>(
