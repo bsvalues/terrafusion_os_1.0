@@ -136,19 +136,31 @@ try {
     $testProject = Join-Path `
         $rollbackWorktree `
         'backend\TerraFusion.API.Tests\TerraFusion.API.Tests.csproj'
-    Invoke-Checked dotnet restore $testProject `
-        --source $nugetOfflineSource `
-        --packages $nugetPackages `
-        --artifacts-path $dotnetArtifacts `
-        --no-cache
-    Invoke-Checked dotnet test $testProject `
-        -c Release `
-        --no-restore `
-        --artifacts-path $dotnetArtifacts `
-        --filter (
+    Invoke-Checked -Command dotnet -Arguments @(
+        'restore',
+        $testProject,
+        '--source',
+        $nugetOfflineSource,
+        '--packages',
+        $nugetPackages,
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '--no-cache'
+    )
+    Invoke-Checked -Command dotnet -Arguments @(
+        'test',
+        $testProject,
+        '-c',
+        'Release',
+        '--no-restore',
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '--filter',
+        (
             'FullyQualifiedName~RustKernelProcessHostTests|' +
             'FullyQualifiedName~RealKernels_ComputeExpectedValue'
         )
+    )
 
     $result = [ordered]@{
         result = 'PASS'
