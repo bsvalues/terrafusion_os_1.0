@@ -67,6 +67,9 @@ foreach ($name in @(
         'NUGET_HTTP_CACHE_PATH',
         'TEMP',
         'TMP',
+        'GIT_CONFIG_COUNT',
+        'GIT_CONFIG_KEY_0',
+        'GIT_CONFIG_VALUE_0',
         'TERRAFUSION_FORGE_CANONICAL_KERNEL_PATH',
         'TERRAFUSION_FORGE_CANONICAL_MANIFEST_PATH',
         'TERRAFUSION_SOVEREIGN_COST_KERNEL_PATH'
@@ -205,6 +208,9 @@ try {
     Invoke-Checked -Command git -Arguments @(
         'clone', '--shared', '--no-checkout', $ForgeRepository, $forgeWorktree
     )
+    $env:GIT_CONFIG_COUNT = '1'
+    $env:GIT_CONFIG_KEY_0 = 'safe.directory'
+    $env:GIT_CONFIG_VALUE_0 = $forgeWorktree
     Invoke-Checked -Command git -Arguments @(
         '-C', $forgeWorktree, 'checkout', '--detach', '--quiet', $expectedForgeCommit
     )
