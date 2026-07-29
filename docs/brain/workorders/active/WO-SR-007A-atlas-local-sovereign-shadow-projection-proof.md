@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - IMPLEMENTATION PROOF COMPLETE LOCALLY; MERGE AND TERMINAL CLOSEOUT PENDING |
+| Status | COMPLETE ON TERMINAL CLOSEOUT MERGE |
 | Program | Five-Suite Federated Repository Buildout |
 | Risk | R3 bounded local sovereign shadow projection proof |
 | Authority | `OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729` |
@@ -45,9 +45,10 @@ shared Atlas checkout remained unchanged, no `backend/src/**` file changed, no n
 was used, and the isolated Atlas worktree plus every copied module, manifest, exchange, output, and
 log was removed after validation.
 
-This candidate does not complete the Work Order by itself. The implementation PR must merge with
-all required checks and substantive review resolved, followed by the governance-only terminal
-closeout that consumes the authority.
+PR #1389 merged exact reviewed head `a41ead004c9ac8242660c4cc58b3db598c07e1e4`
+as `3ff78dee1bde56b582bd1efeaca7cb38455edc99` after every required remote check passed and all
+substantive review threads were resolved. This governance-only closeout consumes the bounded
+authority effective on merge and returns the program to portfolio reconciliation.
 
 ## Denials
 
