@@ -38,13 +38,17 @@ terminal condition.
 | Network or install | None |
 | Disposable cleanup | Complete |
 | Backend source/runtime adoption | None |
-| Focused build | 0 warnings, 0 errors |
+| Focused build | Invocation-owned artifact path; 0 warnings, 0 errors |
 | Full backend solution build | 0 warnings, 0 errors |
 
 The generated local manifest bound repository, commit, module path, source and copy hashes, Node
 version, timestamp, and disposable paths. It and all disposable execution state were deleted by the
 proof script after the assertions completed. The full backend solution build also passed with zero
-warnings and zero errors. Work Order validation and remote PR gates remain required before merge.
+warnings and zero errors. Review remediation made the script self-contained: it restores only from
+the existing local NuGet package source, builds before testing in a unique invocation-owned
+directory, deletes only that directory, and compares protected source plus untracked source state
+to the authorized sovereign base. Work Order validation and remote PR gates remain required before
+merge.
 
 ## Rollback
 

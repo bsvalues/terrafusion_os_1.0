@@ -2,15 +2,33 @@
 param(
     [string]$AtlasRepository = 'C:\Users\bsval\terrafusion-atlas',
     [string]$ProofRootBase = 'E:\tf-build\sr-007a-local-shadow',
-    [string]$DotnetArtifacts = 'C:\tf-build\sr-007a-local-shadow-artifacts'
+    [string]$DotnetRootBase = 'C:\tf-build\sr-007a-local-shadow-dotnet',
+    [string]$NuGetPackagesPath
 )
 
 $ErrorActionPreference = 'Stop'
+$expectedSovereignBase = '12019bce0850b28ded91e5e820d0f54d202a14cc'
 $expectedAtlasCommit = '6c530f1b6b77d59225353dede929c0688f1587da'
 $moduleRelativePath = 'src/spatial-read/project-atlas-feature.mjs'
 $expectedModuleSha256 = '3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46'
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$proofRoot = Join-Path $ProofRootBase ([DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ'))
+$runId = (
+    [DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ') +
+    '-' +
+    [Guid]::NewGuid().ToString('N')
+)
+$proofRoot = Join-Path $ProofRootBase $runId
+$dotnetRoot = Join-Path $DotnetRootBase $runId
+$dotnetArtifacts = Join-Path $dotnetRoot 'artifacts'
+$dotnetHome = Join-Path $dotnetRoot 'dotnet-home'
+$nugetPackages = if ([string]::IsNullOrWhiteSpace($NuGetPackagesPath)) {
+    $null
+}
+else {
+    [IO.Path]::GetFullPath($NuGetPackagesPath)
+}
+$nugetHttp = Join-Path $dotnetRoot 'nuget-http'
+$temp = Join-Path $dotnetRoot 'tmp'
 $atlasWorktree = Join-Path $proofRoot 'atlas-worktree'
 $exchangeRoot = Join-Path $proofRoot 'exchange'
 $copiedModule = Join-Path $exchangeRoot 'project-atlas-feature.mjs'
@@ -20,6 +38,15 @@ $atlasWorktreeRegistered = $false
 $preservedEnvironment = @{}
 
 foreach ($name in @(
+        'DOTNET_CLI_HOME',
+        'DOTNET_CLI_TELEMETRY_OPTOUT',
+        'DOTNET_NOLOGO',
+        'DOTNET_SKIP_FIRST_TIME_EXPERIENCE',
+        'DOTNET_CLI_USE_MSBUILD_SERVER',
+        'NUGET_PACKAGES',
+        'NUGET_HTTP_CACHE_PATH',
+        'TEMP',
+        'TMP',
         'TERRAFUSION_ATLAS_SHADOW_MODULE_PATH',
         'TERRAFUSION_ATLAS_SHADOW_PROOF_ROOT'
     )) {
@@ -43,7 +70,37 @@ function Invoke-Checked {
     }
 }
 
+function Get-LocalNuGetSource {
+    $lines = @(& dotnet nuget locals global-packages --list)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to query the local NuGet global-packages source.'
+    }
+    $entry = $lines |
+        Where-Object { $_ -match '^\s*global-packages:\s*(.+?)\s*$' } |
+        Select-Object -First 1
+    if ($null -eq $entry) {
+        throw 'Unable to resolve the local NuGet global-packages source.'
+    }
+    $path = ([regex]::Match(
+        $entry,
+        '^\s*global-packages:\s*(.+?)\s*$'
+    )).Groups[1].Value
+    if (-not (Test-Path -LiteralPath $path)) {
+        throw "Local NuGet source is unavailable: $path"
+    }
+    return [IO.Path]::GetFullPath($path)
+}
+
 try {
+    $currentHead = (git -C $sovereignRepository rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to resolve the sovereign candidate HEAD.'
+    }
+    git -C $sovereignRepository merge-base --is-ancestor $expectedSovereignBase $currentHead
+    if ($LASTEXITCODE -ne 0) {
+        throw "Sovereign HEAD $currentHead does not descend from $expectedSovereignBase."
+    }
+
     $atlasRoot = (git -C $AtlasRepository rev-parse --show-toplevel).Trim()
     if ($LASTEXITCODE -ne 0 -or
         [System.IO.Path]::GetFullPath($atlasRoot) -ne
@@ -70,7 +127,21 @@ try {
         throw "Atlas origin/main must equal $expectedAtlasCommit; found $atlasOriginMain."
     }
 
-    New-Item -ItemType Directory -Force -Path $proofRoot, $exchangeRoot | Out-Null
+    if ((Test-Path -LiteralPath $proofRoot) -or (Test-Path -LiteralPath $dotnetRoot)) {
+        throw 'The invocation-owned proof or .NET directory already exists.'
+    }
+    $ownedDirectories = @(
+        $proofRoot,
+        $exchangeRoot,
+        $dotnetArtifacts,
+        $dotnetHome,
+        $nugetHttp,
+        $temp
+    )
+    if ($null -ne $nugetPackages) {
+        $ownedDirectories += $nugetPackages
+    }
+    New-Item -ItemType Directory -Force -Path $ownedDirectories | Out-Null
     Invoke-Checked -Command git -Arguments @(
         '-C',
         $AtlasRepository,
@@ -106,6 +177,8 @@ try {
         schemaVersion = 1
         repository = 'bsvalues/terrafusion-atlas'
         commit = $expectedAtlasCommit
+        sovereignBase = $expectedSovereignBase
+        sovereignHead = $currentHead
         sourcePath = $moduleRelativePath
         sourceSha256 = $sourceSha256
         copiedSha256 = $copiedSha256
@@ -115,7 +188,7 @@ try {
         atlasWorktree = $atlasWorktree
         copiedModule = $copiedModule
         manifestPath = $manifestPath
-        dotnetArtifacts = $DotnetArtifacts
+        dotnetArtifacts = $dotnetArtifacts
     }
     $manifest | ConvertTo-Json -Depth 8 |
         Set-Content -LiteralPath $manifestPath -Encoding utf8
@@ -130,21 +203,66 @@ try {
 
     $env:TERRAFUSION_ATLAS_SHADOW_MODULE_PATH = $copiedModule
     $env:TERRAFUSION_ATLAS_SHADOW_PROOF_ROOT = $proofRoot
+    $localNuGetSource = Get-LocalNuGetSource
+    if ($null -eq $nugetPackages) {
+        $nugetPackages = $localNuGetSource
+    }
+    $env:DOTNET_CLI_HOME = $dotnetHome
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+    $env:DOTNET_NOLOGO = '1'
+    $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
+    $env:DOTNET_CLI_USE_MSBUILD_SERVER = '0'
+    $env:NUGET_PACKAGES = $nugetPackages
+    $env:NUGET_HTTP_CACHE_PATH = $nugetHttp
+    $env:TEMP = $temp
+    $env:TMP = $temp
+    $testProject = Join-Path `
+        $sovereignRepository `
+        'backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj'
+    Invoke-Checked -Command dotnet -Arguments @(
+        'restore',
+        $testProject,
+        '--source',
+        $localNuGetSource,
+        '--packages',
+        $nugetPackages,
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '--no-cache',
+        '--disable-parallel',
+        '/m:1'
+    )
+    Invoke-Checked -Command dotnet -Arguments @(
+        'build',
+        $testProject,
+        '-c',
+        'Release',
+        '--no-restore',
+        '--artifacts-path',
+        $dotnetArtifacts,
+        '/warnaserror',
+        '-p:UseSharedCompilation=false',
+        '-nodeReuse:false',
+        '/m:1'
+    )
     Invoke-Checked -Command dotnet -Arguments @(
         'test',
-        (Join-Path $sovereignRepository 'backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj'),
+        $testProject,
         '-c',
         'Release',
         '--no-restore',
         '--no-build',
         '--artifacts-path',
-        $DotnetArtifacts,
+        $dotnetArtifacts,
         '--filter',
         'FullyQualifiedName~AtlasLocalSovereignShadowProjectionTests'
     )
 
     $protectedDelta = @(
-        git -C $sovereignRepository diff origin/main --name-only -- 'backend/src'
+        git -C $sovereignRepository diff $expectedSovereignBase --name-only -- 'backend/src'
+    )
+    $protectedUntracked = @(
+        git -C $sovereignRepository status --porcelain=v1 --untracked-files=all -- 'backend/src'
     )
     if ($LASTEXITCODE -ne 0) {
         throw 'Unable to inspect protected backend source changes.'
@@ -153,7 +271,11 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw 'Unable to recheck the shared Atlas checkout.'
     }
-    if ($protectedDelta.Count -gt 0 -or $atlasStatusAfter.Count -gt 0) {
+    if (
+        $protectedDelta.Count -gt 0 -or
+        $protectedUntracked.Count -gt 0 -or
+        $atlasStatusAfter.Count -gt 0
+    ) {
         throw 'Protected backend source or shared Atlas checkout changed during proof.'
     }
 
@@ -207,8 +329,14 @@ finally {
     ) {
         Remove-Item -LiteralPath $ProofRootBase -Force
     }
-    if (Test-Path -LiteralPath $DotnetArtifacts) {
-        Remove-Item -LiteralPath $DotnetArtifacts -Recurse -Force
+    if (Test-Path -LiteralPath $dotnetRoot) {
+        Remove-Item -LiteralPath $dotnetRoot -Recurse -Force
+    }
+    if (
+        (Test-Path -LiteralPath $DotnetRootBase) -and
+        @(Get-ChildItem -LiteralPath $DotnetRootBase -Force).Count -eq 0
+    ) {
+        Remove-Item -LiteralPath $DotnetRootBase -Force
     }
 }
 
@@ -216,7 +344,8 @@ if ($null -ne $result) {
     $result.disposableStateRemoved = (
         -not (Test-Path -LiteralPath $proofRoot) -and
         -not (Test-Path -LiteralPath $ProofRootBase) -and
-        -not (Test-Path -LiteralPath $DotnetArtifacts)
+        -not (Test-Path -LiteralPath $dotnetRoot) -and
+        -not (Test-Path -LiteralPath $DotnetRootBase)
     )
     $result | ConvertTo-Json -Depth 8
 }
