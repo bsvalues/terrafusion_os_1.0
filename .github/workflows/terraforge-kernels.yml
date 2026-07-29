@@ -59,7 +59,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/terrabuild/kernels/target
+            target
           key: kernels-${{ runner.os }}-${{ hashFiles('packages/terrabuild/kernels/Cargo.lock') }}
           restore-keys: |
             kernels-${{ runner.os }}-
@@ -91,6 +91,11 @@ jobs:
       run:
         working-directory: packages/terrabuild/kernels
     steps:
+      - name: Enable long paths on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: git config --global core.longpaths true
+
       - uses: actions/checkout@v4
 
       - name: Setup Rust (stable)
@@ -102,7 +107,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/terrabuild/kernels/target
+            target
           key: kernels-release-${{ runner.os }}-${{ hashFiles('packages/terrabuild/kernels/Cargo.lock') }}
           restore-keys: |
             kernels-release-${{ runner.os }}-
@@ -113,7 +118,7 @@ jobs:
       - name: Smoke test — cost kernel returns success JSON for a known input
         shell: bash
         run: |
-          COST_BIN="target/release/terraforge-kernel-cost${{ matrix.bin-ext }}"
+          COST_BIN="../../../target/release/terraforge-kernel-cost${{ matrix.bin-ext }}"
           if [ ! -f "$COST_BIN" ]; then
             echo "::error::Missing expected binary at $COST_BIN"
             exit 1
@@ -129,6 +134,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraforge-cost-kernel-${{ matrix.artifact-suffix }}
-          path: packages/terrabuild/kernels/target/release/terraforge-kernel-cost${{ matrix.bin-ext }}
+          path: target/release/terraforge-kernel-cost${{ matrix.bin-ext }}
           retention-days: 30
           if-no-files-found: error
