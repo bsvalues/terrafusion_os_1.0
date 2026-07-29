@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006 authority activation",
+  "generatedBy": "WO-SR-006 sovereign implementation and rollback proof",
   "generatedAt": "2026-07-28T00:00:00Z",
-  "description": "Five-suite registry with WO-SR-006 active under a bounded Forge-only R4 canonical ownership-transfer decision. Execution is sequential and fail-closed; production, protected resources, other-suite cutover, workflows, deployment, publication, credentials, and secrets remain denied.",
+  "description": "Five-suite registry with WO-SR-006 Phase 2 ready for PR under a bounded Forge-only R4 canonical ownership-transfer decision. Phase 0 and Forge readiness are merged; local manifest-bound staging, typed fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, and repository rollback passed. Cross-repository finalization remains pending. Production, protected resources, other-suite cutover, workflows, deployment, publication, credentials, and secrets remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -8584,25 +8584,25 @@
           "name": "Forge tests and pre-cutover parity",
           "command": "cargo test --locked",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Forge canonical cutover and rollback proof",
           "command": "scripts/validation/Invoke-ForgeCanonicalCutoverRollbackProof.ps1",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query and planner tests",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
       "stopConditions": [

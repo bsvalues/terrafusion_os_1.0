@@ -99,8 +99,8 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active; bounded Forge-only canonical runtime ownership cutover authorized |
-| Current | `WO-SR-006` Phase 0 authority activation |
-| Next | Forge documentation-only readiness acceptance |
+| Current | `WO-SR-006` Phase 2 sovereign implementation ready for PR |
+| Next | Forge finalization after sovereign implementation merge |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -646,9 +646,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed WO | `WO-SR-006C`; authority consumed |
+| Last completed interlock | Forge readiness acceptance; Forge PR #3 merged |
 | Current WO | `WO-SR-006` Forge Canonical Runtime Ownership Cutover |
-| Next WO | Forge readiness acceptance after Phase 0 merges |
+| Next interlock | Sovereign implementation merge, then Forge finalization |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

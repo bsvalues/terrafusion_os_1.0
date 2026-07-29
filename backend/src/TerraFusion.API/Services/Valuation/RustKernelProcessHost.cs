@@ -15,6 +15,21 @@ namespace TerraFusion.API.Services.Valuation;
 /// </summary>
 public class RustKernelProcessHost : IRustKernelProcessHost
 {
+    private const string ForgeSourceCommit = "24059c3642339f36877cb454ca63683180915b71";
+
+    private static readonly IReadOnlyDictionary<string, string> ForgeSourceSha256 =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["kernels/terraforge.kernel.valuation/Cargo.toml"] =
+                "c27750c78f2ddf77e5cfca3fc6a020bd2bf5ddecb97fa10e44d2e20d2c5e2358",
+            ["kernels/terraforge.kernel.valuation/Cargo.lock"] =
+                "087367b4a37c7a55700b4f9bec1ac073d5c6e8cc3932f1a4220a9abbba0b48bd",
+            ["kernels/terraforge.kernel.valuation/build.rs"] =
+                "9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6",
+            ["kernels/terraforge.kernel.valuation/src/main.rs"] =
+                "3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae",
+        };
+
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -229,9 +244,11 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             var transport = root.GetProperty("transport").GetString();
             var executableFilename = root.GetProperty("executableFilename").GetString();
             var expectedBinarySha256 = root.GetProperty("executableSha256").GetString();
+            var sourceHashes = root.GetProperty("sourceBlobSha256");
 
             if (schemaVersion != 1 ||
                 !string.Equals(repository, "bsvalues/terrafusion-forge", StringComparison.Ordinal) ||
+                !string.Equals(commit, ForgeSourceCommit, StringComparison.OrdinalIgnoreCase) ||
                 !string.Equals(
                     commit,
                     options.ValuationKernelSourceCommit,
@@ -247,7 +264,8 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 !string.Equals(
                     expectedBinarySha256,
                     binarySha256,
-                    StringComparison.OrdinalIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase) ||
+                !SourceHashesMatch(sourceHashes))
             {
                 return (
                     KernelFailureMode.NonZeroExit,
@@ -260,7 +278,9 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             ex is UnauthorizedAccessException ||
             ex is JsonException ||
             ex is KeyNotFoundException ||
-            ex is InvalidOperationException)
+            ex is InvalidOperationException ||
+            ex is FormatException ||
+            ex is OverflowException)
         {
             return (
                 KernelFailureMode.NonZeroExit,
@@ -269,6 +289,30 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         }
 
         return null;
+    }
+
+    private static bool SourceHashesMatch(JsonElement sourceHashes)
+    {
+        if (sourceHashes.ValueKind != JsonValueKind.Object ||
+            sourceHashes.EnumerateObject().Count() != ForgeSourceSha256.Count)
+        {
+            return false;
+        }
+
+        foreach (var expected in ForgeSourceSha256)
+        {
+            if (!sourceHashes.TryGetProperty(expected.Key, out var actual) ||
+                actual.ValueKind != JsonValueKind.String ||
+                !string.Equals(
+                    actual.GetString(),
+                    expected.Value,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static string ResolveRepositoryRelativePath(string path)

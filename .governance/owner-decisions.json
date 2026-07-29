@@ -1407,10 +1407,10 @@
       ],
       "decision_basis": "WO-SR-006A, WO-SR-006B, and WO-SR-006C proved exact local Forge build and parity, real client/host selection, persistence across isolated restarts, and sovereign rollback. The remaining protected action is the Forge-only canonical ownership transfer and duplicate valuation-source retirement.",
       "completion": {
-        "authority_activation": "pending",
-        "forge_readiness_pr": "pending",
+        "authority_activation": "PR #1385 exact reviewed head f02e376d344b5eb67573605b8c90f6a5030b377c merged as 4e6a810c73b0e9e165a4e496f17dd9da44ec2449",
+        "forge_readiness_pr": "Forge PR #3 exact reviewed head ae552a14a2741ff5c513775a31f3f8b7a7cc4c99 merged as 7a2716e5cd77992f5164e95e4bd9474d3b4150f8",
         "sovereign_implementation_pr": "pending",
-        "repository_rollback_proof": "pending",
+        "repository_rollback_proof": "PASS at sovereign candidate 014b3639540cbe202a240d4633968c805e1cc3c5; exact source, workspace, runtime path, four Rust tests, and seven focused backend tests restored in a disposable sparse worktree",
         "forge_finalization_pr": "pending",
         "sovereign_closeout_pr": "pending",
         "authority_consumed": false

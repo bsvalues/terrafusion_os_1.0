@@ -87,6 +87,9 @@ valuation kernel only. Execute governance activation, Forge readiness, sovereign
 rollback proof, Forge finalization, and sovereign closeout sequentially. Production, protected
 resources, workflows, deployment, publication, cost-kernel transfer, public API change, and
 other-suite cutover remain denied.
+Phase 0 merged in sovereign PR #1385 and Forge readiness merged in Forge PR #3. The sovereign
+implementation candidate and disposable rollback proof are ready for PR; no completion claim is
+made until the remaining implementation and cross-repository finalization merges are verified.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody
 or persistence mutation, protected data, publication, production deployment, blind or out-of-scope
 source retirement, and other-suite cutover remain gated.

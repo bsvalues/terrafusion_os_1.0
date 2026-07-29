@@ -142,7 +142,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
 | WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 | WO-SR-006C Forge Non-Production Persistent Runtime Adoption and Rollback Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1383 proved disposable Forge selection across two host starts and sovereign rollback in a third; no canonical configuration or cutover |
-| WO-SR-006 Forge Canonical Runtime Ownership Cutover | ACTIVE / R4 / FORGE ONLY | Sequential Mode B cutover authorized at sovereign base `af0e21ee`; Forge readiness must merge before sovereign implementation; rollback proof and cross-repository finalization are mandatory |
+| WO-SR-006 Forge Canonical Runtime Ownership Cutover | ACTIVE / R4 / FORGE ONLY / PHASE 2 READY FOR PR | Phase 0 and Forge readiness are merged; local manifest-bound staging, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, and disposable repository rollback passed; cross-repository finalization remains mandatory |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -315,7 +315,12 @@ Portfolio reconciliation subsequently admitted only the separately owner-authori
 Forge canonical ownership cutover. The consumed SR-006C authority did not imply that cutover.
 
 **Current execution state (WO-SR-006, 2026-07-28):**
-`FORGE_CANONICAL_CUTOVER_AUTHORIZED_PENDING_PHASED_EXECUTION`. Phase 0 changes governance only.
+`FORGE_CANONICAL_CUTOVER_SOVEREIGN_IMPLEMENTATION_READY_FOR_PR`. Phase 0 merged in PR #1385 and
+Forge readiness merged in Forge PR #3. The sovereign candidate stages exact Forge source commit
+`24059c3642339f36877cb454ca63683180915b71` into an ignored manifest-bound local artifact slot,
+passes accepted and typed fail-closed proof, retires only the duplicate valuation source, preserves
+the cost kernel, and passes disposable repository rollback. Canonical ownership is not complete
+until the sovereign implementation, Forge finalization, and sovereign closeout merge.
 Forge readiness acceptance must merge before sovereign source, configuration, Cargo, test, or
 validation-script changes begin.
 
