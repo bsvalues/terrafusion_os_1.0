@@ -1486,6 +1486,55 @@
         "authority_consumed": true
       },
       "decision_basis": "Atlas already has a frozen spatial-read contract, a pure unwired sovereign adapter, standalone parity, and a built-fresh standalone projection module. The smallest safe next proof is exact-commit local shadow consumption without runtime adoption or repository mutation."
+    },
+    {
+      "id": "OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-007B",
+      "status": "active",
+      "authority_class": "R3-bounded-unwired-runtime-capability-foundation",
+      "effective_base_sha": "ca7b0324784584f10a2e4b21f116192fc9bb95c5",
+      "atlas_base_sha": "6c530f1b6b77d59225353dede929c0688f1587da",
+      "atlas_module": "src/spatial-read/project-atlas-feature.mjs",
+      "atlas_module_sha256": "3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46",
+      "scope_source": "Owner authorization recorded on 2026-07-29 after PR #1391 completed WO-SR-007B-P. This decision authorizes one pure, manually instantiated and unwired Atlas projection process-host foundation and explicitly denies runtime adoption or Atlas repository mutation.",
+      "terminal_condition": "ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_FOUNDATION_PROVEN after authority activation, implementation, and terminal closeout are merged and verified.",
+      "authorized_actions": [
+        "merge one governance-only authority activation before implementation begins",
+        "create the exact explicit-path, hash-verifying, disposable-copy Node process host, focused synthetic tests, and local validation proof without dependency injection or a runtime consumer",
+        "enforce bounded input and incremental output, filesystem confinement, network denial, process-tree termination, deterministic output validation, identity preservation, property allowlisting, and invocation-owned cleanup",
+        "commit, validate, remediate, obtain exact-head assurance, merge each phase under Mode B, verify terminal closeout, consume this bounded authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Services/Atlas/IAtlasProjectionProcessHost.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionProcessHost.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionProcessHostTests.cs",
+        "scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1",
+        "docs/brain/workorders/active/WO-SR-007B-atlas-unwired-projection-process-host-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "explicitly_denied": [
+        "dependency injection registration, runtime consumers, controllers, endpoints, service adoption, persistent selection, appsettings, providers, GIS services, persistence, databases, network calls, or remote artifact transfer",
+        "Atlas repository mutation, direct source extraction, package publication, workflow changes, deployment, production, county, PACS, SQL, credentials, secrets, ownership transfer, source retirement, Atlas cutover, or other-suite changes",
+        "required-check bypass, unresolved substantive review, exact-head assurance failure, unbounded process I/O, mutable or unverified module execution, cleanup residue, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-sequential-staged-exact-scope",
+      "revocation_triggers": [
+        "sovereign base, Atlas base, module path, source hash, or copied-module hash mismatch",
+        "inability to enforce filesystem confinement or network denial, unbounded output, identity or property-allowlist failure, cleanup residue, runtime or DI wiring, Atlas repository mutation, scope expansion, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "deployment, production, protected-resource, credential, secret, extraction, ownership-transfer, source-retirement, cutover, other-suite, or conflicting-authority access"
+      ],
+      "decision_basis": "WO-SR-007B-P proved the Atlas projection remains test-only and that no reusable Atlas process host exists. The smallest architecture-advancing step is a pure unwired process boundary with exact local provenance and fail-closed execution controls."
     }
   ]
 }

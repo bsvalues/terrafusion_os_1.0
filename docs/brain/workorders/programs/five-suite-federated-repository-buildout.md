@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active at exact protected boundary; WO-SR-007B-P complete
+**Status:** Active under exact WO-SR-007B R3 process-host foundation authority
 
 ## Ratified topology
 
@@ -77,6 +77,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Complete R4; sovereign PR #1386 and Forge PR #4 merged; authority consumed on closeout; no cost-kernel or other-suite cutover |
 | WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Complete R3; PR #1389 merged 13-case proof as `3ff78dee1`; authority consumed on closeout; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
+| WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Active R3; exact 14-file sequential Mode B authority; Phase 0 governance activation precedes implementation; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
 
 ## Extraction and provenance policy
 
@@ -211,3 +212,10 @@ is not protocol-compatible. The smallest useful successor is therefore `WO-SR-00
 unwired Node process-host foundation. It requires a separate bounded grant because it creates
 `backend/src/**`; runtime adoption, persistent selection, deployment, ownership transfer, source
 retirement, and cutover remain later gates.
+
+`OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729` now grants that exact foundation.
+Phase 0 records the decision and complete 14-file allowlist before implementation begins. The
+authorized host is explicit-path, hash-verifying, disposable-copy, filesystem-confined,
+network-denied, bounded-I/O, manually instantiated, and unwired. Runtime consumers, DI, persistent
+selection, Atlas mutation, extraction, publication, deployment, protected resources, ownership
+transfer, source retirement, and cutover remain denied.

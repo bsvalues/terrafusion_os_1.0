@@ -146,6 +146,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
+| WO-SR-007B Atlas Unwired Projection Process Host Foundation | ACTIVE / R3 / AUTHORIZED | Exact 14-file sequential Mode B authority active; Phase 0 governance activation precedes the unwired host implementation; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -286,7 +287,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-007B` | exact R3 process-host foundation authority required; WO-SR-007B-P is complete evidence | New Atlas process-host source, runtime adoption, mutation, extraction, deployment, protected resources, and cutover remain denied | `active/WO-SR-007B-P-atlas-runtime-adoption-boundary-preparation.md` |
+| five-suite-federated-repository-buildout | `WO-SR-007B` | exact R3 process-host foundation authority active; Phase 0 activation is current | Runtime adoption, DI, Atlas mutation, extraction, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-007B-atlas-unwired-projection-process-host-foundation.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -342,6 +343,13 @@ would repeat completed evidence. The smallest useful successor is `WO-SR-007B`, 
 explicit-path, hash-verifying, network-denied, pure unwired Node process host and focused synthetic
 proof. Runtime selection, consumers, persistent configuration, deployment, ownership transfer,
 source retirement, and cutover remain denied.
+
+**Current execution result (WO-SR-007B, 2026-07-29):**
+`R3_BOUNDED_UNWIRED_RUNTIME_CAPABILITY_FOUNDATION_AUTHORIZED`. Phase 0 records the exact owner
+decision and 14-file allowlist. Implementation begins only after this governance activation reaches
+main. The host remains manually instantiated and unwired; runtime consumers, DI, persistent
+selection, Atlas mutation, deployment, protected resources, ownership transfer, source retirement,
+and cutover remain denied.
 
 ---
 
