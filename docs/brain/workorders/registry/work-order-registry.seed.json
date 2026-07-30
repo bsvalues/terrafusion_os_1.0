@@ -8859,9 +8859,9 @@
       "nextCandidates": [
         {
           "id": "WO-SR-007B",
-          "reason": "No Atlas runtime host exists; the smallest useful successor is an exact unwired process-host foundation that requires new backend/src authority.",
+          "reason": "No Atlas runtime host exists; the exact unwired process-host foundation is now authorized by OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {
@@ -8877,6 +8877,134 @@
       "provenance": {
         "createdAt": "2026-07-29T00:00:00Z",
         "source": "Current-main portfolio reconciliation at fa59ab33d40618334e2d8d8afcd65986c754d6cb after WO-SR-007A closeout, plus read-only inspection of the sovereign Atlas adapter, local-shadow tests, and existing process-host patterns.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-007B",
+      "title": "Atlas Unwired Projection Process Host Foundation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Create a pure, explicit-path, hash-verifying and unwired Atlas projection process-host foundation without runtime adoption.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-007B-P",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1391 merged the exact runtime-boundary preparation as ca7b0324784584f10a2e4b21f116192fc9bb95c5."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Unwired sovereign Atlas process-host foundation and Work Order governance",
+          "paths": [
+            "backend/src/TerraFusion.API/Services/Atlas/**",
+            "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionProcessHostTests.cs",
+            "scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1",
+            ".governance/owner-decisions.json",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "DI, runtime consumers, controllers, persistent selection, providers, network, persistence, Atlas mutation, extraction, publication, workflows, deployment, production, protected resources, ownership transfer, source retirement, cutover, and other suites"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Services/Atlas/IAtlasProjectionProcessHost.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionProcessHost.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionProcessHostTests.cs",
+        "scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1",
+        "docs/brain/workorders/active/WO-SR-007B-atlas-unwired-projection-process-host-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        "backend/src/**",
+        "backend/tests/**",
+        "scripts/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "packages/**",
+        ".github/workflows/**",
+        "D:\\terrafusion-atlas\\**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact source and copied-module hashes; filesystem confinement; network denial; bounded incremental I/O; Polygon, Point and unavailable results; fail-closed path, hash, identity, property, geometry, process, size, timeout and cancellation proofs; cleanup; zero consumers and DI registrations."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query and planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Backend build and focused Atlas host tests",
+          "command": "scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md",
+          "summary": "Sequential authority activation, implementation proof, and terminal closeout for the unwired Atlas projection process-host foundation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on scope expansion, hash mismatch, failed filesystem confinement or network denial, unbounded output, identity/property failure, cleanup residue, runtime or DI wiring, required-check failure or bypass, unresolved substantive review, protected resources, ownership transfer, source retirement, or cutover."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729 authorizes the exact sequential activation, implementation, and closeout under Mode B. Runtime adoption, Atlas mutation, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied."
+      },
+      "provenance": {
+        "createdAt": "2026-07-29T00:00:00Z",
+        "source": "Owner decision OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729 at sovereign base ca7b0324784584f10a2e4b21f116192fc9bb95c5 and exact Atlas base 6c530f1b6b77d59225353dede929c0688f1587da.",
         "schemaVersion": "0.1.0"
       }
     }
