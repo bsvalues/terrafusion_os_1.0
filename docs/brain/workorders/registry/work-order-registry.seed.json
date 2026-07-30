@@ -8751,6 +8751,134 @@
         "source": "Owner decision OWNER-SR-007A-R3-ATLAS-LOCAL-SHADOW-PROJECTION-20260729 at sovereign base 12019bce0850b28ded91e5e820d0f54d202a14cc and exact Atlas base 6c530f1b6b77d59225353dede929c0688f1587da.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-007B-P",
+      "title": "Atlas Runtime Adoption Boundary Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Identify the smallest honest Atlas successor after local shadow proof and define an exact runtime-capable foundation boundary without implementing or adopting it.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-007A",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1390 merged WO-SR-007A terminal closeout as fa59ab33d40618334e2d8d8afcd65986c754d6cb and consumed the local-shadow authority."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only sovereign source inspection and Work Order governance",
+          "paths": [
+            "backend/src/TerraFusion.API/Adapters/AtlasSpatialReadAdapter.cs",
+            "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasLocalSovereignShadowProjectionTests.cs",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Source, tests, scripts, contracts, packages, workflows, Atlas mutation, runtime wiring, DI, consumers, providers, persistence, network, deployment, production, protected resources, ownership transfer, source retirement, and cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-007B-P-atlas-runtime-adoption-boundary-preparation.md",
+        "docs/brain/workorders/evidence/WO-SR-007B-P-ATLAS-RUNTIME-ADOPTION-BOUNDARY-PREPARATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "blockedFiles": [
+        ".governance/**",
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "D:\\terrafusion-atlas\\**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Current-main source inspection, existing Atlas adapter and invocation seam classification, exact protected successor files, required behavior, proof gates, rollback, explicit denials, and terminal condition."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query tests",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Wave planner tests",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-007B-P-ATLAS-RUNTIME-ADOPTION-BOUNDARY-PREPARATION.md",
+          "summary": "Exact current-main Atlas execution-seam audit and bounded R3 proposal for an unwired projection process-host foundation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop before new backend source, process-host implementation, runtime consumer or DI registration, Atlas mutation, network/provider/persistence access, deployment, protected resources, ownership transfer, source retirement, or cutover."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-007B",
+          "reason": "No Atlas runtime host exists; the smallest useful successor is an exact unwired process-host foundation that requires new backend/src authority.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Standing operator authority delivered this exact nine-file R2 governance scope. The completed audit grants no WO-SR-007B implementation, runtime adoption, Atlas mutation, deployment, ownership transfer, source retirement, or cutover authority."
+      },
+      "provenance": {
+        "createdAt": "2026-07-29T00:00:00Z",
+        "source": "Current-main portfolio reconciliation at fa59ab33d40618334e2d8d8afcd65986c754d6cb after WO-SR-007A closeout, plus read-only inspection of the sovereign Atlas adapter, local-shadow tests, and existing process-host patterns.",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }

@@ -89,7 +89,10 @@ finalized canonical valuation-source ownership as `b36c2e1`. This closeout consu
 and returned routing to portfolio reconciliation. The operator then admitted `WO-SR-007A` under
 the exact bounded Atlas local-shadow authority. Phase 0 merged in PR #1388 as `30961af25`; the
 13-case Phase 1 proof merged in PR #1389 as `3ff78dee1`, and terminal closeout consumes the authority.
-Portfolio reconciliation resumes. No runtime adoption or Atlas repository mutation is authorized. Production, protected resources, workflows,
+Portfolio reconciliation admitted `WO-SR-007B-P`, which found no Atlas runtime host or consumer and
+defined `WO-SR-007B` as the exact protected successor: an unwired, explicit-path, hash-verifying Node
+projection process-host foundation. New source implementation requires a bounded R3 grant. No runtime
+adoption or Atlas repository mutation is authorized. Production, protected resources, workflows,
 deployment, publication, cost-kernel transfer, public API change, and other-suite cutover remain
 denied.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody
