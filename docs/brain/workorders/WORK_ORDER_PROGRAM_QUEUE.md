@@ -351,10 +351,10 @@ main. The host remains manually instantiated and unwired; runtime consumers, DI,
 selection, Atlas mutation, deployment, protected resources, ownership transfer, source retirement,
 and cutover remain denied.
 
-**Terminal result (WO-SR-007B, 2026-08-02):**
+**Terminal result (WO-SR-007B, 2026-08-03):**
 `ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_FOUNDATION_PROVEN`. A disposable LF-preserving Atlas
-checkout reproduced the exact pinned module hash. The sovereign host build passed with zero warnings
-and errors and all 33 focused process-host tests passed. PR #1393 merged exact reviewed head
+checkout reproduced the exact pinned module hash. The sovereign host build passed with 0 warnings
+and 0 errors, and all 33 focused process-host tests passed. PR #1393 merged exact reviewed head
 `4528dbe425e048d48638bb34cbfd6040fb768a2f` as
 `d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6`. No runtime consumer, DI registration, persistent
 selection, or Atlas mutation exists. The bounded authority is consumed and routing returns to

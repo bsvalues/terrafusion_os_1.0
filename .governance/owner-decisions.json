@@ -1541,7 +1541,7 @@
         "implementation_pr": "#1393",
         "implementation_reviewed_head": "4528dbe425e048d48638bb34cbfd6040fb768a2f",
         "implementation_merge": "d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6",
-        "implementation_result": "backend build passed with zero warnings and errors; 33 focused tests passed; exact LF Atlas source hash verified; host remained manually instantiated and unwired; no Atlas mutation or runtime adoption occurred",
+        "implementation_result": "backend build passed with 0 warnings and 0 errors; 33 focused tests passed; exact LF Atlas source hash verified; host remained manually instantiated and unwired; no Atlas mutation or runtime adoption occurred",
         "terminal_closeout_pending": false
       },
       "completion": {
