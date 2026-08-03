@@ -142,6 +142,7 @@ function Get-SovereignChangedPaths {
 function Assert-AuthorizedSovereignPaths {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [string[]]$Paths
     )
 
