@@ -109,8 +109,9 @@ runtime, test-source, provider, persistence, deployment, or protected-resource m
 
 WO-SR-008A identified authenticated county-governed parcel acquisition as the first live boundary.
 Five targeted synthetic/structural test files pass 46 tests, but do not prove live readiness.
-`WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration` is admitted behind the WO-SR-008A
-merge interlock to restore two stale/skipped contracts without product-source or runtime changes.
+`WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` is admitted behind the
+WO-SR-008A merge interlock as a docs/evidence-only audit. Synthetic test restoration remains
+separately protected-path gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

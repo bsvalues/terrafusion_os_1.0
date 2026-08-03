@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-008A single-parcel journey runtime-readiness audit",
   "generatedAt": "2026-08-03T00:00:00Z",
-  "description": "Five-suite registry during WO-SR-008A closeout. The journey audit identified protected parcel acquisition as the first live boundary and admitted WO-SR-008D behind a post-merge dependency interlock; runtime adoption, providers, deployment, protected resources, and cutover remain unauthorized.",
+  "description": "Five-suite registry during WO-SR-008A closeout. The journey audit identified protected parcel acquisition as the first live boundary and admitted docs-only WO-SR-008E behind a post-merge dependency interlock; runtime adoption, test-source mutation, providers, deployment, protected resources, and cutover remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9159,7 +9159,7 @@
       "allowedFiles": [
         "docs/brain/workorders/active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md",
         "docs/brain/workorders/evidence/WO-SR-008A-SINGLE-PARCEL-ASSESSOR-JOURNEY-RUNTIME-READINESS-AUDIT.md",
-        "docs/brain/workorders/active/WO-SR-008D-synthetic-single-parcel-journey-proof-restoration.md",
+        "docs/brain/workorders/active/WO-SR-008E-forge-canonical-kernel-consumer-boundary-preparation.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -9224,8 +9224,8 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-008D",
-          "reason": "Smallest same-risk slice restores stale synthetic journey evidence while preserving the protected live parcel boundary.",
+          "id": "WO-SR-008E",
+          "reason": "Highest-value same-risk docs-only slice defines the Workbench-to-canonical-Forge-kernel consumer boundary without protected-path mutation.",
           "riskClass": "R2",
           "blocked": true
         }
@@ -9247,10 +9247,10 @@
       }
     },
     {
-      "id": "WO-SR-008D",
-      "title": "Synthetic Single-Parcel Journey Proof Restoration",
+      "id": "WO-SR-008E",
+      "title": "Forge Canonical Kernel Consumer Boundary Preparation",
       "program": "Five-Suite Federated Repository Buildout",
-      "goal": "Restore current bounded synthetic evidence for the existing single-parcel assessor journey without changing product behavior or crossing protected resources.",
+      "goal": "Define the exact boundary between the Workbench Forge consumer and canonical Forge valuation kernel without product, runtime, test, or Forge mutation.",
       "riskClass": "R2",
       "status": "ready",
       "dependencies": [
@@ -9258,26 +9258,24 @@
           "id": "WO-SR-008A",
           "status": "required",
           "evidence": [
-            "WO-SR-008D dispatch begins only after the WO-SR-008A audit PR merges and post-merge verification succeeds."
+            "WO-SR-008E dispatch begins only after the WO-SR-008A audit PR merges and post-merge verification succeeds."
           ]
         }
       ],
       "allowedSystems": [
         {
-          "name": "Bounded synthetic single-parcel journey contract restoration and governance evidence",
+          "name": "Read-only Forge canonical-kernel consumer boundary preparation and governance evidence",
           "paths": ["docs/brain/workorders/**"]
         }
       ],
       "blockedSystems": [
         {
-          "name": "Frontend product source, backend, runtime, workflows, packages, deployment, providers, persistence, protected resources, live services, and production"
+          "name": "Product, test source, Forge repository, backend, runtime, workflows, packages, deployment, providers, persistence, protected resources, live services, and production"
         }
       ],
       "allowedFiles": [
-        "frontend/apps/os-shell/src/__tests__/journey/AssessorValuationJourney.contract.test.tsx",
-        "frontend/apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx",
-        "docs/brain/workorders/active/WO-SR-008D-synthetic-single-parcel-journey-proof-restoration.md",
-        "docs/brain/workorders/evidence/WO-SR-008D-SYNTHETIC-SINGLE-PARCEL-JOURNEY-PROOF-RESTORATION.md",
+        "docs/brain/workorders/active/WO-SR-008E-forge-canonical-kernel-consumer-boundary-preparation.md",
+        "docs/brain/workorders/evidence/WO-SR-008E-FORGE-CANONICAL-KERNEL-CONSUMER-BOUNDARY-PREPARATION.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -9287,6 +9285,7 @@
         "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
       ],
       "blockedFiles": [
+        "frontend/**",
         "backend/**",
         "os-platform/**",
         "tools/**",
@@ -9302,8 +9301,8 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "test",
-          "description": "Restored assessor journey and tab-order contracts with explicit synthetic/live non-claims."
+          "kind": "other",
+          "description": "Exact current/canonical Forge consumer compatibility matrix, authority boundary, rollback, and implementation verdict."
         },
         {
           "kind": "other",
@@ -9311,12 +9310,6 @@
         }
       ],
       "validationGates": [
-        {
-          "name": "Focused restored contracts",
-          "command": "corepack pnpm exec vitest run frontend/apps/os-shell/src/__tests__/journey/AssessorValuationJourney.contract.test.tsx frontend/apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx",
-          "required": true,
-          "result": "pending"
-        },
         {
           "name": "Diff check",
           "command": "git diff --check",
@@ -9346,7 +9339,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Issue #1396 and standing operator authority cover the exact R2 test/evidence restoration lifecycle after WO-SR-008A merges. They do not authorize product or runtime implementation."
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008A merges. They do not authorize product, test, Forge, or runtime implementation."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",

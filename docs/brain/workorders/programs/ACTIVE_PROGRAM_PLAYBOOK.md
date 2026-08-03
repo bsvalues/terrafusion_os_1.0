@@ -100,7 +100,7 @@ automatically.
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active; single-parcel journey audit complete pending merge |
 | Current | `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit` |
-| Next | `WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration` after merge |
+| Next | `WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` after merge |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -658,7 +658,7 @@ from program evidence.
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-006` Forge canonical valuation ownership cutover |
 | Current WO | `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit` closing |
-| Next interlock | `WO-SR-008D` dispatch after WO-SR-008A merge |
+| Next interlock | `WO-SR-008E` dispatch after WO-SR-008A merge |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

@@ -70,18 +70,19 @@ consumption, Atlas process-host adoption, Dais/Pilot invocation, and durable tra
 
 ## Ranked bounded successors
 
-1. `WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration` (`R2`). Restore two stale/skipped
-   tests without changing product behavior, while preserving the live-resource non-claim.
-2. `WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` (`R2`, proposed). Define the
-   exact Workbench-to-canonical-kernel adoption boundary without implementation.
-3. `WO-SR-008B - Atlas Runtime Consumer Boundary Preparation` (`R2`, proposed). Define the exact
+1. `WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` (`R2`). Define the exact
+   Workbench-to-canonical-kernel adoption boundary without implementation or protected-path writes.
+2. `WO-SR-008B - Atlas Runtime Consumer Boundary Preparation` (`R2`, proposed). Define the exact
    later R3 adoption packet for the proven but unwired Atlas process host.
+3. `WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration` (`R2`, authority-gated). Restore
+   two stale/skipped tests only after an exact protected frontend-test path grant exists.
 
 ## Selected successor
 
-`WO-SR-008D` is the smallest same-risk slice and becomes dependency-cleared after this audit PR
-merges. It improves executable evidence and removes stale claims without pretending synthetic
-fixtures satisfy the protected real-parcel boundary. Its dependency remains required until merge.
+`WO-SR-008E` is the highest-value same-risk slice that remains entirely inside existing docs and
+evidence authority. It becomes dependency-cleared after this audit PR merges and defines the first
+suite-level canonical-consumer gap without implementing it. WO-SR-008D remains useful but is not
+admitted because its exact frontend test paths require a separate protected-path grant.
 
 ## Non-claims
 

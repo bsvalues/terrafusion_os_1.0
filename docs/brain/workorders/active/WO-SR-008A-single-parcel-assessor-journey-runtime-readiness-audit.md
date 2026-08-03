@@ -156,8 +156,8 @@ schema change, or another true owner boundary.
 - Verdict: `SINGLE_PARCEL_JOURNEY_EXACT_PROTECTED_BOUNDARY_IDENTIFIED`.
 - First failing link: authenticated, county-governed parcel evidence acquisition before any suite tab.
 - Synthetic evidence: five targeted test files / 46 tests passed; this is not live-readiness proof.
-- Selected same-risk successor: `WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration`.
-- Successor interlock: WO-SR-008D remains blocked until this audit PR merges.
+- Selected same-risk successor: `WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation`.
+- Successor interlock: WO-SR-008E remains blocked until this audit PR merges.
 - Product/runtime/protected-resource mutation: none.
 
 The complete source ledger, journey matrix, non-claims, validation, and successor ranking are in
