@@ -8957,25 +8957,25 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work Order query",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work Order query and planner tests",
           "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass - 41 tests"
         },
         {
           "name": "Backend build and focused Atlas host tests",
           "command": "scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1",
           "required": true,
-          "result": "pending"
+          "result": "pass - backend build 0 warnings/0 errors; 27 focused tests pass; exact LF Atlas source hash verified; no runtime consumer or DI registration"
         }
       ],
       "evidenceProduced": [

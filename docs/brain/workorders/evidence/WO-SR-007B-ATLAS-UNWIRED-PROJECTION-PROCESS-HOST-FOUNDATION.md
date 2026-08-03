@@ -2,13 +2,13 @@
 
 ## Current Result
 
-`AUTHORITY_ACTIVATION_PENDING_MERGE`
+`PHASE_1_IMPLEMENTATION_VALIDATED_PENDING_MERGE`
 
 ## Bound Identity
 
 | Surface | Exact identity |
 | --- | --- |
-| Sovereign base | `ca7b0324784584f10a2e4b21f116192fc9bb95c5` |
+| Sovereign implementation base | `e4157f69a692a830caea96644cf07e6b85f28271` |
 | Atlas base | `6c530f1b6b77d59225353dede929c0688f1587da` |
 | Atlas module | `src/spatial-read/project-atlas-feature.mjs` |
 | Module SHA-256 | `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46` |
@@ -19,6 +19,34 @@
 This governance-only phase records the active owner decision, exact 14-file allowlist, denials,
 stop conditions, sequential Mode B delivery, and terminal condition. It creates no source, test,
 script, runtime, configuration, Atlas repository, workflow, deployment, or capability change.
+
+Phase 0 merged in PR #1392 from exact reviewed head
+`43b31090e26a0c17f7d13b24c5ab7a6aa01b0ecb` and produced sovereign implementation base
+`e4157f69a692a830caea96644cf07e6b85f28271`.
+
+## Phase 1 Local Proof
+
+| Evidence | Result |
+| --- | --- |
+| Disposable Atlas checkout | `C:\Users\bsval\.codex-reference\terrafusion-atlas-sr007b-lf` |
+| Atlas checkout settings | `core.autocrlf=false`; `core.eol=lf`; detached exact commit; clean before and after |
+| Atlas source commit | `6c530f1b6b77d59225353dede929c0688f1587da` |
+| Atlas module | `src/spatial-read/project-atlas-feature.mjs` |
+| Source SHA-256 | `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46` - PASS |
+| Build storage | Invocation-owned `E:\tf-build\sr-007b-unwired-process-host\<run-id>`; removed after proof |
+| Backend build | PASS - 0 warnings, 0 errors |
+| Focused tests | PASS - 33 passed, 0 failed, 0 skipped |
+| Runtime consumers | 0 |
+| DI registrations | 0 |
+| Atlas repository mutation | No |
+| Runtime adoption | No |
+
+The proof covers canonical `polygon`, Point, unavailable, deterministic normalization, canonical path and hash
+verification, copied-byte verification, exact identity and property allowlists, malformed and
+oversized input/output, invalid geometry, raw-socket and DNS network denial, filesystem denial, nonzero exit, timeout,
+cancellation, process-tree termination, and cleanup. The validation script uses an explicit local
+Node executable and a local package cache; it performs no package install and no remote artifact
+fetch.
 
 ## Required Implementation Evidence
 
