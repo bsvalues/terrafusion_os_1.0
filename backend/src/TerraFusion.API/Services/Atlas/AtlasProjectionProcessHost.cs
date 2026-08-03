@@ -80,8 +80,9 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
 
         let input = '';
         let inputBytes = 0;
+        process.stdin.setEncoding('utf8');
         for await (const chunk of process.stdin) {
-          inputBytes += Buffer.byteLength(chunk);
+          inputBytes += Buffer.byteLength(chunk, 'utf8');
           if (inputBytes > {{MaximumInputBytes}}) throw new Error('Atlas exchange exceeds 1 MiB.');
           input += chunk;
         }
