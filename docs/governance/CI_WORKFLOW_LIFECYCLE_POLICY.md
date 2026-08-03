@@ -1,8 +1,8 @@
 # CI Workflow Lifecycle Policy
 
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Active  
-**Last Updated:** 2026-02-12
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -35,6 +35,18 @@ These are enforced by GitHub branch protection on `main`:
 5. `🧪 Tier-1 UI Harness Validation` — UI smoke tests
 
 **No workflow outside this list may be added to required checks without a governance PR.**
+
+### Required-Check Failure Semantics
+
+Required workflows fail closed. Frontend lint, governance suites, workflow inventory validation,
+and deployment-truth validation are blocking steps inside the SEAL workflow. The temporary
+date-based exceptions that expired on July 31, 2026 have been removed; an expired exception must
+never become a renewable or silent validation skip.
+
+Any future bounded exception requires an explicit governance change with active authority,
+documented scope, an unambiguous terminal condition, and a canonical test that prevents the
+exception from surviving that condition. `continue-on-error` is permitted only when a subsequent
+step in the same required job deterministically enforces the collected result.
 
 ---
 
@@ -172,18 +184,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 48 |
-| SCHEDULED | 18 |
-| MANUAL | 23 |
+| PUSH-OPTIONAL | 49 |
+| SCHEDULED | 19 |
+| MANUAL | 25 |
 | DEPRECATED | 2 |
-| **Total** | 94 |
+| **Total** | 98 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (48):
+**PUSH-OPTIONAL** (49):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -198,6 +210,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `benton.yml`
 - `branch-protection-snapshot.yml`
 - `build-validation.yml`
+- `canon-gates.yml`
 - `ci-cd-pipeline.yml`
 - `ci-verified.yml`
 - `ci.yml`
@@ -233,10 +246,11 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `ui-governance.yml`
 - `yaml-sanity.yml`
 
-**SCHEDULED** (18):
+**SCHEDULED** (19):
 - `accessibility-audit.yml`
 - `accreditation-oracle-health.yml`
 - `autonomy-pr-lane.yml`
+- `brain-pulse.yml`
 - `break-glass-drill.yml`
 - `ci-cd.yml`
 - `external-verify.yml`
@@ -253,7 +267,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (23):
+**MANUAL** (25):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
@@ -266,12 +280,14 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `infrastructure-cicd.yml`
 - `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
+- `os-production-acceptance.yml`
 - `performance-regression.yml`
 - `release-lane.yml`
 - `rollback-production.yml`
 - `rollback-staging.yml`
 - `scope-drift-guard.yml`
 - `tag-lint.yml`
+- `terraforge-production-matrix-proof.yml`
 - `terrafusion-gate-enforcement.yml`
 - `terrafusion-pipeline.yml`
 - `test.yml`

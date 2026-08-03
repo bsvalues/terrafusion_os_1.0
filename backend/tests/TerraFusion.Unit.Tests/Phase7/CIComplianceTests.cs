@@ -6,7 +6,7 @@ namespace TerraFusion.Unit.Tests.Phase7;
 
 /// <summary>
 /// Governance tests that prevent CI-blocking regressions.
-/// Phase 7: Ensures escape hatch dates stay future, eslint config is singular,
+/// Phase 7: Ensures required checks have no temporary escape hatches, eslint config is singular,
 /// and Dockerfile pins nginx to a specific version.
 /// </summary>
 [Trait("Phase", "7")]
@@ -25,7 +25,7 @@ public sealed class CIComplianceTests
     }
 
     [Fact]
-    public void SealGateWorkflow_AllEscapeHatchDates_AreFuture()
+    public void SealGateWorkflow_RequiredChecksHaveNoTemporaryEscapeHatches()
     {
         // Arrange
         var workflowPath = Path.Combine(RepoRoot, ".github", "workflows", "seal-gate-fast.yml");
@@ -33,19 +33,14 @@ public sealed class CIComplianceTests
 
         var content = File.ReadAllText(workflowPath);
 
-        // Act — extract ALL cutoff dates from the YAML
-        var matches = Regex.Matches(content, @"cutoff=""(\d{4}-\d{2}-\d{2})""");
-        matches.Count.Should().BeGreaterThan(0, "workflow must contain at least one escape hatch cutoff date");
-
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-
-        // Assert — every cutoff date must be in the future
-        foreach (Match match in matches)
-        {
-            var cutoff = DateOnly.Parse(match.Groups[1].Value);
-            cutoff.Should().BeAfter(today,
-                $"escape hatch cutoff {cutoff} must be in the future to avoid blocking CI");
-        }
+        // The two remaining continue-on-error steps have explicit permanent enforcement steps.
+        // Lint and the governance test suites must fail the required workflow directly.
+        content.Should().NotContain("escape hatch", "temporary required-check bypasses are prohibited");
+        content.Should().NotContain("temporarily non-blocking", "required checks must fail closed");
+        content.Should().NotContain("cutoff=\"", "date-based gate bypasses are prohibited");
+        Regex.Matches(content, @"(?m)^\s*continue-on-error:\s*true\s*$")
+            .Should().HaveCount(2,
+                "only naming governance and repo shape guard may collect output before their enforcement steps");
     }
 
     [Fact]
