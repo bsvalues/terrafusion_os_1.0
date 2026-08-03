@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active under exact WO-SR-007B R3 process-host foundation authority
+**Status:** Active between cohorts; WO-SR-007B complete and authority consumed
 
 ## Ratified topology
 
@@ -77,7 +77,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-006 | Cut over Forge valuation-kernel source ownership and retire its duplicate mutable sovereign implementation | Complete R4; sovereign PR #1386 and Forge PR #4 merged; authority consumed on closeout; no cost-kernel or other-suite cutover |
 | WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Complete R3; PR #1389 merged 13-case proof as `3ff78dee1`; authority consumed on closeout; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
-| WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Active R3; Phase 1 implementation validated with 0/0 build and 27 focused tests; implementation merge and terminal closeout remain; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
+| WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Complete R3; PR #1393 merged as `d2bb8d6e1`; 0/0 build and 33 focused tests passed; authority consumed; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
 
 ## Extraction and provenance policy
 
@@ -213,16 +213,17 @@ unwired Node process-host foundation. It requires a separate bounded grant becau
 `backend/src/**`; runtime adoption, persistent selection, deployment, ownership transfer, source
 retirement, and cutover remain later gates.
 
-`OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729` now grants that exact foundation.
-Phase 0 records the decision and complete 14-file allowlist before implementation begins. The
+`OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729` granted that exact foundation.
+Phase 0 recorded the decision and complete 14-file allowlist before implementation began. The
 authorized host is explicit-path, hash-verifying, disposable-copy, filesystem-confined,
 network-denied, bounded-I/O, manually instantiated, and unwired. Runtime consumers, DI, persistent
 selection, Atlas mutation, extraction, publication, deployment, protected resources, ownership
 transfer, source retirement, and cutover remain denied.
 
-Phase 0 merged in PR #1392 and established sovereign implementation base `e4157f69a`. Phase 1
-reproduced the exact Atlas source hash from a disposable LF-preserving checkout, implemented the
-pure unwired process host, passed a zero-warning backend build and all 27 focused tests, and left the
-Atlas checkout clean. The host has no DI registration or runtime consumer. After the implementation
-merge, one governance-only closeout must consume the authority and return routing to portfolio
-reconciliation without admitting runtime adoption.
+Phase 0 merged in PR #1392 and established sovereign implementation base `e4157f69a`. PR #1393
+merged the exact implementation from reviewed head `4528dbe425e048d48638bb34cbfd6040fb768a2f`
+as `d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6`. The proof reproduced the exact Atlas source hash
+from a disposable LF-preserving checkout, passed a zero-warning backend build and all 33 focused
+tests, and left the Atlas checkout clean. The host has no DI registration or runtime consumer. This
+terminal closeout consumes the bounded authority and returns routing to portfolio reconciliation
+without admitting runtime adoption.

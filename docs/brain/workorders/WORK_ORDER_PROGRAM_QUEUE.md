@@ -146,7 +146,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
-| WO-SR-007B Atlas Unwired Projection Process Host Foundation | ACTIVE / R3 / PHASE 1 VALIDATED | Exact 14-file sequential Mode B authority active; unwired host build is 0/0 and 27 focused tests pass; implementation merge and terminal closeout remain; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
+| WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -287,7 +287,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-007B` | exact R3 process-host foundation authority active; Phase 1 implementation validated | Runtime adoption, DI, Atlas mutation, extraction, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-007B-atlas-unwired-projection-process-host-foundation.md` |
+| five-suite-federated-repository-buildout | Portfolio reconciliation after `WO-SR-007B` | exact R3 process-host foundation complete and authority consumed | Runtime adoption, DI, Atlas mutation, extraction, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -351,12 +351,14 @@ main. The host remains manually instantiated and unwired; runtime consumers, DI,
 selection, Atlas mutation, deployment, protected resources, ownership transfer, source retirement,
 and cutover remain denied.
 
-**Phase 1 implementation result (WO-SR-007B, 2026-08-02):**
-`ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_IMPLEMENTATION_VALIDATED`. A disposable LF-preserving Atlas
-checkout reproduced the exact pinned module hash. The sovereign host build passed with zero warnings
-and errors and all 27 focused process-host tests passed. No runtime consumer, DI registration,
-persistent selection, or Atlas mutation exists. Implementation merge and the governance-only
-terminal closeout remain in sequence.
+**Terminal result (WO-SR-007B, 2026-08-03):**
+`ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_FOUNDATION_PROVEN`. A disposable LF-preserving Atlas
+checkout reproduced the exact pinned module hash. The sovereign host build passed with 0 warnings
+and 0 errors, and all 33 focused process-host tests passed. PR #1393 merged exact reviewed head
+`4528dbe425e048d48638bb34cbfd6040fb768a2f` as
+`d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6`. No runtime consumer, DI registration, persistent
+selection, or Atlas mutation exists. The bounded authority is consumed and routing returns to
+portfolio reconciliation without admitting a successor.
 
 ---
 

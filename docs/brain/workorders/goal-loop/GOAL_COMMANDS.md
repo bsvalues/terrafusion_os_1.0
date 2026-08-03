@@ -91,10 +91,11 @@ the exact bounded Atlas local-shadow authority. Phase 0 merged in PR #1388 as `3
 13-case Phase 1 proof merged in PR #1389 as `3ff78dee1`, and terminal closeout consumes the authority.
 Portfolio reconciliation admitted `WO-SR-007B-P`, which found no Atlas runtime host or consumer and
 defined `WO-SR-007B` as the exact protected successor: an unwired, explicit-path, hash-verifying Node
-projection process-host foundation. Phase 0 merged in PR #1392, and Phase 1 now reproduces the exact
-LF source hash, passes a zero-warning build and all 27 focused tests, and remains manually
-instantiated and unwired. Implementation merge and terminal closeout remain. No runtime adoption or
-Atlas repository mutation is authorized. Production, protected resources, workflows,
+projection process-host foundation. Phase 0 merged in PR #1392, and PR #1393 merged the exact
+implementation as `d2bb8d6e1` after reproducing the LF source hash, passing a zero-warning build and
+all 33 focused tests, and remaining manually instantiated and unwired. The bounded authority is
+consumed and routing returns to portfolio reconciliation. No runtime adoption or Atlas repository
+mutation is authorized. Production, protected resources, workflows,
 deployment, publication, cost-kernel transfer, public API change, and other-suite cutover remain
 denied.
 Runtime/provider adoption outside this exact Forge valuation-kernel envelope, extraction, custody

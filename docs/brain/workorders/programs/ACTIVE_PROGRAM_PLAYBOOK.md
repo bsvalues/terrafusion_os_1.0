@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active under exact WO-SR-007B R3 process-host foundation authority |
-| Current | `WO-SR-007B` Phase 1 implementation validated |
-| Next | WO-SR-007B terminal closeout after implementation merge |
+| Status | Active between cohorts; WO-SR-007B authority consumed |
+| Current | Portfolio reconciliation after `WO-SR-007B` completion |
+| Next | Admit only a dependency-cleared bounded node with applicable authority |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
