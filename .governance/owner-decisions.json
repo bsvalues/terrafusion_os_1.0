@@ -1547,8 +1547,8 @@
       "completion": {
         "activation_pr": "#1392; reviewed head 43b31090e26a0c17f7d13b24c5ab7a6aa01b0ecb; merge e4157f69a692a830caea96644cf07e6b85f28271",
         "implementation_pr": "#1393; reviewed head 4528dbe425e048d48638bb34cbfd6040fb768a2f; merge d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6",
-        "terminal_closeout_pr": "this exact-scope closeout PR; exact reviewed head and merge commit are bound from GitHub PR metadata",
-        "terminal_condition_satisfied": "ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_FOUNDATION_PROVEN when this closeout merges",
+        "terminal_closeout_pr": "#1395; reviewed head a3cd1180146a695c684a873bb5cbb92266cc00ec; merge 5db63ab32486e4d71f27a934795ecce8105045d2",
+        "terminal_condition_satisfied": "ATLAS_UNWIRED_PROJECTION_PROCESS_HOST_FOUNDATION_PROVEN",
         "effective_on_merge": true,
         "authority_consumed": true
       },

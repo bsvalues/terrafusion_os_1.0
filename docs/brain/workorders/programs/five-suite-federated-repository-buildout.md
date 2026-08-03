@@ -227,3 +227,12 @@ from a disposable LF-preserving checkout, passed a zero-warning backend build an
 tests, and left the Atlas checkout clean. The host has no DI registration or runtime consumer. This
 terminal closeout consumes the bounded authority and returns routing to portfolio reconciliation
 without admitting runtime adoption.
+
+`WO-TF-POST-ATLAS-001` then reconciled live repository heads, current source consumers, user
+reachability, authority, and stale routing through five independent evidence and assurance lanes.
+Forge, Dais, Dossier, and the Property Workbench have bounded user-reachable sovereign capability;
+Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sync, TerraPilot, and
+Benton remain protected-resource or deployment gated. The highest-value dependency-cleared safe
+node is `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. It audits the existing
+constitutional parcel journey, not a new Workbench phase or batch product direction, and authorizes
+no product/runtime/test-source mutation.
