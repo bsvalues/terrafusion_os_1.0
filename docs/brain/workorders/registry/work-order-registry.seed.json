@@ -9104,8 +9104,7 @@
         },
         {
           "id": "WO-TF-POST-ATLAS-001",
-          "status": "waived",
-          "reason": "Issue #1396 authorizes canonical admission before merge; dispatch remains gated on the reconciliation PR merge and is not claimed by this waiver.",
+          "status": "required",
           "evidence": ["Issue #1396 requires the reconciliation PR to merge before WO-SR-008A dispatch begins."]
         }
       ],
