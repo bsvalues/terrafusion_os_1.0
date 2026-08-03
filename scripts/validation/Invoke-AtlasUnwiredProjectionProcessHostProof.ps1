@@ -2,7 +2,8 @@
 param(
     [string]$AtlasRepository = 'C:\Users\bsval\.codex-reference\terrafusion-atlas-sr007b-lf',
     [string]$BuildRootBase = 'E:\tf-build\sr-007b-unwired-process-host',
-    [string]$NuGetPackagesPath
+    [string]$NuGetPackagesPath,
+    [string]$NuGetSourcePath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -19,6 +20,22 @@ $nugetHttp = Join-Path $buildRoot 'nuget-http'
 $temp = Join-Path $buildRoot 'tmp'
 $result = $null
 $preservedEnvironment = @{}
+$authorizedSovereignPaths = @(
+    '.governance/owner-decisions.json',
+    'backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionProcessHost.cs',
+    'backend/src/TerraFusion.API/Services/Atlas/IAtlasProjectionProcessHost.cs',
+    'backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionProcessHostTests.cs',
+    'docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md',
+    'docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md',
+    'docs/brain/workorders/active/WO-SR-007B-atlas-unwired-projection-process-host-foundation.md',
+    'docs/brain/workorders/evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md',
+    'docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md',
+    'docs/brain/workorders/goal-loop/GOAL_COMMANDS.md',
+    'docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md',
+    'docs/brain/workorders/programs/five-suite-federated-repository-buildout.md',
+    'docs/brain/workorders/registry/work-order-registry.seed.json',
+    'scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof.ps1'
+)
 
 foreach ($name in @(
         'DOTNET_CLI_HOME',
@@ -54,8 +71,16 @@ function Invoke-Checked {
 }
 
 function Get-NodeExecutable {
-    $command = Get-Command node.exe -ErrorAction Stop
-    return [IO.Path]::GetFullPath($command.Source)
+    $path = @(& node -p 'process.execPath') | Select-Object -First 1
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($path)) {
+        throw 'Unable to resolve the real Node executable through process.execPath.'
+    }
+
+    $resolved = [IO.Path]::GetFullPath($path.Trim())
+    if (-not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+        throw "Resolved Node executable is unavailable: $resolved"
+    }
+    return $resolved
 }
 
 function Get-LocalNuGetPackages {
@@ -74,6 +99,58 @@ function Get-LocalNuGetPackages {
     return [IO.Path]::GetFullPath($path)
 }
 
+function Assert-LocalFixedDirectory {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [Parameter(Mandatory)]
+        [string]$Purpose
+    )
+
+    $resolved = [IO.Path]::GetFullPath($Path)
+    if (-not (Test-Path -LiteralPath $resolved -PathType Container)) {
+        throw "$Purpose directory is unavailable: $resolved"
+    }
+    if ($resolved.StartsWith('\\', [StringComparison]::Ordinal)) {
+        throw "$Purpose must not use a UNC path: $resolved"
+    }
+
+    $root = [IO.Path]::GetPathRoot($resolved)
+    $drive = [IO.DriveInfo]::new($root)
+    if ($drive.DriveType -ne [IO.DriveType]::Fixed) {
+        throw "$Purpose must use a local fixed drive: $resolved ($($drive.DriveType))"
+    }
+
+    return $resolved
+}
+
+function Get-SovereignChangedPaths {
+    $entries = @(git -C $sovereignRepository status --porcelain=v1 --untracked-files=all)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to inspect sovereign worktree status.'
+    }
+
+    return @($entries | ForEach-Object {
+            $path = $_.Substring(3).Replace('\\', '/')
+            if ($path.Contains(' -> ')) {
+                $path = $path.Split(' -> ')[-1]
+            }
+            $path
+        } | Sort-Object -Unique)
+}
+
+function Assert-AuthorizedSovereignPaths {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$Paths
+    )
+
+    $unauthorized = @($Paths | Where-Object { $_ -notin $authorizedSovereignPaths })
+    if ($unauthorized.Count -gt 0) {
+        throw "Unauthorized sovereign paths changed: $($unauthorized -join '; ')"
+    }
+}
+
 try {
     $sovereignHead = (git -C $sovereignRepository rev-parse HEAD).Trim()
     Invoke-Checked -Command git -Arguments @(
@@ -84,6 +161,8 @@ try {
         $expectedSovereignBase,
         $sovereignHead
     )
+    $sovereignChangesBefore = @(Get-SovereignChangedPaths)
+    Assert-AuthorizedSovereignPaths -Paths $sovereignChangesBefore
 
     $atlasRoot = (git -C $AtlasRepository rev-parse --show-toplevel).Trim()
     if ([IO.Path]::GetFullPath($atlasRoot) -ne [IO.Path]::GetFullPath($AtlasRepository)) {
@@ -114,10 +193,21 @@ try {
     }
     New-Item -ItemType Directory -Force -Path $artifacts, $dotnetHome, $nugetHttp, $temp | Out-Null
 
-    $localNuGetPackages = Get-LocalNuGetPackages
-    if (-not [string]::IsNullOrWhiteSpace($NuGetPackagesPath)) {
-        $localNuGetPackages = [IO.Path]::GetFullPath($NuGetPackagesPath)
+    $discoveredNuGetPackages = Get-LocalNuGetPackages
+    $localNuGetPackages = if ([string]::IsNullOrWhiteSpace($NuGetPackagesPath)) {
+        $discoveredNuGetPackages
     }
+    else {
+        $NuGetPackagesPath
+    }
+    $localNuGetSource = if ([string]::IsNullOrWhiteSpace($NuGetSourcePath)) {
+        $discoveredNuGetPackages
+    }
+    else {
+        $NuGetSourcePath
+    }
+    $localNuGetPackages = Assert-LocalFixedDirectory -Path $localNuGetPackages -Purpose 'NuGet package cache'
+    $localNuGetSource = Assert-LocalFixedDirectory -Path $localNuGetSource -Purpose 'Offline NuGet source'
 
     $env:DOTNET_CLI_HOME = $dotnetHome
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
@@ -131,12 +221,39 @@ try {
     $env:TERRAFUSION_ATLAS_HOST_MODULE_PATH = $modulePath
     $env:TERRAFUSION_ATLAS_NODE_PATH = Get-NodeExecutable
 
+    $backendSolution = Join-Path $sovereignRepository 'backend\TerraFusion.sln'
     $testProject = Join-Path $sovereignRepository 'backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj'
+    Invoke-Checked -Command dotnet -Arguments @(
+        'restore',
+        $backendSolution,
+        '--source',
+        $localNuGetSource,
+        '--packages',
+        $localNuGetPackages,
+        '--artifacts-path',
+        $artifacts,
+        '--no-cache',
+        '--disable-parallel',
+        '/m:1'
+    )
+    Invoke-Checked -Command dotnet -Arguments @(
+        'build',
+        $backendSolution,
+        '-c',
+        'Release',
+        '--no-restore',
+        '--artifacts-path',
+        $artifacts,
+        '/warnaserror',
+        '-p:UseSharedCompilation=false',
+        '-nodeReuse:false',
+        '/m:1'
+    )
     Invoke-Checked -Command dotnet -Arguments @(
         'restore',
         $testProject,
         '--source',
-        $localNuGetPackages,
+        $localNuGetSource,
         '--packages',
         $localNuGetPackages,
         '--artifacts-path',
@@ -175,16 +292,10 @@ try {
     if ($atlasStatusAfter.Count -gt 0) {
         throw 'Disposable Atlas checkout changed during proof.'
     }
-    $changedPaths = @(git -C $sovereignRepository status --short --untracked-files=all)
-    $unauthorized = @($changedPaths | Where-Object {
-            $_ -notmatch 'backend/src/TerraFusion.API/Services/Atlas/(IAtlasProjectionProcessHost|AtlasProjectionProcessHost)\.cs$' -and
-            $_ -notmatch 'backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionProcessHostTests\.cs$' -and
-            $_ -notmatch 'scripts/validation/Invoke-AtlasUnwiredProjectionProcessHostProof\.ps1$' -and
-            $_ -notmatch 'docs/brain/workorders/' -and
-            $_ -notmatch '\.governance/owner-decisions\.json$'
-        })
-    if ($unauthorized.Count -gt 0) {
-        throw "Unauthorized sovereign paths changed: $($unauthorized -join '; ')"
+    $sovereignChangesAfter = @(Get-SovereignChangedPaths)
+    Assert-AuthorizedSovereignPaths -Paths $sovereignChangesAfter
+    if ((Compare-Object $sovereignChangesBefore $sovereignChangesAfter).Count -gt 0) {
+        throw 'Sovereign worktree changed during restore/build/test proof.'
     }
 
     $result = [ordered]@{
@@ -197,7 +308,7 @@ try {
         atlasCoreEol = $coreEol
         atlasCheckoutClean = $true
         nodeExecutable = $env:TERRAFUSION_ATLAS_NODE_PATH
-        backendBuild = 'PASS - 0 warnings, 0 errors'
+        backendSolutionBuild = 'PASS - 0 warnings, 0 errors'
         focusedTests = 'PASS'
         runtimeConsumers = 0
         dependencyInjectionRegistrations = 0

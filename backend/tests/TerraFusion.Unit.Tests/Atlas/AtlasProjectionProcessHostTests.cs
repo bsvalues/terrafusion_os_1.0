@@ -36,7 +36,7 @@ public sealed class AtlasProjectionProcessHostTests
             ExpectedModuleSha256,
             PolygonExchange());
 
-        result.Success.Should().BeTrue();
+        result.Success.Should().BeTrue(result.ErrorMessage);
         result.Outcome.Should().Be(AtlasProjectionOutcome.Polygon);
         result.SourceModuleSha256.Should().Be(ExpectedModuleSha256);
         result.CopiedModuleSha256.Should().Be(ExpectedModuleSha256);
@@ -109,6 +109,29 @@ public sealed class AtlasProjectionProcessHostTests
         var result = await scope.Host.ProjectAsync(module, new string('0', 64), PolygonExchange());
 
         result.Failure.Should().Be(AtlasProjectionFailure.SourceHashMismatch);
+        scope.AssertClean();
+    }
+
+    [Fact]
+    public async Task InvalidExpectedHash_FailsClosed()
+    {
+        using var scope = new TestScope();
+        var module = scope.CreateModule(ReturnPolygonModule());
+        var result = await scope.Host.ProjectAsync(module, "not-a-sha256", PolygonExchange());
+
+        result.Failure.Should().Be(AtlasProjectionFailure.InvalidExpectedHash);
+        scope.AssertClean();
+    }
+
+    [Fact]
+    public async Task UnsupportedModuleType_FailsClosed()
+    {
+        using var scope = new TestScope();
+        var module = Path.Combine(scope.Root, "module.js");
+        File.WriteAllText(module, ReturnPolygonModule(), new UTF8Encoding(false));
+        var result = await scope.Host.ProjectAsync(module, Hash(module), PolygonExchange());
+
+        result.Failure.Should().Be(AtlasProjectionFailure.UnsupportedModuleType);
         scope.AssertClean();
     }
 
@@ -197,6 +220,10 @@ public sealed class AtlasProjectionProcessHostTests
             "export function projectAtlasFeature(){return {type:'Feature',geometry:{type:'Point',coordinates:[181,91]},properties:{countyId:'" + CountyId + "',parcelId:'" + ParcelId + "',evidenceState:'canonical'}};}",
             AtlasProjectionFailure.InvalidGeometry,
         ];
+        yield return [
+            "export function projectAtlasFeature(){process.stdout.write('{\"type\":\"Feature\",\"type\":\"Feature\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[1,2],[3,4],[5,6],[1,2]]]},\"properties\":{\"countyId\":\"" + CountyId + "\",\"parcelId\":\"" + ParcelId + "\",\"evidenceState\":\"canonical\"}}');process.exit(0);}",
+            AtlasProjectionFailure.InvalidOutput,
+        ];
     }
 
     [Theory]
@@ -218,7 +245,7 @@ public sealed class AtlasProjectionProcessHostTests
         using var scope = new TestScope();
         var module = scope.CreateModule(ReturnPolygonModule());
         var exchange = PolygonExchange().Replace(
-            "\"available\"",
+            "\"polygon\"",
             "\"ambiguous\"",
             StringComparison.Ordinal);
         var result = await scope.Host.ProjectAsync(module, Hash(module), exchange);
@@ -238,12 +265,15 @@ public sealed class AtlasProjectionProcessHostTests
         scope.AssertClean();
     }
 
-    [Fact]
-    public async Task NetworkAttempt_FailsClosed()
+    [Theory]
+    [InlineData("import net from 'node:net'; export function projectAtlasFeature(){return net.connect(9,'127.0.0.1');}")]
+    [InlineData("import net from 'node:net'; export function projectAtlasFeature(){return new net.Socket().connect(9,'127.0.0.1');}")]
+    [InlineData("import dns from 'node:dns'; export async function projectAtlasFeature(){return dns.promises.lookup('localhost');}")]
+    [InlineData("import dns from 'node:dns'; export function projectAtlasFeature(){return new dns.Resolver().resolve4('localhost');}")]
+    public async Task NetworkAttempt_FailsClosed(string moduleSource)
     {
         using var scope = new TestScope();
-        var module = scope.CreateModule(
-            "import net from 'node:net'; export function projectAtlasFeature(){return net.connect(9,'127.0.0.1');}");
+        var module = scope.CreateModule(moduleSource);
         var result = await scope.Host.ProjectAsync(module, Hash(module), PolygonExchange());
 
         result.Failure.Should().Be(AtlasProjectionFailure.NonZeroExit);
@@ -324,7 +354,7 @@ public sealed class AtlasProjectionProcessHostTests
             evidenceState = "canonical",
             boundary = new
             {
-                geometryState = "available",
+                geometryState = "polygon",
                 outerRing = new[]
                 {
                     new { longitude = -119.2, latitude = 46.2 },
@@ -407,9 +437,20 @@ public sealed class AtlasProjectionProcessHostTests
 
         public void Dispose()
         {
-            if (Directory.Exists(Root))
+            for (var attempt = 1; attempt <= 5 && Directory.Exists(Root); attempt++)
             {
-                Directory.Delete(Root, recursive: true);
+                try
+                {
+                    Directory.Delete(Root, recursive: true);
+                }
+                catch (IOException) when (attempt < 5)
+                {
+                    Thread.Sleep(50 * attempt);
+                }
+                catch (UnauthorizedAccessException) when (attempt < 5)
+                {
+                    Thread.Sleep(50 * attempt);
+                }
             }
         }
 
@@ -421,23 +462,51 @@ public sealed class AtlasProjectionProcessHostTests
                 return Path.GetFullPath(configured);
             }
 
-            var startInfo = new ProcessStartInfo("where.exe", "node.exe")
+            var command = OperatingSystem.IsWindows() ? "where.exe" : "/usr/bin/which";
+            var argument = OperatingSystem.IsWindows() ? "node.exe" : "node";
+            var startInfo = new ProcessStartInfo(command, argument)
             {
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
             };
-            using var process = Process.Start(startInfo)
-                ?? throw new InvalidOperationException("Unable to locate node.exe.");
-            var first = process.StandardOutput.ReadLine();
-            process.WaitForExit();
-            if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(first))
+            Process? process;
+            try
             {
-                throw new InvalidOperationException("node.exe is unavailable.");
+                process = Process.Start(startInfo);
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                throw new InvalidOperationException("Unable to locate the Node executable.", ex);
+            }
+            using var ownedProcess = process
+                ?? throw new InvalidOperationException("Unable to locate the Node executable.");
+            var first = ownedProcess.StandardOutput.ReadLine();
+            ownedProcess.WaitForExit();
+            if (ownedProcess.ExitCode != 0 || string.IsNullOrWhiteSpace(first))
+            {
+                throw new InvalidOperationException("The Node executable is unavailable.");
             }
 
-            return Path.GetFullPath(first);
+            var locator = Path.GetFullPath(first);
+            var resolveInfo = new ProcessStartInfo(locator, "-p process.execPath")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            using var resolveProcess = Process.Start(resolveInfo)
+                ?? throw new InvalidOperationException("Unable to resolve the real Node executable.");
+            var resolved = resolveProcess.StandardOutput.ReadLine();
+            resolveProcess.WaitForExit();
+            if (resolveProcess.ExitCode != 0 || string.IsNullOrWhiteSpace(resolved))
+            {
+                throw new InvalidOperationException("Unable to resolve the real Node executable.");
+            }
+
+            return Path.GetFullPath(resolved);
         }
     }
 }

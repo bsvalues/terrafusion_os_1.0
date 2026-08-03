@@ -35,15 +35,15 @@ Phase 0 merged in PR #1392 from exact reviewed head
 | Source SHA-256 | `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46` - PASS |
 | Build storage | Invocation-owned `E:\tf-build\sr-007b-unwired-process-host\<run-id>`; removed after proof |
 | Backend build | PASS - 0 warnings, 0 errors |
-| Focused tests | PASS - 27 passed, 0 failed, 0 skipped |
+| Focused tests | PASS - 33 passed, 0 failed, 0 skipped |
 | Runtime consumers | 0 |
 | DI registrations | 0 |
 | Atlas repository mutation | No |
 | Runtime adoption | No |
 
-The proof covers Polygon, Point, unavailable, deterministic normalization, canonical path and hash
+The proof covers canonical `polygon`, Point, unavailable, deterministic normalization, canonical path and hash
 verification, copied-byte verification, exact identity and property allowlists, malformed and
-oversized input/output, invalid geometry, network and filesystem denial, nonzero exit, timeout,
+oversized input/output, invalid geometry, raw-socket and DNS network denial, filesystem denial, nonzero exit, timeout,
 cancellation, process-tree termination, and cleanup. The validation script uses an explicit local
 Node executable and a local package cache; it performs no package install and no remote artifact
 fetch.

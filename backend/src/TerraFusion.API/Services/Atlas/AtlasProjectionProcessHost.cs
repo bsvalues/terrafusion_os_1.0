@@ -16,6 +16,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
     internal const int MaximumStandardOutputBytes = 1024 * 1024;
     internal const int MaximumStandardErrorBytes = 64 * 1024;
     private static readonly Encoding Utf8WithoutBom = new UTF8Encoding(false, true);
+    private static readonly Encoding ProcessUtf8 = new UTF8Encoding(false, false);
     private static readonly StringComparison PathComparison = OperatingSystem.IsWindows()
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
@@ -28,7 +29,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         "countyId", "parcelId", "evidenceState",
     };
 
-    private const string RunnerSource = """
+    private static readonly string RunnerSource = $$"""
         import dgram from 'node:dgram';
         import dns from 'node:dns';
         import http from 'node:http';
@@ -51,15 +52,37 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         ]) {
           for (const name of names) target[name] = denyNetwork;
         }
+        for (const [prototype, names] of [
+          [net.Socket.prototype, ['connect']],
+          [dgram.Socket.prototype, ['bind', 'connect', 'send']],
+          [tls.TLSSocket.prototype, ['connect']],
+          [http.ClientRequest.prototype, ['end', 'write']],
+        ]) {
+          for (const name of names) {
+            if (name in prototype) prototype[name] = denyNetwork;
+          }
+        }
+        for (const name of Object.keys(dns.promises)) {
+          if (typeof dns.promises[name] === 'function') dns.promises[name] = denyNetwork;
+        }
+        for (const name of Object.getOwnPropertyNames(dns.Resolver.prototype)) {
+          if (name !== 'constructor' && typeof dns.Resolver.prototype[name] === 'function') {
+            dns.Resolver.prototype[name] = denyNetwork;
+          }
+        }
         globalThis.fetch = denyNetwork;
         globalThis.WebSocket = class { constructor() { denyNetwork(); } };
+        globalThis.EventSource = class { constructor() { denyNetwork(); } };
+        if (typeof process.getBuiltinModule === 'function') {
+          Object.defineProperty(process, 'getBuiltinModule', { value: denyNetwork });
+        }
         syncBuiltinESMExports();
 
         let input = '';
         let inputBytes = 0;
         for await (const chunk of process.stdin) {
           inputBytes += Buffer.byteLength(chunk);
-          if (inputBytes > 1048576) throw new Error('Atlas exchange exceeds 1 MiB.');
+          if (inputBytes > {{MaximumInputBytes}}) throw new Error('Atlas exchange exceeds 1 MiB.');
           input += chunk;
         }
         const exchange = JSON.parse(input);
@@ -107,7 +130,8 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         CancellationToken cancellationToken = default)
     {
         string? invocationDirectory = null;
-        AtlasProjectionProcessResult result;
+        AtlasProjectionProcessResult? result = null;
+        var cleanupSucceeded = true;
 
         try
         {
@@ -176,17 +200,25 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 AtlasProjectionFailure.ProcessStartFailed,
                 $"Atlas projection preparation failed closed: {ex.Message}");
         }
+        finally
+        {
+            if (invocationDirectory is not null)
+            {
+                cleanupSucceeded = await DeleteInvocationDirectoryAsync(invocationDirectory)
+                    .ConfigureAwait(false);
+            }
+        }
 
-        if (invocationDirectory is not null && !DeleteInvocationDirectory(invocationDirectory))
+        if (!cleanupSucceeded)
         {
             return Failure(
                 AtlasProjectionFailure.CleanupFailed,
                 $"Atlas invocation cleanup failed: {invocationDirectory}",
-                result.SourceModuleSha256,
-                result.CopiedModuleSha256);
+                result?.SourceModuleSha256,
+                result?.CopiedModuleSha256);
         }
 
-        return result;
+        return result!;
     }
 
     private async Task<AtlasProjectionProcessResult> InvokeNodeAsync(
@@ -208,18 +240,16 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
+            StandardInputEncoding = ProcessUtf8,
+            StandardOutputEncoding = ProcessUtf8,
+            StandardErrorEncoding = ProcessUtf8,
         };
         startInfo.ArgumentList.Add("--permission");
         startInfo.ArgumentList.Add($"--allow-fs-read={invocationDirectory}");
         startInfo.ArgumentList.Add($"--allow-fs-write={invocationDirectory}");
         startInfo.ArgumentList.Add(runnerPath);
         startInfo.ArgumentList.Add(copiedModulePath);
-        foreach (var key in startInfo.Environment.Keys
-                     .Where(IsAtlasEnvironmentVariable)
-                     .ToArray())
-        {
-            startInfo.Environment.Remove(key);
-        }
+        ReplaceWithMinimalEnvironment(startInfo.Environment);
 
         using var process = new Process { StartInfo = startInfo };
         try
@@ -242,31 +272,36 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             timeoutCts.Token);
+        Task<string>? stdoutTask = null;
+        Task<string>? stderrTask = null;
+        Task? exitTask = null;
         try
         {
-            await process.StandardInput.WriteAsync(exchangeJson.AsMemory(), linkedCts.Token)
-                .ConfigureAwait(false);
-            process.StandardInput.Close();
-
-            var stdoutTask = ReadBoundedAsync(
+            stdoutTask = ReadBoundedAsync(
                 process.StandardOutput,
                 MaximumStandardOutputBytes,
                 AtlasProjectionFailure.StandardOutputTooLarge,
                 linkedCts.Token);
-            var stderrTask = ReadBoundedAsync(
+            stderrTask = ReadBoundedAsync(
                 process.StandardError,
                 MaximumStandardErrorBytes,
                 AtlasProjectionFailure.StandardErrorTooLarge,
                 linkedCts.Token);
-            var exitTask = process.WaitForExitAsync(linkedCts.Token);
+            exitTask = process.WaitForExitAsync(linkedCts.Token);
+
+            await process.StandardInput.WriteAsync(exchangeJson.AsMemory(), linkedCts.Token)
+                .ConfigureAwait(false);
+            process.StandardInput.Close();
 
             try
             {
-                await AwaitProcessAndStreamsAsync(exitTask, stdoutTask, stderrTask).ConfigureAwait(false);
+                await AwaitProcessAndStreamsFailFastAsync(exitTask, stdoutTask, stderrTask)
+                    .ConfigureAwait(false);
             }
             catch
             {
-                KillProcessTree(process);
+                await KillProcessTreeAsync(process).ConfigureAwait(false);
+                await ObserveTasksAsync(exitTask, stdoutTask, stderrTask).ConfigureAwait(false);
                 throw;
             }
 
@@ -288,7 +323,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         }
         catch (OperationCanceledException)
         {
-            KillProcessTree(process);
+            await KillProcessTreeAsync(process).ConfigureAwait(false);
             throw Fail(
                 cancellationToken.IsCancellationRequested
                     ? AtlasProjectionFailure.Cancelled
@@ -301,22 +336,44 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         {
             if (!process.HasExited)
             {
-                KillProcessTree(process);
+                await KillProcessTreeAsync(process).ConfigureAwait(false);
             }
+            await ObserveTasksAsync(exitTask, stdoutTask, stderrTask).ConfigureAwait(false);
         }
     }
 
-    private static async Task AwaitProcessAndStreamsAsync(
-        Task exitTask,
-        Task<string> stdoutTask,
-        Task<string> stderrTask)
+    private static async Task AwaitProcessAndStreamsFailFastAsync(params Task[] tasks)
     {
-        var pending = new List<Task> { exitTask, stdoutTask, stderrTask };
+        var pending = tasks.ToList();
         while (pending.Count > 0)
         {
             var completed = await Task.WhenAny(pending).ConfigureAwait(false);
             await completed.ConfigureAwait(false);
             pending.Remove(completed);
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
+
+    private static async Task ObserveTasksAsync(params Task?[] tasks)
+    {
+        var started = tasks.Where(task => task is not null).Cast<Task>().ToArray();
+        if (started.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var all = Task.WhenAll(started);
+            if (await Task.WhenAny(all, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false) == all)
+            {
+                await all.ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            // The primary invocation path reports the governing failure.
         }
     }
 
@@ -337,7 +394,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 return builder.ToString();
             }
 
-            bytesRead += Utf8WithoutBom.GetByteCount(buffer, 0, count);
+            bytesRead += ProcessUtf8.GetByteCount(buffer, 0, count);
             if (bytesRead > maximumBytes)
             {
                 throw Fail(overflowFailure, $"Process stream exceeded {maximumBytes} bytes.");
@@ -423,7 +480,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
             };
             var expectedGeometryState = outcome == AtlasProjectionOutcome.Point
                 ? "centroid_only"
-                : "available";
+                : "polygon";
             if (!string.Equals(exchange.GeometryState, expectedGeometryState, StringComparison.Ordinal))
             {
                 throw Fail(
@@ -584,7 +641,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 boundary,
                 "geometryState",
                 AtlasProjectionFailure.InvalidExchange);
-            if (geometryState is not ("available" or "centroid_only" or "unavailable"))
+            if (geometryState is not ("polygon" or "centroid_only" or "unavailable"))
             {
                 throw Fail(
                     AtlasProjectionFailure.InvalidExchange,
@@ -673,7 +730,9 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         }
 
         var actual = element.EnumerateObject().Select(property => property.Name).ToArray();
-        if (actual.Length != expected.Count || actual.Any(field => !expected.Contains(field)))
+        var distinct = actual.Distinct(StringComparer.Ordinal).ToArray();
+        if (actual.Length != distinct.Length || distinct.Length != expected.Count ||
+            distinct.Any(field => !expected.Contains(field)))
         {
             throw Fail(AtlasProjectionFailure.InvalidOutput, $"Atlas {objectName} contains unexpected fields.");
         }
@@ -696,27 +755,42 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         return value.GetString()!;
     }
 
-    private static bool IsAtlasEnvironmentVariable(string key) =>
-        key.StartsWith("TERRAFUSION_ATLAS_", StringComparison.OrdinalIgnoreCase) ||
-        key.StartsWith("TF_ATLAS_", StringComparison.OrdinalIgnoreCase);
+    private static void ReplaceWithMinimalEnvironment(IDictionary<string, string?> environment)
+    {
+        var inherited = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var key in new[] { "SystemRoot", "WINDIR", "TEMP", "TMP" })
+        {
+            if (environment.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
+            {
+                inherited[key] = value;
+            }
+        }
 
-    private static void KillProcessTree(Process process)
+        environment.Clear();
+        foreach (var pair in inherited)
+        {
+            environment[pair.Key] = pair.Value;
+        }
+    }
+
+    private static async Task KillProcessTreeAsync(Process process)
     {
         try
         {
             if (!process.HasExited)
             {
                 process.Kill(entireProcessTree: true);
-                process.WaitForExit();
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
             }
         }
-        catch (InvalidOperationException)
+        catch (Exception ex) when (ex is InvalidOperationException or OperationCanceledException)
         {
             // The process exited between the state check and termination.
         }
     }
 
-    private static bool DeleteInvocationDirectory(string path)
+    private static async Task<bool> DeleteInvocationDirectoryAsync(string path)
     {
         for (var attempt = 1; attempt <= 5; attempt++)
         {
@@ -728,13 +802,19 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 }
                 return !Directory.Exists(path);
             }
-            catch (IOException) when (attempt < 5)
+            catch (IOException)
             {
-                Thread.Sleep(100 * attempt);
+                if (attempt < 5)
+                {
+                    await Task.Delay(100 * attempt).ConfigureAwait(false);
+                }
             }
-            catch (UnauthorizedAccessException) when (attempt < 5)
+            catch (UnauthorizedAccessException)
             {
-                Thread.Sleep(100 * attempt);
+                if (attempt < 5)
+                {
+                    await Task.Delay(100 * attempt).ConfigureAwait(false);
+                }
             }
         }
 
