@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-07-27
+**Date:** 2026-08-03
 **Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -13,7 +13,12 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout remains active between cohorts.
+The Five-Suite Federated Repository Buildout has selected and admitted
+`WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. Issue #1396 is completing the
+post-Atlas multi-agent reconciliation and has classified the actual user/runtime state. Dispatch of
+the dependency-cleared R2 evidence node occurs only after the reconciliation PR merges. It changes
+no product behavior and selects no batch direction.
+The historical cohort narrative follows.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
 Dossier E1/E2 envelope is complete and consumed. WO-SR-005E-A proved that the committed GPT/RAG
@@ -147,6 +152,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
 | WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
+| **WO-SR-008A Single-Parcel Assessor Journey Runtime Readiness Audit** | **ACTIVE / R2** | Read-only proof of the existing search-to-Workbench assessor journey, first failing link, and one exact bounded successor; no product/runtime/test source changes |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -287,7 +293,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | Portfolio reconciliation after `WO-SR-007B` | exact R3 process-host foundation complete and authority consumed | Runtime adoption, DI, Atlas mutation, extraction, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `evidence/WO-SR-007B-ATLAS-UNWIRED-PROJECTION-PROCESS-HOST-FOUNDATION.md` |
+| five-suite-federated-repository-buildout | `WO-SR-008A` admitted; dispatch pending reconciliation merge | dependency-cleared R2 evidence audit | Product, runtime, and test-source mutation; DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -359,6 +365,15 @@ and 0 errors, and all 33 focused process-host tests passed. PR #1393 merged exac
 `d2bb8d6e1e8e8a22a7a8244db3dcaabb9707ecc6`. No runtime consumer, DI registration, persistent
 selection, or Atlas mutation exists. The bounded authority is consumed and routing returns to
 portfolio reconciliation without admitting a successor.
+
+**Current reconciliation result (WO-TF-POST-ATLAS-001, 2026-08-03):**
+`PENDING_TERMINAL_VERIFICATION`. Forge, Dais, Dossier, and the Property Workbench are
+user-reachable in bounded sovereign source; Atlas and GPT remain foundation-only/unwired at their
+new suite boundaries; Sync, TerraPilot, and Benton remain protected-resource or deployment gated.
+`WO-SR-008A` is the highest-value dependency-cleared R2 node because it audits the existing
+single-parcel assessor journey without choosing new behavior or crossing runtime authority. The
+terminal changes to `NEXT_WORK_ORDER_ADMITTED_AND_DISPATCHED` only after this reconciliation merges
+and the dedicated WO-SR-008A worktree begins preflight.
 
 ---
 

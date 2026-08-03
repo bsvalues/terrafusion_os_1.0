@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-006 sovereign implementation and rollback proof",
-  "generatedAt": "2026-07-28T00:00:00Z",
-  "description": "Five-suite registry with WO-SR-006 Phase 2 ready for PR under a bounded Forge-only R4 canonical ownership-transfer decision. Phase 0 and Forge readiness are merged; local manifest-bound staging, typed fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, and repository rollback passed. Cross-repository finalization remains pending. Production, protected resources, other-suite cutover, workflows, deployment, publication, credentials, and secrets remain denied.",
+  "generatedBy": "WO-TF-POST-ATLAS-001 post-Atlas reconciliation",
+  "generatedAt": "2026-08-03T00:00:00Z",
+  "description": "Five-suite registry after WO-SR-007B completion. WO-SR-008A is the active R2 single-parcel assessor journey runtime-readiness audit; runtime adoption, providers, deployment, protected resources, and cutover remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9005,6 +9005,171 @@
       "provenance": {
         "createdAt": "2026-07-29T00:00:00Z",
         "source": "Owner decision OWNER-SR-007B-R3-ATLAS-UNWIRED-PROJECTION-HOST-20260729 at sovereign base ca7b0324784584f10a2e4b21f116192fc9bb95c5 and exact Atlas base 6c530f1b6b77d59225353dede929c0688f1587da.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TF-POST-ATLAS-001",
+      "title": "Authoritative Post-Atlas State and Next Work-Order Admission",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Establish one source-backed post-Atlas state and admit exactly one dependency-cleared bounded successor.",
+      "riskClass": "R2",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-007B",
+          "status": "satisfied",
+          "evidence": ["PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only multi-agent portfolio reconciliation and canonical R2 successor admission",
+          "paths": [".governance/owner-decisions.json", "docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {"name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"}
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md",
+        "docs/brain/workorders/evidence/WO-TF-POST-ATLAS-001-AUTHORITATIVE-STATE-AND-NEXT-WORK-ORDER-ADMISSION.md"
+      ],
+      "blockedFiles": [
+        "frontend/**", "backend/**", "os-platform/**", "tools/**", "scripts/**", "packages/**",
+        ".github/workflows/**", "deployment/**", "package.json", "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**", "specialized/**", "applications/**"
+      ],
+      "evidenceRequired": [
+        {"kind": "other", "description": "Repository and capability matrices, contradiction ledger, ranked candidates, one complete successor packet, and independent exact-head assurance."}
+      ],
+      "validationGates": [
+        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pass"},
+        {"name": "Work Order query and planner", "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pass - 41 tests"}
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-TF-POST-ATLAS-001-AUTHORITATIVE-STATE-AND-NEXT-WORK-ORDER-ADMISSION.md",
+          "summary": "Multi-agent post-Atlas state, contradiction, ranking, admission, and independent assurance evidence."
+        }
+      ],
+      "stopConditions": [
+        {"type": "authority_wall", "description": "Stop before product/runtime/test-source mutation, deployment, protected resources, schema changes, destructive action, cutover, or a new product direction."}
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008A",
+          "reason": "Highest-value dependency-cleared R2 audit of the existing constitutional single-parcel assessor journey.",
+          "riskClass": "R2",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 plus standing operator authority cover this exact ten-file R2 reconciliation lifecycle and successor dispatch after merge."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "Issue #1396 at sovereign base 5db63ab32486e4d71f27a934795ecce8105045d2.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008A",
+      "title": "Single-Parcel Assessor Journey Runtime Readiness Audit",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Determine whether the existing search-to-parcel Workbench journey is locally provable and identify its first exact failing link without product or runtime mutation.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-007B",
+          "status": "satisfied",
+          "evidence": ["PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."]
+        },
+        {
+          "id": "WO-TF-POST-ATLAS-001",
+          "status": "required",
+          "evidence": ["Issue #1396 requires the reconciliation PR to merge before WO-SR-008A dispatch begins."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Single-parcel journey governance and evidence",
+          "paths": [
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {"name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"}
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md",
+        "docs/brain/workorders/evidence/WO-SR-008A-SINGLE-PARCEL-ASSESSOR-JOURNEY-RUNTIME-READINESS-AUDIT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {"kind": "other", "description": "Exact route, consumer, registration, provider, test, resource, and authority evidence for every leg of the canonical single-parcel journey, plus the first failing link and one bounded successor."}
+      ],
+      "validationGates": [
+        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pending"},
+        {"name": "Work Order query and planner", "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pending"}
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {"type": "authority_wall", "description": "Stop before product/runtime/test source edits, DI or consumer wiring, providers, persistence, deployment, protected resources, schema changes, cutover, or a new product direction."}
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 read-only/evidence lifecycle. They do not authorize product or runtime implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "Issue #1396 multi-agent post-Atlas reconciliation at sovereign base 5db63ab32486e4d71f27a934795ecce8105045d2.",
         "schemaVersion": "0.1.0"
       }
     }

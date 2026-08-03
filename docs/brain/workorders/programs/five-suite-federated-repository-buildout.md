@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-007B complete and authority consumed
+**Status:** Active; WO-SR-008A admitted and pending post-reconciliation dispatch
 
 ## Ratified topology
 
@@ -78,6 +78,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Complete R3; PR #1389 merged 13-case proof as `3ff78dee1`; authority consumed on closeout; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
 | WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Complete R3; PR #1393 merged as `d2bb8d6e1`; 0/0 build and 33 focused tests passed; authority consumed; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
+| WO-TF-POST-ATLAS-001 | Reconcile authoritative post-Atlas state and admit one successor | In progress; exact ten-file reconciliation PR pending merge and terminal dispatch verification |
+| WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | Admitted R2; dispatch begins after WO-TF-POST-ATLAS-001 merges; no product/runtime/test-source mutation |
 
 ## Extraction and provenance policy
 
@@ -227,3 +229,12 @@ from a disposable LF-preserving checkout, passed a zero-warning backend build an
 tests, and left the Atlas checkout clean. The host has no DI registration or runtime consumer. This
 terminal closeout consumes the bounded authority and returns routing to portfolio reconciliation
 without admitting runtime adoption.
+
+`WO-TF-POST-ATLAS-001` then reconciled live repository heads, current source consumers, user
+reachability, authority, and stale routing through five independent evidence and assurance lanes.
+Forge, Dais, Dossier, and the Property Workbench have bounded user-reachable sovereign capability;
+Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sync, TerraPilot, and
+Benton remain protected-resource or deployment gated. The highest-value dependency-cleared safe
+node is `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. It audits the existing
+constitutional parcel journey, not a new Workbench phase or batch product direction, and authorizes
+no product/runtime/test-source mutation.
