@@ -523,6 +523,7 @@ jobs:
           fi
 
       - name: Scope classifier (optional)
+        id: scope-classifier
         if: hashFiles('tools/scope-classifier/package.json') != ''
         working-directory: tools/scope-classifier
         run: pnpm test

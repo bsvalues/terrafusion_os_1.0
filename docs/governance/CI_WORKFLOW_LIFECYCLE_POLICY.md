@@ -45,8 +45,11 @@ never become a renewable or silent validation skip.
 
 Any future bounded exception requires an explicit governance change with active authority,
 documented scope, an unambiguous terminal condition, and a canonical test that prevents the
-exception from surviving that condition. `continue-on-error` is permitted only when a subsequent
-step in the same required job deterministically enforces the collected result.
+exception from surviving that condition. `continue-on-error` is permitted only for an explicitly
+named optional diagnostic that cannot determine the required job outcome, or when a subsequent step
+in the same required job deterministically enforces the collected result. The SEAL workflow records
+the optional scope classifier as the sole diagnostic exception and enforces the repo shape guard in
+the immediately following step.
 
 ---
 

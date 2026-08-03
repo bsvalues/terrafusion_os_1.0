@@ -33,14 +33,30 @@ public sealed class CIComplianceTests
 
         var content = File.ReadAllText(workflowPath);
 
-        // The two remaining continue-on-error steps have explicit permanent enforcement steps.
-        // Lint and the governance test suites must fail the required workflow directly.
-        content.Should().NotContain("escape hatch", "temporary required-check bypasses are prohibited");
-        content.Should().NotContain("temporarily non-blocking", "required checks must fail closed");
-        content.Should().NotContain("cutoff=\"", "date-based gate bypasses are prohibited");
-        Regex.Matches(content, @"(?m)^\s*continue-on-error:\s*true\s*$")
-            .Should().HaveCount(2,
-                "only naming governance and repo shape guard may collect output before their enforcement steps");
+        content.Should().NotMatchRegex(
+            @"(?i)(escape[- ]?hatch|temporar(?:y|ily)\s+non[- ]blocking|cutoff\s*[:=]|expires?\s+\d{4}-\d{2}-\d{2})",
+            "temporary and date-based required-check bypasses are prohibited");
+
+        var stepBlocks = Regex.Matches(
+                content,
+                @"(?ms)^\s{6}- name:\s*(?<name>[^\r\n]+)\r?\n(?<body>.*?)(?=^\s{6}- name:|\z)")
+            .Cast<Match>()
+            .Where(match => Regex.IsMatch(match.Value, @"(?m)^\s*continue-on-error:\s*true\s*$"))
+            .ToArray();
+
+        var softFailStepIds = stepBlocks
+            .Select(match => Regex.Match(match.Value, @"(?m)^\s*id:\s*(?<id>[^\s#]+)\s*$"))
+            .Select(match => match.Success ? match.Groups["id"].Value : "<missing>");
+
+        softFailStepIds.Should().Equal("scope-classifier", "shape-guard");
+
+        stepBlocks.Single(match => match.Groups["name"].Value == "Scope classifier (optional)").Value
+            .Should().Contain("if: hashFiles('tools/scope-classifier/package.json') != ''",
+                "the only unenforced soft-fail step must remain an explicitly optional diagnostic");
+
+        content.Should().MatchRegex(
+            @"(?ms)^\s{6}- name:\s*Repo shape guard \(root spine allowlist\).*?^\s*id:\s*shape-guard\s*$.*?^\s*continue-on-error:\s*true\s*$.*?^\s{6}- name:\s*Repo shape guard enforcement\s*$\r?\n\s*if:\s*steps\.shape-guard\.outcome == 'failure'\s*$",
+            "the shape guard may collect a failure only when the next step enforces its outcome");
     }
 
     [Fact]
