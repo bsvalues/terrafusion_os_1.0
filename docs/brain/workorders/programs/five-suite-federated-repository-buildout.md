@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008A admitted and pending post-reconciliation dispatch
+**Status:** Active; WO-SR-008A audit complete pending merge; WO-SR-008E admitted behind merge interlock
 
 ## Ratified topology
 
@@ -78,8 +78,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-007A | Prove exact Atlas standalone projection through a local disposable sovereign shadow path | Complete R3; PR #1389 merged 13-case proof as `3ff78dee1`; authority consumed on closeout; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
 | WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Complete R3; PR #1393 merged as `d2bb8d6e1`; 0/0 build and 33 focused tests passed; authority consumed; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
-| WO-TF-POST-ATLAS-001 | Reconcile authoritative post-Atlas state and admit one successor | In progress; exact ten-file reconciliation PR pending merge and terminal dispatch verification |
-| WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | Admitted R2; dispatch begins after WO-TF-POST-ATLAS-001 merges; no product/runtime/test-source mutation |
+| WO-TF-POST-ATLAS-001 | Reconcile authoritative post-Atlas state and admit one successor | Complete; PR #1397 merged as `b85e1c92d` and WO-SR-008A preflight began |
+| WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | In progress; audit complete, first live failure is protected parcel acquisition, closeout merge pending |
+| WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | Ready R2; dependency-interlocked until WO-SR-008A merges; docs/evidence only |
 
 ## Extraction and provenance policy
 
@@ -238,3 +239,13 @@ Benton remain protected-resource or deployment gated. The highest-value dependen
 node is `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. It audits the existing
 constitutional parcel journey, not a new Workbench phase or batch product direction, and authorizes
 no product/runtime/test-source mutation.
+
+`WO-SR-008A` then inspected the journey through independent routing, suite-consumer,
+protected-boundary, and synthesis lanes. Search-to-route and Workbench composition are structurally
+present, and five targeted files / 46 tests pass with synthetic evidence. The first live failure is
+authenticated county-governed parcel acquisition. Forge does not consume its canonical kernel,
+Atlas's process host remains unwired, Dais Workbench operations terminate at the offline Pilot
+fallback, and the Pilot evidence rail is not durable. `WO-SR-008E` is the highest-value same-risk
+successor inside existing authority: it defines the Workbench-to-canonical-kernel boundary without
+product, runtime, test, or Forge mutation. Synthetic test restoration remains separately
+protected-path gated.
