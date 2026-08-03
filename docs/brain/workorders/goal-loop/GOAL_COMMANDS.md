@@ -107,6 +107,11 @@ Issue #1396 completed the post-Atlas multi-agent reconciliation and admitted
 R2 node. It audits the existing search-to-Workbench journey and its first failing link without product,
 runtime, test-source, provider, persistence, deployment, or protected-resource mutation.
 
+WO-SR-008A identified authenticated county-governed parcel acquisition as the first live boundary.
+Five targeted synthetic/structural test files pass 46 tests, but do not prove live readiness.
+`WO-SR-008D - Synthetic Single-Parcel Journey Proof Restoration` is admitted behind the WO-SR-008A
+merge interlock to restore two stale/skipped contracts without product-source or runtime changes.
+
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
 **Blocked:** package publication, blind extraction, duplicate mutable ownership outside the

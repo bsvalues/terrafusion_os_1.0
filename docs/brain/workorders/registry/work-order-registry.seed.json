@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-TF-POST-ATLAS-001 post-Atlas reconciliation",
+  "generatedBy": "WO-SR-008A single-parcel journey runtime-readiness audit",
   "generatedAt": "2026-08-03T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-007B completion. WO-SR-008A is the active R2 single-parcel assessor journey runtime-readiness audit; runtime adoption, providers, deployment, protected resources, and cutover remain unauthorized.",
+  "description": "Five-suite registry during WO-SR-008A closeout. The journey audit identified protected parcel acquisition as the first live boundary and admitted WO-SR-008D behind a post-merge dependency interlock; runtime adoption, providers, deployment, protected resources, and cutover remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9014,22 +9014,29 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Establish one source-backed post-Atlas state and admit exactly one dependency-cleared bounded successor.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-007B",
           "status": "satisfied",
-          "evidence": ["PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."]
+          "evidence": [
+            "PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."
+          ]
         }
       ],
       "allowedSystems": [
         {
           "name": "Read-only multi-agent portfolio reconciliation and canonical R2 successor admission",
-          "paths": [".governance/owner-decisions.json", "docs/brain/workorders/**"]
+          "paths": [
+            ".governance/owner-decisions.json",
+            "docs/brain/workorders/**"
+          ]
         }
       ],
       "blockedSystems": [
-        {"name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"}
+        {
+          "name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"
+        }
       ],
       "allowedFiles": [
         ".governance/owner-decisions.json",
@@ -9044,16 +9051,39 @@
         "docs/brain/workorders/evidence/WO-TF-POST-ATLAS-001-AUTHORITATIVE-STATE-AND-NEXT-WORK-ORDER-ADMISSION.md"
       ],
       "blockedFiles": [
-        "frontend/**", "backend/**", "os-platform/**", "tools/**", "scripts/**", "packages/**",
-        ".github/workflows/**", "deployment/**", "package.json", "**/pnpm-lock.yaml",
-        "**/ARCHIVE/**", "specialized/**", "applications/**"
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
       ],
       "evidenceRequired": [
-        {"kind": "other", "description": "Repository and capability matrices, contradiction ledger, ranked candidates, one complete successor packet, and independent exact-head assurance."}
+        {
+          "kind": "other",
+          "description": "Repository and capability matrices, contradiction ledger, ranked candidates, one complete successor packet, and independent exact-head assurance."
+        }
       ],
       "validationGates": [
-        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pass"},
-        {"name": "Work Order query and planner", "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pass - 41 tests"}
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass - 41 tests"
+        }
       ],
       "evidenceProduced": [
         {
@@ -9063,7 +9093,10 @@
         }
       ],
       "stopConditions": [
-        {"type": "authority_wall", "description": "Stop before product/runtime/test-source mutation, deployment, protected resources, schema changes, destructive action, cutover, or a new product direction."}
+        {
+          "type": "authority_wall",
+          "description": "Stop before product/runtime/test-source mutation, deployment, protected resources, schema changes, destructive action, cutover, or a new product direction."
+        }
       ],
       "nextCandidates": [
         {
@@ -9095,33 +9128,38 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Determine whether the existing search-to-parcel Workbench journey is locally provable and identify its first exact failing link without product or runtime mutation.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-007B",
           "status": "satisfied",
-          "evidence": ["PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."]
+          "evidence": [
+            "PR #1395 merged WO-SR-007B terminal closeout as 5db63ab32486e4d71f27a934795ecce8105045d2."
+          ]
         },
         {
           "id": "WO-TF-POST-ATLAS-001",
-          "status": "required",
-          "evidence": ["Issue #1396 requires the reconciliation PR to merge before WO-SR-008A dispatch begins."]
+          "status": "satisfied",
+          "evidence": [
+            "PR #1397 merged WO-TF-POST-ATLAS-001 as b85e1c92db4fcf0b7aa5eb1ee98c44e998866854; the dedicated WO-SR-008A worktree then began preflight."
+          ]
         }
       ],
       "allowedSystems": [
         {
           "name": "Single-parcel journey governance and evidence",
-          "paths": [
-            "docs/brain/workorders/**"
-          ]
+          "paths": ["docs/brain/workorders/**"]
         }
       ],
       "blockedSystems": [
-        {"name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"}
+        {
+          "name": "Product, runtime, test, workflow, package, deployment, provider, persistence, protected-resource, and cross-repository mutation"
+        }
       ],
       "allowedFiles": [
         "docs/brain/workorders/active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md",
         "docs/brain/workorders/evidence/WO-SR-008A-SINGLE-PARCEL-ASSESSOR-JOURNEY-RUNTIME-READINESS-AUDIT.md",
+        "docs/brain/workorders/active/WO-SR-008D-synthetic-single-parcel-journey-proof-restoration.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -9146,17 +9184,52 @@
         "applications/**"
       ],
       "evidenceRequired": [
-        {"kind": "other", "description": "Exact route, consumer, registration, provider, test, resource, and authority evidence for every leg of the canonical single-parcel journey, plus the first failing link and one bounded successor."}
+        {
+          "kind": "other",
+          "description": "Exact route, consumer, registration, provider, test, resource, and authority evidence for every leg of the canonical single-parcel journey, plus the first failing link and one bounded successor."
+        }
       ],
       "validationGates": [
-        {"name": "Diff check", "command": "git diff --check", "required": true, "result": "pending"},
-        {"name": "Work Order query and planner", "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs", "required": true, "result": "pending"}
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Targeted journey contracts",
+          "command": "corepack pnpm exec vitest run <five selected WO-SR-008A files>",
+          "required": true,
+          "result": "pass - 5 files / 46 tests"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass - 41 tests"
+        }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-008A-SINGLE-PARCEL-ASSESSOR-JOURNEY-RUNTIME-READINESS-AUDIT.md",
+          "summary": "Exact journey matrix, first failing link, test evidence, non-claims, ranking, and selected successor."
+        }
+      ],
       "stopConditions": [
-        {"type": "authority_wall", "description": "Stop before product/runtime/test source edits, DI or consumer wiring, providers, persistence, deployment, protected resources, schema changes, cutover, or a new product direction."}
+        {
+          "type": "authority_wall",
+          "description": "Stop before product/runtime/test source edits, DI or consumer wiring, providers, persistence, deployment, protected resources, schema changes, cutover, or a new product direction."
+        }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008D",
+          "reason": "Smallest same-risk slice restores stale synthetic journey evidence while preserving the protected live parcel boundary.",
+          "riskClass": "R2",
+          "blocked": true
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -9170,6 +9243,114 @@
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
         "source": "Issue #1396 multi-agent post-Atlas reconciliation at sovereign base 5db63ab32486e4d71f27a934795ecce8105045d2.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008D",
+      "title": "Synthetic Single-Parcel Journey Proof Restoration",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Restore current bounded synthetic evidence for the existing single-parcel assessor journey without changing product behavior or crossing protected resources.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-008A",
+          "status": "required",
+          "evidence": [
+            "WO-SR-008D dispatch begins only after the WO-SR-008A audit PR merges and post-merge verification succeeds."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded synthetic single-parcel journey contract restoration and governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frontend product source, backend, runtime, workflows, packages, deployment, providers, persistence, protected resources, live services, and production"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/__tests__/journey/AssessorValuationJourney.contract.test.tsx",
+        "frontend/apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx",
+        "docs/brain/workorders/active/WO-SR-008D-synthetic-single-parcel-journey-proof-restoration.md",
+        "docs/brain/workorders/evidence/WO-SR-008D-SYNTHETIC-SINGLE-PARCEL-JOURNEY-PROOF-RESTORATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Restored assessor journey and tab-order contracts with explicit synthetic/live non-claims."
+        },
+        {
+          "kind": "other",
+          "description": "Exact changed-path, validation, review, assurance, and post-merge evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused restored contracts",
+          "command": "corepack pnpm exec vitest run frontend/apps/os-shell/src/__tests__/journey/AssessorValuationJourney.contract.test.tsx frontend/apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop before product-source, backend, runtime, consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 and standing operator authority cover the exact R2 test/evidence restoration lifecycle after WO-SR-008A merges. They do not authorize product or runtime implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "WO-SR-008A multi-agent audit at sovereign base b85e1c92db4fcf0b7aa5eb1ee98c44e998866854.",
         "schemaVersion": "0.1.0"
       }
     }
