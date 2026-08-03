@@ -245,23 +245,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint (loud, temporary non-blocking)
+      - name: Lint (blocking)
         id: lint
         run: pnpm -C frontend run lint
-        continue-on-error: true
-
-      - name: Lint escape hatch (expires 2026-07-31)
-        if: steps.lint.outcome == 'failure'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cutoff="2026-07-31"
-          echo "::warning::Lint failed (temporarily non-blocking before $cutoff UTC). Fix lint; this will become a merge blocker on $cutoff."
-          today="$(date -u +%F)"
-          if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
-            echo "::error::Lint escape hatch expired on $cutoff. Lint must pass."
-            exit 1
-          fi
 
       - name: Type check (blocking)
         id: typecheck
@@ -303,7 +289,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '⚠️ Soft (expires 2026-07-31)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Type Check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| IPC Tests | ${{ steps.ipc-tests.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ steps.build.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
@@ -537,6 +523,7 @@ jobs:
           fi
 
       - name: Scope classifier (optional)
+        id: scope-classifier
         if: hashFiles('tools/scope-classifier/package.json') != ''
         working-directory: tools/scope-classifier
         run: pnpm test
@@ -587,62 +574,41 @@ jobs:
         id: quarantine-tests
         shell: bash
         run: node --test scripts/quarantine/__tests__/*.test.mjs
-        continue-on-error: true
 
       - name: Phase83 platform tests (54 tests / 17 suites)
         id: phase83-tests
         shell: bash
         run: node --test os-platform/core/tests/phase83-tools.test.mjs
-        continue-on-error: true
 
       - name: Write-lane governance tests
         id: write-lane-tests
         shell: bash
         run: node --test os-platform/core/tests/c2-write-lane-governance.test.mjs os-platform/core/tests/suite-write-lane-compliance.test.mjs
-        continue-on-error: true
 
       - name: Workbench compliance tests
         id: workbench-tests
         shell: bash
         run: node --test os-platform/core/tests/workbench-host-boundary.test.mjs os-platform/core/tests/workbench-tab-embedding.test.mjs
-        continue-on-error: true
 
       - name: Workflow path integrity (13 tests / 5 suites)
         id: workflow-tests
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-paths.test.mjs
-        continue-on-error: true
 
       - name: Workflow inventory tests (23 tests / 5 suites)
         id: inventory-tests
         shell: bash
         run: node --test scripts/governance/__tests__/workflow-inventory.test.mjs scripts/governance/__tests__/workflow-inventory.integration.test.mjs
-        continue-on-error: true
 
       - name: Workflow inventory snapshot check
         id: inventory-snapshot
         shell: bash
         run: node scripts/governance/workflow-inventory.mjs --check
-        continue-on-error: true
 
       - name: Deployment truth gate (63 specs)
         id: deployment-truth-gate
         shell: bash
         run: node --test tests/deployment-truth-gate.test.mjs
-        continue-on-error: true
-
-      - name: Governance test escape hatch (expires 2026-07-31)
-        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure' || steps.deployment-truth-gate.outcome == 'failure'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cutoff="2026-07-31"
-          echo "::warning::Governance tests failed (temporarily non-blocking before $cutoff UTC). See Issue #266. This becomes a merge blocker on $cutoff."
-          today="$(date -u +%F)"
-          if [[ "$today" > "$cutoff" || "$today" == "$cutoff" ]]; then
-            echo "::error::Governance test escape hatch expired on $cutoff. All governance tests must pass."
-            exit 1
-          fi
 
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard
