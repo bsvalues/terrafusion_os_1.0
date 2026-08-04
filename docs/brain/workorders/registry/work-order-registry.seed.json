@@ -9804,7 +9804,7 @@
           "name": "Remote required checks",
           "command": "GitHub required checks on the exact amended PR head",
           "required": true,
-          "result": "pass - exact implementation head completed all required and extended checks successfully or by intentional skip"
+          "result": "pass - all required checks passed on the exact implementation head"
         },
         {
           "name": "Independent exact-head assurance",

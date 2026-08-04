@@ -12,7 +12,7 @@ resolves.
 
 ## Quick Reference Table
 
-| Command / alias | Program | Next WO | Blocked? | Allowed /loop modes |
+| Command / alias | Program | Next state | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
 | `codex-operator-autonomy` | Codex Operator Autonomy | CLOSED at WO-OP-AUTO-012 | YES - governing autonomy baseline merged | `once`, `evidence` |
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |

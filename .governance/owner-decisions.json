@@ -49,7 +49,7 @@
         "implementation_exact_head": "08c3c6010cf588af8a9cea57599a67b222957f1b",
         "implementation_merge": "6eb6f07687cb728dc9b42dada8991c0afa00ced8",
         "implementation_assurance": "PASS at exact head 08c3c6010cf588af8a9cea57599a67b222957f1b; zero unresolved substantive threads; exact 12-file scope",
-        "implementation_required_checks": "PASS; extended quality, security, backend, Vitest, build/package, evidence, SEAL, and constitutional gates completed successfully or were intentionally skipped",
+        "implementation_required_checks": "PASS; all required checks passed, while non-applicable extended jobs were intentionally skipped",
         "terminal_closeout": "this governance-only exact-scope closeout PR; exact reviewed head and merge commit are bound from GitHub PR metadata",
         "terminal_condition_satisfied": "FORGE_PURE_COST_SCHEDULE_PROJECTION_FOUNDATION_PROVEN_UNWIRED when this closeout merges",
         "effective_on_merge": true,

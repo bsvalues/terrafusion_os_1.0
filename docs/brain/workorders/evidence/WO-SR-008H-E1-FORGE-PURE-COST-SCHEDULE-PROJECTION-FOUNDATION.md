@@ -53,7 +53,7 @@ Focused tests prove:
 | Frozen bootstrap invariants | PASS - package and lockfile SHA-256 unchanged; ignored `node_modules` only |
 | Exact changed/blocked paths | PASS - exact 12-file amended allowlist; no blocked paths |
 | Package and lockfile integrity | PASS - SHA-256 unchanged |
-| Remote required checks | PASS - required and extended checks completed successfully or were intentionally skipped |
+| Remote required checks | PASS - all required checks passed; non-applicable extended jobs were intentionally skipped |
 | Independent exact-head assurance | PASS - exact head `08c3c6010cf588af8a9cea57599a67b222957f1b` |
 | Review threads | PASS - 0 unresolved substantive threads |
 | Implementation merge | PASS - PR #1404 merged as `6eb6f07687cb728dc9b42dada8991c0afa00ced8` |
