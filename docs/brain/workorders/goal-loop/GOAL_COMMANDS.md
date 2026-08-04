@@ -111,9 +111,12 @@ pins, stable content hashes, ambiguity rejection, and a pure depreciation-only d
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed
 in PR #1404, and its exact bounded R3 authority is consumed by terminal closeout. One consolidated
 Forge consumer completion packet combines numeric conversion, identity/permission, trace, DTO
-mapping, and consumer adoption; another planning-only successor is not admitted. Quality/condition,
-land/location factors, runtime, host, persistence, deployment, and protected-resource mutation
-remain separately authority-gated.
+mapping, and consumer adoption. Issue #1406 approved that packet as `WO-SR-008I` under
+`OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. Stage 1 pure boundary assembly is current;
+Stage 2 host/consumer, Stage 3 default-disabled Shadow adoption, and terminal closeout continue after
+predecessor verification. The legacy response remains authoritative. Quality/condition,
+land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
+denied.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
