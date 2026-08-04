@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-008H Forge cost schedule version and modifier projection contract",
-  "generatedAt": "2026-08-03T00:00:00Z",
+  "generatedAt": "2026-08-04T00:00:00Z",
   "description": "Five-suite registry during WO-SR-008H closeout. Exact schedule pinning, stable content hashing, ambiguity rejection, and a depreciation-only decimal projection are implementation-ready as bounded R3 WO-SR-008H-E1; runtime and full kernel mapping remain unauthorized.",
   "records": [
     {

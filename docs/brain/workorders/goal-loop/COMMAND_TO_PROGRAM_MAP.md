@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-07-19
+**Last Updated:** 2026-08-04
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,

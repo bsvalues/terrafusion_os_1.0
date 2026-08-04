@@ -55,14 +55,18 @@ mismatch; and duplicate schedule identities.
 
 Schedule hashes use SHA-256 over one UTF-8 byte sequence with no BOM, no trailing newline, and no
 insignificant whitespace. JSON property order is the literal order shown in the known-answer vectors
-below. Strings are Unicode NFC; GUIDs use lowercase `D` format; class codes are trimmed and uppercased
-invariantly. Version, author, and revaluation-cycle strings preserve case and must already be trimmed.
+below. Strings are Unicode NFC; GUIDs use lowercase `D` format. Cost-row class text is otherwise
+byte-preserved; it is not trimmed or case-normalized. Version, author, and revaluation-cycle strings
+preserve case and must already be trimmed.
 JSON string escaping follows `System.Text.Json`. Null bounds and cycles are the JSON literal `null`.
-Integers use invariant base-10 with no leading zero. Decimals are JSON strings formatted with
-`decimal.ToString("G29", InvariantCulture)`; exponent notation is forbidden.
+Integers use invariant base-10 with no leading zero. Decimals remove insignificant trailing scale,
+normalize every zero to `0`, and then use JSON string form from
+`decimal.ToString("G29", InvariantCulture)`; exponent notation is forbidden. Therefore `1m`, `1.0m`,
+and `1.00m` all encode as `"1"` and must hash identically.
 
-Cost rows sort by class ordinal, minimum bound (`null` before integers), maximum bound (`null` after
-integers), unit-cost text ordinal, then row GUID ordinal. Depreciation rows sort by minimum age,
+Cost rows sort by class using `OrdinalIgnoreCase` with exact ordinal text as a tie-break, minimum
+bound (`null` before integers), maximum bound (`null` after integers), unit-cost text ordinal, then
+row GUID ordinal. Depreciation rows sort by minimum age,
 maximum age, fraction text ordinal, then row GUID ordinal. Mutable audit timestamps and actors are
 excluded. Schedule identity, county, year, opaque version, origin, author, revaluation cycle, and
 every semantic row are included. Mutation of any included identity or semantic value must change the
@@ -95,11 +99,14 @@ The pure projection receives the two schedule objects, exact pin, improvement cl
 and nonnegative effective age. It must:
 
 1. validate both exact pins and provenance before reading factors;
-2. normalize class only by trim plus ordinal-ignore-case comparison;
-3. find matching bounded cost factors and select a unique narrowest band;
-4. use exactly one unbanded factor only when no bounded factor matches;
-5. reject equal-specificity ambiguity, duplicate fallback, invalid bounds, missing match, and
-   non-positive `UnitCostPerSqFt`;
+2. compare class text exactly as the live source does, using raw `OrdinalIgnoreCase` with no trim or
+   other normalization;
+3. match each nullable bound independently: a null minimum has no lower limit and a null maximum has
+   no upper limit;
+4. assign fully bounded rows width `max - min` and assign every one-sided or fully unbounded row
+   `long.MaxValue`, matching the current specificity rule;
+5. select the unique matching row with minimum width and reject two or more matches at that same
+   minimum width, invalid bounds, missing matches, and non-positive `UnitCostPerSqFt`;
 6. find a unique narrowest depreciation age band and reject equal-specificity ambiguity, gaps,
    invalid bounds, or a fraction outside `[0,1]`;
 7. return decimal `BaseRate = UnitCostPerSqFt` and exactly one decimal modifier named
@@ -131,9 +138,10 @@ backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs
 
 The source file may contain the pin, result, canonical-hash helper, structural validation, and pure
 projection. The test file must prove exact-pin success, every identity mismatch, lexical-version
-traps, order-independent hashes, mutation-sensitive hashes, unique narrowest bands, fallback rules,
-all duplicate/ambiguity failures, invalid numeric/provenance cases, deterministic output, and absence
-of every excluded modifier/dependency.
+traps, order-independent hashes, mutation-sensitive hashes, equal-value/different-scale hash equality,
+unique narrowest bands, unique minimum-only and maximum-only matches, all equal-specificity and
+unbounded ambiguity failures, invalid numeric/provenance cases, deterministic output, and absence of
+every excluded modifier/dependency.
 
 Governance lifecycle files remain the exact E1 Work Order/evidence packet and the seven canonical
 registry, queue, program, and command-routing records already used by this program.
