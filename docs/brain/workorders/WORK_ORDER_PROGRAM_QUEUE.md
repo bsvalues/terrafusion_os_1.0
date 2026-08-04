@@ -13,11 +13,11 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is executing
-`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` under exact
-bounded R3 authority. WO-SR-008H merged as PR #1403 and defined exact schedule pins, stable content
-hashes, ambiguity rejection, and a pure unwired decimal projection that emits only `BaseRate` and
-`DepreciationRate`. E1 implementation and focused local proof are complete pending governed delivery.
+The Five-Suite Federated Repository Buildout is active between cohorts after
+`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
+PR #1404 merged exact assured head `08c3c6010` as `6eb6f0768`, proving exact schedule pins, stable
+content hashes, ambiguity rejection, and a pure unwired decimal projection that emits only
+`BaseRate` and `DepreciationRate`. The E1 authority is consumed by terminal closeout.
 The historical cohort narrative follows.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
@@ -157,7 +157,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **DONE / R2** | PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **DONE / R2** | PR #1402 merged as `4ef8760fe`; exact rate correction and decomposition recorded |
 | **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
-| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **IN PROGRESS / R3 / AUTHORIZED** | Exact two-file pure implementation and 40-test local proof complete; no runtime or full kernel mapping |
+| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1404 merged as `6eb6f0768`; 40 focused tests, exact-head assurance, and remote gates passed; no runtime or full kernel mapping |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -298,7 +298,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-008H` complete; `WO-SR-008H-E1` active under exact bounded R3 authority | Pure unwired schedule-pin/hash and depreciation-only decimal projection foundation | Full kernel mapping, valuation-policy invention, runtime/host/DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008H-E1-forge-pure-cost-schedule-projection-foundation.md` |
+| five-suite-federated-repository-buildout | `WO-SR-008H-E1` complete; exact bounded R3 authority consumed | Consolidated Forge consumer completion envelope decision | Numeric conversion, identity/permission, trace, DTO mapping, consumer adoption, runtime/host/DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied without a new exact envelope | `evidence/WO-SR-008H-E1-FORGE-PURE-COST-SCHEDULE-PROJECTION-FOUNDATION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -386,9 +386,9 @@ Exact caller-supplied cost/depreciation schedule pins, stable semantic hashes, p
 unique narrowest factor resolution, and a depreciation-only decimal projection are implementation-
 ready. Quality/condition, land and non-neutral location factors, caller modifiers, full kernel DTO
 mapping, decimal/double conversion, runtime, persistence, and cutover remain excluded.
-`WO-SR-008H-E1` is executing under exact bounded R3 implementation and merge authority. Its evidence
-must return one consolidated Forge consumer completion packet after merge rather than another
-planning-only successor.
+`WO-SR-008H-E1` completed in PR #1404 and its bounded authority is consumed by terminal closeout.
+Its evidence returns one consolidated Forge consumer completion packet rather than another
+planning-only successor; no implementation successor is currently admitted.
 
 ---
 
