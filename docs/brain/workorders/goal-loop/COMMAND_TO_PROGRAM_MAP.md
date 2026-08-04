@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-008E` Forge canonical-kernel consumer boundary preparation after WO-SR-008A merge | YES - WO-SR-008A merge and post-merge verification required | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-008A` closing; `WO-SR-008E` next behind merge interlock | NO - active; product/runtime/test mutation remains blocked | `program`, `once`, `evidence` |
+| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-008F` Forge kernel cost input/identity contract preparation after WO-SR-008E merge | YES - WO-SR-008E merge and post-merge verification required | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-008E` closing; `WO-SR-008F` next behind merge interlock | NO - active; product/runtime/test mutation remains blocked | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

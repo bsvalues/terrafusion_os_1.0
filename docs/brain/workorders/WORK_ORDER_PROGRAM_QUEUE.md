@@ -14,11 +14,11 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout is closing
-`WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. Four read-only lanes and 46
-passing targeted tests proved structural and synthetic journey evidence, but not a live
-user-completable journey. Authenticated county-governed parcel acquisition is the first protected
-boundary. `WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` is admitted behind
-the WO-SR-008A merge interlock; it changes no product behavior and selects no batch direction.
+`WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation`. Three read-only lanes established
+that Forge ownership and hash-verified sovereign execution are proven, while Workbench's current
+DB-backed contract lacks the county-bound input, response, failure, trace, cancellation, and host
+contract required for direct kernel consumption. `WO-SR-008F - Forge Kernel Cost Input and Identity
+Contract Preparation` is admitted behind the WO-SR-008E merge interlock.
 The historical cohort narrative follows.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
@@ -153,8 +153,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
 | WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
-| **WO-SR-008A Single-Parcel Assessor Journey Runtime Readiness Audit** | **IN PROGRESS / R2 / AUDIT COMPLETE** | First live failure is protected parcel acquisition; 46 synthetic/structural tests pass; closeout PR and successor dispatch remain |
-| **WO-SR-008E Forge Canonical Kernel Consumer Boundary Preparation** | **READY / R2 / POST-MERGE INTERLOCKED** | Define the exact Workbench-to-canonical-kernel adoption boundary after WO-SR-008A merges; docs/evidence only |
+| **WO-SR-008A Single-Parcel Assessor Journey Runtime Readiness Audit** | **DONE / R2** | PR #1398 merged as `73c2d8af`; first live failure is protected parcel acquisition; 46 synthetic/structural tests passed |
+| **WO-SR-008E Forge Canonical Kernel Consumer Boundary Preparation** | **IN PROGRESS / R2 / AUDIT COMPLETE** | Verdict `DECOMPOSITION_REQUIRED`; direct consumer adoption lacks a safe county/input/response/failure/trace/host contract |
+| **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **READY / R2 / POST-MERGE INTERLOCKED** | Define the missing pure projection and host/trace contract after WO-SR-008E merges; docs/evidence only |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -295,7 +296,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-008A` closing; `WO-SR-008E` admitted behind merge interlock | R2 evidence audit and docs-only Forge consumer-boundary preparation | Product/runtime/test source mutation; DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008A-single-parcel-assessor-journey-runtime-readiness-audit.md` |
+| five-suite-federated-repository-buildout | `WO-SR-008E` closing; `WO-SR-008F` admitted behind merge interlock | R2 evidence audit and docs-only Forge input/identity contract preparation | Product/runtime/test source mutation; DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008E-forge-canonical-kernel-consumer-boundary-preparation.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -373,9 +374,17 @@ portfolio reconciliation without admitting a successor.
 composition are structurally proven, and five targeted files / 46 tests pass with synthetic data.
 The first live failure is authenticated county-governed parcel evidence acquisition. Later gaps
 include non-canonical Forge consumption, an unwired Atlas host, Dais operations routed through the
-offline Pilot stub, and a non-durable Pilot evidence rail. `WO-SR-008E` is the selected same-risk,
-docs-only successor; it remains dependency-blocked until the WO-SR-008A audit PR merges. Synthetic
-test restoration remains authority-gated because its exact paths are under protected frontend scope.
+offline Pilot stub, and a non-durable Pilot evidence rail. PR #1398 merged the audit as
+`73c2d8afbddb3c77e36abf3d920b1ef3eab249af`. Synthetic test restoration remains authority-gated
+because its exact paths are under protected frontend scope.
+
+**Current Forge consumer result (WO-SR-008E, 2026-08-03):**
+
+The sovereign kernel path is provenance-bound and rollback-proven, but the Workbench path is a richer
+DB-backed API. Direct adoption is `DECOMPOSITION_REQUIRED` until county identity, deterministic input
+projection, response mapping, fallback honesty, trace/correlation, cancellation, and process bounds
+are explicit. `WO-SR-008F` is the selected docs-only successor and remains dependency-blocked until
+the WO-SR-008E audit PR merges.
 
 ---
 

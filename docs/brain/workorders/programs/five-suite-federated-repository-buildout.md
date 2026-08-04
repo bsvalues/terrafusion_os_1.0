@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008A audit complete pending merge; WO-SR-008E admitted behind merge interlock
+**Status:** Active; WO-SR-008E decomposition complete pending merge; WO-SR-008F admitted behind merge interlock
 
 ## Ratified topology
 
@@ -79,8 +79,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-007B-P | Prepare the exact Atlas runtime-adoption boundary | Complete R2; no existing Atlas runtime host or consumer found; exact unwired process-host R3 successor defined |
 | WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Complete R3; PR #1393 merged as `d2bb8d6e1`; 0/0 build and 33 focused tests passed; authority consumed; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
 | WO-TF-POST-ATLAS-001 | Reconcile authoritative post-Atlas state and admit one successor | Complete; PR #1397 merged as `b85e1c92d` and WO-SR-008A preflight began |
-| WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | In progress; audit complete, first live failure is protected parcel acquisition, closeout merge pending |
-| WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | Ready R2; dependency-interlocked until WO-SR-008A merges; docs/evidence only |
+| WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | Complete R2; PR #1398 merged as `73c2d8af`; first live failure is protected parcel acquisition |
+| WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | In progress; audit complete with `DECOMPOSITION_REQUIRED`; closeout merge pending |
+| WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Ready R2; dependency-interlocked until WO-SR-008E merges; docs/evidence only |
 
 ## Extraction and provenance policy
 
@@ -235,17 +236,13 @@ without admitting runtime adoption.
 reachability, authority, and stale routing through five independent evidence and assurance lanes.
 Forge, Dais, Dossier, and the Property Workbench have bounded user-reachable sovereign capability;
 Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sync, TerraPilot, and
-Benton remain protected-resource or deployment gated. The highest-value dependency-cleared safe
-node is `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit`. It audits the existing
-constitutional parcel journey, not a new Workbench phase or batch product direction, and authorizes
-no product/runtime/test-source mutation.
+Benton remain protected-resource or deployment gated. PR #1398 completed WO-SR-008A and preserved
+authenticated county-governed parcel acquisition as the first live journey boundary.
 
-`WO-SR-008A` then inspected the journey through independent routing, suite-consumer,
-protected-boundary, and synthesis lanes. Search-to-route and Workbench composition are structurally
-present, and five targeted files / 46 tests pass with synthetic evidence. The first live failure is
-authenticated county-governed parcel acquisition. Forge does not consume its canonical kernel,
-Atlas's process host remains unwired, Dais Workbench operations terminate at the offline Pilot
-fallback, and the Pilot evidence rail is not durable. `WO-SR-008E` is the highest-value same-risk
-successor inside existing authority: it defines the Workbench-to-canonical-kernel boundary without
-product, runtime, test, or Forge mutation. Synthetic test restoration remains separately
-protected-path gated.
+`WO-SR-008E` inspected the Workbench consumer, sovereign kernel path, and WO-SR-006 provenance through
+three independent read-only lanes. Forge source ownership, local staging, hash verification, process
+hosting, and rollback are proven. Direct Workbench adoption is `DECOMPOSITION_REQUIRED`: the current
+DB-backed contract and canonical cost kernel lack an agreed county-bound input projection, response
+map, fallback vocabulary, trace/correlation contract, cancellation distinction, and process bounds.
+`WO-SR-008F` is the highest-value same-risk successor inside existing authority and remains
+docs/evidence-only. Synthetic journey test restoration remains separately protected-path gated.

@@ -2,7 +2,7 @@
 
 ## Status
 
-`READY - POST-MERGE DEPENDENCY INTERLOCKED`
+`IN PROGRESS - AUDIT COMPLETE / CLOSEOUT MERGE PENDING`
 
 ## Program
 
@@ -82,5 +82,8 @@ One of:
 
 ## Continuation
 
-After merge, continue only to a same-risk dependency-cleared evidence node. Any consumer/runtime
-implementation remains a separately bounded R3 authority decision.
+Result: `FORGE_CANONICAL_KERNEL_CONSUMER_DECOMPOSITION_REQUIRED`.
+
+After merge, continue to `WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation`, a
+same-risk docs/evidence-only node. Any projection, host, consumer, runtime, or test implementation
+remains a separately bounded R3 authority decision.
