@@ -9773,7 +9773,7 @@
           "name": "Focused projection tests",
           "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter ForgeCostScheduleProjectionTests",
           "required": true,
-          "result": "pass - 38 tests"
+          "result": "pass - 40 tests"
         },
         {
           "name": "Backend build",

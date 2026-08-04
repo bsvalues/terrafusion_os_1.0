@@ -45,9 +45,12 @@ public static class ForgeCostScheduleProjection
         ArgumentNullException.ThrowIfNull(pin);
 
         ValidateRequest(pin, improvementClassCode, sizeSqFt, effectiveAgeYears);
-        ValidateCostFactorSet(costFactorSet);
-        ValidateDepreciationSchedule(depreciationSchedule);
-        ValidatePins(costFactorSet, depreciationSchedule, pin);
+        ValidateScheduleMetadata(costFactorSet);
+        ValidateScheduleMetadata(depreciationSchedule);
+        ValidatePinnedIdentity(costFactorSet, depreciationSchedule, pin);
+        ValidateCostFactorRows(costFactorSet);
+        ValidateDepreciationRows(depreciationSchedule);
+        ValidatePinnedHashes(costFactorSet, depreciationSchedule, pin);
 
         var cost = SelectUniqueCostFactor(costFactorSet.Factors, improvementClassCode, sizeSqFt);
         var depreciation = SelectUniqueDepreciationFactor(
@@ -103,7 +106,7 @@ public static class ForgeCostScheduleProjection
             throw new InvalidOperationException("Effective age cannot be negative.");
     }
 
-    private static void ValidatePins(
+    private static void ValidatePinnedIdentity(
         CostFactorSet costs,
         DepreciationSchedule depreciation,
         ForgeCostSchedulePin pin)
@@ -129,6 +132,13 @@ public static class ForgeCostScheduleProjection
             throw new InvalidOperationException("Schedule version does not match the opaque exact pin.");
         }
 
+    }
+
+    private static void ValidatePinnedHashes(
+        CostFactorSet costs,
+        DepreciationSchedule depreciation,
+        ForgeCostSchedulePin pin)
+    {
         var costHash = ComputeSha256(WriteCostFactorSet(costs));
         var depreciationHash = ComputeSha256(WriteDepreciationSchedule(depreciation));
         if (!string.Equals(costHash, pin.CostFactorSetContentSha256, StringComparison.Ordinal)
@@ -143,7 +153,12 @@ public static class ForgeCostScheduleProjection
 
     private static void ValidateCostFactorSet(CostFactorSet set)
     {
-        ValidateScheduleMetadata(
+        ValidateScheduleMetadata(set);
+        ValidateCostFactorRows(set);
+    }
+
+    private static void ValidateScheduleMetadata(CostFactorSet set)
+        => ValidateScheduleMetadata(
             set.Id,
             set.CountyId,
             set.EffectiveYear,
@@ -153,6 +168,8 @@ public static class ForgeCostScheduleProjection
             set.RevalCycle,
             nameof(CostFactorSet));
 
+    private static void ValidateCostFactorRows(CostFactorSet set)
+    {
         if (set.Factors is null || set.Factors.Count == 0)
             throw new InvalidOperationException("Cost factor set must contain factors.");
 
@@ -174,7 +191,12 @@ public static class ForgeCostScheduleProjection
 
     private static void ValidateDepreciationSchedule(DepreciationSchedule schedule)
     {
-        ValidateScheduleMetadata(
+        ValidateScheduleMetadata(schedule);
+        ValidateDepreciationRows(schedule);
+    }
+
+    private static void ValidateScheduleMetadata(DepreciationSchedule schedule)
+        => ValidateScheduleMetadata(
             schedule.Id,
             schedule.CountyId,
             schedule.EffectiveYear,
@@ -184,6 +206,8 @@ public static class ForgeCostScheduleProjection
             schedule.RevalCycle,
             nameof(DepreciationSchedule));
 
+    private static void ValidateDepreciationRows(DepreciationSchedule schedule)
+    {
         if (schedule.Factors is null || schedule.Factors.Count == 0)
             throw new InvalidOperationException("Depreciation schedule must contain factors.");
 
@@ -401,7 +425,9 @@ public static class ForgeCostScheduleProjection
     private static string Normalize(string value) => value.Normalize(NormalizationForm.FormC);
     private static string FormatGuid(Guid value) => value.ToString("D", CultureInfo.InvariantCulture);
     private static string FormatDecimal(decimal value)
-        => value == 0m ? "0" : value.ToString("G29", CultureInfo.InvariantCulture);
+        => value == 0m
+            ? "0"
+            : value.ToString("0.############################", CultureInfo.InvariantCulture);
     private static string ComputeSha256(byte[] bytes) => Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 
     private sealed class CostFactorCanonicalComparer : IComparer<CostFactor>

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using FluentAssertions;
 using TerraFusion.Core.Entities.Forge;
 using Xunit;
@@ -60,6 +62,21 @@ public sealed class ForgeCostScheduleProjectionTests
     }
 
     [Fact]
+    public void CanonicalHashes_EncodeTinyDecimalsAsFixedPointWithoutExponentNotation()
+    {
+        var (costs, depreciation) = CreateKnownAnswerSchedules();
+        costs.Factors[0].UnitCostPerSqFt = 0.0000000000000000000000000001m;
+        depreciation.Factors[0].DepreciationFraction = 0.0000000000000000000000000001m;
+        const string costJson = "{\"schema\":\"forge-cost-factor-set/v1\",\"id\":\"11111111-1111-1111-1111-111111111111\",\"countyId\":\"22222222-2222-2222-2222-222222222222\",\"effectiveYear\":2026,\"version\":\"v1\",\"origin\":\"TerraFusionOwned\",\"author\":\"tf\",\"revalCycle\":null,\"factors\":[{\"id\":\"33333333-3333-3333-3333-333333333333\",\"class\":\"R1\",\"minSqFt\":null,\"maxSqFt\":null,\"unitCost\":\"0.0000000000000000000000000001\"}]}";
+        const string depreciationJson = "{\"schema\":\"forge-depreciation-schedule/v1\",\"id\":\"44444444-4444-4444-4444-444444444444\",\"countyId\":\"22222222-2222-2222-2222-222222222222\",\"effectiveYear\":2026,\"version\":\"v1\",\"origin\":\"TerraFusionOwned\",\"author\":\"tf\",\"revalCycle\":null,\"factors\":[{\"id\":\"55555555-5555-5555-5555-555555555555\",\"minAge\":0,\"maxAge\":10,\"fraction\":\"0.0000000000000000000000000001\"}]}";
+
+        ForgeCostScheduleProjection.ComputeCostFactorSetContentSha256(costs)
+            .Should().Be(Sha256(costJson));
+        ForgeCostScheduleProjection.ComputeDepreciationScheduleContentSha256(depreciation)
+            .Should().Be(Sha256(depreciationJson));
+    }
+
+    [Fact]
     public void Create_ReturnsOnlyDecimalBaseAndDepreciationRatesFromExactPins()
     {
         var (costs, depreciation) = CreateSchedules();
@@ -101,6 +118,20 @@ public sealed class ForgeCostScheduleProjectionTests
         var act = () => ForgeCostScheduleProjection.Create(costs, depreciation, pin, "R1", 900, 5);
 
         act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Create_RejectsIdentityPinBeforeReadingMalformedRows()
+    {
+        var (costs, depreciation) = CreateSchedules();
+        var pin = Pin(costs, depreciation) with { CountyId = Guid.NewGuid() };
+        costs.Factors[0].SizeBandMinSqFt = 2_000;
+        costs.Factors[0].SizeBandMaxSqFt = 1_000;
+
+        var act = () => ForgeCostScheduleProjection.Create(costs, depreciation, pin, "R1", 900, 5);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Schedule county identity does not match the pin.");
     }
 
     [Fact]
@@ -403,4 +434,7 @@ public sealed class ForgeCostScheduleProjectionTests
             depreciation.Id,
             depreciation.Version,
             ForgeCostScheduleProjection.ComputeDepreciationScheduleContentSha256(depreciation));
+
+    private static string Sha256(string value)
+        => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value))).ToLowerInvariant();
 }

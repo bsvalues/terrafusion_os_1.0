@@ -84,7 +84,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Complete R2; PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008G | Audit Forge cost fact and schedule semantics | Complete R2; PR #1402 merged as `4ef8760fe`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Complete R2; PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
-| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | In progress R3; exact authority granted; implementation and 38-test local proof complete |
+| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | In progress R3; exact authority granted; implementation and 40-test local proof complete |
 
 ## Extraction and provenance policy
 

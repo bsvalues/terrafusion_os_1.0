@@ -27,9 +27,10 @@ service, DI, process-host, kernel DTO, or runtime dependency.
 Focused tests prove:
 
 - both WO-SR-008H known-answer SHA-256 vectors;
-- order-independent hashes and equal-value/different-scale decimal hash equality;
+- order-independent hashes, equal-value/different-scale decimal hash equality, and fixed-point
+  encoding of tiny decimals without exponent notation;
 - mutation-sensitive semantic hashes;
-- exact county, year, schedule ID, opaque version, and hash pin validation;
+- exact county, year, schedule ID, opaque version, and hash pin validation before factor-row reads;
 - lexical-version rejection rather than latest-version selection;
 - raw `OrdinalIgnoreCase` class matching without trim or vocabulary invention;
 - unique narrowest, minimum-only, maximum-only, and unbounded-band semantics;
@@ -43,7 +44,7 @@ Focused tests prove:
 
 | Gate | Result |
 | --- | --- |
-| Focused projection tests | PASS - 38 passed, 0 failed |
+| Focused projection tests | PASS - 40 passed, 0 failed |
 | Cost known-answer SHA-256 | PASS - `a5eab9a2f0740cc1c16ba835654b41d97fa964e4aff5449de503b5cf479ca9f2` |
 | Depreciation known-answer SHA-256 | PASS - `2902186c7f8bf833d4153de57f1ead1d2a16c39c1cc8da78689cb0cfa75197a4` |
 | Backend Release build | PASS - 0 warnings, 0 errors |

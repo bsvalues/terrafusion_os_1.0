@@ -157,7 +157,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **DONE / R2** | PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **DONE / R2** | PR #1402 merged as `4ef8760fe`; exact rate correction and decomposition recorded |
 | **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
-| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **IN PROGRESS / R3 / AUTHORIZED** | Exact two-file pure implementation and 38-test local proof complete; no runtime or full kernel mapping |
+| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **IN PROGRESS / R3 / AUTHORIZED** | Exact two-file pure implementation and 40-test local proof complete; no runtime or full kernel mapping |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
