@@ -79,8 +79,9 @@ rollback, and duplicate-source retirement, but explicitly granted no successor c
 ## Verdict and successor
 
 Direct implementation is not ready. `WO-SR-008F - Forge Kernel Cost Input and Identity Contract
-Preparation` is the smallest dependency-cleared R2 successor. It remains docs/evidence-only and must
-return an exact later R3 sequence or `NO_GO`; it does not authorize implementation.
+Preparation` is the smallest dependency-interlocked R2 successor and becomes dependency-cleared only
+after this Work Order merges and receives post-merge verification. It remains docs/evidence-only and
+must return an exact later R3 sequence or `NO_GO`; it does not authorize implementation.
 
 ## Rollback and nonclaims
 
