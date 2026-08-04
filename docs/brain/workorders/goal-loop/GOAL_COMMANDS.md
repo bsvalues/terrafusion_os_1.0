@@ -106,12 +106,11 @@ PR #1398 merged `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness A
 `73c2d8afbddb3c77e36abf3d920b1ef3eab249af` after 46 targeted tests and a protected parcel-acquisition
 finding.
 
-`WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` corrected `UnitCostPerSqFt` as the
-canonical TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact version
-pinning, duplicate-band rejection, modifier exclusions, identity, trace, deterministic hashing,
-and numeric conversion still require decomposition. `WO-SR-008H - Forge Cost Schedule Version and
-Modifier Projection Contract` is admitted behind the WO-SR-008G merge interlock as a docs/evidence-
-only node. Valuation-policy invention and product, runtime, test, host, and protected-resource
+`WO-SR-008H - Forge Cost Schedule Version and Modifier Projection Contract` defines exact schedule
+pins, stable content hashes, ambiguity rejection, and a pure depreciation-only decimal projection.
+`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` is proposed
+as exact R3 work and remains authority-gated. Quality/condition, land/location factors, full kernel
+DTO mapping, numeric conversion, runtime, host, persistence, deployment, and protected-resource
 mutation remain separately authority-gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
