@@ -103,7 +103,8 @@ non-neutral neighborhood/location factors have no versioned provenance. County/p
 uniqueness, exact read permission, trace linkage, deterministic fact hashing, and decimal/double
 rounding also remain unresolved.
 
-The smallest dependency-cleared successor is `WO-SR-008H - Forge Cost Schedule Version and Modifier
-Projection Contract`. It is admitted as another R2 read-only docs/evidence node. It may define exact
+The selected successor is `WO-SR-008H - Forge Cost Schedule Version and Modifier Projection
+Contract`. It is admitted as another R2 read-only docs/evidence node and remains dependency-
+interlocked until this closeout merges and receives post-merge verification. It may define exact
 schedule identity, the safe first-projection subset, fail-closed modifier exclusions, and focused
 proof requirements. It may not implement or change valuation behavior.
