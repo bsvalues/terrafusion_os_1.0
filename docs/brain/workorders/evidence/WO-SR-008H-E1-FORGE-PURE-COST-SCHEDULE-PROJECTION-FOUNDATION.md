@@ -53,8 +53,8 @@ Focused tests prove:
 | Frozen bootstrap invariants | PASS - package and lockfile SHA-256 unchanged; ignored `node_modules` only |
 | Exact changed/blocked paths | PASS - exact 12-file amended allowlist; no blocked paths |
 | Package and lockfile integrity | PASS - SHA-256 unchanged |
-| Remote required checks | PENDING - amended head not yet pushed |
-| Independent exact-head assurance | PENDING - amended head not yet reviewed |
+| Remote required checks | PENDING until all required checks complete successfully on the exact candidate head |
+| Independent exact-head assurance | PENDING until an independent PASS verdict binds the exact candidate head |
 
 ## Safety and nonclaims
 

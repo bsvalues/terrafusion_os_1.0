@@ -9804,13 +9804,13 @@
           "name": "Remote required checks",
           "command": "GitHub required checks on the exact amended PR head",
           "required": true,
-          "result": "pending - amended head not yet pushed"
+          "result": "pending until all required checks complete successfully on the exact candidate head"
         },
         {
           "name": "Independent exact-head assurance",
           "command": "independent assurance review of the exact amended PR head",
           "required": true,
-          "result": "pending - amended head not yet reviewed"
+          "result": "pending until an independent PASS verdict binds the exact candidate head"
         }
       ],
       "evidenceProduced": [
