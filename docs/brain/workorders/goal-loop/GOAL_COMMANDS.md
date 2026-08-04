@@ -106,12 +106,13 @@ PR #1398 merged `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness A
 `73c2d8afbddb3c77e36abf3d920b1ef3eab249af` after 46 targeted tests and a protected parcel-acquisition
 finding.
 
-`WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation` found that a pure
-county-bound projection and staged host hardening are definable, but implementation remains
-`DECOMPOSITION_REQUIRED` until exact valuation-fact semantics are source-backed. `WO-SR-008G - Forge
-Cost Fact and Schedule Semantics Audit` is admitted behind the WO-SR-008F merge interlock as a
-docs/evidence-only node. Valuation-policy invention and product, runtime, test, host, and
-protected-resource mutation remain separately authority-gated.
+`WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` corrected `UnitCostPerSqFt` as the
+canonical TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact version
+pinning, duplicate-band rejection, modifier exclusions, identity, trace, deterministic hashing,
+and numeric conversion still require decomposition. `WO-SR-008H - Forge Cost Schedule Version and
+Modifier Projection Contract` is admitted behind the WO-SR-008G merge interlock as a docs/evidence-
+only node. Valuation-policy invention and product, runtime, test, host, and protected-resource
+mutation remain separately authority-gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

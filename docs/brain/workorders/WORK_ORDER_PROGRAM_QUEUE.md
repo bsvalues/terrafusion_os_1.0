@@ -14,11 +14,12 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout is closing
-`WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation`. Three read-only lanes
-established that a pure county-bound projection and staged host hardening are definable, but canonical
-rate, schedule-year, modifier, vocabulary, land/factor, identity, trace, hashing, and rounding
-semantics remain unresolved. `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` is admitted
-behind the WO-SR-008F merge interlock.
+`WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit`: `UnitCostPerSqFt` is the canonical
+TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact county/year matching is
+source-backed, while version pinning, duplicate-band rejection, modifier exclusions, identity,
+   trace, deterministic hashing, and numeric conversion remain unresolved. `WO-SR-008H - Forge Cost
+Schedule Version and Modifier Projection Contract` is admitted behind the WO-SR-008G merge
+interlock.
 The historical cohort narrative follows.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
@@ -155,8 +156,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
 | **WO-SR-008A Single-Parcel Assessor Journey Runtime Readiness Audit** | **DONE / R2** | PR #1398 merged as `73c2d8af`; first live failure is protected parcel acquisition; 46 synthetic/structural tests passed |
 | **WO-SR-008E Forge Canonical Kernel Consumer Boundary Preparation** | **DONE / R2** | PR #1400 merged as `b4eed4c13`; direct consumer adoption requires decomposition |
-| **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **IN PROGRESS / R2 / AUDIT COMPLETE** | Verdict `DECOMPOSITION_REQUIRED`; valuation-fact semantics must be resolved before projection implementation |
-| **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **READY / R2 / POST-MERGE INTERLOCKED** | Resolve canonical valuation-fact semantics after WO-SR-008F merges; docs/evidence only |
+| **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **DONE / R2** | PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
+| **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **IN PROGRESS / R2 / AUDIT COMPLETE** | Corrects the canonical rate premise and returns `DECOMPOSITION_REQUIRED`; closeout merge pending |
+| **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **READY / R2 / POST-MERGE INTERLOCKED** | Pin exact schedule identity and define the fail-closed first-projection subset after WO-SR-008G merges |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -297,7 +299,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-008F` closing; `WO-SR-008G` admitted behind merge interlock | R2 evidence audit and docs-only Forge fact/schedule semantics preparation | Valuation-policy invention, product/runtime/test/host source mutation, DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008F-forge-kernel-cost-input-identity-contract-preparation.md` |
+| five-suite-federated-repository-buildout | `WO-SR-008G` closing; `WO-SR-008H` admitted behind merge interlock | R2 evidence audit and docs-only schedule/version/modifier projection contract | Valuation-policy invention, product/runtime/test/host source mutation, DI, providers, persistence, deployment, protected resources, ownership transfer, source retirement, and cutover remain denied | `active/WO-SR-008G-forge-cost-fact-schedule-semantics-audit.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
@@ -379,13 +381,13 @@ offline Pilot stub, and a non-durable Pilot evidence rail. PR #1398 merged the a
 `73c2d8afbddb3c77e36abf3d920b1ef3eab249af`. Synthetic test restoration remains authority-gated
 because its exact paths are under protected frontend scope.
 
-**Current Forge contract result (WO-SR-008F, 2026-08-03):**
+**Current Forge semantics result (WO-SR-008G, 2026-08-03):**
 
-The sovereign kernel path is provenance-bound and rollback-proven, and a pure county-bound projection
-can be defined. Implementation remains `DECOMPOSITION_REQUIRED` until the canonical rate,
-schedule-year, modifier, quality/condition, land/factor, identity, trace, hashing, and rounding
-semantics are source-backed. `WO-SR-008G` is the selected docs-only successor and remains
-dependency-blocked until the WO-SR-008F audit PR merges.
+`UnitCostPerSqFt` is the canonical TerraFusion-owned RCN rate and source candidate for kernel
+`BaseRate`; legacy `BaseCost` and `CostPerSqFt` are excluded. Exact county/effective-year selection
+exists, but version pinning and duplicate-band rejection do not. Quality/condition and non-neutral
+location modifiers remain excluded because current paths conflict. `WO-SR-008H` is the selected
+docs-only successor and remains dependency-interlocked until the WO-SR-008G audit PR merges.
 
 ---
 

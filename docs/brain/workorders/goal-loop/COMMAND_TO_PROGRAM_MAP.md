@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-008G` Forge cost fact/schedule semantics audit after WO-SR-008F merge | YES - WO-SR-008F merge and post-merge verification required | `program`, `once`, `evidence` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-008F` closing; `WO-SR-008G` next behind merge interlock | NO - active; valuation-policy invention and product/runtime/test/host mutation remain blocked | `program`, `once`, `evidence` |
+| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-008H` Forge cost schedule version/modifier projection contract after WO-SR-008G merge | YES - WO-SR-008G merge and post-merge verification required | `program`, `once`, `evidence` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | `WO-SR-008G` closing; `WO-SR-008H` next behind merge interlock | NO - active; valuation-policy invention and product/runtime/test/host mutation remain blocked | `program`, `once`, `evidence` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |

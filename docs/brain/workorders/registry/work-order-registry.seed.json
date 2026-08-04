@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008F Forge kernel cost input and identity contract preparation",
+  "generatedBy": "WO-SR-008G Forge cost fact and schedule semantics audit",
   "generatedAt": "2026-08-03T00:00:00Z",
-  "description": "Five-suite registry during WO-SR-008F closeout. The Forge input/identity audit returned DECOMPOSITION_REQUIRED and admitted docs-only WO-SR-008G behind a post-merge dependency interlock; product, runtime, test-source, host, provider, deployment, protected-resource, and cutover changes remain unauthorized.",
+  "description": "Five-suite registry during WO-SR-008G closeout. UnitCostPerSqFt is corrected as the canonical BaseRate source candidate; unresolved exact version, modifier, identity, trace, hash, and numeric semantics require docs-only WO-SR-008H before implementation.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10,7 +10,7 @@
       "program": "Work Order Engine",
       "goal": "Turn the proven DevOps goal/loop operating pattern into reusable TerraFusion operator doctrine.",
       "riskClass": "R1",
-      "status": "complete",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-WOE-001",
@@ -86,7 +86,7 @@
           "id": "WO-WOE-002",
           "reason": "The operator pattern needs a canonical Work Order data model.",
           "riskClass": "R1",
-          "blocked": false
+          "blocked": true
         }
       ],
       "authority": {
@@ -9376,7 +9376,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the exact county-bound input, response, failure, trace, cancellation, and host contract required before Forge kernel cost consumer implementation.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-008E",
@@ -9461,7 +9461,7 @@
           "id": "WO-SR-008G",
           "reason": "Smallest same-risk docs-only slice resolves rate, schedule-year, modifier, vocabulary, land/factor, identity, trace, hashing, and rounding semantics before implementation.",
           "riskClass": "R2",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {
@@ -9486,13 +9486,13 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Resolve the canonical valuation-fact, schedule-year, modifier, vocabulary, land/factor, identity, trace, hashing, and rounding semantics required before Forge kernel consumer implementation.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-008F",
-          "status": "required",
+          "status": "satisfied",
           "evidence": [
-            "WO-SR-008G dispatch begins only after the WO-SR-008F contract-preparation PR merges and post-merge verification succeeds."
+            "PR #1401 merged WO-SR-008F as eb80239fa25ca479ae42b992235d985c103477e0 and post-merge verification passed."
           ]
         }
       ],
@@ -9544,6 +9544,116 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass - 41 tests"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-008G-FORGE-COST-FACT-SCHEDULE-SEMANTICS-AUDIT.md",
+          "summary": "Three-lane semantics audit corrected UnitCostPerSqFt as the BaseRate source candidate and returned DECOMPOSITION_REQUIRED for exact version, modifier, identity, trace, hash, and numeric rules."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop before valuation-policy choice without canon, product/test/backend/runtime/host mutation, consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008H",
+          "reason": "Smallest same-risk docs-only slice pins schedule identity and defines a fail-closed first-projection subset without inventing quality, condition, or location-factor policy.",
+          "riskClass": "R2",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008F merges. They do not authorize product, test, Forge, backend, runtime, or host implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "WO-SR-008F merged as eb80239fa25ca479ae42b992235d985c103477e0; Issue #1396 and standing operator authority admitted this R2 audit.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008H",
+      "title": "Forge Cost Schedule Version and Modifier Projection Contract",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define exact cost and depreciation schedule identity plus the fail-closed first-projection subset before any Forge kernel consumer implementation.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-008G",
+          "status": "required",
+          "evidence": [
+            "WO-SR-008H dispatch begins only after the WO-SR-008G semantics-audit PR merges and post-merge verification succeeds."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only Forge cost schedule version and modifier projection contract preparation",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product, test source, Forge repository, backend, runtime, process host, workflows, packages, configuration, deployment, providers, persistence, protected resources, live services, and production"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-008H-forge-cost-schedule-version-modifier-projection-contract.md",
+        "docs/brain/workorders/evidence/WO-SR-008H-FORGE-COST-SCHEDULE-VERSION-MODIFIER-PROJECTION-CONTRACT.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact schedule identity, version pinning, factor ambiguity rejection, safe modifier exclusions, conversion boundary, tests, rollback, and implementation verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
           "result": "pending"
         },
         {
@@ -9569,11 +9679,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008F merges. They do not authorize product, test, Forge, backend, runtime, or host implementation."
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008G merges. They do not authorize product, test, Forge, backend, runtime, or host implementation."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
-        "source": "WO-SR-008F three-lane contract audit at sovereign base b4eed4c13c8e509f613bdce51145a06acd3ae7ca.",
+        "source": "WO-SR-008G three-lane source/canon audit at sovereign base eb80239fa25ca479ae42b992235d985c103477e0.",
         "schemaVersion": "0.1.0"
       }
     }
