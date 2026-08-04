@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008G Forge cost fact and schedule semantics audit",
+  "generatedBy": "WO-SR-008H Forge cost schedule version and modifier projection contract",
   "generatedAt": "2026-08-03T00:00:00Z",
-  "description": "Five-suite registry during WO-SR-008G closeout. UnitCostPerSqFt is corrected as the canonical BaseRate source candidate; unresolved exact version, modifier, identity, trace, hash, and numeric semantics require docs-only WO-SR-008H before implementation.",
+  "description": "Five-suite registry during WO-SR-008H closeout. Exact schedule pinning, stable content hashing, ambiguity rejection, and a depreciation-only decimal projection are implementation-ready as bounded R3 WO-SR-008H-E1; runtime and full kernel mapping remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9486,7 +9486,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Resolve the canonical valuation-fact, schedule-year, modifier, vocabulary, land/factor, identity, trace, hashing, and rounding semantics required before Forge kernel consumer implementation.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-008F",
@@ -9571,7 +9571,7 @@
           "id": "WO-SR-008H",
           "reason": "Smallest same-risk docs-only slice pins schedule identity and defines a fail-closed first-projection subset without inventing quality, condition, or location-factor policy.",
           "riskClass": "R2",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {
@@ -9596,13 +9596,13 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define exact cost and depreciation schedule identity plus the fail-closed first-projection subset before any Forge kernel consumer implementation.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-008G",
-          "status": "required",
+          "status": "satisfied",
           "evidence": [
-            "WO-SR-008H dispatch begins only after the WO-SR-008G semantics-audit PR merges and post-merge verification succeeds."
+            "PR #1402 merged WO-SR-008G as 4ef8760fe36f6053d84eb0b7523c7d8f5bd787d5 and post-merge verification passed."
           ]
         }
       ],
@@ -9654,6 +9654,127 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass - 41 tests"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-008H-FORGE-COST-SCHEDULE-VERSION-MODIFIER-PROJECTION-CONTRACT.md",
+          "summary": "Two-lane schedule and modifier audit defined exact pins, stable hashes, ambiguity rejection, and a pure depreciation-only decimal projection with IMPLEMENTATION_READY_AS_STAGED_SEQUENCE verdict."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop before valuation-policy choice without canon, product/test/backend/runtime/host mutation, consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008H-E1",
+          "reason": "Bounded pure/unwired implementation of exact schedule validation, deterministic content hashes, unique factor resolution, and depreciation-only decimal projection.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008G merges. They do not authorize product, test, Forge, backend, runtime, or host implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "WO-SR-008G merged as 4ef8760fe36f6053d84eb0b7523c7d8f5bd787d5; Issue #1396 and standing operator authority admitted this R2 contract preparation.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008H-E1",
+      "title": "Forge Pure Cost Schedule Resolution and Modifier Projection Foundation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Implement a pure unwired decimal projection over exact pinned cost and depreciation schedules without runtime adoption or valuation-policy invention.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [
+        {
+          "id": "WO-SR-008H",
+          "status": "required",
+          "evidence": [
+            "WO-SR-008H-E1 requires WO-SR-008H merge/post-merge verification and one exact bounded R3 authority envelope."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Pure unwired Forge cost schedule resolution and decimal modifier projection",
+          "paths": ["backend/src/TerraFusion.Core/Entities/Forge/**", "backend/tests/TerraFusion.Unit.Tests/Forge/**", "docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frontend, API/controller, DI, runtime consumer, process host, Forge repository, persistence, migrations, workflows, packages, deployment, providers, protected resources, live services, and production"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Core/Entities/Forge/ForgeCostScheduleProjection.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs",
+        "docs/brain/workorders/active/WO-SR-008H-E1-forge-pure-cost-schedule-projection-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-008H-E1-FORGE-PURE-COST-SCHEDULE-PROJECTION-FOUNDATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/src/TerraFusion.API/**",
+        "backend/src/TerraFusion.Data/**",
+        "backend/src/TerraFusion.Core/DTOs/Kernel/**",
+        "backend/tests/TerraFusion.API.Tests/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Focused synthetic proof for exact pins, canonical hashes, deterministic unique factor resolution, fail-closed ambiguity, decimal output, and absence of runtime dependencies."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused projection tests",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter ForgeCostScheduleProjectionTests",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Backend build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
+          "required": true,
           "result": "pending"
         },
         {
@@ -9667,23 +9788,23 @@
       "stopConditions": [
         {
           "type": "authority_wall",
-          "description": "Stop before valuation-policy choice without canon, product/test/backend/runtime/host mutation, consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
+          "description": "Stop before any file outside the exact allowlist, valuation-policy choice, double-based kernel DTO mapping, runtime consumer/DI, provider, persistence, migration, deployment, protected resource, live service, or cutover."
         }
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008G merges. They do not authorize product, test, Forge, backend, runtime, or host implementation."
+        "notes": "Proposed exact R3 stage. It requires one bounded owner authority envelope after WO-SR-008H merges; standing operator authority alone does not grant product/test writes."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
-        "source": "WO-SR-008G three-lane source/canon audit at sovereign base eb80239fa25ca479ae42b992235d985c103477e0.",
+        "source": "WO-SR-008H schedule/version/modifier contract at sovereign base 4ef8760fe36f6053d84eb0b7523c7d8f5bd787d5.",
         "schemaVersion": "0.1.0"
       }
     }

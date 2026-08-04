@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008G semantic audit complete pending merge; WO-SR-008H admitted behind merge interlock
+**Status:** Active; WO-SR-008H contract complete pending merge; WO-SR-008H-E1 proposed behind exact R3 authority
 
 ## Ratified topology
 
@@ -82,8 +82,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | Complete R2; PR #1398 merged as `73c2d8af`; first live failure is protected parcel acquisition |
 | WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | Complete R2; PR #1400 merged as `b4eed4c13`; direct adoption requires decomposition |
 | WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Complete R2; PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
-| WO-SR-008G | Audit Forge cost fact and schedule semantics | In progress; audit complete with `DECOMPOSITION_REQUIRED`; closeout merge pending |
-| WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Ready R2; dependency-interlocked until WO-SR-008G merges; docs/evidence only |
+| WO-SR-008G | Audit Forge cost fact and schedule semantics | Complete R2; PR #1402 merged as `4ef8760fe`; verdict `DECOMPOSITION_REQUIRED` |
+| WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | In progress; contract complete with `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE`; closeout merge pending |
+| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Proposed R3; exact two-file product/test scope plus bounded governance/evidence; authority required |
 
 ## Extraction and provenance policy
 
@@ -241,10 +242,8 @@ Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sy
 Benton remain protected-resource or deployment gated. PR #1398 completed WO-SR-008A and preserved
 authenticated county-governed parcel acquisition as the first live journey boundary.
 
-`WO-SR-008G` corrected the rate premise from WO-SR-008F: `UnitCostPerSqFt` is the canonical
-TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact county and effective-year
-selection exist, while exact version pinning, duplicate-band rejection, modifier exclusions,
-county/parcel alias uniqueness, permission, trace, deterministic hashing, and numeric conversion do
-not. `WO-SR-008H` is the highest-value same-risk successor inside existing authority and remains
-docs/evidence-only. Product, runtime, test, host, and synthetic journey mutation remain separately
-protected-path gated.
+`WO-SR-008H` defines exact cost/depreciation schedule pins, stable semantic hashes, provenance and
+ambiguity validation, and a safe depreciation-only decimal projection. The exact two-file pure
+implementation is proposed as `WO-SR-008H-E1` and requires bounded R3 authority. Quality/condition,
+land/location factors, full kernel DTO mapping, numeric conversion, runtime, host, persistence, and
+synthetic journey mutation remain separately protected-path gated.
