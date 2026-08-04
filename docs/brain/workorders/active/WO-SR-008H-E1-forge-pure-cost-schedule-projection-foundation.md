@@ -72,8 +72,11 @@ authority.
 
 ## Rollback
 
-Revert only the two new source/test files and this Work Order's ten governance/evidence records. No
-runtime configuration, persistence, external system, credential, data, or deployed state exists.
+Use the registry `allowedFiles` list as the single 12-path rollback manifest. Remove the two files
+created by this Work Order and revert only this Work Order's changes within the ten shared
+governance/evidence files, including `.governance/owner-decisions.json`; do not restore or alter
+unrelated entries. No runtime configuration, persistence, external system, credential, data, or
+deployed state was changed or created by this Work Order.
 
 ## Terminal condition
 
