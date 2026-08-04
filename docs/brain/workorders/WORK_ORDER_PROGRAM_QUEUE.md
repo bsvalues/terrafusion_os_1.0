@@ -303,7 +303,6 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-008I` Stage 1 - Pure boundary assembly active | Stage 2 after Stage 1 merge and verification | Exact Issue #1406 R4 envelope covers the pure boundary, bounded host/consumer, and default-disabled Shadow proof only; canonical switch, production, protected resources, persistence, deployment, and cutover remain denied | `evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.

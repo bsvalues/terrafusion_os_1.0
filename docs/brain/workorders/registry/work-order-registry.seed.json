@@ -9942,25 +9942,25 @@
           "name": "Focused product tests",
           "command": "run the focused Stage 1, Stage 2, and Stage 3 test filters recorded in Issue #1406",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Backend Release build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Work Order query and planner",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         },
         {
           "name": "Remote required checks and exact-head assurance",
           "command": "GitHub required checks plus independent assurance for each exact stage head",
           "required": true,
-          "result": "pending"
+          "result": "not_run"
         }
       ],
       "evidenceProduced": [

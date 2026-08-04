@@ -22,8 +22,8 @@ step.
 
 | Stage | State | Evidence |
 | --- | --- | --- |
-| Authority activation | In progress | Decision record, WO packet, registry, queue, program, and command routing |
-| Stage 1 - Pure boundary assembly | Pending activation merge | No Stage 1 product artifact exists yet |
+| Authority activation | Complete on this PR merge | Decision record, WO packet, registry, queue, program, and command routing |
+| Stage 1 - Pure boundary assembly | Ready after activation merge | No Stage 1 product artifact exists yet |
 | Stage 2 - Host, trace, and county-scoped consumer | Dependency blocked by Stage 1 | No Stage 2 product artifact exists yet |
 | Stage 3 - Reversible shadow adoption | Dependency blocked by Stage 2 | No Stage 3 product artifact exists yet |
 | Terminal closeout | Dependency blocked by Stage 3 | Authority remains active |
