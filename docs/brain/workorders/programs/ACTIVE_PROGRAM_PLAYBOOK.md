@@ -99,7 +99,7 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active; bounded Forge canonical consumer R4 envelope admitted |
-| Current | `WO-SR-008I` Stage 1 - pure boundary assembly |
+| Current | `WO-SR-008I` Stage 1 - Pure boundary assembly |
 | Next | Stage 2 host and county-scoped consumer after Stage 1 merge verification |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
@@ -657,7 +657,7 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-006` Forge canonical valuation ownership cutover |
-| Current WO | `WO-SR-008I` Stage 1 - pure boundary assembly |
+| Current WO | `WO-SR-008I` Stage 1 - Pure boundary assembly |
 | Next interlock | Stage 2 after Stage 1 merge and verification |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the

@@ -4,7 +4,7 @@
 
 `AUTHORITY_CANONIZED - STAGE 1 READY`
 
-Issue #1406 records the complete three-stage R4 packet. The owner approved decision
+Issue #1406 records the complete three-stage R4 packet. The owner approved the decision
 `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804` directly on that issue. This activation
 canonizes the decision before product writes and admits Stage 1 as the only current implementation
 step.
@@ -23,9 +23,9 @@ step.
 | Stage | State | Evidence |
 | --- | --- | --- |
 | Authority activation | In progress | Decision record, WO packet, registry, queue, program, and command routing |
-| Stage 1 pure boundary | Pending predecessor merge | No product claim yet |
-| Stage 2 host and consumer | Dependency blocked by Stage 1 | No product claim yet |
-| Stage 3 Shadow adoption | Dependency blocked by Stage 2 | No product claim yet |
+| Stage 1 - Pure boundary assembly | Pending activation merge | No Stage 1 product artifact exists yet |
+| Stage 2 - Host, trace, and county-scoped consumer | Dependency blocked by Stage 1 | No Stage 2 product artifact exists yet |
+| Stage 3 - Reversible shadow adoption | Dependency blocked by Stage 2 | No Stage 3 product artifact exists yet |
 | Terminal closeout | Dependency blocked by Stage 3 | Authority remains active |
 
 ## Required terminal evidence

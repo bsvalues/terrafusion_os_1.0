@@ -14,7 +14,7 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout is active on
-`WO-SR-008I - Forge Canonical Consumer Completion`, with Stage 1 pure boundary assembly current.
+`WO-SR-008I - Forge Canonical Consumer Completion`, with Stage 1 - Pure boundary assembly current.
 Issue #1406 canonically authorizes the complete Stage 1 through Stage 3 sequence and one closeout
 under `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804` without per-stage owner relay.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
@@ -162,7 +162,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **DONE / R2** | PR #1402 merged as `4ef8760fe`; exact rate correction and decomposition recorded |
 | **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
 | **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1404 merged as `6eb6f0768`; 40 focused tests, exact-head assurance, and remote gates passed; no runtime or full kernel mapping |
-| **WO-SR-008I Forge Canonical Consumer Completion** | **ACTIVE / R4 / STAGE 1** | Issue #1406 authority canonized; pure boundary current, host/consumer and default-disabled Shadow adoption dependency ordered; legacy response remains authoritative |
+| **WO-SR-008I Forge Canonical Consumer Completion** | **ACTIVE / R4 / STAGE 1** | Issue #1406 authority canonized; Stage 1 - Pure boundary assembly current, host/consumer and default-disabled Shadow adoption dependency ordered; legacy response remains authoritative |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -303,7 +303,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
 | runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
-| five-suite-federated-repository-buildout | `WO-SR-008I` Stage 1 active | Stage 2 after Stage 1 merge and verification | Exact Issue #1406 R4 envelope covers pure mapping, bounded host/consumer, and default-disabled Shadow proof only; canonical switch, production, protected resources, persistence, deployment, and cutover remain denied | `evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md` |
+| five-suite-federated-repository-buildout | `WO-SR-008I` Stage 1 - Pure boundary assembly active | Stage 2 after Stage 1 merge and verification | Exact Issue #1406 R4 envelope covers the pure boundary, bounded host/consumer, and default-disabled Shadow proof only; canonical switch, production, protected resources, persistence, deployment, and cutover remain denied | `evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
