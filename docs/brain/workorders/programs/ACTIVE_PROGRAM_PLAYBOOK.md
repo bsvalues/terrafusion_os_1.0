@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; Forge semantic decomposition complete pending merge |
-| Current | `WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation` |
-| Next | `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` after merge |
+| Status | Active; Forge cost semantics audit complete pending merge |
+| Current | `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` |
+| Next | `WO-SR-008H - Forge Cost Schedule Version and Modifier Projection Contract` after merge |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -657,8 +657,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-006` Forge canonical valuation ownership cutover |
-| Current WO | `WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation` closing |
-| Next interlock | `WO-SR-008G` dispatch after WO-SR-008F merge |
+| Current WO | `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` closing |
+| Next interlock | `WO-SR-008H` dispatch after WO-SR-008G merge |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
