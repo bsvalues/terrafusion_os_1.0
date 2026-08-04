@@ -102,16 +102,15 @@ Runtime/provider adoption outside this exact Forge valuation-kernel envelope, ex
 or persistence mutation, protected data, publication, production deployment, blind or out-of-scope
 source retirement, and other-suite cutover remain gated.
 
-Issue #1396 completed the post-Atlas multi-agent reconciliation and admitted
-`WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit` as the current dependency-cleared
-R2 node. It audits the existing search-to-Workbench journey and its first failing link without product,
-runtime, test-source, provider, persistence, deployment, or protected-resource mutation.
+PR #1398 merged `WO-SR-008A - Single-Parcel Assessor Journey Runtime Readiness Audit` as
+`73c2d8afbddb3c77e36abf3d920b1ef3eab249af` after 46 targeted tests and a protected parcel-acquisition
+finding.
 
-WO-SR-008A identified authenticated county-governed parcel acquisition as the first live boundary.
-Five targeted synthetic/structural test files pass 46 tests, but do not prove live readiness.
-`WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` is admitted behind the
-WO-SR-008A merge interlock as a docs/evidence-only audit. Synthetic test restoration remains
-separately protected-path gated.
+`WO-SR-008E - Forge Canonical Kernel Consumer Boundary Preparation` found that Forge ownership and
+hash-verified execution are proven but direct Workbench consumption is `DECOMPOSITION_REQUIRED`.
+`WO-SR-008F - Forge Kernel Cost Input and Identity Contract Preparation` is admitted behind the
+WO-SR-008E merge interlock as a docs/evidence-only node. Product, runtime, test, and protected-resource
+mutation remain separately authority-gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008A single-parcel journey runtime-readiness audit",
+  "generatedBy": "WO-SR-008E Forge canonical-kernel consumer boundary preparation",
   "generatedAt": "2026-08-03T00:00:00Z",
-  "description": "Five-suite registry during WO-SR-008A closeout. The journey audit identified protected parcel acquisition as the first live boundary and admitted docs-only WO-SR-008E behind a post-merge dependency interlock; runtime adoption, test-source mutation, providers, deployment, protected resources, and cutover remain unauthorized.",
+  "description": "Five-suite registry during WO-SR-008E closeout. The Forge consumer audit returned DECOMPOSITION_REQUIRED and admitted docs-only WO-SR-008F behind a post-merge dependency interlock; runtime adoption, test-source mutation, providers, deployment, protected resources, and cutover remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9128,7 +9128,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Determine whether the existing search-to-parcel Workbench journey is locally provable and identify its first exact failing link without product or runtime mutation.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-007B",
@@ -9214,6 +9214,11 @@
           "kind": "other",
           "location": "docs/brain/workorders/evidence/WO-SR-008A-SINGLE-PARCEL-ASSESSOR-JOURNEY-RUNTIME-READINESS-AUDIT.md",
           "summary": "Exact journey matrix, first failing link, test evidence, non-claims, ranking, and selected successor."
+        },
+        {
+          "kind": "merge",
+          "location": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1398",
+          "summary": "PR #1398 merged exact reviewed head c89fa8afe89fd64c982ff5047d4f299e419d4b30 as 73c2d8afbddb3c77e36abf3d920b1ef3eab249af."
         }
       ],
       "stopConditions": [
@@ -9227,7 +9232,7 @@
           "id": "WO-SR-008E",
           "reason": "Highest-value same-risk docs-only slice defines the Workbench-to-canonical-Forge-kernel consumer boundary without protected-path mutation.",
           "riskClass": "R2",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {
@@ -9252,13 +9257,13 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define the exact boundary between the Workbench Forge consumer and canonical Forge valuation kernel without product, runtime, test, or Forge mutation.",
       "riskClass": "R2",
-      "status": "ready",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-008A",
-          "status": "required",
+          "status": "satisfied",
           "evidence": [
-            "WO-SR-008E dispatch begins only after the WO-SR-008A audit PR merges and post-merge verification succeeds."
+            "PR #1398 merged WO-SR-008A as 73c2d8afbddb3c77e36abf3d920b1ef3eab249af and post-merge file verification passed."
           ]
         }
       ],
@@ -9276,6 +9281,7 @@
       "allowedFiles": [
         "docs/brain/workorders/active/WO-SR-008E-forge-canonical-kernel-consumer-boundary-preparation.md",
         "docs/brain/workorders/evidence/WO-SR-008E-FORGE-CANONICAL-KERNEL-CONSUMER-BOUNDARY-PREPARATION.md",
+        "docs/brain/workorders/active/WO-SR-008F-forge-kernel-cost-input-identity-contract-preparation.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -9314,23 +9320,36 @@
           "name": "Diff check",
           "command": "git diff --check",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         },
         {
           "name": "Work Order query and planner",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass - 41 tests"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-008E-FORGE-CANONICAL-KERNEL-CONSUMER-BOUNDARY-PREPARATION.md",
+          "summary": "Three-lane current/canonical compatibility matrix, exact missing proofs, nonclaims, and DECOMPOSITION_REQUIRED verdict."
+        }
+      ],
       "stopConditions": [
         {
           "type": "authority_wall",
           "description": "Stop before product-source, backend, runtime, consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
         }
       ],
-      "nextCandidates": [],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008F",
+          "reason": "Smallest same-risk docs-only slice defines the county-bound input, response, failure, trace, cancellation, and host contract before any Forge consumer implementation.",
+          "riskClass": "R2",
+          "blocked": true
+        }
+      ],
       "authority": {
         "mayWrite": true,
         "mayCommit": true,
@@ -9344,6 +9363,103 @@
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
         "source": "WO-SR-008A multi-agent audit at sovereign base b85e1c92db4fcf0b7aa5eb1ee98c44e998866854.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008F",
+      "title": "Forge Kernel Cost Input and Identity Contract Preparation",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Define the exact county-bound input, response, failure, trace, cancellation, and host contract required before Forge kernel cost consumer implementation.",
+      "riskClass": "R2",
+      "status": "ready",
+      "dependencies": [
+        {
+          "id": "WO-SR-008E",
+          "status": "required",
+          "evidence": [
+            "WO-SR-008F dispatch begins only after the WO-SR-008E audit PR merges and post-merge verification succeeds."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only Forge kernel cost input and identity contract preparation",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product, test source, Forge repository, backend, runtime, workflows, packages, deployment, providers, persistence, protected resources, live services, and production"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-SR-008F-forge-kernel-cost-input-identity-contract-preparation.md",
+        "docs/brain/workorders/evidence/WO-SR-008F-FORGE-KERNEL-COST-INPUT-IDENTITY-CONTRACT-PREPARATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "frontend/**",
+        "backend/**",
+        "os-platform/**",
+        "tools/**",
+        "scripts/**",
+        "packages/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact county/input projection, response mapping, failure/trace/cancellation/host contract, staged implementation allowlists, rollback, and verdict."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Diff check",
+          "command": "git diff --check",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop before product-source, backend, runtime, projection/consumer/DI, provider, persistence, deployment, protected-resource, live-service, schema, cutover, or new-product-direction changes."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008E merges. They do not authorize product, test, Forge, backend, or runtime implementation."
+      },
+      "provenance": {
+        "createdAt": "2026-08-03T00:00:00Z",
+        "source": "WO-SR-008E three-lane audit at sovereign base 73c2d8afbddb3c77e36abf3d920b1ef3eab249af.",
         "schemaVersion": "0.1.0"
       }
     }
