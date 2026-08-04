@@ -9281,7 +9281,6 @@
       "allowedFiles": [
         "docs/brain/workorders/active/WO-SR-008E-forge-canonical-kernel-consumer-boundary-preparation.md",
         "docs/brain/workorders/evidence/WO-SR-008E-FORGE-CANONICAL-KERNEL-CONSUMER-BOUNDARY-PREPARATION.md",
-        "docs/brain/workorders/active/WO-SR-008F-forge-kernel-cost-input-identity-contract-preparation.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
         "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
         "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
@@ -9358,11 +9357,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008A merges. They do not authorize product, test, Forge, or runtime implementation."
+        "notes": "Issue #1396 and standing operator authority cover this exact R2 docs/evidence lifecycle after WO-SR-008A merged. They do not authorize product, test, Forge, backend, or runtime implementation."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
-        "source": "WO-SR-008A multi-agent audit at sovereign base b85e1c92db4fcf0b7aa5eb1ee98c44e998866854.",
+        "source": "Issue #1396 portfolio reconciliation after WO-SR-008A merged as 73c2d8afbddb3c77e36abf3d920b1ef3eab249af.",
         "schemaVersion": "0.1.0"
       }
     },
