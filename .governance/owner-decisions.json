@@ -3,6 +3,67 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-008I",
+      "status": "active",
+      "authority_class": "R4-bounded-non-production-forge-canonical-consumer-shadow-adoption",
+      "effective_base_sha": "bf5c66fe335cdd0b4d738671975ff8ff67261948",
+      "scope_source": "Owner authorization recorded directly on Issue #1406 on 2026-08-04. The issue is the controlling consolidated packet for Stages 1 through 3 and one terminal closeout without per-stage or per-PR owner relay.",
+      "terminal_condition": "FORGE_CANONICAL_CONSUMER_SHADOW_ADOPTION_PROVEN_NO_LIVE_CUTOVER",
+      "authorized_actions": [
+        "implement and merge Stage 1 pure boundary assembly over the unchanged WO-SR-008H-E1 schedule projection",
+        "implement and merge Stage 2 bounded process-host hardening and authenticated county-scoped Forge canonical consumer",
+        "implement and merge Stage 3 reversible default-disabled Shadow adoption while preserving the existing DB-backed response",
+        "perform in-scope remediation, exact-head assurance, eligible Mode B squash merges, post-merge verification, and one governance-only terminal closeout"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.Core/Entities/Forge/ForgeCanonicalCostConsumerProjection.cs",
+        "backend/src/TerraFusion.Core/DTOs/ForgeValuationDtos.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCanonicalCostConsumerProjectionTests.cs",
+        "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelExecutionContext.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelFailureMode.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelInvocationResult.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/IValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/RustKernelProcessHost.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/IForgeCanonicalCostConsumer.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ForgeCanonicalCostConsumer.cs",
+        "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/ValuationKernelClientTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/RustKernelProcessHostTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/ForgeCanonicalCostConsumerTests.cs",
+        "backend/TerraFusion.API.Tests/Controllers/ForgeCanonicalCostConsumerTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/BoundaryGuardTests.cs",
+        "docs/brain/workorders/active/WO-SR-008I-forge-canonical-consumer-completion.md",
+        "docs/brain/workorders/evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "changes to the completed E1 source or tests, standalone Forge, the cost kernel, new valuation methodology, unresolved quality, condition, location, land-schedule, obsolescence, or arbitrary-modifier semantics",
+        "canonical response replacement, frontend adoption, production configuration, migration, schema, persistence mutation, seed or backfill, workflow, branch protection, deployment, source retirement, or package and lockfile mutation",
+        "live county, PACS, SQL, credentials, secrets, GitHub artifact trust, network artifact transfer, other-suite cutover, force push, gate bypass, unresolved-thread merge, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "out-of-scope file requirement, E1 or hash change, new valuation methodology, or incompatible frozen boundary",
+        "schema, persistence, protected-resource, credential, secret, deployment, production, frontend, canonical-response, cost-kernel, standalone-Forge, or OS network-sandbox requirement",
+        "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
+      ],
+      "decision_basis": "Issue #1406 consolidates the minimum remaining Forge consumer path after E1 into one reversible implementation envelope. Shadow mode may invoke and compare but the existing DB-backed response remains authoritative and the code default remains Disabled."
+    },
+    {
       "id": "OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

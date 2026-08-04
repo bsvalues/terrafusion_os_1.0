@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-008H-E1 complete and bounded authority consumed
+**Status:** Active; WO-SR-008I bounded R4 envelope admitted and Stage 1 current
 
 ## Ratified topology
 
@@ -85,6 +85,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008G | Audit Forge cost fact and schedule semantics | Complete R2; PR #1402 merged as `4ef8760fe`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Complete R2; PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
 | WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Complete R3; PR #1404 merged as `6eb6f0768`; exact authority consumed |
+| WO-SR-008I | Complete the Forge canonical consumer through Stage 1 - Pure boundary assembly, bounded host/consumer, and default-disabled Shadow adoption | Active R4; Issue #1406 authority canonized; Stage 1 current |
 
 ## Extraction and provenance policy
 
@@ -245,6 +246,9 @@ authenticated county-governed parcel acquisition as the first live journey bound
 `WO-SR-008H` defined exact cost/depreciation schedule pins, stable semantic hashes, provenance and
 ambiguity validation, and a safe depreciation-only decimal projection. Bounded R3 `WO-SR-008H-E1`
 implemented that exact two-file pure foundation in PR #1404 and recorded one consolidated remaining
-consumer path. Its authority is completed and consumed; no implementation successor is admitted.
-Quality/condition, land/location factors, full kernel DTO mapping, numeric conversion, runtime, host,
-persistence, and synthetic journey mutation remain separately protected-path gated.
+consumer path. Its authority is completed and consumed. Issue #1406 approved that path as
+`WO-SR-008I`: Stage 1 - Pure boundary assembly, Stage 2 bounded host and authenticated
+county-scoped consumer, Stage 3 default-disabled Shadow adoption, and one terminal closeout. The
+legacy DB-backed response remains authoritative. Quality/condition, land/location factors,
+persistence, live protected resources, production, deployment, frontend adoption, and canonical
+response cutover remain denied.

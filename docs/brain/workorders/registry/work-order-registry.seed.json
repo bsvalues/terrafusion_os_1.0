@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008H-E1 terminal closeout",
+  "generatedBy": "WO-SR-008I authority activation",
   "generatedAt": "2026-08-04T00:00:00Z",
-  "description": "Five-suite registry after bounded R3 WO-SR-008H-E1 implementation merged and terminal closeout consumed its authority. Exact schedule pinning, stable content hashing, ambiguity rejection, and a depreciation-only decimal projection are proven; runtime and full kernel mapping remain unauthorized.",
+  "description": "Five-suite registry after Issue #1406 canonized bounded R4 WO-SR-008I authority. Stage 1 pure Forge consumer boundary assembly is active; later host, consumer, and default-disabled Shadow stages remain dependency ordered inside the same exact envelope.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9840,6 +9840,163 @@
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
         "source": "WO-SR-008H merged as 2561e2d060612e38dfd6afbb0d070268468c7517; owner granted exact bounded E1 R3 authority on 2026-08-03.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-008I",
+      "title": "Forge Canonical Consumer Completion",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove a complete authenticated, county-scoped, non-production Forge canonical cost consumer in reversible default-disabled Shadow mode without changing the authoritative response.",
+      "riskClass": "R4",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-008H-E1",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1404 merged E1 as 6eb6f07687cb728dc9b42dada8991c0afa00ced8 and PR #1405 closed it at exact base bf5c66fe335cdd0b4d738671975ff8ff67261948."
+          ]
+        },
+        {
+          "id": "OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804",
+          "status": "satisfied",
+          "evidence": [
+            "Owner approved the complete consolidated packet directly on Issue #1406 on 2026-08-04."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded Forge canonical consumer and default-disabled non-production Shadow adoption",
+          "paths": [
+            "backend/src/TerraFusion.Core/Entities/Forge/**",
+            "backend/src/TerraFusion.Core/DTOs/ForgeValuationDtos.cs",
+            "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+            "backend/src/TerraFusion.API/Services/Valuation/**",
+            "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
+            "backend/src/TerraFusion.API/Program.cs",
+            "backend/tests/TerraFusion.Unit.Tests/Forge/**",
+            "backend/TerraFusion.API.Tests/**",
+            ".governance/owner-decisions.json",
+            "docs/brain/workorders/**"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Completed E1, standalone Forge, cost kernel, frontend, canonical response switch, production configuration, schema, persistence, workflows, deployment, protected resources, credentials, secrets, and other suites"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.Core/Entities/Forge/ForgeCanonicalCostConsumerProjection.cs",
+        "backend/src/TerraFusion.Core/DTOs/ForgeValuationDtos.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCanonicalCostConsumerProjectionTests.cs",
+        "backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelExecutionContext.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelFailureMode.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/KernelContracts/KernelInvocationResult.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/IValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ValuationKernelClient.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/RustKernelProcessHost.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/IForgeCanonicalCostConsumer.cs",
+        "backend/src/TerraFusion.API/Services/Valuation/ForgeCanonicalCostConsumer.cs",
+        "backend/src/TerraFusion.API/Controllers/ForgeController.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/ValuationKernelClientTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/RustKernelProcessHostTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/ForgeCanonicalCostConsumerTests.cs",
+        "backend/TerraFusion.API.Tests/Controllers/ForgeCanonicalCostConsumerTests.cs",
+        "backend/TerraFusion.API.Tests/Services/Valuation/BoundaryGuardTests.cs",
+        "docs/brain/workorders/active/WO-SR-008I-forge-canonical-consumer-completion.md",
+        "docs/brain/workorders/evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.Core/Entities/Forge/ForgeCostScheduleProjection.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs",
+        "frontend/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**",
+        "specialized/**",
+        "applications/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "test",
+          "description": "Stage-specific focused proof for pure numeric and identity mapping, bounded host failures, authenticated county isolation, Shadow honesty, and unchanged authoritative response."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused product tests",
+          "command": "run the focused Stage 1, Stage 2, and Stage 3 test filters recorded in Issue #1406",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Backend Release build",
+          "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Remote required checks and exact-head assurance",
+          "command": "GitHub required checks plus independent assurance for each exact stage head",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-008I-FORGE-CANONICAL-CONSUMER-COMPLETION.md",
+          "summary": "Consolidated activation, stage, safety, validation, merge, and terminal closeout evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop only for a required out-of-scope file, E1/hash change, new valuation methodology, schema or persistence mutation, protected resource, credential, deployment, production, canonical response switch, standalone Forge or cost-kernel change, OS network sandbox, gate bypass, force push, destructive cleanup, or conflicting authority."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-008I-STAGE-2",
+          "reason": "Host hardening and authenticated county-scoped consumer after Stage 1 is merged and verified.",
+          "riskClass": "R4",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Issue #1406 and OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804 authorize the complete staged lifecycle and one closeout without per-stage or per-PR owner relay. Stage 1 is current; later stages are dependency ordered."
+      },
+      "provenance": {
+        "createdAt": "2026-08-04T00:00:00Z",
+        "source": "Issue #1406 owner approval at exact base bf5c66fe335cdd0b4d738671975ff8ff67261948.",
         "schemaVersion": "0.1.0"
       }
     }
