@@ -53,11 +53,38 @@ mismatch; and duplicate schedule identities.
 
 ## Stable content hash contract
 
-Schedule hashes use UTF-8 canonical JSON with fixed property order and invariant decimal text.
-Mutable audit timestamps and actors are excluded. Schedule identity, county, year, opaque version,
-origin, author, revaluation cycle, and every semantic row are included. Rows are sorted by normalized
-class or age bounds, bounds, invariant values, and row ID, so database load order cannot change the
-hash. Mutation of any included identity or semantic value must change the hash.
+Schedule hashes use SHA-256 over one UTF-8 byte sequence with no BOM, no trailing newline, and no
+insignificant whitespace. JSON property order is the literal order shown in the known-answer vectors
+below. Strings are Unicode NFC; GUIDs use lowercase `D` format; class codes are trimmed and uppercased
+invariantly. Version, author, and revaluation-cycle strings preserve case and must already be trimmed.
+JSON string escaping follows `System.Text.Json`. Null bounds and cycles are the JSON literal `null`.
+Integers use invariant base-10 with no leading zero. Decimals are JSON strings formatted with
+`decimal.ToString("G29", InvariantCulture)`; exponent notation is forbidden.
+
+Cost rows sort by class ordinal, minimum bound (`null` before integers), maximum bound (`null` after
+integers), unit-cost text ordinal, then row GUID ordinal. Depreciation rows sort by minimum age,
+maximum age, fraction text ordinal, then row GUID ordinal. Mutable audit timestamps and actors are
+excluded. Schedule identity, county, year, opaque version, origin, author, revaluation cycle, and
+every semantic row are included. Mutation of any included identity or semantic value must change the
+hash.
+
+### Known-answer vectors
+
+Cost-factor canonical bytes:
+
+```json
+{"schema":"forge-cost-factor-set/v1","id":"11111111-1111-1111-1111-111111111111","countyId":"22222222-2222-2222-2222-222222222222","effectiveYear":2026,"version":"v1","origin":"TerraFusionOwned","author":"tf","revalCycle":null,"factors":[{"id":"33333333-3333-3333-3333-333333333333","class":"R1","minSqFt":null,"maxSqFt":null,"unitCost":"125.5"}]}
+```
+
+SHA-256: `a5eab9a2f0740cc1c16ba835654b41d97fa964e4aff5449de503b5cf479ca9f2`
+
+Depreciation canonical bytes:
+
+```json
+{"schema":"forge-depreciation-schedule/v1","id":"44444444-4444-4444-4444-444444444444","countyId":"22222222-2222-2222-2222-222222222222","effectiveYear":2026,"version":"v1","origin":"TerraFusionOwned","author":"tf","revalCycle":null,"factors":[{"id":"55555555-5555-5555-5555-555555555555","minAge":0,"maxAge":10,"fraction":"0.1"}]}
+```
+
+SHA-256: `2902186c7f8bf833d4153de57f1ead1d2a16c39c1cc8da78689cb0cfa75197a4`
 
 This hash proves the exact caller-supplied schedule snapshot. It does not replace invocation/audit
 identity, sign content, or certify persistence provenance.

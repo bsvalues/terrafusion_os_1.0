@@ -9719,7 +9719,11 @@
       "allowedSystems": [
         {
           "name": "Pure unwired Forge cost schedule resolution and decimal modifier projection",
-          "paths": ["backend/src/TerraFusion.Core/Entities/Forge/**", "backend/tests/TerraFusion.Unit.Tests/Forge/**", "docs/brain/workorders/**"]
+          "paths": [
+            "backend/src/TerraFusion.Core/Entities/Forge/**",
+            "backend/tests/TerraFusion.Unit.Tests/Forge/**",
+            "docs/brain/workorders/**"
+          ]
         }
       ],
       "blockedSystems": [
