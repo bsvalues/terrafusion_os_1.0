@@ -35,8 +35,9 @@ formula, but no focused test currently proves the source-to-kernel projection.
    narrowest-band rule (`DepreciationSchedule.cs:24-75`).
 5. Land rates are county/year/version-scoped and neighborhood keyed with explicit misses
    (`LandScheduleSet.cs:24-71`).
-6. Canonical quality vocabulary is `ECONOMY`, `FAIR`, `STANDARD`, `GOOD`, `EXCELLENT`, `LUXURY`;
-   condition vocabulary is `POOR`, `FAIR`, `GOOD`, `EXCELLENT` (`CamaCharacteristic.cs:38-56`).
+6. `CamaCharacteristic` documents one quality/condition vocabulary, but normalization code also
+   persists `AVERAGE`, `VERY_GOOD`, and pass-through values. No enforced canonical vocabulary exists
+   (`CamaCharacteristic.cs:38-56`; `PacsCanonicalizer.NormalizeQualityGrade`).
 7. `TfParcelId` is the canonical parcel identity; PACS identifiers are lineage only
    (`CanonicalTf/TfParcel.cs:5-21`).
 
@@ -47,7 +48,7 @@ formula, but no focused test currently proves the source-to-kernel projection.
 | Version pinning | Catalog selection accepts no requested version and chooses the lexically greatest version for a county/year. Version syntax, exact-match behavior, and uniqueness are not enforced. |
 | Duplicate factors | Equally specific bands can be selected by generated GUID; overlapping or duplicate bands are not rejected. |
 | Modifier policy | The kernel silently defaults unknown quality/condition to `1.0`, defaults depreciation, ignores unknown keys, and permits reserved-key collisions. The TF-native calculator does not consume quality or condition. |
-| Quality/condition | Current legacy and kernel paths use different defaults, ordering, and rounding. Adopting either would invent policy. |
+| Quality/condition | Documentation, normalization, legacy, and kernel paths accept conflicting vocabularies and use different defaults, ordering, and rounding. Adopting any one path would invent policy. |
 | Land/factors | `LandScheduleSet` is canonical, but Workbench land values do not carry schedule provenance. Non-neutral neighborhood/location multipliers have no canonical versioned source. |
 | Parcel aliases | `(CountyId, ParcelNumber)` is indexed but not unique; current read paths accept aliases without a single fail-closed normalization contract. |
 | Permission | Existing Forge and CostForge routes use different permission vocabularies; no exact consumer-read permission is canonical. |

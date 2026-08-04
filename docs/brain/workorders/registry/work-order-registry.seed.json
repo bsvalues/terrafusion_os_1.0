@@ -10,7 +10,7 @@
       "program": "Work Order Engine",
       "goal": "Turn the proven DevOps goal/loop operating pattern into reusable TerraFusion operator doctrine.",
       "riskClass": "R1",
-      "status": "complete",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-WOE-001",
@@ -86,7 +86,7 @@
           "id": "WO-WOE-002",
           "reason": "The operator pattern needs a canonical Work Order data model.",
           "riskClass": "R1",
-          "blocked": false
+          "blocked": true
         }
       ],
       "authority": {
@@ -9486,7 +9486,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Resolve the canonical valuation-fact, schedule-year, modifier, vocabulary, land/factor, identity, trace, hashing, and rounding semantics required before Forge kernel consumer implementation.",
       "riskClass": "R2",
-      "status": "complete",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-008F",
@@ -9571,7 +9571,7 @@
           "id": "WO-SR-008H",
           "reason": "Smallest same-risk docs-only slice pins schedule identity and defines a fail-closed first-projection subset without inventing quality, condition, or location-factor policy.",
           "riskClass": "R2",
-          "blocked": false
+          "blocked": true
         }
       ],
       "authority": {

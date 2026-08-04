@@ -108,7 +108,7 @@ finding.
 
 `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit` corrected `UnitCostPerSqFt` as the
 canonical TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact version
-pinning, duplicate-factor rejection, modifier exclusions, identity, trace, deterministic hashing,
+pinning, duplicate-band rejection, modifier exclusions, identity, trace, deterministic hashing,
 and numeric conversion still require decomposition. `WO-SR-008H - Forge Cost Schedule Version and
 Modifier Projection Contract` is admitted behind the WO-SR-008G merge interlock as a docs/evidence-
 only node. Valuation-policy invention and product, runtime, test, host, and protected-resource

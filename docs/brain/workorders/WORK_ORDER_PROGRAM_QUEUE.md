@@ -17,7 +17,7 @@ The Five-Suite Federated Repository Buildout is closing
 `WO-SR-008G - Forge Cost Fact and Schedule Semantics Audit`: `UnitCostPerSqFt` is the canonical
 TerraFusion-owned RCN rate and source candidate for kernel `BaseRate`. Exact county/year matching is
 source-backed, while version pinning, duplicate-band rejection, modifier exclusions, identity,
-trace, deterministic hashing, and numeric conversion remain unresolved. `WO-SR-008H - Forge Cost
+   trace, deterministic hashing, and numeric conversion remain unresolved. `WO-SR-008H - Forge Cost
 Schedule Version and Modifier Projection Contract` is admitted behind the WO-SR-008G merge
 interlock.
 The historical cohort narrative follows.
@@ -385,7 +385,7 @@ because its exact paths are under protected frontend scope.
 
 `UnitCostPerSqFt` is the canonical TerraFusion-owned RCN rate and source candidate for kernel
 `BaseRate`; legacy `BaseCost` and `CostPerSqFt` are excluded. Exact county/effective-year selection
-exists, but version pinning and duplicate-factor rejection do not. Quality/condition and non-neutral
+exists, but version pinning and duplicate-band rejection do not. Quality/condition and non-neutral
 location modifiers remain excluded because current paths conflict. `WO-SR-008H` is the selected
 docs-only successor and remains dependency-interlocked until the WO-SR-008G audit PR merges.
 
