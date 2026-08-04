@@ -30,7 +30,8 @@ Focused tests prove:
 - order-independent hashes, equal-value/different-scale decimal hash equality, and fixed-point
   encoding of tiny decimals without exponent notation;
 - mutation-sensitive semantic hashes;
-- exact county, year, schedule ID, opaque version, and hash pin validation before factor-row reads;
+- exact county, year, schedule ID, and opaque version validation before factor-row reads, followed by
+  structural row validation and exact semantic-hash pin validation;
 - lexical-version rejection rather than latest-version selection;
 - raw `OrdinalIgnoreCase` class matching without trim or vocabulary invention;
 - unique narrowest, minimum-only, maximum-only, and unbounded-band semantics;
@@ -50,8 +51,10 @@ Focused tests prove:
 | Backend Release build | PASS - 0 warnings, 0 errors |
 | Work Order query/planner | PASS - query output valid; 41 tests passed |
 | Frozen bootstrap invariants | PASS - package and lockfile SHA-256 unchanged; ignored `node_modules` only |
-| Exact 11-file allowlist | PASS |
-| Remote checks / exact-head assurance | Pending PR |
+| Exact changed/blocked paths | PASS - exact 12-file amended allowlist; no blocked paths |
+| Package and lockfile integrity | PASS - SHA-256 unchanged |
+| Remote required checks | PENDING - amended head not yet pushed |
+| Independent exact-head assurance | PENDING - amended head not yet reviewed |
 
 ## Safety and nonclaims
 

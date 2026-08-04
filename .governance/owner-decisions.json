@@ -3,6 +3,54 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-008H-E1",
+      "status": "active",
+      "authority_class": "R3-bounded-forge-cost-schedule-projection-foundation",
+      "effective_base_sha": "2561e2d060612e38dfd6afbb0d070268468c7517",
+      "scope_source": "Owner authorization recorded on 2026-08-03 after WO-SR-008H merged. OWNER-SR-008H-E1-R3-CANONICAL-RATIFICATION-AMENDMENT-001, recorded on PR #1404 as review 4854937885, adds this canonical decision record and one post-merge governance-only closeout without expanding product scope.",
+      "terminal_condition": "FORGE_PURE_COST_SCHEDULE_PROJECTION_FOUNDATION_PROVEN_UNWIRED after the exact-scope implementation PR and one governance-only closeout PR are merged and verified.",
+      "authorized_actions": [
+        "validate exact caller-supplied cost-factor and depreciation-schedule identities, opaque versions, and deterministic semantic SHA-256 pins",
+        "resolve exactly one bounded cost factor and one depreciation factor into decimal BaseRate and DepreciationRate while failing closed on malformed, ambiguous, or mismatched inputs",
+        "commit, validate, remediate, obtain exact-head assurance, merge the exact-scope implementation under Mode B, perform one governance-only closeout, consume this authority, and return one consolidated Forge consumer completion packet"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.Core/Entities/Forge/ForgeCostScheduleProjection.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs",
+        "docs/brain/workorders/active/WO-SR-008H-E1-forge-pure-cost-schedule-projection-foundation.md",
+        "docs/brain/workorders/evidence/WO-SR-008H-E1-FORGE-PURE-COST-SCHEDULE-PROJECTION-FOUNDATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "runtime or dependency-injection wiring, catalog or database lookup, persistence, migrations, kernel DTO mapping, decimal-to-double conversion, providers, controllers, endpoints, workflows, deployment, county, PACS, SQL, credentials, secrets, live services, production, or cutover",
+        "quality, condition, land, neighborhood, location, obsolescence, arbitrary caller modifiers, schedule inference, source extraction, packages, publication, Forge-repository mutation, or files outside the exact allowlist",
+        "required-check bypass, unresolved substantive review, exact-head assurance failure, or another planning-only successor"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "schedule identity, semantic hash, deterministic resolution, decimal output, or fail-closed proof failure",
+        "scope expansion, blocked-path mutation, package or lockfile mutation, required-check failure or bypass, unresolved substantive review, or exact-head assurance failure",
+        "runtime, deployment, protected-resource, credential, secret, persistence, publication, or conflicting-authority access"
+      ],
+      "decision_basis": "WO-SR-008H proved the smallest safe next implementation is a pure unwired schedule projection. The bounded implementation produces reusable decimal schedule truth while leaving runtime adoption and the complete Forge consumer boundary separately protected.",
+      "progress": {
+        "implementation_pr": 1404,
+        "implementation_exact_head_pending": true,
+        "terminal_closeout_pending": true
+      }
+    },
+    {
       "id": "OWNER-SR-005C-F1-RETAIN-REMEDIATE-20260727",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

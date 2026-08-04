@@ -19,6 +19,7 @@ Five-Suite Federated Repository Buildout
 - Mode: bounded pure product/test implementation plus governance evidence
 - Dependency: WO-SR-008H merged as PR #1403 / `2561e2d060612e38dfd6afbb0d070268468c7517`
 - Authority: `OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803`
+- Canonical-ratification amendment: `OWNER-SR-008H-E1-R3-CANONICAL-RATIFICATION-AMENDMENT-001`
 
 ## Purpose
 
@@ -34,7 +35,9 @@ backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs
 ```
 
 Governance writes are limited to this packet, its evidence artifact, and the seven canonical
-registry, queue, program, and command-routing records in the registry allowlist.
+registry, queue, program, and command-routing records in the registry allowlist. The amended scope
+also includes `.governance/owner-decisions.json` solely to canonize and later consume the bounded
+authority.
 
 ## Implemented boundary
 
@@ -69,7 +72,7 @@ registry, queue, program, and command-routing records in the registry allowlist.
 
 ## Rollback
 
-Revert only the two new source/test files and this Work Order's nine governance/evidence records. No
+Revert only the two new source/test files and this Work Order's ten governance/evidence records. No
 runtime configuration, persistence, external system, credential, data, or deployed state exists.
 
 ## Terminal condition

@@ -9732,6 +9732,7 @@
         }
       ],
       "allowedFiles": [
+        ".governance/owner-decisions.json",
         "backend/src/TerraFusion.Core/Entities/Forge/ForgeCostScheduleProjection.cs",
         "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs",
         "docs/brain/workorders/active/WO-SR-008H-E1-forge-pure-cost-schedule-projection-foundation.md",
@@ -9786,6 +9787,30 @@
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
           "result": "pass - query valid and 41 tests"
+        },
+        {
+          "name": "Exact changed-path and blocked-path inspection",
+          "command": "compare the PR diff against allowedFiles and blockedFiles",
+          "required": true,
+          "result": "pass - exact 12-file amended allowlist; no blocked paths"
+        },
+        {
+          "name": "Package and lockfile integrity",
+          "command": "verify package.json and pnpm-lock.yaml SHA-256 values remain unchanged across frozen bootstrap and validation",
+          "required": true,
+          "result": "pass - package.json and pnpm-lock.yaml SHA-256 unchanged"
+        },
+        {
+          "name": "Remote required checks",
+          "command": "GitHub required checks on the exact amended PR head",
+          "required": true,
+          "result": "pending - amended head not yet pushed"
+        },
+        {
+          "name": "Independent exact-head assurance",
+          "command": "independent assurance review of the exact amended PR head",
+          "required": true,
+          "result": "pending - amended head not yet reviewed"
         }
       ],
       "evidenceProduced": [
@@ -9810,7 +9835,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Exact bounded R3 authority OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803 grants the complete 11-file E1 delivery lifecycle through eligible merge. Runtime, full kernel mapping, persistence, deployment, and protected resources remain denied."
+        "notes": "Exact bounded R3 authority OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803 and canonical-ratification amendment 001 grant the complete 12-file E1 delivery lifecycle through eligible merge plus one governance-only closeout. Runtime, full kernel mapping, persistence, deployment, and protected resources remain denied."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
