@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008H contract complete pending merge; WO-SR-008H-E1 proposed behind exact R3 authority
+**Status:** Active; WO-SR-008H complete; bounded WO-SR-008H-E1 implementation and local proof complete
 
 ## Ratified topology
 
@@ -83,8 +83,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | Complete R2; PR #1400 merged as `b4eed4c13`; direct adoption requires decomposition |
 | WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Complete R2; PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008G | Audit Forge cost fact and schedule semantics | Complete R2; PR #1402 merged as `4ef8760fe`; verdict `DECOMPOSITION_REQUIRED` |
-| WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | In progress; contract complete with `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE`; closeout merge pending |
-| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Proposed R3; exact two-file product/test scope plus bounded governance/evidence; authority required |
+| WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Complete R2; PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
+| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | In progress R3; exact authority granted; implementation and 38-test local proof complete |
 
 ## Extraction and provenance policy
 
@@ -242,8 +242,8 @@ Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sy
 Benton remain protected-resource or deployment gated. PR #1398 completed WO-SR-008A and preserved
 authenticated county-governed parcel acquisition as the first live journey boundary.
 
-`WO-SR-008H` defines exact cost/depreciation schedule pins, stable semantic hashes, provenance and
-ambiguity validation, and a safe depreciation-only decimal projection. The exact two-file pure
-implementation is proposed as `WO-SR-008H-E1` and requires bounded R3 authority. Quality/condition,
-land/location factors, full kernel DTO mapping, numeric conversion, runtime, host, persistence, and
-synthetic journey mutation remain separately protected-path gated.
+`WO-SR-008H` defined exact cost/depreciation schedule pins, stable semantic hashes, provenance and
+ambiguity validation, and a safe depreciation-only decimal projection. Bounded R3 `WO-SR-008H-E1`
+implements that exact two-file pure foundation and records one consolidated remaining consumer path.
+Quality/condition, land/location factors, full kernel DTO mapping, numeric conversion, runtime, host,
+persistence, and synthetic journey mutation remain separately protected-path gated.

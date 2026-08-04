@@ -13,12 +13,11 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is closing
-`WO-SR-008H - Forge Cost Schedule Version and Modifier Projection Contract`. Two read-only lanes
-defined exact schedule pins, stable content hashes, ambiguity rejection, and a pure unwired decimal
-projection that emits only `BaseRate` and `DepreciationRate`. `WO-SR-008H-E1 - Forge Pure Cost
-Schedule Resolution and Modifier Projection Foundation` is proposed R3 work and remains blocked on
-one exact bounded authority envelope.
+The Five-Suite Federated Repository Buildout is executing
+`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` under exact
+bounded R3 authority. WO-SR-008H merged as PR #1403 and defined exact schedule pins, stable content
+hashes, ambiguity rejection, and a pure unwired decimal projection that emits only `BaseRate` and
+`DepreciationRate`. E1 implementation and focused local proof are complete pending governed delivery.
 The historical cohort narrative follows.
 WO-SR-005D-E1 completed the pure unwired sovereign evidence-registry adapter with 31 focused tests,
 and WO-SR-005D-E2 merged the standalone synthetic parity proof in Dossier PR #1. The bounded
@@ -157,8 +156,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008E Forge Canonical Kernel Consumer Boundary Preparation** | **DONE / R2** | PR #1400 merged as `b4eed4c13`; direct consumer adoption requires decomposition |
 | **WO-SR-008F Forge Kernel Cost Input and Identity Contract Preparation** | **DONE / R2** | PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **DONE / R2** | PR #1402 merged as `4ef8760fe`; exact rate correction and decomposition recorded |
-| **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **IN PROGRESS / R2 / CONTRACT COMPLETE** | Verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE`; closeout merge pending |
-| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **PROPOSED / R3 / AUTHORITY REQUIRED** | Exact two-file pure implementation plus bounded governance/evidence; no runtime or full kernel mapping |
+| **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
+| **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **IN PROGRESS / R3 / AUTHORIZED** | Exact two-file pure implementation and 38-test local proof complete; no runtime or full kernel mapping |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -387,7 +386,9 @@ Exact caller-supplied cost/depreciation schedule pins, stable semantic hashes, p
 unique narrowest factor resolution, and a depreciation-only decimal projection are implementation-
 ready. Quality/condition, land and non-neutral location factors, caller modifiers, full kernel DTO
 mapping, decimal/double conversion, runtime, persistence, and cutover remain excluded.
-`WO-SR-008H-E1` is proposed R3 work and has no implementation or merge authority yet.
+`WO-SR-008H-E1` is executing under exact bounded R3 implementation and merge authority. Its evidence
+must return one consolidated Forge consumer completion packet after merge rather than another
+planning-only successor.
 
 ---
 
