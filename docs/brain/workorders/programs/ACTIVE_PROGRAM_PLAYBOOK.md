@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; bounded Forge schedule projection implementation in progress |
-| Current | `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` |
-| Next | Consolidated Forge consumer completion decision packet after E1 merge; no planning-only successor admitted |
+| Status | Active between cohorts; bounded Forge schedule projection proven and authority consumed |
+| Current | Portfolio reconciliation after `WO-SR-008H-E1` completion |
+| Next | Consolidated Forge consumer completion envelope decision; no planning-only successor admitted |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -657,8 +657,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-006` Forge canonical valuation ownership cutover |
-| Current WO | `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` |
-| Next interlock | Consolidated Forge consumer completion envelope decision after E1 merge |
+| Current WO | None admitted; `WO-SR-008H-E1` complete in PR #1404 |
+| Next interlock | Consolidated Forge consumer completion envelope decision |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

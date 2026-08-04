@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008H complete; bounded WO-SR-008H-E1 implementation and local proof complete
+**Status:** Active between cohorts; WO-SR-008H-E1 complete and bounded authority consumed
 
 ## Ratified topology
 
@@ -84,7 +84,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Complete R2; PR #1401 merged as `eb80239fa`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008G | Audit Forge cost fact and schedule semantics | Complete R2; PR #1402 merged as `4ef8760fe`; verdict `DECOMPOSITION_REQUIRED` |
 | WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Complete R2; PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
-| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | In progress R3; exact authority granted; implementation and 40-test local proof complete |
+| WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Complete R3; PR #1404 merged as `6eb6f0768`; exact authority consumed |
 
 ## Extraction and provenance policy
 
@@ -244,6 +244,7 @@ authenticated county-governed parcel acquisition as the first live journey bound
 
 `WO-SR-008H` defined exact cost/depreciation schedule pins, stable semantic hashes, provenance and
 ambiguity validation, and a safe depreciation-only decimal projection. Bounded R3 `WO-SR-008H-E1`
-implements that exact two-file pure foundation and records one consolidated remaining consumer path.
+implemented that exact two-file pure foundation in PR #1404 and recorded one consolidated remaining
+consumer path. Its authority is completed and consumed; no implementation successor is admitted.
 Quality/condition, land/location factors, full kernel DTO mapping, numeric conversion, runtime, host,
 persistence, and synthetic journey mutation remain separately protected-path gated.
