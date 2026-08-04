@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008H Forge cost schedule version and modifier projection contract",
+  "generatedBy": "WO-SR-008H-E1 Forge pure cost schedule resolution and modifier projection foundation",
   "generatedAt": "2026-08-04T00:00:00Z",
-  "description": "Five-suite registry during WO-SR-008H closeout. Exact schedule pinning, stable content hashing, ambiguity rejection, and a depreciation-only decimal projection are implementation-ready as bounded R3 WO-SR-008H-E1; runtime and full kernel mapping remain unauthorized.",
+  "description": "Five-suite registry during bounded R3 WO-SR-008H-E1 delivery. Exact schedule pinning, stable content hashing, ambiguity rejection, and a depreciation-only decimal projection are implemented and locally proven; runtime and full kernel mapping remain unauthorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9596,7 +9596,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Define exact cost and depreciation schedule identity plus the fail-closed first-projection subset before any Forge kernel consumer implementation.",
       "riskClass": "R2",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-008G",
@@ -9681,7 +9681,7 @@
           "id": "WO-SR-008H-E1",
           "reason": "Bounded pure/unwired implementation of exact schedule validation, deterministic content hashes, unique factor resolution, and depreciation-only decimal projection.",
           "riskClass": "R3",
-          "blocked": true
+          "blocked": false
         }
       ],
       "authority": {
@@ -9706,13 +9706,13 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Implement a pure unwired decimal projection over exact pinned cost and depreciation schedules without runtime adoption or valuation-policy invention.",
       "riskClass": "R3",
-      "status": "proposed",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-SR-008H",
-          "status": "required",
+          "status": "satisfied",
           "evidence": [
-            "WO-SR-008H-E1 requires WO-SR-008H merge/post-merge verification and one exact bounded R3 authority envelope."
+            "PR #1403 merged WO-SR-008H as 2561e2d060612e38dfd6afbb0d070268468c7517; exact bounded authority OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803 is granted."
           ]
         }
       ],
@@ -9732,6 +9732,7 @@
         }
       ],
       "allowedFiles": [
+        ".governance/owner-decisions.json",
         "backend/src/TerraFusion.Core/Entities/Forge/ForgeCostScheduleProjection.cs",
         "backend/tests/TerraFusion.Unit.Tests/Forge/ForgeCostScheduleProjectionTests.cs",
         "docs/brain/workorders/active/WO-SR-008H-E1-forge-pure-cost-schedule-projection-foundation.md",
@@ -9773,22 +9774,52 @@
           "name": "Focused projection tests",
           "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter ForgeCostScheduleProjectionTests",
           "required": true,
-          "result": "pending"
+          "result": "pass - 40 tests"
         },
         {
           "name": "Backend build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "pending"
+          "result": "pass - 0 warnings, 0 errors"
         },
         {
           "name": "Work Order query and planner",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "pending"
+          "result": "pass - query valid and 41 tests"
+        },
+        {
+          "name": "Exact changed-path and blocked-path inspection",
+          "command": "compare the PR diff against allowedFiles and blockedFiles",
+          "required": true,
+          "result": "pass - exact 12-file amended allowlist; no blocked paths"
+        },
+        {
+          "name": "Package and lockfile integrity",
+          "command": "verify package.json and pnpm-lock.yaml SHA-256 values remain unchanged across frozen bootstrap and validation",
+          "required": true,
+          "result": "pass - package.json and pnpm-lock.yaml SHA-256 unchanged"
+        },
+        {
+          "name": "Remote required checks",
+          "command": "GitHub required checks on the exact amended PR head",
+          "required": true,
+          "result": "pending until all required checks complete successfully on the exact candidate head"
+        },
+        {
+          "name": "Independent exact-head assurance",
+          "command": "independent assurance review of the exact amended PR head",
+          "required": true,
+          "result": "pending until an independent PASS verdict binds the exact candidate head"
         }
       ],
-      "evidenceProduced": [],
+      "evidenceProduced": [
+        {
+          "kind": "test",
+          "location": "docs/brain/workorders/evidence/WO-SR-008H-E1-FORGE-PURE-COST-SCHEDULE-PROJECTION-FOUNDATION.md",
+          "summary": "Pure exact-pin schedule projection, known-answer hashes, fail-closed ambiguity proof, and consolidated remaining Forge consumer completion packet."
+        }
+      ],
       "stopConditions": [
         {
           "type": "authority_wall",
@@ -9797,18 +9828,18 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Proposed exact R3 stage. It requires one bounded owner authority envelope after WO-SR-008H merges; standing operator authority alone does not grant product/test writes."
+        "notes": "Exact bounded R3 authority OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803 and canonical-ratification amendment 001 grant the complete 12-file E1 delivery lifecycle through eligible merge plus one governance-only closeout. Runtime, full kernel mapping, persistence, deployment, and protected resources remain denied."
       },
       "provenance": {
         "createdAt": "2026-08-03T00:00:00Z",
-        "source": "WO-SR-008H schedule/version/modifier contract at sovereign base 4ef8760fe36f6053d84eb0b7523c7d8f5bd787d5.",
+        "source": "WO-SR-008H merged as 2561e2d060612e38dfd6afbb0d070268468c7517; owner granted exact bounded E1 R3 authority on 2026-08-03.",
         "schemaVersion": "0.1.0"
       }
     }

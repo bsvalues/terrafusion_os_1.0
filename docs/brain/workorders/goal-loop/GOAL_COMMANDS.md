@@ -108,10 +108,11 @@ finding.
 
 `WO-SR-008H - Forge Cost Schedule Version and Modifier Projection Contract` defines exact schedule
 pins, stable content hashes, ambiguity rejection, and a pure depreciation-only decimal projection.
-`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` is proposed
-as exact R3 work and remains authority-gated. Quality/condition, land/location factors, full kernel
-DTO mapping, numeric conversion, runtime, host, persistence, deployment, and protected-resource
-mutation remain separately authority-gated.
+`WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` is active
+under exact bounded R3 authority. After E1 merge, one consolidated Forge consumer completion packet
+must combine numeric conversion, identity/permission, trace, DTO mapping, and consumer adoption;
+another planning-only successor is not admitted. Quality/condition, land/location factors, runtime,
+host, persistence, deployment, and protected-resource mutation remain separately authority-gated.
 
 **Allowed loop modes:** `program`, `evidence`, `discovery`
 
