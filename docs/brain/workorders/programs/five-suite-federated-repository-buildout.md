@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-008E decomposition complete pending merge; WO-SR-008F admitted behind merge interlock
+**Status:** Active; WO-SR-008F semantic decomposition complete pending merge; WO-SR-008G admitted behind merge interlock
 
 ## Ratified topology
 
@@ -80,8 +80,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-007B | Create the pure unwired Atlas projection process-host foundation | Complete R3; PR #1393 merged as `d2bb8d6e1`; 0/0 build and 33 focused tests passed; authority consumed; no runtime consumer, DI, Atlas mutation, deployment, or cutover |
 | WO-TF-POST-ATLAS-001 | Reconcile authoritative post-Atlas state and admit one successor | Complete; PR #1397 merged as `b85e1c92d` and WO-SR-008A preflight began |
 | WO-SR-008A | Audit the single-parcel assessor journey and identify its first failing link | Complete R2; PR #1398 merged as `73c2d8af`; first live failure is protected parcel acquisition |
-| WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | In progress; audit complete with `DECOMPOSITION_REQUIRED`; closeout merge pending |
-| WO-SR-008F | Prepare the Forge kernel cost input and identity contract | Ready R2; dependency-interlocked until WO-SR-008E merges; docs/evidence only |
+| WO-SR-008E | Prepare the Forge canonical-kernel consumer boundary | Complete R2; PR #1400 merged as `b4eed4c13`; direct adoption requires decomposition |
+| WO-SR-008F | Prepare the Forge kernel cost input and identity contract | In progress; audit complete with `DECOMPOSITION_REQUIRED`; closeout merge pending |
+| WO-SR-008G | Audit Forge cost fact and schedule semantics | Ready R2; dependency-interlocked until WO-SR-008F merges; docs/evidence only |
 
 ## Extraction and provenance policy
 
@@ -239,10 +240,11 @@ Atlas and GPT remain foundation-only/unwired at their newer suite boundaries; Sy
 Benton remain protected-resource or deployment gated. PR #1398 completed WO-SR-008A and preserved
 authenticated county-governed parcel acquisition as the first live journey boundary.
 
-`WO-SR-008E` inspected the Workbench consumer, sovereign kernel path, and WO-SR-006 provenance through
-three independent read-only lanes. Forge source ownership, local staging, hash verification, process
-hosting, and rollback are proven. Direct Workbench adoption is `DECOMPOSITION_REQUIRED`: the current
-DB-backed contract and canonical cost kernel lack an agreed county-bound input projection, response
-map, fallback vocabulary, trace/correlation contract, cancellation distinction, and process bounds.
-`WO-SR-008F` is the highest-value same-risk successor inside existing authority and remains
-docs/evidence-only. Synthetic journey test restoration remains separately protected-path gated.
+`WO-SR-008F` inspected identity/input, response/failure, and process-host/trace semantics through
+three independent read-only lanes. A pure county-bound projection and staged host hardening are
+definable. Implementation remains `DECOMPOSITION_REQUIRED` because the repository does not yet
+establish one canonical rate, schedule-year rule, modifier vocabulary, quality/condition mapping,
+land/factor provenance, county/parcel alias rule, trace identity, deterministic hash, or rounding
+policy. `WO-SR-008G` is the highest-value same-risk successor inside existing authority and remains
+docs/evidence-only. Product, runtime, test, host, and synthetic journey mutation remain separately
+protected-path gated.
