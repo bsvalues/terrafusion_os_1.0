@@ -15,7 +15,8 @@
 
 The Five-Suite Federated Repository Buildout is active between cohorts after
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
-PR #1404 merged exact assured head `08c3c6010` as `6eb6f0768`, proving exact schedule pins, stable
+PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
+`6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable
 content hashes, ambiguity rejection, and a pure unwired decimal projection that emits only
 `BaseRate` and `DepreciationRate`. The E1 authority is consumed by terminal closeout.
 The historical cohort narrative follows.
