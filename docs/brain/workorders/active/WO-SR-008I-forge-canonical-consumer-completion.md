@@ -2,7 +2,7 @@
 
 ## Status
 
-`ACTIVE - STAGE 1 PURE BOUNDARY ASSEMBLY AUTHORIZED`
+`COMPLETE - AUTHORITY CONSUMED`
 
 ## Program
 
@@ -41,6 +41,19 @@ This Work Order does not claim a complete live parcel journey or authorize a liv
 Each stage starts only after its predecessor is verified on `origin/main`. The authority covers
 routine branch, commit, PR, review remediation, exact-head assurance, eligible Mode B merge, and
 post-merge verification without another owner relay.
+
+## Completion ledger
+
+| Step | Exact reviewed head | Merge |
+| --- | --- | --- |
+| Authority activation - PR #1407 | `d6d770e09f89937d48318ce3e82141223e3f51b0` | `29cafdb0312f95f1c7c11cc4405499e9d6819382` |
+| Stage 1 - PR #1408 | `335ee2ea7a2b8cb0b0a1314f2a5544cc3eec6aa5` | `164c05c82f4151add89eb802bdac03e7cb68a982` |
+| Stage 2 - PR #1409 | `8ae80087ef4eea81cc1f7980122b56c40dce20fb` | `a441783706f726eb00bac3e08de88656eb2ad9cf` |
+| Stage 3 - PR #1410 | `40c21bc4a5ada9db1d8c53c0eef20d2fb9a7d4e7` | `37a3e469cfb63273d39c6706837ad5ea0b1b7690` |
+
+All four PRs merged with required checks satisfied. Stage assurance passed at each exact
+implementation head, substantive review threads were resolved before merge, and the bounded R4
+authority is completed and consumed by this closeout.
 
 ## Exact scope
 
@@ -86,3 +99,6 @@ gate bypass; force push; destructive cleanup; or conflicting authority.
 ## Terminal condition
 
 `FORGE_CANONICAL_CONSUMER_SHADOW_ADOPTION_PROVEN_NO_LIVE_CUTOVER`
+
+Satisfied. The Five-Suite program returns to portfolio reconciliation; no successor implementation,
+live cutover, protected-resource, deployment, or production authority follows from this closeout.

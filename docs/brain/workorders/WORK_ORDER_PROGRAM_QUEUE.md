@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-03
+**Date:** 2026-08-05
 **Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -13,10 +13,10 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active on
-`WO-SR-008I - Forge Canonical Consumer Completion`, with Stage 1 - Pure boundary assembly current.
-Issue #1406 canonically authorizes the complete Stage 1 through Stage 3 sequence and one closeout
-under `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804` without per-stage owner relay.
+The Five-Suite Federated Repository Buildout is active between cohorts with portfolio reconciliation
+current. `WO-SR-008I - Forge Canonical Consumer Completion` completed its activation, three stages,
+and terminal closeout under `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. The authority is
+completed and consumed. No successor implementation or live-cutover authority is inferred.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
 PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
 `6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable
@@ -162,7 +162,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008G Forge Cost Fact and Schedule Semantics Audit** | **DONE / R2** | PR #1402 merged as `4ef8760fe`; exact rate correction and decomposition recorded |
 | **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
 | **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1404 merged as `6eb6f0768`; 40 focused tests, exact-head assurance, and remote gates passed; no runtime or full kernel mapping |
-| **WO-SR-008I Forge Canonical Consumer Completion** | **ACTIVE / R4 / STAGE 1** | Issue #1406 authority canonized; Stage 1 - Pure boundary assembly current, host/consumer and default-disabled Shadow adoption dependency ordered; legacy response remains authoritative |
+| **WO-SR-008I Forge Canonical Consumer Completion** | **DONE / R4 / AUTHORITY CONSUMED** | PRs #1408-#1410 merged through `37a3e469c`; pure boundary, bounded host/consumer, and default-disabled Shadow adoption proven; legacy response remains authoritative; no live cutover |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -391,9 +391,10 @@ unique narrowest factor resolution, and a depreciation-only decimal projection a
 ready. Quality/condition, land and non-neutral location factors, caller modifiers, full kernel DTO
 mapping, decimal/double conversion, runtime, persistence, and cutover remain excluded.
 `WO-SR-008H-E1` completed in PR #1404 and its bounded authority is consumed by terminal closeout.
-Issue #1406 then admitted the consolidated `WO-SR-008I` R4 sequence. Stage 1 is current; Stage 2,
-Stage 3, and terminal closeout follow automatically after predecessor merge verification. The
-existing DB-backed response remains authoritative and `Disabled` remains the code default.
+Issue #1406 then admitted the consolidated `WO-SR-008I` R4 sequence. PRs #1408 through #1410
+completed pure boundary assembly, the bounded authenticated county-scoped host/consumer, and
+default-disabled Shadow adoption. The existing DB-backed response remains authoritative,
+`Disabled` remains the code default, and the exact authority is consumed by terminal closeout.
 
 ---
 
