@@ -72,7 +72,7 @@
           "prUrl": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1102",
           "state": "closed",
           "isDraft": false,
-          "mergeState": "unmerged"
+          "mergeState": "unknown"
         }
       },
       "stopConditions": [
@@ -10053,7 +10053,7 @@
           "name": "Remote checks and exact-head assurance",
           "command": "GitHub required checks plus independent assurance",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
