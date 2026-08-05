@@ -187,6 +187,21 @@ public class RustKernelProcessHostTests
     }
 
     [Fact]
+    public async Task OutputDrain_RemainsBoundedAfterParentExit()
+    {
+        var method = typeof(RustKernelProcessHost).GetMethod(
+            "WaitForOutputDrainAsync", BindingFlags.NonPublic | BindingFlags.Static);
+        var pendingDrain = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+
+        var wait = Assert.IsAssignableFrom<Task>(
+            method!.Invoke(null, [pendingDrain.Task, timeout.Token]));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => wait);
+    }
+
+    [Fact]
     public void ProcessEnvironment_DropsUnapprovedInheritedVariables()
     {
         const string variable = "TF_SR_008I_SECRET_SENTINEL";

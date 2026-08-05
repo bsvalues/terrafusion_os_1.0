@@ -110,6 +110,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 if (completed == outputLimit.Task)
                     await outputLimit.Task;
                 await exitTask;
+                await WaitForOutputDrainAsync(outputTask, waitCts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -300,6 +301,9 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         catch (InvalidOperationException) { }
         catch (OperationCanceledException) { }
     }
+
+    private static Task WaitForOutputDrainAsync(Task outputTask, CancellationToken ct) =>
+        outputTask.WaitAsync(ct);
 
     private (string Message, string? BinarySha256)? ValidateValuationKernelProvenance(string executablePath)
     {
