@@ -56,10 +56,10 @@ public class RustKernelProcessHost : IRustKernelProcessHost
 
         if (requestBytes.Length > options.MaxStdinBytes)
             return Fail<TResp>(KernelFailureMode.InputLimitExceeded, "Kernel input exceeded its byte limit.",
-                startedAt, sw, kernelName, inputHash, null);
+                startedAt, sw, kernelName, inputHash, null, invocation.RequestId);
         if (!File.Exists(executablePath))
             return Fail<TResp>(KernelFailureMode.ExecutableNotFound, "Kernel executable was not found.",
-                startedAt, sw, kernelName, inputHash, null);
+                startedAt, sw, kernelName, inputHash, null, invocation.RequestId);
 
         string? binarySha256 = null;
         if (string.Equals(kernelName, "terraforge.kernel.valuation", StringComparison.Ordinal))
@@ -67,7 +67,8 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             var provenanceFailure = ValidateValuationKernelProvenance(executablePath);
             if (provenanceFailure != null)
                 return Fail<TResp>(KernelFailureMode.ProvenanceFailure, provenanceFailure.Value.Message,
-                    startedAt, sw, kernelName, inputHash, provenanceFailure.Value.BinarySha256);
+                    startedAt, sw, kernelName, inputHash, provenanceFailure.Value.BinarySha256,
+                    invocation.RequestId);
             binarySha256 = ComputeFileSha256(executablePath);
         }
 
@@ -79,25 +80,31 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             process = new Process { StartInfo = psi };
             if (!process.Start())
                 return Fail<TResp>(KernelFailureMode.ProcessStartFailure, "Kernel process did not start.",
-                    startedAt, sw, kernelName, inputHash, binarySha256);
+                    startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId);
+            if (options.TimeoutMs <= 0)
+            {
+                await KillAndAwaitAsync(process);
+                return Fail<TResp>(KernelFailureMode.Timeout, "Kernel timeout must be positive.",
+                    startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId);
+            }
 
             using var ioCts = new CancellationTokenSource();
             var outputLimit = new TaskCompletionSource(
                 TaskCreationOptions.RunContinuationsAsynchronously);
             var stdoutTask = ReadBoundedAsync(
-                "stdout", process.StandardOutput, options.MaxStdoutBytes, outputLimit, ioCts.Token);
+                "stdout", process.StandardOutput.BaseStream, options.MaxStdoutBytes, outputLimit, ioCts.Token);
             var stderrTask = ReadBoundedAsync(
-                "stderr", process.StandardError, options.MaxStderrBytes, outputLimit, ioCts.Token);
+                "stderr", process.StandardError.BaseStream, options.MaxStderrBytes, outputLimit, ioCts.Token);
             var outputTask = Task.WhenAll(stdoutTask, stderrTask);
-
-            await process.StandardInput.BaseStream.WriteAsync(requestBytes, ct);
-            await process.StandardInput.BaseStream.FlushAsync(ct);
-            process.StandardInput.Close();
 
             using var timeoutCts = new CancellationTokenSource(options.TimeoutMs);
             using var waitCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
             try
             {
+                await process.StandardInput.BaseStream.WriteAsync(requestBytes, waitCts.Token);
+                await process.StandardInput.BaseStream.FlushAsync(waitCts.Token);
+                process.StandardInput.Close();
+
                 var exitTask = process.WaitForExitAsync(waitCts.Token);
                 var completed = await Task.WhenAny(exitTask, outputLimit.Task);
                 if (completed == outputLimit.Task)
@@ -114,7 +121,8 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 var message = mode == KernelFailureMode.Cancellation
                     ? "Kernel invocation was cancelled."
                     : $"Kernel exceeded timeout of {options.TimeoutMs}ms.";
-                return Fail<TResp>(mode, message, startedAt, sw, kernelName, inputHash, binarySha256);
+                return Fail<TResp>(mode, message, startedAt, sw, kernelName, inputHash,
+                    binarySha256, invocation.RequestId);
             }
             catch (OutputLimitExceededException exception)
             {
@@ -123,15 +131,15 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 try { await outputTask; } catch (Exception) { }
                 return Fail<TResp>(KernelFailureMode.OutputLimitExceeded,
                     $"Kernel {exception.StreamName} exceeded its byte limit.",
-                    startedAt, sw, kernelName, inputHash, binarySha256,
+                    startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId,
                     exception.StreamName == "stdout" ? exception.ByteCount : 0,
                     exception.StreamName == "stdout" ? exception.Sha256 : null,
                     exception.StreamName == "stderr" ? exception.ByteCount : 0,
                     exception.StreamName == "stderr" ? exception.Sha256 : null);
             }
 
-            BoundedText stdout;
-            BoundedText stderr;
+            BoundedBytes stdout;
+            BoundedBytes stderr;
             try
             {
                 stdout = await stdoutTask;
@@ -143,7 +151,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 await KillAndAwaitAsync(process);
                 return Fail<TResp>(KernelFailureMode.OutputLimitExceeded,
                     $"Kernel {exception.StreamName} exceeded its byte limit.",
-                    startedAt, sw, kernelName, inputHash, binarySha256,
+                    startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId,
                     exception.StreamName == "stdout" ? exception.ByteCount : 0,
                     exception.StreamName == "stdout" ? exception.Sha256 : null,
                     exception.StreamName == "stderr" ? exception.ByteCount : 0,
@@ -157,32 +165,36 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                     kernelName, process.ExitCode, stdout.ByteCount, stderr.ByteCount);
                 return Fail<TResp>(KernelFailureMode.NonZeroExit,
                     $"Kernel exited with code {process.ExitCode}.",
-                    startedAt, sw, kernelName, inputHash, binarySha256,
+                    startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId,
                     stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256);
             }
 
             KernelResponse<TResp>? parsed;
             try
             {
-                parsed = JsonSerializer.Deserialize<KernelResponse<TResp>>(stdout.Text, JsonOpts);
+                parsed = JsonSerializer.Deserialize<KernelResponse<TResp>>(
+                    DecodeUtf8Strict(stdout.Bytes), JsonOpts);
             }
-            catch (JsonException)
+            catch (Exception exception) when (exception is JsonException or DecoderFallbackException)
             {
                 _logger.LogWarning(
                     "Kernel {KernelName} returned invalid JSON; stdout bytes {StdoutBytes}, sha256 {StdoutSha256}.",
                     kernelName, stdout.ByteCount, stdout.Sha256);
                 return Fail<TResp>(KernelFailureMode.InvalidJsonResponse,
                     "Kernel returned invalid JSON.", startedAt, sw, kernelName, inputHash, binarySha256,
+                    invocation.RequestId,
                     stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256);
             }
 
             if (parsed is null)
                 return Fail<TResp>(KernelFailureMode.InvalidJsonResponse, "Kernel returned a null response.",
                     startedAt, sw, kernelName, inputHash, binarySha256,
+                    invocation.RequestId,
                     stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256);
             if (!parsed.Success)
                 return Fail<TResp>(KernelFailureMode.KernelReportedError, "Kernel reported failure.",
                     startedAt, sw, kernelName, inputHash, binarySha256,
+                    invocation.RequestId,
                     stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256);
 
             sw.Stop();
@@ -198,7 +210,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
             if (process is not null)
                 await KillAndAwaitAsync(process);
             return Fail<TResp>(KernelFailureMode.Cancellation, "Kernel invocation was cancelled.",
-                startedAt, sw, kernelName, inputHash, binarySha256);
+                startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId);
         }
         catch (Exception exception)
         {
@@ -208,7 +220,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 "Kernel {KernelName} process failure ({ExceptionType}).",
                 kernelName, exception.GetType().Name);
             return Fail<TResp>(KernelFailureMode.ProcessStartFailure, "Kernel process failed.",
-                startedAt, sw, kernelName, inputHash, binarySha256);
+                startedAt, sw, kernelName, inputHash, binarySha256, invocation.RequestId);
         }
         finally
         {
@@ -236,25 +248,24 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         return psi;
     }
 
-    private static async Task<BoundedText> ReadBoundedAsync(
+    private static async Task<BoundedBytes> ReadBoundedAsync(
         string streamName,
-        StreamReader reader,
+        Stream stream,
         int maxBytes,
         TaskCompletionSource outputLimit,
         CancellationToken ct)
     {
-        var buffer = new char[4096];
-        var text = new StringBuilder();
+        var buffer = new byte[4096];
+        using var content = new MemoryStream();
         using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
         var byteCount = 0;
         while (true)
         {
-            var read = await reader.ReadAsync(buffer.AsMemory(), ct);
+            var read = await stream.ReadAsync(buffer.AsMemory(), ct);
             if (read == 0)
                 break;
-            var bytes = Encoding.UTF8.GetBytes(buffer, 0, read);
-            hash.AppendData(bytes);
-            byteCount += bytes.Length;
+            hash.AppendData(buffer, 0, read);
+            byteCount += read;
             if (byteCount > maxBytes)
             {
                 var exception = new OutputLimitExceededException(
@@ -264,10 +275,10 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 outputLimit.TrySetException(exception);
                 throw exception;
             }
-            text.Append(buffer, 0, read);
+            content.Write(buffer, 0, read);
         }
-        return new BoundedText(
-            text.ToString(), byteCount,
+        return new BoundedBytes(
+            content.ToArray(), byteCount,
             Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant());
     }
 
@@ -283,9 +294,11 @@ public class RustKernelProcessHost : IRustKernelProcessHost
 
         try
         {
-            await process.WaitForExitAsync();
+            using var exitCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await process.WaitForExitAsync(exitCts.Token);
         }
         catch (InvalidOperationException) { }
+        catch (OperationCanceledException) { }
     }
 
     private (string Message, string? BinarySha256)? ValidateValuationKernelProvenance(string executablePath)
@@ -349,6 +362,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
     private static KernelInvocationResult<T> Fail<T>(
         KernelFailureMode mode, string message, DateTimeOffset startedAt, Stopwatch sw,
         string kernelName, string inputHash, string? binarySha256,
+        string? requestId,
         int stdoutBytes = 0, string? stdoutSha256 = null,
         int stderrBytes = 0, string? stderrSha256 = null)
     {
@@ -356,7 +370,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         return new(false, kernelName, null, inputHash, startedAt,
             startedAt.AddMilliseconds(sw.ElapsedMilliseconds), (int)sw.ElapsedMilliseconds,
             default, null, Array.Empty<string>(), mode, message, binarySha256,
-            stdoutBytes, stdoutSha256, stderrBytes, stderrSha256);
+            stdoutBytes, stdoutSha256, stderrBytes, stderrSha256, requestId);
     }
 
     private static string ComputeSha256(byte[] input)
@@ -368,7 +382,10 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
     }
 
-    private sealed record BoundedText(string Text, int ByteCount, string Sha256);
+    private static string DecodeUtf8Strict(byte[] bytes)
+        => new UTF8Encoding(false, true).GetString(bytes);
+
+    private sealed record BoundedBytes(byte[] Bytes, int ByteCount, string Sha256);
     private sealed class OutputLimitExceededException(string streamName, int byteCount, string sha256) : Exception
     {
         public string StreamName { get; } = streamName;

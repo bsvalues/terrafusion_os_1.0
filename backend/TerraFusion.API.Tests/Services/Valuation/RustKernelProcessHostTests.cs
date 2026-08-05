@@ -122,6 +122,7 @@ public class RustKernelProcessHostTests
 
         Assert.False(result.Success);
         Assert.Equal(KernelFailureMode.InputLimitExceeded, result.FailureMode);
+        Assert.Equal("test-001", result.RequestId);
         Assert.DoesNotContain("PARCEL-001", result.ErrorMessage ?? string.Empty, StringComparison.Ordinal);
     }
 
@@ -182,6 +183,7 @@ public class RustKernelProcessHostTests
 
         Assert.False(result.Success);
         Assert.Equal(KernelFailureMode.Timeout, result.FailureMode);
+        Assert.Equal("test-001", result.RequestId);
     }
 
     [Fact]
