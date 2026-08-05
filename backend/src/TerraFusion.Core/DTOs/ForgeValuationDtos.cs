@@ -1,4 +1,74 @@
+using TerraFusion.Core.Entities.Forge;
+
 namespace TerraFusion.Core.DTOs;
+
+// These DTOs are intentionally narrower than the existing Workbench cost response. They form the
+// pure boundary for the canonical Forge kernel without admitting unresolved modifier semantics.
+public sealed record ForgeCanonicalRequestIdentity(
+    Guid CountyId,
+    string ParcelId,
+    int TaxYear,
+    string CorrelationId);
+
+public sealed record ForgeCanonicalAuthorizationAssertion(
+    bool IsAuthenticated,
+    string SubjectId,
+    Guid CountyId,
+    string Permission);
+
+public sealed record ForgeCanonicalCamaFact(
+    Guid CountyId,
+    string ParcelId,
+    int TaxYear,
+    string ImprovementClassCode,
+    int SizeSqFt,
+    int EffectiveAgeYears);
+
+public sealed record ForgeCanonicalLandValueFact(
+    Guid CountyId,
+    string ParcelId,
+    int TaxYear,
+    decimal LandValue);
+
+public sealed record ForgeCanonicalCostConsumerInput(
+    ForgeCanonicalRequestIdentity Identity,
+    ForgeCanonicalAuthorizationAssertion Authorization,
+    ForgeCanonicalCamaFact Cama,
+    ForgeCanonicalLandValueFact Land,
+    CostFactorSet CostFactorSet,
+    DepreciationSchedule DepreciationSchedule,
+    ForgeCostSchedulePin SchedulePin);
+
+public sealed record ForgeCanonicalValuationRequest(
+    string ParcelId,
+    double ReplacementCost,
+    double Depreciation,
+    double Rcnld,
+    double LandValue);
+
+public sealed record ForgeCanonicalValuationResponse(
+    double TotalValue,
+    double LandValue,
+    double BuildingValue);
+
+public sealed record ForgeCanonicalCostConsumerProjectionResult(
+    ForgeCanonicalRequestIdentity Identity,
+    ForgeCostSchedulePin SchedulePin,
+    string FactSnapshotSha256,
+    decimal BaseRate,
+    decimal DepreciationRate,
+    decimal ReplacementCost,
+    decimal Depreciation,
+    decimal Rcnld,
+    decimal LandValue,
+    decimal TotalValue,
+    ForgeCanonicalValuationRequest KernelRequest);
+
+public sealed record ForgeCanonicalCostConsumerValidatedResult(
+    ForgeCanonicalCostConsumerProjectionResult Projection,
+    decimal TotalValue,
+    decimal LandValue,
+    decimal BuildingValue);
 
 // ── Cost Approach ──────────────────────────────────────────────────────
 
