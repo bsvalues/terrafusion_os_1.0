@@ -48,4 +48,41 @@ public class ValuationKernelClientTests
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
+
+    [Fact]
+    public async Task ValuateAsync_PreservesCallerOwnedRequestIdentity()
+    {
+        var host = new Mock<IRustKernelProcessHost>();
+        host.Setup(h => h.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+                It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<KernelInvocation<ValuationKernelPayload>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new KernelInvocationResult<ValuationKernelResult>(
+                true, "terraforge.kernel.valuation", "git:abc", "hash",
+                DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, 1,
+                new(1, new(0, 1)), null, Array.Empty<string>(), null, null));
+        var sut = new ValuationKernelClient(
+            host.Object,
+            Options.Create(new RustKernelsOptions { ValuationKernelPath = "valuation.exe" }),
+            NullLogger<ValuationKernelClient>.Instance);
+        var payload = new ValuationKernelPayload(
+            new("P1", JsonDocument.Parse("{}").RootElement.Clone()),
+            new(1, 0, 1),
+            new(0, null));
+
+        await sut.ValuateAsync(payload, KernelExecutionContext.Create("corr-owned-001"));
+
+        host.Verify(h => h.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            It.IsAny<string>(), "terraforge.kernel.valuation",
+            It.Is<KernelInvocation<ValuationKernelPayload>>(invocation =>
+                invocation.RequestId == "corr-owned-001"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("unsafe value")]
+    [InlineData("unsafe/value")]
+    public void KernelExecutionContext_RejectsUnsafeIdentity(string value)
+        => Assert.Throws<InvalidOperationException>(() => KernelExecutionContext.Create(value));
 }

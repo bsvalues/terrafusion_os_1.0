@@ -27,12 +27,24 @@ public class ValuationKernelClient : IValuationKernelClient
     public async Task<KernelInvocationResult<ValuationKernelResult>> ValuateAsync(
         ValuationKernelPayload payload,
         CancellationToken ct = default)
+        => await ValuateAsync(
+            payload,
+            KernelExecutionContext.Create($"legacy-{Guid.NewGuid():N}"),
+            ct);
+
+    public async Task<KernelInvocationResult<ValuationKernelResult>> ValuateAsync(
+        ValuationKernelPayload payload,
+        KernelExecutionContext executionContext,
+        CancellationToken ct = default)
     {
+        ArgumentNullException.ThrowIfNull(payload);
+        ArgumentNullException.ThrowIfNull(executionContext);
+        var validatedContext = KernelExecutionContext.Create(executionContext.RequestId);
         var opts = _options.Value;
         var invocation = new KernelInvocation<ValuationKernelPayload>(
             ContractPackVersion: opts.ContractPackVersion,
             ModuleApiVersion: opts.ModuleApiVersion,
-            RequestId: Guid.NewGuid().ToString(),
+            RequestId: validatedContext.RequestId,
             Action: Action,
             Payload: payload);
 
