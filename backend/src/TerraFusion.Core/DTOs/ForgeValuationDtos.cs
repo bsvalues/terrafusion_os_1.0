@@ -1,6 +1,6 @@
-namespace TerraFusion.Core.DTOs;
-
 using TerraFusion.Core.Entities.Forge;
+
+namespace TerraFusion.Core.DTOs;
 
 // These DTOs are intentionally narrower than the existing Workbench cost response. They form the
 // pure boundary for the canonical Forge kernel without admitting unresolved modifier semantics.

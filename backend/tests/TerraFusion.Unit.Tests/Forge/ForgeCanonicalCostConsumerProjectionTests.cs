@@ -53,10 +53,21 @@ public sealed class ForgeCanonicalCostConsumerProjectionTests
         input = input with
         {
             Authorization = input.Authorization with { SubjectId = "different-subject" },
-            Identity = input.Identity with { CorrelationId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
+            Identity = input.Identity with { CorrelationId = "client.trace_1" },
         };
 
         ForgeCanonicalCostConsumerProjection.Create(input).FactSnapshotSha256.Should().Be(first.FactSnapshotSha256);
+    }
+
+    [Theory]
+    [InlineData("tf-0123456789abcdef0123456789abcdef")]
+    [InlineData("client.trace_1")]
+    [InlineData("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")]
+    public void Create_AcceptsPlatformSafeCorrelationIdentity(string correlationId)
+    {
+        var input = CreateInput() with { Identity = CreateInput().Identity with { CorrelationId = correlationId } };
+
+        ForgeCanonicalCostConsumerProjection.Create(input).Identity.CorrelationId.Should().Be(correlationId);
     }
 
     [Theory]
@@ -68,6 +79,7 @@ public sealed class ForgeCanonicalCostConsumerProjectionTests
     [InlineData("parcel")]
     [InlineData("year")]
     [InlineData("correlation")]
+    [InlineData("correlation-oversized")]
     [InlineData("size")]
     [InlineData("age")]
     [InlineData("land")]
@@ -83,7 +95,8 @@ public sealed class ForgeCanonicalCostConsumerProjectionTests
             "land-county" => input with { Land = input.Land with { CountyId = Guid.NewGuid() } },
             "parcel" => input with { Land = input.Land with { ParcelId = "another" } },
             "year" => input with { Cama = input.Cama with { TaxYear = 2025 } },
-            "correlation" => input with { Identity = input.Identity with { CorrelationId = "not-a-guid" } },
+            "correlation" => input with { Identity = input.Identity with { CorrelationId = "unsafe correlation" } },
+            "correlation-oversized" => input with { Identity = input.Identity with { CorrelationId = new string('a', 129) } },
             "size" => input with { Cama = input.Cama with { SizeSqFt = 0 } },
             "age" => input with { Cama = input.Cama with { EffectiveAgeYears = -1 } },
             _ => input with { Land = input.Land with { LandValue = -1m } },
@@ -158,6 +171,19 @@ public sealed class ForgeCanonicalCostConsumerProjectionTests
         var act = () => ForgeCanonicalCostConsumerProjection.ValidateResponse(projection, response);
 
         act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void ValidateResponse_NormalizesComponentOverflowAsInvalidKernelOutput()
+    {
+        var projection = ForgeCanonicalCostConsumerProjection.Create(CreateInput());
+        var hugeComponent = (double)(decimal.MaxValue / 2m);
+
+        var act = () => ForgeCanonicalCostConsumerProjection.ValidateResponse(
+            projection,
+            new ForgeCanonicalValuationResponse(0d, hugeComponent, hugeComponent));
+
+        act.Should().Throw<InvalidOperationException>().WithMessage("*component arithmetic overflowed*");
     }
 
     [Fact]

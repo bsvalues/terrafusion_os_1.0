@@ -77,10 +77,19 @@ public static class ForgeCanonicalCostConsumerProjection
         var total = FromFiniteNonnegativeDouble(response.TotalValue, nameof(response.TotalValue));
         var land = FromFiniteNonnegativeDouble(response.LandValue, nameof(response.LandValue));
         var building = FromFiniteNonnegativeDouble(response.BuildingValue, nameof(response.BuildingValue));
+        decimal componentTotal;
+        try
+        {
+            componentTotal = checked(building + land);
+        }
+        catch (OverflowException exception)
+        {
+            throw new InvalidOperationException("Kernel response component arithmetic overflowed.", exception);
+        }
 
         RequireWithinTolerance(building, projection.Rcnld, "Kernel building value does not match projected RCNLD.");
         RequireWithinTolerance(land, projection.LandValue, "Kernel land value does not match projected land value.");
-        RequireWithinTolerance(total, checked(building + land), "Kernel total does not equal its components.");
+        RequireWithinTolerance(total, componentTotal, "Kernel total does not equal its components.");
         RequireWithinTolerance(total, projection.TotalValue, "Kernel total does not match the projected total.");
 
         return new ForgeCanonicalCostConsumerValidatedResult(projection, total, land, building);
@@ -108,9 +117,8 @@ public static class ForgeCanonicalCostConsumerProjection
         RequireCanonicalText(land.ParcelId, "Land parcel identity");
         RequireCanonicalText(cama.ImprovementClassCode, "Improvement class code");
 
-        if (!Guid.TryParseExact(identity.CorrelationId, "D", out var correlation)
-            || !string.Equals(identity.CorrelationId, correlation.ToString("D"), StringComparison.Ordinal))
-            throw new InvalidOperationException("Correlation identity must be canonical lowercase GUID text.");
+        if (!IsSafeCorrelationId(identity.CorrelationId))
+            throw new InvalidOperationException("Correlation identity must be 1-128 safe ASCII characters.");
 
         if (identity.TaxYear <= 0 || cama.TaxYear <= 0 || land.TaxYear <= 0)
             throw new InvalidOperationException("Tax year must be positive.");
@@ -168,7 +176,8 @@ public static class ForgeCanonicalCostConsumerProjection
             writer.WriteEndObject();
         }
 
-        return Convert.ToHexString(SHA256.HashData(buffer.ToArray())).ToLowerInvariant();
+        buffer.Position = 0;
+        return Convert.ToHexString(SHA256.HashData(buffer)).ToLowerInvariant();
     }
 
     private static void WriteDecimal(Utf8JsonWriter writer, string name, decimal value)
@@ -218,4 +227,8 @@ public static class ForgeCanonicalCostConsumerProjection
             || !value.IsNormalized(NormalizationForm.FormC))
             throw new InvalidOperationException($"{field} must be nonempty, unpadded NFC text.");
     }
+
+    private static bool IsSafeCorrelationId(string value)
+        => value is { Length: >= 1 and <= 128 }
+            && value.All(character => char.IsAsciiLetterOrDigit(character) || character is '.' or '_' or '-');
 }
