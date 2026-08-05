@@ -130,8 +130,9 @@ public sealed class ForgeCanonicalCostConsumerProjectionTests
     [Fact]
     public void FactHash_ChangesWhenSemanticFactChanges()
     {
-        var first = ForgeCanonicalCostConsumerProjection.Create(CreateInput());
-        var changed = CreateInput() with { Land = new ForgeCanonicalLandValueFact(CountyId, ParcelId, 2026, 50001m) };
+        var input = CreateInput();
+        var first = ForgeCanonicalCostConsumerProjection.Create(input);
+        var changed = input with { Land = input.Land with { LandValue = 50001m } };
 
         ForgeCanonicalCostConsumerProjection.Create(changed).FactSnapshotSha256.Should().NotBe(first.FactSnapshotSha256);
     }
