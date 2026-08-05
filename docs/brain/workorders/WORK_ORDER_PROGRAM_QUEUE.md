@@ -13,10 +13,11 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active between cohorts with portfolio reconciliation
-current. `WO-SR-008I - Forge Canonical Consumer Completion` completed its activation, three stages,
-and terminal closeout under `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. The authority is
-completed and consumed. No successor implementation or live-cutover authority is inferred.
+The Five-Suite Federated Repository Buildout is active between cohorts. `WO-TF-POST-FORGE-001`
+completed the authoritative reconciliation after `WO-SR-008I` and selected `WO-SR-009A` as the
+highest-value next candidate. The complete bounded R3 decision packet is Issue #1413. Implementation
+is not admitted until that decision is approved and canonized; no live county, PACS, SQL, production,
+deployment, schema, credential, or secret authority is inferred.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
 PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
 `6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable

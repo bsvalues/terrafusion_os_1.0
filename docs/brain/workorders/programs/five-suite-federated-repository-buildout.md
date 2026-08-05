@@ -86,6 +86,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008H | Define the Forge cost schedule version and modifier projection contract | Complete R2; PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
 | WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Complete R3; PR #1404 merged as `6eb6f0768`; exact authority consumed |
 | WO-SR-008I | Complete the Forge canonical consumer through Stage 1 - Pure boundary assembly, bounded host/consumer, and default-disabled Shadow adoption | Complete R4; PRs #1408-#1410 merged through `37a3e469c`; authority consumed; no live cutover |
+| WO-TF-POST-FORGE-001 | Reconcile authoritative post-Forge portfolio state and admit or bound one successor | Complete R2; capability matrix and ranked candidates select WO-SR-009A; Issue #1413 is the complete decision packet |
+| WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Proposed R3; blocked pending the exact Issue #1413 owner decision; no implementation authority inferred |
 
 ## Extraction and provenance policy
 
@@ -253,3 +255,10 @@ county-scoped consumer, Stage 3 default-disabled Shadow adoption, and one termin
 DB-backed response remains authoritative. Quality/condition, land/location factors,
 persistence, live protected resources, production, deployment, frontend adoption, and canonical
 response cutover remain denied.
+
+`WO-TF-POST-FORGE-001` then reconciled all six repository heads, product reachability, authority,
+dependencies, and stale routing. It selected `WO-SR-009A` because authenticated county-governed
+parcel acquisition remains the earliest shared product blocker and source inspection found
+parcel-only CAMA/GIS enrichment fallbacks that require exact county-isolation repair. Issue #1413
+contains the complete recommended R3 packet. No successor implementation is admitted by this
+reconciliation.

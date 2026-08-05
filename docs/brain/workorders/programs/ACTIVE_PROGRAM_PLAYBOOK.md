@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; WO-SR-008I complete and authority consumed |
-| Current | Portfolio reconciliation |
-| Next | Highest-value dependency-cleared bounded node; no successor implementation inferred |
+| Status | Active between cohorts; post-Forge reconciliation complete |
+| Current | `WO-TF-POST-FORGE-001` complete |
+| Next | `WO-SR-009A` proposed in Issue #1413; bounded R3 owner decision required |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -656,9 +656,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-008I` Forge canonical consumer Shadow adoption |
-| Current WO | Portfolio reconciliation |
-| Next interlock | Highest-value dependency-cleared bounded node |
+| Last completed interlock | `WO-TF-POST-FORGE-001` authoritative post-Forge reconciliation |
+| Current WO | None executable; `WO-SR-009A` is proposed only |
+| Next interlock | Complete bounded R3 owner decision in Issue #1413 |
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
