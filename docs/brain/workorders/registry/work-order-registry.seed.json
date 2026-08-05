@@ -10038,7 +10038,7 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "portfolio-reconciliation",
+          "kind": "other",
           "description": "Repository heads, product reachability, authority, contradiction ledger, ranked candidates, and independent assurance."
         }
       ],
@@ -10058,7 +10058,7 @@
       ],
       "evidenceProduced": [
         {
-          "kind": "portfolio-reconciliation",
+          "kind": "other",
           "location": "docs/brain/workorders/evidence/WO-TF-POST-FORGE-001-AUTHORITATIVE-POST-FORGE-PORTFOLIO-RECONCILIATION.md",
           "summary": "Capability matrix, contradiction ledger, ranked candidates, and exact owner-decision boundary."
         }
@@ -10142,7 +10142,7 @@
       ],
       "evidenceRequired": [
         {
-          "kind": "owner-decision",
+          "kind": "other",
           "description": "Approve the exact stages, files, denials, tests, rollback, and terminal condition in Issue #1413."
         }
       ],
