@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008I authority activation",
-  "generatedAt": "2026-08-04T00:00:00Z",
-  "description": "Five-suite registry after Issue #1406 canonized bounded R4 WO-SR-008I authority. Stage 1 pure Forge consumer boundary assembly is active; later host, consumer, and default-disabled Shadow stages remain dependency ordered inside the same exact envelope.",
+  "generatedBy": "WO-SR-008I terminal closeout",
+  "generatedAt": "2026-08-05T00:00:00Z",
+  "description": "Five-suite registry after WO-SR-008I completed pure boundary assembly, bounded host/consumer implementation, and reversible default-disabled Shadow adoption. The exact R4 authority is completed and consumed; portfolio reconciliation is current and no live cutover is authorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9849,7 +9849,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove a complete authenticated, county-scoped, non-production Forge canonical cost consumer in reversible default-disabled Shadow mode without changing the authoritative response.",
       "riskClass": "R4",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-008H-E1",
@@ -9942,25 +9942,25 @@
           "name": "Focused product tests",
           "command": "run the focused Stage 1, Stage 2, and Stage 3 test filters recorded in Issue #1406",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Backend Release build",
           "command": "dotnet build backend/TerraFusion.sln -c Release --no-restore /warnaserror",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Work Order query and planner",
           "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         },
         {
           "name": "Remote required checks and exact-head assurance",
           "command": "GitHub required checks plus independent assurance for each exact stage head",
           "required": true,
-          "result": "not_run"
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
@@ -9978,25 +9978,25 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-008I-STAGE-2",
-          "reason": "Host hardening and authenticated county-scoped consumer after Stage 1 is merged and verified.",
-          "riskClass": "R4",
-          "blocked": true
+          "id": "PORTFOLIO-RECONCILIATION",
+          "reason": "WO-SR-008I is complete and its bounded authority is consumed. Recompute the Five-Suite graph without inferring successor implementation or live-cutover authority.",
+          "riskClass": "R2",
+          "blocked": false
         }
       ],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "Issue #1406 and OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804 authorize the complete staged lifecycle and one closeout without per-stage or per-PR owner relay. Stage 1 is current; later stages are dependency ordered."
+        "notes": "WO-SR-008I completed in PRs #1408 through #1410 after activation PR #1407. OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804 is completed and consumed by terminal closeout. Disabled remains the code default, the legacy response remains authoritative, and no successor implementation or live cutover is authorized."
       },
       "provenance": {
         "createdAt": "2026-08-04T00:00:00Z",
-        "source": "Issue #1406 owner approval at exact base bf5c66fe335cdd0b4d738671975ff8ff67261948.",
+        "source": "Issue #1406 owner approval at exact base bf5c66fe335cdd0b4d738671975ff8ff67261948; activation PR #1407, Stage 1 PR #1408, Stage 2 PR #1409, and Stage 3 PR #1410 merged through 37a3e469cfb63273d39c6706837ad5ea0b1b7690.",
         "schemaVersion": "0.1.0"
       }
     }

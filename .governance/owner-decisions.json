@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-008I",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R4-bounded-non-production-forge-canonical-consumer-shadow-adoption",
       "effective_base_sha": "bf5c66fe335cdd0b4d738671975ff8ff67261948",
       "scope_source": "Owner authorization recorded directly on Issue #1406 on 2026-08-04. The issue is the controlling consolidated packet for Stages 1 through 3 and one terminal closeout without per-stage or per-PR owner relay.",
@@ -61,7 +61,30 @@
         "schema, persistence, protected-resource, credential, secret, deployment, production, frontend, canonical-response, cost-kernel, standalone-Forge, or OS network-sandbox requirement",
         "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
       ],
-      "decision_basis": "Issue #1406 consolidates the minimum remaining Forge consumer path after E1 into one reversible implementation envelope. Shadow mode may invoke and compare but the existing DB-backed response remains authoritative and the code default remains Disabled."
+      "decision_basis": "Issue #1406 consolidates the minimum remaining Forge consumer path after E1 into one reversible implementation envelope. Shadow mode may invoke and compare but the existing DB-backed response remains authoritative and the code default remains Disabled.",
+      "completion": {
+        "activation_pr": 1407,
+        "activation_exact_head": "d6d770e09f89937d48318ce3e82141223e3f51b0",
+        "activation_merge": "29cafdb0312f95f1c7c11cc4405499e9d6819382",
+        "stage_1_pr": 1408,
+        "stage_1_exact_head": "335ee2ea7a2b8cb0b0a1314f2a5544cc3eec6aa5",
+        "stage_1_merge": "164c05c82f4151add89eb802bdac03e7cb68a982",
+        "stage_1_assurance_review": 4860641009,
+        "stage_2_pr": 1409,
+        "stage_2_exact_head": "8ae80087ef4eea81cc1f7980122b56c40dce20fb",
+        "stage_2_merge": "a441783706f726eb00bac3e08de88656eb2ad9cf",
+        "stage_2_assurance_review": 4861506471,
+        "stage_3_pr": 1410,
+        "stage_3_exact_head": "40c21bc4a5ada9db1d8c53c0eef20d2fb9a7d4e7",
+        "stage_3_merge": "37a3e469cfb63273d39c6706837ad5ea0b1b7690",
+        "stage_3_assurance_review": 4863140336,
+        "required_checks": "PASS for every merged exact stage head; zero unresolved substantive threads at merge",
+        "terminal_closeout": "this exact-scope governance closeout; effective when merged",
+        "terminal_condition_satisfied": "FORGE_CANONICAL_CONSUMER_SHADOW_ADOPTION_PROVEN_NO_LIVE_CUTOVER",
+        "effective_on_merge": true,
+        "authority_consumed_on_closeout_merge": true,
+        "next_state": "Five-Suite portfolio reconciliation; no successor implementation authority inferred"
+      }
     },
     {
       "id": "OWNER-SR-008H-E1-R3-FORGE-COST-SCHEDULE-PROJECTION-20260803",

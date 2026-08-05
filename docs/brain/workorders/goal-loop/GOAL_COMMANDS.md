@@ -112,9 +112,10 @@ pins, stable content hashes, ambiguity rejection, and a pure depreciation-only d
 in PR #1404, and its exact bounded R3 authority is consumed by terminal closeout. One consolidated
 Forge consumer completion packet combines numeric conversion, identity/permission, trace, DTO
 mapping, and consumer adoption. Issue #1406 approved that packet as `WO-SR-008I` under
-`OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. Stage 1 - Pure boundary assembly is current;
-Stage 2 host/consumer, Stage 3 default-disabled Shadow adoption, and terminal closeout continue after
-predecessor verification. The legacy response remains authoritative. Quality/condition,
+`OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. PRs #1408 through #1410 completed pure
+boundary assembly, bounded host/consumer implementation, and default-disabled Shadow adoption. The
+authority is completed and consumed, and portfolio reconciliation is current. The legacy response
+remains authoritative. Quality/condition,
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.
 

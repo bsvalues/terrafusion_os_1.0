@@ -2,12 +2,12 @@
 
 ## Current result
 
-`AUTHORITY_CANONIZED - STAGE 1 READY`
+`COMPLETE - AUTHORITY CONSUMED`
 
 Issue #1406 records the complete three-stage R4 packet. The owner approved the decision
-`OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804` directly on that issue. This activation
-canonizes the decision before product writes and admits Stage 1 as the only current implementation
-step.
+`OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804` directly on that issue. PRs #1407 through
+#1410 completed the activation and all three dependency-ordered stages. This terminal closeout marks
+the authority completed and consumed without authorizing live cutover or a successor implementation.
 
 ## Baseline evidence
 
@@ -22,19 +22,20 @@ step.
 
 | Stage | State | Evidence |
 | --- | --- | --- |
-| Authority activation | Complete on this PR merge | Decision record, WO packet, registry, queue, program, and command routing |
-| Stage 1 - Pure boundary assembly | Ready after activation merge | No Stage 1 product artifact exists yet |
-| Stage 2 - Host, trace, and county-scoped consumer | Dependency blocked by Stage 1 | No Stage 2 product artifact exists yet |
-| Stage 3 - Reversible shadow adoption | Dependency blocked by Stage 2 | No Stage 3 product artifact exists yet |
-| Terminal closeout | Dependency blocked by Stage 3 | Authority remains active |
+| Authority activation | Complete | PR #1407; head `d6d770e09f89937d48318ce3e82141223e3f51b0`; merge `29cafdb0312f95f1c7c11cc4405499e9d6819382` |
+| Stage 1 - Pure boundary assembly | Complete | PR #1408; 25 focused tests; head `335ee2ea7a2b8cb0b0a1314f2a5544cc3eec6aa5`; merge `164c05c82f4151add89eb802bdac03e7cb68a982`; assurance `4860641009` |
+| Stage 2 - Host, trace, and county-scoped consumer | Complete | PR #1409; 35 focused tests after remediation; head `8ae80087ef4eea81cc1f7980122b56c40dce20fb`; merge `a441783706f726eb00bac3e08de88656eb2ad9cf`; assurance `4861506471` |
+| Stage 3 - Reversible shadow adoption | Complete | PR #1410; 20 focused API tests and 70 focused projection tests after remediation; head `40c21bc4a5ada9db1d8c53c0eef20d2fb9a7d4e7`; merge `37a3e469cfb63273d39c6706837ad5ea0b1b7690`; assurance `4863140336` |
+| Terminal closeout | Complete on this PR merge | Authority completed and consumed; routing returns to portfolio reconciliation |
 
 ## Required terminal evidence
 
-The terminal closeout must bind each stage PR, exact reviewed head, merge commit, focused validation,
-backend build result, required remote checks, unresolved-thread count, and exact-head assurance. It
-must prove that Shadow used the unchanged E1 projection and manifest-pinned Forge valuation kernel,
-that the legacy response stayed authoritative, that `Disabled` remained the code default, and that
-no protected resource or production configuration switch occurred.
+Each implementation stage passed its focused validation, a full backend Release build with zero
+warnings and zero errors, Work Order query/planner validation, required remote checks, exact-head
+assurance, and zero unresolved substantive threads at merge. The completed path uses the unchanged
+E1 projection and manifest-pinned Forge valuation kernel. `Disabled` remains the code default;
+`Shadow` may invoke and compare but always returns the existing DB-backed response. No protected
+resource, production configuration, deployment, persistence, or live-response switch occurred.
 
 ## Safety posture
 
@@ -48,3 +49,5 @@ no protected resource or production configuration switch occurred.
 ## Terminal condition
 
 `FORGE_CANONICAL_CONSUMER_SHADOW_ADOPTION_PROVEN_NO_LIVE_CUTOVER`
+
+`PASS`
