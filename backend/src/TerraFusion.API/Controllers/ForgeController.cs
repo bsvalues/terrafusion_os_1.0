@@ -26,6 +26,11 @@ namespace TerraFusion.API.Controllers;
 [Route("api/forge")]
 public class ForgeController : ControllerBase
 {
+    private const string PermissionClaimType = "perm";
+    private const string ForgeAccessPermission = "access:forge";
+    private const string CountyClaimType = "countyId";
+    private const string CorrelationItemKey = "CorrelationId";
+
     private readonly IValuationService _valuationService;
     private readonly DataDbContext _db;
     private readonly ILogger<ForgeController> _logger;
@@ -116,25 +121,42 @@ public class ForgeController : ControllerBase
                         || property.PropertyId == parcelId))
                 .Take(2)
                 .ToListAsync(ct);
+            if (properties.Count != 1)
+                throw new InvalidOperationException("Forge canonical shadow requires exactly one property match.");
+
             var canonicalParcelIds = properties.Select(property => property.ParcelId).Distinct().ToArray();
             var camaRows = await _db.CamaCharacteristics.AsNoTracking()
                 .Where(row => row.CountyId == assertion.Authorization.CountyId
                     && row.TaxYear == taxYear
                     && canonicalParcelIds.Contains(row.ParcelId))
-                .Take(3)
+                .Take(2)
                 .ToListAsync(ct);
-            var costSets = await _db.CostFactorSets.AsNoTracking()
-                .Include(set => set.Factors)
+            if (camaRows.Count != 1)
+                throw new InvalidOperationException("Forge canonical shadow requires exactly one CAMA fact match.");
+
+            var costSetIds = await _db.CostFactorSets.AsNoTracking()
                 .Where(set => set.CountyId == assertion.Authorization.CountyId
                     && set.EffectiveYear == taxYear)
+                .Select(set => set.Id)
                 .Take(2)
                 .ToListAsync(ct);
-            var depreciationSchedules = await _db.DepreciationSchedules.AsNoTracking()
-                .Include(schedule => schedule.Factors)
+            if (costSetIds.Count != 1)
+                throw new InvalidOperationException("Forge canonical shadow requires exactly one cost-factor set.");
+            var costSet = await _db.CostFactorSets.AsNoTracking()
+                .Include(set => set.Factors)
+                .SingleAsync(set => set.Id == costSetIds[0], ct);
+
+            var depreciationScheduleIds = await _db.DepreciationSchedules.AsNoTracking()
                 .Where(schedule => schedule.CountyId == assertion.Authorization.CountyId
                     && schedule.EffectiveYear == taxYear)
+                .Select(schedule => schedule.Id)
                 .Take(2)
                 .ToListAsync(ct);
+            if (depreciationScheduleIds.Count != 1)
+                throw new InvalidOperationException("Forge canonical shadow requires exactly one depreciation schedule.");
+            var depreciationSchedule = await _db.DepreciationSchedules.AsNoTracking()
+                .Include(schedule => schedule.Factors)
+                .SingleAsync(schedule => schedule.Id == depreciationScheduleIds[0], ct);
 
             var request = new ForgeCanonicalConsumerRequest(
                 new(assertion.Authorization.CountyId, parcelId, taxYear, assertion.CorrelationId),
@@ -159,8 +181,8 @@ public class ForgeController : ControllerBase
                     property.ParcelId,
                     taxYear,
                     property.LandValue)).ToArray(),
-                costSets,
-                depreciationSchedules);
+                [costSet],
+                [depreciationSchedule]);
 
             var shadow = await _canonicalConsumer.ConsumeAsync(request, ct);
             _logger.LogInformation(
@@ -174,10 +196,14 @@ public class ForgeController : ControllerBase
                 shadow.Evidence.SourceIdentity,
                 shadow.Evidence.AuditEventId);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException || !ct.IsCancellationRequested)
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
         {
             _logger.LogWarning(
-                "Forge canonical shadow failed closed for request {RequestId} with {FailureType}; " +
+                "Forge canonical shadow failed closed for correlation {CorrelationId} with {FailureType}; " +
                 "the legacy response remains authoritative.",
                 assertion.CorrelationId,
                 exception.GetType().Name);
@@ -190,11 +216,11 @@ public class ForgeController : ControllerBase
             return null;
         var subjectId = User.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? User.FindFirstValue("sub");
-        var countyClaim = User.FindFirstValue("countyId");
+        var countyClaim = User.FindFirstValue(CountyClaimType);
         var hasPermission = User.Claims.Any(claim =>
-            claim.Type == "perm"
-            && string.Equals(claim.Value, "access:forge", StringComparison.Ordinal));
-        var correlationId = HttpContext.Items["CorrelationId"] as string;
+            claim.Type == PermissionClaimType
+            && string.Equals(claim.Value, ForgeAccessPermission, StringComparison.Ordinal));
+        var correlationId = HttpContext.Items[CorrelationItemKey] as string;
         if (string.IsNullOrWhiteSpace(subjectId)
             || !Guid.TryParse(countyClaim, out var countyId)
             || !hasPermission
@@ -203,7 +229,7 @@ public class ForgeController : ControllerBase
 
         return new ShadowAssertion(
             correlationId,
-            new ForgeCanonicalAuthorizationAssertion(true, subjectId, countyId, "access:forge"));
+            new ForgeCanonicalAuthorizationAssertion(true, subjectId, countyId, ForgeAccessPermission));
     }
 
     private static int ToWholeInt(decimal value, string field)

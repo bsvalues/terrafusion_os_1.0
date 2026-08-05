@@ -115,6 +115,57 @@ public sealed class ForgeCanonicalCostConsumerTests
         Assert.Equal("legacy-db", Assert.IsType<CostApproachResult>(response.Value).Source);
     }
 
+    [Fact]
+    public async Task Shadow_AmbiguousPropertyFailsClosedWithoutConsumerInvocation()
+    {
+        await using var db = CreateDb();
+        await SeedAsync(db);
+        db.Properties.Add(new Property
+        {
+            CountyId = CountyId,
+            PropertyId = "PROP-AMBIGUOUS",
+            ParcelId = ParcelId,
+            ParcelNumber = "ALIAS-AMBIGUOUS",
+            Address = "synthetic",
+            LandValue = 75m,
+            TaxYear = TaxYear,
+        });
+        await db.SaveChangesAsync();
+        var consumer = new Mock<IForgeCanonicalCostConsumer>(MockBehavior.Strict);
+        var legacy = LegacyResult();
+        var controller = CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy);
+
+        var response = Assert.IsType<OkObjectResult>(
+            await controller.GetCostApproach(ParcelId, TaxYear, CancellationToken.None));
+
+        Assert.Same(legacy, response.Value);
+        consumer.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Shadow_AmbiguousScheduleFailsClosedWithoutConsumerInvocation()
+    {
+        await using var db = CreateDb();
+        await SeedAsync(db);
+        db.CostFactorSets.Add(new CostFactorSet
+        {
+            CountyId = CountyId,
+            EffectiveYear = TaxYear,
+            Version = "cost-ambiguous",
+            ProvenanceAuthor = "synthetic",
+        });
+        await db.SaveChangesAsync();
+        var consumer = new Mock<IForgeCanonicalCostConsumer>(MockBehavior.Strict);
+        var legacy = LegacyResult();
+        var controller = CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy);
+
+        var response = Assert.IsType<OkObjectResult>(
+            await controller.GetCostApproach(ParcelId, TaxYear, CancellationToken.None));
+
+        Assert.Same(legacy, response.Value);
+        consumer.VerifyNoOtherCalls();
+    }
+
     private static ForgeController CreateController(
         DataDbContext db,
         IForgeCanonicalCostConsumer consumer,
