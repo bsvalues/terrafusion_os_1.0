@@ -111,15 +111,23 @@ public sealed class ForgeCanonicalCostConsumerTests
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 isAuthenticated: false),
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                includeSubject: false),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 permission: "access:forge-near-match"),
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 includeCountyClaim: false),
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 countyClaim: "not-a-county-uuid"),
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                countyClaim: Guid.Empty.ToString()),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 includeCorrelationId: false),
             CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
                 correlationId: " "),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                correlationId: "unsafe/correlation"),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                correlationId: new string('a', 129)),
         };
 
         foreach (var controller in cases)
@@ -249,6 +257,7 @@ public sealed class ForgeCanonicalCostConsumerTests
         bool includePermission = true,
         string permission = "access:forge",
         bool isAuthenticated = true,
+        bool includeSubject = true,
         bool includeCountyClaim = true,
         string? countyClaim = null,
         bool includeCorrelationId = true,
@@ -264,7 +273,9 @@ public sealed class ForgeCanonicalCostConsumerTests
             NullLogger<ForgeController>.Instance,
             consumer,
             Options.Create(new RustKernelsOptions { ForgeCanonicalConsumerMode = mode }));
-        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, "synthetic-assessor") };
+        var claims = new List<Claim>();
+        if (includeSubject)
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, "synthetic-assessor"));
         if (includeCountyClaim)
             claims.Add(new Claim("countyId", countyClaim ?? CountyId.ToString()));
         if (includePermission)

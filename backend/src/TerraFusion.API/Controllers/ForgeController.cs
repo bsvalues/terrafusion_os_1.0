@@ -8,6 +8,7 @@ using System.Text.Json;
 using TerraFusion.API.Configuration;
 using TerraFusion.API.Security;
 using TerraFusion.API.Services.Valuation;
+using TerraFusion.API.Services.Valuation.KernelContracts;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
@@ -223,9 +224,19 @@ public class ForgeController : ControllerBase
         var correlationId = HttpContext.Items[CorrelationItemKey] as string;
         if (string.IsNullOrWhiteSpace(subjectId)
             || !Guid.TryParse(countyClaim, out var countyId)
+            || countyId == Guid.Empty
             || !hasPermission
             || string.IsNullOrWhiteSpace(correlationId))
             return null;
+
+        try
+        {
+            KernelExecutionContext.Create(correlationId);
+        }
+        catch (InvalidOperationException)
+        {
+            return null;
+        }
 
         return new ShadowAssertion(
             correlationId,
