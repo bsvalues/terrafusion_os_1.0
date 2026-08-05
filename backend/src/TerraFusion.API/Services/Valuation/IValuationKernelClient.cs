@@ -7,4 +7,9 @@ public interface IValuationKernelClient
     Task<KernelInvocationResult<ValuationKernelResult>> ValuateAsync(
         ValuationKernelPayload payload,
         CancellationToken ct = default);
+
+    Task<KernelInvocationResult<ValuationKernelResult>> ValuateAsync(
+        ValuationKernelPayload payload,
+        KernelExecutionContext executionContext,
+        CancellationToken ct = default);
 }

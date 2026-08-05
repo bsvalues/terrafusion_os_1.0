@@ -1,5 +1,6 @@
 using System.IO;
 using System.Security.Cryptography;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -112,6 +113,133 @@ public class RustKernelProcessHostTests
     }
 
     [Fact]
+    public async Task OversizedInput_FailsBeforeProcessStart()
+    {
+        var host = CreateSut(configure: options => options.MaxStdinBytes = 8);
+
+        var result = await host.InvokeAsync<CostKernelPayload, CostKernelResult>(
+            "this-does-not-exist.exe", "cost", SampleCostInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.InputLimitExceeded, result.FailureMode);
+        Assert.Equal("test-001", result.RequestId);
+        Assert.DoesNotContain("PARCEL-001", result.ErrorMessage ?? string.Empty, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task StdoutLimit_FailsClosedWithoutRawOutput()
+    {
+        var host = CreateSut(configure: options =>
+        {
+            options.MaxStdinBytes = 64 * 1024;
+            options.MaxStdoutBytes = 8;
+        });
+
+        var result = await host.InvokeAsync<CostKernelPayload, CostKernelResult>(
+            FindPassthroughExecutable(), "cost", SampleCostInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.OutputLimitExceeded, result.FailureMode);
+        Assert.DoesNotContain("PARCEL-001", result.ErrorMessage ?? string.Empty, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task KernelReportedFailure_RecordsOnlyBoundedHashesAndCounts()
+    {
+        var host = CreateSut();
+
+        var result = await host.InvokeAsync<CostKernelPayload, CostKernelResult>(
+            FindPassthroughExecutable(), "cost", SampleCostInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.KernelReportedError, result.FailureMode);
+        Assert.True(result.StdoutByteCount > 0);
+        Assert.Matches("^[a-f0-9]{64}$", result.StdoutSha256 ?? string.Empty);
+        Assert.DoesNotContain("PARCEL-001", result.ErrorMessage ?? string.Empty, StringComparison.Ordinal);
+        Assert.Empty(result.Warnings);
+    }
+
+    [Fact]
+    public async Task CallerCancellation_IsDistinctFromTimeout()
+    {
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var host = CreateSut(timeoutMs: 30_000);
+
+        var result = await host.InvokeAsync<CostKernelPayload, CostKernelResult>(
+            FindPassthroughExecutable(), "cost", SampleCostInvocation(), cancellation.Token);
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.Cancellation, result.FailureMode);
+    }
+
+    [Fact]
+    public async Task ZeroTimeout_IsReportedAsTimeout()
+    {
+        var host = CreateSut(timeoutMs: 0);
+
+        var result = await host.InvokeAsync<CostKernelPayload, CostKernelResult>(
+            FindPassthroughExecutable(), "cost", SampleCostInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.Timeout, result.FailureMode);
+        Assert.Equal("test-001", result.RequestId);
+    }
+
+    [Fact]
+    public async Task OutputDrain_RemainsBoundedAfterParentExit()
+    {
+        var method = typeof(RustKernelProcessHost).GetMethod(
+            "WaitForOutputDrainAsync", BindingFlags.NonPublic | BindingFlags.Static);
+        var pendingDrain = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+
+        var wait = Assert.IsAssignableFrom<Task>(
+            method!.Invoke(null, [pendingDrain.Task, timeout.Token]));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => wait);
+    }
+
+    [Fact]
+    public void ProcessEnvironment_DropsUnapprovedInheritedVariables()
+    {
+        const string variable = "TF_SR_008I_SECRET_SENTINEL";
+        Environment.SetEnvironmentVariable(variable, "must-not-propagate");
+        try
+        {
+            var method = typeof(RustKernelProcessHost).GetMethod(
+                "CreateProcessStartInfo", BindingFlags.NonPublic | BindingFlags.Static);
+            var info = Assert.IsType<System.Diagnostics.ProcessStartInfo>(
+                method!.Invoke(null, [FindPassthroughExecutable()]));
+
+            Assert.False(info.Environment.ContainsKey(variable));
+            Assert.True(info.RedirectStandardInput);
+            Assert.True(info.RedirectStandardOutput);
+            Assert.True(info.RedirectStandardError);
+            Assert.False(info.UseShellExecute);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(variable, null);
+        }
+    }
+
+    [Fact]
+    public async Task NonzeroExit_IsTypedAndSanitized()
+    {
+        var executable = FindNonzeroExecutable();
+        if (executable is null)
+            return;
+        var result = await CreateSut().InvokeAsync<CostKernelPayload, CostKernelResult>(
+            executable, "cost", SampleCostInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.NonZeroExit, result.FailureMode);
+        Assert.DoesNotContain("PARCEL-001", result.ErrorMessage ?? string.Empty, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task ValuationKernel_MissingManifest_FailsClosedBeforeExecution()
     {
         using var fixture = ProvenanceFixture.Create();
@@ -127,8 +255,8 @@ public class RustKernelProcessHostTests
             SampleValuationInvocation());
 
         Assert.False(result.Success);
-        Assert.Equal(KernelFailureMode.ExecutableNotFound, result.FailureMode);
-        Assert.Contains("manifest not found", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(KernelFailureMode.ProvenanceFailure, result.FailureMode);
+        Assert.Contains("manifest", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -147,8 +275,8 @@ public class RustKernelProcessHostTests
             SampleValuationInvocation());
 
         Assert.False(result.Success);
-        Assert.Equal(KernelFailureMode.NonZeroExit, result.FailureMode);
-        Assert.Contains("does not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(KernelFailureMode.ProvenanceFailure, result.FailureMode);
+        Assert.Contains("did not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         Assert.Matches("^[a-f0-9]{64}$", result.KernelBinarySha256 ?? string.Empty);
     }
 
@@ -171,8 +299,8 @@ public class RustKernelProcessHostTests
             SampleValuationInvocation());
 
         Assert.False(result.Success);
-        Assert.Equal(KernelFailureMode.NonZeroExit, result.FailureMode);
-        Assert.Contains("does not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(KernelFailureMode.ProvenanceFailure, result.FailureMode);
+        Assert.Contains("did not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -243,6 +371,27 @@ public class RustKernelProcessHostTests
             if (File.Exists(c)) return c;
         }
         return null;
+    }
+
+    private static string FindPassthroughExecutable()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var path = Path.Combine(Environment.SystemDirectory, "more.com");
+            if (File.Exists(path)) return path;
+        }
+        if (File.Exists("/bin/cat")) return "/bin/cat";
+        throw new InvalidOperationException("No local passthrough executable is available for host tests.");
+    }
+
+    private static string? FindNonzeroExecutable()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var path = Path.Combine(Environment.SystemDirectory, "where.exe");
+            return File.Exists(path) ? path : null;
+        }
+        return File.Exists("/bin/false") ? "/bin/false" : null;
     }
 
     private static KernelInvocation<ValuationKernelPayload> SampleValuationInvocation() =>

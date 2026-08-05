@@ -49,4 +49,16 @@ public class BoundaryGuardTests
         Assert.DoesNotContain(paramTypes, t => t.Contains("IValuationKernelClient"));
         Assert.DoesNotContain(paramTypes, t => t.Contains("IRustKernelProcessHost"));
     }
+
+    [Fact]
+    public void CanonicalConsumer_DependsOnlyOnValuationClient()
+    {
+        var fields = typeof(TerraFusion.API.Services.Valuation.ForgeCanonicalCostConsumer)
+            .GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+
+        Assert.Single(fields);
+        Assert.Equal(typeof(TerraFusion.API.Services.Valuation.IValuationKernelClient), fields[0].FieldType);
+        Assert.DoesNotContain(fields, field =>
+            (field.FieldType.FullName ?? string.Empty).Contains("DbContext", System.StringComparison.Ordinal));
+    }
 }
