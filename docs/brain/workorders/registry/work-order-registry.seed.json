@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-008I terminal closeout",
+  "generatedBy": "WO-TF-POST-FORGE-001 authoritative portfolio reconciliation",
   "generatedAt": "2026-08-05T00:00:00Z",
-  "description": "Five-Suite registry after WO-SR-008I completed pure boundary assembly, bounded host/consumer implementation, and reversible default-disabled Shadow adoption. The exact R4 authority is completed and consumed; portfolio reconciliation is current and no live cutover is authorized.",
+  "description": "Post-Forge portfolio reconciliation after WO-SR-008I. WO-TF-POST-FORGE-001 is complete; WO-SR-009A is the highest-value candidate and remains proposed pending the bounded R3 decision in Issue #1413.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10,7 +10,7 @@
       "program": "Work Order Engine",
       "goal": "Turn the proven DevOps goal/loop operating pattern into reusable TerraFusion operator doctrine.",
       "riskClass": "R1",
-      "status": "in_progress",
+      "status": "superseded",
       "dependencies": [
         {
           "id": "WO-WOE-001",
@@ -70,8 +70,8 @@
         "github": {
           "prNumber": 1102,
           "prUrl": "https://github.com/bsvalues/terrafusion_os_1.0/pull/1102",
-          "state": "open",
-          "isDraft": true,
+          "state": "closed",
+          "isDraft": false,
           "mergeState": "unknown"
         }
       },
@@ -81,23 +81,16 @@
           "description": "Stop if doctrine requires runtime, CI, merge-policy, or production authority."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "WO-WOE-002",
-          "reason": "The operator pattern needs a canonical Work Order data model.",
-          "riskClass": "R1",
-          "blocked": true
-        }
-      ],
+      "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
         "mayMarkReady": false,
         "mayMerge": false,
         "mayCleanup": false,
-        "notes": "PR remains open/draft unless separately advanced."
+        "notes": "Historical PR #1102 closed without merge. The Work Order Engine program later closed through WO-WOE-013/PR #1291; this stale seed is superseded and carries no execution authority."
       },
       "provenance": {
         "createdAt": "2026-06-29T00:00:00Z",
@@ -9990,6 +9983,191 @@
       "provenance": {
         "createdAt": "2026-08-04T00:00:00Z",
         "source": "Issue #1406 owner approval at exact base bf5c66fe335cdd0b4d738671975ff8ff67261948; activation PR #1407, Stage 1 PR #1408, Stage 2 PR #1409, and Stage 3 PR #1410 merged through 37a3e469cfb63273d39c6706837ad5ea0b1b7690.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TF-POST-FORGE-001",
+      "title": "Authoritative Post-Forge Portfolio Reconciliation and Next Work-Order Admission",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Reconcile post-Forge portfolio truth and either dispatch one authorized successor or return one complete genuine owner-decision packet.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-008I",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1411 closed SR-008I and origin/main reached a7e15211c74d4929e9d49043b052e3e79e60dedb."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only portfolio reconciliation and Brain governance",
+          "paths": [
+            "docs/brain/workorders/**",
+            ".governance/owner-decisions.json"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product/runtime implementation, workflows, deployment, protected resources, credentials, and secrets"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-TF-POST-FORGE-001-authoritative-post-forge-portfolio-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-TF-POST-FORGE-001-AUTHORITATIVE-POST-FORGE-PORTFOLIO-RECONCILIATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "os-platform/**",
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Repository heads, product reachability, authority, contradiction ledger, ranked candidates, and independent assurance."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Work Order query and planner",
+          "command": "node docs/brain/workorders/tools/wo-query.mjs --json && node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Remote checks and exact-head assurance",
+          "command": "GitHub required checks plus independent assurance",
+          "required": true,
+          "result": "pass"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-TF-POST-FORGE-001-AUTHORITATIVE-POST-FORGE-PORTFOLIO-RECONCILIATION.md",
+          "summary": "Capability matrix, contradiction ledger, ranked candidates, and exact owner-decision boundary."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop at the complete WO-SR-009A R3 decision packet; do not implement product/runtime or access protected resources."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-009A",
+          "reason": "Highest-value candidate; complete owner-decision packet recorded in Issue #1413.",
+          "riskClass": "R3",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "R2 reconciliation completes at GENUINE_OWNER_DECISION_REQUIRED. Standing authority does not create WO-SR-009A R3 scope."
+      },
+      "provenance": {
+        "createdAt": "2026-08-05T00:00:00Z",
+        "source": "Issue #1412 at exact base a7e15211c74d4929e9d49043b052e3e79e60dedb",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-009A",
+      "title": "Authenticated County-Governed Parcel Evidence Acquisition and Local Single-Parcel Journey Proof",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Prove the first complete authenticated synthetic single-parcel assessor journey while repairing exact county isolation in parcel enrichment.",
+      "riskClass": "R3",
+      "status": "proposed",
+      "dependencies": [
+        {
+          "id": "WO-TF-POST-FORGE-001",
+          "status": "satisfied",
+          "evidence": ["Issue #1412 reconciliation selected WO-SR-009A."]
+        },
+        {
+          "id": "OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805",
+          "status": "blocked",
+          "evidence": ["Complete proposed decision packet: Issue #1413."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Proposed bounded local synthetic parcel journey",
+          "paths": [
+            "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
+            "backend/TerraFusion.API.Tests/Phase14/**",
+            "backend/tests/TerraFusion.Unit.Tests/R1Week5/**",
+            "tests/e2e/property-workbench-production-smoke.spec.ts",
+            "tests/playwright.workbench-smoke.config.ts",
+            "docs/brain/workorders/**",
+            ".governance/owner-decisions.json"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Live county/PACS/SQL, production, deployment, credentials, schema/migrations, frontend changes, suite adoption, Forge cutover, workflows, packages, and source retirement"
+        }
+      ],
+      "allowedFiles": [],
+      "blockedFiles": [
+        ".github/workflows/**",
+        "deployment/**",
+        "frontend/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Approve the exact stages, files, denials, tests, rollback, and terminal condition in Issue #1413."
+        }
+      ],
+      "validationGates": [],
+      "evidenceProduced": [],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "No implementation until the complete bounded R3 envelope in Issue #1413 is approved and canonized."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "Proposed only. Issue #1413 is the decision artifact; no product authority is inferred."
+      },
+      "provenance": {
+        "createdAt": "2026-08-05T00:00:00Z",
+        "source": "WO-TF-POST-FORGE-001 and Issue #1413",
         "schemaVersion": "0.1.0"
       }
     }

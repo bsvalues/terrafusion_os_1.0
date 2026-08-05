@@ -114,8 +114,10 @@ Forge consumer completion packet combines numeric conversion, identity/permissio
 mapping, and consumer adoption. Issue #1406 approved that packet as `WO-SR-008I` under
 `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. PRs #1408 through #1410 completed pure
 boundary assembly, bounded host/consumer implementation, and default-disabled Shadow adoption. The
-authority is completed and consumed, and portfolio reconciliation is current. The legacy response
-remains authoritative. Quality/condition,
+  authority is completed and consumed. `WO-TF-POST-FORGE-001` completed the resulting portfolio
+  reconciliation and selected `WO-SR-009A`; Issue #1413 contains its complete bounded R3 decision
+  packet. No implementation is admitted until that decision is approved. The legacy response remains
+  authoritative. Quality/condition,
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.
 
