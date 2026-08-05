@@ -25,7 +25,7 @@ the authority completed and consumed without authorizing live cutover or a succe
 | Authority activation | Complete | PR #1407; head `d6d770e09f89937d48318ce3e82141223e3f51b0`; merge `29cafdb0312f95f1c7c11cc4405499e9d6819382` |
 | Stage 1 - Pure boundary assembly | Complete | PR #1408; 25 focused tests; head `335ee2ea7a2b8cb0b0a1314f2a5544cc3eec6aa5`; merge `164c05c82f4151add89eb802bdac03e7cb68a982`; assurance `4860641009` |
 | Stage 2 - Host, trace, and county-scoped consumer | Complete | PR #1409; 35 focused tests after remediation; head `8ae80087ef4eea81cc1f7980122b56c40dce20fb`; merge `a441783706f726eb00bac3e08de88656eb2ad9cf`; assurance `4861506471` |
-| Stage 3 - Reversible shadow adoption | Complete | PR #1410; 20 focused API tests and 70 focused projection tests after remediation; head `40c21bc4a5ada9db1d8c53c0eef20d2fb9a7d4e7`; merge `37a3e469cfb63273d39c6706837ad5ea0b1b7690`; assurance `4863140336` |
+| Stage 3 - Reversible shadow adoption | Complete | PR #1410; 17 focused API tests and 70 focused projection tests; head `40c21bc4a5ada9db1d8c53c0eef20d2fb9a7d4e7`; merge `37a3e469cfb63273d39c6706837ad5ea0b1b7690`; assurance `4863140336` |
 | Terminal closeout | Complete on this PR merge | Authority completed and consumed; routing returns to portfolio reconciliation |
 
 ## Required terminal evidence
