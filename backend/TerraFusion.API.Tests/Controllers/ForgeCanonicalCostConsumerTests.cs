@@ -70,6 +70,10 @@ public sealed class ForgeCanonicalCostConsumerTests
         Assert.Same(legacy, response.Value);
         Assert.NotNull(captured);
         Assert.Equal(CorrelationId, captured.Identity.CorrelationId);
+        Assert.Equal(CountyId, captured.Identity.CountyId);
+        Assert.Equal(TaxYear, captured.Identity.TaxYear);
+        Assert.Equal("synthetic-assessor", captured.Authorization.SubjectId);
+        Assert.Equal(CountyId, captured.Authorization.CountyId);
         Assert.Equal("access:forge", captured.Authorization.Permission);
         Assert.Single(captured.Properties);
         Assert.Single(captured.LandFacts);
@@ -97,6 +101,38 @@ public sealed class ForgeCanonicalCostConsumerTests
     }
 
     [Fact]
+    public async Task Shadow_IncompleteIdentityAssertionsSkipConsumerAndPreserveLegacyResponse()
+    {
+        await using var db = CreateDb();
+        var consumer = new Mock<IForgeCanonicalCostConsumer>(MockBehavior.Strict);
+        var legacy = LegacyResult();
+        var cases = new[]
+        {
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                isAuthenticated: false),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                permission: "access:forge-near-match"),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                includeCountyClaim: false),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                countyClaim: "not-a-county-uuid"),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                includeCorrelationId: false),
+            CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy,
+                correlationId: " "),
+        };
+
+        foreach (var controller in cases)
+        {
+            var response = Assert.IsType<OkObjectResult>(
+                await controller.GetCostApproach(ParcelId, TaxYear, CancellationToken.None));
+            Assert.Same(legacy, response.Value);
+        }
+
+        consumer.VerifyNoOtherCalls();
+    }
+
+    [Fact]
     public async Task Shadow_FailureDoesNotRelabelOrReplaceLegacyResponse()
     {
         await using var db = CreateDb();
@@ -113,6 +149,45 @@ public sealed class ForgeCanonicalCostConsumerTests
 
         Assert.Same(legacy, response.Value);
         Assert.Equal("legacy-db", Assert.IsType<CostApproachResult>(response.Value).Source);
+    }
+
+    [Fact]
+    public async Task Shadow_InternalCancellationFailsClosedWhenCallerRemainsActive()
+    {
+        await using var db = CreateDb();
+        await SeedAsync(db);
+        var consumer = new Mock<IForgeCanonicalCostConsumer>();
+        consumer.Setup(service => service.ConsumeAsync(
+                It.IsAny<ForgeCanonicalConsumerRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new OperationCanceledException("synthetic internal cancellation"));
+        var legacy = LegacyResult();
+        var controller = CreateController(db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, legacy);
+
+        var response = Assert.IsType<OkObjectResult>(
+            await controller.GetCostApproach(ParcelId, TaxYear, CancellationToken.None));
+
+        Assert.Same(legacy, response.Value);
+    }
+
+    [Fact]
+    public async Task Shadow_CallerCancellationPropagates()
+    {
+        await using var db = CreateDb();
+        await SeedAsync(db);
+        using var callerCancellation = new CancellationTokenSource();
+        var consumer = new Mock<IForgeCanonicalCostConsumer>();
+        consumer.Setup(service => service.ConsumeAsync(
+                It.IsAny<ForgeCanonicalConsumerRequest>(), It.IsAny<CancellationToken>()))
+            .Returns<ForgeCanonicalConsumerRequest, CancellationToken>((_, token) =>
+            {
+                callerCancellation.Cancel();
+                return Task.FromCanceled<ForgeCanonicalConsumerResult>(token);
+            });
+        var controller = CreateController(
+            db, consumer.Object, ForgeCanonicalConsumerMode.Shadow, LegacyResult());
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            controller.GetCostApproach(ParcelId, TaxYear, callerCancellation.Token));
     }
 
     [Fact]
@@ -171,7 +246,13 @@ public sealed class ForgeCanonicalCostConsumerTests
         IForgeCanonicalCostConsumer consumer,
         ForgeCanonicalConsumerMode mode,
         CostApproachResult legacy,
-        bool includePermission = true)
+        bool includePermission = true,
+        string permission = "access:forge",
+        bool isAuthenticated = true,
+        bool includeCountyClaim = true,
+        string? countyClaim = null,
+        bool includeCorrelationId = true,
+        string correlationId = CorrelationId)
     {
         var valuation = new Mock<IValuationService>();
         valuation.Setup(service => service.CalculateCostApproachAsync(
@@ -183,18 +264,19 @@ public sealed class ForgeCanonicalCostConsumerTests
             NullLogger<ForgeController>.Instance,
             consumer,
             Options.Create(new RustKernelsOptions { ForgeCanonicalConsumerMode = mode }));
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, "synthetic-assessor"),
-            new("countyId", CountyId.ToString()),
-        };
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, "synthetic-assessor") };
+        if (includeCountyClaim)
+            claims.Add(new Claim("countyId", countyClaim ?? CountyId.ToString()));
         if (includePermission)
-            claims.Add(new Claim("perm", "access:forge"));
+            claims.Add(new Claim("perm", permission));
         var context = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal(new ClaimsIdentity(claims, "SyntheticAuth")),
+            User = new ClaimsPrincipal(new ClaimsIdentity(
+                claims,
+                isAuthenticated ? "SyntheticAuth" : null)),
         };
-        context.Items["CorrelationId"] = CorrelationId;
+        if (includeCorrelationId)
+            context.Items["CorrelationId"] = correlationId;
         controller.ControllerContext = new ControllerContext { HttpContext = context };
         return controller;
     }
