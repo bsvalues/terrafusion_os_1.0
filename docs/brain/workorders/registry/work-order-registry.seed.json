@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-008I terminal closeout",
   "generatedAt": "2026-08-05T00:00:00Z",
-  "description": "Five-suite registry after WO-SR-008I completed pure boundary assembly, bounded host/consumer implementation, and reversible default-disabled Shadow adoption. The exact R4 authority is completed and consumed; portfolio reconciliation is current and no live cutover is authorized.",
+  "description": "Five-Suite registry after WO-SR-008I completed pure boundary assembly, bounded host/consumer implementation, and reversible default-disabled Shadow adoption. The exact R4 authority is completed and consumed; portfolio reconciliation is current and no live cutover is authorized.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -9976,14 +9976,7 @@
           "description": "Stop only for a required out-of-scope file, E1/hash change, new valuation methodology, schema or persistence mutation, protected resource, credential, deployment, production, canonical response switch, standalone Forge or cost-kernel change, OS network sandbox, gate bypass, force push, destructive cleanup, or conflicting authority."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "PORTFOLIO-RECONCILIATION",
-          "reason": "WO-SR-008I is complete and its bounded authority is consumed. Recompute the Five-Suite graph without inferring successor implementation or live-cutover authority.",
-          "riskClass": "R2",
-          "blocked": false
-        }
-      ],
+      "nextCandidates": [],
       "authority": {
         "mayWrite": false,
         "mayCommit": false,
