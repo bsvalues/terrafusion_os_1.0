@@ -15,4 +15,12 @@ public class RustKernelsOptions
     public string ContractPackVersion { get; set; } = "1.0.0";
     public string ModuleApiVersion { get; set; } = "1.0.0";
     public bool Enabled { get; set; } = true;
+    public ForgeCanonicalConsumerMode ForgeCanonicalConsumerMode { get; set; } =
+        ForgeCanonicalConsumerMode.Disabled;
+}
+
+public enum ForgeCanonicalConsumerMode
+{
+    Disabled,
+    Shadow,
 }
