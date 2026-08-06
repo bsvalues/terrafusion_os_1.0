@@ -120,7 +120,9 @@ boundary assembly, bounded host/consumer implementation, and default-disabled Sh
   county-isolation repair and local synthetic journey as `b934cf0c0`; the authority is completed and
   consumed. Portfolio reconciliation selected `WO-SR-009B`, and Issue #1417 activated the exact
   bounded Dais Workbench durable appeal-read sequence under
-  `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805`. The legacy Forge response remains authoritative.
+  `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805`. PR #1419 merged exact assured head
+  `11bc49507a6e57925414d142a21f203bb8c3c811` as `8b5fe0965`; SR-009B is complete, its authority is
+  consumed, and portfolio reconciliation is current. The legacy Forge response remains authoritative.
   Quality/condition,
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.

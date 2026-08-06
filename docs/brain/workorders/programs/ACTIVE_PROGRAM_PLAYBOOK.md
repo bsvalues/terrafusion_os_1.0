@@ -656,15 +656,17 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-009A` authenticated county-governed synthetic parcel journey |
-| Current WO | `WO-SR-009B` Dais Workbench durable appeal read adoption |
-| Next interlock | Terminal closeout, then portfolio reconciliation |
+| Last completed interlock | `WO-SR-009B` Dais Workbench durable appeal read adoption |
+| Current WO | Portfolio reconciliation |
+| Next interlock | Select the highest-value dependency-cleared bounded node |
 
-Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorize the exact bounded
-read-only Dais adoption sequence. Existing raw CRUD response shapes remain unchanged; the frozen
-adapter is consumed only through a dedicated county-scoped endpoint. LiveDataProvider and the Dais
-tab may expose contract-honest read state, but routing, tab identity, navigation, broader structure,
+Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
+read-only Dais adoption sequence. PR #1419 merged exact assured head
+`11bc49507a6e57925414d142a21f203bb8c3c811` as
+`8b5fe0965c0f51008d47e6ff1e0133e94a417667`; the authority is completed and consumed. Existing raw
+CRUD response shapes remain unchanged, and routing, tab identity, navigation, broader structure,
 writes, persistence/schema, standalone Dais runtime, live data, deployment, and cutover remain denied.
+Portfolio reconciliation is current operator work; no successor implementation authority is inferred.
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

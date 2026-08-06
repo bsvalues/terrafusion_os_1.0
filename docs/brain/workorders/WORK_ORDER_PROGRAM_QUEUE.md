@@ -13,17 +13,16 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active at `WO-SR-009B` under the exact bounded R3
-authority recorded in Issue #1417. `WO-SR-009A` completed in PR #1415: exact assured head
-`0423615c82840978673916831de788f61766c1b7` merged as
-`b934cf0c02ab7e6b5eb20e122f290e9adb665f83`. The proof county-scopes CAMA, fails closed on legacy
-GIS evidence without county ownership, and completes one disposable authenticated synthetic
-Workbench journey. Decision `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805` is completed
-and consumed. `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` now authorizes one dedicated
-frozen-contract Dais read, contract-honest `LiveDataProvider` adoption, truthful PropertyDais states,
-and disposable same-county/cross-county synthetic proof. Writes, persistence/schema, standalone Dais
-runtime adoption, live data, deployment, cutover, and Workbench routing/tab/navigation changes remain
-denied.
+The Five-Suite Federated Repository Buildout is active between cohorts in portfolio reconciliation.
+`WO-SR-009B` completed in PR #1419: exact assured head
+`11bc49507a6e57925414d142a21f203bb8c3c811` merged as
+`8b5fe0965c0f51008d47e6ff1e0133e94a417667`. The proof makes the frozen county-scoped Dais appeal
+read reachable through the real API and `LiveDataProvider`, renders honest PropertyDais states, and
+passes disposable same-county and cross-county synthetic proof. Decision
+`OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` is completed and consumed. No successor is
+automatically admitted; portfolio reconciliation must select the next evidence-backed bounded node.
+Writes, persistence/schema, standalone Dais runtime adoption, live data, deployment, cutover, and
+Workbench routing/tab/navigation changes remain denied.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
 PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
 `6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable
