@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-008I complete and bounded R4 authority consumed
+**Status:** Active between cohorts; WO-SR-009A complete and bounded R3 authority consumed
 
 ## Ratified topology
 
@@ -87,7 +87,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Complete R3; PR #1404 merged as `6eb6f0768`; exact authority consumed |
 | WO-SR-008I | Complete the Forge canonical consumer through Stage 1 - Pure boundary assembly, bounded host/consumer, and default-disabled Shadow adoption | Complete R4; PRs #1408-#1410 merged through `37a3e469c`; authority consumed; no live cutover |
 | WO-TF-POST-FORGE-001 | Reconcile authoritative post-Forge portfolio state and admit or bound one successor | Complete R2; capability matrix and ranked candidates select WO-SR-009A; Issue #1413 is the complete decision packet |
-| WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Active R3 under the corrected Issue #1413 decision; county-scoped CAMA and fail-closed GIS repair plus synthetic local proof only |
+| WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Complete R3; PR #1415 merged exact assured head `0423615c8` as `b934cf0c0`; authority consumed; no live data or cutover |
 
 ## Extraction and provenance policy
 
@@ -264,3 +264,11 @@ contains the approved corrected R3 packet. The decision is canonized as
 `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`; implementation is limited to the exact
 controller, test, browser-smoke, and governance allowlist. Live county/PACS/SQL, production,
 deployment, schema, permission-policy, frontend-source, and suite-adoption changes remain denied.
+
+PR #1415 merged exact assured head `0423615c82840978673916831de788f61766c1b7` as
+`b934cf0c02ab7e6b5eb20e122f290e9adb665f83`. The controller now county-scopes CAMA evidence and
+fails closed on legacy GIS evidence without provable county ownership. Focused API tests and one
+disposable SQLite-backed authenticated Workbench browser journey passed; all disposable database
+state was removed. This terminal closeout consumes the decision and returns the program to
+portfolio reconciliation without live-data, suite-adoption, deployment, production, or cutover
+authority.

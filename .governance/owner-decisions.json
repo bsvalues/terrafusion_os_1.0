@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-009A",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-authenticated-synthetic-parcel-journey",
       "effective_base_sha": "f71cdffb66305c4af1abb5193586aa60818e3969",
       "scope_source": "Owner approval recorded on 2026-08-05 for the corrected Issue #1413 envelope. CAMA enrichment must be county-scoped; legacy GIS enrichment must fail closed where county ownership cannot be proven. The authorization covers implementation, local synthetic proof, review remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without routine owner relay.",
@@ -47,7 +47,19 @@
         "CAMA query not county-scoped, GIS evidence used without provable county ownership, synthetic proof using existing county data, disposable residue retained, or secret value printed or persisted",
         "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
       ],
-      "decision_basis": "Post-Forge reconciliation identified authenticated county-governed parcel acquisition as the first common dependency for a complete assessor journey and found parcel-only CAMA/GIS enrichment that could cross county boundaries. The bounded repair and synthetic local journey are reversible and do not authorize live data or cutover."
+      "decision_basis": "Post-Forge reconciliation identified authenticated county-governed parcel acquisition as the first common dependency for a complete assessor journey and found parcel-only CAMA/GIS enrichment that could cross county boundaries. The bounded repair and synthetic local journey are reversible and do not authorize live data or cutover.",
+      "completion": {
+        "implementation_pr": 1415,
+        "implementation_exact_head": "0423615c82840978673916831de788f61766c1b7",
+        "implementation_merge": "b934cf0c02ab7e6b5eb20e122f290e9adb665f83",
+        "implementation_assurance": "PASS at exact head 0423615c82840978673916831de788f61766c1b7; zero unresolved substantive threads; exact 15-file scope",
+        "implementation_required_checks": "PASS; all required checks completed successfully",
+        "terminal_closeout": "this governance-only exact-scope closeout PR; exact reviewed head and merge commit are bound from GitHub PR metadata",
+        "terminal_condition_satisfied": "AUTHENTICATED_COUNTY_GOVERNED_SYNTHETIC_PARCEL_JOURNEY_PROVEN_NO_LIVE_DATA_OR_CUTOVER when this closeout merges",
+        "effective_on_merge": true,
+        "authority_consumed": true,
+        "next_state": "Five-Suite portfolio reconciliation; no live-data, cutover, or successor implementation authority inferred"
+      }
     },
     {
       "id": "OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804",
