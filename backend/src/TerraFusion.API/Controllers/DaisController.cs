@@ -7,6 +7,8 @@ using TerraFusion.Core.Auth;
 using TerraFusion.Data;
 using TerraFusion.API.Security;
 using TerraFusion.API.Services;
+using TerraFusion.API.Adapters;
+using TerraFusion.Abstractions.DTOs;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -1050,6 +1052,69 @@ public class DaisController : ControllerBase
     var appeals = await _appealService.GetByParcelAsync(parcelId, effectiveCountyId);
     return Ok(appeals);
   }
+
+  /// <summary>
+  /// GET api/dais/appeals/parcel/{parcelId}/workflow-read — Read the frozen,
+  /// county-scoped appeal workflow contract for a parcel.
+  /// </summary>
+  [HttpGet("appeals/parcel/{parcelId}/workflow-read")]
+  public async Task<IActionResult> GetAppealWorkflowByParcel(string parcelId)
+  {
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
+    var appeals = await _appealService.GetByParcelAsync(parcelId, effectiveCountyId);
+    if (string.Equals(
+      _db.Database.ProviderName,
+      "Microsoft.EntityFrameworkCore.Sqlite",
+      StringComparison.Ordinal))
+    {
+      // SQLite persists the value but not DateTimeKind; restore the UTC storage contract
+      // before the unchanged frozen adapter performs its timestamp validation.
+      foreach (var appeal in appeals)
+      {
+        appeal.FiledDate = RestoreSqliteUtcKind(appeal.FiledDate);
+        appeal.HearingDate = appeal.HearingDate is null
+          ? null
+          : RestoreSqliteUtcKind(appeal.HearingDate.Value);
+        appeal.DecisionDate = appeal.DecisionDate is null
+          ? null
+          : RestoreSqliteUtcKind(appeal.DecisionDate.Value);
+      }
+    }
+    var request = new DaisAppealWorkflowReadRequest
+    {
+      SchemaVersion = "1.0.0",
+      CountyId = effectiveCountyId.ToString("D"),
+      Selector = new DaisAppealSelector { ParcelId = parcelId },
+      TraceId = HttpContext.TraceIdentifier,
+    };
+
+    try
+    {
+      return Content(
+        DaisAppealWorkflowReadAdapter.Serialize(request, appeals),
+        "application/json");
+    }
+    catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+    {
+      _logger.LogWarning(
+        exception,
+        "Dais appeal workflow read failed closed for county {CountyId} and trace {TraceId}.",
+        effectiveCountyId,
+        HttpContext.TraceIdentifier);
+      return Problem(
+        statusCode: StatusCodes.Status500InternalServerError,
+        title: "Appeal workflow evidence failed contract validation.");
+    }
+  }
+
+  private static DateTime RestoreSqliteUtcKind(DateTime value) =>
+    value.Kind == DateTimeKind.Unspecified
+      ? DateTime.SpecifyKind(value, DateTimeKind.Utc)
+      : value;
 
   /// <summary>
   /// PUT api/dais/appeals/{id}/status — Update appeal status and optional decision fields.

@@ -159,6 +159,36 @@ async function assertAuthenticatedParcelApiBoundary(
   );
 }
 
+async function assertAuthenticatedDaisAppealBoundary(
+  api: APIRequestContext,
+  auth: { token: string; countyId?: string },
+  parcelId: string
+): Promise<void> {
+  const path = `/api/dais/appeals/parcel/${encodeURIComponent(parcelId)}/workflow-read`;
+  const unauthenticated = await api.get(path);
+  expect(unauthenticated.status(), 'Dais appeal read must reject a missing identity').toBe(401);
+
+  const response = await api.get(path, {
+    headers: { Authorization: `Bearer ${auth.token}` },
+  });
+  expect(response.ok(), 'authorized synthetic Dais appeal read must load').toBe(true);
+  const payload = await response.json();
+  expect(payload.schemaVersion).toBe('1.0.0');
+  expect(payload.countyId).toBe(auth.countyId);
+  expect(payload.appeals).toHaveLength(1);
+  expect(payload.appeals[0]).toMatchObject({
+    appealId: 'be0900a0-0000-0000-0000-0000000000c1',
+    parcelId,
+    taxYear: 2026,
+    ground: 'MARKET_VALUE',
+    status: 'filed',
+  });
+  expect(JSON.stringify(payload)).not.toContain('be0900a0-0000-0000-0000-0000000000c2');
+  expect(payload.appeals[0]).not.toHaveProperty('petitionerName');
+  expect(payload.appeals[0]).not.toHaveProperty('currentValue');
+  expect(payload.appeals[0]).not.toHaveProperty('requestedValue');
+}
+
 async function installSmokeSession(
   page: Page,
   auth: { token: string; countyId?: string; countyCode?: string },
@@ -200,7 +230,9 @@ async function assertNoParcelJourneyServerErrors(): Promise<void> {
   const serverErrors = network.filter(
     entry =>
       entry.status >= 500 &&
-      (entry.url.includes('/api/auth/') || entry.url.includes('/api/properties'))
+      (entry.url.includes('/api/auth/')
+        || entry.url.includes('/api/properties')
+        || entry.url.includes('/api/dais/appeals/'))
   );
   expect(
     serverErrors,
@@ -253,8 +285,12 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     const api = await request.newContext({ baseURL: baseUrl() });
     const auth = await fetchDevToken(api);
+    if (!auth.countyId) {
+      throw new Error('Synthetic auth response did not include a countyId claim.');
+    }
     const parcelId = await resolveSmokeParcel(api, auth.token);
     await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
+    await assertAuthenticatedDaisAppealBoundary(api, auth, parcelId);
     await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
     await installSmokeSession(page, auth, parcelId);
 
@@ -302,6 +338,11 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     await page.goto(`/property/${encodeURIComponent(parcelId)}/dais`);
     await expect(page.getByTestId('property-dais-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('dais-appeals-loaded')).toContainText('1 appeal', {
+      timeout: 30000,
+    });
+    await expect(page.getByText(/filed - MARKET VALUE/)).toBeVisible();
+    await expect(page.getByText(/Tax year 2026/)).toBeVisible();
     await assertNoInfiniteLoading(page);
     await capture(page, '05 dais', '05-dais');
 
