@@ -118,7 +118,9 @@ boundary assembly, bounded host/consumer implementation, and default-disabled Sh
   reconciliation and selected `WO-SR-009A`. The corrected Issue #1413 decision is canonized as
   `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`. PR #1415 merged the exact assured
   county-isolation repair and local synthetic journey as `b934cf0c0`; the authority is completed and
-  consumed and routing returns to portfolio reconciliation. The legacy Forge response remains authoritative.
+  consumed. Portfolio reconciliation selected `WO-SR-009B`, and Issue #1417 activated the exact
+  bounded Dais Workbench durable appeal-read sequence under
+  `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805`. The legacy Forge response remains authoritative.
   Quality/condition,
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.

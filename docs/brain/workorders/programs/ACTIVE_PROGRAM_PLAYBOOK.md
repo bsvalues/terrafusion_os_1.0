@@ -657,8 +657,14 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-009A` authenticated county-governed synthetic parcel journey |
-| Current WO | Portfolio reconciliation |
-| Next interlock | Admit the highest-value dependency-cleared bounded successor or prove one exact protected boundary |
+| Current WO | `WO-SR-009B` Dais Workbench durable appeal read adoption |
+| Next interlock | Terminal closeout, then portfolio reconciliation |
+
+Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorize the exact bounded
+read-only Dais adoption sequence. Existing raw CRUD response shapes remain unchanged; the frozen
+adapter is consumed only through a dedicated county-scoped endpoint. LiveDataProvider and the Dais
+tab may expose contract-honest read state, but routing, tab identity, navigation, broader structure,
+writes, persistence/schema, standalone Dais runtime, live data, deployment, and cutover remain denied.
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

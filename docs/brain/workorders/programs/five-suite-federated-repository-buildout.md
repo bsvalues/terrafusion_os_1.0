@@ -272,3 +272,10 @@ disposable SQLite-backed authenticated Workbench browser journey passed; all dis
 state was removed. This terminal closeout consumes the decision and returns the program to
 portfolio reconciliation without live-data, suite-adoption, deployment, production, or cutover
 authority.
+
+Issue #1417 then activated `WO-SR-009B` under
+`OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805`. The exact bounded sequence adds one dedicated
+county-scoped frozen-contract Dais appeal read, contract-honest `LiveDataProvider` adoption, truthful
+PropertyDais loading/empty/error/loaded states, and disposable same-county/cross-county browser proof.
+Existing raw CRUD endpoints, the frozen adapter, persistence, standalone Dais, Workbench routing/tab
+identity/navigation, live data, deployment, and cutover remain unchanged or denied.
