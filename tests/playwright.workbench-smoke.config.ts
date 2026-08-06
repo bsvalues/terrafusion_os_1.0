@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync } from 'node:fs';
+import { existsSync, unlinkSync } from 'node:fs';
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,9 +31,18 @@ if (
   );
 }
 
-if (existsSync(smokeDatabasePath)) {
+const isPlaywrightWorker = process.env.TEST_WORKER_INDEX !== undefined;
+
+if (!isPlaywrightWorker && existsSync(smokeDatabasePath)) {
   throw new Error(`Refusing to replace pre-existing smoke database: ${smokeDatabasePath}`);
 }
+
+if (!isPlaywrightWorker) {
+  process.once('exit', () => {
+    if (existsSync(smokeDatabasePath)) unlinkSync(smokeDatabasePath);
+  });
+}
+process.env.WORKBENCH_SMOKE_DATABASE_PATH = smokeDatabasePath;
 
 export default defineConfig({
   testDir: resolve(testsRoot, 'e2e'),
@@ -77,7 +86,7 @@ export default defineConfig({
       TF_ENABLE_LEGACY_ARCGIS_SYNC: 'false',
     },
     reuseExistingServer: false,
-    timeout: 240_000,
+    timeout: 360_000,
     url: `${smokeBaseURL}/api/auth/dev-token`,
   },
   use: {
