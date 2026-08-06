@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009B Dais Workbench durable appeal read activation",
+  "generatedBy": "WO-SR-009B Dais Workbench durable appeal read terminal closeout",
   "generatedAt": "2026-08-06T00:00:00Z",
-  "description": "WO-SR-009A is complete and consumed. WO-SR-009B is active under the exact bounded Issue #1417 R3 authority; appeal writes, persistence/schema, standalone Dais runtime, live/protected data, deployment, cutover, other-suite adoption, and Workbench routing/tab/navigation changes remain denied.",
+  "description": "WO-SR-009B is complete and its exact bounded Issue #1417 R3 authority is consumed. The Five-Suite program is active between cohorts with portfolio reconciliation current; appeal writes, persistence/schema, standalone Dais runtime, live/protected data, deployment, cutover, other-suite adoption, and Workbench routing/tab/navigation changes remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
