@@ -10413,7 +10413,7 @@
           "name": "Governance validation",
           "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact nine-file scope",
           "required": true,
-          "result": "pending delivery"
+          "result": "passed: diff, JSON, wo-query, 41 query/planner tests, Prettier, and exact nine-file scope"
         }
       ],
       "evidenceProduced": [
