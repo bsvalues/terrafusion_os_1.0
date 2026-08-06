@@ -10561,7 +10561,7 @@
           "name": "Governance activation and terminal-narrowing reconciliation",
           "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact governance scope",
           "required": true,
-          "result": "passed: diff, JSON, wo-query, 41 query/planner tests, Prettier, and exact ten-file governance scope"
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
