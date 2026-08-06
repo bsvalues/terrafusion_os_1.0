@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-TF-POST-DAIS-001 authoritative post-Dais portfolio reconciliation",
+  "generatedBy": "WO-SR-009C Atlas Workbench canonical projection activation and authority-wall evidence",
   "generatedAt": "2026-08-06T00:00:00Z",
-  "description": "WO-TF-POST-DAIS-001 completed current-base R2 reconciliation and selected WO-SR-009C as one exact R3 Atlas Workbench adoption boundary. No implementation is admitted; Atlas mutation, anonymous legacy GIS adoption, protected resources, deployment, and cutover remain denied.",
+  "description": "WO-SR-009C is owner-approved but blocked before product writes because its frozen adapter cannot produce the required canonical Point exchange. One exact adapter/test amendment is required; all runtime and protected-resource denials remain active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10433,7 +10433,7 @@
         {
           "id": "WO-SR-009C",
           "status": "blocked",
-          "reason": "Exact consolidated R3 Atlas Workbench canonical projection adoption authority required."
+          "reason": "R3 authority approved; product execution is blocked at FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED."
         }
       ],
       "authority": {
@@ -10449,6 +10449,124 @@
       "provenance": {
         "createdAt": "2026-08-06T00:00:00Z",
         "source": "Current-base inspection at cb0463830d06e288e37ea5515e97b23eee51c0f4 after WO-SR-009B closeout",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-009C",
+      "title": "Atlas Workbench Canonical Projection Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Make the canonical county-scoped Atlas projection reachable and truthful in the Property Workbench without live provider adoption or cutover.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-TF-POST-DAIS-001",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1421 merged the exact current-base reconciliation and R3 packet."
+          ]
+        },
+        {
+          "id": "OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806",
+          "status": "satisfied",
+          "evidence": [
+            "Owner approved the exact Issue #1422 packet on 2026-08-06."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Exact Issue #1422 product, test, governance, and evidence scope",
+          "paths": ["exact authorized_files in the owner decision register"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Frozen adapter changes or alternate mapper until an exact amendment is approved"
+        },
+        {
+          "name": "Atlas repository mutation, legacy anonymous GIS adoption, live providers, protected data, persistence, deployment, production, or cutover"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionConsumer.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionConsumerTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/GisTf/ParcelGeometryControllerTests.cs",
+        "frontend/apps/os-shell/src/hooks/useAtlasGis.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009C-atlas-workbench-canonical-projection-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Adapters/AtlasSpatialReadAdapter.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasSpatialReadAdapterTests.cs",
+        "backend/src/TerraFusion.Abstractions/**",
+        ".github/workflows/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact frozen-adapter Point contradiction, zero-product-change safety state, and bounded amendment recommendation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Governance activation and authority-wall validation",
+          "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact governance scope",
+          "required": true,
+          "result": "passed: diff, JSON, wo-query, 41 query/planner tests, Prettier, and exact ten-file governance scope"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md",
+          "summary": "Approval provenance, frozen-adapter Point contradiction, zero-product-change state, exact amendment, alternatives, and validation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED: Point proof requires the existing adapter and test files outside the approved allowlist."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-009C-AMENDMENT-001",
+          "status": "blocked",
+          "reason": "Owner must authorize the exact adapter/test Point-mapping amendment or narrow the terminal proof."
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Delivery lifecycle authority remains active only inside the current exact allowlist; product execution is suspended at the frozen-adapter wall."
+      },
+      "provenance": {
+        "createdAt": "2026-08-06T00:00:00Z",
+        "source": "Issue #1422 and owner decision at sovereign base f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2",
         "schemaVersion": "0.1.0"
       }
     }

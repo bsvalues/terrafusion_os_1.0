@@ -208,10 +208,11 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing: `WO-TF-POST-DAIS-001` completed R2 reconciliation at
-`cb0463830d06e288e37ea5515e97b23eee51c0f4` and selected `WO-SR-009C - Atlas Workbench Canonical
-Projection Adoption` as the next exact R3 boundary. No implementation is admitted until its
-consolidated packet is approved. The legacy anonymous GIS parcel reads are not the canonical source.
+Current Five-Suite routing: Issue #1422 approved `WO-SR-009C - Atlas Workbench Canonical Projection
+Adoption` at `f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 inspection found that the frozen
+adapter is polygon-only while the terminal proof requires Point. Product execution is suspended at
+`FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`; no runtime file has changed. The legacy anonymous GIS
+parcel reads remain non-canonical.
 
 ---
 
@@ -661,9 +662,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-009B` Dais Workbench durable appeal read adoption |
-| Current WO | Portfolio reconciliation |
-| Next interlock | Select the highest-value dependency-cleared bounded node |
+| Last completed interlock | `WO-TF-POST-DAIS-001` portfolio reconciliation |
+| Current WO | `WO-SR-009C` blocked at exact Point-mapping scope wall |
+| Next interlock | Decide the bounded adapter/test amendment on Issue #1422 |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head

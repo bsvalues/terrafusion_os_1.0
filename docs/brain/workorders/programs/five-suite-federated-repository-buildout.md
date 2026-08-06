@@ -295,3 +295,13 @@ default-disabled consumer, and truthful Workbench states. The existing anonymous
 and parcel-only legacy GIS lookup are explicitly not a canonical source. Implementation remains a
 new exact R3 boundary; no live provider, Atlas mutation, persistence, deployment, or cutover is
 inferred.
+
+Issue #1422 subsequently approved `WO-SR-009C` under
+`OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806` at sovereign base
+`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 inspection proved an exact contradiction:
+`AtlasSpatialReadAdapter` emits polygon only and rejects `POINT`, while the approved terminal proof
+requires a real canonical Point result and the process host requires `centroid_only` for Point.
+Because the adapter and its tests are outside the approved product allowlist and a frozen-adapter
+change is an explicit stop wall, no product implementation began. The program remains active with
+`WO-SR-009C` blocked pending one narrow adapter/test amendment; all live-provider, protected-resource,
+deployment, cutover, routing, and legacy-anonymous-path denials remain intact.

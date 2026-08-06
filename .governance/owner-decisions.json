@@ -3,6 +3,64 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-009C",
+      "status": "active",
+      "authority_class": "R3-bounded-atlas-workbench-canonical-projection-adoption",
+      "effective_base_sha": "f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2",
+      "scope_source": "Owner approval recorded directly on Issue #1422 on 2026-08-06. The authorization covers Stages 0 through 4, exact allowlisted product, test, governance, and evidence files, local hash-pinned Atlas execution, disposable synthetic proof, in-scope remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without per-stage owner relay.",
+      "terminal_condition": "ATLAS_COUNTY_SCOPED_CANONICAL_PROJECTION_REACHABLE_IN_WORKBENCH_NO_LIVE_PROVIDER_OR_CUTOVER",
+      "authorized_actions": [
+        "add a default-disabled environment-bound canonical Atlas projection consumer using IParcelGeometryReader, the existing frozen AtlasSpatialReadAdapter, and the existing hash-pinned AtlasProjectionProcessHost",
+        "add one authenticated read:parcel county-scoped read-only canonical projection endpoint and truthful PropertyAtlas loading, unavailable, error, and projected states without changing routing, tab identity, navigation, Workbench structure, Mapbox behavior, or legacy GIS endpoints",
+        "prove same-county Polygon, Point, and unavailable results plus cross-county non-disclosure through focused tests and one disposable authenticated SQLite browser journey",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify main, perform one governance-only terminal closeout, consume authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionConsumer.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionConsumerTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/GisTf/ParcelGeometryControllerTests.cs",
+        "frontend/apps/os-shell/src/hooks/useAtlasGis.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009C-atlas-workbench-canonical-projection-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "Atlas repository mutation, source extraction, ownership transfer, frozen AtlasSpatialReadAdapter change, or a new mapper outside the exact allowlist",
+        "legacy GisDataService or anonymous endpoint adoption as canonical evidence, live ArcGIS or other provider and network calls, county, PACS, SQL, schema, migration, persistence, sync, runtime-write, credential, secret, deployment, production, publication, retirement, or cutover changes",
+        "route, tab identity, navigation, broader Workbench structure, Mapbox, package, lockfile, workflow, branch-protection, other-suite adoption, force push, required-gate bypass, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "need for a file outside the exact allowlist, Atlas module or frozen-adapter change, a different mapper, legacy anonymous-path adoption, persistence or schema mutation, live or protected data, credential, provider, deployment, navigation or tab restructuring, or cross-suite behavior",
+        "configuration not default-disabled, mutable or unpinned module fallback, cross-county existence disclosure, dishonest Workbench provenance, or disposable test residue",
+        "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
+      ],
+      "decision_basis": "Post-Dais reconciliation selected canonical Atlas Workbench projection adoption as the highest-value dependency-cleared gap. Stage 1 inspection then proved that the frozen adapter emits only polygon results and rejects POINT while the authorized terminal condition requires a real canonical Point proof. Product execution is suspended at that exact scope wall pending one narrow amendment or a narrowed terminal condition.",
+      "current_blocker": {
+        "type": "FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED",
+        "evidence": "AtlasSpatialReadAdapter.Adapt always emits GeometryState polygon and ParseOuterRing rejects POINT, while AtlasProjectionProcessHost requires centroid_only for Point output.",
+        "safe_state": "No product file has been modified; only governance activation and authority-wall evidence are admitted."
+      }
+    },
+    {
       "id": "OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
