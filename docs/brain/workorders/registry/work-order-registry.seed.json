@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-TF-POST-FORGE-001 authoritative portfolio reconciliation",
-  "generatedAt": "2026-08-05T00:00:00Z",
-  "description": "Post-Forge portfolio reconciliation after WO-SR-008I. WO-TF-POST-FORGE-001 is complete; WO-SR-009A is the active owner-authorized bounded R3 parcel-journey implementation.",
+  "generatedBy": "WO-SR-009A authenticated county-governed parcel journey terminal closeout",
+  "generatedAt": "2026-08-06T00:00:00Z",
+  "description": "WO-SR-009A is complete and its bounded R3 authority is consumed. The Five-Suite Federated Repository Buildout is active between cohorts at portfolio reconciliation; no live-data, suite-adoption, deployment, production, or cutover authority is inferred.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10199,13 +10199,13 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
-        "mayCleanup": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
         "notes": "PR #1415 merged exact assured head 0423615c82840978673916831de788f61766c1b7 as b934cf0c02ab7e6b5eb20e122f290e9adb665f83. All required checks passed with zero unresolved substantive threads. The corrected Issue #1413 R3 authority is completed and consumed by terminal closeout; no live-data, suite-adoption, deployment, production, or cutover authority follows."
       },
       "provenance": {
