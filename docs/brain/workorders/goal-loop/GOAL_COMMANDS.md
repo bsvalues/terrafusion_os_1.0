@@ -48,6 +48,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 ```
 
 **Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
+Post-Dais reconciliation at `cb0463830d06e288e37ea5515e97b23eee51c0f4` selected
+`WO-SR-009C - Atlas Workbench Canonical Projection Adoption` as the next exact protected boundary.
+Its consolidated R3 packet must use canonical county-bearing geometry and may not treat the legacy
+anonymous GIS parcel path as canonical evidence. No implementation is admitted yet.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and

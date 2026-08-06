@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009B Dais Workbench durable appeal read terminal closeout",
+  "generatedBy": "WO-TF-POST-DAIS-001 authoritative post-Dais portfolio reconciliation",
   "generatedAt": "2026-08-06T00:00:00Z",
-  "description": "WO-SR-009B is complete and its exact bounded Issue #1417 R3 authority is consumed. The Five-Suite program is active between cohorts with portfolio reconciliation current; appeal writes, persistence/schema, standalone Dais runtime, live/protected data, deployment, cutover, other-suite adoption, and Workbench routing/tab/navigation changes remain denied.",
+  "description": "WO-TF-POST-DAIS-001 completed current-base R2 reconciliation and selected WO-SR-009C as one exact R3 Atlas Workbench adoption boundary. No implementation is admitted; Atlas mutation, anonymous legacy GIS adoption, protected resources, deployment, and cutover remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10353,6 +10353,103 @@
         "terminalCondition": "DAIS_COUNTY_SCOPED_APPEAL_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_OR_LIVE_DATA",
         "authorityConsumed": true,
         "nextState": "portfolio reconciliation"
+      }
+    },
+    {
+      "id": "WO-TF-POST-DAIS-001",
+      "title": "Authoritative Post-Dais Portfolio Reconciliation and Atlas Consumer Boundary",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Reconcile current product truth after WO-SR-009B and produce one exact bounded successor packet.",
+      "riskClass": "R2",
+      "status": "complete",
+      "dependencies": [
+        {
+          "id": "WO-SR-009B",
+          "status": "satisfied",
+          "evidence": [
+            "PR #1419 and terminal closeout PR #1420 completed Dais Workbench read adoption."
+          ]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Read-only portfolio reconciliation and governance evidence",
+          "paths": ["docs/brain/workorders/**"]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Runtime, product, Atlas repository, live GIS, protected data, persistence, deployment, credentials, or cutover"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-TF-POST-DAIS-001-authoritative-post-dais-portfolio-reconciliation.md",
+        "docs/brain/workorders/evidence/WO-TF-POST-DAIS-001-AUTHORITATIVE-POST-DAIS-PORTFOLIO-RECONCILIATION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/**",
+        "frontend/**",
+        "tests/**",
+        ".github/workflows/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Current-base source, product, county-isolation, dependency, scope, rollback, and authority evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Governance validation",
+          "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact nine-file scope",
+          "required": true,
+          "result": "pending delivery"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-TF-POST-DAIS-001-AUTHORITATIVE-POST-DAIS-PORTFOLIO-RECONCILIATION.md",
+          "summary": "Current product truth, canonical-vs-legacy GIS boundary, exact R3 scope, validation, rollback, and recommendation."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "WO-SR-009C requires one exact R3 runtime/product authority packet before implementation."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-009C",
+          "status": "blocked",
+          "reason": "Exact consolidated R3 Atlas Workbench canonical projection adoption authority required."
+        }
+      ],
+      "authority": {
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
+        "mayCleanup": false,
+        "notes": "R2 reconciliation complete. No implementation authority follows."
+      },
+      "provenance": {
+        "createdAt": "2026-08-06T00:00:00Z",
+        "source": "Current-base inspection at cb0463830d06e288e37ea5515e97b23eee51c0f4 after WO-SR-009B closeout",
+        "schemaVersion": "0.1.0"
       }
     }
   ]

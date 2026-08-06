@@ -311,6 +311,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
+**Current reconciliation result (WO-TF-POST-DAIS-001, 2026-08-06):**
+`GENUINE_OWNER_DECISION_REQUIRED`. `WO-SR-009A` and `WO-SR-009B` are complete. The highest-value
+remaining product gap is `WO-SR-009C - Atlas Workbench Canonical Projection Adoption`. The exact R3
+packet must use the county-bearing canonical `IParcelGeometryReader`, frozen adapter, and existing
+hash-pinned process host. It must not adopt the anonymous legacy GIS parcel methods or parcel-only
+`GisDataService` lookup as canonical evidence. No implementation is admitted by this R2 result.
+
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
 The owner-authorized bounded R3 envelope is complete and consumed. No extraction, F1, or
 runtime-adoption slice is implied. Exact later scope and applicable authority remain required for
