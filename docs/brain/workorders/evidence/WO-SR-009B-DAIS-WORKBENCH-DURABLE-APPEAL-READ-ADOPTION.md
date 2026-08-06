@@ -6,7 +6,7 @@
 - Decision source: Issue #1417
 - Sovereign base: `32eff1281326019217341a326dba787437dea270`
 - Dais evidence head: `29a34b0feeab32984a4dedf1af853239993b4a26`
-- State: `AUTHORIZED / IMPLEMENTATION PENDING`
+- State: `COMPLETE / AUTHORITY CONSUMED`
 
 ## Pre-Implementation Truth
 
@@ -21,8 +21,30 @@
 
 ## Delivery Evidence
 
-Implementation commits, PRs, exact heads, test output, browser proof, remote checks, assurance,
-rollback proof, and terminal closeout will be recorded here as the bounded sequence executes.
+- Activation PR #1418 merged as `46e55b5ccd17a0c9bdbceee2d80ba091777d5365`.
+- Implementation PR #1419 merged exact assured head
+  `11bc49507a6e57925414d142a21f203bb8c3c811` as
+  `8b5fe0965c0f51008d47e6ff1e0133e94a417667`.
+- The API exposes one dedicated authenticated county-scoped frozen-contract parcel appeal read while
+  preserving the existing raw CRUD response.
+- `LiveDataProvider` validates and maps the frozen schema, uses authenticated county identity, applies
+  a bounded timeout, and preserves backend or network correlation evidence.
+- `PropertyDais` truthfully renders unavailable, loading, error, empty, loaded, and provenance states
+  for every returned appeal without routing, tab identity, navigation, or structure changes.
+- Focused backend proof passed, including 56 original targeted tests and 33 endpoint tests after
+  remediation. The full Release build passed with 0 warnings and 0 errors.
+- Focused frontend proof passed: 38 tests passed with 31 pre-existing skips, and frontend type-check
+  passed. The disposable authenticated SQLite Workbench Playwright journey passed 1 of 1.
+- Contract freeze, JSON parsing, `wo-query`, and all 41 Work Order query/planner tests passed.
+- PR #1419 completed 54 remote checks successfully, 9 neutral/skipped, and 0 failed. All nine review
+  threads were dispositioned and resolved; substantive unresolved threads were zero.
+- Package manifests and lockfiles were unchanged. No secret, live-data, deployment, runtime switch,
+  standalone Dais adoption, persistence, schema, or appeal-write change occurred.
+
+## Rollback Evidence
+
+Revert PR #1419 and this terminal closeout. No database, schema, persistence, deployment, or live
+resource mutation occurred, so rollback does not require data repair or operational cutover.
 
 ## Safety Boundary
 
