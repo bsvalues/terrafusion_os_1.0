@@ -13,8 +13,8 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active at `WO-SR-009C`. Issue #1422 canonized
-`OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806`, but product execution is blocked
+The Five-Suite Federated Repository Buildout is active at `WO-SR-009C`. The owner decision recorded
+on Issue #1422 is canonized as `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806`, but product execution is blocked
 at `FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`. The frozen adapter emits only polygon results and
 rejects `POINT`, while the approved terminal condition requires a real canonical Point proof. No
 product file is modified; one narrow adapter/test amendment is the next valid action.

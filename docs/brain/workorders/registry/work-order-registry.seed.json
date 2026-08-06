@@ -10478,7 +10478,29 @@
       "allowedSystems": [
         {
           "name": "Exact Issue #1422 product, test, governance, and evidence scope",
-          "paths": ["exact authorized_files in the owner decision register"]
+          "paths": [
+            ".governance/owner-decisions.json",
+            "backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs",
+            "backend/src/TerraFusion.API/Program.cs",
+            "backend/src/TerraFusion.API/Controllers/ParcelGeometryController.cs",
+            "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionConsumer.cs",
+            "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionConsumerTests.cs",
+            "backend/tests/TerraFusion.Unit.Tests/GisTf/ParcelGeometryControllerTests.cs",
+            "frontend/apps/os-shell/src/hooks/useAtlasGis.ts",
+            "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyAtlas.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyAtlas.honesty.contract.test.tsx",
+            "tests/e2e/property-workbench-production-smoke.spec.ts",
+            "docs/brain/workorders/active/WO-SR-009C-atlas-workbench-canonical-projection-adoption.md",
+            "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md",
+            "docs/brain/workorders/registry/work-order-registry.seed.json",
+            "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+            "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+            "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+            "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+            "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+            "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+          ]
         }
       ],
       "blockedSystems": [
