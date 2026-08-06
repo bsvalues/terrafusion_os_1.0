@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-009A complete and bounded R3 authority consumed
+**Status:** Active; WO-SR-009C Stages 1 through 4 authorized and in progress
 
 ## Ratified topology
 
@@ -88,6 +88,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008I | Complete the Forge canonical consumer through Stage 1 - Pure boundary assembly, bounded host/consumer, and default-disabled Shadow adoption | Complete R4; PRs #1408-#1410 merged through `37a3e469c`; authority consumed; no live cutover |
 | WO-TF-POST-FORGE-001 | Reconcile authoritative post-Forge portfolio state and admit or bound one successor | Complete R2; capability matrix and ranked candidates select WO-SR-009A; Issue #1413 is the complete decision packet |
 | WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Complete R3; PR #1415 merged exact assured head `0423615c8` as `b934cf0c0`; authority consumed; no live data or cutover |
+| WO-SR-009B | Make the county-scoped Dais appeal read reachable in the Property Workbench | Complete R3; PR #1419 merged exact assured head `11bc49507`; authority consumed; no write or live data |
+| WO-TF-POST-DAIS-001 | Reconcile authoritative post-Dais portfolio state and admit one successor | Complete R2; PR #1421 merged and selected WO-SR-009C |
+| WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Active R3; Stages 1 through 4 resumed under canonical Polygon, truthful unavailable, and cross-county non-disclosure proof; Point remains outside authority |
 
 ## Extraction and provenance policy
 
@@ -295,3 +298,14 @@ default-disabled consumer, and truthful Workbench states. The existing anonymous
 and parcel-only legacy GIS lookup are explicitly not a canonical source. Implementation remains a
 new exact R3 boundary; no live provider, Atlas mutation, persistence, deployment, or cutover is
 inferred.
+
+Issue #1422 subsequently approved `WO-SR-009C` under
+`OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806` at sovereign base
+`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 inspection proved that the canonical
+`ParcelGeometryResponse.GeomWkt` source is Polygon-based and the frozen `AtlasSpatialReadAdapter`
+correctly consumes that source while rejecting `POINT`. The controlling terminal-narrowing amendment
+therefore removed Point from the terminal proof instead of authorizing a synthetic ingestion path.
+Stages 1 through 4 resume under the original allowlist to prove canonical Polygon, truthful
+unavailable, and cross-county non-disclosure. The adapter and tests remain unchanged and all
+live-provider, protected-resource, deployment, cutover, routing, and legacy-anonymous-path denials
+remain intact.
