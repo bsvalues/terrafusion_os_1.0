@@ -672,7 +672,10 @@ read-only Dais adoption sequence. PR #1419 merged exact assured head
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`; the authority is completed and consumed. Existing raw
 CRUD response shapes remain unchanged, and routing, tab identity, navigation, broader structure,
 writes, persistence/schema, standalone Dais runtime, live data, deployment, and cutover remain denied.
-Portfolio reconciliation is current operator work; no successor implementation authority is inferred.
+`WO-SR-009C` is the active bounded successor under its original R3 authority and controlling
+terminal-narrowing amendment. Stages 1 through 4 proceed with canonical Polygon, truthful unavailable,
+and cross-county non-disclosure proof; Point, frozen-adapter changes, live providers, and cutover remain
+outside authority.
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no
