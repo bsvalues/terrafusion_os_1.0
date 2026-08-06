@@ -10583,7 +10583,7 @@
         "mayOpenPr": true,
         "mayMarkReady": true,
         "mayMerge": true,
-        "mayCleanup": true,
+        "mayCleanup": false,
         "notes": "Delivery lifecycle authority remains active only inside the current exact allowlist; product execution is suspended at the frozen-adapter wall."
       },
       "provenance": {
