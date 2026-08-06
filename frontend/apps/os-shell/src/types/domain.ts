@@ -273,15 +273,24 @@ export interface Appeal {
   appealYear: number;
   filingDate: string;
   hearingDate?: string;
+  decisionDate?: string;
+  appealGround?: AppealGround;
   status: AppealStatus;
-  petitionerName: string;
-  currentAssessedValue: number;
-  petitionedValue: number;
+  petitionerName?: string;
+  currentAssessedValue?: number;
+  petitionedValue?: number;
   determinedValue?: number;
   reason?: string;
   resolution?: string;
   resolvedDate?: string;
 }
+
+export type AppealGround =
+  | 'MARKET_VALUE'
+  | 'UNIFORMITY'
+  | 'CLASSIFICATION'
+  | 'EXEMPTION_DENIAL'
+  | 'CLERICAL_ERROR';
 
 export type AppealStatus =
   | 'filed'

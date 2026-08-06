@@ -14,6 +14,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
+const { propertyState } = vi.hoisted(() => ({
+  propertyState: {
+    appeals: [] as Array<Record<string, unknown>>,
+    relatedDataStatus: 'idle' as 'idle' | 'loading' | 'loaded' | 'error',
+  },
+}));
+
 /* ── Mocks ────────────────────────────────────────────── */
 
 vi.mock('../../context/workbenchTabContext', () => ({
@@ -26,9 +33,8 @@ vi.mock('../../context/workbenchTabContext', () => ({
 vi.mock('../../api/pilotApi', () => ({ invokeTool: vi.fn() }));
 
 vi.mock('../../stores/propertyStore', () => ({
-  usePropertyStore: vi.fn((selector: (s: { appeals: unknown[] }) => unknown) =>
-    selector({ appeals: [] }),
-  ),
+  usePropertyStore: vi.fn((selector: (state: typeof propertyState) => unknown) =>
+    selector(propertyState)),
 }));
 
 vi.mock('../../runtime/env', () => ({
@@ -61,6 +67,8 @@ import { PropertyDais } from '../../pages/workbench/tabs/PropertyDais';
 describe('PropertyDais source honesty contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    propertyState.appeals = [];
+    propertyState.relatedDataStatus = 'idle';
   });
 
   it('baseline disclosure info box carries a WorkbenchSourceBadge', () => {
@@ -110,5 +118,50 @@ describe('PropertyDais source honesty contract', () => {
     const unavailableBadge = badges.find(b => b.getAttribute('data-source') === 'unavailable');
     expect(unavailableBadge).toBeDefined();
     expect(unavailableBadge).toBeInTheDocument();
+  });
+
+  it('renders an explicit loading state without claiming live appeal evidence', () => {
+    propertyState.relatedDataStatus = 'loading';
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.getByTestId('dais-appeals-loading')).toBeInTheDocument();
+    const appealRead = screen.getByTestId('dais-appeal-read');
+    expect(appealRead.querySelector('[data-testid="workbench-source-badge"]'))
+      .toHaveAttribute('data-source', 'unavailable');
+  });
+
+  it('renders an explicit empty state after a successful county-scoped read', () => {
+    propertyState.relatedDataStatus = 'loaded';
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.getByTestId('dais-appeals-empty')).toHaveTextContent(/no appeal records/i);
+    const appealRead = screen.getByTestId('dais-appeal-read');
+    expect(appealRead.querySelector('[data-testid="workbench-source-badge"]'))
+      .toHaveAttribute('data-source', 'live');
+  });
+
+  it('renders an explicit unavailable state when related-data loading fails', () => {
+    propertyState.relatedDataStatus = 'error';
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.getByTestId('dais-appeals-error')).toHaveTextContent(/unavailable/i);
+    const appealRead = screen.getByTestId('dais-appeal-read');
+    expect(appealRead.querySelector('[data-testid="workbench-source-badge"]'))
+      .toHaveAttribute('data-source', 'unavailable');
+  });
+
+  it('renders exact frozen-contract appeal fields in the loaded state', () => {
+    propertyState.relatedDataStatus = 'loaded';
+    propertyState.appeals = [{
+      appealId: '33333333-3333-3333-3333-333333333333',
+      parcelId: 'TEST-001',
+      appealYear: 2026,
+      appealGround: 'MARKET_VALUE',
+      status: 'filed',
+      filingDate: '2026-02-03T12:00:00Z',
+      hearingDate: '2026-03-03T12:00:00Z',
+    }];
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.getByTestId('dais-appeals-loaded')).toHaveTextContent('1 appeal');
+    expect(screen.getByText(/filed - MARKET VALUE/)).toBeInTheDocument();
+    expect(screen.getByText(/Tax year 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Hearing:/)).toBeInTheDocument();
   });
 });

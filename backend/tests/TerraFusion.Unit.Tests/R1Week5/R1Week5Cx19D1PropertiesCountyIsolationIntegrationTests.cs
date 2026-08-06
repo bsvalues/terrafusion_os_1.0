@@ -34,6 +34,7 @@ public sealed class R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests
     : IClassFixture<Cx19D1PropertiesIsolationFactory>
 {
     private static readonly Guid BentonCountyId = Guid.Parse("d1a10000-0000-0000-0000-000000000001");
+    private static readonly Guid YakimaCountyId = Guid.Parse("d1a10000-0000-0000-0000-000000000002");
     private static readonly Guid BentonPropertyId = Guid.Parse("d1a10000-0000-0000-0000-0000000000a1");
     private static readonly Guid YakimaPropertyId = Guid.Parse("d1a10000-0000-0000-0000-0000000000b1");
     private const string SharedParcelNumber = "CX19D1-SHARED-P1";
@@ -186,6 +187,23 @@ public sealed class R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests
 
         search.StatusCode.Should().Be(HttpStatusCode.OK);
         detail.StatusCode.Should().Be(HttpStatusCode.OK, "the detail response was {0}", detailBody);
+
+        if (usesDisposableSqlite)
+        {
+            var appeals = await client.GetAsync($"/api/dais/appeals/parcel/{parcel}/workflow-read");
+            var appealBody = await appeals.Content.ReadAsStringAsync();
+
+            appeals.StatusCode.Should().Be(HttpStatusCode.OK, "the appeal response was {0}", appealBody);
+            using var appealDocument = JsonDocument.Parse(appealBody);
+            appealDocument.RootElement.GetProperty("countyId").GetGuid().Should().Be(countyId);
+            appealDocument.RootElement.GetProperty("appeals").GetArrayLength().Should().Be(1);
+            var appeal = appealDocument.RootElement.GetProperty("appeals")[0];
+            appeal.GetProperty("appealId").GetGuid()
+                .Should().Be(Guid.Parse("be0900a0-0000-0000-0000-0000000000c1"));
+            appeal.GetProperty("parcelId").GetString().Should().Be(parcel);
+            appeal.GetProperty("ground").GetString().Should().Be("MARKET_VALUE");
+            appeal.GetProperty("status").GetString().Should().Be("filed");
+        }
     }
 
     private HttpClient CreateAuthenticatedClient(Guid countyId, string countyCode, string role = "Assessor")
@@ -368,6 +386,15 @@ public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<Api
                 Population = 0,
                 Area = 0,
             });
+            db.Counties.Add(new TerraFusion.Core.Entities.County
+            {
+                Id = YakimaCountyId,
+                Name = "Yakima",
+                State = "WA",
+                FipsCode = "53077",
+                Population = 0,
+                Area = 0,
+            });
             db.Properties.Add(new TerraFusion.Core.Entities.Property
             {
                 Id = Guid.Parse("be0900a0-0000-0000-0000-000000000001"),
@@ -398,6 +425,34 @@ public sealed class Cx19D1PropertiesIsolationFactory : WebApplicationFactory<Api
                 ParcelId = "SR009A-SYNTHETIC-P1",
                 LegalDescription = "UNSCOPED GIS MUST NOT BE RETURNED",
             });
+            db.Appeals.AddRange(
+                new TerraFusion.Core.Entities.Appeal
+                {
+                    Id = Guid.Parse("be0900a0-0000-0000-0000-0000000000c1"),
+                    ParcelId = "SR009A-SYNTHETIC-P1",
+                    AppealGround = "MARKET_VALUE",
+                    Status = "filed",
+                    FiledDate = new DateTime(2026, 2, 3, 12, 0, 0, DateTimeKind.Utc),
+                    TaxYear = 2026,
+                    CountyId = countyId,
+                    PetitionerName = "Synthetic same-county proof",
+                    CurrentValue = 250000,
+                    RequestedValue = 225000,
+                },
+                new TerraFusion.Core.Entities.Appeal
+                {
+                    Id = Guid.Parse("be0900a0-0000-0000-0000-0000000000c2"),
+                    ParcelId = "SR009A-SYNTHETIC-P1",
+                    AppealGround = "UNIFORMITY",
+                    Status = "decided",
+                    FiledDate = new DateTime(2026, 2, 4, 12, 0, 0, DateTimeKind.Utc),
+                    DecisionDate = new DateTime(2026, 3, 4, 12, 0, 0, DateTimeKind.Utc),
+                    TaxYear = 2026,
+                    CountyId = YakimaCountyId,
+                    PetitionerName = "Synthetic cross-county sentinel",
+                    CurrentValue = 900000,
+                    RequestedValue = 100000,
+                });
             db.SaveChanges();
             return host;
         }

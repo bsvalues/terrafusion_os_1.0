@@ -204,6 +204,7 @@ const MORNING_BRIEF_ROLES = [
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
+  const relatedDataStatus = usePropertyStore((s) => s.relatedDataStatus);
 
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
   const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
@@ -615,29 +616,72 @@ export const PropertyDais: React.FC = () => {
         <WorkbenchSourceBadge source="unavailable" />
       </div>
 
-      {/* Active Appeals from Store */}
-      {appeals.length > 0 && (
-        <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Active Appeals">
-            <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
-              {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Appeal records on file for this parcel.
+      {/* County-scoped frozen-contract appeal read from the related-data bundle. */}
+      <section data-testid="dais-appeal-read" className="space-y-3">
+        <div className="flex items-center justify-between gap-3 px-2">
+          <p className="text-xs tf-text-dim">
+            Appeal identity and lifecycle fields are returned by the authenticated Dais read contract.
+          </p>
+          <WorkbenchSourceBadge source={relatedDataStatus === 'loaded' ? 'live' : 'unavailable'} />
+        </div>
+
+        {relatedDataStatus === 'loading' && (
+          <BentoCard variant="stat" title="Appeals">
+            <p data-testid="dais-appeals-loading" className="text-sm tf-text-dim">
+              Loading county-scoped appeal records...
             </p>
           </BentoCard>
-          {appeals.slice(0, 2).map((a) => (
-            <BentoCard key={a.appealId} variant="stat" title={`Appeal ${a.appealId.slice(0, 8)}`}>
-              <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-                {a.status} — {a.appealType}
+        )}
+
+        {(relatedDataStatus === 'idle' || relatedDataStatus === 'error') && (
+          <BentoCard variant="stat" title="Appeals">
+            <p data-testid="dais-appeals-error" className="text-sm tf-text-dim">
+              Appeal records are unavailable for this parcel.
+            </p>
+          </BentoCard>
+        )}
+
+        {relatedDataStatus === 'loaded' && appeals.length === 0 && (
+          <BentoCard variant="stat" title="Appeals">
+            <p data-testid="dais-appeals-empty" className="text-sm tf-text-dim">
+              No appeal records were returned for this parcel.
+            </p>
+          </BentoCard>
+        )}
+
+        {relatedDataStatus === 'loaded' && appeals.length > 0 && (
+          <BentoGrid columns="auto" gap={0.75} padding={0}>
+            <BentoCard variant="stat" title="Active Appeals">
+              <p data-testid="dais-appeals-loaded" className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
+                {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
               </p>
               <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                Filed: {new Date(a.filingDate).toLocaleDateString()}
+                County-scoped appeal records for this parcel.
               </p>
             </BentoCard>
-          ))}
-        </BentoGrid>
-      )}
+            {appeals.slice(0, 2).map((appeal) => (
+              <BentoCard key={appeal.appealId} variant="stat" title={`Appeal ${appeal.appealId.slice(0, 8)}`}>
+                <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {appeal.status} - {appeal.appealGround?.replaceAll('_', ' ') ?? 'Ground unavailable'}
+                </p>
+                <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Tax year {appeal.appealYear}; filed {new Date(appeal.filingDate).toLocaleDateString()}
+                </p>
+                {appeal.hearingDate && (
+                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                    Hearing: {new Date(appeal.hearingDate).toLocaleDateString()}
+                  </p>
+                )}
+                {appeal.decisionDate && (
+                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                    Decision: {new Date(appeal.decisionDate).toLocaleDateString()}
+                  </p>
+                )}
+              </BentoCard>
+            ))}
+          </BentoGrid>
+        )}
+      </section>
 
       <BentoCard title='Morning Brief' actions={<span>🌅</span>}>
         <p className='tf-text-tertiary text-sm mb-3'>

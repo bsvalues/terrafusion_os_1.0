@@ -20,6 +20,7 @@ using ICertificationService = TerraFusion.Core.Services.ICertificationService;
 using INoticeService = TerraFusion.Core.Services.INoticeService;
 using IQueueService = TerraFusion.Core.Services.IQueueService;
 using TerraFusion.Core.Auth;
+using TerraFusion.Abstractions.DTOs;
 
 namespace TerraFusion.Unit.Tests.Stage2;
 
@@ -118,6 +119,149 @@ public sealed class DaisEndpointContractTests
     }
 
     // ── 201 Contract ───────────────────────────────────────────────────
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_ReturnsExactFrozenContract()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_ReturnsExactFrozenContract));
+        var filedAt = new DateTime(2026, 1, 15, 12, 30, 0, DateTimeKind.Utc);
+        var appealId = Guid.Parse("11111111-1111-1111-1111-1111111111a1");
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-001", BentonCountyId))
+            .ReturnsAsync([
+                new Appeal
+                {
+                    Id = appealId,
+                    ParcelId = "PARCEL-001",
+                    AppealGround = "MARKET_VALUE",
+                    Status = "filed",
+                    FiledDate = filedAt,
+                    TaxYear = 2026,
+                    CountyId = BentonCountyId,
+                },
+            ]);
+        var controller = CreateDaisController(db, appealMock.Object);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        var content = result.Should().BeOfType<ContentResult>().Subject;
+        content.ContentType.Should().Be("application/json");
+        var contract = DeserializeAppealWorkflowResult(content);
+        contract.SchemaVersion.Should().Be("1.0.0");
+        contract.CountyId.Should().Be(BentonCountyId.ToString("D"));
+        contract.TraceId.Should().NotBeNullOrWhiteSpace();
+        contract.Appeals.Should().ContainSingle().Which.Should().BeEquivalentTo(
+            new DaisAppealWorkflowRecord
+            {
+                AppealId = appealId.ToString("D"),
+                ParcelId = "PARCEL-001",
+                TaxYear = 2026,
+                Ground = DaisAppealGround.MARKET_VALUE,
+                Status = DaisAppealStatus.filed,
+                FiledAt = new DateTimeOffset(filedAt),
+            });
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_ReturnsExactEmptyContract()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_ReturnsExactEmptyContract));
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-EMPTY", BentonCountyId))
+            .ReturnsAsync([]);
+        var controller = CreateDaisController(db, appealMock.Object);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-EMPTY");
+
+        var contract = DeserializeAppealWorkflowResult(result.Should().BeOfType<ContentResult>().Subject);
+        contract.CountyId.Should().Be(BentonCountyId.ToString("D"));
+        contract.Appeals.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_WithoutIdentity_Returns401()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_WithoutIdentity_Returns401));
+        var controller = CreateDaisController(
+            db,
+            principal: new ClaimsPrincipal(new ClaimsIdentity()));
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        result.Should().BeOfType<UnauthorizedObjectResult>();
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_WithoutCountyIdentity_Returns403()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_WithoutCountyIdentity_Returns403));
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+            [new Claim("sub", "stage2-test-user")],
+            "TestAuth"));
+        var controller = CreateDaisController(db, principal: principal);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        result.Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_DoesNotDiscloseSameParcelFromOtherCounty()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_DoesNotDiscloseSameParcelFromOtherCounty));
+        var service = new AppealService(db, NullLogger<AppealService>.Instance);
+        await service.CreateAsync(BentonCountyId,
+            new CreateAppealCommand("SHARED-PARCEL", "UNIFORMITY", "Synthetic Benton", 250_000m, 225_000m, 2026),
+            "stage2-test-user",
+            new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc));
+        await service.CreateAsync(OtherCountyId,
+            new CreateAppealCommand("SHARED-PARCEL", "MARKET_VALUE", "Synthetic Other", 900_000m, 100_000m, 2026),
+            "stage2-other-user",
+            new DateTime(2026, 1, 11, 0, 0, 0, DateTimeKind.Utc));
+        var controller = CreateDaisController(db, service);
+
+        var result = await controller.GetAppealWorkflowByParcel("SHARED-PARCEL");
+
+        var contract = DeserializeAppealWorkflowResult(result.Should().BeOfType<ContentResult>().Subject);
+        contract.Appeals.Should().ContainSingle();
+        contract.Appeals[0].Ground.Should().Be(DaisAppealGround.UNIFORMITY);
+        contract.Appeals.Should().OnlyContain(appeal => appeal.ParcelId == "SHARED-PARCEL");
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_FailsClosedOnCountyMismatch()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_FailsClosedOnCountyMismatch));
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-001", BentonCountyId))
+            .ReturnsAsync([
+                new Appeal
+                {
+                    Id = Guid.NewGuid(),
+                    ParcelId = "PARCEL-001",
+                    AppealGround = "MARKET_VALUE",
+                    Status = "filed",
+                    FiledDate = DateTime.UtcNow,
+                    TaxYear = 2026,
+                    CountyId = OtherCountyId,
+                },
+            ]);
+        var controller = CreateDaisController(db, appealMock.Object);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        var problem = result.Should().BeOfType<ObjectResult>().Subject;
+        problem.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        problem.Value.Should().BeOfType<ProblemDetails>();
+    }
+
+    private static DaisAppealWorkflowReadResult DeserializeAppealWorkflowResult(ContentResult content)
+    {
+        content.Content.Should().NotBeNullOrWhiteSpace();
+        return JsonSerializer.Deserialize<DaisAppealWorkflowReadResult>(
+            content.Content!,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+    }
 
     [Fact]
     public async Task DaisController_PostAppeal_Returns201Created()

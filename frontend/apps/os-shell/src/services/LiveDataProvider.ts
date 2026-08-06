@@ -16,6 +16,7 @@ import type {
   LevyCertification,
   TaxStatement,
   Appeal,
+  AppealGround,
   HearingEvent,
   GISLayer,
   ParcelDocument,
@@ -94,6 +95,24 @@ interface PropertiesPagedResult {
   totalCount: number;
   page: number;
   pageSize: number;
+}
+
+interface DaisAppealWorkflowRecordDto {
+  appealId: string;
+  parcelId: string;
+  taxYear: number;
+  ground: AppealGround;
+  status: Appeal['status'];
+  filedAt: string;
+  hearingAt?: string;
+  decisionAt?: string;
+}
+
+interface DaisAppealWorkflowReadResultDto {
+  schemaVersion: string;
+  countyId: string;
+  appeals: DaisAppealWorkflowRecordDto[];
+  traceId?: string;
 }
 
 /** Legacy county assessment property detail endpoint */
@@ -230,6 +249,93 @@ function isAssessmentSourcePropertyDetailDto(dto: unknown): dto is AssessmentSou
     && typeof candidate.assessedValue === 'number'
     && typeof candidate.marketValue === 'number'
     && typeof candidate.propertyType === 'string';
+}
+
+const DAIS_APPEAL_GROUNDS = new Set<AppealGround>([
+  'MARKET_VALUE',
+  'UNIFORMITY',
+  'CLASSIFICATION',
+  'EXEMPTION_DENIAL',
+  'CLERICAL_ERROR',
+]);
+const DAIS_APPEAL_STATUSES = new Set<Appeal['status']>([
+  'filed',
+  'scheduled',
+  'heard',
+  'decided',
+  'withdrawn',
+]);
+const CANONICAL_GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const UTC_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?Z$/;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function hasOnlyKeys(value: Record<string, unknown>, allowed: readonly string[]): boolean {
+  const allowedKeys = new Set(allowed);
+  return Object.keys(value).every((key) => allowedKeys.has(key));
+}
+
+function isCanonicalGuid(value: unknown): value is string {
+  return typeof value === 'string' && CANONICAL_GUID.test(value);
+}
+
+function isUtcTimestamp(value: unknown): value is string {
+  return typeof value === 'string'
+    && UTC_TIMESTAMP.test(value)
+    && !Number.isNaN(Date.parse(value));
+}
+
+function parseDaisAppealWorkflowResult(
+  value: unknown,
+  expectedCountyId: string,
+  expectedParcelId: string,
+): DaisAppealWorkflowReadResultDto {
+  if (!isRecord(value)
+    || !hasOnlyKeys(value, ['schemaVersion', 'countyId', 'appeals', 'traceId'])
+    || value.schemaVersion !== '1.0.0'
+    || !isCanonicalGuid(value.countyId)
+    || value.countyId !== expectedCountyId
+    || !Array.isArray(value.appeals)
+    || (value.traceId !== undefined
+      && (typeof value.traceId !== 'string' || value.traceId.trim().length === 0))) {
+    throw new Error('Dais appeal workflow response failed contract validation.');
+  }
+
+  const appealIds = new Set<string>();
+  const appeals = value.appeals.map((candidate): DaisAppealWorkflowRecordDto => {
+    if (!isRecord(candidate)
+      || !hasOnlyKeys(candidate, [
+        'appealId', 'parcelId', 'taxYear', 'ground', 'status', 'filedAt', 'hearingAt', 'decisionAt',
+      ])
+      || !isCanonicalGuid(candidate.appealId)
+      || candidate.parcelId !== expectedParcelId
+      || !Number.isInteger(candidate.taxYear)
+      || (candidate.taxYear as number) < 1900
+      || (candidate.taxYear as number) > 2200
+      || !DAIS_APPEAL_GROUNDS.has(candidate.ground as AppealGround)
+      || !DAIS_APPEAL_STATUSES.has(candidate.status as Appeal['status'])
+      || !isUtcTimestamp(candidate.filedAt)
+      || (candidate.hearingAt !== undefined && !isUtcTimestamp(candidate.hearingAt))
+      || (candidate.decisionAt !== undefined && !isUtcTimestamp(candidate.decisionAt))) {
+      throw new Error('Dais appeal workflow record failed contract validation.');
+    }
+
+    if (appealIds.has(candidate.appealId)) {
+      throw new Error('Dais appeal workflow response contains duplicate appeal identity.');
+    }
+    appealIds.add(candidate.appealId);
+
+    return candidate as unknown as DaisAppealWorkflowRecordDto;
+  });
+
+  return {
+    schemaVersion: value.schemaVersion,
+    countyId: value.countyId,
+    appeals,
+    ...(value.traceId === undefined ? {} : { traceId: value.traceId as string }),
+  };
 }
 
 function mapAssessmentSourceSummaryToSearchResult(dto: AssessmentSourceSummaryDto): PropertySearchResult {
@@ -458,8 +564,27 @@ export class LiveDataProvider implements DataProvider {
 
   // ── Appeals ─────────────────────────────────────────────────────────────
 
-  async getAppeals(_parcelId: string): Promise<Appeal[]> {
-    return [];
+  async getAppeals(parcelId: string): Promise<Appeal[]> {
+    const session = getSession();
+    const countyScope = buildCountyScopedSessionHeaders(session);
+    if (!countyScope.isolated || !isCanonicalGuid(session?.countyId)) {
+      throw new Error('Canonical county context required for Dais appeal workflow reads.');
+    }
+
+    const path = `/api/dais/appeals/parcel/${encodeURIComponent(parcelId)}/workflow-read`;
+    const response = await apiFetch<unknown>(path, { headers: countyScope.headers });
+    const contract = parseDaisAppealWorkflowResult(response, session.countyId, parcelId);
+
+    return contract.appeals.map((appeal) => ({
+      appealId: appeal.appealId,
+      parcelId: appeal.parcelId,
+      appealYear: appeal.taxYear,
+      appealGround: appeal.ground,
+      status: appeal.status,
+      filingDate: appeal.filedAt,
+      ...(appeal.hearingAt === undefined ? {} : { hearingDate: appeal.hearingAt }),
+      ...(appeal.decisionAt === undefined ? {} : { decisionDate: appeal.decisionAt }),
+    }));
   }
 
   async getHearings(_parcelId?: string): Promise<HearingEvent[]> {
