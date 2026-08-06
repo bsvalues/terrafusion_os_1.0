@@ -24,8 +24,9 @@ non-disclosure.
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`. The proof makes the frozen county-scoped Dais appeal
 read reachable through the real API and `LiveDataProvider`, renders honest PropertyDais states, and
 passes disposable same-county and cross-county synthetic proof. Decision
-`OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` is completed and consumed. No successor is
-automatically admitted; portfolio reconciliation must select the next evidence-backed bounded node.
+`OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` is completed and consumed. The subsequent
+`WO-TF-POST-DAIS-001` reconciliation admitted `WO-SR-009C`, whose exact R3 authority and controlling
+terminal-narrowing amendment are now active.
 Writes, persistence/schema, standalone Dais runtime adoption, live data, deployment, cutover, and
 Workbench routing/tab/navigation changes remain denied.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
@@ -174,6 +175,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-008H Forge Cost Schedule Version and Modifier Projection Contract** | **DONE / R2** | PR #1403 merged as `2561e2d06`; verdict `IMPLEMENTATION_READY_AS_STAGED_SEQUENCE` |
 | **WO-SR-008H-E1 Forge Pure Cost Schedule Resolution and Modifier Projection Foundation** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1404 merged as `6eb6f0768`; 40 focused tests, exact-head assurance, and remote gates passed; no runtime or full kernel mapping |
 | **WO-SR-008I Forge Canonical Consumer Completion** | **DONE / R4 / AUTHORITY CONSUMED** | PRs #1408-#1410 merged through `37a3e469c`; pure boundary, bounded host/consumer, and default-disabled Shadow adoption proven; legacy response remains authoritative; no live cutover |
+| **WO-SR-009A Authenticated County-Governed Synthetic Parcel Journey** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1415 merged as `b934cf0c0`; same-county synthetic parcel journey and cross-county enrichment denial proven; no live data or cutover |
+| **WO-SR-009B Dais Workbench Durable Appeal Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1419 merged as `8b5fe0965`; authenticated same-county read and cross-county non-disclosure proven; no write or live data |
+| **WO-TF-POST-DAIS-001 Post-Dais Portfolio Reconciliation** | **DONE / R2** | PR #1421 selected and bounded WO-SR-009C |
+| **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **IN PROGRESS / R3** | Stages 1-4 active under canonical Polygon, truthful unavailable, and cross-county non-disclosure proof; Point and frozen-adapter changes remain denied |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
