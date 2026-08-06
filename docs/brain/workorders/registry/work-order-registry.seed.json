@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-TF-POST-FORGE-001 authoritative portfolio reconciliation",
   "generatedAt": "2026-08-05T00:00:00Z",
-  "description": "Post-Forge portfolio reconciliation after WO-SR-008I. WO-TF-POST-FORGE-001 is complete; WO-SR-009A is the highest-value candidate and remains proposed pending the bounded R3 decision in Issue #1413.",
+  "description": "Post-Forge portfolio reconciliation after WO-SR-008I. WO-TF-POST-FORGE-001 is complete; WO-SR-009A is the active owner-authorized bounded R3 parcel-journey implementation.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10099,7 +10099,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Prove the first complete authenticated synthetic single-parcel assessor journey while repairing exact county isolation in parcel enrichment.",
       "riskClass": "R3",
-      "status": "proposed",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-TF-POST-FORGE-001",
@@ -10108,13 +10108,15 @@
         },
         {
           "id": "OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805",
-          "status": "blocked",
-          "evidence": ["Complete proposed decision packet: Issue #1413."]
+          "status": "satisfied",
+          "evidence": [
+            "Owner approved the corrected Issue #1413 packet on 2026-08-05; authority is canonized in .governance/owner-decisions.json."
+          ]
         }
       ],
       "allowedSystems": [
         {
-          "name": "Proposed bounded local synthetic parcel journey",
+          "name": "Bounded authenticated local synthetic parcel journey",
           "paths": [
             "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
             "backend/TerraFusion.API.Tests/Phase14/**",
@@ -10131,7 +10133,23 @@
           "name": "Live county/PACS/SQL, production, deployment, credentials, schema/migrations, frontend changes, suite adoption, Forge cutover, workflows, packages, and source retirement"
         }
       ],
-      "allowedFiles": [],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
+        "backend/TerraFusion.API.Tests/Phase14/ControllerSecurityBoundaryTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests.cs",
+        "tests/playwright.workbench-smoke.config.ts",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009A-authenticated-county-governed-parcel-journey.md",
+        "docs/brain/workorders/evidence/WO-SR-009A-AUTHENTICATED-COUNTY-GOVERNED-PARCEL-JOURNEY.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
       "blockedFiles": [
         ".github/workflows/**",
         "deployment/**",
@@ -10143,31 +10161,56 @@
       "evidenceRequired": [
         {
           "kind": "other",
-          "description": "Approve the exact stages, files, denials, tests, rollback, and terminal condition in Issue #1413."
+          "description": "County-scoped CAMA and fail-closed GIS proof; authenticated API fail-closed matrix; disposable local Workbench journey; no protected-resource access."
         }
       ],
-      "validationGates": [],
-      "evidenceProduced": [],
+      "validationGates": [
+        {
+          "name": "Focused county-isolation tests",
+          "command": "dotnet test focused controller and R1Week5 county-isolation slices",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Local synthetic Workbench journey",
+          "command": "corepack pnpm smoke:workbench",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Governance and delivery gates",
+          "command": "git diff --check; wo-query; query/planner tests; remote required checks; exact-head assurance",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-009A-AUTHENTICATED-COUNTY-GOVERNED-PARCEL-JOURNEY.md",
+          "summary": "Implementation, test, browser, protected-resource, rollback, and terminal closeout evidence."
+        }
+      ],
       "stopConditions": [
         {
           "type": "authority_wall",
-          "description": "No implementation until the complete bounded R3 envelope in Issue #1413 is approved and canonized."
+          "description": "Stop on scope expansion, protected data or connectivity, schema or permission-policy change, deployment/production, suite adoption, failed required proof, or unprovable county ownership."
         }
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": false,
-        "mayCommit": false,
-        "mayPush": false,
-        "mayOpenPr": false,
-        "mayMarkReady": false,
-        "mayMerge": false,
-        "mayCleanup": false,
-        "notes": "Proposed only. Issue #1413 is the decision artifact; no product authority is inferred."
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Exact corrected Issue #1413 R3 envelope is active. Mode B delivery and one terminal closeout are authorized without routine owner relay."
       },
       "provenance": {
         "createdAt": "2026-08-05T00:00:00Z",
-        "source": "WO-TF-POST-FORGE-001 and Issue #1413",
+        "source": "WO-TF-POST-FORGE-001, corrected Issue #1413, and OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805 at base f71cdffb66305c4af1abb5193586aa60818e3969",
         "schemaVersion": "0.1.0"
       }
     }

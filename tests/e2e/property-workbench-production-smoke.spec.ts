@@ -53,10 +53,10 @@ async function writeEvidence(summaryNotes: string): Promise<void> {
   const unauthorized = network.filter(entry => entry.status === 401 || entry.status === 403);
   const failedApi = network.filter(entry => entry.url.includes('/api/') && entry.status >= 400);
   const markdown = [
-    '# Property Workbench Production Smoke',
+    '# Property Workbench Local Synthetic Parcel Journey',
     '',
     `Base URL: ${baseUrl()}`,
-    `Parcel: ${process.env.WORKBENCH_SMOKE_PARCEL_ID ?? 'auto-selected first live parcel'}`,
+    `Parcel: ${process.env.WORKBENCH_SMOKE_PARCEL_ID ?? 'auto-selected synthetic parcel'}`,
     `Generated: ${new Date().toISOString()}`,
     '',
     '## Verdict Inputs',
@@ -104,7 +104,10 @@ async function resolveSmokeParcel(api: APIRequestContext, token: string): Promis
     .map((item: Record<string, unknown>) => item.parcelNumber ?? item.parcelId ?? item.geoId)
     .filter(Boolean)
     .map(String);
-  expect(candidates.length, 'properties feed must expose parcel identifiers').toBeGreaterThan(0);
+  expect(
+    candidates.length,
+    'synthetic properties feed must expose parcel identifiers'
+  ).toBeGreaterThan(0);
 
   for (const parcel of candidates) {
     const parcelResponse = await api.get(`/api/properties/parcel/${encodeURIComponent(parcel)}`, {
@@ -113,7 +116,47 @@ async function resolveSmokeParcel(api: APIRequestContext, token: string): Promis
     if (parcelResponse.ok()) return parcel;
   }
 
-  throw new Error('smoke could not find a listed parcel that loads from live property evidence');
+  throw new Error(
+    'smoke could not find a listed parcel that loads from synthetic property evidence'
+  );
+}
+
+async function assertAuthenticatedParcelApiBoundary(
+  api: APIRequestContext,
+  auth: { token: string; countyId?: string },
+  parcelId: string
+): Promise<void> {
+  const parcelPath = `/api/properties/parcel/${encodeURIComponent(parcelId)}`;
+  const unauthenticated = await api.get(parcelPath);
+  expect(unauthenticated.status(), 'parcel detail must reject a missing identity').toBe(401);
+
+  const invalidIdentity = await api.get(parcelPath, {
+    headers: { Authorization: 'Bearer invalid-local-smoke-token' },
+  });
+  expect(invalidIdentity.status(), 'parcel detail must reject an invalid identity').toBe(401);
+
+  const mismatchedCounty = await api.get(
+    '/api/properties?page=1&pageSize=1&countyId=00000000-0000-0000-0000-000000000001',
+    { headers: { Authorization: `Bearer ${auth.token}` } }
+  );
+  expect(
+    mismatchedCounty.status(),
+    'search must reject a county outside the authenticated claim'
+  ).toBe(403);
+
+  const unknownParcel = await api.get('/api/properties/parcel/WO-SR-009A-UNKNOWN', {
+    headers: { Authorization: `Bearer ${auth.token}` },
+  });
+  expect(unknownParcel.status(), 'unknown synthetic parcels must return not found').toBe(404);
+
+  const detail = await api.get(parcelPath, {
+    headers: { Authorization: `Bearer ${auth.token}` },
+  });
+  expect(detail.ok(), 'authorized synthetic parcel detail must load').toBe(true);
+  const payload = await detail.json();
+  expect(payload.countyId, 'parcel detail county must equal the authenticated county').toBe(
+    auth.countyId
+  );
 }
 
 async function installSmokeSession(
@@ -123,6 +166,7 @@ async function installSmokeSession(
 ): Promise<void> {
   await page.addInitScript(
     ({ token, countyId, countyCode, parcelId }) => {
+      // Playwright's isolated browser profile is destroyed after the proof.
       localStorage.setItem('authToken', token);
       localStorage.setItem(
         'tf.session.dev',
@@ -152,18 +196,22 @@ async function assertNoUnauthorizedNetwork(): Promise<void> {
   ).toHaveLength(0);
 }
 
-async function assertNoServerErrors(): Promise<void> {
-  const serverErrors = network.filter(entry => entry.status >= 500);
+async function assertNoParcelJourneyServerErrors(): Promise<void> {
+  const serverErrors = network.filter(
+    entry =>
+      entry.status >= 500 &&
+      (entry.url.includes('/api/auth/') || entry.url.includes('/api/properties'))
+  );
   expect(
     serverErrors,
-    `No API call should return 5xx: ${serverErrors.map(entry => entry.url).join(', ')}`
+    `The authenticated parcel-acquisition path must not return 5xx: ${serverErrors.map(entry => entry.url).join(', ')}`
   ).toHaveLength(0);
 }
 
-test.describe('Property Workbench production runtime smoke', () => {
+test.describe('Property Workbench local synthetic parcel journey', () => {
   test.afterAll(async () => {
     await writeEvidence(
-      'Smoke verifies the backend-hosted production bundle with an existing Development-only JWT smoke session.'
+      'Smoke verifies a backend-hosted local bundle with Development-only synthetic data and an ephemeral JWT session.'
     );
   });
 
@@ -206,6 +254,7 @@ test.describe('Property Workbench production runtime smoke', () => {
     const api = await request.newContext({ baseURL: baseUrl() });
     const auth = await fetchDevToken(api);
     const parcelId = await resolveSmokeParcel(api, auth.token);
+    await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
     await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
     await installSmokeSession(page, auth, parcelId);
 
@@ -267,7 +316,7 @@ test.describe('Property Workbench production runtime smoke', () => {
     await capture(page, '07 pilot', '07-pilot');
 
     await assertNoUnauthorizedNetwork();
-    await assertNoServerErrors();
+    await assertNoParcelJourneyServerErrors();
     await api.dispose();
   });
 });

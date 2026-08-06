@@ -25,7 +25,7 @@ namespace TerraFusion.API.Tests.Phase14;
 public sealed class ControllerSecurityBoundaryTests
 {
     [Fact]
-    public async Task PropertiesController_GetProperties_ReturnsBadRequest_WhenCountyClaimMissing()
+    public async Task PropertiesController_GetProperties_ReturnsForbid_WhenCountyClaimMissing()
     {
         var propertyService = new Mock<IPropertyService>(MockBehavior.Strict);
         var controller = new PropertiesController(propertyService.Object, BuildDbContext(), Mock.Of<ILogger<PropertiesController>>())
@@ -35,7 +35,7 @@ public sealed class ControllerSecurityBoundaryTests
 
         var result = await controller.GetProperties(countyId: null);
 
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        result.Result.Should().BeOfType<ForbidResult>();
         propertyService.VerifyNoOtherCalls();
     }
 
@@ -74,6 +74,69 @@ public sealed class ControllerSecurityBoundaryTests
 
         result.Result.Should().BeOfType<OkObjectResult>();
         propertyService.Verify(service => service.GetPropertyByParcelAsync("123-456", countyId), Times.Once);
+        propertyService.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task PropertiesController_GetPropertyByParcel_UsesOnlyClaimCountyCama_AndFailsClosedOnUnscopedGis()
+    {
+        var countyId = Guid.NewGuid();
+        var otherCountyId = Guid.NewGuid();
+        const string parcelNumber = "SHARED-123";
+
+        await using var dbContext = BuildDbContext();
+        dbContext.CamaCharacteristics.AddRange(
+            new TerraFusion.Core.Entities.CamaCharacteristic
+            {
+                CountyId = countyId,
+                ParcelId = parcelNumber,
+                TaxYear = 2025,
+                BuildingType = "R1",
+                SquareFeet = 1450,
+            },
+            new TerraFusion.Core.Entities.CamaCharacteristic
+            {
+                CountyId = otherCountyId,
+                ParcelId = parcelNumber,
+                TaxYear = 2026,
+                BuildingType = "R1",
+                SquareFeet = 9900,
+            });
+        dbContext.GisParcelGeometries.Add(new TerraFusion.Core.Entities.GisParcelGeometry
+        {
+            ParcelId = parcelNumber,
+            LegalDescription = "UNSCOPED GIS DESCRIPTION",
+        });
+        await dbContext.SaveChangesAsync();
+
+        var propertyService = new Mock<IPropertyService>(MockBehavior.Strict);
+        propertyService
+            .Setup(service => service.GetPropertyByParcelAsync(parcelNumber, countyId))
+            .ReturnsAsync(new PropertyDto
+            {
+                Id = Guid.NewGuid(),
+                ParcelNumber = parcelNumber,
+                Address = "1 County Road",
+                CountyId = countyId,
+                CountyName = "Authorized",
+            });
+
+        var controller = new PropertiesController(
+            propertyService.Object,
+            dbContext,
+            Mock.Of<ILogger<PropertiesController>>())
+        {
+            ControllerContext = BuildControllerContext(new Claim("countyId", countyId.ToString()))
+        };
+
+        var result = await controller.GetPropertyByParcel(parcelNumber);
+
+        var property = result.Result.Should().BeOfType<OkObjectResult>()
+            .Which.Value.Should().BeOfType<PropertyDto>().Subject;
+        property.SquareFeet.Should().Be(1450);
+        property.GrossLivingArea.Should().Be(1450);
+        property.LegalDescription.Should().BeNull();
+        propertyService.Verify(service => service.GetPropertyByParcelAsync(parcelNumber, countyId), Times.Once);
         propertyService.VerifyNoOtherCalls();
     }
 
