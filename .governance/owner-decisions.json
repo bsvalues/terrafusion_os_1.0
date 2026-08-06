@@ -3,6 +3,57 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-009B",
+      "status": "active",
+      "authority_class": "R3-bounded-dais-workbench-durable-appeal-read-adoption",
+      "effective_base_sha": "32eff1281326019217341a326dba787437dea270",
+      "scope_source": "Owner approval recorded directly on Issue #1417 on 2026-08-05. The authorization covers Stages 0 through 4, exact allowlisted product, test, governance, and evidence files, disposable synthetic proof, in-scope remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without per-stage owner relay.",
+      "terminal_condition": "DAIS_COUNTY_SCOPED_APPEAL_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_OR_LIVE_DATA",
+      "authorized_actions": [
+        "add one dedicated authenticated county-scoped read-only parcel appeal-workflow endpoint that projects only through the existing frozen DaisAppealWorkflowReadAdapter",
+        "implement contract-honest LiveDataProvider appeal reads and truthful PropertyDais loading, empty, error, loaded, and provenance states without changing Workbench routing, tab identity, navigation, or broader structure",
+        "prove same-county success and cross-county non-disclosure through focused tests and the existing disposable SQLite authenticated Workbench journey",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify main, perform one governance-only terminal closeout, consume authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Stage2/DaisEndpointContractTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests.cs",
+        "frontend/apps/os-shell/src/types/domain.ts",
+        "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
+        "frontend/apps/os-shell/src/services/__tests__/LiveDataProvider.daisAppeals.contract.test.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDais.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009B-dais-workbench-durable-appeal-read-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009B-DAIS-WORKBENCH-DURABLE-APPEAL-READ-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "appeal creation, update, decision, certification, notice, queue mutation, service, entity, persistence, schema, migration, permission-policy, or frozen-contract and adapter changes",
+        "standalone Dais F1 runtime adoption, Dais repository mutation, extraction, ownership transfer, publication, cutover, live county data, PACS, county SQL, existing county database mutation, credentials, secrets, deployment, or production",
+        "other-suite adoption, Workbench routing, tab identity, navigation or broader structure changes, package or lockfile changes, workflow or branch-protection changes, force push, required-gate bypass, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "need for a file outside the exact allowlist, frozen contract or adapter change, persistence or schema mutation, appeal write, standalone Dais execution, live or protected data, credential, deployment, permission-policy decision, or cross-suite behavior",
+        "fixture, snapshot, legacy, or empty-array fallback in the live appeal read; invented petitioner or value data; cross-county disclosure; dishonest Workbench provenance; or disposable test residue",
+        "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
+      ],
+      "decision_basis": "WO-SR-009A proved authenticated county-governed synthetic parcel acquisition. Live source inspection then found that the county-scoped Dais persistence read and frozen pure adapter exist, but LiveDataProvider returns no appeals and PropertyDais cannot truthfully present the frozen read. This is the highest-value dependency-cleared product gap and is reversible without writes, live data, standalone runtime adoption, or deployment."
+    },
+    {
       "id": "OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

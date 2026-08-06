@@ -13,14 +13,17 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active between cohorts at portfolio reconciliation.
-`WO-SR-009A` completed in PR #1415: exact assured head
+The Five-Suite Federated Repository Buildout is active at `WO-SR-009B` under the exact bounded R3
+authority recorded in Issue #1417. `WO-SR-009A` completed in PR #1415: exact assured head
 `0423615c82840978673916831de788f61766c1b7` merged as
 `b934cf0c02ab7e6b5eb20e122f290e9adb665f83`. The proof county-scopes CAMA, fails closed on legacy
 GIS evidence without county ownership, and completes one disposable authenticated synthetic
 Workbench journey. Decision `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805` is completed
-and consumed. No live county, PACS, SQL, production, deployment, schema, credential, secret,
-frontend-source, suite-adoption, or cutover authority is inferred.
+and consumed. `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` now authorizes one dedicated
+frozen-contract Dais read, contract-honest `LiveDataProvider` adoption, truthful PropertyDais states,
+and disposable same-county/cross-county synthetic proof. Writes, persistence/schema, standalone Dais
+runtime adoption, live data, deployment, cutover, and Workbench routing/tab/navigation changes remain
+denied.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
 PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
 `6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable

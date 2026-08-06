@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009A authenticated county-governed parcel journey terminal closeout",
+  "generatedBy": "WO-SR-009B Dais Workbench durable appeal read activation",
   "generatedAt": "2026-08-06T00:00:00Z",
-  "description": "WO-SR-009A is complete and its bounded R3 authority is consumed. The Five-Suite Federated Repository Buildout is active between cohorts at portfolio reconciliation; no live-data, suite-adoption, deployment, production, or cutover authority is inferred.",
+  "description": "WO-SR-009A is complete and consumed. WO-SR-009B is active under the exact bounded Issue #1417 R3 authority; appeal writes, persistence/schema, standalone Dais runtime, live/protected data, deployment, cutover, other-suite adoption, and Workbench routing/tab/navigation changes remain denied.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10211,6 +10211,132 @@
       "provenance": {
         "createdAt": "2026-08-05T00:00:00Z",
         "source": "WO-TF-POST-FORGE-001, corrected Issue #1413, and OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805 at base f71cdffb66305c4af1abb5193586aa60818e3969",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-009B",
+      "title": "Dais Workbench Durable Appeal Read Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Make the frozen county-scoped Dais appeal read reachable and truthful in the canonical Property Workbench.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-009A",
+          "status": "satisfied",
+          "evidence": ["PR #1415 and terminal closeout PR #1416 proved authenticated county-governed synthetic parcel acquisition."]
+        },
+        {
+          "id": "OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805",
+          "status": "satisfied",
+          "evidence": ["Owner approved the exact Issue #1417 packet on 2026-08-05."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Bounded Dais frozen read adoption in the sovereign API and Property Workbench",
+          "paths": [
+            "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+            "backend/tests/TerraFusion.Unit.Tests/Stage2/DaisEndpointContractTests.cs",
+            "backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests.cs",
+            "frontend/apps/os-shell/src/types/domain.ts",
+            "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
+            "frontend/apps/os-shell/src/services/__tests__/LiveDataProvider.daisAppeals.contract.test.ts",
+            "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyDais.honesty.contract.test.tsx",
+            "tests/e2e/property-workbench-production-smoke.spec.ts",
+            "docs/brain/workorders/**",
+            ".governance/owner-decisions.json"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Appeal writes, persistence/schema, standalone Dais runtime, live county/PACS/SQL, credentials, deployment, production, cutover, other-suite adoption, or Workbench routing/tab/navigation changes"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Stage2/DaisEndpointContractTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests.cs",
+        "frontend/apps/os-shell/src/types/domain.ts",
+        "frontend/apps/os-shell/src/services/LiveDataProvider.ts",
+        "frontend/apps/os-shell/src/services/__tests__/LiveDataProvider.daisAppeals.contract.test.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDais.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009B-dais-workbench-durable-appeal-read-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009B-DAIS-WORKBENCH-DURABLE-APPEAL-READ-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        ".github/workflows/**",
+        "deployment/**",
+        "package.json",
+        "**/pnpm-lock.yaml",
+        "**/ARCHIVE/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Frozen-contract API and provider proof, same-county success, cross-county non-disclosure, honest Dais tab states, disposable browser journey, exact-head assurance, and rollback."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Focused backend and frontend contract proof",
+          "command": "dotnet focused Dais tests; vitest focused LiveDataProvider and PropertyDais tests",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Disposable authenticated Dais Workbench journey",
+          "command": "corepack pnpm smoke:workbench",
+          "required": true,
+          "result": "pending"
+        },
+        {
+          "name": "Governance and delivery gates",
+          "command": "git diff --check; wo-query; query/planner/authority tests; remote checks; exact-head assurance",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-009B-DAIS-WORKBENCH-DURABLE-APPEAL-READ-ADOPTION.md",
+          "summary": "Activation, implementation, test, browser, safety, rollback, merge, and closeout evidence."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop for scope expansion, frozen contract/adapter change, persistence/schema, appeal writes, standalone Dais execution, live/protected data, credentials, deployment, permission-policy, cross-suite behavior, failed required proof, or dishonest provenance."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1417 grants bounded Mode B delivery through terminal closeout. Cleanup is limited to disposable synthetic test state and this Work Order's isolated worktree after verified merge."
+      },
+      "provenance": {
+        "createdAt": "2026-08-05T00:00:00Z",
+        "source": "Issue #1417 and OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805 at exact sovereign base 32eff1281326019217341a326dba787437dea270",
         "schemaVersion": "0.1.0"
       }
     }
