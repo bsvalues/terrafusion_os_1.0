@@ -1101,6 +1101,7 @@ public class DaisController : ControllerBase
     catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
     {
       _logger.LogWarning(
+        exception,
         "Dais appeal workflow read failed closed for county {CountyId} and trace {TraceId}.",
         effectiveCountyId,
         HttpContext.TraceIdentifier);

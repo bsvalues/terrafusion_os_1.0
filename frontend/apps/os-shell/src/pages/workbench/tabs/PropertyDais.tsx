@@ -28,7 +28,7 @@
  * Architecture: UI → select params → governed tool → correlationId UX
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -42,6 +42,7 @@ import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import { createStableId } from '../../../utils/stableId';
 import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
+import { getDaisAppealReadError } from '../../../services/LiveDataProvider';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
 import AppealDeadlinePanel from '../../../components/dais/AppealDeadlinePanel';
@@ -204,7 +205,18 @@ const MORNING_BRIEF_ROLES = [
 export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
   const relatedDataStatus = usePropertyStore((s) => s.relatedDataStatus);
+  const parcelScopedRelatedDataStatus = activeParcel?.parcelId === parcelId
+    ? relatedDataStatus
+    : 'idle';
+  const appealReadError = useMemo(
+    () => getDaisAppealReadError(parcelId) ?? {
+      message: 'Appeal records are unavailable for this parcel.',
+      correlationId: createStableId('net'),
+    },
+    [parcelId, parcelScopedRelatedDataStatus],
+  );
 
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
   const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
@@ -622,10 +634,10 @@ export const PropertyDais: React.FC = () => {
           <p className="text-xs tf-text-dim">
             Appeal identity and lifecycle fields are returned by the authenticated Dais read contract.
           </p>
-          <WorkbenchSourceBadge source={relatedDataStatus === 'loaded' ? 'live' : 'unavailable'} />
+          <WorkbenchSourceBadge source={parcelScopedRelatedDataStatus === 'loaded' ? 'live' : 'unavailable'} />
         </div>
 
-        {relatedDataStatus === 'loading' && (
+        {parcelScopedRelatedDataStatus === 'loading' && (
           <BentoCard variant="stat" title="Appeals">
             <p data-testid="dais-appeals-loading" className="text-sm tf-text-dim">
               Loading county-scoped appeal records...
@@ -633,15 +645,23 @@ export const PropertyDais: React.FC = () => {
           </BentoCard>
         )}
 
-        {(relatedDataStatus === 'idle' || relatedDataStatus === 'error') && (
+        {parcelScopedRelatedDataStatus === 'idle' && (
           <BentoCard variant="stat" title="Appeals">
-            <p data-testid="dais-appeals-error" className="text-sm tf-text-dim">
+            <p data-testid="dais-appeals-unavailable" className="text-sm tf-text-dim">
               Appeal records are unavailable for this parcel.
             </p>
           </BentoCard>
         )}
 
-        {relatedDataStatus === 'loaded' && appeals.length === 0 && (
+        {parcelScopedRelatedDataStatus === 'error' && (
+          <BentoCard variant="stat" title="Appeals">
+            <div data-testid="dais-appeals-error">
+              <ErrorDisplay error={appealReadError} />
+            </div>
+          </BentoCard>
+        )}
+
+        {parcelScopedRelatedDataStatus === 'loaded' && appeals.length === 0 && (
           <BentoCard variant="stat" title="Appeals">
             <p data-testid="dais-appeals-empty" className="text-sm tf-text-dim">
               No appeal records were returned for this parcel.
@@ -649,31 +669,31 @@ export const PropertyDais: React.FC = () => {
           </BentoCard>
         )}
 
-        {relatedDataStatus === 'loaded' && appeals.length > 0 && (
+        {parcelScopedRelatedDataStatus === 'loaded' && appeals.length > 0 && (
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             <BentoCard variant="stat" title="Active Appeals">
-              <p data-testid="dais-appeals-loaded" className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
+              <p data-testid="dais-appeals-loaded" className="text-2xl font-bold tf-suite-accent-text">
                 {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
               </p>
-              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              <p className="text-xs mt-1 tf-text-dim">
                 County-scoped appeal records for this parcel.
               </p>
             </BentoCard>
-            {appeals.slice(0, 2).map((appeal) => (
+            {appeals.map((appeal) => (
               <BentoCard key={appeal.appealId} variant="stat" title={`Appeal ${appeal.appealId.slice(0, 8)}`}>
-                <p className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                <p className="text-sm font-semibold tf-text-secondary">
                   {appeal.status} - {appeal.appealGround?.replaceAll('_', ' ') ?? 'Ground unavailable'}
                 </p>
-                <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                <p className="text-xs mt-1 tf-text-dim">
                   Tax year {appeal.appealYear}; filed {new Date(appeal.filingDate).toLocaleDateString()}
                 </p>
                 {appeal.hearingDate && (
-                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  <p className="text-xs mt-1 tf-text-dim">
                     Hearing: {new Date(appeal.hearingDate).toLocaleDateString()}
                   </p>
                 )}
                 {appeal.decisionDate && (
-                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  <p className="text-xs mt-1 tf-text-dim">
                     Decision: {new Date(appeal.decisionDate).toLocaleDateString()}
                   </p>
                 )}

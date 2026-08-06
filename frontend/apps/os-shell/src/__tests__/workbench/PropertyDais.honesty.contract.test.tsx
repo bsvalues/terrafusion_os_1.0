@@ -16,6 +16,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 const { propertyState } = vi.hoisted(() => ({
   propertyState: {
+    activeParcel: { parcelId: 'TEST-001' } as { parcelId: string } | null,
     appeals: [] as Array<Record<string, unknown>>,
     relatedDataStatus: 'idle' as 'idle' | 'loading' | 'loaded' | 'error',
   },
@@ -42,8 +43,8 @@ vi.mock('../../runtime/env', () => ({
 }));
 
 vi.mock('../../components/errors/ErrorDisplay', () => ({
-  ErrorDisplay: ({ error }: { error: { message: string } }) => (
-    <div data-testid="error-display">{error.message}</div>
+  ErrorDisplay: ({ error }: { error: { message: string; correlationId?: string } }) => (
+    <div data-testid="error-display">{error.message} {error.correlationId}</div>
   ),
 }));
 
@@ -67,6 +68,7 @@ import { PropertyDais } from '../../pages/workbench/tabs/PropertyDais';
 describe('PropertyDais source honesty contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    propertyState.activeParcel = { parcelId: 'TEST-001' };
     propertyState.appeals = [];
     propertyState.relatedDataStatus = 'idle';
   });
@@ -142,9 +144,46 @@ describe('PropertyDais source honesty contract', () => {
     propertyState.relatedDataStatus = 'error';
     render(<MemoryRouter><PropertyDais /></MemoryRouter>);
     expect(screen.getByTestId('dais-appeals-error')).toHaveTextContent(/unavailable/i);
+    expect(screen.getByTestId('error-display')).toHaveTextContent(/net-/i);
     const appealRead = screen.getByTestId('dais-appeal-read');
     expect(appealRead.querySelector('[data-testid="workbench-source-badge"]'))
       .toHaveAttribute('data-source', 'unavailable');
+  });
+
+  it('does not claim stale loaded appeal evidence for a different active parcel', () => {
+    propertyState.relatedDataStatus = 'loaded';
+    propertyState.activeParcel = { parcelId: 'OTHER-PARCEL' };
+    propertyState.appeals = [{
+      appealId: '33333333-3333-3333-3333-333333333333',
+      parcelId: 'OTHER-PARCEL',
+      appealYear: 2026,
+      appealGround: 'MARKET_VALUE',
+      status: 'filed',
+      filingDate: '2026-02-03T12:00:00Z',
+    }];
+
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.queryByTestId('dais-appeals-loaded')).not.toBeInTheDocument();
+    expect(screen.getByTestId('dais-appeals-unavailable')).toBeInTheDocument();
+    const appealRead = screen.getByTestId('dais-appeal-read');
+    expect(appealRead.querySelector('[data-testid="workbench-source-badge"]'))
+      .toHaveAttribute('data-source', 'unavailable');
+  });
+
+  it('renders every appeal returned by the frozen contract', () => {
+    propertyState.relatedDataStatus = 'loaded';
+    propertyState.appeals = [0, 1, 2].map((index) => ({
+      appealId: `33333333-3333-3333-3333-33333333333${index}`,
+      parcelId: 'TEST-001',
+      appealYear: 2026,
+      appealGround: 'MARKET_VALUE',
+      status: 'filed',
+      filingDate: '2026-02-03T12:00:00Z',
+    }));
+
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+    expect(screen.getByTestId('dais-appeals-loaded')).toHaveTextContent('3 appeals');
+    expect(screen.getAllByText(/filed - MARKET VALUE/)).toHaveLength(3);
   });
 
   it('renders exact frozen-contract appeal fields in the loaded state', () => {

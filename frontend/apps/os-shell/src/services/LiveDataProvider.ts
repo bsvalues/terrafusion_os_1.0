@@ -7,7 +7,8 @@
 
 import type { DataProvider, DataMode } from './dataProvider';
 import { getSession } from '../auth/session';
-import { buildCountyScopedSessionHeaders } from './countyIsolation';
+import { decodeAuthClaims } from '../auth/useAuthContext';
+import { buildCountyScopedHeaders, buildCountyScopedSessionHeaders } from './countyIsolation';
 import type {
   Property,
   Assessment,
@@ -113,6 +114,17 @@ interface DaisAppealWorkflowReadResultDto {
   countyId: string;
   appeals: DaisAppealWorkflowRecordDto[];
   traceId?: string;
+}
+
+export interface DaisAppealReadErrorInfo {
+  message: string;
+  correlationId: string;
+}
+
+const daisAppealReadErrors = new Map<string, DaisAppealReadErrorInfo>();
+
+export function getDaisAppealReadError(parcelId: string): DaisAppealReadErrorInfo | null {
+  return daisAppealReadErrors.get(parcelId) ?? null;
 }
 
 /** Legacy county assessment property detail endpoint */
@@ -285,6 +297,15 @@ function isUtcTimestamp(value: unknown): value is string {
   return typeof value === 'string'
     && UTC_TIMESTAMP.test(value)
     && !Number.isNaN(Date.parse(value));
+}
+
+function correlationIdForDaisFailure(value: unknown): string {
+  if (isRecord(value) && typeof value.traceId === 'string' && value.traceId.trim().length > 0) {
+    return value.traceId.startsWith('corr-') ? value.traceId : `corr-${value.traceId}`;
+  }
+  const id = globalThis.crypto?.randomUUID?.()
+    ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  return `net-${id}`;
 }
 
 function parseDaisAppealWorkflowResult(
@@ -565,26 +586,55 @@ export class LiveDataProvider implements DataProvider {
   // ── Appeals ─────────────────────────────────────────────────────────────
 
   async getAppeals(parcelId: string): Promise<Appeal[]> {
+    daisAppealReadErrors.delete(parcelId);
+    const token = getToken();
+    const claims = decodeAuthClaims(token);
     const session = getSession();
-    const countyScope = buildCountyScopedSessionHeaders(session);
-    if (!countyScope.isolated || !isCanonicalGuid(session?.countyId)) {
+    const countyId = claims.countyId ?? session?.countyId ?? null;
+    const countyScope = token
+      ? buildCountyScopedHeaders({
+          isAuthenticated: true,
+          userId: claims.userId,
+          countyId: claims.countyId,
+          roles: claims.roles,
+          token,
+        })
+      : buildCountyScopedSessionHeaders(session);
+    if (!countyScope.isolated || !isCanonicalGuid(countyId)) {
       throw new Error('Canonical county context required for Dais appeal workflow reads.');
     }
 
     const path = `/api/dais/appeals/parcel/${encodeURIComponent(parcelId)}/workflow-read`;
-    const response = await apiFetch<unknown>(path, { headers: countyScope.headers });
-    const contract = parseDaisAppealWorkflowResult(response, session.countyId, parcelId);
+    let response: unknown;
+    try {
+      response = await apiFetch<unknown>(
+        path,
+        { headers: countyScope.headers },
+        { timeoutMs: PRIMARY_PARCEL_EVIDENCE_TIMEOUT_MS },
+      );
+      const contract = parseDaisAppealWorkflowResult(response, countyId, parcelId);
 
-    return contract.appeals.map((appeal) => ({
-      appealId: appeal.appealId,
-      parcelId: appeal.parcelId,
-      appealYear: appeal.taxYear,
-      appealGround: appeal.ground,
-      status: appeal.status,
-      filingDate: appeal.filedAt,
-      ...(appeal.hearingAt === undefined ? {} : { hearingDate: appeal.hearingAt }),
-      ...(appeal.decisionAt === undefined ? {} : { decisionDate: appeal.decisionAt }),
-    }));
+      return contract.appeals.map((appeal) => ({
+        appealId: appeal.appealId,
+        parcelId: appeal.parcelId,
+        appealYear: appeal.taxYear,
+        appealGround: appeal.ground,
+        status: appeal.status,
+        filingDate: appeal.filedAt,
+        ...(appeal.hearingAt === undefined ? {} : { hearingDate: appeal.hearingAt }),
+        ...(appeal.decisionAt === undefined ? {} : { decisionDate: appeal.decisionAt }),
+      }));
+    } catch (error) {
+      const correlationId = correlationIdForDaisFailure(response);
+      daisAppealReadErrors.set(parcelId, {
+        message: 'Appeal records are unavailable for this parcel.',
+        correlationId,
+      });
+      if (error instanceof Error) {
+        Object.defineProperty(error, 'correlationId', { value: correlationId, configurable: true });
+      }
+      throw error;
+    }
   }
 
   async getHearings(_parcelId?: string): Promise<HearingEvent[]> {

@@ -1,12 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { setToken } from '../../auth/authStorage';
 import { setDevSession } from '../../auth/session';
-import { ApiFetchError, LiveDataProvider } from '../LiveDataProvider';
+import {
+  ApiFetchError,
+  getDaisAppealReadError,
+  LiveDataProvider,
+} from '../LiveDataProvider';
 
 const COUNTY_ID = '11111111-1111-1111-1111-111111111111';
 const OTHER_COUNTY_ID = '22222222-2222-2222-2222-222222222222';
 const PARCEL_ID = 'SR009B-SYNTHETIC-P1';
 const APPEAL_ID = '33333333-3333-3333-3333-333333333333';
+
+function jwtForCounty(countyId: string): string {
+  const encode = (value: object) => btoa(JSON.stringify(value))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+  return `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ sub: 'sr009b-user', countyId })}.sig`;
+}
 
 function validResponse() {
   return {
@@ -72,7 +85,8 @@ describe('LiveDataProvider Dais appeal workflow contract', () => {
       `/api/dais/appeals/parcel/${PARCEL_ID}/workflow-read`,
       expect.objectContaining({
         headers: expect.objectContaining({ 'x-county-id': COUNTY_ID }),
-      })
+        signal: expect.any(AbortSignal),
+      }),
     );
     expect(appeals[0]).not.toHaveProperty('petitionerName');
     expect(appeals[0]).not.toHaveProperty('currentAssessedValue');
@@ -83,6 +97,21 @@ describe('LiveDataProvider Dais appeal workflow contract', () => {
     stubResponse({ ...validResponse(), appeals: [] });
 
     await expect(new LiveDataProvider().getAppeals(PARCEL_ID)).resolves.toEqual([]);
+  });
+
+  it('uses the authenticated JWT county instead of a stale dev-session county', async () => {
+    setDevSession({ userId: 'stale-user', countyId: OTHER_COUNTY_ID, role: 'Assessor' });
+    setToken(jwtForCounty(COUNTY_ID));
+    const fetchMock = stubResponse(validResponse());
+
+    await expect(new LiveDataProvider().getAppeals(PARCEL_ID)).resolves.toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      `/api/dais/appeals/parcel/${PARCEL_ID}/workflow-read`,
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'X-County-Id': COUNTY_ID }),
+        signal: expect.any(AbortSignal),
+      }),
+    );
   });
 
   it.each([
@@ -132,6 +161,18 @@ describe('LiveDataProvider Dais appeal workflow contract', () => {
     await expect(new LiveDataProvider().getAppeals(PARCEL_ID)).rejects.toThrow(
       /contract|duplicate/i
     );
+  });
+
+  it('preserves the backend trace as a visible correlation ID on contract failure', async () => {
+    stubResponse({ ...validResponse(), schemaVersion: '2.0.0' });
+
+    await expect(new LiveDataProvider().getAppeals(PARCEL_ID)).rejects.toMatchObject({
+      correlationId: 'corr-trace-sr009b',
+    });
+    expect(getDaisAppealReadError(PARCEL_ID)).toEqual({
+      message: 'Appeal records are unavailable for this parcel.',
+      correlationId: 'corr-trace-sr009b',
+    });
   });
 
   it.each([401, 403])(

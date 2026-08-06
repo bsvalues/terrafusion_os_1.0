@@ -285,6 +285,9 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     const api = await request.newContext({ baseURL: baseUrl() });
     const auth = await fetchDevToken(api);
+    if (!auth.countyId) {
+      throw new Error('Synthetic auth response did not include a countyId claim.');
+    }
     const parcelId = await resolveSmokeParcel(api, auth.token);
     await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
     await assertAuthenticatedDaisAppealBoundary(api, auth, parcelId);
