@@ -16,7 +16,7 @@
       "authorized_actions": [
         "add a default-disabled environment-bound canonical Atlas projection consumer using IParcelGeometryReader, the existing frozen AtlasSpatialReadAdapter, and the existing hash-pinned AtlasProjectionProcessHost",
         "add one authenticated read:parcel county-scoped read-only canonical projection endpoint and truthful PropertyAtlas loading, unavailable, error, and projected states without changing routing, tab identity, navigation, Workbench structure, Mapbox behavior, or legacy GIS endpoints",
-        "prove same-county Polygon, Point, and unavailable results plus cross-county non-disclosure through focused tests and one disposable authenticated SQLite browser journey",
+        "prove same-county canonical Polygon and truthful unavailable results plus cross-county non-disclosure through focused tests and one disposable authenticated SQLite browser journey; Point is neither required nor claimable in this Work Order",
         "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify main, perform one governance-only terminal closeout, consume authority, and return to portfolio reconciliation"
       ],
       "authorized_files": [
@@ -53,11 +53,19 @@
         "configuration not default-disabled, mutable or unpinned module fallback, cross-county existence disclosure, dishonest Workbench provenance, or disposable test residue",
         "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
       ],
-      "decision_basis": "Post-Dais reconciliation selected canonical Atlas Workbench projection adoption as the highest-value dependency-cleared gap. Stage 1 inspection then proved that the frozen adapter emits only polygon results and rejects POINT while the authorized terminal condition requires a real canonical Point proof. Product execution is suspended at that exact scope wall pending one narrow amendment or a narrowed terminal condition.",
-      "current_blocker": {
-        "type": "FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED",
-        "evidence": "AtlasSpatialReadAdapter.Adapt always emits GeometryState polygon and ParseOuterRing rejects POINT, while AtlasProjectionProcessHost requires centroid_only for Point output.",
-        "safe_state": "No product file has been modified; only governance activation and authority-wall evidence are admitted."
+      "decision_basis": "Post-Dais reconciliation selected canonical Atlas Workbench projection adoption as the highest-value dependency-cleared gap. Stage 1 proved that ParcelGeometryResponse.GeomWkt is canonical Polygon WKT and the frozen adapter correctly consumes that Polygon source. OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001 removed the synthetic Point terminal requirement rather than authorizing a false ingestion path. Product execution resumes under the original exact allowlist.",
+      "amendments": [
+        {
+          "id": "OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001",
+          "status": "active",
+          "source": "Owner approval recorded directly on Issue #1422 on 2026-08-06.",
+          "effect": "Point is removed from the WO-SR-009C terminal proof. The required geometry outcomes are real canonical Polygon and truthful unavailable, with cross-county non-disclosure. The frozen AtlasSpatialReadAdapter and its tests remain outside the allowlist and unchanged."
+        }
+      ],
+      "current_execution": {
+        "state": "AUTHORIZED_STAGES_1_THROUGH_4_RESUMED",
+        "terminal_proof": "Authenticated same-county canonical Polygon, truthful unavailable, and cross-county non-disclosure.",
+        "point_disposition": "Not required or claimable until a separately authorized real canonical Point source exists."
       }
     },
     {

@@ -14,10 +14,11 @@
 ## Active Goal
 
 The Five-Suite Federated Repository Buildout is active at `WO-SR-009C`. The owner decision recorded
-on Issue #1422 is canonized as `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806`, but product execution is blocked
-at `FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`. The frozen adapter emits only polygon results and
-rejects `POINT`, while the approved terminal condition requires a real canonical Point proof. No
-product file is modified; one narrow adapter/test amendment is the next valid action.
+on Issue #1422 is canonized as `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806` and
+`OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001` removes Point from the terminal proof.
+The frozen adapter remains unchanged. Product execution resumes under the original allowlist to prove
+canonical Polygon, truthful unavailable, authentication, authorization, and cross-county
+non-disclosure.
 `WO-SR-009B` completed in PR #1419: exact assured head
 `11bc49507a6e57925414d142a21f203bb8c3c811` merged as
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`. The proof makes the frozen county-scoped Dais appeal
@@ -316,9 +317,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
 **Current execution result (WO-SR-009C, 2026-08-06):**
-`FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`. The R3 packet is approved, but its required real-API
-Point proof cannot be produced through the current frozen polygon-only adapter. Runtime work remains
-suspended with zero product changes until the exact adapter/test amendment is decided.
+`AUTHORIZED_STAGES_1_THROUGH_4_RESUMED`. Canonical ingestion is Polygon-based, so the terminal proof
+is narrowed to real canonical Polygon plus truthful unavailable and cross-county non-disclosure.
+Point is neither required nor claimable; the frozen adapter and its tests remain outside scope.
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
 The owner-authorized bounded R3 envelope is complete and consumed. No extraction, F1, or

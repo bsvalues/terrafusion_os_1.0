@@ -298,10 +298,11 @@ inferred.
 
 Issue #1422 subsequently approved `WO-SR-009C` under
 `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806` at sovereign base
-`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 inspection proved an exact contradiction:
-`AtlasSpatialReadAdapter` emits polygon only and rejects `POINT`, while the approved terminal proof
-requires a real canonical Point result and the process host requires `centroid_only` for Point.
-Because the adapter and its tests are outside the approved product allowlist and a frozen-adapter
-change is an explicit stop wall, no product implementation began. The program remains active with
-`WO-SR-009C` blocked pending one narrow adapter/test amendment; all live-provider, protected-resource,
-deployment, cutover, routing, and legacy-anonymous-path denials remain intact.
+`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 inspection proved that the canonical
+`ParcelGeometryResponse.GeomWkt` source is Polygon-based and the frozen `AtlasSpatialReadAdapter`
+correctly consumes that source while rejecting `POINT`. The controlling terminal-narrowing amendment
+therefore removed Point from the terminal proof instead of authorizing a synthetic ingestion path.
+Stages 1 through 4 resume under the original allowlist to prove canonical Polygon, truthful
+unavailable, and cross-county non-disclosure. The adapter and tests remain unchanged and all
+live-provider, protected-resource, deployment, cutover, routing, and legacy-anonymous-path denials
+remain intact.

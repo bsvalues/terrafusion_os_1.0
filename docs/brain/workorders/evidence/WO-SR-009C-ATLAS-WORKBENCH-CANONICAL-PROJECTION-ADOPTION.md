@@ -3,57 +3,48 @@
 ## Activation
 
 - Owner decision: `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806`
+- Terminal narrowing: `OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001`
 - Decision source: Issue #1422
 - Sovereign base: `f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`
 - Atlas evidence head: `6c530f1b6b77d59225353dede929c0688f1587da`
 - Exact module SHA-256: `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`
-- State: `BLOCKED - FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`
+- State: `ACTIVE - AUTHORIZED STAGES 1 THROUGH 4`
 
 ## Source Evidence
 
 Current-base inspection establishes:
 
-1. `AtlasSpatialReadAdapter.Adapt` parses only a simple `POLYGON`, always emits
-   `AtlasGeometryState.polygon`, and rejects `POINT` input.
-2. `AtlasProjectionProcessHost` accepts `Point` output only when the serialized exchange carries
-   `geometryState = centroid_only`; polygon exchanges cannot validate as Point.
+1. `ParcelGeometryResponse.GeomWkt` is explicitly the canonical Polygon WKT source.
+2. `AtlasSpatialReadAdapter.Adapt` parses that canonical `POLYGON`, emits
+   `AtlasGeometryState.polygon`, and correctly rejects `POINT` input.
 3. The local-sovereign proof's Point case uses a hand-built frozen synthetic `centroid_only` exchange,
-   not the real `IParcelGeometryReader` plus adapter path required by Issue #1422.
-4. The exact product allowlist excludes the adapter and adapter tests, and the owner decision names an
-   adapter change or different mapper as a true stop wall.
+   not the real `IParcelGeometryReader` plus adapter ingestion path.
+4. Accepting synthetic Point input in the adapter would prove a state the canonical source cannot
+   produce. The owner therefore narrowed the terminal proof instead of expanding product scope.
 
 ## Safety State
 
 - No backend, frontend, runtime, test, configuration, persistence, workflow, or Atlas-repository file
-  is changed.
+  was changed before this governance reconciliation.
 - No module was executed and no disposable database or process state was created.
 - The legacy anonymous GIS path remains unchanged and is not represented as canonical evidence.
-- The terminal condition is not claimed.
+- The terminal condition is not yet claimed; implementation remains required.
 
-## Recommended Amendment
+## Controlling Disposition
 
-Authorize exactly:
+`OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001` removes Point from the terminal
+proof. It does not add the adapter or adapter tests to the allowlist and does not authorize a new
+mapper. Point is outside this Work Order until a real canonical Point source is separately proven and
+authorized.
 
-```text
-backend/src/TerraFusion.API/Adapters/AtlasSpatialReadAdapter.cs
-backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasSpatialReadAdapterTests.cs
-```
+The active terminal proof is authenticated same-county canonical Polygon, truthful unavailable, and
+cross-county non-disclosure. The exact Atlas hash, default `Disabled` configuration, authentication,
+`read:parcel`, county, parcel, and returned-geometry identity checks, legacy anonymous GIS behavior,
+and every original denial remain controlling.
 
-The permitted change is limited to mapping an authenticated, county-matched canonical point geometry
-to the existing frozen `centroid_only` contract state, while preserving current polygon behavior,
-identity checks, closed vocabulary, fail-closed WKT parsing, serialization, and every Issue #1422
-denial. No contract schema, DTO, host, Atlas module, persistence, provider, or route change follows.
+## Validation Required During Implementation
 
-## Alternatives
-
-- **Approve the amendment:** complete the originally approved Polygon, Point, and unavailable product
-  outcome using the existing frozen contract vocabulary.
-- **Narrow the terminal condition:** authorize polygon and unavailable only; this weakens the approved
-  product proof and is not recommended.
-- **Reject:** retain the current unwired foundations and close WO-SR-009C without capability delivery.
-
-## Validation Required After Amendment
-
-Focused adapter tests must prove canonical point acceptance, polygon regression, malformed point and
-identity rejection, exact `centroid_only` serialization, and unchanged contract hashes. All original
-Issue #1422 validation, review, exact-head, merge, rollback, and closeout gates remain mandatory.
+Focused consumer, controller, Workbench, and disposable browser tests must prove canonical Polygon,
+truthful unavailable, authentication and `read:parcel`, same-county identity, cross-county
+non-disclosure, exact hash enforcement, and default-disabled behavior. No test may claim Point support.
+All original Issue #1422 review, exact-head, merge, rollback, and closeout gates remain mandatory.

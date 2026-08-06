@@ -49,10 +49,10 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
 
 **Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete.
 Issue #1422 approved `WO-SR-009C - Atlas Workbench Canonical Projection Adoption` at
-`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. Stage 1 proved the frozen adapter is polygon-only while
-the terminal proof requires Point, so product execution is suspended at
-`FROZEN_ADAPTER_POINT_MAPPING_AUTH_REQUIRED`. No product file changed. The legacy anonymous GIS path
-remains non-canonical.
+`f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. The terminal-narrowing amendment recognizes the real
+canonical Polygon source, removes Point from the required proof, and resumes Stages 1 through 4.
+Point remains outside authority, the frozen adapter remains unchanged, and the legacy anonymous GIS
+path remains non-canonical.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
