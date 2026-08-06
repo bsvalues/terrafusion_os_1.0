@@ -3,6 +3,53 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-009A",
+      "status": "active",
+      "authority_class": "R3-bounded-authenticated-synthetic-parcel-journey",
+      "effective_base_sha": "f71cdffb66305c4af1abb5193586aa60818e3969",
+      "scope_source": "Owner approval recorded on 2026-08-05 for the corrected Issue #1413 envelope. CAMA enrichment must be county-scoped; legacy GIS enrichment must fail closed where county ownership cannot be proven. The authorization covers implementation, local synthetic proof, review remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without routine owner relay.",
+      "terminal_condition": "AUTHENTICATED_COUNTY_GOVERNED_SYNTHETIC_PARCEL_JOURNEY_PROVEN_NO_LIVE_DATA_OR_CUTOVER",
+      "authorized_actions": [
+        "filter CAMA enrichment by the authenticated county and remove parcel-only GIS legal-description fallback where county ownership cannot be proven",
+        "prove authenticated search and parcel detail plus missing identity, invalid identity, missing permission, county mismatch, unknown parcel, and duplicate-identifier cross-county fail-closed behavior with synthetic data",
+        "run the canonical Workbench browser journey against a disposable local SQLite database and Development-only ephemeral token without protected-resource access",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify main, perform one governance-only terminal closeout, consume authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/PropertiesController.cs",
+        "backend/TerraFusion.API.Tests/Phase14/ControllerSecurityBoundaryTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/R1Week5/R1Week5Cx19D1PropertiesCountyIsolationIntegrationTests.cs",
+        "tests/playwright.workbench-smoke.config.ts",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009A-authenticated-county-governed-parcel-journey.md",
+        "docs/brain/workorders/evidence/WO-SR-009A-AUTHENTICATED-COUNTY-GOVERNED-PARCEL-JOURNEY.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "live county data, PACS, county SQL, existing county database mutation, credentials, secret values, production, deployment, schema or migration changes, permission-policy changes, or frontend product-source changes",
+        "Forge authoritative-response switch or cutover, Atlas process-host adoption, Dais write adoption, GPT provider/model/embedding adoption, TerraPilot promotion, Sync connection or refresh, suite-repository mutation, publication, source retirement, or package and lockfile changes",
+        "workflow or branch-protection changes, force push, required-gate bypass, unresolved substantive review, failed exact-head assurance, external connectivity, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "need for a file outside the allowlist, schema or permission-policy change, protected data, non-development credential, external connectivity, deployment, production, or another suite/runtime adoption",
+        "CAMA query not county-scoped, GIS evidence used without provable county ownership, synthetic proof using existing county data, disposable residue retained, or secret value printed or persisted",
+        "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
+      ],
+      "decision_basis": "Post-Forge reconciliation identified authenticated county-governed parcel acquisition as the first common dependency for a complete assessor journey and found parcel-only CAMA/GIS enrichment that could cross county boundaries. The bounded repair and synthetic local journey are reversible and do not authorize live data or cutover."
+    },
+    {
       "id": "OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

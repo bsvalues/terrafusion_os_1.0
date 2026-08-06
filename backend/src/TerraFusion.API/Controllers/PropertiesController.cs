@@ -103,7 +103,7 @@ public class PropertiesController : ControllerBase
             // Enrich with CAMA data not available on the base Property entity
             var cama = await _db.CamaCharacteristics
                 .AsNoTracking()
-                .Where(c => c.ParcelId == parcelNumber)
+                .Where(c => c.CountyId == countyId && c.ParcelId == parcelNumber)
                 .OrderByDescending(c => c.TaxYear)
                 .Select(c => new {
                     c.SquareFeet,
@@ -138,17 +138,8 @@ public class PropertiesController : ControllerBase
                     property.LandAcres = Math.Round(cama.LandAreaSqft.Value / 43560m, 4);
             }
 
-            // Enrich legal description — GIS (varchar 255, ArcGIS-synced) as quick fallback
-            if (string.IsNullOrEmpty(property.LegalDescription))
-            {
-                var gisLegal = await _db.GisParcelGeometries
-                    .AsNoTracking()
-                    .Where(g => g.ParcelId == parcelNumber && !string.IsNullOrEmpty(g.LegalDescription))
-                    .Select(g => g.LegalDescription)
-                    .FirstOrDefaultAsync();
-                if (!string.IsNullOrEmpty(gisLegal))
-                    property.LegalDescription = gisLegal;
-            }
+            // Legacy GisParcelGeometry has no CountyId. ParcelId alone cannot prove county
+            // ownership, so legal-description enrichment must fail closed at this boundary.
 
             return Ok(property);
         }

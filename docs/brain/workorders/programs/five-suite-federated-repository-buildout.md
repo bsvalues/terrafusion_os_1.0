@@ -87,7 +87,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-008H-E1 | Implement the pure cost schedule resolution and modifier projection foundation | Complete R3; PR #1404 merged as `6eb6f0768`; exact authority consumed |
 | WO-SR-008I | Complete the Forge canonical consumer through Stage 1 - Pure boundary assembly, bounded host/consumer, and default-disabled Shadow adoption | Complete R4; PRs #1408-#1410 merged through `37a3e469c`; authority consumed; no live cutover |
 | WO-TF-POST-FORGE-001 | Reconcile authoritative post-Forge portfolio state and admit or bound one successor | Complete R2; capability matrix and ranked candidates select WO-SR-009A; Issue #1413 is the complete decision packet |
-| WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Proposed R3; blocked pending the exact Issue #1413 owner decision; no implementation authority inferred |
+| WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Active R3 under the corrected Issue #1413 decision; county-scoped CAMA and fail-closed GIS repair plus synthetic local proof only |
 
 ## Extraction and provenance policy
 
@@ -260,5 +260,7 @@ response cutover remain denied.
 dependencies, and stale routing. It selected `WO-SR-009A` because authenticated county-governed
 parcel acquisition remains the earliest shared product blocker and source inspection found
 parcel-only CAMA/GIS enrichment fallbacks that require exact county-isolation repair. Issue #1413
-contains the complete recommended R3 packet. No successor implementation is admitted by this
-reconciliation.
+contains the approved corrected R3 packet. The decision is canonized as
+`OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`; implementation is limited to the exact
+controller, test, browser-smoke, and governance allowlist. Live county/PACS/SQL, production,
+deployment, schema, permission-policy, frontend-source, and suite-adoption changes remain denied.
