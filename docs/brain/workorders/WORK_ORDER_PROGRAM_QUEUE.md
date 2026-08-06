@@ -13,12 +13,14 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active at `WO-SR-009A`. The corrected bounded R3
-decision in Issue #1413 is approved and canonized as
-`OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`. Current work is limited to county-scoped
-CAMA enrichment, fail-closed GIS behavior where county ownership cannot be proven, focused synthetic
-API tests, and one disposable local Workbench journey. No live county, PACS, SQL, production,
-deployment, schema, credential, secret, frontend-source, or suite-adoption authority is inferred.
+The Five-Suite Federated Repository Buildout is active between cohorts at portfolio reconciliation.
+`WO-SR-009A` completed in PR #1415: exact assured head
+`0423615c82840978673916831de788f61766c1b7` merged as
+`b934cf0c02ab7e6b5eb20e122f290e9adb665f83`. The proof county-scopes CAMA, fails closed on legacy
+GIS evidence without county ownership, and completes one disposable authenticated synthetic
+Workbench journey. Decision `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805` is completed
+and consumed. No live county, PACS, SQL, production, deployment, schema, credential, secret,
+frontend-source, suite-adoption, or cutover authority is inferred.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
 PR #1404 merged exact assured head `08c3c6010cf588af8a9cea57599a67b222957f1b` as
 `6eb6f07687cb728dc9b42dada8991c0afa00ced8`, proving exact schedule pins, stable

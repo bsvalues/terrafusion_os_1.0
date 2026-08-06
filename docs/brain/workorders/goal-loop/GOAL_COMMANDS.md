@@ -115,9 +115,10 @@ mapping, and consumer adoption. Issue #1406 approved that packet as `WO-SR-008I`
 `OWNER-SR-008I-R4-FORGE-CONSUMER-COMPLETION-20260804`. PRs #1408 through #1410 completed pure
 boundary assembly, bounded host/consumer implementation, and default-disabled Shadow adoption. The
   authority is completed and consumed. `WO-TF-POST-FORGE-001` completed the resulting portfolio
-  reconciliation and selected `WO-SR-009A`. The corrected Issue #1413 decision is approved and
-  canonized as `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`; the exact county-isolation
-  repair and local synthetic journey are active. The legacy Forge response remains authoritative.
+  reconciliation and selected `WO-SR-009A`. The corrected Issue #1413 decision is canonized as
+  `OWNER-SR-009A-R3-AUTHENTICATED-PARCEL-JOURNEY-20260805`. PR #1415 merged the exact assured
+  county-isolation repair and local synthetic journey as `b934cf0c0`; the authority is completed and
+  consumed and routing returns to portfolio reconciliation. The legacy Forge response remains authoritative.
   Quality/condition,
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.

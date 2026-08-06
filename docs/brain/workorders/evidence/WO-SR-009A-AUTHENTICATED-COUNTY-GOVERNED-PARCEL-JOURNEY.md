@@ -2,8 +2,8 @@
 
 ## Evidence state
 
-`IMPLEMENTATION_VALIDATED_AWAITING_REMOTE`. Local proof is complete. PR checks, exact-head
-assurance, merge metadata, and post-merge verification remain pending.
+`COMPLETE - AUTHORITY CONSUMED`. Local proof, remote checks, exact-head assurance, governed merge,
+and post-merge verification are complete.
 
 ## Authority and provenance
 
@@ -39,8 +39,11 @@ assurance, merge metadata, and post-merge verification remain pending.
 | External/protected resource access | PASS | SQLite-only process configuration; Harris and legacy ArcGIS sync disabled; no external credentials or protected data used |
 | JSON, query, planner, diff, secret scan | PASS | JSON/query pass; `41` query/planner tests pass; diff and prohibited secret-pattern scan pass |
 | Core governance gates | PASS | TypeScript core boundary passes; Phase 8.3 tools `56` passed, `0` failed |
-| Remote checks and review threads | PENDING | GitHub exact-head evidence required |
-| Independent exact-head assurance | PENDING | PASS required |
+| Strict pre-push validation | PASS | `164` unit tests passed; Snyk, performance, coordination, compliance, and backend publish checks passed |
+| Remote checks and review threads | PASS | PR #1415; all required checks green/acceptable; `5` substantive threads resolved; `0` unresolved |
+| Independent exact-head assurance | PASS | Exact head `0423615c82840978673916831de788f61766c1b7`; exact 15-file scope |
+| Governed merge | PASS | PR #1415 squash-merged as `b934cf0c02ab7e6b5eb20e122f290e9adb665f83` |
+| Post-merge verification | PASS | `origin/main` equals `b934cf0c02ab7e6b5eb20e122f290e9adb665f83`; implementation and evidence files present |
 
 ## Rollback
 
@@ -56,6 +59,6 @@ connectivity.
 
 ## Terminal condition
 
-Local proof satisfies the implementation portion of
-`AUTHENTICATED_COUNTY_GOVERNED_SYNTHETIC_PARCEL_JOURNEY_PROVEN_NO_LIVE_DATA_OR_CUTOVER`.
-The terminal condition is recorded only after governed merge and post-merge verification.
+`AUTHENTICATED_COUNTY_GOVERNED_SYNTHETIC_PARCEL_JOURNEY_PROVEN_NO_LIVE_DATA_OR_CUTOVER`
+
+`PASS`
