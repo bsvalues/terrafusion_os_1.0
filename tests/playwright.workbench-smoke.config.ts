@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
-import { dirname, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const testsRoot = dirname(fileURLToPath(import.meta.url));
@@ -7,9 +8,32 @@ const repoRoot = resolve(testsRoot, '..');
 const apiPort = process.env.TF_API_PORT ?? '5046';
 const smokeBaseURL =
   process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? `http://127.0.0.1:${apiPort}`;
+const smokeRoot = resolve(repoRoot, '.tmp', 'workbench-smoke');
 const smokeDatabasePath =
   process.env.WORKBENCH_SMOKE_DATABASE_PATH ??
-  resolve(repoRoot, '.tmp', 'workbench-smoke', `parcel-journey-${process.pid}.db`);
+  resolve(smokeRoot, `parcel-journey-${process.pid}.db`);
+const smokeDatabaseRelativePath = relative(smokeRoot, smokeDatabasePath);
+const frontendToolPath = resolve(repoRoot, 'frontend', 'node_modules', '.bin');
+const rootToolPath = resolve(repoRoot, 'node_modules', '.bin');
+const frontendBuildCommand =
+  process.platform === 'win32'
+    ? `set "PATH=${frontendToolPath};${rootToolPath};C:\\Program Files\\nodejs;C:\\Program Files\\dotnet;C:\\Windows\\System32;C:\\Windows" && corepack pnpm --dir frontend run build`
+    : `PATH="${frontendToolPath}:${rootToolPath}:$PATH" corepack pnpm --dir frontend run build`;
+
+if (
+  !smokeDatabaseRelativePath ||
+  smokeDatabaseRelativePath.startsWith('..') ||
+  isAbsolute(smokeDatabaseRelativePath) ||
+  !/^parcel-journey-\d+\.db$/.test(basename(smokeDatabasePath))
+) {
+  throw new Error(
+    'WORKBENCH_SMOKE_DATABASE_PATH must name a parcel-journey database inside .tmp/workbench-smoke.'
+  );
+}
+
+if (existsSync(smokeDatabasePath)) {
+  throw new Error(`Refusing to replace pre-existing smoke database: ${smokeDatabasePath}`);
+}
 
 export default defineConfig({
   testDir: resolve(testsRoot, 'e2e'),
@@ -34,8 +58,7 @@ export default defineConfig({
     ],
   ],
   webServer: {
-    command:
-      'node -e "const fs=require(\'node:fs\');const path=require(\'node:path\');const file=process.env.WORKBENCH_SMOKE_DATABASE_PATH;fs.mkdirSync(path.dirname(file),{recursive:true});fs.rmSync(file,{force:true});" && cd frontend && node node_modules/typescript/bin/tsc --noEmit && node node_modules/vite/bin/vite.js build && cd .. && dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~BootstrapDisposableSqliteParcelJourney_SeedsRealPropertyServiceFixture --logger "console;verbosity=minimal" && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --skip-dev-seeders',
+    command: `${frontendBuildCommand} && dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~BootstrapDisposableSqliteParcelJourney_SeedsRealPropertyServiceFixture --logger "console;verbosity=minimal" && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -v minimal && dotnet backend/src/TerraFusion.API/bin/Debug/net8.0/TerraFusion.API.dll --skip-dev-seeders`,
     cwd: repoRoot,
     env: {
       ...process.env,
@@ -53,7 +76,7 @@ export default defineConfig({
       LegacyArcGisSync__Enabled: 'false',
       TF_ENABLE_LEGACY_ARCGIS_SYNC: 'false',
     },
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 240_000,
     url: `${smokeBaseURL}/api/auth/dev-token`,
   },
