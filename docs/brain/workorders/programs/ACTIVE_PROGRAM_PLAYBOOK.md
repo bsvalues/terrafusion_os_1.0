@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-07-27
+**Last Updated:** 2026-08-06
 **Base:** `origin/main` at `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` or later
 
 ---
@@ -207,6 +207,11 @@ mutation, extraction, provider, persistence, deployment, protected-resource acce
 transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
+
+Current Five-Suite routing: `WO-TF-POST-DAIS-001` completed R2 reconciliation at
+`cb0463830d06e288e37ea5515e97b23eee51c0f4` and selected `WO-SR-009C - Atlas Workbench Canonical
+Projection Adoption` as the next exact R3 boundary. No implementation is admitted until its
+consolidated packet is approved. The legacy anonymous GIS parcel reads are not the canonical source.
 
 ---
 
