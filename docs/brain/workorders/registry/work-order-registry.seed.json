@@ -10426,16 +10426,10 @@
       "stopConditions": [
         {
           "type": "authority_wall",
-          "description": "WO-SR-009C implementation may proceed only under its satisfied exact R3 authority and terminal-narrowing amendment."
+          "description": "WO-SR-009C completed in PR #1424; its exact R3 authority and terminal-narrowing amendment are consumed, and no successor implementation authority is inferred."
         }
       ],
-      "nextCandidates": [
-        {
-          "id": "WO-SR-009C",
-          "status": "active",
-          "reason": "R3 authority and terminal-narrowing amendment are satisfied; execute Stages 1 through 4 under the original allowlist."
-        }
-      ],
+      "nextCandidates": [],
       "authority": {
         "mayWrite": false,
         "mayCommit": false,
@@ -10591,12 +10585,12 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
         "notes": "WO-SR-009C is complete and its bounded authority is consumed. Point support, frozen-adapter changes, live providers, protected resources, deployment, and cutover remain denied."
       },

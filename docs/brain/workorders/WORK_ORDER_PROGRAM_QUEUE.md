@@ -27,8 +27,8 @@ Portfolio reconciliation is current; no successor implementation is inferred.
 read reachable through the real API and `LiveDataProvider`, renders honest PropertyDais states, and
 passes disposable same-county and cross-county synthetic proof. Decision
 `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` is completed and consumed. The subsequent
-`WO-TF-POST-DAIS-001` reconciliation admitted `WO-SR-009C`, whose exact R3 authority and controlling
-terminal-narrowing amendment are now active.
+`WO-TF-POST-DAIS-001` reconciliation admitted `WO-SR-009C`; PR #1424 completed that Work Order, and
+its exact R3 authority and controlling terminal-narrowing amendment are now consumed.
 Writes, persistence/schema, standalone Dais runtime adoption, live data, deployment, cutover, and
 Workbench routing/tab/navigation changes remain denied.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
