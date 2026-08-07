@@ -7,7 +7,7 @@
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import * as dossierServiceModule from '../../services/dossierService';
 import PropertyDossier from '../../pages/workbench/tabs/PropertyDossier';
@@ -47,6 +47,7 @@ vi.mock('../../services/dossierService', () => ({
   dossierService: {
     getDetails: vi.fn(),
     getEvidenceSnapshot: vi.fn(),
+    getEvidenceRegistryRead: vi.fn(),
     searchDocuments: vi.fn(),
     searchEvidence: vi.fn(),
     getChainOfCustody: vi.fn(),
@@ -62,6 +63,11 @@ const mockGetDetails =
 const mockGetEvidenceSnapshot =
   dossierServiceModule.dossierService.getEvidenceSnapshot as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getEvidenceSnapshot
+  >;
+
+const mockGetEvidenceRegistryRead =
+  dossierServiceModule.dossierService.getEvidenceRegistryRead as vi.MockedFunction<
+    typeof dossierServiceModule.dossierService.getEvidenceRegistryRead
   >;
 
 const mockSearchDocuments =
@@ -99,6 +105,29 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
             </div>
           }
         >
+          <Route path='dossier' element={<PropertyDossier />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+};
+
+const NavigableTestWrapper: React.FC = () => {
+  const ParcelRoute: React.FC = () => {
+    const { parcelId = '' } = useParams();
+    const navigate = useNavigate();
+    return (
+      <div>
+        <button onClick={() => navigate('/property/P-B/dossier')}>Navigate parcel</button>
+        <Outlet context={{ parcelId }} />
+      </div>
+    );
+  };
+
+  return (
+    <MemoryRouter initialEntries={['/property/P-A/dossier']}>
+      <Routes>
+        <Route path='/property/:parcelId' element={<ParcelRoute />}>
           <Route path='dossier' element={<PropertyDossier />} />
         </Route>
       </Routes>
@@ -199,6 +228,26 @@ describe('PropertyDossier', () => {
       hasMore: false,
     });
 
+    mockGetEvidenceRegistryRead.mockResolvedValue({
+      schemaVersion: '1.0.0',
+      countyId: '11111111-1111-1111-1111-111111111111',
+      parcelId: '12345-001',
+      results: [
+        {
+          evidenceId: '33333333-3333-3333-3333-333333333333',
+          evidenceType: 'field-inspection',
+          integrity: 'verified',
+          createdAt: '2026-08-06T12:00:00.000Z',
+          documentId: '44444444-4444-4444-4444-444444444444',
+        },
+      ],
+      total: 1,
+      hasMore: false,
+      limit: 25,
+      offset: 0,
+      traceId: 'corr-canonical-evidence',
+    });
+
     mockSearchEvidence.mockResolvedValue({
       results: [
         {
@@ -246,6 +295,164 @@ describe('PropertyDossier', () => {
   });
 
   describe('Rendering', () => {
+    it('renders the canonical evidence registry in exact server order', async () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      const panel = await screen.findByTestId('canonical-evidence-loaded');
+      expect(panel).toHaveTextContent('field-inspection');
+      expect(panel).toHaveTextContent('33333333-3333-3333-3333-333333333333');
+      expect(panel).toHaveTextContent('44444444-4444-4444-4444-444444444444');
+      expect(panel).toHaveTextContent('corr-canonical-evidence');
+      expect(mockGetEvidenceRegistryRead).toHaveBeenCalledWith('12345-001', 25, 0);
+    });
+
+    it('renders an honest canonical evidence empty state', async () => {
+      mockGetEvidenceRegistryRead.mockResolvedValue({
+        schemaVersion: '1.0.0',
+        countyId: '11111111-1111-1111-1111-111111111111',
+        parcelId: '12345-001',
+        results: [],
+        total: 0,
+        hasMore: false,
+        limit: 25,
+        offset: 0,
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(await screen.findByTestId('canonical-evidence-empty')).toHaveTextContent(
+        'No canonical evidence records are available',
+      );
+    });
+
+    it('renders an honest canonical evidence error state', async () => {
+      mockGetEvidenceRegistryRead.mockRejectedValue(Object.assign(
+        new Error('canonical registry unavailable'),
+        {
+          errorCode: 'DOSSIER_HTTP_503',
+          correlationId: 'corr-dossier-server-error',
+          component: 'DossierEvidenceRegistryRead',
+        },
+      ));
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(await screen.findByTestId('canonical-evidence-error')).toHaveTextContent(
+        'canonical registry unavailable',
+      );
+      expect(screen.getByText('corr-dossier-server-error')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeEnabled();
+    });
+
+    it('renders a copyable network correlation ID', async () => {
+      mockGetEvidenceRegistryRead.mockRejectedValue(Object.assign(new Error('network unavailable'), {
+        errorCode: 'NETWORK_ERROR',
+        correlationId: 'net-dossier-network-error',
+        component: 'DossierEvidenceRegistryRead',
+      }));
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(await screen.findByTestId('canonical-evidence-error')).toHaveTextContent(
+        'net-dossier-network-error',
+      );
+      expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeEnabled();
+    });
+
+    it('discards a stale canonical response after parcel navigation', async () => {
+      let resolveOld: ((value: Awaited<ReturnType<typeof dossierServiceModule.dossierService.getEvidenceRegistryRead>>) => void) | undefined;
+      const oldResponse = new Promise<Awaited<ReturnType<typeof dossierServiceModule.dossierService.getEvidenceRegistryRead>>>((resolve) => {
+        resolveOld = resolve;
+      });
+      mockGetEvidenceRegistryRead.mockImplementation((requestedParcelId) => {
+        if (requestedParcelId === 'P-A') return oldResponse;
+        return Promise.resolve({
+          schemaVersion: '1.0.0',
+          countyId: '11111111-1111-1111-1111-111111111111',
+          parcelId: 'P-B',
+          results: [{
+            evidenceId: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+            evidenceType: 'photo',
+            integrity: 'verified',
+            createdAt: '2026-08-07T12:00:00.000Z',
+          }],
+          total: 1,
+          hasMore: false,
+          limit: 25,
+          offset: 0,
+        });
+      });
+
+      render(<NavigableTestWrapper />);
+      fireEvent.click(screen.getByRole('button', { name: 'Navigate parcel' }));
+      await waitFor(() => {
+        expect(mockGetEvidenceRegistryRead).toHaveBeenCalledWith('P-B', 25, 0);
+      });
+      expect(await screen.findByTestId('canonical-evidence-loaded')).toHaveTextContent(
+        'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      );
+
+      resolveOld?.({
+        schemaVersion: '1.0.0',
+        countyId: '11111111-1111-1111-1111-111111111111',
+        parcelId: 'P-A',
+        results: [{
+          evidenceId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+          evidenceType: 'photo',
+          integrity: 'verified',
+          createdAt: '2026-08-06T12:00:00.000Z',
+        }],
+        total: 1,
+        hasMore: false,
+        limit: 25,
+        offset: 0,
+      });
+      await waitFor(() => {
+        expect(screen.queryByText('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).not.toBeInTheDocument();
+      });
+    });
+
+    it('navigates canonical evidence pages and preserves server order', async () => {
+      mockGetEvidenceRegistryRead.mockImplementation(async (requestedParcelId, limit, offset) => ({
+        schemaVersion: '1.0.0',
+        countyId: '11111111-1111-1111-1111-111111111111',
+        parcelId: requestedParcelId,
+        results: [{
+          evidenceId: offset === 0
+            ? '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+            : '22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+          evidenceType: 'photo',
+          integrity: 'verified',
+          createdAt: '2026-08-07T12:00:00.000Z',
+        }],
+        total: 26,
+        hasMore: offset === 0,
+        limit,
+        offset,
+      }));
+
+      render(<TestWrapper parcelId='12345-001' />);
+      expect(await screen.findByTestId('canonical-evidence-loaded')).toHaveTextContent(
+        '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Next evidence page' }));
+      await waitFor(() => {
+        expect(screen.getByTestId('canonical-evidence-loaded')).toHaveTextContent(
+          '22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+        );
+      });
+      expect(mockGetEvidenceRegistryRead).toHaveBeenLastCalledWith('12345-001', 25, 25);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Previous evidence page' }));
+      await waitFor(() => {
+        expect(screen.getByTestId('canonical-evidence-loaded')).toHaveTextContent(
+          '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        );
+      });
+      expect(mockGetEvidenceRegistryRead).toHaveBeenLastCalledWith('12345-001', 25, 0);
+    });
+
     it('renders with parcel context', () => {
       render(<TestWrapper parcelId='12345-001' />);
 

@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using TerraFusion.Abstractions.DTOs;
+using TerraFusion.API.Adapters;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
@@ -91,6 +93,19 @@ public class DossierController : ControllerBase
     return await countyQuery
         .Select(c => (Guid?)c.Id)
         .FirstOrDefaultAsync();
+  }
+
+  private Guid? ResolveStrictAuthenticatedCountyId()
+  {
+    if (User.Identity?.IsAuthenticated != true)
+      return null;
+
+    var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+    return Guid.TryParseExact(countyIdClaim, "D", out var countyId)
+        && countyId != Guid.Empty
+        && string.Equals(countyIdClaim, countyId.ToString("D"), StringComparison.Ordinal)
+      ? countyId
+      : null;
   }
 
   private static string[] BuildCountyNameCandidates(params string?[] claims)
@@ -186,6 +201,14 @@ public class DossierController : ControllerBase
     var generated = $"dossier-{Guid.NewGuid():N}";
     HttpContext.Response.Headers["X-Correlation-ID"] = generated;
     return generated;
+  }
+
+  private string? GetValidInboundCorrelationId()
+  {
+    var inbound = HttpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault();
+    return !string.IsNullOrWhiteSpace(inbound) && CorrelationIdSanitizer.IsMatch(inbound)
+        ? inbound
+        : null;
   }
 
   /// <summary>
@@ -356,6 +379,83 @@ public class DossierController : ControllerBase
       total,
       hasMore = offset + page.Count < total,
     });
+  }
+
+  /// <summary>
+  /// Returns the frozen county- and parcel-scoped Dossier evidence registry read contract.
+  /// This route intentionally rejects missing or invalid county claims and never uses DX-01.
+  /// </summary>
+  [HttpGet("parcels/{parcelId}/evidence/registry")]
+  [RequiresPermission("read:dossier")]
+  [ProducesResponseType(typeof(DossierEvidenceRegistryReadResult), StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+  public async Task<ActionResult<DossierEvidenceRegistryReadResult>> GetEvidenceRegistryRead(
+      string parcelId,
+      [FromQuery] int limit = 25,
+      [FromQuery] int offset = 0)
+  {
+    parcelId = parcelId?.Trim() ?? string.Empty;
+    if (!IsValidParcelId(parcelId))
+      return BadRequest(new { error = "Invalid parcelId format" });
+
+    if (limit is < 1 or > 100)
+      return BadRequest(new { error = "limit must be between 1 and 100" });
+
+    if (offset < 0)
+      return BadRequest(new { error = "offset must be non-negative" });
+
+    var countyId = ResolveStrictAuthenticatedCountyId();
+    if (countyId is null)
+      return Forbid();
+
+    var scopedQuery = _db.DossierEvidenceItems
+        .AsNoTracking()
+        .Where(e => e.CountyId == countyId.Value && e.ParcelId == parcelId);
+
+    var total = await scopedQuery.CountAsync();
+    var sourcePage = await scopedQuery
+        .OrderByDescending(e => e.CreatedAt)
+        .ThenBy(e => e.Id)
+        .Skip(offset)
+        .Take(limit)
+        .ToListAsync();
+
+    // SQLite materializes stored UTC timestamps as Local. Convert only that
+    // provider-proven representation; every other non-UTC value stays invalid.
+    if (_db.Database.IsSqlite())
+    {
+      foreach (var evidence in sourcePage.Where(e => e.CreatedAt.Kind == DateTimeKind.Local))
+        evidence.CreatedAt = evidence.CreatedAt.ToUniversalTime();
+    }
+
+    var request = new DossierEvidenceRegistryReadRequest
+    {
+      SchemaVersion = "1.0.0",
+      CountyId = countyId.Value.ToString("D"),
+      ParcelId = parcelId,
+      Limit = limit,
+      Offset = offset,
+      TraceId = GetValidInboundCorrelationId(),
+    };
+
+    try
+    {
+      var contractJson = DossierEvidenceRegistryReadAdapter.Serialize(request, total, sourcePage);
+      return Content(contractJson, "application/json");
+    }
+    catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+    {
+      _logger.LogWarning(
+          exception,
+          "Canonical Dossier evidence registry projection rejected parcel {ParcelId} for county {CountyId}",
+          parcelId,
+          countyId.Value);
+      return Problem(
+          statusCode: StatusCodes.Status500InternalServerError,
+          title: "Canonical Dossier evidence registry projection failed");
+    }
   }
 
   [HttpGet("evidence/{evidenceId}/chain")]

@@ -101,6 +101,54 @@ export interface EvidenceSearchResponse {
   hasMore: boolean;
 }
 
+export interface DossierEvidenceRegistryRecord {
+  evidenceId: string;
+  evidenceType:
+    | 'field-inspection'
+    | 'valuation-record'
+    | 'legal-document'
+    | 'tax-record'
+    | 'correspondence'
+    | 'photo';
+  integrity: IntegrityStatus;
+  createdAt: string;
+  documentId?: string;
+}
+
+export interface DossierEvidenceRegistryReadResult {
+  schemaVersion: '1.0.0';
+  countyId: string;
+  parcelId: string;
+  results: DossierEvidenceRegistryRecord[];
+  total: number;
+  hasMore: boolean;
+  limit: number;
+  offset: number;
+  traceId?: string;
+}
+
+export class DossierRequestError extends Error {
+  readonly correlationId: string;
+  readonly errorCode: string;
+  readonly component: string;
+  readonly stackTrace?: string;
+
+  constructor(
+    message: string,
+    correlationId: string,
+    errorCode: string,
+    component: string,
+    stackTrace?: string,
+  ) {
+    super(message);
+    this.name = 'DossierRequestError';
+    this.correlationId = correlationId;
+    this.errorCode = errorCode;
+    this.component = component;
+    this.stackTrace = stackTrace;
+  }
+}
+
 export interface DossierStats {
   totalDocuments: number;
   activeDocuments: number;
@@ -223,12 +271,21 @@ function generateCorrelationId(): string {
   return `tf-${Date.now().toString(36)}-${dossierCorrelationSequence.toString(36)}`;
 }
 
+function generateNetworkCorrelationId(): string {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `net-${uuid}`;
+
+  dossierCorrelationSequence = (dossierCorrelationSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `net-${Date.now().toString(36)}-${dossierCorrelationSequence.toString(36)}`;
+}
+
 /**
  * GET with X-Correlation-ID header injection.
  * Returns both the parsed body and the correlation ID echoed by the server.
  */
 async function dossierGetWithCorrelation<T>(
   path: string,
+  component: string,
   correlationId?: string,
 ): Promise<{ data: T; correlationId: string }> {
   const cid = correlationId || generateCorrelationId();
@@ -237,15 +294,43 @@ async function dossierGetWithCorrelation<T>(
     'X-Correlation-ID': cid,
   };
 
-  const response = await fetch(`${DOSSIER_API}${path}`, { headers });
-  if (!response.ok) {
-    throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
+  let response: Response;
+  try {
+    response = await fetch(`${DOSSIER_API}${path}`, { headers });
+  } catch (error) {
+    throw new DossierRequestError(
+      error instanceof Error ? error.message : 'Dossier API network error',
+      generateNetworkCorrelationId(),
+      'NETWORK_ERROR',
+      component,
+      error instanceof Error ? error.stack : undefined,
+    );
   }
 
-  const data: T = await response.json();
+  const echoed = response.headers.get('X-Correlation-ID') || cid;
+  if (!response.ok) {
+    throw new DossierRequestError(
+      `Dossier API error: ${response.status} ${response.statusText}`,
+      echoed,
+      `DOSSIER_HTTP_${response.status}`,
+      component,
+    );
+  }
+
+  let data: T;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new DossierRequestError(
+      'Dossier API returned an invalid JSON response',
+      echoed,
+      'INVALID_RESPONSE',
+      component,
+      error instanceof Error ? error.stack : undefined,
+    );
+  }
 
   // Prefer the server-echoed header; fall back to what we sent
-  const echoed = response.headers.get('X-Correlation-ID') || cid;
   return { data, correlationId: echoed };
 }
 
@@ -285,6 +370,21 @@ export const dossierService = {
     return dossierPost<EvidenceSearchResponse>('/evidence/search', request);
   },
 
+  /** Read the frozen county- and parcel-scoped canonical evidence registry contract. */
+  getEvidenceRegistryRead: async (
+    parcelId: string,
+    limit = 25,
+    offset = 0,
+  ): Promise<DossierEvidenceRegistryReadResult> => {
+    const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+    const path = `/parcels/${encodeURIComponent(parcelId)}/evidence/registry?${params}`;
+    const response = await dossierGetWithCorrelation<DossierEvidenceRegistryReadResult>(
+      path,
+      'DossierEvidenceRegistryRead',
+    );
+    return response.data;
+  },
+
   /**
    * Get evidence chain-of-custody events
    */
@@ -319,7 +419,7 @@ export const dossierService = {
 
     const qs = params.toString();
     const path = `/parcels/${encodeURIComponent(parcelId)}/details${qs ? `?${qs}` : ''}`;
-    return dossierGetWithCorrelation<DossierDetailsResponse>(path);
+    return dossierGetWithCorrelation<DossierDetailsResponse>(path, 'DossierDetails');
   },
 
   /**

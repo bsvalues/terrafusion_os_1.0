@@ -47,14 +47,19 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** Dais, Dossier, and GPT contract implementation/freeze is complete. `WO-SR-009C -
-Atlas Workbench Canonical Projection Adoption` completed in PR #1424. Exact assured head
+**Current state:** `WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption` is active under
+Issue #1426 and exact decision
+`OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807`. It adds one strict
+authenticated county- and parcel-scoped frozen-contract read and truthful canonical panel without
+writes, custody mutation, live data, routing changes, or cutover. The Development-only Benton
+fallback is explicitly prohibited for this route. Before activation, `WO-SR-009C - Atlas Workbench
+Canonical Projection Adoption` completed in PR #1424. Exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` merged as
 `b5a02db1758deda45d84c0ec99adb8f31d328c7b`, proving authenticated canonical Polygon, truthful
 unavailable, and cross-county non-disclosure through the real API and existing Atlas tab.
 Configuration remains default `Disabled`; Point is not claimed; the frozen adapter and legacy
 anonymous GIS path remain unchanged. The bounded authority is consumed and portfolio reconciliation
-is current without inferred successor authority.
+selected WO-SR-009D; no parallel successor authority is inferred.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
@@ -134,7 +139,7 @@ boundary assembly, bounded host/consumer implementation, and default-disabled Sh
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.
 
-**Allowed loop modes:** `program`, `evidence`, `discovery`
+**Allowed loop modes:** `program`, `evidence`, `discovery`, `implementation`, `validation`
 
 **Blocked:** package publication, blind extraction, duplicate mutable ownership outside the
 authorized Forge valuation-kernel transition, out-of-scope source deletion or cutover, secrets,

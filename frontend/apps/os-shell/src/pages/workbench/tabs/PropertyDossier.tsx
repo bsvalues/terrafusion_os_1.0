@@ -41,6 +41,7 @@ import {
   dossierService,
   type ChainEvent,
   type DossierDocument,
+  type DossierEvidenceRegistryReadResult,
   type DossierStats,
   type EvidenceItem,
 } from '../../../services/dossierService';
@@ -138,6 +139,21 @@ interface EvidenceChainState {
   selectedEvidenceId: string | null;
   events: ChainEvent[];
 }
+
+type CanonicalEvidenceState =
+  | { status: 'loading'; parcelId: string }
+  | { status: 'loaded'; parcelId: string; data: DossierEvidenceRegistryReadResult }
+  | {
+      status: 'error';
+      parcelId: string;
+      error: {
+        message: string;
+        errorCode: string;
+        correlationId?: string;
+        component: string;
+        details?: { stackTrace?: string };
+      };
+    };
 
 // ============================================================================
 // Helper: Format currency for display
@@ -364,6 +380,15 @@ export const PropertyDossier: React.FC = () => {
     selectedEvidenceId: null,
     events: [],
   });
+  const [canonicalEvidence, setCanonicalEvidence] = useState<CanonicalEvidenceState>({
+    status: 'loading',
+    parcelId,
+  });
+  const [canonicalEvidenceReload, setCanonicalEvidenceReload] = useState(0);
+  const [canonicalEvidencePage, setCanonicalEvidencePage] = useState({ parcelId, offset: 0 });
+  const canonicalEvidenceOffset = canonicalEvidencePage.parcelId === parcelId
+    ? canonicalEvidencePage.offset
+    : 0;
 
   // CX-26: Evidence snapshot (manual fetch — point-in-time)
   const evidence = useEvidenceSnapshot(parcelId);
@@ -419,6 +444,59 @@ export const PropertyDossier: React.FC = () => {
   useEffect(() => {
     void loadDocumentManagement();
   }, [loadDocumentManagement]);
+
+  useEffect(() => {
+    let active = true;
+    const requestedParcelId = parcelId;
+    setCanonicalEvidence({ status: 'loading', parcelId: requestedParcelId });
+
+    if (typeof dossierService.getEvidenceRegistryRead !== 'function') {
+      setCanonicalEvidence({
+        status: 'error',
+        parcelId: requestedParcelId,
+        error: {
+          message: 'Canonical evidence registry is unavailable in this client bundle',
+          errorCode: 'DOSSIER_REGISTRY_CLIENT_UNAVAILABLE',
+          correlationId: createStableId('net'),
+          component: 'DossierEvidenceRegistryRead',
+        },
+      });
+      return () => { active = false; };
+    }
+
+    void dossierService.getEvidenceRegistryRead(requestedParcelId, 25, canonicalEvidenceOffset)
+      .then((data) => {
+        if (active && data.parcelId === requestedParcelId)
+          setCanonicalEvidence({ status: 'loaded', parcelId: requestedParcelId, data });
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setCanonicalEvidence({
+            status: 'error',
+            parcelId: requestedParcelId,
+            error: {
+              message: error instanceof Error ? error.message : 'Failed to load canonical evidence registry',
+              errorCode: typeof error === 'object' && error !== null && 'errorCode' in error
+                ? String(error.errorCode)
+                : 'FETCH_ERROR',
+              correlationId: typeof error === 'object' && error !== null && 'correlationId' in error
+                ? String(error.correlationId)
+                : undefined,
+              component: typeof error === 'object' && error !== null && 'component' in error
+                ? String(error.component)
+                : 'DossierEvidenceRegistryRead',
+              details: {
+                stackTrace: typeof error === 'object' && error !== null && 'stackTrace' in error
+                  ? String(error.stackTrace)
+                  : error instanceof Error ? error.stack : undefined,
+              },
+            },
+          });
+        }
+      });
+
+    return () => { active = false; };
+  }, [parcelId, canonicalEvidenceOffset, canonicalEvidenceReload]);
 
   const loadEvidenceChain = useCallback(async (evidenceId: string) => {
     setEvidenceChain((prev) => ({
@@ -926,6 +1004,100 @@ export const PropertyDossier: React.FC = () => {
           </div>
         )}
       </div>
+
+      <BentoCard title='Canonical Evidence Registry' variant='form'>
+        <div className='space-y-4' data-testid='canonical-evidence-registry'>
+          <div className='flex items-start justify-between gap-4 flex-wrap'>
+            <div>
+              <p className='tf-text-tertiary font-medium'>County-scoped canonical read</p>
+              <p className='tf-text-dim text-sm mt-1'>
+                Frozen Dossier evidence metadata for this parcel. This view is read-only and is not
+                combined with the legacy synthesized evidence index below.
+              </p>
+            </div>
+            <WorkbenchSourceBadge
+              source={canonicalEvidence.status === 'loaded' && canonicalEvidence.parcelId === parcelId ? 'fallback' : 'unavailable'}
+            />
+          </div>
+
+          {canonicalEvidence.status === 'loading' && canonicalEvidence.parcelId === parcelId && (
+            <div className='tf-status-info rounded-xl p-4' role='status' data-testid='canonical-evidence-loading'>
+              <span className='tf-text'>Loading canonical evidence registry...</span>
+            </div>
+          )}
+
+          {canonicalEvidence.status === 'error' && canonicalEvidence.parcelId === parcelId && (
+            <div className='tf-status-error rounded-xl p-4' data-testid='canonical-evidence-error'>
+              <ErrorDisplay error={canonicalEvidence.error} />
+              <button
+                onClick={() => setCanonicalEvidenceReload((value) => value + 1)}
+                className='mt-3 px-3 py-1.5 text-sm tf-hover-surface rounded-lg'
+              >
+                Retry canonical evidence
+              </button>
+            </div>
+          )}
+
+          {canonicalEvidence.status === 'loaded'
+            && canonicalEvidence.parcelId === parcelId
+            && canonicalEvidence.data.results.length === 0 && (
+              <div className='tf-panel rounded-xl p-4' data-testid='canonical-evidence-empty'>
+                <p className='tf-text-dim text-sm'>No canonical evidence records are available for this parcel.</p>
+              </div>
+            )}
+
+          {canonicalEvidence.status === 'loaded'
+            && canonicalEvidence.parcelId === parcelId
+            && canonicalEvidence.data.results.length > 0 && (
+              <div className='space-y-3' data-testid='canonical-evidence-loaded'>
+                <div className='flex items-center justify-between text-xs tf-text-dim'>
+                  <span>{canonicalEvidence.data.results.length} of {canonicalEvidence.data.total} records</span>
+                  <span>{canonicalEvidence.data.hasMore ? 'More records available' : 'Complete page'}</span>
+                </div>
+                {canonicalEvidence.data.results.map((item) => (
+                  <div key={item.evidenceId} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
+                    <div className='flex items-center justify-between gap-3'>
+                      <span className='tf-text font-medium'>{item.evidenceType}</span>
+                      <span className='tf-text-dim text-xs uppercase'>{item.integrity}</span>
+                    </div>
+                    <div className='mt-1 grid gap-1 text-xs tf-text-dim'>
+                      <span>Evidence: {item.evidenceId}</span>
+                      {item.documentId && <span>Document: {item.documentId}</span>}
+                      <span>Created: {new Date(item.createdAt).toISOString()}</span>
+                    </div>
+                  </div>
+                ))}
+                {canonicalEvidence.data.traceId && (
+                  <div className='text-xs tf-text-dim'>Trace: <code>{canonicalEvidence.data.traceId}</code></div>
+                )}
+                <div className='flex items-center justify-end gap-2'>
+                  <button
+                    type='button'
+                    onClick={() => setCanonicalEvidencePage({
+                      parcelId,
+                      offset: Math.max(0, canonicalEvidence.data.offset - canonicalEvidence.data.limit),
+                    })}
+                    disabled={canonicalEvidence.data.offset === 0}
+                    className='px-3 py-1.5 text-xs tf-hover-surface rounded-lg disabled:opacity-50'
+                  >
+                    Previous evidence page
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setCanonicalEvidencePage({
+                      parcelId,
+                      offset: canonicalEvidence.data.offset + canonicalEvidence.data.limit,
+                    })}
+                    disabled={!canonicalEvidence.data.hasMore}
+                    className='px-3 py-1.5 text-xs tf-hover-surface rounded-lg disabled:opacity-50'
+                  >
+                    Next evidence page
+                  </button>
+                </div>
+              </div>
+            )}
+        </div>
+      </BentoCard>
 
       {/* ================================================================ */}
       {/* Document Management — live read-only registry                  */}

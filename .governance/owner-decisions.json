@@ -3,6 +3,60 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-009D",
+      "status": "active",
+      "authority_class": "R3-bounded-dossier-workbench-canonical-evidence-read-adoption",
+      "effective_base_sha": "6622ca14e93d6a853c9629308e37a42620c0e08f",
+      "scope_source": "Owner approval recorded directly on Issue #1426 on 2026-08-07. The authorization covers Stages 0 through 4, exact allowlisted product, test, governance, and evidence files, disposable synthetic proof, in-scope remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without per-stage owner relay.",
+      "terminal_condition": "DOSSIER_COUNTY_SCOPED_CANONICAL_EVIDENCE_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_CUSTODY_MUTATION_OR_LIVE_DATA",
+      "authorized_actions": [
+        "add one authenticated read:dossier county- and parcel-scoped canonical evidence registry GET route that maps only through the unchanged frozen DossierEvidenceRegistryReadAdapter",
+        "add a typed canonical evidence read and truthful loading, loaded, empty, error, provenance, pagination, and stale-navigation states in the existing PropertyDossier tab",
+        "prove same-county canonical records and foreign-only empty-shape non-disclosure through focused tests and the disposable authenticated SQLite Workbench journey",
+        "commit, validate, remediate, obtain exact-head assurance, merge under Mode B, verify main, perform one governance-only terminal closeout, consume authority, and return to portfolio reconciliation"
+      ],
+      "authorized_files": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/DossierController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dossier/DossierEvidenceRegistryReadControllerTests.cs",
+        "frontend/apps/os-shell/src/services/dossierService.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.test.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009D-dossier-workbench-canonical-evidence-read-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "explicitly_denied": [
+        "Development-only Benton fallback use by the new canonical route, frozen adapter or contract change, evidence or custody writes, custody semantic changes, entity, schema, migration, provider, persistence, or standalone F1 changes",
+        "Workbench route, tab identity, navigation, or broader layout changes; source extraction; package, lockfile, workflow, deployment, production, publication, retirement, or cutover changes",
+        "county, PACS, SQL, live data, credentials, secrets, cross-suite adoption, force push, required-gate bypass, or files outside the exact allowlist"
+      ],
+      "merge_mode": "B-standing-bounded-exact-scope",
+      "revocation_triggers": [
+        "need for a file outside the exact allowlist, frozen-adapter or contract change, write or custody mutation, persistence/schema/provider work, live or protected data, deployment, routing/tab restructuring, or cross-suite behavior",
+        "missing or invalid authenticated county context does not fail closed, foreign-only records disclose existence, canonical and synthesized evidence are mixed, stale navigation renders a prior parcel, or disposable proof leaves residue",
+        "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
+      ],
+      "decision_basis": "WO-SR-009C completed and portfolio reconciliation selected the frozen Dossier evidence registry read as the highest-value bounded successor. The existing adapter is pure and fail-closed, and the approved route must derive county strictly from authenticated context without the controller's Development-only Benton fallback.",
+      "current_execution": {
+        "state": "ACTIVE",
+        "issue": 1426,
+        "owner_action_required": false
+      }
+    },
+    {
       "id": "OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

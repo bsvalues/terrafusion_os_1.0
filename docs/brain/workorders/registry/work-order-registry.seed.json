@@ -10599,6 +10599,137 @@
         "source": "Issue #1422, the original owner decision, OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001, and PR #1424 exact-head/merge evidence through b5a02db1758deda45d84c0ec99adb8f31d328c7b",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-009D",
+      "title": "Dossier Workbench Canonical Evidence Read Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Make the frozen county-scoped Dossier evidence registry read reachable and truthful in the Property Workbench without writes, custody mutation, or live data.",
+      "riskClass": "R3",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-SR-009C",
+          "status": "satisfied",
+          "evidence": ["PR #1425 terminally closed WO-SR-009C at base 6622ca14e93d6a853c9629308e37a42620c0e08f."]
+        },
+        {
+          "id": "OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
+          "status": "satisfied",
+          "evidence": ["Owner approved the exact Issue #1426 packet on 2026-08-07."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Exact Issue #1426 product, test, governance, and evidence scope",
+          "paths": [
+            ".governance/owner-decisions.json",
+            "backend/src/TerraFusion.API/Controllers/DossierController.cs",
+            "backend/tests/TerraFusion.Unit.Tests/Dossier/DossierEvidenceRegistryReadControllerTests.cs",
+            "frontend/apps/os-shell/src/services/dossierService.ts",
+            "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.test.tsx",
+            "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.honesty.contract.test.tsx",
+            "tests/e2e/property-workbench-production-smoke.spec.ts",
+            "docs/brain/workorders/active/WO-SR-009D-dossier-workbench-canonical-evidence-read-adoption.md",
+            "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md",
+            "docs/brain/workorders/registry/work-order-registry.seed.json",
+            "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+            "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+            "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+            "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+            "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+            "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        { "name": "Evidence or custody writes, custody semantics, persistence, schema, migration, provider, or frozen-contract changes" },
+        { "name": "Live county/PACS/SQL data, credentials, deployment, production, publication, source retirement, or cutover" }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "backend/src/TerraFusion.API/Controllers/DossierController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dossier/DossierEvidenceRegistryReadControllerTests.cs",
+        "frontend/apps/os-shell/src/services/dossierService.ts",
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDossier.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.test.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDossier.honesty.contract.test.tsx",
+        "tests/e2e/property-workbench-production-smoke.spec.ts",
+        "docs/brain/workorders/active/WO-SR-009D-dossier-workbench-canonical-evidence-read-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Adapters/DossierEvidenceRegistryReadAdapter.cs",
+        "backend/src/TerraFusion.Abstractions/**",
+        "backend/src/TerraFusion.Core/Entities/**",
+        "backend/src/TerraFusion.Data/Migrations/**",
+        ".github/workflows/**",
+        "package.json",
+        "**/pnpm-lock.yaml"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Strict county-claim proof, frozen-adapter mapping, same-county and foreign-only non-disclosure, honest Workbench states, disposable synthetic journey, and exact-scope delivery evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Bounded canonical Dossier implementation proof",
+          "command": "focused backend and frontend tests; disposable authenticated SQLite journey; Release build; frontend type-check; frozen-contract hashes",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Governance and exact scope",
+          "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact 17-file allowlist",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Remote delivery and exact-head assurance",
+          "command": "required checks, zero substantive threads, CLEAN merge state, and independent exact-head assurance",
+          "required": true,
+          "result": "pending"
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "other",
+          "location": "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md",
+          "summary": "Active implementation and delivery evidence for the exact Issue #1426 boundary."
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop if completion requires the Development Benton fallback, a frozen adapter or contract change, a write or custody mutation, files outside the exact allowlist, protected resources, deployment, or failed required proof."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": false,
+        "notes": "Exact bounded R3 Issue #1426 authority is active through one product merge and one governance-only terminal closeout."
+      },
+      "provenance": {
+        "createdAt": "2026-08-07T00:00:00Z",
+        "source": "Issue #1426 and OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
+        "schemaVersion": "0.1.0"
+      }
     }
   ]
 }

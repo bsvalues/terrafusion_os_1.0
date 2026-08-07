@@ -32,6 +32,7 @@ vi.mock('../../services/dossierService', () => ({
   dossierService: {
     getDetails: vi.fn(),
     getEvidenceSnapshot: vi.fn(),
+    getEvidenceRegistryRead: vi.fn(),
     searchDocuments: vi.fn(),
     searchEvidence: vi.fn(),
     getChainOfCustody: vi.fn(),
@@ -103,6 +104,16 @@ describe('PropertyDossier source honesty contract', () => {
       results: [],
       total: 0,
       hasMore: false,
+    });
+    (svc.getEvidenceRegistryRead as ReturnType<typeof vi.fn>).mockResolvedValue({
+      schemaVersion: '1.0.0',
+      countyId: '11111111-1111-1111-1111-111111111111',
+      parcelId: '12345-001',
+      results: [],
+      total: 0,
+      hasMore: false,
+      limit: 25,
+      offset: 0,
     });
     (svc.searchEvidence as ReturnType<typeof vi.fn>).mockResolvedValue({
       results: [],
@@ -180,5 +191,14 @@ describe('PropertyDossier source honesty contract', () => {
   it('does not invoke any tool on mount without user action', () => {
     render(<TestWrapper parcelId='12345-001' />);
     expect(mockInvokeTool).not.toHaveBeenCalled();
+  });
+
+  it('labels the mixed evidence index as non-canonical', async () => {
+    render(<TestWrapper parcelId='12345-001' />);
+    expect(await screen.findByTestId('canonical-evidence-registry')).toHaveTextContent(
+      'not combined with the legacy synthesized evidence index',
+    );
+    await screen.findByTestId('canonical-evidence-empty');
+    expect(screen.getByTestId('canonical-evidence-registry')).toHaveTextContent('Non-live data');
   });
 });

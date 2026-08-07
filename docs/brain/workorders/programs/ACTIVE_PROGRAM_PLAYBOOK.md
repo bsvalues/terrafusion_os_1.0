@@ -98,7 +98,7 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; WO-SR-009C complete and authority consumed |
+| Status | Active; WO-SR-009D authorized and executing |
 | Current | Portfolio reconciliation after verified Atlas Workbench canonical projection adoption |
 | Next | Highest-value dependency-cleared bounded successor; no successor authority inferred |
 
@@ -208,7 +208,11 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing: `WO-SR-009C - Atlas Workbench Canonical Projection Adoption` completed
+Current Five-Suite routing: `WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption` is
+authorized by Issue #1426 and executing from exact base
+`6622ca14e93d6a853c9629308e37a42620c0e08f`. The route must use strict authenticated county context
+without the Development Benton fallback. Before this activation, `WO-SR-009C - Atlas Workbench
+Canonical Projection Adoption` completed
 in PR #1424. Exact assured head `e70548cb4938da92b2c0b254d71c5361aa10a6ed` merged as
 `b5a02db1758deda45d84c0ec99adb8f31d328c7b`. The real API and existing Workbench prove canonical
 Polygon, truthful unavailable, and cross-county non-disclosure. Configuration remains default
@@ -664,8 +668,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-009C` Atlas Workbench canonical projection adoption |
-| Current WO | Portfolio reconciliation after verified WO-SR-009C closeout |
-| Next interlock | Select the highest-value dependency-cleared bounded successor without inferring new authority |
+| Current WO | `WO-SR-009D` Dossier Workbench canonical evidence read adoption |
+| Next interlock | Complete exact Issue #1426 delivery and terminal closeout, then recompute portfolio |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head
@@ -679,6 +683,13 @@ writes, persistence/schema, standalone Dais runtime, live data, deployment, and 
 cross-county non-disclosure through the real API and Workbench. Point, frozen-adapter changes, live
 providers, and cutover remain outside authority. The bounded authority is consumed and portfolio
 reconciliation is current.
+
+Issue #1426 and decision
+`OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` activate the next bounded R3
+slice. It adds one strict authenticated county- and parcel-scoped read through the unchanged frozen
+Dossier adapter and a truthful canonical Property Dossier panel. The Development-only Benton
+fallback, writes, custody mutation, contract/adapter changes, live data, protected resources,
+deployment, routing/tab changes, and cutover remain denied.
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

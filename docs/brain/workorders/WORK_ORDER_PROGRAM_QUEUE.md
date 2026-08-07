@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-06
+**Date:** 2026-08-07
 **Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -13,14 +13,21 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active between cohorts after completing
-`WO-SR-009C`. PR #1424 merged exact assured head
+The Five-Suite Federated Repository Buildout is executing `WO-SR-009D - Dossier Workbench Canonical
+Evidence Read Adoption` under Issue #1426 and decision
+`OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807`. The approved route must use
+strict authenticated county context and may not use the Development-only Benton fallback. It adds a
+read-only frozen-contract Dossier panel with same-county results, foreign-only empty-shape
+non-disclosure, honest UI states, and disposable synthetic proof. Writes, custody mutation, frozen
+contract changes, live data, deployment, and cutover remain denied.
+
+The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
 `b5a02db1758deda45d84c0ec99adb8f31d328c7b`. Canonical Polygon, truthful unavailable,
 authentication, `read:parcel`, and cross-county non-disclosure passed through the real API and
 Property Workbench. The default remains `Disabled`, the frozen adapter is unchanged, Point is not
 claimed, and both the original authority and terminal-narrowing amendment are completed and consumed.
-Portfolio reconciliation is current; no successor implementation is inferred.
+Portfolio reconciliation selected and admitted WO-SR-009D; no other successor is inferred.
 `WO-SR-009B` completed in PR #1419: exact assured head
 `11bc49507a6e57925414d142a21f203bb8c3c811` merged as
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`. The proof makes the frozen county-scoped Dais appeal
@@ -181,6 +188,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-009B Dais Workbench Durable Appeal Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1419 merged as `8b5fe0965`; authenticated same-county read and cross-county non-disclosure proven; no write or live data |
 | **WO-TF-POST-DAIS-001 Post-Dais Portfolio Reconciliation** | **DONE / R2** | PR #1421 selected and bounded WO-SR-009C |
 | **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1424 merged as `b5a02db17`; canonical Polygon, truthful unavailable, and cross-county non-disclosure proven; default Disabled, no Point, live provider, or cutover |
+| **WO-SR-009D Dossier Workbench Canonical Evidence Read Adoption** | **ACTIVE / R3 / AUTHORIZED** | Issue #1426; strict authenticated county context, frozen-adapter read, honest Workbench states, no writes/custody/live data |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

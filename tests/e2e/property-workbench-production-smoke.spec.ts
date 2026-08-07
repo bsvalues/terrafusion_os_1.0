@@ -30,6 +30,8 @@ const CROSS_COUNTY_TF_PARCEL_ID = 'be0900a0-0000-0000-0000-0000000000b1';
 const UNAVAILABLE_PARCEL_NUMBER = 'SR009C-SYNTHETIC-NO-GEOMETRY';
 const CROSS_COUNTY_PARCEL_NUMBER = 'SR009C-SYNTHETIC-CROSS-COUNTY';
 const CROSS_COUNTY_ID = '20200020-2020-2020-2020-202020202020';
+const CANONICAL_DOSSIER_EVIDENCE_ID = 'de0900d0-0000-0000-0000-0000000000d1';
+const FOREIGN_DOSSIER_EVIDENCE_ID = 'de0900d0-0000-0000-0000-0000000000d2';
 
 function baseUrl(): string {
   const apiPort = process.env.TF_API_PORT ?? '5046';
@@ -146,6 +148,37 @@ function sqlGuid(value: string): string {
   return sqlLiteral(value.toUpperCase());
 }
 
+function addMissingSqliteColumns(
+  databasePath: string,
+  tableName: string,
+  columns: Readonly<Record<string, string>>,
+): void {
+  const tableInfo = execFileSync(
+    sqliteExecutable(),
+    [databasePath, `PRAGMA table_info(${sqlLiteral(tableName)});`],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+  if (!tableInfo.trim()) return;
+
+  const existing = new Set(
+    tableInfo
+      .trim()
+      .split(/\r?\n/)
+      .map(line => line.split('|')[1]),
+  );
+  const additions = Object.entries(columns)
+    .filter(([name]) => !existing.has(name))
+    .map(([name, definition]) => `ALTER TABLE "${tableName}" ADD COLUMN "${name}" ${definition};`)
+    .join('\n');
+
+  if (additions) {
+    execFileSync(sqliteExecutable(), [databasePath, additions], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  }
+}
+
 function seedCanonicalAtlasFixture(countyId: string, parcelNumber: string): void {
   const databasePath = process.env.WORKBENCH_SMOKE_DATABASE_PATH?.trim();
   if (!databasePath) {
@@ -227,6 +260,180 @@ INSERT INTO "tf_parcel_geom" (
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   });
+}
+
+function seedCanonicalDossierFixture(countyId: string, parcelNumber: string): void {
+  const databasePath = process.env.WORKBENCH_SMOKE_DATABASE_PATH?.trim();
+  if (!databasePath) {
+    throw new Error('WORKBENCH_SMOKE_DATABASE_PATH is required for canonical Dossier smoke proof.');
+  }
+
+  // The local SQLite bootstrap may be pinned to the initial property migration. Add only the
+  // current nullable projection columns required by EF; the disposable database is deleted later.
+  addMissingSqliteColumns(databasePath, 'Properties', {
+    LegalDescription: 'TEXT NULL',
+    Neighborhood: 'TEXT NULL',
+    PropertyUseCode: 'TEXT NULL',
+    TaxDistrictCode: 'TEXT NULL',
+    TaxDistrictName: 'TEXT NULL',
+    SitusCity: 'TEXT NULL',
+    SitusState: 'TEXT NULL',
+    SitusZip: 'TEXT NULL',
+    Zoning: 'TEXT NULL',
+    LotWidthFront: 'TEXT NULL',
+    LotDepth: 'TEXT NULL',
+  });
+
+  const sql = `
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS "Counties" (
+  "Id" TEXT NOT NULL PRIMARY KEY,
+  "Name" TEXT NOT NULL,
+  "State" TEXT NOT NULL,
+  "FipsCode" TEXT NOT NULL,
+  "Population" INTEGER NOT NULL,
+  "Area" REAL NOT NULL,
+  "CreatedAt" TEXT NOT NULL,
+  "UpdatedAt" TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "Properties" (
+  "Id" TEXT NOT NULL PRIMARY KEY,
+  "PropertyId" TEXT NOT NULL,
+  "ParcelId" TEXT NOT NULL,
+  "ParcelNumber" TEXT NOT NULL,
+  "Address" TEXT NOT NULL,
+  "OwnerName" TEXT NULL,
+  "OwnerSSN" TEXT NULL,
+  "PropertyType" TEXT NULL,
+  "LegalDescription" TEXT NULL,
+  "Neighborhood" TEXT NULL,
+  "PropertyUseCode" TEXT NULL,
+  "TaxDistrictCode" TEXT NULL,
+  "TaxDistrictName" TEXT NULL,
+  "SitusCity" TEXT NULL,
+  "SitusState" TEXT NULL,
+  "SitusZip" TEXT NULL,
+  "Zoning" TEXT NULL,
+  "YearBuilt" INTEGER NULL,
+  "LotWidthFront" TEXT NULL,
+  "LotDepth" TEXT NULL,
+  "AssessedValue" TEXT NOT NULL,
+  "LandValue" TEXT NOT NULL,
+  "ImprovementValue" TEXT NOT NULL,
+  "MarketValue" TEXT NOT NULL,
+  "AssessmentDate" TEXT NOT NULL,
+  "LastUpdated" TEXT NOT NULL,
+  "TaxYear" INTEGER NOT NULL,
+  "CountyId" TEXT NOT NULL,
+  "CreatedAt" TEXT NOT NULL,
+  "UpdatedAt" TEXT NOT NULL,
+  FOREIGN KEY ("CountyId") REFERENCES "Counties" ("Id") ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "IX_Properties_ParcelId" ON "Properties" ("ParcelId");
+CREATE TABLE IF NOT EXISTS "CamaCharacteristics" (
+  "Id" TEXT NOT NULL PRIMARY KEY,
+  "CountyId" TEXT NOT NULL,
+  "ParcelId" TEXT NOT NULL,
+  "TaxYear" INTEGER NOT NULL,
+  "SquareFeet" REAL NULL,
+  "BasementSqft" REAL NULL,
+  "GarageSqft" REAL NULL,
+  "YearBuilt" INTEGER NULL,
+  "Bedrooms" INTEGER NULL,
+  "Bathrooms" REAL NULL,
+  "LandAreaSqft" REAL NULL
+);
+CREATE TABLE IF NOT EXISTS "DossierEvidenceItems" (
+  "Id" TEXT NOT NULL PRIMARY KEY,
+  "ParcelId" TEXT NOT NULL,
+  "Title" TEXT NOT NULL,
+  "EvidenceType" TEXT NOT NULL,
+  "Integrity" TEXT NOT NULL,
+  "DocumentId" TEXT NULL,
+  "CountyId" TEXT NOT NULL,
+  "CreatedBy" TEXT NOT NULL,
+  "CreatedAt" TEXT NOT NULL,
+  FOREIGN KEY ("CountyId") REFERENCES "Counties" ("Id") ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS "IX_DossierEvidenceItems_CountyId_ParcelId"
+  ON "DossierEvidenceItems" ("CountyId", "ParcelId");
+INSERT OR IGNORE INTO "Counties" (
+  "Id", "Name", "State", "FipsCode", "Population", "Area", "CreatedAt", "UpdatedAt"
+) VALUES
+  (${sqlGuid(countyId)}, 'SR-009D authenticated synthetic county', 'WA', '019', 0, 0,
+   '2026-08-07T00:00:00.0000000Z', '2026-08-07T00:00:00.0000000Z'),
+  (${sqlGuid(CROSS_COUNTY_ID)}, 'SR-009D foreign synthetic county', 'WA', '020', 0, 0,
+   '2026-08-07T00:00:00.0000000Z', '2026-08-07T00:00:00.0000000Z');
+DELETE FROM "Properties" WHERE "ParcelId" = ${sqlLiteral(parcelNumber)};
+INSERT INTO "Properties" (
+  "Id", "PropertyId", "ParcelId", "ParcelNumber", "Address", "OwnerName", "OwnerSSN",
+  "PropertyType", "LegalDescription", "Neighborhood", "PropertyUseCode", "TaxDistrictCode",
+  "TaxDistrictName", "SitusCity", "SitusState", "SitusZip", "Zoning", "YearBuilt",
+  "LotWidthFront", "LotDepth", "AssessedValue", "LandValue", "ImprovementValue", "MarketValue",
+  "AssessmentDate", "LastUpdated", "TaxYear", "CountyId", "CreatedAt", "UpdatedAt"
+) VALUES (
+  ${sqlGuid('de0900d0-0000-0000-0000-0000000000f1')}, '9001', ${sqlLiteral(parcelNumber)},
+  ${sqlLiteral(parcelNumber)}, '100 Synthetic Dossier Proof Way', 'Synthetic Owner', NULL,
+  'Residential', 'Synthetic proof parcel', 'SYN', 'R', 'SYN', 'Synthetic District',
+  'Prosser', 'WA', '99350', 'R1', 2001, NULL, NULL, 250000, 75000, 175000, 275000,
+  '2026-01-01T00:00:00.0000000Z', '2026-08-07T12:00:00.0000000Z', 2026,
+  ${sqlGuid(countyId)}, '2026-08-07T12:00:00.0000000Z', '2026-08-07T12:00:00.0000000Z'
+);
+DELETE FROM "DossierEvidenceItems" WHERE "Id" IN (
+  ${sqlGuid(CANONICAL_DOSSIER_EVIDENCE_ID)},
+  ${sqlGuid(FOREIGN_DOSSIER_EVIDENCE_ID)}
+);
+INSERT INTO "DossierEvidenceItems" (
+  "Id", "ParcelId", "Title", "EvidenceType", "Integrity", "DocumentId",
+  "CountyId", "CreatedBy", "CreatedAt"
+) VALUES
+  (${sqlGuid(CANONICAL_DOSSIER_EVIDENCE_ID)}, ${sqlLiteral(parcelNumber)},
+   'Canonical synthetic field inspection', 'field-inspection', 'verified', NULL,
+   ${sqlGuid(countyId)}, 'wo-sr-009d-synthetic', '2026-08-07T12:00:00.0000000Z'),
+  (${sqlGuid(FOREIGN_DOSSIER_EVIDENCE_ID)}, ${sqlLiteral(CROSS_COUNTY_PARCEL_NUMBER)},
+   'Foreign county sentinel', 'photo', 'verified', NULL,
+   ${sqlGuid(CROSS_COUNTY_ID)}, 'wo-sr-009d-synthetic', '2026-08-07T11:00:00.0000000Z');
+`;
+  execFileSync(sqliteExecutable(), [databasePath, sql], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+}
+
+async function assertCanonicalDossierBoundary(
+  api: APIRequestContext,
+  token: string,
+  parcelNumber: string,
+): Promise<void> {
+  const headers = { Authorization: `Bearer ${token}`, 'X-Correlation-ID': 'corr-sr009d-smoke' };
+  const response = await api.get(
+    `/api/dossier/parcels/${encodeURIComponent(parcelNumber)}/evidence/registry?limit=25&offset=0`,
+    { headers },
+  );
+  const responseText = await response.text();
+  expect(response.status(), responseText).toBe(200);
+  const body = JSON.parse(responseText);
+  expect(body).toMatchObject({
+    schemaVersion: '1.0.0',
+    parcelId: parcelNumber,
+    total: 1,
+    hasMore: false,
+    traceId: 'corr-sr009d-smoke',
+  });
+  expect(body.results).toEqual([
+    expect.objectContaining({
+      evidenceId: CANONICAL_DOSSIER_EVIDENCE_ID,
+      evidenceType: 'field-inspection',
+      integrity: 'verified',
+    }),
+  ]);
+
+  const foreign = await api.get(
+    `/api/dossier/parcels/${encodeURIComponent(CROSS_COUNTY_PARCEL_NUMBER)}/evidence/registry?limit=25&offset=0`,
+    { headers },
+  );
+  expect(foreign.status()).toBe(200);
+  expect(await foreign.json()).toMatchObject({ results: [], total: 0, hasMore: false });
 }
 
 async function assertAuthenticatedParcelApiBoundary(
@@ -355,6 +562,47 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
     );
   });
 
+  test('proves the authenticated canonical Dossier read with disposable SQLite evidence', async ({
+    page,
+  }) => {
+    await ensureEvidenceDir();
+    const api = await request.newContext({ baseURL: baseUrl() });
+    const auth = await fetchDevToken(api);
+    if (!auth.countyId) {
+      throw new Error('Synthetic auth response did not include a countyId claim.');
+    }
+
+    const parcelId = await resolveSmokeParcel(api, auth.token);
+    seedCanonicalDossierFixture(auth.countyId, parcelId);
+    await assertCanonicalDossierBoundary(api, auth.token, parcelId);
+    await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
+    await installSmokeSession(page, auth, parcelId);
+
+    await page.goto(`/property/${encodeURIComponent(parcelId)}/dossier`);
+    await expect(page.getByTestId('property-dossier-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('canonical-evidence-loaded')).toContainText(
+      CANONICAL_DOSSIER_EVIDENCE_ID,
+      { timeout: 30000 },
+    );
+    await assertNoInfiniteLoading(page);
+
+    const registryPattern = '**/api/dossier/parcels/*/evidence/registry?*';
+    await page.route(registryPattern, route => route.fulfill({
+      status: 503,
+      contentType: 'application/problem+json',
+      headers: { 'X-Correlation-ID': 'corr-dossier-smoke-error' },
+      body: JSON.stringify({ title: 'Synthetic registry outage' }),
+    }));
+    await page.reload();
+    await expect(page.getByTestId('canonical-evidence-error')).toContainText(
+      'corr-dossier-smoke-error',
+      { timeout: 30000 },
+    );
+    await expect(page.getByRole('button', { name: 'Copy Correlation ID' })).toBeVisible();
+    await page.unroute(registryPattern);
+    await api.dispose();
+  });
+
   test('boots shell and walks canonical Workbench tabs with authenticated parcel evidence', async ({
     page,
   }) => {
@@ -398,8 +646,10 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
     }
     const parcelId = await resolveSmokeParcel(api, auth.token);
     seedCanonicalAtlasFixture(auth.countyId, parcelId);
+    seedCanonicalDossierFixture(auth.countyId, parcelId);
     await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
     await assertAuthenticatedDaisAppealBoundary(api, auth, parcelId);
+    await assertCanonicalDossierBoundary(api, auth.token, parcelId);
     await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
     await installSmokeSession(page, auth, parcelId);
 
@@ -520,6 +770,10 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     await page.goto(`/property/${encodeURIComponent(parcelId)}/dossier`);
     await expect(page.getByTestId('property-dossier-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('canonical-evidence-loaded')).toContainText(
+      CANONICAL_DOSSIER_EVIDENCE_ID,
+      { timeout: 30000 },
+    );
     await assertNoInfiniteLoading(page);
     await capture(page, '06 dossier', '06-dossier');
 
