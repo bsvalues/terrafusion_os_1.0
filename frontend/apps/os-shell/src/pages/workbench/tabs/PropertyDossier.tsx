@@ -450,6 +450,20 @@ export const PropertyDossier: React.FC = () => {
     const requestedParcelId = parcelId;
     setCanonicalEvidence({ status: 'loading', parcelId: requestedParcelId });
 
+    if (typeof dossierService.getEvidenceRegistryRead !== 'function') {
+      setCanonicalEvidence({
+        status: 'error',
+        parcelId: requestedParcelId,
+        error: {
+          message: 'Canonical evidence registry is unavailable in this client bundle',
+          errorCode: 'DOSSIER_REGISTRY_CLIENT_UNAVAILABLE',
+          correlationId: createStableId('net'),
+          component: 'DossierEvidenceRegistryRead',
+        },
+      });
+      return () => { active = false; };
+    }
+
     void dossierService.getEvidenceRegistryRead(requestedParcelId, 25, canonicalEvidenceOffset)
       .then((data) => {
         if (active && data.parcelId === requestedParcelId)
