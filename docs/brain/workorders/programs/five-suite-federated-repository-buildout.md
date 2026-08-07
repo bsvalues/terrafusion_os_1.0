@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-009C Stages 1 through 4 authorized and in progress
+**Status:** Active between cohorts; WO-SR-009C complete and authority consumed
 
 ## Ratified topology
 
@@ -90,7 +90,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-009A | Prove authenticated county-governed synthetic parcel acquisition and one local assessor journey | Complete R3; PR #1415 merged exact assured head `0423615c8` as `b934cf0c0`; authority consumed; no live data or cutover |
 | WO-SR-009B | Make the county-scoped Dais appeal read reachable in the Property Workbench | Complete R3; PR #1419 merged exact assured head `11bc49507`; authority consumed; no write or live data |
 | WO-TF-POST-DAIS-001 | Reconcile authoritative post-Dais portfolio state and admit one successor | Complete R2; PR #1421 merged and selected WO-SR-009C |
-| WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Active R3; Stages 1 through 4 resumed under canonical Polygon, truthful unavailable, and cross-county non-disclosure proof; Point remains outside authority |
+| WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
 
 ## Extraction and provenance policy
 
@@ -305,6 +305,13 @@ Issue #1422 subsequently approved `WO-SR-009C` under
 `ParcelGeometryResponse.GeomWkt` source is Polygon-based and the frozen `AtlasSpatialReadAdapter`
 correctly consumes that source while rejecting `POINT`. The controlling terminal-narrowing amendment
 therefore removed Point from the terminal proof instead of authorizing a synthetic ingestion path.
+PR #1424 then merged exact assured head `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
+`b5a02db1758deda45d84c0ec99adb8f31d328c7b`. The real API and existing Atlas tab prove authenticated
+same-county canonical Polygon, truthful unavailable, and cross-county non-disclosure. Configuration
+remains default `Disabled`; local exact evidence remains non-live; the frozen adapter is unchanged;
+and Point, provider adoption, and cutover remain unclaimed. The bounded authority and amendment are
+completed and consumed. The program remains active between cohorts with portfolio reconciliation
+current and no successor implementation inferred.
 Stages 1 through 4 resume under the original allowlist to prove canonical Polygon, truthful
 unavailable, and cross-county non-disclosure. The adapter and tests remain unchanged and all
 live-provider, protected-resource, deployment, cutover, routing, and legacy-anonymous-path denials

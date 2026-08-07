@@ -3,8 +3,8 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-08-06
-**Base:** `origin/main` at `4d1ee8417b4f9ab7594ee310aa5e8f4c2e403df3` or later
+**Last Updated:** 2026-08-07
+**Base:** `origin/main` at `b5a02db1758deda45d84c0ec99adb8f31d328c7b` or later
 
 ---
 
@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active; WO-SR-009C bounded implementation in progress |
-| Current | WO-SR-009C Stages 1 through 4 under the narrowed Polygon/unavailable terminal proof |
-| Next | WO-SR-009C terminal closeout after implementation and delivery gates pass |
+| Status | Active between cohorts; WO-SR-009C complete and authority consumed |
+| Current | Portfolio reconciliation after verified Atlas Workbench canonical projection adoption |
+| Next | Highest-value dependency-cleared bounded successor; no successor authority inferred |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,11 +208,12 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing: Issue #1422 approved `WO-SR-009C - Atlas Workbench Canonical Projection
-Adoption` at `f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2`. The terminal-narrowing amendment recognizes
-the canonical Polygon source and removes Point from the required proof. Stages 1 through 4 are active
-under the original allowlist; the frozen adapter is unchanged and the legacy anonymous GIS parcel
-reads remain non-canonical.
+Current Five-Suite routing: `WO-SR-009C - Atlas Workbench Canonical Projection Adoption` completed
+in PR #1424. Exact assured head `e70548cb4938da92b2c0b254d71c5361aa10a6ed` merged as
+`b5a02db1758deda45d84c0ec99adb8f31d328c7b`. The real API and existing Workbench prove canonical
+Polygon, truthful unavailable, and cross-county non-disclosure. Configuration remains default
+`Disabled`; the frozen adapter is unchanged; Point, live-provider adoption, and cutover are not
+claimed. Authority is consumed and portfolio reconciliation is current.
 
 ---
 
@@ -662,9 +663,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-TF-POST-DAIS-001` portfolio reconciliation |
-| Current WO | `WO-SR-009C` active under Polygon/unavailable terminal proof |
-| Next interlock | Execute Stages 1-4 and terminal closeout without owner relay |
+| Last completed interlock | `WO-SR-009C` Atlas Workbench canonical projection adoption |
+| Current WO | Portfolio reconciliation after verified WO-SR-009C closeout |
+| Next interlock | Select the highest-value dependency-cleared bounded successor without inferring new authority |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head
@@ -672,10 +673,12 @@ read-only Dais adoption sequence. PR #1419 merged exact assured head
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`; the authority is completed and consumed. Existing raw
 CRUD response shapes remain unchanged, and routing, tab identity, navigation, broader structure,
 writes, persistence/schema, standalone Dais runtime, live data, deployment, and cutover remain denied.
-`WO-SR-009C` is the active bounded successor under its original R3 authority and controlling
-terminal-narrowing amendment. Stages 1 through 4 proceed with canonical Polygon, truthful unavailable,
-and cross-county non-disclosure proof; Point, frozen-adapter changes, live providers, and cutover remain
-outside authority.
+`WO-SR-009C` completed in PR #1424. Exact assured head
+`e70548cb4938da92b2c0b254d71c5361aa10a6ed` merged as
+`b5a02db1758deda45d84c0ec99adb8f31d328c7b`, proving canonical Polygon, truthful unavailable, and
+cross-county non-disclosure through the real API and Workbench. Point, frozen-adapter changes, live
+providers, and cutover remain outside authority. The bounded authority is consumed and portfolio
+reconciliation is current.
 
 WO-LOCAL-093 through WO-LOCAL-097 were incorrectly admitted from WilliamOS/TerraGroq into the
 TerraFusion portfolio. Their documents remain historical audit material, but they delivered no

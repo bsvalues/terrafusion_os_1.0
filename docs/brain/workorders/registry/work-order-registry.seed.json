@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009C Atlas Workbench canonical projection terminal-narrowing reconciliation",
-  "generatedAt": "2026-08-06T00:00:00Z",
-  "description": "WO-SR-009C is active under its original allowlist after the controlling amendment removed Point from the terminal proof. Canonical Polygon, truthful unavailable, and cross-county non-disclosure remain required; frozen-adapter and protected-resource denials remain active.",
+  "generatedBy": "WO-SR-009C Atlas Workbench canonical projection terminal closeout",
+  "generatedAt": "2026-08-07T00:00:00Z",
+  "description": "WO-SR-009C is complete and its bounded authority is consumed. PR #1424 proves canonical Polygon, truthful unavailable, and cross-county non-disclosure; Point, frozen-adapter, live-provider, protected-resource, and cutover denials remain active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10458,7 +10458,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Make the canonical county-scoped Atlas projection reachable and truthful in the Property Workbench without live provider adoption or cutover.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-TF-POST-DAIS-001",
@@ -10553,7 +10553,7 @@
       "evidenceRequired": [
         {
           "kind": "other",
-          "description": "Exact canonical Polygon source evidence, terminal-narrowing disposition, unchanged frozen-adapter boundary, and active Polygon/unavailable/cross-county implementation proof."
+          "description": "Exact canonical Polygon source evidence, terminal-narrowing disposition, unchanged frozen-adapter boundary, and completed Polygon/unavailable/cross-county implementation proof."
         }
       ],
       "validationGates": [
@@ -10562,13 +10562,25 @@
           "command": "git diff --check; JSON parse; wo-query; query/planner tests; exact governance scope",
           "required": true,
           "result": "pass"
+        },
+        {
+          "name": "Bounded canonical Atlas implementation proof",
+          "command": "focused backend, frontend, process-host, and authenticated Playwright tests; Release build; frontend type-check; exact scope and frozen-adapter checks",
+          "required": true,
+          "result": "pass"
+        },
+        {
+          "name": "Remote delivery and exact-head assurance",
+          "command": "PR #1424 required checks, review-thread resolution, and independent exact-head assurance",
+          "required": true,
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
         {
           "kind": "other",
           "location": "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md",
-          "summary": "Approval provenance, canonical Polygon source evidence, Point non-claim disposition, unchanged adapter boundary, active terminal proof, and validation."
+          "summary": "PR #1424 merged exact assured head e70548cb4938da92b2c0b254d71c5361aa10a6ed as b5a02db1758deda45d84c0ec99adb8f31d328c7b; canonical Polygon, truthful unavailable, cross-county non-disclosure, unchanged adapter, validation, rollback, and authority consumption are proven."
         }
       ],
       "stopConditions": [
@@ -10586,11 +10598,11 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": false,
-        "notes": "Delivery lifecycle authority is active inside the exact allowlist for Stages 1 through 4. Point support and frozen-adapter changes remain denied."
+        "notes": "WO-SR-009C is complete and its bounded authority is consumed. Point support, frozen-adapter changes, live providers, protected resources, deployment, and cutover remain denied."
       },
       "provenance": {
         "createdAt": "2026-08-06T00:00:00Z",
-        "source": "Issue #1422, the original owner decision, and OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001 at sovereign base f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2",
+        "source": "Issue #1422, the original owner decision, OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001, and PR #1424 exact-head/merge evidence through b5a02db1758deda45d84c0ec99adb8f31d328c7b",
         "schemaVersion": "0.1.0"
       }
     }
