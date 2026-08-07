@@ -230,9 +230,9 @@ async function assertNoParcelJourneyServerErrors(): Promise<void> {
   const serverErrors = network.filter(
     entry =>
       entry.status >= 500 &&
-      (entry.url.includes('/api/auth/')
-        || entry.url.includes('/api/properties')
-        || entry.url.includes('/api/dais/appeals/'))
+      (entry.url.includes('/api/auth/') ||
+        entry.url.includes('/api/properties') ||
+        entry.url.includes('/api/dais/appeals/'))
   );
   expect(
     serverErrors,
@@ -333,6 +333,36 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     await page.goto(`/property/${encodeURIComponent(parcelId)}/atlas`);
     await expect(page.getByTestId('property-atlas-tab')).toBeVisible({ timeout: 30000 });
+    const unauthenticatedAtlas = await api.get(
+      `/api/parcels/${encodeURIComponent(parcelId)}/atlas-projection`
+    );
+    expect([401, 403]).toContain(unauthenticatedAtlas.status());
+
+    const canonicalAtlas = await api.get(
+      `/api/parcels/${encodeURIComponent(parcelId)}/atlas-projection`,
+      { headers: { Authorization: `Bearer ${auth.token}` } }
+    );
+    expect([200, 404, 503]).toContain(canonicalAtlas.status());
+    if (canonicalAtlas.status() === 200) {
+      const feature = await canonicalAtlas.json();
+      if (feature !== null) {
+        expect(feature).toMatchObject({
+          type: 'Feature',
+          geometry: { type: 'Polygon' },
+          properties: {
+            parcelId,
+            countyId: auth.countyId,
+            evidenceState: 'canonical',
+          },
+        });
+      }
+    }
+    await expect(
+      page.locator(
+        '[data-testid="atlas-projection-polygon"], [data-testid="atlas-projection-unavailable"], [data-testid="atlas-projection-error"]'
+      )
+    ).toHaveCount(1, { timeout: 30000 });
+    await expect(page.getByText(/canonical Point/i)).toHaveCount(0);
     await assertNoInfiniteLoading(page);
     await capture(page, '04 atlas', '04-atlas');
 

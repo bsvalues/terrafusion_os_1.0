@@ -20,8 +20,9 @@ vi.mock('../../context/workbenchTabContext', () => ({
 }));
 vi.mock('../../api/pilotApi', () => ({ invokeTool: vi.fn() }));
 vi.mock('../../stores/propertyStore', () => ({
-  usePropertyStore: vi.fn((selector: (s: { activeParcel: null; assessments: never[]; appeals: never[] }) => unknown) =>
-    selector ? selector({ activeParcel: null, assessments: [], appeals: [] }) : null
+  usePropertyStore: vi.fn(
+    (selector: (s: { activeParcel: null; assessments: never[]; appeals: never[] }) => unknown) =>
+      selector ? selector({ activeParcel: null, assessments: [], appeals: [] }) : null
   ),
 }));
 vi.mock('../../runtime/env', () => ({
@@ -29,34 +30,59 @@ vi.mock('../../runtime/env', () => ({
 }));
 vi.mock('../../components/errors/ErrorDisplay', () => ({
   ErrorDisplay: ({ error }: { error: { message: string } }) => (
-    <div data-testid="error-display">{error.message}</div>
+    <div data-testid='error-display'>{error.message}</div>
   ),
 }));
 
 vi.mock('../../hooks/useAtlasGis', () => ({
-  useParcelBoundary: () => ({ data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() }),
-  useParcelLayers: () => ({ data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() }),
+  useParcelGis: () => ({
+    boundary: { data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() },
+    layers: { data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() },
+  }),
+  useAtlasProjection: () => ({
+    status: 'unavailable',
+    feature: null,
+    error: null,
+    refetch: vi.fn(),
+  }),
 }));
 
 import { PropertyAtlas } from '../../pages/workbench/tabs/PropertyAtlas';
 
 describe('PropertyAtlas source honesty contract', () => {
-  beforeEach(() => { vi.clearAllMocks(); });
-
-  it('renders WorkbenchSourceBadge at idle state showing unavailable', () => {
-    render(<MemoryRouter><PropertyAtlas /></MemoryRouter>);
-    const badge = screen.getByTestId('workbench-source-badge');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveAttribute('data-source', 'unavailable');
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('discloses that full GIS geometry is not available on this route', () => {
-    render(<MemoryRouter><PropertyAtlas /></MemoryRouter>);
-    expect(screen.getByTestId('atlas-geometry-disclosure')).toBeInTheDocument();
+  it('renders WorkbenchSourceBadge at idle state showing unavailable', () => {
+    render(
+      <MemoryRouter>
+        <PropertyAtlas />
+      </MemoryRouter>
+    );
+    const badges = screen.getAllByTestId('workbench-source-badge');
+    expect(badges.length).toBeGreaterThanOrEqual(2);
+    expect(badges.every((badge) => badge.getAttribute('data-source') === 'unavailable')).toBe(true);
+  });
+
+  it('distinguishes canonical evidence from legacy compatibility previews', () => {
+    render(
+      <MemoryRouter>
+        <PropertyAtlas />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('atlas-geometry-disclosure')).toHaveTextContent(
+      /Legacy boundary previews.*are not relabeled as canonical/i
+    );
+    expect(screen.getByTestId('atlas-projection-unavailable')).toBeInTheDocument();
   });
 
   it('does not display hardcoded layer data at idle without disclosure', () => {
-    render(<MemoryRouter><PropertyAtlas /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <PropertyAtlas />
+      </MemoryRouter>
+    );
     expect(screen.queryByTestId('result-panel-success')).not.toBeInTheDocument();
     // No hardcoded flood zone values at idle
     expect(screen.queryByText(/Zone AE/i)).not.toBeInTheDocument();
@@ -65,7 +91,11 @@ describe('PropertyAtlas source honesty contract', () => {
   });
 
   it('does not invoke query_parcel_layers on mount', async () => {
-    render(<MemoryRouter><PropertyAtlas /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <PropertyAtlas />
+      </MemoryRouter>
+    );
     const { invokeTool } = await import('../../api/pilotApi');
     expect(vi.mocked(invokeTool)).not.toHaveBeenCalled();
   });

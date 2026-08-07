@@ -53,14 +53,31 @@ vi.mock('../../api/pilotApi');
 
 // Mock the useAtlasGis hooks — default to 'unavailable' so existing tests pass unchanged
 const mockUseParcelBoundary = vi.fn().mockReturnValue({
-  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+  data: null,
+  loading: false,
+  error: null,
+  source: 'unavailable',
+  refetch: vi.fn(),
 });
 const mockUseParcelLayers = vi.fn().mockReturnValue({
-  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+  data: null,
+  loading: false,
+  error: null,
+  source: 'unavailable',
+  refetch: vi.fn(),
+});
+const mockUseAtlasProjection = vi.fn().mockReturnValue({
+  status: 'unavailable',
+  feature: null,
+  error: null,
+  refetch: vi.fn(),
 });
 vi.mock('../../hooks/useAtlasGis', () => ({
-  useParcelBoundary: (...args: unknown[]) => mockUseParcelBoundary(...args),
-  useParcelLayers: (...args: unknown[]) => mockUseParcelLayers(...args),
+  useParcelGis: (...args: unknown[]) => ({
+    boundary: mockUseParcelBoundary(...args),
+    layers: mockUseParcelLayers(...args),
+  }),
+  useAtlasProjection: (...args: unknown[]) => mockUseAtlasProjection(...args),
 }));
 
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
@@ -205,10 +222,14 @@ describe('PropertyAtlas', () => {
         expect(screen.getByText(/Zoning Districts/i)).toBeInTheDocument();
         expect(screen.getByText(/Not exposed on this route yet/i)).toBeInTheDocument();
         expect(
-          screen.getByText(/Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches/i)
+          screen.getByText(
+            /Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches/i
+          )
         ).toBeInTheDocument();
         expect(
-          screen.getByText(/Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches/i)
+          screen.getByText(
+            /Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches/i
+          )
         ).toBeInTheDocument();
         expect(screen.queryByText(/Live Atlas layer truth is available/i)).not.toBeInTheDocument();
         // Truncated display shows first 16 chars
@@ -338,6 +359,60 @@ describe('PropertyAtlas', () => {
   // Phase 0A — GIS Source Behavior
   // ---------------------------------------------------------------------------
   describe('GIS Source Behavior', () => {
+    it('renders a verified canonical Polygon without claiming Point support', () => {
+      mockUseAtlasProjection.mockReturnValue({
+        status: 'polygon',
+        feature: {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-119.3, 46.2],
+                [-119.2, 46.2],
+                [-119.2, 46.3],
+                [-119.3, 46.2],
+              ],
+            ],
+          },
+          properties: {
+            countyId: '19190019-1919-1919-1919-191919191919',
+            parcelId: '12345-001',
+            evidenceState: 'canonical',
+          },
+        },
+        error: null,
+        refetch: vi.fn(),
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByTestId('atlas-projection-polygon')).toHaveTextContent(
+        'Canonical Polygon verified'
+      );
+      expect(screen.queryByText(/canonical Point/i)).not.toBeInTheDocument();
+    });
+
+    it('renders canonical loading and error states honestly', () => {
+      mockUseAtlasProjection.mockReturnValue({
+        status: 'loading',
+        feature: null,
+        error: null,
+        refetch: vi.fn(),
+      });
+      const { rerender } = render(<TestWrapper parcelId='12345-001' />);
+      expect(screen.getByTestId('atlas-projection-loading')).toBeInTheDocument();
+
+      mockUseAtlasProjection.mockReturnValue({
+        status: 'error',
+        feature: null,
+        error: 'Canonical Atlas 500',
+        refetch: vi.fn(),
+      });
+      rerender(<TestWrapper parcelId='12345-001' />);
+      expect(screen.getByTestId('atlas-projection-error')).toHaveTextContent('Canonical Atlas 500');
+    });
+
     it('renders boundary-derived situs content as text rather than HTML', async () => {
       vi.stubEnv('VITE_MAPBOX_ACCESS_TOKEN', 'test-token');
       const hostileSitus = '<img src=x onerror=alert(1)>';
