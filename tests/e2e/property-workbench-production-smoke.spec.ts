@@ -483,6 +483,31 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
     await assertNoInfiniteLoading(page);
     await capture(page, '04 atlas', '04-atlas');
 
+    const atlasProjectionPath = `**/api/parcels/${encodeURIComponent(parcelId)}/atlas-projection`;
+    await page.route(atlasProjectionPath, async route => {
+      await route.fulfill({ status: 503, body: '' });
+    });
+    await page.reload();
+    await expect(page.getByTestId('property-atlas-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('atlas-projection-unavailable')).toBeVisible({ timeout: 30000 });
+    await page.unroute(atlasProjectionPath);
+
+    const correlationId = 'corr-sr009c-browser-proof';
+    await page.route(atlasProjectionPath, async route => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/problem+json',
+        headers: { 'x-correlation-id': correlationId },
+        body: JSON.stringify({ title: 'Synthetic Atlas failure proof' }),
+      });
+    });
+    await page.reload();
+    const atlasError = page.getByTestId('atlas-projection-error');
+    await expect(atlasError).toBeVisible({ timeout: 30000 });
+    await expect(atlasError).toContainText(correlationId);
+    await expect(page.getByRole('button', { name: 'Copy Atlas correlation ID' })).toBeEnabled();
+    await page.unroute(atlasProjectionPath);
+
     await page.goto(`/property/${encodeURIComponent(parcelId)}/dais`);
     await expect(page.getByTestId('property-dais-tab')).toBeVisible({ timeout: 30000 });
     await expect(page.getByTestId('dais-appeals-loaded')).toContainText('1 appeal', {

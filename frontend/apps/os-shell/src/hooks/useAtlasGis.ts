@@ -279,7 +279,11 @@ function normalizeGuid(value: unknown): string | null {
 }
 
 function createNetworkCorrelationId(): string {
-  return `net-${globalThis.crypto.randomUUID()}`;
+  const uuid =
+    typeof globalThis.crypto?.randomUUID === 'function'
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`;
+  return `net-${uuid}`;
 }
 
 function responseCorrelationId(response: Response): string {
