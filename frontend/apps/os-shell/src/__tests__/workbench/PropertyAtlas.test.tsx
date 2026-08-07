@@ -73,11 +73,11 @@ const mockUseAtlasProjection = vi.fn().mockReturnValue({
   refetch: vi.fn(),
 });
 vi.mock('../../hooks/useAtlasGis', () => ({
-  useParcelGis: (...args: unknown[]) => ({
-    boundary: mockUseParcelBoundary(...args),
-    layers: mockUseParcelLayers(...args),
+  useParcelBoundary: (...args: unknown[]) => ({
+    ...mockUseParcelBoundary(...args),
+    atlasProjection: mockUseAtlasProjection(...args),
   }),
-  useAtlasProjection: (...args: unknown[]) => mockUseAtlasProjection(...args),
+  useParcelLayers: (...args: unknown[]) => mockUseParcelLayers(...args),
 }));
 
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;

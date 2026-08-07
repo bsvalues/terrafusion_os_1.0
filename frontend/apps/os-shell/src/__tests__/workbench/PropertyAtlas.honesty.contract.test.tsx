@@ -35,14 +35,24 @@ vi.mock('../../components/errors/ErrorDisplay', () => ({
 }));
 
 vi.mock('../../hooks/useAtlasGis', () => ({
-  useParcelGis: () => ({
-    boundary: { data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() },
-    layers: { data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() },
-  }),
-  useAtlasProjection: () => ({
-    status: 'unavailable',
-    feature: null,
+  useParcelBoundary: () => ({
+    data: null,
+    loading: false,
     error: null,
+    source: 'unavailable',
+    refetch: vi.fn(),
+    atlasProjection: {
+      status: 'unavailable',
+      feature: null,
+      error: null,
+      refetch: vi.fn(),
+    },
+  }),
+  useParcelLayers: () => ({
+    data: null,
+    loading: false,
+    error: null,
+    source: 'unavailable',
     refetch: vi.fn(),
   }),
 }));

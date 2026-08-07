@@ -114,6 +114,14 @@ export type AtlasProjectionState =
   | { status: 'unavailable'; feature: null; error: null }
   | { status: 'error'; feature: null; error: string };
 
+export type AtlasProjectionResult = AtlasProjectionState & {
+  refetch: () => void;
+};
+
+export type ParcelBoundaryResult = AtlasGisResult<ParcelBoundaryData> & {
+  atlasProjection?: AtlasProjectionResult;
+};
+
 // ── Internal fetch helper ───────────────────────────────────────────
 
 async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasGisSource }> {
@@ -217,9 +225,10 @@ export function useParcelGis(parcelId: string | undefined): {
  */
 export function useParcelBoundary(
   parcelId: string | undefined
-): AtlasGisResult<ParcelBoundaryData> {
+): ParcelBoundaryResult {
   const { boundary } = useParcelGis(parcelId);
-  return boundary;
+  const atlasProjection = useAtlasProjection(parcelId);
+  return { ...boundary, atlasProjection };
 }
 
 /**
@@ -264,9 +273,7 @@ function isCanonicalPolygon(value: unknown, parcelId: string): value is AtlasPro
  * Authenticated canonical Atlas projection. This does not replace or relabel
  * the legacy GIS compatibility endpoint.
  */
-export function useAtlasProjection(parcelId: string | undefined): AtlasProjectionState & {
-  refetch: () => void;
-} {
+export function useAtlasProjection(parcelId: string | undefined): AtlasProjectionResult {
   const [state, setState] = useState<AtlasProjectionState>({
     status: parcelId ? 'loading' : 'unavailable',
     feature: null,

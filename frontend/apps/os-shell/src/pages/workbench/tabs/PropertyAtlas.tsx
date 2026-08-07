@@ -27,7 +27,12 @@ import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
-import { useAtlasProjection, useParcelGis, type AtlasGisSource } from '../../../hooks/useAtlasGis';
+import {
+  useParcelBoundary,
+  useParcelLayers,
+  type AtlasGisSource,
+  type AtlasProjectionResult,
+} from '../../../hooks/useAtlasGis';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -313,11 +318,17 @@ export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
-  // Legacy GIS compatibility remains available, but this tab performs its
-  // combined request once. Canonical Atlas proof uses the separate,
-  // authenticated projection endpoint.
-  const { boundary, layers } = useParcelGis(parcelId);
-  const atlasProjection = useAtlasProjection(parcelId);
+  // Keep the established boundary/layer hook contract. The real boundary
+  // wrapper also carries the authenticated canonical projection; older
+  // partial mocks fail closed to unavailable rather than inventing evidence.
+  const boundary = useParcelBoundary(parcelId);
+  const layers = useParcelLayers(parcelId);
+  const atlasProjection: AtlasProjectionResult = boundary.atlasProjection ?? {
+    status: 'unavailable',
+    feature: null,
+    error: null,
+    refetch: boundary.refetch,
+  };
 
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
