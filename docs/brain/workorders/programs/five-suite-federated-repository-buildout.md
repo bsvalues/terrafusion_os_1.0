@@ -311,8 +311,6 @@ same-county canonical Polygon, truthful unavailable, and cross-county non-disclo
 remains default `Disabled`; local exact evidence remains non-live; the frozen adapter is unchanged;
 and Point, provider adoption, and cutover remain unclaimed. The bounded authority and amendment are
 completed and consumed. The program remains active between cohorts with portfolio reconciliation
-current and no successor implementation inferred.
-Stages 1 through 4 resume under the original allowlist to prove canonical Polygon, truthful
-unavailable, and cross-county non-disclosure. The adapter and tests remain unchanged and all
-live-provider, protected-resource, deployment, cutover, routing, and legacy-anonymous-path denials
-remain intact.
+current and no successor implementation inferred. No WO-SR-009C stage remains executable; the
+adapter and tests remain unchanged, and all live-provider, protected-resource, deployment, cutover,
+routing, and legacy-anonymous-path denials remain intact.
