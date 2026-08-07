@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
@@ -121,6 +122,55 @@ public sealed class ParcelGeometryControllerTests
         var unavailable = result.Should().BeOfType<ObjectResult>().Subject;
         unavailable.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
         reader.CallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ControllerActivation_SelectsTwoArgumentConstructor_WhenProjectionIsDisabled()
+    {
+        var reader = new StubReader(ParcelGeometryLookup.NotFound());
+        await using var services = new ServiceCollection()
+            .AddSingleton<IParcelGeometryReader>(reader)
+            .AddSingleton(NullLogger<ParcelGeometryController>.Instance)
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<ParcelGeometryController>>(
+                NullLogger<ParcelGeometryController>.Instance)
+            .BuildServiceProvider();
+        var controller = ActivatorUtilities.CreateInstance<ParcelGeometryController>(services);
+        SetPrincipal(controller, CountyA);
+
+        var result = await controller.GetAtlasProjection(ParcelId);
+
+        result.Should().BeOfType<ObjectResult>()
+            .Which.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+        reader.CallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ControllerActivation_SelectsThreeArgumentConstructor_WhenProjectionIsEnabled()
+    {
+        var reader = new StubReader(ParcelGeometryLookup.Found(CountyA, CreateGeometry()));
+        var options = Options.Create(new AtlasProjectionOptions
+        {
+            Mode = AtlasProjectionMode.LocalExact,
+            ModulePath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "project-atlas-feature.mjs")),
+        });
+        var consumer = new AtlasProjectionConsumer(
+            reader,
+            new StubCountyScopeVerifier(true),
+            new StubHost(CreatePolygonResult()),
+            options);
+        await using var services = new ServiceCollection()
+            .AddSingleton<IParcelGeometryReader>(reader)
+            .AddSingleton<Microsoft.Extensions.Logging.ILogger<ParcelGeometryController>>(
+                NullLogger<ParcelGeometryController>.Instance)
+            .AddSingleton(consumer)
+            .BuildServiceProvider();
+        var controller = ActivatorUtilities.CreateInstance<ParcelGeometryController>(services);
+        SetPrincipal(controller, CountyA);
+
+        var result = await controller.GetAtlasProjection(ParcelId);
+
+        result.Should().BeOfType<ContentResult>()
+            .Which.Content.Should().Contain("\"type\":\"Polygon\"");
     }
 
     [Fact]
