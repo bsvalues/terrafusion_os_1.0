@@ -11,17 +11,20 @@ namespace TerraFusion.API.Services.Atlas;
 public sealed class AtlasProjectionConsumer
 {
     private readonly IParcelGeometryReader _reader;
+    private readonly IAtlasParcelIdentityResolver _identityResolver;
     private readonly IAtlasParcelCountyScopeVerifier _countyScopeVerifier;
     private readonly IAtlasProjectionProcessHost _processHost;
     private readonly AtlasProjectionOptions _options;
 
     public AtlasProjectionConsumer(
         IParcelGeometryReader reader,
+        IAtlasParcelIdentityResolver identityResolver,
         IAtlasParcelCountyScopeVerifier countyScopeVerifier,
         IAtlasProjectionProcessHost processHost,
         IOptions<AtlasProjectionOptions> options)
     {
         _reader = reader;
+        _identityResolver = identityResolver;
         _countyScopeVerifier = countyScopeVerifier;
         _processHost = processHost;
         _options = options.Value;
@@ -29,7 +32,7 @@ public sealed class AtlasProjectionConsumer
 
     public async Task<AtlasProjectionConsumerResult> ProjectAsync(
         Guid countyId,
-        Guid tfParcelId,
+        string parcelNumber,
         CancellationToken cancellationToken = default)
     {
         if (_options.Mode != AtlasProjectionMode.LocalExact)
@@ -40,20 +43,28 @@ public sealed class AtlasProjectionConsumer
         {
             throw new ArgumentException("CountyId must be a non-empty Guid.", nameof(countyId));
         }
-        if (tfParcelId == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(parcelNumber) || parcelNumber.Length > 50)
         {
-            throw new ArgumentException("TfParcelId must be a non-empty Guid.", nameof(tfParcelId));
+            throw new ArgumentException("ParcelNumber must contain 1-50 characters.", nameof(parcelNumber));
         }
 
         var modulePath = RequireCanonicalAbsoluteModulePath(_options.ModulePath);
+        var tfParcelId = await _identityResolver
+            .ResolveInCountyAsync(countyId, parcelNumber, cancellationToken)
+            .ConfigureAwait(false);
+        if (tfParcelId is null)
+        {
+            return AtlasProjectionConsumerResult.NotFound();
+        }
+
         if (!await _countyScopeVerifier
-                .ExistsInCountyAsync(countyId, tfParcelId, cancellationToken)
+                .ExistsInCountyAsync(countyId, tfParcelId.Value, cancellationToken)
                 .ConfigureAwait(false))
         {
             return AtlasProjectionConsumerResult.NotFound();
         }
 
-        var lookup = await _reader.GetGeometryAsync(tfParcelId, cancellationToken).ConfigureAwait(false);
+        var lookup = await _reader.GetGeometryAsync(tfParcelId.Value, cancellationToken).ConfigureAwait(false);
 
         if (lookup.Kind == ParcelGeometryLookupKind.NotFound)
         {
@@ -67,7 +78,7 @@ public sealed class AtlasProjectionConsumer
 
         if (lookup.Kind == ParcelGeometryLookupKind.NoGeometry)
         {
-            return AtlasProjectionConsumerResult.Unavailable(countyId, tfParcelId);
+            return AtlasProjectionConsumerResult.Unavailable(countyId, tfParcelId.Value);
         }
 
         if (lookup.Kind != ParcelGeometryLookupKind.Found || lookup.Payload is null)
@@ -76,7 +87,7 @@ public sealed class AtlasProjectionConsumer
         }
 
         var source = lookup.Payload;
-        if (source.CountyId != countyId || source.TfParcelId != tfParcelId)
+        if (source.CountyId != countyId || source.TfParcelId != tfParcelId.Value)
         {
             throw new AtlasProjectionConsumerException("Canonical parcel geometry identity did not match the request.");
         }
@@ -84,17 +95,18 @@ public sealed class AtlasProjectionConsumer
         var request = new AtlasParcelSpatialReadRequest
         {
             CountyId = countyId.ToString("D"),
-            ParcelId = tfParcelId.ToString("D"),
+            ParcelId = tfParcelId.Value.ToString("D"),
         };
         string exchangeJson;
         try
         {
-            exchangeJson = AtlasSpatialReadAdapter.Serialize(request, source);
+            var resultJson = AtlasSpatialReadAdapter.Serialize(request, source);
+            exchangeJson = $"{{\"result\":{resultJson}}}";
         }
         catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             throw new AtlasProjectionConsumerException(
-                "Canonical parcel geometry failed Atlas contract validation.",
+                $"Canonical parcel geometry failed Atlas contract validation: {exception.Message}",
                 exception);
         }
 
@@ -155,6 +167,39 @@ public sealed class AtlasProjectionConsumer
         }
 
         return canonical;
+    }
+}
+
+public interface IAtlasParcelIdentityResolver
+{
+    Task<Guid?> ResolveInCountyAsync(
+        Guid countyId,
+        string parcelNumber,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Resolves a Workbench parcel number to exactly one sovereign parcel inside
+/// the authenticated county. Missing and ambiguous matches are intentionally
+/// indistinguishable.
+/// </summary>
+public sealed class AtlasParcelIdentityResolver(TerraFusionDbContext db)
+    : IAtlasParcelIdentityResolver
+{
+    public async Task<Guid?> ResolveInCountyAsync(
+        Guid countyId,
+        string parcelNumber,
+        CancellationToken cancellationToken = default)
+    {
+        var matches = await db.TfParcels
+            .AsNoTracking()
+            .Where(parcel => parcel.CountyId == countyId && parcel.ParcelNumber == parcelNumber)
+            .Select(parcel => parcel.TfParcelId)
+            .Take(2)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return matches.Count == 1 ? matches[0] : null;
     }
 }
 

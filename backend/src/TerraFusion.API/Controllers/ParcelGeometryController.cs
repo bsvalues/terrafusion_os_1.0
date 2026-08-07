@@ -39,15 +39,8 @@ public sealed class ParcelGeometryController : ControllerBase
 
     public ParcelGeometryController(
         IParcelGeometryReader reader,
-        ILogger<ParcelGeometryController> logger)
-        : this(reader, logger, atlasProjectionConsumer: null)
-    {
-    }
-
-    public ParcelGeometryController(
-        IParcelGeometryReader reader,
         ILogger<ParcelGeometryController> logger,
-        AtlasProjectionConsumer? atlasProjectionConsumer)
+        AtlasProjectionConsumer? atlasProjectionConsumer = null)
     {
         _reader = reader;
         _logger = logger;
@@ -126,18 +119,18 @@ public sealed class ParcelGeometryController : ControllerBase
     /// parcel geometry. Disabled configuration is reported as unavailable;
     /// cross-county and missing parcels are indistinguishable 404 responses.
     /// </summary>
-    [HttpGet("{tfParcelId:guid}/atlas-projection")]
+    [HttpGet("{parcelNumber}/atlas-projection")]
     [Authorize]
     [RequiresPermission("read:parcel")]
     public async Task<IActionResult> GetAtlasProjection(
-        Guid tfParcelId,
+        string parcelNumber,
         CancellationToken ct = default)
     {
-        if (tfParcelId == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(parcelNumber) || parcelNumber.Length > 50)
         {
             return BadRequest(new
             {
-                error = "tfParcelId must be a non-empty Guid.",
+                error = "parcelNumber must contain 1-50 characters.",
             });
         }
 
@@ -159,7 +152,7 @@ public sealed class ParcelGeometryController : ControllerBase
         try
         {
             var projection = await _atlasProjectionConsumer
-                .ProjectAsync(principalCountyId.Value, tfParcelId, ct)
+                .ProjectAsync(principalCountyId.Value, parcelNumber, ct)
                 .ConfigureAwait(false);
 
             return projection.Outcome switch
@@ -184,7 +177,7 @@ public sealed class ParcelGeometryController : ControllerBase
             _logger.LogWarning(
                 exception,
                 "[AtlasProjection] canonical projection failed closed for parcel {ParcelId} and trace {TraceId}.",
-                tfParcelId,
+                parcelNumber,
                 HttpContext.TraceIdentifier);
             return Problem(
                 statusCode: StatusCodes.Status500InternalServerError,

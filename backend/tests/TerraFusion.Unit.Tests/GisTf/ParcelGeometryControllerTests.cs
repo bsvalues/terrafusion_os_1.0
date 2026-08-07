@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,7 @@ public sealed class ParcelGeometryControllerTests
     private static readonly Guid CountyA = Guid.Parse("19190019-1919-1919-1919-191919191919");
     private static readonly Guid CountyB = Guid.Parse("20200020-2020-2020-2020-202020202020");
     private static readonly Guid ParcelId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+    private const string ParcelNumber = "SR009C-SYNTHETIC-P1";
 
     [Fact]
     public void AtlasProjectionEndpoint_RequiresAuthentication_AndReadParcelPermission()
@@ -44,7 +46,7 @@ public sealed class ParcelGeometryControllerTests
         var host = new StubHost(CreatePolygonResult());
         var controller = BuildController(CountyA, reader, host);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         var content = result.Should().BeOfType<ContentResult>().Subject;
         content.ContentType.Should().Be("application/json");
@@ -60,7 +62,7 @@ public sealed class ParcelGeometryControllerTests
         var host = new StubHost(CreatePolygonResult());
         var controller = BuildController(CountyA, reader, host);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         var content = result.Should().BeOfType<ContentResult>().Subject;
         content.Content.Should().Be("null");
@@ -74,7 +76,7 @@ public sealed class ParcelGeometryControllerTests
         var host = new StubHost(CreatePolygonResult());
         var controller = BuildController(CountyB, reader, host);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         result.Should().BeOfType<NotFoundResult>();
         host.CallCount.Should().Be(0);
@@ -87,7 +89,7 @@ public sealed class ParcelGeometryControllerTests
         var host = new StubHost(CreatePolygonResult());
         var controller = BuildController(null, reader, host);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         result.Should().BeOfType<ForbidResult>();
         reader.CallCount.Should().Be(0);
@@ -101,7 +103,7 @@ public sealed class ParcelGeometryControllerTests
         var host = new StubHost(CreatePolygonResult());
         var controller = BuildController(Guid.Empty, reader, host);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         result.Should().BeOfType<ForbidResult>();
         reader.CallCount.Should().Be(0);
@@ -117,7 +119,7 @@ public sealed class ParcelGeometryControllerTests
             NullLogger<ParcelGeometryController>.Instance);
         SetPrincipal(controller, CountyA);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         var unavailable = result.Should().BeOfType<ObjectResult>().Subject;
         unavailable.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
@@ -128,16 +130,17 @@ public sealed class ParcelGeometryControllerTests
     public async Task ControllerActivation_SelectsTwoArgumentConstructor_WhenProjectionIsDisabled()
     {
         var reader = new StubReader(ParcelGeometryLookup.NotFound());
-        await using var services = new ServiceCollection()
+        var serviceCollection = new ServiceCollection()
             .AddSingleton<IParcelGeometryReader>(reader)
             .AddSingleton(NullLogger<ParcelGeometryController>.Instance)
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<ParcelGeometryController>>(
-                NullLogger<ParcelGeometryController>.Instance)
-            .BuildServiceProvider();
-        var controller = ActivatorUtilities.CreateInstance<ParcelGeometryController>(services);
+                NullLogger<ParcelGeometryController>.Instance);
+        serviceCollection.AddControllers();
+        await using var services = serviceCollection.BuildServiceProvider();
+        var controller = ActivateThroughMvc(services);
         SetPrincipal(controller, CountyA);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         result.Should().BeOfType<ObjectResult>()
             .Which.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
@@ -155,19 +158,21 @@ public sealed class ParcelGeometryControllerTests
         });
         var consumer = new AtlasProjectionConsumer(
             reader,
+            new StubIdentityResolver(ParcelId),
             new StubCountyScopeVerifier(true),
             new StubHost(CreatePolygonResult()),
             options);
-        await using var services = new ServiceCollection()
+        var serviceCollection = new ServiceCollection()
             .AddSingleton<IParcelGeometryReader>(reader)
             .AddSingleton<Microsoft.Extensions.Logging.ILogger<ParcelGeometryController>>(
                 NullLogger<ParcelGeometryController>.Instance)
-            .AddSingleton(consumer)
-            .BuildServiceProvider();
-        var controller = ActivatorUtilities.CreateInstance<ParcelGeometryController>(services);
+            .AddSingleton(consumer);
+        serviceCollection.AddControllers();
+        await using var services = serviceCollection.BuildServiceProvider();
+        var controller = ActivateThroughMvc(services);
         SetPrincipal(controller, CountyA);
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         result.Should().BeOfType<ContentResult>()
             .Which.Content.Should().Contain("\"type\":\"Polygon\"");
@@ -180,7 +185,7 @@ public sealed class ParcelGeometryControllerTests
         var invalid = CreatePolygonResult() with { SourceModuleSha256 = new string('0', 64) };
         var controller = BuildController(CountyA, reader, new StubHost(invalid));
 
-        var result = await controller.GetAtlasProjection(ParcelId);
+        var result = await controller.GetAtlasProjection(ParcelNumber);
 
         var failure = result.Should().BeOfType<ObjectResult>().Subject;
         failure.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
@@ -210,6 +215,7 @@ public sealed class ParcelGeometryControllerTests
         });
         var consumer = new AtlasProjectionConsumer(
             reader,
+            new StubIdentityResolver(ParcelId),
             new StubCountyScopeVerifier(countyClaim == CountyA),
             host,
             options);
@@ -219,6 +225,21 @@ public sealed class ParcelGeometryControllerTests
             consumer);
         SetPrincipal(controller, countyClaim);
         return controller;
+    }
+
+    private static ParcelGeometryController ActivateThroughMvc(IServiceProvider services)
+    {
+        var activator = services.GetRequiredService<IControllerActivator>();
+        var context = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { RequestServices = services },
+            ActionDescriptor = new ControllerActionDescriptor
+            {
+                ControllerTypeInfo = typeof(ParcelGeometryController).GetTypeInfo(),
+            },
+        };
+
+        return (ParcelGeometryController)activator.Create(context);
     }
 
     private static void SetPrincipal(ParcelGeometryController controller, Guid? countyClaim)
@@ -302,5 +323,13 @@ public sealed class ParcelGeometryControllerTests
             Guid countyId,
             Guid tfParcelId,
             CancellationToken cancellationToken = default) => Task.FromResult(exists);
+    }
+
+    private sealed class StubIdentityResolver(Guid? tfParcelId) : IAtlasParcelIdentityResolver
+    {
+        public Task<Guid?> ResolveInCountyAsync(
+            Guid countyId,
+            string parcelNumber,
+            CancellationToken cancellationToken = default) => Task.FromResult(tfParcelId);
     }
 }

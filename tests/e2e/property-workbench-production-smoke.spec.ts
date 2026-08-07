@@ -1,4 +1,6 @@
 import { expect, request, test, type Page, type APIRequestContext } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -22,6 +24,12 @@ const steps: SmokeStep[] = [];
 const network: NetworkRecord[] = [];
 const failedResponses: NetworkRecord[] = [];
 const consoleLines: string[] = [];
+const CANONICAL_TF_PARCEL_ID = 'be0900a0-0000-0000-0000-0000000000a1';
+const UNAVAILABLE_TF_PARCEL_ID = 'be0900a0-0000-0000-0000-0000000000a2';
+const CROSS_COUNTY_TF_PARCEL_ID = 'be0900a0-0000-0000-0000-0000000000b1';
+const UNAVAILABLE_PARCEL_NUMBER = 'SR009C-SYNTHETIC-NO-GEOMETRY';
+const CROSS_COUNTY_PARCEL_NUMBER = 'SR009C-SYNTHETIC-CROSS-COUNTY';
+const CROSS_COUNTY_ID = '20200020-2020-2020-2020-202020202020';
 
 function baseUrl(): string {
   const apiPort = process.env.TF_API_PORT ?? '5046';
@@ -119,6 +127,106 @@ async function resolveSmokeParcel(api: APIRequestContext, token: string): Promis
   throw new Error(
     'smoke could not find a listed parcel that loads from synthetic property evidence'
   );
+}
+
+function sqliteExecutable(): string {
+  const configured = process.env.SQLITE3_PATH?.trim();
+  if (configured) return configured;
+
+  const windowsPath = 'C:\\msys64\\mingw64\\bin\\sqlite3.exe';
+  if (process.platform === 'win32' && existsSync(windowsPath)) return windowsPath;
+  return 'sqlite3';
+}
+
+function sqlLiteral(value: string): string {
+  return `'${value.replaceAll("'", "''")}'`;
+}
+
+function sqlGuid(value: string): string {
+  return sqlLiteral(value.toUpperCase());
+}
+
+function seedCanonicalAtlasFixture(countyId: string, parcelNumber: string): void {
+  const databasePath = process.env.WORKBENCH_SMOKE_DATABASE_PATH?.trim();
+  if (!databasePath) {
+    throw new Error('WORKBENCH_SMOKE_DATABASE_PATH is required for canonical Atlas smoke proof.');
+  }
+
+  const now = '2026-08-05T12:00:00.0000000Z';
+  const sql = `
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS "tf_parcel" (
+  "TfParcelId" TEXT NOT NULL PRIMARY KEY,
+  "CountyId" TEXT NOT NULL,
+  "ParcelNumber" TEXT NULL,
+  "SitusAddress" TEXT NULL,
+  "LegalDescription" TEXT NULL,
+  "ParcelStatus" TEXT NOT NULL,
+  "PropertyType" TEXT NULL,
+  "CurrentOwnerId" TEXT NULL,
+  "CurrentAssessmentId" TEXT NULL,
+  "ConversionEra" TEXT NULL,
+  "CreatedAt" TEXT NOT NULL,
+  "UpdatedAt" TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "tf_parcel_geom" (
+  "TfParcelGeomId" TEXT NOT NULL PRIMARY KEY,
+  "TfParcelId" TEXT NULL,
+  "CountyId" TEXT NOT NULL,
+  "ArcGisObjectId" INTEGER NOT NULL,
+  "ArcGisApn" TEXT NULL,
+  "GeomWkt" TEXT NOT NULL,
+  "CentroidLat" REAL NOT NULL,
+  "CentroidLon" REAL NOT NULL,
+  "AreaSqFt" REAL NOT NULL,
+  "SourceServiceUrl" TEXT NOT NULL,
+  "LastSyncedAt" TEXT NOT NULL,
+  "IsActive" INTEGER NOT NULL,
+  "CreatedAt" TEXT NOT NULL,
+  "UpdatedAt" TEXT NOT NULL
+);
+DELETE FROM "tf_parcel_geom" WHERE "TfParcelId" IN (
+  ${sqlGuid(CANONICAL_TF_PARCEL_ID)},
+  ${sqlGuid(UNAVAILABLE_TF_PARCEL_ID)},
+  ${sqlGuid(CROSS_COUNTY_TF_PARCEL_ID)}
+);
+DELETE FROM "tf_parcel" WHERE "TfParcelId" IN (
+  ${sqlGuid(CANONICAL_TF_PARCEL_ID)},
+  ${sqlGuid(UNAVAILABLE_TF_PARCEL_ID)},
+  ${sqlGuid(CROSS_COUNTY_TF_PARCEL_ID)}
+);
+INSERT INTO "tf_parcel" (
+  "TfParcelId", "CountyId", "ParcelNumber", "SitusAddress", "LegalDescription",
+  "ParcelStatus", "PropertyType", "CurrentOwnerId", "CurrentAssessmentId",
+  "ConversionEra", "CreatedAt", "UpdatedAt"
+) VALUES
+  (${sqlGuid(CANONICAL_TF_PARCEL_ID)}, ${sqlGuid(countyId)}, ${sqlLiteral(parcelNumber)},
+   '100 Synthetic Proof Way', NULL, 'ACTIVE', 'R', NULL, NULL, NULL, ${sqlLiteral(now)}, ${sqlLiteral(now)}),
+  (${sqlGuid(UNAVAILABLE_TF_PARCEL_ID)}, ${sqlGuid(countyId)}, ${sqlLiteral(UNAVAILABLE_PARCEL_NUMBER)},
+   '101 Synthetic Proof Way', NULL, 'ACTIVE', 'R', NULL, NULL, NULL, ${sqlLiteral(now)}, ${sqlLiteral(now)}),
+  (${sqlGuid(CROSS_COUNTY_TF_PARCEL_ID)}, ${sqlGuid(CROSS_COUNTY_ID)}, ${sqlLiteral(CROSS_COUNTY_PARCEL_NUMBER)},
+   '200 Cross County Sentinel Way', NULL, 'ACTIVE', 'R', NULL, NULL, NULL, ${sqlLiteral(now)}, ${sqlLiteral(now)});
+INSERT INTO "tf_parcel_geom" (
+  "TfParcelGeomId", "TfParcelId", "CountyId", "ArcGisObjectId", "ArcGisApn",
+  "GeomWkt", "CentroidLat", "CentroidLon", "AreaSqFt", "SourceServiceUrl",
+  "LastSyncedAt", "IsActive", "CreatedAt", "UpdatedAt"
+) VALUES
+  (${sqlGuid('be0900a0-0000-0000-0000-0000000000d1')}, ${sqlGuid(CANONICAL_TF_PARCEL_ID)},
+   ${sqlGuid(countyId)}, 9001, ${sqlLiteral(parcelNumber)},
+   'POLYGON((-119.30 46.20, -119.20 46.20, -119.20 46.30, -119.30 46.30, -119.30 46.20))',
+   46.233, -119.250, 125000.0, 'synthetic://wo-sr-009c/same-county',
+   ${sqlLiteral(now)}, 1, ${sqlLiteral(now)}, ${sqlLiteral(now)}),
+  (${sqlGuid('be0900a0-0000-0000-0000-0000000000d2')}, ${sqlGuid(CROSS_COUNTY_TF_PARCEL_ID)},
+   ${sqlGuid(CROSS_COUNTY_ID)}, 9002, ${sqlLiteral(CROSS_COUNTY_PARCEL_NUMBER)},
+   'POLYGON((-120.30 47.20, -120.20 47.20, -120.20 47.30, -120.30 47.30, -120.30 47.20))',
+   47.233, -120.250, 225000.0, 'synthetic://wo-sr-009c/cross-county-sentinel',
+   ${sqlLiteral(now)}, 1, ${sqlLiteral(now)}, ${sqlLiteral(now)});
+`;
+
+  execFileSync(sqliteExecutable(), [databasePath, sql], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
 }
 
 async function assertAuthenticatedParcelApiBoundary(
@@ -289,6 +397,7 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
       throw new Error('Synthetic auth response did not include a countyId claim.');
     }
     const parcelId = await resolveSmokeParcel(api, auth.token);
+    seedCanonicalAtlasFixture(auth.countyId, parcelId);
     await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
     await assertAuthenticatedDaisAppealBoundary(api, auth, parcelId);
     await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
@@ -352,11 +461,23 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
       type: 'Feature',
       geometry: { type: 'Polygon' },
       properties: {
-        parcelId,
+        parcelId: CANONICAL_TF_PARCEL_ID,
         countyId: auth.countyId,
         evidenceState: 'canonical',
       },
     });
+    const unavailableAtlas = await api.get(
+      `/api/parcels/${encodeURIComponent(UNAVAILABLE_PARCEL_NUMBER)}/atlas-projection`,
+      { headers: { Authorization: `Bearer ${auth.token}` } }
+    );
+    expect(unavailableAtlas.status()).toBe(200);
+    expect(await unavailableAtlas.json()).toBeNull();
+
+    const crossCountyAtlas = await api.get(
+      `/api/parcels/${encodeURIComponent(CROSS_COUNTY_PARCEL_NUMBER)}/atlas-projection`,
+      { headers: { Authorization: `Bearer ${auth.token}` } }
+    );
+    expect(crossCountyAtlas.status()).toBe(404);
     await expect(page.getByTestId('atlas-projection-polygon')).toHaveCount(1, { timeout: 30000 });
     await expect(page.getByText(/canonical Point/i)).toHaveCount(0);
     await assertNoInfiniteLoading(page);

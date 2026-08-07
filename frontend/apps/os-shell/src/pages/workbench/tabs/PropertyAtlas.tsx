@@ -683,7 +683,7 @@ export const PropertyAtlas: React.FC = () => {
             </p>
           </div>
           <WorkbenchSourceBadge
-            source={atlasProjection.status === 'polygon' ? 'live' : 'unavailable'}
+            source={atlasProjection.status === 'polygon' ? 'fallback' : 'unavailable'}
           />
         </div>
 
@@ -726,9 +726,7 @@ export const PropertyAtlas: React.FC = () => {
         )}
         {atlasProjection.status === 'polygon' && atlasProjection.feature && (
           <div className='mt-3 text-sm tf-text' data-testid='atlas-projection-polygon'>
-            <p>
-              Canonical Polygon verified for parcel {atlasProjection.feature.properties.parcelId}.
-            </p>
+            <p>Canonical Polygon verified for the current request.</p>
             <p className='mt-1 text-xs tf-text-dim'>
               County {atlasProjection.feature.properties.countyId} ·{' '}
               {atlasProjection.feature.geometry.coordinates[0].length} ring positions · canonical

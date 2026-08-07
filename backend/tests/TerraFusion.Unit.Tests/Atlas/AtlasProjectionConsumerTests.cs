@@ -13,6 +13,7 @@ public sealed class AtlasProjectionConsumerTests
     private static readonly Guid CountyA = Guid.Parse("19190019-1919-1919-1919-191919191919");
     private static readonly Guid CountyB = Guid.Parse("20200020-2020-2020-2020-202020202020");
     private static readonly Guid ParcelId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+    private const string ParcelNumber = "SR009C-SYNTHETIC-P1";
 
     [Fact]
     public void Options_AreDefaultDisabled_AndHashPinned()
@@ -31,7 +32,7 @@ public sealed class AtlasProjectionConsumerTests
         var host = new StubHost(CreatePolygonResult());
         var consumer = CreateConsumer(reader, host);
 
-        var result = await consumer.ProjectAsync(CountyA, ParcelId);
+        var result = await consumer.ProjectAsync(CountyA, ParcelNumber);
 
         result.Outcome.Should().Be(AtlasProjectionConsumerOutcome.Polygon);
         result.CountyId.Should().Be(CountyA.ToString("D"));
@@ -40,6 +41,7 @@ public sealed class AtlasProjectionConsumerTests
         host.CallCount.Should().Be(1);
         Path.IsPathFullyQualified(host.ModulePath!).Should().BeTrue();
         host.ExpectedHash.Should().Be(AtlasProjectionOptions.ExpectedModuleSha256);
+        host.ExchangeJson.Should().StartWith("{\"result\":");
         host.ExchangeJson.Should().Contain("\"geometryState\":\"polygon\"");
         host.ExchangeJson.Should().Contain("\"outerRing\"");
     }
@@ -51,7 +53,7 @@ public sealed class AtlasProjectionConsumerTests
         var host = new StubHost(CreatePolygonResult());
         var consumer = CreateConsumer(reader, host);
 
-        var result = await consumer.ProjectAsync(CountyA, ParcelId);
+        var result = await consumer.ProjectAsync(CountyA, ParcelNumber);
 
         result.Outcome.Should().Be(AtlasProjectionConsumerOutcome.Unavailable);
         result.NormalizedFeatureJson.Should().Be("null");
@@ -68,7 +70,7 @@ public sealed class AtlasProjectionConsumerTests
         var host = new StubHost(CreatePolygonResult());
         var consumer = CreateConsumer(reader, host, new StubCountyScopeVerifier(false));
 
-        var result = await consumer.ProjectAsync(CountyB, ParcelId);
+        var result = await consumer.ProjectAsync(CountyB, ParcelNumber);
 
         result.Outcome.Should().Be(AtlasProjectionConsumerOutcome.NotFound);
         result.CountyId.Should().BeNull();
@@ -93,7 +95,7 @@ public sealed class AtlasProjectionConsumerTests
             "hash mismatch"));
         var consumer = CreateConsumer(reader, host);
 
-        var action = () => consumer.ProjectAsync(CountyA, ParcelId);
+        var action = () => consumer.ProjectAsync(CountyA, ParcelNumber);
 
         await action.Should().ThrowAsync<AtlasProjectionConsumerException>();
     }
@@ -105,7 +107,7 @@ public sealed class AtlasProjectionConsumerTests
         var mismatched = CreatePolygonResult() with { ParcelId = Guid.NewGuid().ToString("D") };
         var consumer = CreateConsumer(reader, new StubHost(mismatched));
 
-        var action = () => consumer.ProjectAsync(CountyA, ParcelId);
+        var action = () => consumer.ProjectAsync(CountyA, ParcelNumber);
 
         await action.Should().ThrowAsync<AtlasProjectionConsumerException>();
     }
@@ -118,7 +120,7 @@ public sealed class AtlasProjectionConsumerTests
         var host = new StubHost(CreatePolygonResult());
         var consumer = CreateConsumer(reader, host);
 
-        var action = () => consumer.ProjectAsync(CountyA, ParcelId);
+        var action = () => consumer.ProjectAsync(CountyA, ParcelNumber);
 
         await action.Should().ThrowAsync<AtlasProjectionConsumerException>();
         host.CallCount.Should().Be(0);
@@ -132,6 +134,7 @@ public sealed class AtlasProjectionConsumerTests
         var modulePath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "project-atlas-feature.mjs"));
         return new AtlasProjectionConsumer(
             reader,
+            new StubIdentityResolver(ParcelId),
             countyScopeVerifier ?? new StubCountyScopeVerifier(true),
             host,
             Options.Create(new AtlasProjectionOptions
@@ -190,6 +193,14 @@ public sealed class AtlasProjectionConsumerTests
             Guid countyId,
             Guid tfParcelId,
             CancellationToken cancellationToken = default) => Task.FromResult(exists);
+    }
+
+    private sealed class StubIdentityResolver(Guid? tfParcelId) : IAtlasParcelIdentityResolver
+    {
+        public Task<Guid?> ResolveInCountyAsync(
+            Guid countyId,
+            string parcelNumber,
+            CancellationToken cancellationToken = default) => Task.FromResult(tfParcelId);
     }
 
     private sealed class StubHost(AtlasProjectionProcessResult result) : IAtlasProjectionProcessHost

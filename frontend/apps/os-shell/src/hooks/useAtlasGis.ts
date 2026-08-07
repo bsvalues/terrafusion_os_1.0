@@ -239,12 +239,11 @@ export function useParcelLayers(parcelId: string | undefined): AtlasGisResult<Pa
   return layers;
 }
 
-function isCanonicalPolygon(value: unknown, parcelId: string): value is AtlasProjectionFeature {
+function isCanonicalPolygon(value: unknown): value is AtlasProjectionFeature {
   if (!value || typeof value !== 'object') return false;
   const feature = value as Partial<AtlasProjectionFeature>;
   const properties = feature.properties;
   const geometry = feature.geometry;
-  const canonicalParcelId = normalizeGuid(parcelId);
   return (
     feature.type === 'Feature' &&
     geometry?.type === 'Polygon' &&
@@ -265,8 +264,7 @@ function isCanonicalPolygon(value: unknown, parcelId: string): value is AtlasPro
     ) &&
     properties?.evidenceState === 'canonical' &&
     normalizeGuid(properties.countyId) !== null &&
-    canonicalParcelId !== null &&
-    normalizeGuid(properties.parcelId) === canonicalParcelId
+    normalizeGuid(properties.parcelId) !== null
   );
 }
 
@@ -344,7 +342,7 @@ export function useAtlasProjection(parcelId: string | undefined): AtlasProjectio
           setState({ status: 'unavailable', feature: null, error: null });
           return;
         }
-        if (!isCanonicalPolygon(payload, parcelId)) {
+        if (!isCanonicalPolygon(payload)) {
           throw new Error('Canonical Atlas returned an invalid Polygon contract.');
         }
         setState({ status: 'polygon', feature: payload, error: null });

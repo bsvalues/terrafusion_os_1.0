@@ -383,7 +383,7 @@ describe('PropertyAtlas', () => {
           },
           properties: {
             countyId: '19190019-1919-1919-1919-191919191919',
-            parcelId: '12345-001',
+            parcelId: 'be0900a0-0000-0000-0000-000000000001',
             evidenceState: 'canonical',
           },
         },
@@ -396,6 +396,9 @@ describe('PropertyAtlas', () => {
       expect(screen.getByTestId('atlas-projection-polygon')).toHaveTextContent(
         'Canonical Polygon verified'
       );
+      expect(
+        screen.getByTestId('atlas-canonical-projection').querySelector('[data-source="fallback"]')
+      ).toHaveTextContent('Non-live data');
       expect(screen.queryByText(/canonical Point/i)).not.toBeInTheDocument();
     });
 
