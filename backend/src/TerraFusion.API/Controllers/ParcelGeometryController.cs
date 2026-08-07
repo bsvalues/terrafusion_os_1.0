@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Security;
+using TerraFusion.API.Services.Atlas;
 using TerraFusion.Core.GIS.ArcGisRest;
 
 namespace TerraFusion.API.Controllers;
@@ -33,13 +35,16 @@ public sealed class ParcelGeometryController : ControllerBase
 {
     private readonly IParcelGeometryReader _reader;
     private readonly ILogger<ParcelGeometryController> _logger;
+    private readonly AtlasProjectionConsumer? _atlasProjectionConsumer;
 
     public ParcelGeometryController(
         IParcelGeometryReader reader,
-        ILogger<ParcelGeometryController> logger)
+        ILogger<ParcelGeometryController> logger,
+        AtlasProjectionConsumer? atlasProjectionConsumer = null)
     {
         _reader = reader;
         _logger = logger;
+        _atlasProjectionConsumer = atlasProjectionConsumer;
     }
 
     [HttpGet("{tfParcelId:guid}/geometry")]
@@ -106,6 +111,77 @@ public sealed class ParcelGeometryController : ControllerBase
             default:
                 throw new InvalidOperationException(
                     $"Unrecognized lookup kind: {lookup.Kind}");
+        }
+    }
+
+    /// <summary>
+    /// Returns the exact-hash, local-sovereign Atlas projection for canonical
+    /// parcel geometry. Disabled configuration is reported as unavailable;
+    /// cross-county and missing parcels are indistinguishable 404 responses.
+    /// </summary>
+    [HttpGet("{parcelNumber}/atlas-projection")]
+    [Authorize]
+    [RequiresPermission("read:parcel")]
+    public async Task<IActionResult> GetAtlasProjection(
+        string parcelNumber,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(parcelNumber) || parcelNumber.Length > 50)
+        {
+            return BadRequest(new
+            {
+                error = "parcelNumber must contain 1-50 characters.",
+            });
+        }
+
+        var principalCountyId = ResolveCountyClaim();
+        if (principalCountyId is null || principalCountyId.Value == Guid.Empty)
+        {
+            _logger.LogWarning(
+                "[AtlasProjection] missing countyId claim on principal; refusing.");
+            return Forbid();
+        }
+
+        if (_atlasProjectionConsumer is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status503ServiceUnavailable,
+                title: "Canonical Atlas projection is unavailable.");
+        }
+
+        try
+        {
+            var projection = await _atlasProjectionConsumer
+                .ProjectAsync(principalCountyId.Value, parcelNumber, ct)
+                .ConfigureAwait(false);
+
+            return projection.Outcome switch
+            {
+                AtlasProjectionConsumerOutcome.NotFound => NotFound(),
+                AtlasProjectionConsumerOutcome.Unavailable => Content(
+                    projection.NormalizedFeatureJson!,
+                    "application/json"),
+                AtlasProjectionConsumerOutcome.Polygon => Content(
+                    projection.NormalizedFeatureJson!,
+                    "application/json"),
+                _ => throw new InvalidOperationException(
+                    $"Unrecognized Atlas projection outcome: {projection.Outcome}"),
+            };
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (AtlasProjectionConsumerException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "[AtlasProjection] canonical projection failed closed for parcel {ParcelId} and trace {TraceId}.",
+                parcelNumber,
+                HttpContext.TraceIdentifier);
+            return Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Canonical Atlas projection failed contract validation.");
         }
     }
 

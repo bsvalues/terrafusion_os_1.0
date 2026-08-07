@@ -1737,6 +1737,31 @@ builder.Services.AddScoped<
     TerraFusion.Core.GIS.ArcGisRest.IParcelGeometryReader,
     TerraFusion.Data.Services.GisTf.ParcelGeometryReader>();
 
+// WO-SR-009C: canonical Atlas projection is opt-in and local-only. Disabled mode
+// registers neither the process host nor its consumer, so an unconfigured host
+// cannot become reachable through the API by accident.
+var atlasProjectionSection = builder.Configuration.GetSection(
+    TerraFusion.API.Configuration.AtlasProjectionOptions.SectionName);
+builder.Services.Configure<TerraFusion.API.Configuration.AtlasProjectionOptions>(
+    atlasProjectionSection);
+var atlasProjectionOptions = atlasProjectionSection
+    .Get<TerraFusion.API.Configuration.AtlasProjectionOptions>()
+    ?? new TerraFusion.API.Configuration.AtlasProjectionOptions();
+if (atlasProjectionOptions.Mode == TerraFusion.API.Configuration.AtlasProjectionMode.LocalExact)
+{
+    builder.Services.AddSingleton<TerraFusion.API.Services.Atlas.IAtlasProjectionProcessHost>(_ =>
+        new TerraFusion.API.Services.Atlas.AtlasProjectionProcessHost(
+            atlasProjectionOptions.NodeExecutablePath,
+            TimeSpan.FromSeconds(atlasProjectionOptions.TimeoutSeconds)));
+    builder.Services.AddScoped<
+        TerraFusion.API.Services.Atlas.IAtlasParcelIdentityResolver,
+        TerraFusion.API.Services.Atlas.AtlasParcelIdentityResolver>();
+    builder.Services.AddScoped<
+        TerraFusion.API.Services.Atlas.IAtlasParcelCountyScopeVerifier,
+        TerraFusion.API.Services.Atlas.AtlasParcelCountyScopeVerifier>();
+    builder.Services.AddScoped<TerraFusion.API.Services.Atlas.AtlasProjectionConsumer>();
+}
+
 // Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
 // legacy_pacs_raw.sale with provenance and writes the four S1
 // promotion gate results. No canonical promotion in S1.

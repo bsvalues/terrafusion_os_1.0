@@ -95,6 +95,33 @@ export interface AtlasGisResult<T> {
   refetch: () => void;
 }
 
+export interface AtlasProjectionFeature {
+  type: 'Feature';
+  geometry: {
+    type: 'Polygon';
+    coordinates: number[][][];
+  };
+  properties: {
+    countyId: string;
+    parcelId: string;
+    evidenceState: 'canonical';
+  };
+}
+
+export type AtlasProjectionState =
+  | { status: 'loading'; feature: null; error: null }
+  | { status: 'polygon'; feature: AtlasProjectionFeature; error: null }
+  | { status: 'unavailable'; feature: null; error: null }
+  | { status: 'error'; feature: null; error: string; correlationId: string };
+
+export type AtlasProjectionResult = AtlasProjectionState & {
+  refetch: () => void;
+};
+
+export type ParcelBoundaryResult = AtlasGisResult<ParcelBoundaryData> & {
+  atlasProjection?: AtlasProjectionResult;
+};
+
 // ── Internal fetch helper ───────────────────────────────────────────
 
 async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasGisSource }> {
@@ -149,9 +176,7 @@ export function useParcelGis(parcelId: string | undefined): {
     setLoading(true);
     setError(null);
     try {
-      const result = await atlasGisFetch<ParcelGisData>(
-        `/parcels/${encodeURIComponent(parcelId)}`,
-      );
+      const result = await atlasGisFetch<ParcelGisData>(`/parcels/${encodeURIComponent(parcelId)}`);
       setData(result.data);
       setSource(result.source);
     } catch (err) {
@@ -167,10 +192,13 @@ export function useParcelGis(parcelId: string | undefined): {
   }, [fetch_]);
 
   const boundarySource: AtlasGisSource =
-    data?.boundary?.source === 'live' ? 'live'
-    : data?.boundary?.source === 'unavailable' ? 'unavailable'
-    : loading ? 'unavailable'
-    : 'fallback';
+    data?.boundary?.source === 'live'
+      ? 'live'
+      : data?.boundary?.source === 'unavailable'
+        ? 'unavailable'
+        : loading
+          ? 'unavailable'
+          : 'fallback';
 
   return {
     boundary: {
@@ -195,9 +223,12 @@ export function useParcelGis(parcelId: string | undefined): {
 /**
  * @deprecated Use useParcelGis(parcelId).boundary
  */
-export function useParcelBoundary(parcelId: string | undefined): AtlasGisResult<ParcelBoundaryData> {
+export function useParcelBoundary(
+  parcelId: string | undefined
+): ParcelBoundaryResult {
   const { boundary } = useParcelGis(parcelId);
-  return boundary;
+  const atlasProjection = useAtlasProjection(parcelId);
+  return { ...boundary, atlasProjection };
 }
 
 /**
@@ -206,4 +237,135 @@ export function useParcelBoundary(parcelId: string | undefined): AtlasGisResult<
 export function useParcelLayers(parcelId: string | undefined): AtlasGisResult<ParcelLayersData> {
   const { layers } = useParcelGis(parcelId);
   return layers;
+}
+
+function isCanonicalPolygon(value: unknown): value is AtlasProjectionFeature {
+  if (!value || typeof value !== 'object') return false;
+  const feature = value as Partial<AtlasProjectionFeature>;
+  const properties = feature.properties;
+  const geometry = feature.geometry;
+  return (
+    feature.type === 'Feature' &&
+    geometry?.type === 'Polygon' &&
+    Array.isArray(geometry.coordinates) &&
+    geometry.coordinates.length > 0 &&
+    geometry.coordinates.every(
+      (ring) =>
+        Array.isArray(ring) &&
+        ring.length >= 4 &&
+        ring.every(
+          (position) =>
+            Array.isArray(position) &&
+            position.length === 2 &&
+            position.every(
+              (coordinate) => typeof coordinate === 'number' && Number.isFinite(coordinate)
+            )
+        )
+    ) &&
+    properties?.evidenceState === 'canonical' &&
+    normalizeGuid(properties.countyId) !== null &&
+    normalizeGuid(properties.parcelId) !== null
+  );
+}
+
+function normalizeGuid(value: unknown): string | null {
+  if (
+    typeof value !== 'string' ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  ) {
+    return null;
+  }
+  return value.toLowerCase();
+}
+
+function createNetworkCorrelationId(): string {
+  const uuid =
+    typeof globalThis.crypto?.randomUUID === 'function'
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`;
+  return `net-${uuid}`;
+}
+
+function responseCorrelationId(response: Response): string {
+  const value =
+    response.headers.get('x-correlation-id')?.trim() ||
+    response.headers.get('x-request-id')?.trim();
+  if (!value) return createNetworkCorrelationId();
+  return value.startsWith('corr-') ? value : `corr-${value}`;
+}
+
+/**
+ * Authenticated canonical Atlas projection. This does not replace or relabel
+ * the legacy GIS compatibility endpoint.
+ */
+export function useAtlasProjection(parcelId: string | undefined): AtlasProjectionResult {
+  const [state, setState] = useState<AtlasProjectionState>({
+    status: parcelId ? 'loading' : 'unavailable',
+    feature: null,
+    error: null,
+  });
+  const [requestVersion, setRequestVersion] = useState(0);
+
+  useEffect(() => {
+    if (!parcelId) {
+      setState({ status: 'unavailable', feature: null, error: null });
+      return;
+    }
+
+    const controller = new AbortController();
+    const token = getToken();
+    if (!token) {
+      setState({
+        status: 'error',
+        feature: null,
+        error: 'Authentication is required for canonical Atlas geometry.',
+        correlationId: createNetworkCorrelationId(),
+      });
+      return () => controller.abort();
+    }
+
+    let correlationId = createNetworkCorrelationId();
+    setState({ status: 'loading', feature: null, error: null });
+    void fetch(buildApiUrl(`/parcels/${encodeURIComponent(parcelId)}/atlas-projection`), {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        correlationId = responseCorrelationId(response);
+        if (response.status === 404 || response.status === 503) {
+          return null;
+        }
+        if (!response.ok) {
+          throw new Error(`Canonical Atlas ${response.status}: ${response.statusText}`);
+        }
+        return response.json() as Promise<unknown>;
+      })
+      .then((payload) => {
+        if (controller.signal.aborted) return;
+        if (payload === null) {
+          setState({ status: 'unavailable', feature: null, error: null });
+          return;
+        }
+        if (!isCanonicalPolygon(payload)) {
+          throw new Error('Canonical Atlas returned an invalid Polygon contract.');
+        }
+        setState({ status: 'polygon', feature: payload, error: null });
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        setState({
+          status: 'error',
+          feature: null,
+          error: error instanceof Error ? error.message : 'Canonical Atlas request failed.',
+          correlationId,
+        });
+      });
+
+    return () => controller.abort();
+  }, [parcelId, requestVersion]);
+
+  return {
+    ...state,
+    refetch: () => setRequestVersion((version) => version + 1),
+  };
 }
