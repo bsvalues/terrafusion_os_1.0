@@ -13,20 +13,22 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active at `WO-SR-009C`. The owner decision recorded
-on Issue #1422 is canonized as `OWNER-SR-009C-R3-ATLAS-WORKBENCH-CANONICAL-PROJECTION-20260806` and
-`OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001` removes Point from the terminal proof.
-The frozen adapter remains unchanged. Product execution resumes under the original allowlist to prove
-canonical Polygon, truthful unavailable, authentication, authorization, and cross-county
-non-disclosure.
+The Five-Suite Federated Repository Buildout is active between cohorts after completing
+`WO-SR-009C`. PR #1424 merged exact assured head
+`e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
+`b5a02db1758deda45d84c0ec99adb8f31d328c7b`. Canonical Polygon, truthful unavailable,
+authentication, `read:parcel`, and cross-county non-disclosure passed through the real API and
+Property Workbench. The default remains `Disabled`, the frozen adapter is unchanged, Point is not
+claimed, and both the original authority and terminal-narrowing amendment are completed and consumed.
+Portfolio reconciliation is current; no successor implementation is inferred.
 `WO-SR-009B` completed in PR #1419: exact assured head
 `11bc49507a6e57925414d142a21f203bb8c3c811` merged as
 `8b5fe0965c0f51008d47e6ff1e0133e94a417667`. The proof makes the frozen county-scoped Dais appeal
 read reachable through the real API and `LiveDataProvider`, renders honest PropertyDais states, and
 passes disposable same-county and cross-county synthetic proof. Decision
 `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` is completed and consumed. The subsequent
-`WO-TF-POST-DAIS-001` reconciliation admitted `WO-SR-009C`, whose exact R3 authority and controlling
-terminal-narrowing amendment are now active.
+`WO-TF-POST-DAIS-001` reconciliation admitted `WO-SR-009C`; PR #1424 completed that Work Order, and
+its exact R3 authority and controlling terminal-narrowing amendment are now consumed.
 Writes, persistence/schema, standalone Dais runtime adoption, live data, deployment, cutover, and
 Workbench routing/tab/navigation changes remain denied.
 `WO-SR-008H-E1 - Forge Pure Cost Schedule Resolution and Modifier Projection Foundation` completed.
@@ -178,7 +180,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-009A Authenticated County-Governed Synthetic Parcel Journey** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1415 merged as `b934cf0c0`; same-county synthetic parcel journey and cross-county enrichment denial proven; no live data or cutover |
 | **WO-SR-009B Dais Workbench Durable Appeal Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1419 merged as `8b5fe0965`; authenticated same-county read and cross-county non-disclosure proven; no write or live data |
 | **WO-TF-POST-DAIS-001 Post-Dais Portfolio Reconciliation** | **DONE / R2** | PR #1421 selected and bounded WO-SR-009C |
-| **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **IN PROGRESS / R3** | Stages 1-4 active under canonical Polygon, truthful unavailable, and cross-county non-disclosure proof; Point and frozen-adapter changes remain denied |
+| **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1424 merged as `b5a02db17`; canonical Polygon, truthful unavailable, and cross-county non-disclosure proven; default Disabled, no Point, live provider, or cutover |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -321,10 +323,12 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
 
-**Current execution result (WO-SR-009C, 2026-08-06):**
-`AUTHORIZED_STAGES_1_THROUGH_4_RESUMED`. Canonical ingestion is Polygon-based, so the terminal proof
-is narrowed to real canonical Polygon plus truthful unavailable and cross-county non-disclosure.
-Point is neither required nor claimable; the frozen adapter and its tests remain outside scope.
+**Current execution result (WO-SR-009C, 2026-08-07):**
+`ATLAS_COUNTY_SCOPED_CANONICAL_PROJECTION_REACHABLE_IN_WORKBENCH_NO_LIVE_PROVIDER_OR_CUTOVER`.
+PR #1424 proves authenticated canonical Polygon, truthful unavailable, and cross-county
+non-disclosure through the real API and Workbench. Point is neither required nor claimed; the frozen
+adapter remains unchanged, local exact evidence remains non-live, and the bounded authority is
+completed and consumed. Portfolio reconciliation is current.
 
 **Portfolio result after WO-SR-005C-E2:** `DAIS_E1_E2_COMPLETE_PORTFOLIO_RECONCILIATION`.
 The owner-authorized bounded R3 envelope is complete and consumed. No extraction, F1, or

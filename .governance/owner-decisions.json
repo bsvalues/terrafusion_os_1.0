@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-009C",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-atlas-workbench-canonical-projection-adoption",
       "effective_base_sha": "f559a181832f0b5ce0617cdbd0bc2d08dfd9ebc2",
       "scope_source": "Owner approval recorded directly on Issue #1422 on 2026-08-06. The authorization covers Stages 0 through 4, exact allowlisted product, test, governance, and evidence files, local hash-pinned Atlas execution, disposable synthetic proof, in-scope remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without per-stage owner relay.",
@@ -53,19 +53,23 @@
         "configuration not default-disabled, mutable or unpinned module fallback, cross-county existence disclosure, dishonest Workbench provenance, or disposable test residue",
         "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
       ],
-      "decision_basis": "Post-Dais reconciliation selected canonical Atlas Workbench projection adoption as the highest-value dependency-cleared gap. Stage 1 proved that ParcelGeometryResponse.GeomWkt is canonical Polygon WKT and the frozen adapter correctly consumes that Polygon source. OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001 removed the synthetic Point terminal requirement rather than authorizing a false ingestion path. Product execution resumes under the original exact allowlist.",
+      "decision_basis": "Post-Dais reconciliation selected canonical Atlas Workbench projection adoption as the highest-value dependency-cleared gap. ParcelGeometryResponse.GeomWkt is canonical Polygon WKT and the frozen adapter correctly consumes that Polygon source. OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001 removed the synthetic Point terminal requirement rather than authorizing a false ingestion path. PR #1424 completed the exact bounded implementation and the authority is consumed.",
       "amendments": [
         {
           "id": "OWNER-SR-009C-R3-ATLAS-POINT-TERMINAL-NARROWING-AMENDMENT-001",
-          "status": "active",
+          "status": "completed",
           "source": "Owner approval recorded directly on Issue #1422 on 2026-08-06.",
           "effect": "Point is removed from the WO-SR-009C terminal proof. The required geometry outcomes are real canonical Polygon and truthful unavailable, with cross-county non-disclosure. The frozen AtlasSpatialReadAdapter and its tests remain outside the allowlist and unchanged."
         }
       ],
       "current_execution": {
-        "state": "AUTHORIZED_STAGES_1_THROUGH_4_RESUMED",
-        "terminal_proof": "Authenticated same-county canonical Polygon, truthful unavailable, and cross-county non-disclosure.",
-        "point_disposition": "Not required or claimable until a separately authorized real canonical Point source exists."
+        "state": "COMPLETED_AND_CONSUMED",
+        "terminal_proof": "Authenticated same-county canonical Polygon, truthful unavailable, and cross-county non-disclosure passed through the real canonical API and existing Atlas Workbench tab.",
+        "point_disposition": "Not required or claimed; the frozen adapter remains unchanged until a separately authorized real canonical Point source exists.",
+        "implementation_pr": 1424,
+        "implementation_head": "e70548cb4938da92b2c0b254d71c5361aa10a6ed",
+        "implementation_merge": "b5a02db1758deda45d84c0ec99adb8f31d328c7b",
+        "completion_evidence": "docs/brain/workorders/evidence/WO-SR-009C-ATLAS-WORKBENCH-CANONICAL-PROJECTION-ADOPTION.md"
       }
     },
     {
