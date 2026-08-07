@@ -326,13 +326,37 @@ describe('PropertyDossier', () => {
     });
 
     it('renders an honest canonical evidence error state', async () => {
-      mockGetEvidenceRegistryRead.mockRejectedValue(new Error('canonical registry unavailable'));
+      mockGetEvidenceRegistryRead.mockRejectedValue(Object.assign(
+        new Error('canonical registry unavailable'),
+        {
+          errorCode: 'DOSSIER_HTTP_503',
+          correlationId: 'corr-dossier-server-error',
+          component: 'DossierEvidenceRegistryRead',
+        },
+      ));
 
       render(<TestWrapper parcelId='12345-001' />);
 
       expect(await screen.findByTestId('canonical-evidence-error')).toHaveTextContent(
         'canonical registry unavailable',
       );
+      expect(screen.getByText('corr-dossier-server-error')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeEnabled();
+    });
+
+    it('renders a copyable network correlation ID', async () => {
+      mockGetEvidenceRegistryRead.mockRejectedValue(Object.assign(new Error('network unavailable'), {
+        errorCode: 'NETWORK_ERROR',
+        correlationId: 'net-dossier-network-error',
+        component: 'DossierEvidenceRegistryRead',
+      }));
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(await screen.findByTestId('canonical-evidence-error')).toHaveTextContent(
+        'net-dossier-network-error',
+      );
+      expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeEnabled();
     });
 
     it('discards a stale canonical response after parcel navigation', async () => {
@@ -364,6 +388,9 @@ describe('PropertyDossier', () => {
       await waitFor(() => {
         expect(mockGetEvidenceRegistryRead).toHaveBeenCalledWith('P-B', 25, 0);
       });
+      expect(await screen.findByTestId('canonical-evidence-loaded')).toHaveTextContent(
+        'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      );
 
       resolveOld?.({
         schemaVersion: '1.0.0',
@@ -383,6 +410,47 @@ describe('PropertyDossier', () => {
       await waitFor(() => {
         expect(screen.queryByText('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).not.toBeInTheDocument();
       });
+    });
+
+    it('navigates canonical evidence pages and preserves server order', async () => {
+      mockGetEvidenceRegistryRead.mockImplementation(async (requestedParcelId, limit, offset) => ({
+        schemaVersion: '1.0.0',
+        countyId: '11111111-1111-1111-1111-111111111111',
+        parcelId: requestedParcelId,
+        results: [{
+          evidenceId: offset === 0
+            ? '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+            : '22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+          evidenceType: 'photo',
+          integrity: 'verified',
+          createdAt: '2026-08-07T12:00:00.000Z',
+        }],
+        total: 26,
+        hasMore: offset === 0,
+        limit,
+        offset,
+      }));
+
+      render(<TestWrapper parcelId='12345-001' />);
+      expect(await screen.findByTestId('canonical-evidence-loaded')).toHaveTextContent(
+        '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Next evidence page' }));
+      await waitFor(() => {
+        expect(screen.getByTestId('canonical-evidence-loaded')).toHaveTextContent(
+          '22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+        );
+      });
+      expect(mockGetEvidenceRegistryRead).toHaveBeenLastCalledWith('12345-001', 25, 25);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Previous evidence page' }));
+      await waitFor(() => {
+        expect(screen.getByTestId('canonical-evidence-loaded')).toHaveTextContent(
+          '11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        );
+      });
+      expect(mockGetEvidenceRegistryRead).toHaveBeenLastCalledWith('12345-001', 25, 0);
     });
 
     it('renders with parcel context', () => {

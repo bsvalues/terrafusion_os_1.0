@@ -10722,7 +10722,7 @@
         "mayOpenPr": true,
         "mayMarkReady": true,
         "mayMerge": true,
-        "mayCleanup": true,
+        "mayCleanup": false,
         "notes": "Exact bounded R3 Issue #1426 authority is active through one product merge and one governance-only terminal closeout."
       },
       "provenance": {

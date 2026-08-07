@@ -139,7 +139,7 @@ boundary assembly, bounded host/consumer implementation, and default-disabled Sh
 land/location factors, persistence, deployment, protected-resource mutation, and live cutover remain
 denied.
 
-**Allowed loop modes:** `program`, `evidence`, `discovery`
+**Allowed loop modes:** `program`, `evidence`, `discovery`, `implementation`, `validation`
 
 **Blocked:** package publication, blind extraction, duplicate mutable ownership outside the
 authorized Forge valuation-kernel transition, out-of-scope source deletion or cutover, secrets,

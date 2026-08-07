@@ -143,7 +143,17 @@ interface EvidenceChainState {
 type CanonicalEvidenceState =
   | { status: 'loading'; parcelId: string }
   | { status: 'loaded'; parcelId: string; data: DossierEvidenceRegistryReadResult }
-  | { status: 'error'; parcelId: string; error: ErrorInfo };
+  | {
+      status: 'error';
+      parcelId: string;
+      error: {
+        message: string;
+        errorCode: string;
+        correlationId?: string;
+        component: string;
+        details?: { stackTrace?: string };
+      };
+    };
 
 // ============================================================================
 // Helper: Format currency for display
@@ -375,6 +385,10 @@ export const PropertyDossier: React.FC = () => {
     parcelId,
   });
   const [canonicalEvidenceReload, setCanonicalEvidenceReload] = useState(0);
+  const [canonicalEvidencePage, setCanonicalEvidencePage] = useState({ parcelId, offset: 0 });
+  const canonicalEvidenceOffset = canonicalEvidencePage.parcelId === parcelId
+    ? canonicalEvidencePage.offset
+    : 0;
 
   // CX-26: Evidence snapshot (manual fetch — point-in-time)
   const evidence = useEvidenceSnapshot(parcelId);
@@ -436,7 +450,7 @@ export const PropertyDossier: React.FC = () => {
     const requestedParcelId = parcelId;
     setCanonicalEvidence({ status: 'loading', parcelId: requestedParcelId });
 
-    void dossierService.getEvidenceRegistryRead(requestedParcelId, 25, 0)
+    void dossierService.getEvidenceRegistryRead(requestedParcelId, 25, canonicalEvidenceOffset)
       .then((data) => {
         if (active && data.parcelId === requestedParcelId)
           setCanonicalEvidence({ status: 'loaded', parcelId: requestedParcelId, data });
@@ -448,15 +462,27 @@ export const PropertyDossier: React.FC = () => {
             parcelId: requestedParcelId,
             error: {
               message: error instanceof Error ? error.message : 'Failed to load canonical evidence registry',
-              code: 'FETCH_ERROR',
-              severity: 'error',
+              errorCode: typeof error === 'object' && error !== null && 'errorCode' in error
+                ? String(error.errorCode)
+                : 'FETCH_ERROR',
+              correlationId: typeof error === 'object' && error !== null && 'correlationId' in error
+                ? String(error.correlationId)
+                : undefined,
+              component: typeof error === 'object' && error !== null && 'component' in error
+                ? String(error.component)
+                : 'DossierEvidenceRegistryRead',
+              details: {
+                stackTrace: typeof error === 'object' && error !== null && 'stackTrace' in error
+                  ? String(error.stackTrace)
+                  : error instanceof Error ? error.stack : undefined,
+              },
             },
           });
         }
       });
 
     return () => { active = false; };
-  }, [parcelId, canonicalEvidenceReload]);
+  }, [parcelId, canonicalEvidenceOffset, canonicalEvidenceReload]);
 
   const loadEvidenceChain = useCallback(async (evidenceId: string) => {
     setEvidenceChain((prev) => ({
@@ -1030,6 +1056,30 @@ export const PropertyDossier: React.FC = () => {
                 {canonicalEvidence.data.traceId && (
                   <div className='text-xs tf-text-dim'>Trace: <code>{canonicalEvidence.data.traceId}</code></div>
                 )}
+                <div className='flex items-center justify-end gap-2'>
+                  <button
+                    type='button'
+                    onClick={() => setCanonicalEvidencePage({
+                      parcelId,
+                      offset: Math.max(0, canonicalEvidence.data.offset - canonicalEvidence.data.limit),
+                    })}
+                    disabled={canonicalEvidence.data.offset === 0}
+                    className='px-3 py-1.5 text-xs tf-hover-surface rounded-lg disabled:opacity-50'
+                  >
+                    Previous evidence page
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setCanonicalEvidencePage({
+                      parcelId,
+                      offset: canonicalEvidence.data.offset + canonicalEvidence.data.limit,
+                    })}
+                    disabled={!canonicalEvidence.data.hasMore}
+                    className='px-3 py-1.5 text-xs tf-hover-surface rounded-lg disabled:opacity-50'
+                  >
+                    Next evidence page
+                  </button>
+                </div>
               </div>
             )}
         </div>

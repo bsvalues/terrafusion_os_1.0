@@ -22,8 +22,8 @@ and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-2026080
 | Strict authentication/county/permission/selectors | Fail closed | PASS - exact-route 401/403 integration proof plus focused controller proof |
 | Same-county, foreign-only, absent, ordering, pagination, trace | Pass | PASS - valid inbound trace propagates; missing or invalid trace is omitted |
 | Frozen-adapter rejection, UTC, vocabulary, duplicates | Fail closed | PASS - 49/49 focused adapter/controller tests, including exact SQLite instant preservation and unspecified timestamp rejection |
-| Property Dossier loading/loaded/empty/error/stale navigation | Pass | PASS - 24/24 focused frontend tests |
-| Disposable authenticated SQLite journey | Pass, no residue | PASS - Playwright 1/1; disposable database removed |
+| Property Dossier loading/loaded/empty/error/stale navigation, pagination, and correlation UX | Pass | PASS - 26/26 focused frontend tests |
+| Disposable authenticated SQLite journey | Pass, no tracked residue | PASS - Playwright 1/1; database isolated under ignored `.tmp` state |
 | Backend Release build | 0 warnings, 0 errors | PASS - 0 warnings, 0 errors with `/warnaserror` |
 | Frontend TypeScript | Pass | PASS - `tsc --noEmit` |
 | Frozen contract hashes | Unchanged | PASS - DTO and adapter Git blobs match base |

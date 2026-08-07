@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -123,14 +124,16 @@ public sealed class DossierEvidenceRegistryReadControllerTests
 
     var result = await controller.GetEvidenceRegistryRead("P-100", limit: 2, offset: 0);
 
-    var payload = result.Result.Should().BeOfType<OkObjectResult>().Subject.Value
-        .Should().BeOfType<DossierEvidenceRegistryReadResult>().Subject;
+    var payload = Payload(result);
     payload.Total.Should().Be(3);
     payload.HasMore.Should().BeTrue();
     payload.TraceId.Should().Be("corr-dossier-registry");
     payload.Results.Select(item => item.EvidenceId).Should().Equal(
         tieEarlierId.Id.ToString("D"),
         tieLaterId.Id.ToString("D"));
+    var content = result.Result.Should().BeOfType<ContentResult>().Subject.Content;
+    content.Should().NotContain("\"documentId\":null");
+    content.Should().Contain("2026-08-02T10:00:00.0000000Z");
   }
 
   [Theory]
@@ -257,7 +260,7 @@ public sealed class DossierEvidenceRegistryReadControllerTests
   }
 
   [Fact]
-  public async Task FrozenAdapterRejectionReturnsNoEvidence()
+  public async Task FrozenAdapterRejectionReturnsProblem()
   {
     await using var db = CreateDbContext();
     var invalid = Evidence(CountyA, "P-100", "77777777-7777-7777-7777-777777777777", "2026-08-01T10:00:00Z");
@@ -274,9 +277,14 @@ public sealed class DossierEvidenceRegistryReadControllerTests
   }
 
   private static DossierEvidenceRegistryReadResult Payload(
-      ActionResult<DossierEvidenceRegistryReadResult> result) =>
-      result.Result.Should().BeOfType<OkObjectResult>().Subject.Value
-          .Should().BeOfType<DossierEvidenceRegistryReadResult>().Subject;
+      ActionResult<DossierEvidenceRegistryReadResult> result)
+  {
+    var content = result.Result.Should().BeOfType<ContentResult>().Subject;
+    content.ContentType.Should().StartWith("application/json");
+    return JsonSerializer.Deserialize<DossierEvidenceRegistryReadResult>(
+        content.Content!,
+        new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+  }
 
   private static DossierEvidence Evidence(
       Guid countyId,

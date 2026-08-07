@@ -441,7 +441,8 @@ public class DossierController : ControllerBase
 
     try
     {
-      return Ok(DossierEvidenceRegistryReadAdapter.Map(request, total, sourcePage));
+      var contractJson = DossierEvidenceRegistryReadAdapter.Serialize(request, total, sourcePage);
+      return Content(contractJson, "application/json");
     }
     catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
     {

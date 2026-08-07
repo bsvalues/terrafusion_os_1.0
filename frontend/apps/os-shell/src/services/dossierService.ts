@@ -127,6 +127,21 @@ export interface DossierEvidenceRegistryReadResult {
   traceId?: string;
 }
 
+export class DossierRequestError extends Error {
+  readonly correlationId: string;
+  readonly errorCode: string;
+  readonly component = 'DossierEvidenceRegistryRead';
+  readonly stackTrace?: string;
+
+  constructor(message: string, correlationId: string, errorCode: string, stackTrace?: string) {
+    super(message);
+    this.name = 'DossierRequestError';
+    this.correlationId = correlationId;
+    this.errorCode = errorCode;
+    this.stackTrace = stackTrace;
+  }
+}
+
 export interface DossierStats {
   totalDocuments: number;
   activeDocuments: number;
@@ -249,6 +264,14 @@ function generateCorrelationId(): string {
   return `tf-${Date.now().toString(36)}-${dossierCorrelationSequence.toString(36)}`;
 }
 
+function generateNetworkCorrelationId(): string {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `net-${uuid}`;
+
+  dossierCorrelationSequence = (dossierCorrelationSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `net-${Date.now().toString(36)}-${dossierCorrelationSequence.toString(36)}`;
+}
+
 /**
  * GET with X-Correlation-ID header injection.
  * Returns both the parsed body and the correlation ID echoed by the server.
@@ -263,15 +286,30 @@ async function dossierGetWithCorrelation<T>(
     'X-Correlation-ID': cid,
   };
 
-  const response = await fetch(`${DOSSIER_API}${path}`, { headers });
+  let response: Response;
+  try {
+    response = await fetch(`${DOSSIER_API}${path}`, { headers });
+  } catch (error) {
+    throw new DossierRequestError(
+      error instanceof Error ? error.message : 'Dossier API network error',
+      generateNetworkCorrelationId(),
+      'NETWORK_ERROR',
+      error instanceof Error ? error.stack : undefined,
+    );
+  }
+
+  const echoed = response.headers.get('X-Correlation-ID') || cid;
   if (!response.ok) {
-    throw new Error(`Dossier API error: ${response.status} ${response.statusText}`);
+    throw new DossierRequestError(
+      `Dossier API error: ${response.status} ${response.statusText}`,
+      echoed,
+      `DOSSIER_HTTP_${response.status}`,
+    );
   }
 
   const data: T = await response.json();
 
   // Prefer the server-echoed header; fall back to what we sent
-  const echoed = response.headers.get('X-Correlation-ID') || cid;
   return { data, correlationId: echoed };
 }
 
