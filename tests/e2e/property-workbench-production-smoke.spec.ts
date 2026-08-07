@@ -30,6 +30,8 @@ const CROSS_COUNTY_TF_PARCEL_ID = 'be0900a0-0000-0000-0000-0000000000b1';
 const UNAVAILABLE_PARCEL_NUMBER = 'SR009C-SYNTHETIC-NO-GEOMETRY';
 const CROSS_COUNTY_PARCEL_NUMBER = 'SR009C-SYNTHETIC-CROSS-COUNTY';
 const CROSS_COUNTY_ID = '20200020-2020-2020-2020-202020202020';
+const CANONICAL_DOSSIER_EVIDENCE_ID = 'de0900d0-0000-0000-0000-0000000000d1';
+const FOREIGN_DOSSIER_EVIDENCE_ID = 'de0900d0-0000-0000-0000-0000000000d2';
 
 function baseUrl(): string {
   const apiPort = process.env.TF_API_PORT ?? '5046';
@@ -229,6 +231,78 @@ INSERT INTO "tf_parcel_geom" (
   });
 }
 
+function seedCanonicalDossierFixture(countyId: string, parcelNumber: string): void {
+  const databasePath = process.env.WORKBENCH_SMOKE_DATABASE_PATH?.trim();
+  if (!databasePath) {
+    throw new Error('WORKBENCH_SMOKE_DATABASE_PATH is required for canonical Dossier smoke proof.');
+  }
+
+  const sql = `
+PRAGMA foreign_keys = ON;
+INSERT OR IGNORE INTO "Counties" (
+  "Id", "Name", "State", "FipsCode", "Population", "Area", "CreatedAt", "UpdatedAt"
+) VALUES
+  (${sqlGuid(countyId)}, 'SR-009D authenticated synthetic county', 'WA', '019', 0, 0,
+   '2026-08-07T00:00:00.0000000Z', '2026-08-07T00:00:00.0000000Z'),
+  (${sqlGuid(CROSS_COUNTY_ID)}, 'SR-009D foreign synthetic county', 'WA', '020', 0, 0,
+   '2026-08-07T00:00:00.0000000Z', '2026-08-07T00:00:00.0000000Z');
+DELETE FROM "DossierEvidenceItems" WHERE "Id" IN (
+  ${sqlGuid(CANONICAL_DOSSIER_EVIDENCE_ID)},
+  ${sqlGuid(FOREIGN_DOSSIER_EVIDENCE_ID)}
+);
+INSERT INTO "DossierEvidenceItems" (
+  "Id", "ParcelId", "Title", "EvidenceType", "Integrity", "DocumentId",
+  "CountyId", "CreatedBy", "CreatedAt"
+) VALUES
+  (${sqlGuid(CANONICAL_DOSSIER_EVIDENCE_ID)}, ${sqlLiteral(parcelNumber)},
+   'Canonical synthetic field inspection', 'field-inspection', 'verified', NULL,
+   ${sqlGuid(countyId)}, 'wo-sr-009d-synthetic', '2026-08-07T12:00:00.0000000Z'),
+  (${sqlGuid(FOREIGN_DOSSIER_EVIDENCE_ID)}, ${sqlLiteral(CROSS_COUNTY_PARCEL_NUMBER)},
+   'Foreign county sentinel', 'photo', 'verified', NULL,
+   ${sqlGuid(CROSS_COUNTY_ID)}, 'wo-sr-009d-synthetic', '2026-08-07T11:00:00.0000000Z');
+`;
+  execFileSync(sqliteExecutable(), [databasePath, sql], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+}
+
+async function assertCanonicalDossierBoundary(
+  api: APIRequestContext,
+  token: string,
+  parcelNumber: string,
+): Promise<void> {
+  const headers = { Authorization: `Bearer ${token}`, 'X-Correlation-ID': 'corr-sr009d-smoke' };
+  const response = await api.get(
+    `/api/dossier/parcels/${encodeURIComponent(parcelNumber)}/evidence/registry?limit=25&offset=0`,
+    { headers },
+  );
+  const responseText = await response.text();
+  expect(response.status(), responseText).toBe(200);
+  const body = JSON.parse(responseText);
+  expect(body).toMatchObject({
+    schemaVersion: '1.0.0',
+    parcelId: parcelNumber,
+    total: 1,
+    hasMore: false,
+    traceId: 'corr-sr009d-smoke',
+  });
+  expect(body.results).toEqual([
+    expect.objectContaining({
+      evidenceId: CANONICAL_DOSSIER_EVIDENCE_ID,
+      evidenceType: 'field-inspection',
+      integrity: 'verified',
+    }),
+  ]);
+
+  const foreign = await api.get(
+    `/api/dossier/parcels/${encodeURIComponent(CROSS_COUNTY_PARCEL_NUMBER)}/evidence/registry?limit=25&offset=0`,
+    { headers },
+  );
+  expect(foreign.status()).toBe(200);
+  expect(await foreign.json()).toMatchObject({ results: [], total: 0, hasMore: false });
+}
+
 async function assertAuthenticatedParcelApiBoundary(
   api: APIRequestContext,
   auth: { token: string; countyId?: string },
@@ -355,6 +429,32 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
     );
   });
 
+  test('proves the authenticated canonical Dossier read with disposable SQLite evidence', async ({
+    page,
+  }) => {
+    await ensureEvidenceDir();
+    const api = await request.newContext({ baseURL: baseUrl() });
+    const auth = await fetchDevToken(api);
+    if (!auth.countyId) {
+      throw new Error('Synthetic auth response did not include a countyId claim.');
+    }
+
+    const parcelId = await resolveSmokeParcel(api, auth.token);
+    seedCanonicalDossierFixture(auth.countyId, parcelId);
+    await assertCanonicalDossierBoundary(api, auth.token, parcelId);
+    await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
+    await installSmokeSession(page, auth, parcelId);
+
+    await page.goto(`/property/${encodeURIComponent(parcelId)}/dossier`);
+    await expect(page.getByTestId('property-dossier-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('canonical-evidence-loaded')).toContainText(
+      CANONICAL_DOSSIER_EVIDENCE_ID,
+      { timeout: 30000 },
+    );
+    await assertNoInfiniteLoading(page);
+    await api.dispose();
+  });
+
   test('boots shell and walks canonical Workbench tabs with authenticated parcel evidence', async ({
     page,
   }) => {
@@ -398,8 +498,10 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
     }
     const parcelId = await resolveSmokeParcel(api, auth.token);
     seedCanonicalAtlasFixture(auth.countyId, parcelId);
+    seedCanonicalDossierFixture(auth.countyId, parcelId);
     await assertAuthenticatedParcelApiBoundary(api, auth, parcelId);
     await assertAuthenticatedDaisAppealBoundary(api, auth, parcelId);
+    await assertCanonicalDossierBoundary(api, auth.token, parcelId);
     await page.setExtraHTTPHeaders({ Authorization: `Bearer ${auth.token}` });
     await installSmokeSession(page, auth, parcelId);
 
@@ -520,6 +622,10 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
 
     await page.goto(`/property/${encodeURIComponent(parcelId)}/dossier`);
     await expect(page.getByTestId('property-dossier-tab')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByTestId('canonical-evidence-loaded')).toContainText(
+      CANONICAL_DOSSIER_EVIDENCE_ID,
+      { timeout: 30000 },
+    );
     await assertNoInfiniteLoading(page);
     await capture(page, '06 dossier', '06-dossier');
 

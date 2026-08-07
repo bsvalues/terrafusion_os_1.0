@@ -101,6 +101,32 @@ export interface EvidenceSearchResponse {
   hasMore: boolean;
 }
 
+export interface DossierEvidenceRegistryRecord {
+  evidenceId: string;
+  evidenceType:
+    | 'field-inspection'
+    | 'valuation-record'
+    | 'legal-document'
+    | 'tax-record'
+    | 'correspondence'
+    | 'photo';
+  integrity: IntegrityStatus;
+  createdAt: string;
+  documentId?: string;
+}
+
+export interface DossierEvidenceRegistryReadResult {
+  schemaVersion: '1.0.0';
+  countyId: string;
+  parcelId: string;
+  results: DossierEvidenceRegistryRecord[];
+  total: number;
+  hasMore: boolean;
+  limit: number;
+  offset: number;
+  traceId?: string;
+}
+
 export interface DossierStats {
   totalDocuments: number;
   activeDocuments: number;
@@ -283,6 +309,18 @@ export const dossierService = {
    */
   searchEvidence: async (request: EvidenceSearchRequest): Promise<EvidenceSearchResponse> => {
     return dossierPost<EvidenceSearchResponse>('/evidence/search', request);
+  },
+
+  /** Read the frozen county- and parcel-scoped canonical evidence registry contract. */
+  getEvidenceRegistryRead: async (
+    parcelId: string,
+    limit = 25,
+    offset = 0,
+  ): Promise<DossierEvidenceRegistryReadResult> => {
+    const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+    const path = `/parcels/${encodeURIComponent(parcelId)}/evidence/registry?${params}`;
+    const response = await dossierGetWithCorrelation<DossierEvidenceRegistryReadResult>(path);
+    return response.data;
   },
 
   /**
