@@ -704,6 +704,17 @@ export const PropertyAtlas: React.FC = () => {
         {atlasProjection.status === 'error' && (
           <div className='mt-3 text-sm tf-text-muted' data-testid='atlas-projection-error'>
             <p>{atlasProjection.error}</p>
+            <div className='mt-1 flex items-center gap-2 text-xs'>
+              <code>{atlasProjection.correlationId}</code>
+              <button
+                type='button'
+                className='tf-suite-atlas-cta rounded px-2 py-1'
+                onClick={() => void navigator.clipboard.writeText(atlasProjection.correlationId)}
+                aria-label='Copy Atlas correlation ID'
+              >
+                Copy
+              </button>
+            </div>
             <button
               type='button'
               className='mt-2 tf-suite-atlas-cta rounded px-3 py-1'

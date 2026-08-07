@@ -142,7 +142,7 @@ public sealed class ParcelGeometryController : ControllerBase
         }
 
         var principalCountyId = ResolveCountyClaim();
-        if (principalCountyId is null)
+        if (principalCountyId is null || principalCountyId.Value == Guid.Empty)
         {
             _logger.LogWarning(
                 "[AtlasProjection] missing countyId claim on principal; refusing.");

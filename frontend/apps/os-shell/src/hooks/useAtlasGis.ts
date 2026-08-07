@@ -112,7 +112,7 @@ export type AtlasProjectionState =
   | { status: 'loading'; feature: null; error: null }
   | { status: 'polygon'; feature: AtlasProjectionFeature; error: null }
   | { status: 'unavailable'; feature: null; error: null }
-  | { status: 'error'; feature: null; error: string };
+  | { status: 'error'; feature: null; error: string; correlationId: string };
 
 export type AtlasProjectionResult = AtlasProjectionState & {
   refetch: () => void;
@@ -280,6 +280,18 @@ function normalizeGuid(value: unknown): string | null {
   return value.toLowerCase();
 }
 
+function createNetworkCorrelationId(): string {
+  return `net-${globalThis.crypto.randomUUID()}`;
+}
+
+function responseCorrelationId(response: Response): string {
+  const value =
+    response.headers.get('x-correlation-id')?.trim() ||
+    response.headers.get('x-request-id')?.trim();
+  if (!value) return createNetworkCorrelationId();
+  return value.startsWith('corr-') ? value : `corr-${value}`;
+}
+
 /**
  * Authenticated canonical Atlas projection. This does not replace or relabel
  * the legacy GIS compatibility endpoint.
@@ -305,16 +317,19 @@ export function useAtlasProjection(parcelId: string | undefined): AtlasProjectio
         status: 'error',
         feature: null,
         error: 'Authentication is required for canonical Atlas geometry.',
+        correlationId: createNetworkCorrelationId(),
       });
       return () => controller.abort();
     }
 
+    let correlationId = createNetworkCorrelationId();
     setState({ status: 'loading', feature: null, error: null });
     void fetch(buildApiUrl(`/parcels/${encodeURIComponent(parcelId)}/atlas-projection`), {
       headers: { Authorization: `Bearer ${token}` },
       signal: controller.signal,
     })
       .then(async (response) => {
+        correlationId = responseCorrelationId(response);
         if (response.status === 404 || response.status === 503) {
           return null;
         }
@@ -340,6 +355,7 @@ export function useAtlasProjection(parcelId: string | undefined): AtlasProjectio
           status: 'error',
           feature: null,
           error: error instanceof Error ? error.message : 'Canonical Atlas request failed.',
+          correlationId,
         });
       });
 

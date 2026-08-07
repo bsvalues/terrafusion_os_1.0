@@ -105,6 +105,12 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 describe('PropertyAtlas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseAtlasProjection.mockReturnValue({
+      status: 'unavailable',
+      feature: null,
+      error: null,
+      refetch: vi.fn(),
+    });
   });
 
   afterEach(() => {
@@ -407,10 +413,12 @@ describe('PropertyAtlas', () => {
         status: 'error',
         feature: null,
         error: 'Canonical Atlas 500',
+        correlationId: 'corr-atlas-test-500',
         refetch: vi.fn(),
       });
       rerender(<TestWrapper parcelId='12345-001' />);
       expect(screen.getByTestId('atlas-projection-error')).toHaveTextContent('Canonical Atlas 500');
+      expect(screen.getByTestId('atlas-projection-error')).toHaveTextContent('corr-atlas-test-500');
     });
 
     it('renders boundary-derived situs content as text rather than HTML', async () => {

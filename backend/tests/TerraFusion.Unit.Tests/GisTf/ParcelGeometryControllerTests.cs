@@ -94,6 +94,20 @@ public sealed class ParcelGeometryControllerTests
     }
 
     [Fact]
+    public async Task AtlasProjectionEndpoint_ForbidsEmptyCountyClaim_WithoutLookup()
+    {
+        var reader = new StubReader(ParcelGeometryLookup.Found(CountyA, CreateGeometry()));
+        var host = new StubHost(CreatePolygonResult());
+        var controller = BuildController(Guid.Empty, reader, host);
+
+        var result = await controller.GetAtlasProjection(ParcelId);
+
+        result.Should().BeOfType<ForbidResult>();
+        reader.CallCount.Should().Be(0);
+        host.CallCount.Should().Be(0);
+    }
+
+    [Fact]
     public async Task AtlasProjectionEndpoint_IsDefaultUnavailable_WhenConsumerIsNotRegistered()
     {
         var reader = new StubReader(ParcelGeometryLookup.NotFound());
