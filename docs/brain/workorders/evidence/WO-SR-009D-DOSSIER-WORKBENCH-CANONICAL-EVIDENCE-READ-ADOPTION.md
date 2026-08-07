@@ -19,9 +19,9 @@ and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-2026080
 
 | Proof | Required result | Current result |
 |---|---|---|
-| Strict authentication/county/permission/selectors | Fail closed | PASS - focused backend proof |
-| Same-county, foreign-only, absent, ordering, pagination, trace | Pass | PASS - focused backend proof |
-| Frozen-adapter rejection, UTC, vocabulary, duplicates | Fail closed | PASS - 44/44 adapter/controller tests |
+| Strict authentication/county/permission/selectors | Fail closed | PASS - exact-route 401/403 integration proof plus focused controller proof |
+| Same-county, foreign-only, absent, ordering, pagination, trace | Pass | PASS - valid inbound trace propagates; missing or invalid trace is omitted |
+| Frozen-adapter rejection, UTC, vocabulary, duplicates | Fail closed | PASS - 49/49 focused adapter/controller tests, including exact SQLite instant preservation and unspecified timestamp rejection |
 | Property Dossier loading/loaded/empty/error/stale navigation | Pass | PASS - 24/24 focused frontend tests |
 | Disposable authenticated SQLite journey | Pass, no residue | PASS - Playwright 1/1; disposable database removed |
 | Backend Release build | 0 warnings, 0 errors | PASS - 0 warnings, 0 errors with `/warnaserror` |
@@ -31,9 +31,10 @@ and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-2026080
 | Remote checks, exact-head assurance, review threads | Green, pass, zero | Pending delivery |
 
 The disposable proof exposed and closed two local-only fixture/provider gaps without weakening the
-contract: synthetic county parents now satisfy the real Dossier foreign key, and SQLite timestamps
-are normalized back to UTC at the controller persistence boundary before the unchanged frozen adapter
-validates them. The broader historical smoke still depends on the previously proven exact Atlas local
+contract: synthetic county parents now satisfy the real Dossier foreign key, and SQLite's demonstrated
+Local materialization of a stored UTC timestamp is converted back to the exact UTC instant before the
+unchanged frozen adapter validates it. Other non-UTC representations remain fail-closed. The broader
+historical smoke still depends on the previously proven exact Atlas local
 process-host environment; the dedicated Dossier journey isolates this Work Order's terminal proof.
 
 ## Safety Posture

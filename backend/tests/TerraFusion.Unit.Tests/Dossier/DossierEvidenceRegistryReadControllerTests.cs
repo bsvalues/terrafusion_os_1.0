@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
 using FluentAssertions;
@@ -13,6 +15,7 @@ using TerraFusion.API.Controllers;
 using TerraFusion.API.Security;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.Unit.Tests.R1Week5;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
@@ -20,9 +23,14 @@ using Task = System.Threading.Tasks.Task;
 namespace TerraFusion.Unit.Tests.Dossier;
 
 public sealed class DossierEvidenceRegistryReadControllerTests
+    : IClassFixture<Cx27PermClaimFactory>
 {
   private static readonly Guid CountyA = Guid.Parse("11111111-1111-1111-1111-111111111111");
   private static readonly Guid CountyB = Guid.Parse("22222222-2222-2222-2222-222222222222");
+  private readonly Cx27PermClaimFactory _permissionFactory;
+
+  public DossierEvidenceRegistryReadControllerTests(Cx27PermClaimFactory permissionFactory) =>
+      _permissionFactory = permissionFactory;
 
   [Fact]
   public void RouteRequiresAuthenticationAndReadDossierPermission()
@@ -36,6 +44,30 @@ public sealed class DossierEvidenceRegistryReadControllerTests
         .Should().Be("parcels/{parcelId}/evidence/registry");
     method!.GetCustomAttribute<RequiresPermissionAttribute>()!.Policy
         .Should().Be($"{RequiresPermissionAttribute.PolicyPrefix}read:dossier");
+  }
+
+  [Fact]
+  public async Task ExactRouteUnauthenticatedReturnsUnauthorized()
+  {
+    using var client = _permissionFactory.CreateClient();
+
+    var response = await client.GetAsync("/api/dossier/parcels/P-100/evidence/registry");
+
+    response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+  }
+
+  [Fact]
+  public async Task ExactRouteWithoutReadDossierPermissionReturnsForbidden()
+  {
+    using var client = _permissionFactory.CreateClient();
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue(Cx27PermClaimFactory.AuthScheme, "token");
+    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Test-UserId", "dossier-registry-user");
+    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Test-CountyId", CountyA.ToString("D"));
+
+    var response = await client.GetAsync("/api/dossier/parcels/P-100/evidence/registry");
+
+    response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
   }
 
   [Fact]
@@ -101,6 +133,25 @@ public sealed class DossierEvidenceRegistryReadControllerTests
         tieLaterId.Id.ToString("D"));
   }
 
+  [Theory]
+  [InlineData(null)]
+  [InlineData("invalid trace value")]
+  public async Task MissingOrInvalidInboundTraceIsNotFabricated(string? correlationId)
+  {
+    await using var db = CreateDbContext();
+    db.DossierEvidenceItems.Add(Evidence(
+        CountyA,
+        "P-100",
+        "37373737-3737-4373-8373-373737373737",
+        "2026-08-01T10:00:00Z"));
+    await db.SaveChangesAsync();
+    var controller = CreateController(db, CountyA, correlationId: correlationId);
+
+    var payload = Payload(await controller.GetEvidenceRegistryRead("P-100"));
+
+    payload.TraceId.Should().BeNull();
+  }
+
   [Fact]
   public async Task SqliteProviderTimestampIsNormalizedToUtc()
   {
@@ -160,8 +211,30 @@ public sealed class DossierEvidenceRegistryReadControllerTests
     var payload = Payload(await controller.GetEvidenceRegistryRead("P-100"));
 
     payload.Results.Should().ContainSingle();
+    payload.Results[0].CreatedAt.Should().Be(
+        new DateTimeOffset(2026, 8, 1, 10, 0, 0, TimeSpan.Zero));
     payload.Results[0].CreatedAt.Offset.Should().Be(TimeSpan.Zero);
     payload.Results[0].CreatedAt.UtcDateTime.Kind.Should().Be(DateTimeKind.Utc);
+  }
+
+  [Fact]
+  public async Task UnspecifiedTimestampFailsClosedOutsideProvenSqliteNormalization()
+  {
+    await using var db = CreateDbContext();
+    var invalid = Evidence(
+        CountyA,
+        "P-100",
+        "39393939-3939-4393-8393-393939393939",
+        "2026-08-01T10:00:00Z");
+    invalid.CreatedAt = DateTime.SpecifyKind(invalid.CreatedAt, DateTimeKind.Unspecified);
+    db.DossierEvidenceItems.Add(invalid);
+    await db.SaveChangesAsync();
+    var controller = CreateController(db, CountyA);
+
+    var result = await controller.GetEvidenceRegistryRead("P-100");
+
+    var problem = result.Result.Should().BeOfType<ObjectResult>().Subject;
+    problem.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
   }
 
   [Fact]

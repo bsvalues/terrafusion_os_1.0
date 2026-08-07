@@ -202,6 +202,14 @@ public class DossierController : ControllerBase
     return generated;
   }
 
+  private string? GetValidInboundCorrelationId()
+  {
+    var inbound = HttpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault();
+    return !string.IsNullOrWhiteSpace(inbound) && CorrelationIdSanitizer.IsMatch(inbound)
+        ? inbound
+        : null;
+  }
+
   /// <summary>
   /// Build stable resource links for a parcel's dossier endpoints.
   /// Relative paths only — no host/scheme, safe for any deployment.
@@ -413,11 +421,12 @@ public class DossierController : ControllerBase
         .Take(limit)
         .ToListAsync();
 
-    foreach (var evidence in sourcePage.Where(e => e.CreatedAt.Kind != DateTimeKind.Utc))
+    // SQLite materializes stored UTC timestamps as Local. Convert only that
+    // provider-proven representation; every other non-UTC value stays invalid.
+    if (_db.Database.IsSqlite())
     {
-      evidence.CreatedAt = evidence.CreatedAt.Kind == DateTimeKind.Local
-          ? evidence.CreatedAt.ToUniversalTime()
-          : DateTime.SpecifyKind(evidence.CreatedAt, DateTimeKind.Utc);
+      foreach (var evidence in sourcePage.Where(e => e.CreatedAt.Kind == DateTimeKind.Local))
+        evidence.CreatedAt = evidence.CreatedAt.ToUniversalTime();
     }
 
     var request = new DossierEvidenceRegistryReadRequest
@@ -427,7 +436,7 @@ public class DossierController : ControllerBase
       ParcelId = parcelId,
       Limit = limit,
       Offset = offset,
-      TraceId = GetOrCreateCorrelationId(),
+      TraceId = GetValidInboundCorrelationId(),
     };
 
     try
