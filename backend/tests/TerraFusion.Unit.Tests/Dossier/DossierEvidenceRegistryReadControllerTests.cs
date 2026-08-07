@@ -85,6 +85,7 @@ public sealed class DossierEvidenceRegistryReadControllerTests
   [Theory]
   [InlineData("not-a-guid")]
   [InlineData("11111111111111111111111111111111")]
+  [InlineData("00000000-0000-0000-0000-000000000000")]
   public async Task InvalidOrNonCanonicalCountyClaimFailsClosed(string countyClaim)
   {
     await using var db = CreateDbContext();

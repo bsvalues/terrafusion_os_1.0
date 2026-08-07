@@ -102,6 +102,7 @@ public class DossierController : ControllerBase
 
     var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
     return Guid.TryParseExact(countyIdClaim, "D", out var countyId)
+        && countyId != Guid.Empty
         && string.Equals(countyIdClaim, countyId.ToString("D"), StringComparison.Ordinal)
       ? countyId
       : null;

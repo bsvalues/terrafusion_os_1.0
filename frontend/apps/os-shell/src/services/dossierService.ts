@@ -130,14 +130,21 @@ export interface DossierEvidenceRegistryReadResult {
 export class DossierRequestError extends Error {
   readonly correlationId: string;
   readonly errorCode: string;
-  readonly component = 'DossierEvidenceRegistryRead';
+  readonly component: string;
   readonly stackTrace?: string;
 
-  constructor(message: string, correlationId: string, errorCode: string, stackTrace?: string) {
+  constructor(
+    message: string,
+    correlationId: string,
+    errorCode: string,
+    component: string,
+    stackTrace?: string,
+  ) {
     super(message);
     this.name = 'DossierRequestError';
     this.correlationId = correlationId;
     this.errorCode = errorCode;
+    this.component = component;
     this.stackTrace = stackTrace;
   }
 }
@@ -278,6 +285,7 @@ function generateNetworkCorrelationId(): string {
  */
 async function dossierGetWithCorrelation<T>(
   path: string,
+  component: string,
   correlationId?: string,
 ): Promise<{ data: T; correlationId: string }> {
   const cid = correlationId || generateCorrelationId();
@@ -294,6 +302,7 @@ async function dossierGetWithCorrelation<T>(
       error instanceof Error ? error.message : 'Dossier API network error',
       generateNetworkCorrelationId(),
       'NETWORK_ERROR',
+      component,
       error instanceof Error ? error.stack : undefined,
     );
   }
@@ -304,10 +313,22 @@ async function dossierGetWithCorrelation<T>(
       `Dossier API error: ${response.status} ${response.statusText}`,
       echoed,
       `DOSSIER_HTTP_${response.status}`,
+      component,
     );
   }
 
-  const data: T = await response.json();
+  let data: T;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new DossierRequestError(
+      'Dossier API returned an invalid JSON response',
+      echoed,
+      'INVALID_RESPONSE',
+      component,
+      error instanceof Error ? error.stack : undefined,
+    );
+  }
 
   // Prefer the server-echoed header; fall back to what we sent
   return { data, correlationId: echoed };
@@ -357,7 +378,10 @@ export const dossierService = {
   ): Promise<DossierEvidenceRegistryReadResult> => {
     const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
     const path = `/parcels/${encodeURIComponent(parcelId)}/evidence/registry?${params}`;
-    const response = await dossierGetWithCorrelation<DossierEvidenceRegistryReadResult>(path);
+    const response = await dossierGetWithCorrelation<DossierEvidenceRegistryReadResult>(
+      path,
+      'DossierEvidenceRegistryRead',
+    );
     return response.data;
   },
 
@@ -395,7 +419,7 @@ export const dossierService = {
 
     const qs = params.toString();
     const path = `/parcels/${encodeURIComponent(parcelId)}/details${qs ? `?${qs}` : ''}`;
-    return dossierGetWithCorrelation<DossierDetailsResponse>(path);
+    return dossierGetWithCorrelation<DossierDetailsResponse>(path, 'DossierDetails');
   },
 
   /**
