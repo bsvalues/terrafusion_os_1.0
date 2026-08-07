@@ -1,23 +1,28 @@
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Adapters;
 using TerraFusion.API.Configuration;
 using TerraFusion.Abstractions.DTOs;
 using TerraFusion.Core.GIS.ArcGisRest;
+using TerraFusion.Data;
 
 namespace TerraFusion.API.Services.Atlas;
 
 public sealed class AtlasProjectionConsumer
 {
     private readonly IParcelGeometryReader _reader;
+    private readonly IAtlasParcelCountyScopeVerifier _countyScopeVerifier;
     private readonly IAtlasProjectionProcessHost _processHost;
     private readonly AtlasProjectionOptions _options;
 
     public AtlasProjectionConsumer(
         IParcelGeometryReader reader,
+        IAtlasParcelCountyScopeVerifier countyScopeVerifier,
         IAtlasProjectionProcessHost processHost,
         IOptions<AtlasProjectionOptions> options)
     {
         _reader = reader;
+        _countyScopeVerifier = countyScopeVerifier;
         _processHost = processHost;
         _options = options.Value;
     }
@@ -41,6 +46,13 @@ public sealed class AtlasProjectionConsumer
         }
 
         var modulePath = RequireCanonicalAbsoluteModulePath(_options.ModulePath);
+        if (!await _countyScopeVerifier
+                .ExistsInCountyAsync(countyId, tfParcelId, cancellationToken)
+                .ConfigureAwait(false))
+        {
+            return AtlasProjectionConsumerResult.NotFound();
+        }
+
         var lookup = await _reader.GetGeometryAsync(tfParcelId, cancellationToken).ConfigureAwait(false);
 
         if (lookup.Kind == ParcelGeometryLookupKind.NotFound)
@@ -144,6 +156,33 @@ public sealed class AtlasProjectionConsumer
 
         return canonical;
     }
+}
+
+public interface IAtlasParcelCountyScopeVerifier
+{
+    Task<bool> ExistsInCountyAsync(
+        Guid countyId,
+        Guid tfParcelId,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Prevents a cross-county parcel or geometry from being materialized by the
+/// canonical reader. The reader remains the only geometry source after this
+/// county-scoped identity predicate succeeds.
+/// </summary>
+public sealed class AtlasParcelCountyScopeVerifier(TerraFusionDbContext db)
+    : IAtlasParcelCountyScopeVerifier
+{
+    public Task<bool> ExistsInCountyAsync(
+        Guid countyId,
+        Guid tfParcelId,
+        CancellationToken cancellationToken = default) =>
+        db.TfParcels
+            .AsNoTracking()
+            .AnyAsync(
+                parcel => parcel.TfParcelId == tfParcelId && parcel.CountyId == countyId,
+                cancellationToken);
 }
 
 public enum AtlasProjectionConsumerOutcome

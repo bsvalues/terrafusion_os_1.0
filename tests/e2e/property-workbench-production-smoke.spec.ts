@@ -342,26 +342,22 @@ test.describe('Property Workbench local synthetic parcel journey', () => {
       `/api/parcels/${encodeURIComponent(parcelId)}/atlas-projection`,
       { headers: { Authorization: `Bearer ${auth.token}` } }
     );
-    expect([200, 404, 503]).toContain(canonicalAtlas.status());
-    if (canonicalAtlas.status() === 200) {
-      const feature = await canonicalAtlas.json();
-      if (feature !== null) {
-        expect(feature).toMatchObject({
-          type: 'Feature',
-          geometry: { type: 'Polygon' },
-          properties: {
-            parcelId,
-            countyId: auth.countyId,
-            evidenceState: 'canonical',
-          },
-        });
-      }
-    }
-    await expect(
-      page.locator(
-        '[data-testid="atlas-projection-polygon"], [data-testid="atlas-projection-unavailable"], [data-testid="atlas-projection-error"]'
-      )
-    ).toHaveCount(1, { timeout: 30000 });
+    expect(
+      canonicalAtlas.status(),
+      'the WO-SR-009C journey must run with the exact local Atlas projection enabled'
+    ).toBe(200);
+    const feature = await canonicalAtlas.json();
+    expect(feature, 'a 200 projection response must carry a canonical Feature').not.toBeNull();
+    expect(feature).toMatchObject({
+      type: 'Feature',
+      geometry: { type: 'Polygon' },
+      properties: {
+        parcelId,
+        countyId: auth.countyId,
+        evidenceState: 'canonical',
+      },
+    });
+    await expect(page.getByTestId('atlas-projection-polygon')).toHaveCount(1, { timeout: 30000 });
     await expect(page.getByText(/canonical Point/i)).toHaveCount(0);
     await assertNoInfiniteLoading(page);
     await capture(page, '04 atlas', '04-atlas');

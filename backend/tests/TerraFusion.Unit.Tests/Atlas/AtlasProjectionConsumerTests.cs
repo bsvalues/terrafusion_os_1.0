@@ -66,13 +66,14 @@ public sealed class AtlasProjectionConsumerTests
     {
         var reader = new StubReader(ParcelGeometryLookup.Found(CountyA, CreateGeometry(CountyA)));
         var host = new StubHost(CreatePolygonResult());
-        var consumer = CreateConsumer(reader, host);
+        var consumer = CreateConsumer(reader, host, new StubCountyScopeVerifier(false));
 
         var result = await consumer.ProjectAsync(CountyB, ParcelId);
 
         result.Outcome.Should().Be(AtlasProjectionConsumerOutcome.NotFound);
         result.CountyId.Should().BeNull();
         result.ParcelId.Should().BeNull();
+        reader.CallCount.Should().Be(0);
         host.CallCount.Should().Be(0);
     }
 
@@ -125,11 +126,13 @@ public sealed class AtlasProjectionConsumerTests
 
     private static AtlasProjectionConsumer CreateConsumer(
         IParcelGeometryReader reader,
-        IAtlasProjectionProcessHost host)
+        IAtlasProjectionProcessHost host,
+        IAtlasParcelCountyScopeVerifier? countyScopeVerifier = null)
     {
         var modulePath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "project-atlas-feature.mjs"));
         return new AtlasProjectionConsumer(
             reader,
+            countyScopeVerifier ?? new StubCountyScopeVerifier(true),
             host,
             Options.Create(new AtlasProjectionOptions
             {
@@ -164,15 +167,29 @@ public sealed class AtlasProjectionConsumerTests
 
     private sealed class StubReader(ParcelGeometryLookup lookup) : IParcelGeometryReader
     {
+        public int CallCount { get; private set; }
+
         public Task<ParcelGeometryLookup> GetGeometryAsync(
             Guid tfParcelId,
-            CancellationToken cancellationToken = default) => Task.FromResult(lookup);
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            return Task.FromResult(lookup);
+        }
 
         public Task<ParcelNeighborLookup> GetNeighborsAsync(
             Guid tfParcelId,
             double radiusFeet,
             int maxResults,
             CancellationToken cancellationToken = default) => throw new NotSupportedException();
+    }
+
+    private sealed class StubCountyScopeVerifier(bool exists) : IAtlasParcelCountyScopeVerifier
+    {
+        public Task<bool> ExistsInCountyAsync(
+            Guid countyId,
+            Guid tfParcelId,
+            CancellationToken cancellationToken = default) => Task.FromResult(exists);
     }
 
     private sealed class StubHost(AtlasProjectionProcessResult result) : IAtlasProjectionProcessHost

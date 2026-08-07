@@ -1753,6 +1753,9 @@ if (atlasProjectionOptions.Mode == TerraFusion.API.Configuration.AtlasProjection
         new TerraFusion.API.Services.Atlas.AtlasProjectionProcessHost(
             atlasProjectionOptions.NodeExecutablePath,
             TimeSpan.FromSeconds(atlasProjectionOptions.TimeoutSeconds)));
+    builder.Services.AddScoped<
+        TerraFusion.API.Services.Atlas.IAtlasParcelCountyScopeVerifier,
+        TerraFusion.API.Services.Atlas.AtlasParcelCountyScopeVerifier>();
     builder.Services.AddScoped<TerraFusion.API.Services.Atlas.AtlasProjectionConsumer>();
 }
 

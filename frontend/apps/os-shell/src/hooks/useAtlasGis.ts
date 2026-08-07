@@ -244,6 +244,7 @@ function isCanonicalPolygon(value: unknown, parcelId: string): value is AtlasPro
   const feature = value as Partial<AtlasProjectionFeature>;
   const properties = feature.properties;
   const geometry = feature.geometry;
+  const canonicalParcelId = normalizeGuid(parcelId);
   return (
     feature.type === 'Feature' &&
     geometry?.type === 'Polygon' &&
@@ -263,10 +264,20 @@ function isCanonicalPolygon(value: unknown, parcelId: string): value is AtlasPro
         )
     ) &&
     properties?.evidenceState === 'canonical' &&
-    typeof properties.countyId === 'string' &&
-    properties.countyId.length > 0 &&
-    properties.parcelId === parcelId
+    normalizeGuid(properties.countyId) !== null &&
+    canonicalParcelId !== null &&
+    normalizeGuid(properties.parcelId) === canonicalParcelId
   );
+}
+
+function normalizeGuid(value: unknown): string | null {
+  if (
+    typeof value !== 'string' ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+  ) {
+    return null;
+  }
+  return value.toLowerCase();
 }
 
 /**

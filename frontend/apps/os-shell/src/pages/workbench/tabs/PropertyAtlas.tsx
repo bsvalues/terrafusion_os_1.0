@@ -698,7 +698,7 @@ export const PropertyAtlas: React.FC = () => {
         )}
         {atlasProjection.status === 'unavailable' && (
           <p className='mt-3 text-sm tf-text-muted' data-testid='atlas-projection-unavailable'>
-            Canonical Atlas geometry is unavailable for this parcel.
+            Canonical Atlas geometry is unavailable for the current request.
           </p>
         )}
         {atlasProjection.status === 'error' && (

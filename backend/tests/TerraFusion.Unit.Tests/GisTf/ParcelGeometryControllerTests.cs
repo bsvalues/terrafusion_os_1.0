@@ -144,7 +144,11 @@ public sealed class ParcelGeometryControllerTests
             Mode = AtlasProjectionMode.LocalExact,
             ModulePath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "project-atlas-feature.mjs")),
         });
-        var consumer = new AtlasProjectionConsumer(reader, host, options);
+        var consumer = new AtlasProjectionConsumer(
+            reader,
+            new StubCountyScopeVerifier(countyClaim == CountyA),
+            host,
+            options);
         var controller = new ParcelGeometryController(
             reader,
             NullLogger<ParcelGeometryController>.Instance,
@@ -226,5 +230,13 @@ public sealed class ParcelGeometryControllerTests
             CallCount++;
             return Task.FromResult(result);
         }
+    }
+
+    private sealed class StubCountyScopeVerifier(bool exists) : IAtlasParcelCountyScopeVerifier
+    {
+        public Task<bool> ExistsInCountyAsync(
+            Guid countyId,
+            Guid tfParcelId,
+            CancellationToken cancellationToken = default) => Task.FromResult(exists);
     }
 }
