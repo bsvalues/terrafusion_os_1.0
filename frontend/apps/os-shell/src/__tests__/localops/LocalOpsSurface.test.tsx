@@ -147,6 +147,26 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.queryByTestId('localops-diagnostic-insight')).not.toBeInTheDocument();
   });
 
+  it('fails closed when a provider refusal contains malformed fields', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'unavailable',
+      reasonCode: 'LOCAL_PROVIDER_FAILED',
+      message: { unsafe: true },
+      safeAlternatives: { unsafe: true },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-run-diagnostic'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-diagnostic-insight')).not.toBeInTheDocument();
+  });
+
   it('rejects unsafe nested fields and a non-Ollama adapter', async () => {
     askLocalOpsMock.mockResolvedValue({
       ok: true,

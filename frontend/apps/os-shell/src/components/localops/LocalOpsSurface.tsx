@@ -40,6 +40,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure {
+  if (!isRecord(value) || value.ok !== false) return false;
+  const statuses = ['disabled', 'unavailable', 'misconfigured', 'failed', 'refused'];
+  return (
+    typeof value.status === 'string' &&
+    statuses.includes(value.status) &&
+    boundedString(value.reasonCode) &&
+    boundedString(value.message) &&
+    (value.safeAlternatives === undefined ||
+      (Array.isArray(value.safeAlternatives) &&
+        value.safeAlternatives.length <= 8 &&
+        value.safeAlternatives.every((alternative) => boundedString(alternative)))) &&
+    (value.correlationId === undefined ||
+      (boundedString(value.correlationId) &&
+        /^(?:corr|tf)-[A-Za-z0-9._:-]{1,124}$/.test(value.correlationId)))
+  );
+}
+
 function isSafePanelViewModel(value: unknown): value is LocalOpsViewModel {
   if (typeof value !== 'object' || value === null) return false;
   const vm = value as Partial<LocalOpsViewModel>;
@@ -172,7 +190,7 @@ export const LocalOpsSurface: React.FC = () => {
         isSafePanelViewModel(result.viewModel)
       ) {
         setData(result.viewModel);
-      } else if (!result.ok) {
+      } else if (!result.ok && isSafeFailureResponse(result)) {
         if (result.correlationId) {
           setNetworkFailure({
             message: result.message,
