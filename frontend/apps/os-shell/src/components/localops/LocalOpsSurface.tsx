@@ -173,6 +173,14 @@ export const LocalOpsSurface: React.FC = () => {
       ) {
         setData(result.viewModel);
       } else if (!result.ok) {
+        if (result.correlationId) {
+          setNetworkFailure({
+            message: result.message,
+            errorCode: result.reasonCode,
+            correlationId: result.correlationId,
+            component: 'LocalOpsPanel',
+          });
+        }
         setData(failureViewModel(result));
       } else {
         setData(

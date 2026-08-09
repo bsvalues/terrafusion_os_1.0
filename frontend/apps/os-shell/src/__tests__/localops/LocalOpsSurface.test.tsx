@@ -82,6 +82,7 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
       reasonCode: 'LOCAL_PROVIDER_FETCH_FAILED',
       message: 'The local provider is unavailable. No external provider was called.',
       safeAlternatives: ['Check the approved Hermes tunnel and local Ollama service.'],
+      correlationId: 'corr-localops-provider-123',
     });
 
     render(<LocalOpsSurface />);
@@ -97,6 +98,7 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.getByTestId('localops-external-calls-badge')).toHaveTextContent(
       'external calls: disabled'
     );
+    expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-provider-123');
   });
 
   it('refuses an unsafe or malformed panel view model instead of rendering it', async () => {

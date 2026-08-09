@@ -276,10 +276,7 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     const answer = await engine.ask('zxqwvkplm qbvqwxz fghjkvmn');
     assert.equal(answer.answered, true);
     assert.equal(answer.grounded, false);
-    assert.deepEqual(engine.viewModel().insight, {
-      text: answer.text,
-      grounded: false,
-    });
+    assert.equal(engine.viewModel().insight, undefined);
     await engine.close();
   });
 

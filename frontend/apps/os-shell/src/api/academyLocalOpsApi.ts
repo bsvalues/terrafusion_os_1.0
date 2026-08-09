@@ -45,6 +45,7 @@ export interface AcademyLocalOpsFailure {
   reasonCode: string;
   message: string;
   safeAlternatives?: string[];
+  correlationId?: string;
 }
 
 export type AcademyLocalOpsResponse = AcademyLocalOpsSuccess | AcademyLocalOpsFailure;
@@ -60,6 +61,12 @@ export async function askAcademyLocalOps(
   const payload = (await response.json()) as AcademyLocalOpsResponse;
   if (typeof payload !== 'object' || payload === null || typeof payload.ok !== 'boolean') {
     throw new Error('LocalOps Academy returned an invalid response.');
+  }
+  if (!payload.ok) {
+    const correlationId = response.headers.get('X-Correlation-ID');
+    if (correlationId && /^(?:corr|tf)-[A-Za-z0-9._:-]{1,124}$/.test(correlationId)) {
+      payload.correlationId = correlationId;
+    }
   }
   return payload;
 }

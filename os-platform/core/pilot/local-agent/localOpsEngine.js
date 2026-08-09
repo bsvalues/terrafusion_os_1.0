@@ -192,7 +192,9 @@ function createLocalOpsEngine(options) {
         }
         lastRefusal = undefined;
         lastSources = citationCheck.verified.length > 0 ? citationCheck.verified : lastSources;
-        lastInsight = { text: result.completion.text, grounded: retrieval.grounded };
+        if (retrieval.grounded) {
+            lastInsight = { text: result.completion.text, grounded: true };
+        }
         trace.aiResponded({ status: 'success' });
         return {
             answered: true,
