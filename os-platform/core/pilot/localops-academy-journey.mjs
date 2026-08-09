@@ -1,6 +1,7 @@
 import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
+const APPROVED_HERMES_TUNNEL_ORIGIN = 'http://127.0.0.1:11455';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -20,6 +21,7 @@ const REQUIRED_ENV = Object.freeze({
   AI_PROFILE: 'localops',
   AI_PROVIDER: 'ollama',
   AI_MODEL: 'llama3.2:3b',
+  LOCALOPS_TRANSPORT_BOUNDARY: 'hermes-ssh-tunnel',
   AI_EXTERNAL_CALLS: 'false',
   AI_ALLOW_WEB: 'false',
   AI_ALLOW_SHELL: 'false',
@@ -91,12 +93,12 @@ function validateEnvironment(env) {
       );
     }
   }
-  if (!explicitLoopbackOrigin(env.AI_BASE_URL)) {
+  if (explicitLoopbackOrigin(env.AI_BASE_URL) !== APPROVED_HERMES_TUNNEL_ORIGIN) {
     return fail(
       503,
       'misconfigured',
       'UNSAFE_LOCALOPS_ENV',
-      'LocalOps Academy requires an explicit HTTP loopback AI_BASE_URL; the request was not sent to a model.'
+      `LocalOps Academy requires the approved Hermes SSH tunnel at ${APPROVED_HERMES_TUNNEL_ORIGIN}; the request was not sent to a model.`
     );
   }
   return null;
@@ -149,6 +151,15 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    if (answer.text.trim().length === 0) {
+      return fail(
+        503,
+        'refused',
+        'EMPTY_LOCAL_RESPONSE',
+        'The local provider returned no answer text, so Academy will not display it.'
+      );
+    }
+
     if (!answer.grounded || answer.sources.length === 0) {
       return fail(
         503,
@@ -173,7 +184,7 @@ export async function runAcademyLocalOpsJourney({
         provider: {
           name: viewModel.provider,
           model: viewModel.model,
-          boundary: 'loopback',
+          boundary: 'hermes-ssh-tunnel',
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },

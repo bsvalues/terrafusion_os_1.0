@@ -683,7 +683,7 @@ test("pilot runtime preview endpoints return overallOk true", async () => {
 
 test("pilot runtime serves the enabled Ask Academy journey through LocalOps Ollama", async () => {
   const pilotPort = await getFreePort();
-  const ollamaPort = await getFreePort();
+  const ollamaPort = 11455;
   const received = [];
   const ollama = createServer(async (req, res) => {
     let body = "";
@@ -708,6 +708,7 @@ test("pilot runtime serves the enabled Ask Academy journey through LocalOps Olla
       AI_PROVIDER: "ollama",
       AI_MODEL: "llama3.2:3b",
       AI_BASE_URL: `http://127.0.0.1:${ollamaPort}`,
+      LOCALOPS_TRANSPORT_BOUNDARY: "hermes-ssh-tunnel",
       AI_EXTERNAL_CALLS: "false",
       AI_ALLOW_WEB: "false",
       AI_ALLOW_SHELL: "false",

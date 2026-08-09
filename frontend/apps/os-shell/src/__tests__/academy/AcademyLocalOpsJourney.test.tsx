@@ -35,7 +35,7 @@ describe('AcademyLocalOpsJourney', () => {
           },
         ],
       },
-      provider: { name: 'ollama', model: 'llama3.2:3b', boundary: 'loopback' },
+      provider: { name: 'ollama', model: 'llama3.2:3b', boundary: 'hermes-ssh-tunnel' },
       safety: {
         externalCalls: false,
         allowWeb: false,

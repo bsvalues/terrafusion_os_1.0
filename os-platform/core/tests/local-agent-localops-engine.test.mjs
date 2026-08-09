@@ -64,6 +64,33 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     await engine.close();
   });
 
+  it('supplies bounded retrieved evidence to the model as the grounding contract', async () => {
+    let captured;
+    const adapter = {
+      name: 'capturing',
+      capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+      async *chat() {},
+      async complete(request) {
+        captured = request;
+        return { text: 'A bounded answer.', usage: { promptTokens: 1, completionTokens: 3 } };
+      },
+      async close() {},
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, true);
+    assert.ok(captured.system.includes('Use only the bounded local evidence below'));
+    assert.ok(captured.system.includes('docs/'));
+    assert.ok(captured.system.length < 2500, 'grounding context must stay bounded');
+    assert.equal(captured.messages.at(-1).content, 'provider status');
+    await engine.close();
+  });
+
   it('makes zero external calls and never silently falls back (external profile refused)', async () => {
     const calls = [];
     const realFetch = globalThis.fetch;

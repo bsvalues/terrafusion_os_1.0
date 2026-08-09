@@ -105,6 +105,14 @@ class LocalAdapterProvider {
             return { ok: true, status: 'success', completion };
         }
         catch (error) {
+            if (signal?.aborted) {
+                return problem(this.config, 'unavailable', 'LOCAL_PROVIDER_TIMEOUT', 'The local provider timed out safely. No fallback provider was called.', {
+                    safeAlternatives: [
+                        'Check the approved Hermes tunnel and local Ollama service',
+                        'Run LocalOps provider status',
+                    ],
+                });
+            }
             // A local provider failing at call time is a `failed` outcome — NEVER a
             // fallback to anything else, and never reported as success.
             const message = error instanceof Error ? error.message : String(error);

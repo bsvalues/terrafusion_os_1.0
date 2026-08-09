@@ -14,9 +14,6 @@ export default defineConfig(({ mode }) => {
     configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
       ? configuredApiUrl
       : `http://localhost:${process.env.TF_API_PORT || process.env.VITE_API_PORT || 5000}`;
-  const pilotRuntimeUrl = `http://127.0.0.1:${
-    process.env.TF_PILOT_PORT || process.env.PILOT_PORT || 4317
-  }`;
 
   // Dev-mode middleware: serves service-registry.json directly from disk.
   // The .NET ServiceRegistryController serves this in production. In dev, this
@@ -151,14 +148,6 @@ export default defineConfig(({ mode }) => {
 
       // Proxy API calls to .NET backend
       proxy: {
-        // LocalOps product journeys are served only by the loopback-bound Pilot
-        // runtime. The runtime's explicit environment interlock remains the
-        // authority for enablement and fails closed when it is not configured.
-        '/api/pilot/localops': {
-          target: pilotRuntimeUrl,
-          changeOrigin: true,
-          secure: false,
-        },
         // Capture error boundary reports in pilot runtime (dev diagnostics)
         '/api/errors': {
           target: backendUrl,

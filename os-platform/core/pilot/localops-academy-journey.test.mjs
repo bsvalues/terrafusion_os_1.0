@@ -11,7 +11,8 @@ const SAFE_ENV = {
   AI_PROFILE: 'localops',
   AI_PROVIDER: 'ollama',
   AI_MODEL: 'llama3.2:3b',
-  AI_BASE_URL: 'http://127.0.0.1:11434',
+  AI_BASE_URL: 'http://127.0.0.1:11455',
+  LOCALOPS_TRANSPORT_BOUNDARY: 'hermes-ssh-tunnel',
   AI_EXTERNAL_CALLS: 'false',
   AI_ALLOW_WEB: 'false',
   AI_ALLOW_SHELL: 'false',
@@ -93,7 +94,7 @@ test('Academy LocalOps journey maps an allowlisted synthetic question through th
   });
   assert.equal(result.payload.provider.name, 'ollama');
   assert.equal(result.payload.provider.model, 'llama3.2:3b');
-  assert.equal(result.payload.provider.boundary, 'loopback');
+  assert.equal(result.payload.provider.boundary, 'hermes-ssh-tunnel');
   assert.equal(engine.calls[0].repoRoot, 'C:/repo');
   assert.deepEqual(engine.calls[1], {
     question: ACADEMY_LOCALOPS_QUESTIONS['localops-safety-boundary'].prompt,
@@ -147,6 +148,28 @@ test('Academy LocalOps journey rejects unsafe flags and arbitrary prompts before
   }
 });
 
+test('Academy LocalOps journey refuses any endpoint other than the approved Hermes tunnel', async () => {
+  for (const env of [
+    { ...SAFE_ENV, AI_BASE_URL: 'http://127.0.0.1:11434' },
+    { ...SAFE_ENV, LOCALOPS_TRANSPORT_BOUNDARY: 'loopback' },
+  ]) {
+    let factoryCalls = 0;
+    const result = await runAcademyLocalOpsJourney({
+      repoRoot: 'C:/repo',
+      env,
+      body: { questionId: 'localops-safety-boundary' },
+      engineFactory() {
+        factoryCalls += 1;
+        throw new Error('must not run');
+      },
+    });
+
+    assert.equal(factoryCalls, 0);
+    assert.equal(result.httpStatus, 503);
+    assert.equal(result.payload.reasonCode, 'UNSAFE_LOCALOPS_ENV');
+  }
+});
+
 test('Academy LocalOps journey projects provider failure as visible fail-closed state', async () => {
   const engine = recordingEngineFactory({
     answered: false,
@@ -176,43 +199,49 @@ test('Academy LocalOps journey projects provider failure as visible fail-closed 
   assert.deepEqual(result.payload.safeAlternatives, ['Check the local model service health']);
 });
 
-test('Academy LocalOps journey aborts a hung provider and reports a visible timeout', async () => {
+test('Academy LocalOps journey reports timeout through the real engine/provider/adapter seam', async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (_url, init) =>
+    new Promise((_resolve, reject) => {
+      init.signal.addEventListener(
+        'abort',
+        () => reject(Object.assign(new Error('aborted'), { name: 'AbortError' })),
+        { once: true }
+      );
+    });
+  try {
+    const result = await runAcademyLocalOpsJourney({
+      repoRoot: process.cwd(),
+      env: SAFE_ENV,
+      body: { questionId: 'localops-safety-boundary' },
+      timeoutMs: 5,
+    });
+
+    assert.equal(result.httpStatus, 503);
+    assert.equal(result.payload.ok, false);
+    assert.equal(result.payload.status, 'unavailable');
+    assert.equal(result.payload.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
+    assert.match(result.payload.message, /timed out/i);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test('Academy LocalOps journey refuses an empty model completion', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: '   ',
+    grounded: true,
+    sources: [{ sourceFile: 'docs/localops.md', snippet: 'read-only' }],
+  });
   const result = await runAcademyLocalOpsJourney({
     repoRoot: 'C:/repo',
     env: SAFE_ENV,
     body: { questionId: 'localops-safety-boundary' },
-    timeoutMs: 5,
-    engineFactory() {
-      return {
-        async ask(_question, signal) {
-          if (!signal) {
-            return {
-              answered: false,
-              text: null,
-              grounded: true,
-              sources: [],
-              refusal: {
-                reasonCode: 'NO_ABORT_SIGNAL',
-                status: 'failed',
-                message: 'No abort signal reached the engine.',
-              },
-            };
-          }
-          await new Promise((resolve, reject) => {
-            signal.addEventListener('abort', () => reject(signal.reason), { once: true });
-          });
-        },
-        viewModel() {
-          throw new Error('must not build a success view model');
-        },
-        async close() {},
-      };
-    },
+    engineFactory: engine.factory,
   });
 
   assert.equal(result.httpStatus, 503);
   assert.equal(result.payload.ok, false);
-  assert.equal(result.payload.status, 'unavailable');
-  assert.equal(result.payload.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
-  assert.match(result.payload.message, /timed out/i);
+  assert.equal(result.payload.reasonCode, 'EMPTY_LOCAL_RESPONSE');
 });

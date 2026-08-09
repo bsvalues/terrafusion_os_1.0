@@ -22,7 +22,7 @@ export interface AcademyLocalOpsSuccess {
     grounded: true;
     sources: AcademyLocalOpsSource[];
   };
-  provider: { name: string; model?: string; boundary: 'loopback' };
+  provider: { name: string; model?: string; boundary: 'hermes-ssh-tunnel' };
   safety: {
     externalCalls: false;
     allowWeb: false;
