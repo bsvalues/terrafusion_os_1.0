@@ -1,8 +1,11 @@
 using System.Net;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
@@ -19,6 +22,8 @@ public sealed class LocalOpsAcademyControllerTests
     Assert.NotNull(authorize);
     Assert.Equal("RequireUser", authorize.Policy);
     Assert.Null(typeof(LocalOpsAcademyController).GetCustomAttribute<AllowAnonymousAttribute>());
+    Assert.Equal("ApiPolicy", typeof(LocalOpsAcademyController)
+        .GetCustomAttribute<EnableRateLimitingAttribute>()?.PolicyName);
   }
 
   [Fact]
@@ -48,6 +53,8 @@ public sealed class LocalOpsAcademyControllerTests
     Assert.Equal(new Uri("http://127.0.0.1:4317/pilot/localops/academy/ask"), handler.LastUri);
     Assert.Contains("localops-safety-boundary", handler.LastBody);
     Assert.Equal(new string('x', 32), handler.LastHostToken);
+    Assert.Equal("19190019-1919-1919-1919-191919191919", handler.LastCountyId);
+    Assert.Equal("academy-user", handler.LastUserId);
   }
 
   [Fact]
@@ -78,10 +85,25 @@ public sealed class LocalOpsAcademyControllerTests
     Assert.Equal(0, handler.CallCount);
   }
 
+  [Fact]
+  public async Task Ask_requires_authenticated_trace_context_before_contacting_runtime()
+  {
+    var handler = new StubHandler(HttpStatusCode.OK, "{}");
+    var controller = BuildController(handler, enabled: true, includeTraceClaims: false);
+
+    var result = await controller.Ask(new AcademyLocalOpsRequest("localops-safety-boundary"), default);
+
+    var content = Assert.IsType<ContentResult>(result);
+    Assert.Equal(403, content.StatusCode);
+    Assert.Contains("LOCALOPS_TRACE_CONTEXT_REQUIRED", content.Content);
+    Assert.Equal(0, handler.CallCount);
+  }
+
   private static LocalOpsAcademyController BuildController(
       StubHandler handler,
       bool enabled,
-      string runtimeUrl = "http://127.0.0.1:4317")
+      string runtimeUrl = "http://127.0.0.1:4317",
+      bool includeTraceClaims = true)
   {
     var values = new Dictionary<string, string?>
     {
@@ -90,10 +112,25 @@ public sealed class LocalOpsAcademyControllerTests
       ["LOCALOPS_PILOT_HOST_TOKEN"] = new string('x', 32),
     };
     var config = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
-    return new LocalOpsAcademyController(
+    var controller = new LocalOpsAcademyController(
         new StubHttpClientFactory(new HttpClient(handler)),
         config,
         NullLogger<LocalOpsAcademyController>.Instance);
+    var claims = includeTraceClaims
+        ? new[]
+        {
+          new Claim("countyId", "19190019-1919-1919-1919-191919191919"),
+          new Claim(ClaimTypes.NameIdentifier, "academy-user"),
+        }
+        : Array.Empty<Claim>();
+    controller.ControllerContext = new ControllerContext
+    {
+      HttpContext = new DefaultHttpContext
+      {
+        User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test")),
+      },
+    };
+    return controller;
   }
 
   private sealed class StubHttpClientFactory(HttpClient client) : IHttpClientFactory
@@ -107,6 +144,8 @@ public sealed class LocalOpsAcademyControllerTests
     public Uri? LastUri { get; private set; }
     public string? LastBody { get; private set; }
     public string? LastHostToken { get; private set; }
+    public string? LastCountyId { get; private set; }
+    public string? LastUserId { get; private set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
@@ -116,6 +155,12 @@ public sealed class LocalOpsAcademyControllerTests
       LastUri = request.RequestUri;
       LastHostToken = request.Headers.TryGetValues("X-TerraFusion-LocalOps-Host", out var values)
           ? values.Single()
+          : null;
+      LastCountyId = request.Headers.TryGetValues("X-TerraFusion-County-Id", out var countyValues)
+          ? countyValues.Single()
+          : null;
+      LastUserId = request.Headers.TryGetValues("X-TerraFusion-User-Id", out var userValues)
+          ? userValues.Single()
           : null;
       LastBody = request.Content is null
           ? null

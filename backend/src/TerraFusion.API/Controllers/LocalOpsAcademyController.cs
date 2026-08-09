@@ -1,7 +1,9 @@
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace TerraFusion.API.Controllers;
 
@@ -14,6 +16,7 @@ public sealed record AcademyLocalOpsRequest(string QuestionId);
 [ApiController]
 [Route("api/pilot/localops/academy")]
 [Authorize(Policy = "RequireUser")]
+[EnableRateLimiting("ApiPolicy")]
 public sealed class LocalOpsAcademyController : ControllerBase
 {
   private const string EnabledKey = "LOCALOPS_PRODUCT_JOURNEY_ENABLED";
@@ -66,6 +69,14 @@ public sealed class LocalOpsAcademyController : ControllerBase
           "Choose one of the synthetic Academy questions.");
     }
 
+    var countyId = User.FindFirst("countyId")?.Value;
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+    if (!Guid.TryParse(countyId, out var parsedCountyId) || !IsSafeTraceIdentity(userId))
+    {
+      return SafeJson(403, "refused", "LOCALOPS_TRACE_CONTEXT_REQUIRED",
+          "LocalOps Academy requires authenticated county and user trace context; no model request was sent.");
+    }
+
     using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     timeout.CancelAfter(TimeSpan.FromSeconds(35));
 
@@ -77,6 +88,8 @@ public sealed class LocalOpsAcademyController : ControllerBase
         Content = JsonContent.Create(request),
       };
       upstreamRequest.Headers.TryAddWithoutValidation("X-TerraFusion-LocalOps-Host", hostToken);
+      upstreamRequest.Headers.TryAddWithoutValidation("X-TerraFusion-County-Id", parsedCountyId.ToString());
+      upstreamRequest.Headers.TryAddWithoutValidation("X-TerraFusion-User-Id", userId);
       using var upstream = await client.SendAsync(upstreamRequest, timeout.Token);
       if ((int)upstream.StatusCode is >= 300 and < 400)
       {
@@ -109,6 +122,11 @@ public sealed class LocalOpsAcademyController : ControllerBase
           "The LocalOps runtime is unavailable. No external provider was called.");
     }
   }
+
+  private static bool IsSafeTraceIdentity(string? value) =>
+      !string.IsNullOrWhiteSpace(value) &&
+      value.Length <= 128 &&
+      value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.' or ':' or '@');
 
   private static ContentResult SafeJson(int statusCode, string status, string reasonCode, string message) =>
       new()

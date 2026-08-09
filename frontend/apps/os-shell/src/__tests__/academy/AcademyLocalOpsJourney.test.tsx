@@ -84,6 +84,8 @@ describe('AcademyLocalOpsJourney', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ask local model' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not reach localops/i);
+    expect(screen.getByRole('alert')).toHaveTextContent(/net-/i);
+    expect(screen.getByRole('button', { name: /copy correlation id/i })).toBeInTheDocument();
     expect(screen.queryByTestId('academy-localops-answer')).not.toBeInTheDocument();
   });
 });

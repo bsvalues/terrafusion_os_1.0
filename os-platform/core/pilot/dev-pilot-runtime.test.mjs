@@ -719,11 +719,26 @@ test("pilot runtime requires its API host token and refuses a noncanonical model
     assert.equal(unauthorized.status, 401);
     assert.equal(unauthorized.payload.reasonCode, "LOCALOPS_HOST_UNAUTHORIZED");
 
-    const refused = await postJson(
+    const untraced = await postJson(
       pilotPort,
       "/pilot/localops/academy/ask",
       { questionId: "localops-safety-boundary" },
       { headers: { "X-TerraFusion-LocalOps-Host": hostToken } }
+    );
+    assert.equal(untraced.status, 403);
+    assert.equal(untraced.payload.reasonCode, "LOCALOPS_TRACE_CONTEXT_REQUIRED");
+
+    const refused = await postJson(
+      pilotPort,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" },
+      {
+        headers: {
+          "X-TerraFusion-LocalOps-Host": hostToken,
+          "X-TerraFusion-County-Id": "19190019-1919-1919-1919-191919191919",
+          "X-TerraFusion-User-Id": "academy-user",
+        },
+      }
     );
     assert.equal(refused.status, 503);
     assert.equal(refused.payload.ok, false);
@@ -754,7 +769,13 @@ test("pilot runtime exposes a visible disabled response without touching a provi
       port,
       "/pilot/localops/academy/ask",
       { questionId: "localops-safety-boundary" },
-      { headers: { "X-TerraFusion-LocalOps-Host": hostToken } }
+      {
+        headers: {
+          "X-TerraFusion-LocalOps-Host": hostToken,
+          "X-TerraFusion-County-Id": "19190019-1919-1919-1919-191919191919",
+          "X-TerraFusion-User-Id": "academy-user",
+        },
+      }
     );
     assert.equal(response.status, 503);
     assert.equal(response.payload.ok, false);

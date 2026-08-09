@@ -1,4 +1,5 @@
 import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
+import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const APPROVED_HERMES_TUNNEL_ORIGIN = 'http://127.0.0.1:11455';
@@ -110,6 +111,8 @@ export async function runAcademyLocalOpsJourney({
   body,
   engineFactory = createLocalOpsEngine,
   timeoutMs = DEFAULT_TIMEOUT_MS,
+  traceEmitter,
+  traceContext,
 }) {
   const questionId = validateSyntheticQuestion(body);
   if (!questionId) {
@@ -124,9 +127,27 @@ export async function runAcademyLocalOpsJourney({
   const environmentFailure = validateEnvironment(env);
   if (environmentFailure) return environmentFailure;
 
+  if (
+    !traceEmitter ||
+    typeof traceEmitter.emit !== 'function' ||
+    !isPlainObject(traceContext) ||
+    typeof traceContext.countyId !== 'string' ||
+    traceContext.countyId.length === 0 ||
+    typeof traceContext.userId !== 'string' ||
+    traceContext.userId.length === 0
+  ) {
+    return fail(
+      503,
+      'misconfigured',
+      'LOCALOPS_TRACE_CONTEXT_REQUIRED',
+      'LocalOps Academy requires the canonical authenticated trace context; no model request was sent.'
+    );
+  }
+
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
-  const engine = engineFactory({ repoRoot, env: safeEnv });
+  const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
+  const engine = engineFactory({ repoRoot, env: safeEnv, sink });
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(new Error('LocalOps Academy provider timeout')),

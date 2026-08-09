@@ -6,6 +6,8 @@ import {
   type AcademyLocalOpsQuestionId,
   type AcademyLocalOpsResponse,
 } from '../../api/academyLocalOpsApi';
+import { normalizeNetworkError } from '../../api/pilotApi';
+import { ErrorDisplay, type ErrorDisplayProps } from '../errors/ErrorDisplay';
 
 const QUESTIONS: ReadonlyArray<{ id: AcademyLocalOpsQuestionId; label: string }> = [
   { id: 'localops-safety-boundary', label: 'Why is LocalOps read-only?' },
@@ -18,16 +20,26 @@ export function AcademyLocalOpsJourney() {
   );
   const [result, setResult] = useState<AcademyLocalOpsResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [networkFailure, setNetworkFailure] = useState(false);
+  const [networkFailure, setNetworkFailure] = useState<ErrorDisplayProps['error'] | null>(null);
 
   async function askLocalModel() {
     setLoading(true);
     setResult(null);
-    setNetworkFailure(false);
+    setNetworkFailure(null);
     try {
       setResult(await askAcademyLocalOps({ questionId }));
-    } catch {
-      setNetworkFailure(true);
+    } catch (error) {
+      const normalized = normalizeNetworkError(
+        error instanceof Error ? error : new Error('LocalOps network request failed'),
+        { journey: 'academy-localops' }
+      );
+      setNetworkFailure({
+        message: 'Could not reach LocalOps. No answer was generated and no external provider was called.',
+        errorCode: String(normalized.context?.errorCode ?? 'NETWORK_ERROR'),
+        correlationId: normalized.correlationId,
+        timestamp: normalized.timestamp,
+        component: 'AcademyLocalOps',
+      });
     } finally {
       setLoading(false);
     }
@@ -108,7 +120,9 @@ export function AcademyLocalOpsJourney() {
             </div>
 
             {networkFailure && (
-              <FailureCard message='Could not reach LocalOps. No answer was generated and no external provider was called.' />
+              <div className='mt-5'>
+                <ErrorDisplay error={networkFailure} />
+              </div>
             )}
             {result && !result.ok && (
               <FailureCard message={result.message} alternatives={result.safeAlternatives} />

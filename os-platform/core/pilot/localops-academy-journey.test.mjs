@@ -20,6 +20,16 @@ const SAFE_ENV = {
   AI_REQUIRE_TRACE: 'true',
   AI_REQUIRE_SOURCES: 'true',
 };
+const TRACE_EVENTS = [];
+const TRACE_OPTIONS = {
+  traceEmitter: { emit: event => TRACE_EVENTS.push(event) },
+  traceContext: {
+    countyId: '19190019-1919-1919-1919-191919191919',
+    userId: 'academy-user',
+    roles: [],
+    mode: 'pilot',
+  },
+};
 
 function recordingEngineFactory(answer) {
   const calls = [];
@@ -57,6 +67,7 @@ function recordingEngineFactory(answer) {
 }
 
 test('Academy LocalOps journey maps an allowlisted synthetic question through the existing engine', async () => {
+  TRACE_EVENTS.length = 0;
   const answer = {
     answered: true,
     text: 'LocalOps stays read-only so reasoning cannot mutate county systems.',
@@ -72,6 +83,7 @@ test('Academy LocalOps journey maps an allowlisted synthetic question through th
   const engine = recordingEngineFactory(answer);
 
   const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
     repoRoot: 'C:/repo',
     env: SAFE_ENV,
     body: { questionId: 'localops-safety-boundary' },
@@ -96,6 +108,19 @@ test('Academy LocalOps journey maps an allowlisted synthetic question through th
   assert.equal(result.payload.provider.model, 'llama3.2:3b');
   assert.equal(result.payload.provider.boundary, 'hermes-ssh-tunnel');
   assert.equal(engine.calls[0].repoRoot, 'C:/repo');
+  assert.equal(engine.calls[0].sink.name, 'terratrace-bridge');
+  engine.calls[0].sink.emit({
+    type: 'localops.ai.requested',
+    ts: '2026-08-09T00:00:00Z',
+    correlationId: 'corr-academy-test',
+    schemaVersion: '1.0.0',
+    summary: 'Academy LocalOps request',
+    data: { profile: 'localops', provider: 'ollama' },
+  });
+  assert.equal(TRACE_EVENTS.length, 1);
+  assert.equal(TRACE_EVENTS[0].context.countyId, TRACE_OPTIONS.traceContext.countyId);
+  assert.equal(TRACE_EVENTS[0].context.userId, TRACE_OPTIONS.traceContext.userId);
+  assert.deepEqual(TRACE_EVENTS[0].context.roles, []);
   assert.deepEqual(engine.calls[1], {
     question: ACADEMY_LOCALOPS_QUESTIONS['localops-safety-boundary'].prompt,
   });
@@ -105,6 +130,7 @@ test('Academy LocalOps journey maps an allowlisted synthetic question through th
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
     repoRoot: 'C:/repo',
     env: { ...SAFE_ENV, LOCALOPS_PRODUCT_JOURNEY_ENABLED: undefined },
     body: { questionId: 'localops-safety-boundary' },
@@ -131,6 +157,7 @@ test('Academy LocalOps journey rejects unsafe flags and arbitrary prompts before
   ]) {
     let factoryCalls = 0;
     const result = await runAcademyLocalOpsJourney({
+      ...TRACE_OPTIONS,
       repoRoot: 'C:/repo',
       env: { ...SAFE_ENV, AI_ALLOW_SHELL: 'true' },
       body,
@@ -155,6 +182,7 @@ test('Academy LocalOps journey refuses any endpoint other than the approved Herm
   ]) {
     let factoryCalls = 0;
     const result = await runAcademyLocalOpsJourney({
+      ...TRACE_OPTIONS,
       repoRoot: 'C:/repo',
       env,
       body: { questionId: 'localops-safety-boundary' },
@@ -185,6 +213,7 @@ test('Academy LocalOps journey projects provider failure as visible fail-closed 
   });
 
   const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
     repoRoot: 'C:/repo',
     env: SAFE_ENV,
     body: { questionId: 'localops-safety-boundary' },
@@ -211,6 +240,7 @@ test('Academy LocalOps journey reports timeout through the real engine/provider/
     });
   try {
     const result = await runAcademyLocalOpsJourney({
+      ...TRACE_OPTIONS,
       repoRoot: process.cwd(),
       env: SAFE_ENV,
       body: { questionId: 'localops-safety-boundary' },
@@ -235,6 +265,7 @@ test('Academy LocalOps journey refuses an empty model completion', async () => {
     sources: [{ sourceFile: 'docs/localops.md', snippet: 'read-only' }],
   });
   const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
     repoRoot: 'C:/repo',
     env: SAFE_ENV,
     body: { questionId: 'localops-safety-boundary' },
@@ -244,4 +275,21 @@ test('Academy LocalOps journey refuses an empty model completion', async () => {
   assert.equal(result.httpStatus, 503);
   assert.equal(result.payload.ok, false);
   assert.equal(result.payload.reasonCode, 'EMPTY_LOCAL_RESPONSE');
+});
+
+test('Academy LocalOps journey fails closed without canonical authenticated trace context', async () => {
+  let factoryCalls = 0;
+  const result = await runAcademyLocalOpsJourney({
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-safety-boundary' },
+    engineFactory() {
+      factoryCalls += 1;
+      throw new Error('must not run');
+    },
+  });
+
+  assert.equal(factoryCalls, 0);
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'LOCALOPS_TRACE_CONTEXT_REQUIRED');
 });

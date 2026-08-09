@@ -19,13 +19,26 @@ const {
   createLocalOpsTrace,
   createRecordingLocalOpsTraceSink,
   createLocalOpsDiagnostics,
-  FakeModelAdapter,
 } = await import('../pilot/local-agent/index.js');
 const { TraceService } = await import('../trace/index.js');
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const localopsEnv = { AI_PROFILE: 'localops', AI_PROVIDER: 'ollama', AI_MODEL: 'm' };
 const CONTEXT = { countyId: 'benton-wa', userId: 'operator-1' };
+
+function sourceCitingAdapter(answerText) {
+  return {
+    name: 'source-citing',
+    capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+    async *chat() {},
+    async complete(request) {
+      const source = request.system.match(/\[1\]\s+([^\s—\r\n]+)/)?.[1];
+      assert.ok(source, 'grounding prompt must carry a source filename');
+      return { text: `${answerText} [source: ${source}]` };
+    },
+    async close() {},
+  };
+}
 
 describe('LocalOps → TerraTrace bridge (WO-AI-CONSOLIDATION-002)', () => {
   it('maps all eight localops event types onto the canonical closed union', () => {
@@ -69,12 +82,10 @@ describe('LocalOps → TerraTrace bridge (WO-AI-CONSOLIDATION-002)', () => {
 
   it('engine ask flows end-to-end onto a REAL TraceService (grounded local answer)', async () => {
     const service = new TraceService();
-    const fake = new FakeModelAdapter();
-    fake.respondTo('provider status', 'local grounded answer');
     const engine = createLocalOpsEngine({
       env: localopsEnv,
       repoRoot: REPO_ROOT,
-      adapter: fake,
+      adapter: sourceCitingAdapter('local grounded answer'),
       sink: createTerraTraceBridgeSink({ trace: service, context: CONTEXT }),
     });
 
@@ -170,12 +181,10 @@ describe('LocalOps → TerraTrace bridge (WO-AI-CONSOLIDATION-002)', () => {
         throw new Error('spine down');
       },
     };
-    const fake = new FakeModelAdapter();
-    fake.respondTo('provider status', 'still answers');
     const engine = createLocalOpsEngine({
       env: localopsEnv,
       repoRoot: REPO_ROOT,
-      adapter: fake,
+      adapter: sourceCitingAdapter('still answers'),
       sink: createTerraTraceBridgeSink({ trace: broken, context: CONTEXT }),
     });
     const ans = await engine.ask('provider status');

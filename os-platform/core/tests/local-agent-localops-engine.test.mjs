@@ -10,7 +10,7 @@ import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
-const { createLocalOpsEngine, FakeModelAdapter } = await import(
+const { createLocalOpsEngine } = await import(
   '../pilot/local-agent/index.js'
 );
 
@@ -38,11 +38,31 @@ function countingLocalAdapter() {
   };
 }
 
+function firstGroundingSource(system) {
+  const match = system.match(/\[1\]\s+([^\s—\r\n]+)/);
+  assert.ok(match, 'grounding system must contain a first source filename');
+  return match[1];
+}
+
+function sourceCitingAdapter(answerText = 'Local grounded answer about provider status.') {
+  return {
+    name: 'source-citing',
+    capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+    async *chat() {},
+    async complete(request) {
+      return { text: `${answerText} [source: ${firstGroundingSource(request.system)}]` };
+    },
+    async close() {},
+  };
+}
+
 describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
   it('answers locally, source-grounded, and emits trace (success path)', async () => {
-    const fake = new FakeModelAdapter();
-    fake.respondTo('provider status', 'Local grounded answer about provider status.');
-    const engine = createLocalOpsEngine({ env: localopsEnv, repoRoot: REPO_ROOT, adapter: fake });
+    const engine = createLocalOpsEngine({
+      env: localopsEnv,
+      repoRoot: REPO_ROOT,
+      adapter: sourceCitingAdapter(),
+    });
 
     const ans = await engine.ask('provider status');
     assert.strictEqual(ans.answered, true);
@@ -72,7 +92,10 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
       async *chat() {},
       async complete(request) {
         captured = request;
-        return { text: 'A bounded answer.', usage: { promptTokens: 1, completionTokens: 3 } };
+        return {
+          text: `A bounded answer. [source: ${firstGroundingSource(request.system)}]`,
+          usage: { promptTokens: 1, completionTokens: 3 },
+        };
       },
       async close() {},
     };
@@ -88,6 +111,68 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.ok(captured.system.includes('docs/'));
     assert.ok(captured.system.length < 2500, 'grounding context must stay bounded');
     assert.equal(captured.messages.at(-1).content, 'provider status');
+    await engine.close();
+  });
+
+  it('refuses a completion that does not cite a retrieved source', async () => {
+    const adapter = {
+      ...sourceCitingAdapter(),
+      async complete() {
+        return { text: 'A plausible but uncited answer.' };
+      },
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.grounded, false);
+    assert.equal(answer.refusal.reasonCode, 'UNVERIFIED_SOURCE_CITATION');
+    assert.equal(engine.viewModel().grounded, false);
+    await engine.close();
+  });
+
+  it('accepts a numbered citation only when it maps to retrieved evidence', async () => {
+    const adapter = {
+      ...sourceCitingAdapter(),
+      async complete() {
+        return { text: 'A bounded answer supported by the first retrieved excerpt [1].' };
+      },
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, true);
+    assert.equal(answer.grounded, true);
+    assert.equal(answer.sources.length, 1);
+    await engine.close();
+  });
+
+  it('refuses a completion that invents a source citation', async () => {
+    const adapter = {
+      ...sourceCitingAdapter(),
+      async complete(request) {
+        return {
+          text: `Supported [source: ${firstGroundingSource(request.system)}] and invented [99]`,
+        };
+      },
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.refusal.reasonCode, 'UNVERIFIED_SOURCE_CITATION');
     await engine.close();
   });
 

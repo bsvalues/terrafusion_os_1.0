@@ -80,6 +80,18 @@ function hasValidLocalOpsHostToken(req) {
   return expectedBytes.length === suppliedBytes.length && timingSafeEqual(expectedBytes, suppliedBytes);
 }
 
+function localOpsTraceContext(req) {
+  const countyId = req.headers["x-terrafusion-county-id"];
+  const userId = req.headers["x-terrafusion-user-id"];
+  const validIdentity = (value) =>
+    typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= 128 &&
+    /^[A-Za-z0-9_.:@-]+$/.test(value);
+  if (!validIdentity(countyId) || !validIdentity(userId)) return null;
+  return { countyId, userId, roles: [], mode: "pilot" };
+}
+
 async function readJsonBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -4135,11 +4147,23 @@ const server = createServer(async (req, res) => {
         });
         return;
       }
+      const traceContext = localOpsTraceContext(req);
+      if (!traceContext) {
+        writeJson(res, 403, {
+          ok: false,
+          status: "refused",
+          reasonCode: "LOCALOPS_TRACE_CONTEXT_REQUIRED",
+          message: "LocalOps Academy requires authenticated county and user trace context.",
+        });
+        return;
+      }
       const body = await readJsonBody(req);
       const result = await runAcademyLocalOpsJourney({
         repoRoot: REPO_ROOT,
         env: process.env,
         body,
+        traceEmitter: traceService,
+        traceContext,
       });
       writeJson(res, result.httpStatus, result.payload);
       return;
