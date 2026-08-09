@@ -63,6 +63,20 @@ function runCli(env) {
   });
 }
 
+async function withFetchMonitor(run) {
+  const originalFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = async () => {
+    requests += 1;
+    throw new Error('unexpected network request');
+  };
+  try {
+    return await run(() => requests);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
 describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', () => {
   it('posts the explicit model and prompt to loopback Ollama and projects the literal response digest and length', async () => {
     let requests = 0;
@@ -88,7 +102,6 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
         ok: true,
         status: 'success',
         provider: 'ollama',
-        model: FIXTURE_MODEL,
         response: {
           sha256: FIXTURE_DIGEST,
           length: 23,
@@ -98,16 +111,65 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     assert.strictEqual(requests, 1);
   });
 
-  it('refuses a non-loopback URL before making an Ollama request', async () => {
-    const result = await runLocalOpsOllamaLiveProof({
-      env: proofEnv('http://models.example.test:11434'),
-      prompt: FIXTURE_PROMPT,
-      timeoutMs: 1_000,
+  it('rejects ordinary remote and userinfo-host bypass URLs before any request', async () => {
+    for (const baseUrl of [
+      'http://models.example.test:11434',
+      'http://127.0.0.1:11434@attacker.example:11434',
+    ]) {
+      await withFetchMonitor(async requestCount => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
+        assert.deepStrictEqual(result, {
+          ok: false,
+          status: 'misconfigured',
+          reasonCode: 'INVALID_PROOF_INPUT',
+          message: 'AI_BASE_URL must be an explicit HTTP loopback URL without userinfo',
+        });
+        assert.strictEqual(requestCount(), 0, `${baseUrl} must not reach fetch`);
+      });
+    }
+  });
+
+  it('requires an explicit loopback URL instead of falling back to TF_LOCAL_MODEL_PORT', async () => {
+    await withFetchMonitor(async requestCount => {
+      const result = await runLocalOpsOllamaLiveProof({
+        env: {
+          ...proofEnv(''),
+          TF_LOCAL_MODEL_PORT: '11434',
+        },
+        prompt: FIXTURE_PROMPT,
+        timeoutMs: 1_000,
+      });
+      assert.strictEqual(result.reasonCode, 'INVALID_PROOF_INPUT');
+      assert.match(result.message, /AI_BASE_URL/);
+      assert.strictEqual(requestCount(), 0);
     });
-    assert.strictEqual(result.ok, false);
-    assert.strictEqual(result.status, 'unavailable');
-    assert.strictEqual(result.reasonCode, 'PROVIDER_UNAVAILABLE');
-    assert.strictEqual(result.violatedConstraint, 'loopback_only');
+  });
+
+  it('pins the proof to the localops Ollama profile and rejects loosening overrides before fetch', async () => {
+    const unsafeEnvs = [
+      { ...proofEnv('http://127.0.0.1:11434'), AI_PROFILE: 'hybrid-approved' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_PROFILE: 'cloud-dev' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_PROVIDER: 'openai' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_EXTERNAL_CALLS: 'true' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_ALLOW_WEB: 'true' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_ALLOW_SHELL: 'true' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_ALLOW_MUTATION: 'true' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_REQUIRE_TRACE: 'false' },
+      { ...proofEnv('http://127.0.0.1:11434'), AI_REQUIRE_SOURCES: 'false' },
+    ];
+    for (const env of unsafeEnvs) {
+      await withFetchMonitor(async requestCount => {
+        const result = await runLocalOpsOllamaLiveProof({ env, prompt: FIXTURE_PROMPT, timeoutMs: 1_000 });
+        assert.strictEqual(result.ok, false);
+        assert.strictEqual(result.status, 'misconfigured');
+        assert.strictEqual(result.reasonCode, 'INVALID_PROOF_INPUT');
+        assert.strictEqual(requestCount(), 0);
+      });
+    }
   });
 
   it('returns a structured failure for an unavailable loopback port and exits the CLI nonzero', async () => {

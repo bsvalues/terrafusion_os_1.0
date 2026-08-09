@@ -10,6 +10,14 @@ import {
 const DEFAULT_PROMPT = 'Return a short, read-only LocalOps loopback proof response.';
 const DEFAULT_TIMEOUT_MS = 10_000;
 const MAX_TIMEOUT_MS = 30_000;
+const REQUIRED_LOCALOPS_FLAGS = {
+  AI_EXTERNAL_CALLS: ['false', '0'],
+  AI_ALLOW_WEB: ['false', '0'],
+  AI_ALLOW_SHELL: ['false', '0'],
+  AI_ALLOW_MUTATION: ['false', '0'],
+  AI_REQUIRE_TRACE: ['true', '1'],
+  AI_REQUIRE_SOURCES: ['true', '1'],
+};
 
 function inputProblem(message) {
   return {
@@ -18,6 +26,45 @@ function inputProblem(message) {
     reasonCode: 'INVALID_PROOF_INPUT',
     message,
   };
+}
+
+function isExplicitLoopbackUrl(value) {
+  if (typeof value !== 'string') return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:'
+      && url.username === ''
+      && url.password === ''
+      && (url.hostname === '127.0.0.1' || url.hostname === 'localhost')
+      && url.port !== ''
+      && url.pathname === '/'
+      && url.search === ''
+      && url.hash === '';
+  } catch {
+    return false;
+  }
+}
+
+function validateLocalOpsEnv(env) {
+  if (env.AI_PROFILE !== 'localops') {
+    return inputProblem('AI_PROFILE must be exactly localops');
+  }
+  if (env.AI_PROVIDER !== 'ollama') {
+    return inputProblem('AI_PROVIDER must be exactly ollama');
+  }
+  if (typeof env.AI_MODEL !== 'string' || env.AI_MODEL.trim() === '') {
+    return inputProblem('AI_MODEL must be a non-empty string');
+  }
+  if (!isExplicitLoopbackUrl(env.AI_BASE_URL)) {
+    return inputProblem('AI_BASE_URL must be an explicit HTTP loopback URL without userinfo');
+  }
+  for (const [key, allowedValues] of Object.entries(REQUIRED_LOCALOPS_FLAGS)) {
+    const value = env[key];
+    if (value !== undefined && (typeof value !== 'string' || !allowedValues.includes(value.toLowerCase()))) {
+      return inputProblem(`${key} must preserve the localops safety posture`);
+    }
+  }
+  return null;
 }
 
 function validateOptions(options) {
@@ -33,14 +80,19 @@ function validateOptions(options) {
   if (!Number.isSafeInteger(options.timeoutMs) || options.timeoutMs < 1 || options.timeoutMs > MAX_TIMEOUT_MS) {
     return inputProblem(`proof timeoutMs must be an integer from 1 to ${MAX_TIMEOUT_MS}`);
   }
-  return null;
+  return validateLocalOpsEnv(options.env);
 }
 
 export async function runLocalOpsOllamaLiveProof(options) {
   const invalid = validateOptions(options);
   if (invalid) return invalid;
 
-  const provider = createLocalOpsProvider({ env: options.env });
+  let provider;
+  try {
+    provider = createLocalOpsProvider({ env: options.env });
+  } catch {
+    return inputProblem('LocalOps proof environment is invalid');
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
 
@@ -63,7 +115,6 @@ export async function runLocalOpsOllamaLiveProof(options) {
       ok: true,
       status: 'success',
       provider: 'ollama',
-      model: options.env.AI_MODEL.trim(),
       response: {
         sha256: createHash('sha256').update(result.completion.text).digest('hex'),
         length: result.completion.text.length,
