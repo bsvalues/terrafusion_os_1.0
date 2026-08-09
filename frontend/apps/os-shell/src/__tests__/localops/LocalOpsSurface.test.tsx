@@ -147,6 +147,21 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.queryByTestId('localops-diagnostic-insight')).not.toBeInTheDocument();
   });
 
+  it('keeps a diagnostic transport error out of the runbook journey', async () => {
+    askLocalOpsMock.mockRejectedValue(new Error('socket unavailable'));
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-run-diagnostic'));
+
+    await screen.findByRole('alert');
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+      'LOCALOPS_NETWORK_UNAVAILABLE'
+    );
+  });
+
   it('fails closed when a provider refusal contains malformed fields', async () => {
     askLocalOpsMock.mockResolvedValue({
       ok: false,
@@ -286,6 +301,110 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
       )
     );
     expect(screen.queryByTestId('localops-runbook-guidance')).not.toBeInTheDocument();
+  });
+
+  it('rejects a mixed-source runbook response even when the canonical runbook is present', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-runbook-guidance',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+            heading: 'R0',
+            snippet: 'Canonical guidance.',
+          },
+          {
+            sourceFile: 'docs/operations/UNRELATED_RUNBOOK.md',
+            heading: 'Unrelated',
+            snippet: 'Outside the fixed contract.',
+          },
+        ],
+        insight: { text: 'Mixed-source guidance. [1] [2]', grounded: true },
+        insightKind: 'runbook-guidance',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-runbook-guidance')).not.toBeInTheDocument();
+  });
+
+  it('rejects runbook-labeled insight returned through the diagnostic journey', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-diagnostic-panel',
+      viewModel: {
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        flags: DEFAULT_LOCALOPS_VIEW_MODEL.flags,
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        diagnostics: [],
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+            heading: 'R0',
+            snippet: 'Canonical guidance.',
+          },
+        ],
+        traceEvents: [],
+        insight: { text: 'Cross-journey content. [1]', grounded: true },
+        insightKind: 'runbook-guidance',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-run-diagnostic'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-diagnostic-insight')).not.toBeInTheDocument();
+  });
+
+  it('serializes diagnostic and runbook requests so an older response cannot overwrite a newer journey', async () => {
+    let resolveDiagnostic!: (value: unknown) => void;
+    askLocalOpsMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveDiagnostic = resolve;
+        })
+    );
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-run-diagnostic'));
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+
+    expect(screen.getByTestId('localops-get-runbook-guidance')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+    expect(askLocalOpsMock).toHaveBeenCalledTimes(1);
+
+    resolveDiagnostic({
+      ok: false,
+      status: 'unavailable',
+      reasonCode: 'LOCAL_PROVIDER_TIMEOUT',
+      message: 'The local provider timed out safely.',
+    });
+    await waitFor(() => expect(screen.getByTestId('localops-get-runbook-guidance')).toBeEnabled());
   });
 
   it('shows a visible refusal and no runbook guidance when the local provider is unavailable', async () => {

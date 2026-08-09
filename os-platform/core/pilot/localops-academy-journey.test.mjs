@@ -234,6 +234,43 @@ test('LocalOps runbook guidance fails closed without the canonical Benton runboo
   assert.match(result.payload.message, /Benton server runbook/i);
 });
 
+test('LocalOps runbook guidance refuses mixed sources instead of broadening beyond the canonical runbook', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Runbook guidance with an unrelated operational source. [1] [2]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+        heading: 'R0 — LocalOps self-readiness diagnostic',
+        snippet: 'The operator performs the documented step.',
+      },
+      {
+        sourceFile: 'docs/operations/UNRELATED_RUNBOOK.md',
+        heading: 'Unrelated procedure',
+        snippet: 'This source is outside the fixed LocalOps runbook contract.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'RUNBOOK_SOURCE_REQUIRED');
+});
+
+test('LocalOps runbook guidance asks for documented procedure, not an unsupplied current finding', () => {
+  const prompt = ACADEMY_LOCALOPS_QUESTIONS['localops-runbook-guidance'].prompt;
+  assert.match(prompt, /documented R0 self-readiness procedure/i);
+  assert.doesNotMatch(prompt, /current LocalOps self-readiness finding/i);
+});
+
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({

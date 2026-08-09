@@ -22,7 +22,7 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-runbook-guidance': Object.freeze({
     label: 'Explain the documented LocalOps operator step',
     prompt:
-      'Using only the Benton County server runbook, explain the current LocalOps self-readiness finding, identify the read-only diagnostic, propose the human-performed next step, state when to escalate, and cite the source. Do not execute or imply execution of any step.',
+      'Using only the Benton County server runbook, explain the documented R0 self-readiness procedure, identify the read-only diagnostic, describe how an operator should interpret the latest diagnostic cards shown in the LocalOps panel, propose the human-performed next step, state when to escalate, and cite the source. Do not claim a current status and do not execute or imply execution of any step.',
   }),
 });
 
@@ -209,7 +209,9 @@ export async function runAcademyLocalOpsJourney({
     const runbookJourney = questionId === 'localops-runbook-guidance';
     if (
       runbookJourney &&
-      !answer.sources.some(source => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md')
+      !answer.sources.every(
+        source => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md'
+      )
     ) {
       return fail(
         503,

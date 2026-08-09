@@ -117,6 +117,8 @@ export interface LocalOpsPanelProps {
   runbookGuidancePending?: boolean;
   /** Correlation-first shell error for transport-level failures. */
   networkFailure?: ErrorDisplayProps['error'];
+  /** Correlation-first runbook error scoped to the runbook journey. */
+  runbookNetworkFailure?: ErrorDisplayProps['error'];
 }
 
 // ============================================================================
@@ -333,6 +335,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
   onRunbookGuidance,
   runbookGuidancePending = false,
   networkFailure,
+  runbookNetworkFailure,
 }) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
 
@@ -577,7 +580,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                       : 'Get grounded runbook guidance'}
                   </button>
                 )}
-                {networkFailure && <ErrorDisplay error={networkFailure} />}
+                {runbookNetworkFailure && <ErrorDisplay error={runbookNetworkFailure} />}
                 {data.insight?.grounded && data.insightKind === 'runbook-guidance' && (
                   <div
                     data-testid='localops-runbook-guidance'

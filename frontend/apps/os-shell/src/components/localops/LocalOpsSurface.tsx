@@ -15,7 +15,7 @@
  * @module components/localops/LocalOpsSurface
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   askAcademyLocalOps,
   type AcademyLocalOpsFailure,
@@ -64,7 +64,7 @@ function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure 
 
 function isSafePanelViewModel(
   value: unknown,
-  requireRunbookSource = false
+  journey: 'localops-diagnostic-panel' | 'localops-runbook-guidance'
 ): value is LocalOpsViewModel {
   if (typeof value !== 'object' || value === null) return false;
   const vm = value as Partial<LocalOpsViewModel>;
@@ -118,11 +118,10 @@ function isSafePanelViewModel(
     ) &&
     boundedString(vm.insight?.text) &&
     vm.insight.grounded === true &&
-    (!requireRunbookSource ||
-      (vm.insightKind === 'runbook-guidance' &&
-        vm.sources.some(
-          (source) => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md'
-        )))
+    (journey === 'localops-runbook-guidance'
+      ? vm.insightKind === 'runbook-guidance' &&
+        vm.sources.every((source) => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md')
+      : vm.insightKind === undefined)
   );
 }
 
@@ -175,9 +174,15 @@ export const LocalOpsSurface: React.FC = () => {
   const open = useLocalOpsStore((s) => s.open);
   const close = useLocalOpsStore((s) => s.close);
   const setData = useLocalOpsStore((s) => s.setData);
-  const [diagnosePending, setDiagnosePending] = useState(false);
-  const [runbookGuidancePending, setRunbookGuidancePending] = useState(false);
-  const [networkFailure, setNetworkFailure] = useState<ErrorDisplayProps['error'] | undefined>();
+  const requestInFlight = useRef(false);
+  const [requestPending, setRequestPending] = useState(false);
+  const [networkFailure, setNetworkFailure] = useState<
+    | {
+        journey: 'localops-diagnostic-panel' | 'localops-runbook-guidance';
+        error: ErrorDisplayProps['error'];
+      }
+    | undefined
+  >();
 
   const failureViewModel = (failure: AcademyLocalOpsFailure): LocalOpsViewModel => ({
     ...DEFAULT_LOCALOPS_VIEW_MODEL,
@@ -196,25 +201,28 @@ export const LocalOpsSurface: React.FC = () => {
     questionId: AcademyLocalOpsQuestionId,
     journey: 'localops-diagnostic-panel' | 'localops-runbook-guidance'
   ) {
-    const runbookJourney = journey === 'localops-runbook-guidance';
-    if (runbookJourney) setRunbookGuidancePending(true);
-    else setDiagnosePending(true);
+    if (requestInFlight.current) return;
+    requestInFlight.current = true;
+    setRequestPending(true);
     setNetworkFailure(undefined);
     try {
       const result = await askAcademyLocalOps({ questionId });
       if (
         result.ok &&
         result.journey === journey &&
-        isSafePanelViewModel(result.viewModel, runbookJourney)
+        isSafePanelViewModel(result.viewModel, journey)
       ) {
         setData(result.viewModel);
       } else if (!result.ok && isSafeFailureResponse(result)) {
         if (result.correlationId) {
           setNetworkFailure({
-            message: result.message,
-            errorCode: result.reasonCode,
-            correlationId: result.correlationId,
-            component: 'LocalOpsPanel',
+            journey,
+            error: {
+              message: result.message,
+              errorCode: result.reasonCode,
+              correlationId: result.correlationId,
+              component: 'LocalOpsPanel',
+            },
           });
         }
         setData(failureViewModel(result));
@@ -234,12 +242,15 @@ export const LocalOpsSurface: React.FC = () => {
         { journey }
       );
       setNetworkFailure({
-        message:
-          'Could not reach LocalOps. No insight was generated and no external provider was called.',
-        errorCode: String(normalized.context?.errorCode ?? 'NETWORK_ERROR'),
-        correlationId: normalized.correlationId,
-        timestamp: normalized.timestamp,
-        component: 'LocalOpsPanel',
+        journey,
+        error: {
+          message:
+            'Could not reach LocalOps. No insight was generated and no external provider was called.',
+          errorCode: String(normalized.context?.errorCode ?? 'NETWORK_ERROR'),
+          correlationId: normalized.correlationId,
+          timestamp: normalized.timestamp,
+          component: 'LocalOpsPanel',
+        },
       });
       setData(
         failureViewModel({
@@ -250,8 +261,8 @@ export const LocalOpsSurface: React.FC = () => {
         })
       );
     } finally {
-      if (runbookJourney) setRunbookGuidancePending(false);
-      else setDiagnosePending(false);
+      requestInFlight.current = false;
+      setRequestPending(false);
     }
   }
 
@@ -271,10 +282,15 @@ export const LocalOpsSurface: React.FC = () => {
         open={isOpen}
         onClose={close}
         onDiagnose={runDiagnostic}
-        diagnosePending={diagnosePending}
+        diagnosePending={requestPending}
         onRunbookGuidance={runRunbookGuidance}
-        runbookGuidancePending={runbookGuidancePending}
-        networkFailure={networkFailure}
+        runbookGuidancePending={requestPending}
+        networkFailure={
+          networkFailure?.journey === 'localops-diagnostic-panel' ? networkFailure.error : undefined
+        }
+        runbookNetworkFailure={
+          networkFailure?.journey === 'localops-runbook-guidance' ? networkFailure.error : undefined
+        }
       />
     </div>
   );

@@ -91,12 +91,13 @@ The in-shell **Runbook** section now consumes the same authenticated LocalOps pr
 live diagnostic adapter. An operator can request one fixed synthetic guidance question; there is no
 free-form prompt and no parallel provider or diagnostic path.
 
-- A successful response must be grounded in
+- A successful response must be grounded exclusively in
   [`BENTON_SERVER_RUNBOOK.md`](BENTON_SERVER_RUNBOOK.md). If that canonical source is absent, the
   journey fails closed and displays no guidance.
-- The local model explains the read-only finding, identifies the documented diagnostic, proposes the
-  human-performed next step, and states when to escalate. It cannot execute, apply, restart, write, or
-  mutate anything.
+- The local model explains the documented R0 procedure and how to interpret the latest diagnostic
+  cards, identifies the read-only diagnostic, proposes the human-performed next step, and states when
+  to escalate. Current status remains the responsibility of the diagnostic cards; the model cannot
+  claim it, execute, apply, restart, write, or mutate anything.
 - Provider, tunnel, runtime, network, malformed-response, and missing-source failures remain visible
   refusals with no silent fallback. The default store state remains disabled until an operator makes
   the explicit request.
