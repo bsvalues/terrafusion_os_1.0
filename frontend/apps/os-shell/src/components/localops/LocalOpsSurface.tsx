@@ -16,7 +16,11 @@
  */
 
 import React, { useState } from 'react';
-import { askAcademyLocalOps, type AcademyLocalOpsFailure } from '../../api/academyLocalOpsApi';
+import {
+  askAcademyLocalOps,
+  type AcademyLocalOpsFailure,
+  type AcademyLocalOpsQuestionId,
+} from '../../api/academyLocalOpsApi';
 import { normalizeNetworkError } from '../../api/pilotApi';
 import { Z } from '../../shell/desktop/zIndex';
 import { DEFAULT_LOCALOPS_VIEW_MODEL, useLocalOpsStore } from '../../stores/localOpsStore';
@@ -58,7 +62,10 @@ function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure 
   );
 }
 
-function isSafePanelViewModel(value: unknown): value is LocalOpsViewModel {
+function isSafePanelViewModel(
+  value: unknown,
+  requireRunbookSource = false
+): value is LocalOpsViewModel {
   if (typeof value !== 'object' || value === null) return false;
   const vm = value as Partial<LocalOpsViewModel>;
   const flags = vm.flags;
@@ -110,7 +117,12 @@ function isSafePanelViewModel(value: unknown): value is LocalOpsViewModel {
         boundedString(event.summary, true)
     ) &&
     boundedString(vm.insight?.text) &&
-    vm.insight.grounded === true
+    vm.insight.grounded === true &&
+    (!requireRunbookSource ||
+      (vm.insightKind === 'runbook-guidance' &&
+        vm.sources.some(
+          (source) => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md'
+        )))
   );
 }
 
@@ -164,6 +176,7 @@ export const LocalOpsSurface: React.FC = () => {
   const close = useLocalOpsStore((s) => s.close);
   const setData = useLocalOpsStore((s) => s.setData);
   const [diagnosePending, setDiagnosePending] = useState(false);
+  const [runbookGuidancePending, setRunbookGuidancePending] = useState(false);
   const [networkFailure, setNetworkFailure] = useState<ErrorDisplayProps['error'] | undefined>();
 
   const failureViewModel = (failure: AcademyLocalOpsFailure): LocalOpsViewModel => ({
@@ -179,15 +192,20 @@ export const LocalOpsSurface: React.FC = () => {
     },
   });
 
-  async function runDiagnostic() {
-    setDiagnosePending(true);
+  async function runPanelJourney(
+    questionId: AcademyLocalOpsQuestionId,
+    journey: 'localops-diagnostic-panel' | 'localops-runbook-guidance'
+  ) {
+    const runbookJourney = journey === 'localops-runbook-guidance';
+    if (runbookJourney) setRunbookGuidancePending(true);
+    else setDiagnosePending(true);
     setNetworkFailure(undefined);
     try {
-      const result = await askAcademyLocalOps({ questionId: 'localops-panel-diagnostic' });
+      const result = await askAcademyLocalOps({ questionId });
       if (
         result.ok &&
-        result.journey === 'localops-diagnostic-panel' &&
-        isSafePanelViewModel(result.viewModel)
+        result.journey === journey &&
+        isSafePanelViewModel(result.viewModel, runbookJourney)
       ) {
         setData(result.viewModel);
       } else if (!result.ok && isSafeFailureResponse(result)) {
@@ -206,14 +224,14 @@ export const LocalOpsSurface: React.FC = () => {
             ok: false,
             status: 'failed',
             reasonCode: 'INVALID_LOCALOPS_PANEL_RESPONSE',
-            message: 'LocalOps returned an invalid diagnostic response. No result was displayed.',
+            message: 'LocalOps returned an invalid panel response. No result was displayed.',
           })
         );
       }
     } catch (error) {
       const normalized = normalizeNetworkError(
         error instanceof Error ? error : new Error('LocalOps network request failed'),
-        { journey: 'localops-diagnostic-panel' }
+        { journey }
       );
       setNetworkFailure({
         message:
@@ -232,8 +250,17 @@ export const LocalOpsSurface: React.FC = () => {
         })
       );
     } finally {
-      setDiagnosePending(false);
+      if (runbookJourney) setRunbookGuidancePending(false);
+      else setDiagnosePending(false);
     }
+  }
+
+  function runDiagnostic() {
+    return runPanelJourney('localops-panel-diagnostic', 'localops-diagnostic-panel');
+  }
+
+  function runRunbookGuidance() {
+    return runPanelJourney('localops-runbook-guidance', 'localops-runbook-guidance');
   }
 
   return (
@@ -245,6 +272,8 @@ export const LocalOpsSurface: React.FC = () => {
         onClose={close}
         onDiagnose={runDiagnostic}
         diagnosePending={diagnosePending}
+        onRunbookGuidance={runRunbookGuidance}
+        runbookGuidancePending={runbookGuidancePending}
         networkFailure={networkFailure}
       />
     </div>

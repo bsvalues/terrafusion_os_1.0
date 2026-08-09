@@ -209,4 +209,104 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     );
     expect(screen.queryByTestId('localops-diagnostic-insight')).not.toBeInTheDocument();
   });
+
+  it('renders canonical runbook guidance through the existing LocalOps journey', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-runbook-guidance',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+            heading: 'R0 — LocalOps self-readiness diagnostic',
+            snippet: 'LocalOps proposes the documented operator step and does not execute it.',
+          },
+        ],
+        insight: {
+          text: 'Review the read-only diagnostic, perform the documented step manually, and escalate on failure. [1]',
+          grounded: true,
+        },
+        insightKind: 'runbook-guidance',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-runbook-guidance')).toHaveTextContent(
+        'perform the documented step manually'
+      )
+    );
+    expect(askLocalOpsMock).toHaveBeenCalledWith({ questionId: 'localops-runbook-guidance' });
+    expect(screen.getByTestId('localops-runbook-source')).toHaveTextContent(
+      'docs/localops/BENTON_SERVER_RUNBOOK.md'
+    );
+  });
+
+  it('fails closed and shows no runbook guidance when the canonical runbook source is missing', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-runbook-guidance',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/README.md',
+            heading: 'Overview',
+            snippet: 'LocalOps is read-only.',
+          },
+        ],
+        insight: { text: 'Untrusted generic guidance. [1]', grounded: true },
+        insightKind: 'runbook-guidance',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-runbook-guidance')).not.toBeInTheDocument();
+  });
+
+  it('shows a visible refusal and no runbook guidance when the local provider is unavailable', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'unavailable',
+      reasonCode: 'LOCAL_PROVIDER_FETCH_FAILED',
+      message: 'The local provider is unavailable. No external provider was called.',
+      correlationId: 'corr-localops-runbook-503',
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'LOCAL_PROVIDER_FETCH_FAILED'
+      )
+    );
+    expect(screen.queryByTestId('localops-runbook-guidance')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-runbook-503');
+  });
 });

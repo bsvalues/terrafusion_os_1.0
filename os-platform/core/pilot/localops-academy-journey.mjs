@@ -19,6 +19,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     prompt:
       'Explain the current TerraFusion LocalOps read-only diagnostic boundary and how an operator should interpret provider readiness.',
   }),
+  'localops-runbook-guidance': Object.freeze({
+    label: 'Explain the documented LocalOps operator step',
+    prompt:
+      'Using only the Benton County server runbook, explain the current LocalOps self-readiness finding, identify the read-only diagnostic, propose the human-performed next step, state when to escalate, and cite the source. Do not execute or imply execution of any step.',
+  }),
 });
 
 const REQUIRED_ENV = Object.freeze({
@@ -201,13 +206,30 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    const runbookJourney = questionId === 'localops-runbook-guidance';
+    if (
+      runbookJourney &&
+      !answer.sources.some(source => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md')
+    ) {
+      return fail(
+        503,
+        'refused',
+        'RUNBOOK_SOURCE_REQUIRED',
+        'LocalOps did not ground this guidance in the canonical Benton server runbook, so no operator step will be displayed.'
+      );
+    }
+
     const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
       payload: {
         ok: true,
         status: 'success',
-        journey: panelJourney ? 'localops-diagnostic-panel' : 'academy-localops',
+        journey: runbookJourney
+          ? 'localops-runbook-guidance'
+          : panelJourney
+            ? 'localops-diagnostic-panel'
+            : 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -221,7 +243,13 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney ? { viewModel } : {}),
+        ...(panelJourney || runbookJourney
+          ? {
+              viewModel: runbookJourney
+                ? { ...viewModel, insightKind: 'runbook-guidance' }
+                : viewModel,
+            }
+          : {}),
       },
     };
   } catch {

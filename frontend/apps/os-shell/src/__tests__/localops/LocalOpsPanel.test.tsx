@@ -109,6 +109,45 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     expect(onDiagnose).toHaveBeenCalledTimes(1);
   });
 
+  it('offers grounded runbook guidance without an execution affordance', () => {
+    const onRunbookGuidance = vi.fn();
+    const data = baseVm({
+      sources: [
+        {
+          sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+          heading: 'R0 — LocalOps self-readiness diagnostic',
+          snippet: 'The operator performs the documented step; LocalOps does not execute it.',
+        },
+      ],
+      insight: {
+        text: 'Review the read-only finding, perform R1 manually, and escalate if it fails. [1]',
+        grounded: true,
+      },
+      insightKind: 'runbook-guidance',
+    });
+
+    render(
+      <LocalOpsPanel
+        data={data}
+        onRunbookGuidance={onRunbookGuidance}
+        runbookGuidancePending={false}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    expect(screen.getByTestId('localops-runbook-guidance')).toHaveTextContent(
+      'perform R1 manually'
+    );
+    expect(screen.getByTestId('localops-runbook-source')).toHaveTextContent(
+      'docs/localops/BENTON_SERVER_RUNBOOK.md'
+    );
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+    expect(onRunbookGuidance).toHaveBeenCalledTimes(1);
+    expect(
+      screen.queryByRole('button', { name: /execute|restart|apply/i })
+    ).not.toBeInTheDocument();
+  });
+
   it('shows a structured refusal card clearly when present', () => {
     render(
       <LocalOpsPanel
@@ -166,7 +205,7 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     expect(screen.getByTestId('localops-panel')).toHaveTextContent('LocalOps is unavailable');
   });
 
-  it('exposes no autonomous-action affordances (only section tabs + optional close)', () => {
+  it('exposes no autonomous-action affordances when no operator request handlers are supplied', () => {
     const { container } = render(<LocalOpsPanel data={baseVm()} />);
     // Buttons present are the six section tabs only (no close handler passed here).
     const buttons = container.querySelectorAll('button');

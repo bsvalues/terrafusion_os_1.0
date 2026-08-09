@@ -169,6 +169,71 @@ test('LocalOps panel diagnostic journey returns the engine view model for the ex
   });
 });
 
+test('LocalOps runbook guidance returns the engine view model only when grounded in the canonical Benton runbook', async () => {
+  const answer = {
+    answered: true,
+    text: 'The diagnostic is read-only. The operator performs the documented check and escalates if it fails. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+        heading: 'R0 — LocalOps self-readiness diagnostic',
+        snippet: 'LocalOps proposes the next documented step but never executes it.',
+      },
+    ],
+  };
+  const engine = recordingEngineFactory(answer);
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.payload.ok, true);
+  assert.equal(result.payload.journey, 'localops-runbook-guidance');
+  assert.deepEqual(result.payload.viewModel.insight, {
+    text: answer.text,
+    grounded: true,
+  });
+  assert.deepEqual(result.payload.answer.sources, answer.sources);
+  assert.deepEqual(engine.calls[1], {
+    question: ACADEMY_LOCALOPS_QUESTIONS['localops-runbook-guidance'].prompt,
+  });
+});
+
+test('LocalOps runbook guidance fails closed without the canonical Benton runbook source', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Generic operational advice. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/README.md',
+        heading: 'Overview',
+        snippet: 'LocalOps is read-only.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.ok, false);
+  assert.equal(result.payload.status, 'refused');
+  assert.equal(result.payload.reasonCode, 'RUNBOOK_SOURCE_REQUIRED');
+  assert.match(result.payload.message, /Benton server runbook/i);
+});
+
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({
