@@ -19,6 +19,12 @@ function proofEnv(baseUrl) {
     AI_PROVIDER: 'ollama',
     AI_MODEL: FIXTURE_MODEL,
     AI_BASE_URL: baseUrl,
+    AI_EXTERNAL_CALLS: 'false',
+    AI_ALLOW_WEB: 'false',
+    AI_ALLOW_SHELL: 'false',
+    AI_ALLOW_MUTATION: 'false',
+    AI_REQUIRE_TRACE: 'true',
+    AI_REQUIRE_SOURCES: 'true',
   };
 }
 
@@ -31,8 +37,27 @@ async function withLoopbackServer(handler, run) {
     return await run(`http://127.0.0.1:${port}`);
   } finally {
     server.close();
-    server.closeAllConnections();
+    if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
     await once(server, 'close');
+  }
+}
+
+async function withRedirectTarget(run) {
+  let targetRequests = 0;
+  const target = createServer((_request, response) => {
+    targetRequests += 1;
+    response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+    response.end('{"message":{"content":"redirected"},"done":true}\n');
+  });
+  target.listen(0, '127.0.0.1');
+  await once(target, 'listening');
+  const { port } = target.address();
+  try {
+    return await run(`http://127.0.0.1:${port}`, () => targetRequests);
+  } finally {
+    target.close();
+    if (typeof target.closeAllConnections === 'function') target.closeAllConnections();
+    await once(target, 'close');
   }
 }
 
@@ -187,6 +212,47 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     });
   });
 
+  it('fails closed without following a loopback proof redirect to another target', async () => {
+    await withRedirectTarget(async (targetUrl, requestCount) => {
+      await withLoopbackServer((_request, response) => {
+        response.writeHead(302, { location: `${targetUrl}/redirected` });
+        response.end();
+      }, async baseUrl => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
+        assert.strictEqual(result.ok, false);
+        assert.strictEqual(result.status, 'failed');
+        assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_FAILED');
+        assert.strictEqual(requestCount(), 0);
+      });
+    });
+  });
+
+  it('requires every LocalOps safety flag to be explicitly present', async () => {
+    for (const key of [
+      'AI_EXTERNAL_CALLS',
+      'AI_ALLOW_WEB',
+      'AI_ALLOW_SHELL',
+      'AI_ALLOW_MUTATION',
+      'AI_REQUIRE_TRACE',
+      'AI_REQUIRE_SOURCES',
+    ]) {
+      const env = proofEnv('http://127.0.0.1:11434');
+      delete env[key];
+      await withFetchMonitor(async requestCount => {
+        const result = await runLocalOpsOllamaLiveProof({ env, prompt: FIXTURE_PROMPT, timeoutMs: 1_000 });
+        assert.strictEqual(result.ok, false);
+        assert.strictEqual(result.status, 'misconfigured');
+        assert.strictEqual(result.reasonCode, 'INVALID_PROOF_INPUT');
+        assert.match(result.message, new RegExp(`${key} must be explicitly set`));
+        assert.strictEqual(requestCount(), 0);
+      });
+    }
+  });
+
   it('rejects ordinary remote and userinfo-host bypass URLs before any request', async () => {
     for (const baseUrl of [
       'http://models.example.test:11434',
@@ -263,7 +329,10 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     assert.strictEqual(cli.code, 1);
     assert.strictEqual(cli.stderr, '');
     assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
-    assert.strictEqual(JSON.parse(cli.stdout).ok, false);
+    const cliResult = JSON.parse(cli.stdout);
+    assert.strictEqual(cliResult.ok, false);
+    assert.strictEqual(cliResult.status, 'failed');
+    assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_FAILED');
   });
 
   it('returns a structured abort timeout and exits the CLI nonzero', async () => {
@@ -288,7 +357,10 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
       assert.strictEqual(cli.code, 1);
       assert.strictEqual(cli.stderr, '');
       assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
-      assert.strictEqual(JSON.parse(cli.stdout).ok, false);
+      const cliResult = JSON.parse(cli.stdout);
+      assert.strictEqual(cliResult.ok, false);
+      assert.strictEqual(cliResult.status, 'failed');
+      assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_FAILED');
     });
   });
 });

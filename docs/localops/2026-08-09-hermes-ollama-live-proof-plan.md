@@ -98,8 +98,9 @@ the changed path, canon gate, generated-code check, secret scan, `git diff --che
 Commit only the two evidence paths, obtain task review and whole-branch review, remediate legitimate
 Critical/Important findings test-first, and repeat scoped review.
 
-- [ ] **Step 5: PR, exact-head verification, and merge**
+- [ ] **Step 5: Coordinator-only PR, exact-head verification, and merge**
 
-Push the branch, open the single Work Order PR, wait for required checks, resolve all review threads,
-verify the exact head and clean merge state, squash merge under standing owner authority, and verify
-the merge SHA is on `origin/main`.
+The coordinator alone pushes the branch, opens the single Work Order PR, waits for required checks,
+resolves all review threads, verifies the exact head and clean merge state, squash-merges under
+standing owner authority, and verifies the merge SHA is on `origin/main`. Task workers must not push
+or merge from this step.

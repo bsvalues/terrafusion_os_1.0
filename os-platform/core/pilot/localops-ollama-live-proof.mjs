@@ -11,12 +11,12 @@ const DEFAULT_PROMPT = 'Return a short, read-only LocalOps loopback proof respon
 const DEFAULT_TIMEOUT_MS = 10_000;
 const MAX_TIMEOUT_MS = 30_000;
 const REQUIRED_LOCALOPS_FLAGS = {
-  AI_EXTERNAL_CALLS: ['false', '0'],
-  AI_ALLOW_WEB: ['false', '0'],
-  AI_ALLOW_SHELL: ['false', '0'],
-  AI_ALLOW_MUTATION: ['false', '0'],
-  AI_REQUIRE_TRACE: ['true', '1'],
-  AI_REQUIRE_SOURCES: ['true', '1'],
+  AI_EXTERNAL_CALLS: 'false',
+  AI_ALLOW_WEB: 'false',
+  AI_ALLOW_SHELL: 'false',
+  AI_ALLOW_MUTATION: 'false',
+  AI_REQUIRE_TRACE: 'true',
+  AI_REQUIRE_SOURCES: 'true',
 };
 
 function inputProblem(message) {
@@ -59,10 +59,9 @@ function validateLocalOpsEnv(env, baseUrl) {
   if (!baseUrl) {
     return inputProblem('AI_BASE_URL must be an explicit HTTP loopback URL without userinfo');
   }
-  for (const [key, allowedValues] of Object.entries(REQUIRED_LOCALOPS_FLAGS)) {
-    const value = env[key];
-    if (value !== undefined && (typeof value !== 'string' || !allowedValues.includes(value.toLowerCase()))) {
-      return inputProblem(`${key} must preserve the localops safety posture`);
+  for (const [key, requiredValue] of Object.entries(REQUIRED_LOCALOPS_FLAGS)) {
+    if (env[key] !== requiredValue) {
+      return inputProblem(`${key} must be explicitly set to ${requiredValue}`);
     }
   }
   return null;
@@ -97,8 +96,9 @@ function observeOllamaTerminal(baseUrl) {
   }
 
   globalThis.fetch = async (url, init) => {
-    const response = await originalFetch(url, init);
-    if (url !== `${baseUrl}/api/chat` || !response.body) return response;
+    const isProofRequest = url === `${baseUrl}/api/chat`;
+    const response = await originalFetch(url, isProofRequest ? { ...init, redirect: 'error' } : init);
+    if (!isProofRequest || !response.body) return response;
 
     const copy = response.clone();
     observation = (async () => {

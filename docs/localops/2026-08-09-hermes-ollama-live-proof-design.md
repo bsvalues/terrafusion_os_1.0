@@ -29,7 +29,7 @@ existing provider exclusively through `createLocalOpsProvider`, using the `local
 `ollama` provider, an explicit model, and an explicit loopback base URL. It sends one fixed,
 non-sensitive prompt through the existing adapter contract.
 
-The entrypoint emits a single machine-readable JSON result. Success includes the adapter identity,
+The entrypoint emits a single machine-readable JSON result. Success includes provider identity,
 UTF-8 response byte length, and SHA-256 digest. It does not emit or persist the model identity or
 model response. Failure is a structured non-success result and a nonzero process exit. An abort
 timeout bounds an unavailable or hung tunnel. There is no alternate provider construction or fallback
