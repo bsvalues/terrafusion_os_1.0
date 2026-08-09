@@ -103,4 +103,3 @@ Critical/Important findings test-first, and repeat scoped review.
 Push the branch, open the single Work Order PR, wait for required checks, resolve all review threads,
 verify the exact head and clean merge state, squash merge under standing owner authority, and verify
 the merge SHA is on `origin/main`.
-

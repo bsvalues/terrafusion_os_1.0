@@ -1,8 +1,8 @@
 # Hermes Ollama Live Proof Design
 
-**Work Order:** `WO-LOCALOPS-009`  
-**Owner authorization:** `TERRAFUSION_LOCALOPS_OLLAMA_PROOF`, 2026-08-09  
-**Repository:** `bsvalues/terrafusion_os_1.0`  
+**Work Order:** `WO-LOCALOPS-009`
+**Owner authorization:** `TERRAFUSION_LOCALOPS_OLLAMA_PROOF`, 2026-08-09
+**Repository:** `bsvalues/terrafusion_os_1.0`
 **Risk:** R1, read-only runtime proof
 
 ## Goal
@@ -45,4 +45,3 @@ The evidence packet records the exact branch head, focused and required-gate res
 shape, model identity, response digest/length, fail-closed result, Atlas TCP-only boundary result,
 WilliamOS isolation check, PR review state, merge SHA, and post-merge ancestry. No credentials,
 prompts containing sensitive data, or raw database payloads are recorded.
-
