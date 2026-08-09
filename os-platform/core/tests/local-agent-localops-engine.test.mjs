@@ -172,6 +172,23 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     await engine.close();
   });
 
+  it('does not call the model when retrieved evidence is removed by the source allowlist', async () => {
+    const counting = countingLocalAdapter();
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter: counting.adapter,
+      sourceFileAllowlist: ['docs/localops/NOT_AN_INDEXED_SOURCE.md'],
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.refusal.reasonCode, 'NO_GROUNDING');
+    assert.equal(answer.sources.length, 0);
+    assert.equal(counting.state.calls, 0, 'filtered evidence must refuse before model invocation');
+    await engine.close();
+  });
+
   it('refuses a completion that does not cite a retrieved source', async () => {
     const adapter = {
       ...sourceCitingAdapter(),
