@@ -39,9 +39,11 @@ function countingLocalAdapter() {
 }
 
 function firstGroundingSource(system) {
-  const match = system.match(/\[1\]\s+([^\s—\r\n]+)/);
-  assert.ok(match, 'grounding system must contain a first source filename');
-  return match[1];
+  const source = [...system.matchAll(/\[\d+\]\s+([^\s—\r\n]+)/g)]
+    .map(match => match[1])
+    .find(value => value.startsWith('docs/'));
+  assert.ok(source, 'grounding system must contain a source filename');
+  return source;
 }
 
 function sourceCitingAdapter(answerText = 'Local grounded answer about provider status.') {
@@ -111,6 +113,9 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.ok(captured.system.includes('docs/'));
     assert.ok(captured.system.length < 2500, 'grounding context must stay bounded');
     assert.equal(captured.messages.at(-1).content, 'provider status');
+    assert.equal(captured.temperature, 0);
+    assert.equal(captured.maxTokens, 256);
+    assert.match(captured.system, /Sources: \[1\] \[2\]/);
     assert.ok(answer.sources.length <= 5);
     for (const source of answer.sources) {
       assert.ok(captured.system.includes(source.sourceFile));

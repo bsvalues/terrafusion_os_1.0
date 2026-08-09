@@ -32,7 +32,9 @@ function sourceCitingAdapter(answerText) {
     capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
     async *chat() {},
     async complete(request) {
-      const source = request.system.match(/\[1\]\s+([^\s—\r\n]+)/)?.[1];
+      const source = [...request.system.matchAll(/\[\d+\]\s+([^\s—\r\n]+)/g)]
+        .map(match => match[1])
+        .find(value => value.startsWith('docs/'));
       assert.ok(source, 'grounding prompt must carry a source filename');
       return { text: `${answerText} [source: ${source}]` };
     },
