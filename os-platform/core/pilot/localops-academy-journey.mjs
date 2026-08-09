@@ -14,6 +14,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     prompt:
       'Why does TerraFusion require source-grounded evidence for a read-only LocalOps answer?',
   }),
+  'localops-panel-diagnostic': Object.freeze({
+    label: 'Explain LocalOps diagnostic readiness',
+    prompt:
+      'Explain the current TerraFusion LocalOps read-only diagnostic boundary and how an operator should interpret provider readiness.',
+  }),
 });
 
 const REQUIRED_ENV = Object.freeze({
@@ -196,12 +201,13 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
       payload: {
         ok: true,
         status: 'success',
-        journey: 'academy-localops',
+        journey: panelJourney ? 'localops-diagnostic-panel' : 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -215,6 +221,7 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
+        ...(panelJourney ? { viewModel } : {}),
       },
     };
   } catch {

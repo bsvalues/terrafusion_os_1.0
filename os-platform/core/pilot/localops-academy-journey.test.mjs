@@ -57,6 +57,9 @@ function recordingEngineFactory(answer) {
           traceEvents: [
             { type: 'localops.ai.responded', ts: '2026-08-09T00:00:00Z', summary: 'success' },
           ],
+          ...(answer.answered && answer.text
+            ? { insight: { text: answer.text, grounded: true } }
+            : {}),
         };
       },
       async close() {
@@ -126,6 +129,44 @@ test('Academy LocalOps journey maps an allowlisted synthetic question through th
     question: ACADEMY_LOCALOPS_QUESTIONS['localops-safety-boundary'].prompt,
   });
   assert.deepEqual(engine.calls.at(-1), { closed: true });
+});
+
+test('LocalOps panel diagnostic journey returns the engine view model for the existing in-shell surface', async () => {
+  const answer = {
+    answered: true,
+    text: 'LocalOps is ready for grounded, read-only diagnostic explanation. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/README.md',
+        heading: 'Read-only diagnostics',
+        snippet: 'Diagnostics observe and explain only.',
+      },
+    ],
+  };
+  const engine = recordingEngineFactory(answer);
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-panel-diagnostic' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.payload.ok, true);
+  assert.equal(result.payload.journey, 'localops-diagnostic-panel');
+  assert.deepEqual(result.payload.viewModel.insight, {
+    text: answer.text,
+    grounded: true,
+  });
+  assert.equal(result.payload.viewModel.flags.externalCalls, false);
+  assert.equal(result.payload.viewModel.flags.allowShell, false);
+  assert.equal(result.payload.viewModel.flags.allowMutation, false);
+  assert.deepEqual(engine.calls[1], {
+    question: ACADEMY_LOCALOPS_QUESTIONS['localops-panel-diagnostic'].prompt,
+  });
 });
 
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {

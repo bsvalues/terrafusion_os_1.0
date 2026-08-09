@@ -80,6 +80,10 @@ export interface LocalOpsViewModel {
   grounded: boolean;
   sources: LocalOpsSourceView[];
   traceEvents: LocalOpsTraceView[];
+  insight?: {
+    text: string;
+    grounded: boolean;
+  };
 }
 
 /** Result of a single LocalOps ask — never a silent cloud fallback. */
@@ -160,9 +164,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
   const config = resolveAiProfile(env);
 
   const recording = createRecordingLocalOpsTraceSink();
-  const sink = options.sink
-    ? composeLocalOpsTraceSinks(recording, options.sink)
-    : recording;
+  const sink = options.sink ? composeLocalOpsTraceSinks(recording, options.sink) : recording;
   const trace = createLocalOpsTrace({ sink });
 
   const provider = createLocalOpsProvider({ config, env, adapter: options.adapter });
@@ -172,9 +174,10 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
   let lastGrounded = false;
   let lastSources: LocalOpsSourceView[] = [];
   let lastRefusal: LocalOpsRefusalView | undefined;
+  let lastInsight: LocalOpsViewModel['insight'];
 
   function traceViews(): LocalOpsTraceView[] {
-    return recording.events.map((e) => ({ type: e.type, ts: e.ts, summary: e.summary }));
+    return recording.events.map(e => ({ type: e.type, ts: e.ts, summary: e.summary }));
   }
 
   function viewModel(): LocalOpsViewModel {
@@ -185,7 +188,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       model: config.model || undefined,
       flags: flagsOf(config),
       providerStatus: { ok: st.ok, status: st.status, adapter: st.adapter },
-      diagnostics: diagnostics.runAll().map((d) => ({
+      diagnostics: diagnostics.runAll().map(d => ({
         name: d.name,
         status: d.status,
         summary: d.summary,
@@ -194,10 +197,12 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       grounded: lastGrounded,
       sources: lastSources,
       traceEvents: traceViews(),
+      ...(lastInsight ? { insight: lastInsight } : {}),
     };
   }
 
   async function ask(question: string, signal?: AbortSignal): Promise<LocalOpsAnswer> {
+    lastInsight = undefined;
     trace.aiRequested({ profile: config.profile, provider: config.provider });
 
     // Source grounding (I6): retrieve local sources first; when sources are
@@ -205,7 +210,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
     // model — an ungrounded confident answer is not permitted.
     const retrieval = kb.retrieve(question);
     lastGrounded = retrieval.grounded;
-    lastSources = retrieval.sources.slice(0, 5).map((s) => ({
+    lastSources = retrieval.sources.slice(0, 5).map(s => ({
       sourceFile: s.sourceFile,
       heading: s.heading,
       snippet: s.snippet,
@@ -228,7 +233,13 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
         violatedConstraint: 'source_grounding',
       });
       trace.aiResponded({ status: 'refused' });
-      return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
+      return {
+        answered: false,
+        text: null,
+        grounded: retrieval.grounded,
+        sources: lastSources,
+        refusal,
+      };
     }
 
     const groundingContext = lastSources
@@ -274,15 +285,25 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       lastRefusal = refusal;
       trace.policyRefused(result);
       trace.aiResponded({ status: result.status });
-      return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
+      return {
+        answered: false,
+        text: null,
+        grounded: retrieval.grounded,
+        sources: lastSources,
+        refusal,
+      };
     }
 
     const citationCheck = verifiedCitedSources(result.completion.text, lastSources);
-    if (config.requireSources && (citationCheck.verified.length === 0 || citationCheck.hasUnknownCitation)) {
+    if (
+      config.requireSources &&
+      (citationCheck.verified.length === 0 || citationCheck.hasUnknownCitation)
+    ) {
       const refusal: LocalOpsRefusalView = {
         reasonCode: 'UNVERIFIED_SOURCE_CITATION',
         status: 'refused',
-        message: 'The local completion did not cite only verified retrieved sources; LocalOps will not display it as grounded.',
+        message:
+          'The local completion did not cite only verified retrieved sources; LocalOps will not display it as grounded.',
         safeAlternatives: ['Retry the allowlisted question against the approved local model path'],
       };
       lastRefusal = refusal;
@@ -298,6 +319,9 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
 
     lastRefusal = undefined;
     lastSources = citationCheck.verified.length > 0 ? citationCheck.verified : lastSources;
+    if (retrieval.grounded) {
+      lastInsight = { text: result.completion.text, grounded: true };
+    }
     trace.aiResponded({ status: 'success' });
     return {
       answered: true,

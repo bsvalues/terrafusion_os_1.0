@@ -15,14 +15,104 @@
  * @module components/localops/LocalOpsSurface
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import { askAcademyLocalOps, type AcademyLocalOpsFailure } from '../../api/academyLocalOpsApi';
+import { normalizeNetworkError } from '../../api/pilotApi';
 import { Z } from '../../shell/desktop/zIndex';
-import { useLocalOpsStore } from '../../stores/localOpsStore';
-import { LocalOpsPanel } from './LocalOpsPanel';
+import { DEFAULT_LOCALOPS_VIEW_MODEL, useLocalOpsStore } from '../../stores/localOpsStore';
+import type { ErrorDisplayProps } from '../errors/ErrorDisplay';
+import { LocalOpsPanel, type LocalOpsViewModel } from './LocalOpsPanel';
 
 const TEXT = 'hsl(var(--tf-text))';
 const SURFACE = 'hsl(var(--tf-surface-dark-hs, 226 30%) 9%)';
 const BORDER = 'hsl(var(--tf-border) / 0.2)';
+const MAX_FIELD_LENGTH = 16_384;
+
+function boundedString(value: unknown, allowEmpty = false): value is string {
+  return (
+    typeof value === 'string' &&
+    value.length <= MAX_FIELD_LENGTH &&
+    (allowEmpty || value.trim().length > 0)
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure {
+  if (!isRecord(value) || value.ok !== false) return false;
+  const statuses = ['disabled', 'unavailable', 'misconfigured', 'failed', 'refused'];
+  return (
+    typeof value.status === 'string' &&
+    statuses.includes(value.status) &&
+    boundedString(value.reasonCode) &&
+    boundedString(value.message) &&
+    (value.safeAlternatives === undefined ||
+      (Array.isArray(value.safeAlternatives) &&
+        value.safeAlternatives.length <= 8 &&
+        value.safeAlternatives.every((alternative) => boundedString(alternative)))) &&
+    (value.correlationId === undefined ||
+      (boundedString(value.correlationId) &&
+        /^(?:corr|tf)-[A-Za-z0-9._:-]{1,124}$/.test(value.correlationId)))
+  );
+}
+
+function isSafePanelViewModel(value: unknown): value is LocalOpsViewModel {
+  if (typeof value !== 'object' || value === null) return false;
+  const vm = value as Partial<LocalOpsViewModel>;
+  const flags = vm.flags;
+  return (
+    vm.profile === 'localops' &&
+    vm.provider === 'ollama' &&
+    vm.model === 'llama3.2:3b' &&
+    flags?.externalCalls === false &&
+    flags.allowWeb === false &&
+    flags.allowShell === false &&
+    flags.allowMutation === false &&
+    flags.requireTrace === true &&
+    flags.requireSources === true &&
+    vm.providerStatus?.ok === true &&
+    vm.providerStatus.status === 'success' &&
+    vm.providerStatus.adapter === 'ollama' &&
+    Array.isArray(vm.diagnostics) &&
+    vm.diagnostics.length <= 32 &&
+    vm.diagnostics.every(
+      (diagnostic) =>
+        isRecord(diagnostic) &&
+        boundedString(diagnostic.name) &&
+        (diagnostic.status === 'ok' ||
+          diagnostic.status === 'warn' ||
+          diagnostic.status === 'error') &&
+        boundedString(diagnostic.summary, true)
+    ) &&
+    vm.refusal === undefined &&
+    vm.grounded === true &&
+    Array.isArray(vm.sources) &&
+    vm.sources.length > 0 &&
+    vm.sources.length <= 5 &&
+    vm.sources.every(
+      (source) =>
+        isRecord(source) &&
+        boundedString(source.sourceFile) &&
+        source.sourceFile.startsWith('docs/') &&
+        !source.sourceFile.includes('..') &&
+        (source.heading === undefined || boundedString(source.heading, true)) &&
+        boundedString(source.snippet, true)
+    ) &&
+    Array.isArray(vm.traceEvents) &&
+    vm.traceEvents.length <= 256 &&
+    vm.traceEvents.every(
+      (event) =>
+        isRecord(event) &&
+        boundedString(event.type) &&
+        boundedString(event.ts) &&
+        boundedString(event.summary, true)
+    ) &&
+    boundedString(vm.insight?.text) &&
+    vm.insight.grounded === true
+  );
+}
 
 /**
  * Right-edge pull-tab. Hidden (aria + pointer) while the panel is open so it
@@ -72,11 +162,91 @@ export const LocalOpsSurface: React.FC = () => {
   const data = useLocalOpsStore((s) => s.data);
   const open = useLocalOpsStore((s) => s.open);
   const close = useLocalOpsStore((s) => s.close);
+  const setData = useLocalOpsStore((s) => s.setData);
+  const [diagnosePending, setDiagnosePending] = useState(false);
+  const [networkFailure, setNetworkFailure] = useState<ErrorDisplayProps['error'] | undefined>();
+
+  const failureViewModel = (failure: AcademyLocalOpsFailure): LocalOpsViewModel => ({
+    ...DEFAULT_LOCALOPS_VIEW_MODEL,
+    profile: 'localops',
+    provider: 'ollama',
+    providerStatus: { ok: false, status: failure.status },
+    refusal: {
+      reasonCode: failure.reasonCode,
+      status: failure.status,
+      message: failure.message,
+      safeAlternatives: failure.safeAlternatives,
+    },
+  });
+
+  async function runDiagnostic() {
+    setDiagnosePending(true);
+    setNetworkFailure(undefined);
+    try {
+      const result = await askAcademyLocalOps({ questionId: 'localops-panel-diagnostic' });
+      if (
+        result.ok &&
+        result.journey === 'localops-diagnostic-panel' &&
+        isSafePanelViewModel(result.viewModel)
+      ) {
+        setData(result.viewModel);
+      } else if (!result.ok && isSafeFailureResponse(result)) {
+        if (result.correlationId) {
+          setNetworkFailure({
+            message: result.message,
+            errorCode: result.reasonCode,
+            correlationId: result.correlationId,
+            component: 'LocalOpsPanel',
+          });
+        }
+        setData(failureViewModel(result));
+      } else {
+        setData(
+          failureViewModel({
+            ok: false,
+            status: 'failed',
+            reasonCode: 'INVALID_LOCALOPS_PANEL_RESPONSE',
+            message: 'LocalOps returned an invalid diagnostic response. No result was displayed.',
+          })
+        );
+      }
+    } catch (error) {
+      const normalized = normalizeNetworkError(
+        error instanceof Error ? error : new Error('LocalOps network request failed'),
+        { journey: 'localops-diagnostic-panel' }
+      );
+      setNetworkFailure({
+        message:
+          'Could not reach LocalOps. No insight was generated and no external provider was called.',
+        errorCode: String(normalized.context?.errorCode ?? 'NETWORK_ERROR'),
+        correlationId: normalized.correlationId,
+        timestamp: normalized.timestamp,
+        component: 'LocalOpsPanel',
+      });
+      setData(
+        failureViewModel({
+          ok: false,
+          status: 'unavailable',
+          reasonCode: 'LOCALOPS_NETWORK_UNAVAILABLE',
+          message: 'LocalOps is unavailable. No external provider was called.',
+        })
+      );
+    } finally {
+      setDiagnosePending(false);
+    }
+  }
 
   return (
     <div data-testid='localops-surface'>
       <PullTab open={isOpen} onOpen={open} />
-      <LocalOpsPanel data={data} open={isOpen} onClose={close} />
+      <LocalOpsPanel
+        data={data}
+        open={isOpen}
+        onClose={close}
+        onDiagnose={runDiagnostic}
+        diagnosePending={diagnosePending}
+        networkFailure={networkFailure}
+      />
     </div>
   );
 };

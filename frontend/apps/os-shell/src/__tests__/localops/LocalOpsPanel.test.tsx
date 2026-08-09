@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LocalOpsPanel, type LocalOpsViewModel } from '../../components/localops/LocalOpsPanel';
 
@@ -82,6 +82,31 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     const diag = screen.getByTestId('localops-diagnostics');
     expect(diag).toHaveTextContent('ai.profile');
     expect(diag).toHaveTextContent('provider.status');
+  });
+
+  it('shows a grounded local diagnostic insight only after an operator-triggered request', () => {
+    const onDiagnose = vi.fn();
+    const data = {
+      ...baseVm(),
+      insight: {
+        text: 'LocalOps explains diagnostic readiness from approved local evidence. [1]',
+        grounded: true,
+      },
+    };
+
+    render(
+      <LocalOpsPanel
+        {...({ data, onDiagnose, diagnosePending: false } as React.ComponentProps<
+          typeof LocalOpsPanel
+        >)}
+      />
+    );
+
+    expect(screen.getByTestId('localops-diagnostic-insight')).toHaveTextContent(
+      'LocalOps explains diagnostic readiness'
+    );
+    fireEvent.click(screen.getByTestId('localops-run-diagnostic'));
+    expect(onDiagnose).toHaveBeenCalledTimes(1);
   });
 
   it('shows a structured refusal card clearly when present', () => {
