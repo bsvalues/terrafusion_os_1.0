@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
+import { timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
 import path from "node:path";
 import fs from "node:fs";
@@ -8,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
+import { runAcademyLocalOpsJourney } from "./localops-academy-journey.mjs";
 
 /** Alias for traceService.emit — used by Canon tool routes */
 const traceEvent = traceService?.emit?.bind(traceService);
@@ -65,6 +67,29 @@ function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
+
+function hasValidLocalOpsHostToken(req) {
+  const expected = process.env.LOCALOPS_PILOT_HOST_TOKEN;
+  const supplied = req.headers["x-terrafusion-localops-host"];
+  if (typeof expected !== "string" || expected.length < 32 || typeof supplied !== "string") {
+    return false;
+  }
+  const expectedBytes = Buffer.from(expected, "utf8");
+  const suppliedBytes = Buffer.from(supplied, "utf8");
+  return expectedBytes.length === suppliedBytes.length && timingSafeEqual(expectedBytes, suppliedBytes);
+}
+
+function localOpsTraceContext(req) {
+  const countyId = req.headers["x-terrafusion-county-id"];
+  const userId = req.headers["x-terrafusion-user-id"];
+  const validIdentity = (value) =>
+    typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= 128 &&
+    /^[A-Za-z0-9_.:@-]+$/.test(value);
+  if (!validIdentity(countyId) || !validIdentity(userId)) return null;
+  return { countyId, userId, roles: [], mode: "pilot" };
 }
 
 async function readJsonBody(req) {
@@ -4105,6 +4130,42 @@ const server = createServer(async (req, res) => {
       const body = await readJsonBody(req);
       const result = await handleSummarizeSalesCompsRationale(body);
       writeJson(res, result.status, result.payload);
+      return;
+    }
+
+    if (
+      method === "POST" &&
+      (pathname === "/pilot/localops/academy/ask" ||
+        pathname === "/api/pilot/localops/academy/ask")
+    ) {
+      if (!hasValidLocalOpsHostToken(req)) {
+        writeJson(res, 401, {
+          ok: false,
+          status: "refused",
+          reasonCode: "LOCALOPS_HOST_UNAUTHORIZED",
+          message: "LocalOps Academy accepts requests only from the authenticated TerraFusion API host.",
+        });
+        return;
+      }
+      const traceContext = localOpsTraceContext(req);
+      if (!traceContext) {
+        writeJson(res, 403, {
+          ok: false,
+          status: "refused",
+          reasonCode: "LOCALOPS_TRACE_CONTEXT_REQUIRED",
+          message: "LocalOps Academy requires authenticated county and user trace context.",
+        });
+        return;
+      }
+      const body = await readJsonBody(req);
+      const result = await runAcademyLocalOpsJourney({
+        repoRoot: REPO_ROOT,
+        env: process.env,
+        body,
+        traceEmitter: traceService,
+        traceContext,
+      });
+      writeJson(res, result.httpStatus, result.payload);
       return;
     }
 

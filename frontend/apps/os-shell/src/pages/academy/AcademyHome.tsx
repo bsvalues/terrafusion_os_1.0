@@ -41,6 +41,7 @@ import {
   PLAYBOOKS,
   type CertState,
 } from './academyContent';
+import { AcademyLocalOpsJourney } from '../../components/academy/AcademyLocalOpsJourney';
 
 const eyebrow = 'text-[10px] font-bold uppercase tracking-[0.16em]';
 
@@ -144,6 +145,8 @@ function AcademyHomeInner() {
               </div>
             </div>
           </section>
+
+          <AcademyLocalOpsJourney />
 
           {/* Live Workflow Guidance */}
           <Section

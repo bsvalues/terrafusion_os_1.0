@@ -1,0 +1,241 @@
+import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
+import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
+
+const DEFAULT_TIMEOUT_MS = 30_000;
+
+export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
+  'localops-safety-boundary': Object.freeze({
+    label: 'Why is LocalOps read-only?',
+    prompt:
+      'Why must TerraFusion LocalOps stay read-only and never silently fall back to an external AI provider?',
+  }),
+  'source-grounded-evidence': Object.freeze({
+    label: 'Why must answers cite local sources?',
+    prompt:
+      'Why does TerraFusion require source-grounded evidence for a read-only LocalOps answer?',
+  }),
+});
+
+const REQUIRED_ENV = Object.freeze({
+  LOCALOPS_PRODUCT_JOURNEY_ENABLED: '1',
+  AI_PROFILE: 'localops',
+  AI_PROVIDER: 'ollama',
+  AI_MODEL: 'llama3.2:3b',
+  LOCALOPS_TRANSPORT_BOUNDARY: 'hermes-ssh-tunnel',
+  AI_EXTERNAL_CALLS: 'false',
+  AI_ALLOW_WEB: 'false',
+  AI_ALLOW_SHELL: 'false',
+  AI_ALLOW_MUTATION: 'false',
+  AI_REQUIRE_TRACE: 'true',
+  AI_REQUIRE_SOURCES: 'true',
+});
+
+function fail(httpStatus, status, reasonCode, message, safeAlternatives) {
+  return {
+    httpStatus,
+    payload: {
+      ok: false,
+      status,
+      reasonCode,
+      message,
+      ...(safeAlternatives?.length ? { safeAlternatives } : {}),
+    },
+  };
+}
+
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function explicitLoopbackOrigin(value) {
+  if (typeof value !== 'string') return null;
+  try {
+    const url = new URL(value);
+    const valid =
+      url.protocol === 'http:' &&
+      url.username === '' &&
+      url.password === '' &&
+      (url.hostname === '127.0.0.1' || url.hostname === 'localhost') &&
+      url.port !== '' &&
+      url.pathname === '/' &&
+      url.search === '' &&
+      url.hash === '';
+    return valid ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+function validateSyntheticQuestion(body) {
+  if (!isPlainObject(body)) return null;
+  const keys = Object.keys(body);
+  if (keys.length !== 1 || keys[0] !== 'questionId') return null;
+  if (typeof body.questionId !== 'string') return null;
+  return ACADEMY_LOCALOPS_QUESTIONS[body.questionId] ? body.questionId : null;
+}
+
+function validateEnvironment(env) {
+  if (env.LOCALOPS_PRODUCT_JOURNEY_ENABLED !== '1') {
+    return fail(
+      503,
+      'disabled',
+      'PRODUCT_JOURNEY_DISABLED',
+      'LocalOps Academy is not enabled in this environment.'
+    );
+  }
+  for (const [key, value] of Object.entries(REQUIRED_ENV)) {
+    if (env[key] !== value) {
+      return fail(
+        503,
+        'misconfigured',
+        'UNSAFE_LOCALOPS_ENV',
+        `LocalOps Academy requires ${key}=${value}; the request was not sent to a model.`
+      );
+    }
+  }
+  const tunnelPort = env.LOCALOPS_HERMES_TUNNEL_PORT;
+  const validTunnelPort =
+    typeof tunnelPort === 'string' &&
+    /^\d+$/.test(tunnelPort) &&
+    Number(tunnelPort) >= 1024 &&
+    Number(tunnelPort) <= 65535;
+  const approvedTunnelOrigin = validTunnelPort ? `http://127.0.0.1:${Number(tunnelPort)}` : null;
+  if (!approvedTunnelOrigin || explicitLoopbackOrigin(env.AI_BASE_URL) !== approvedTunnelOrigin) {
+    return fail(
+      503,
+      'misconfigured',
+      'UNSAFE_LOCALOPS_ENV',
+      'LocalOps Academy requires an explicit approved loopback Hermes SSH tunnel port; the request was not sent to a model.'
+    );
+  }
+  return null;
+}
+
+export async function runAcademyLocalOpsJourney({
+  repoRoot,
+  env = process.env,
+  body,
+  engineFactory = createLocalOpsEngine,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+  traceEmitter,
+  traceContext,
+}) {
+  const questionId = validateSyntheticQuestion(body);
+  if (!questionId) {
+    return fail(
+      400,
+      'refused',
+      'INVALID_SYNTHETIC_QUESTION',
+      'Choose one of the synthetic Academy questions. Free-form model prompts are not accepted.'
+    );
+  }
+
+  const environmentFailure = validateEnvironment(env);
+  if (environmentFailure) return environmentFailure;
+
+  if (
+    !traceEmitter ||
+    typeof traceEmitter.emit !== 'function' ||
+    !isPlainObject(traceContext) ||
+    typeof traceContext.countyId !== 'string' ||
+    traceContext.countyId.length === 0 ||
+    typeof traceContext.userId !== 'string' ||
+    traceContext.userId.length === 0
+  ) {
+    return fail(
+      503,
+      'misconfigured',
+      'LOCALOPS_TRACE_CONTEXT_REQUIRED',
+      'LocalOps Academy requires the canonical authenticated trace context; no model request was sent.'
+    );
+  }
+
+  const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
+  const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
+  const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
+  const engine = engineFactory({ repoRoot, env: safeEnv, sink });
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(new Error('LocalOps Academy provider timeout')),
+    timeoutMs
+  );
+  try {
+    const answer = await engine.ask(question.prompt, controller.signal);
+    const viewModel = engine.viewModel();
+
+    if (!answer.answered || answer.text === null) {
+      const refusal = answer.refusal ?? {
+        status: 'failed',
+        reasonCode: 'LOCALOPS_ANSWER_UNAVAILABLE',
+        message: 'The local provider did not return an answer. No external provider was called.',
+      };
+      return fail(
+        503,
+        refusal.status,
+        refusal.reasonCode,
+        refusal.message,
+        refusal.safeAlternatives
+      );
+    }
+
+    if (answer.text.trim().length === 0) {
+      return fail(
+        503,
+        'refused',
+        'EMPTY_LOCAL_RESPONSE',
+        'The local provider returned no answer text, so Academy will not display it.'
+      );
+    }
+
+    if (!answer.grounded || answer.sources.length === 0) {
+      return fail(
+        503,
+        'refused',
+        'UNGROUNDED_ANSWER_REFUSED',
+        'LocalOps did not produce a source-grounded answer, so Academy will not display it.'
+      );
+    }
+
+    return {
+      httpStatus: 200,
+      payload: {
+        ok: true,
+        status: 'success',
+        journey: 'academy-localops',
+        question: { id: questionId, label: question.label },
+        answer: {
+          text: answer.text,
+          grounded: true,
+          sources: answer.sources,
+        },
+        provider: {
+          name: viewModel.provider,
+          model: viewModel.model,
+          boundary: 'hermes-ssh-tunnel',
+        },
+        safety: viewModel.flags,
+        trace: { eventCount: viewModel.traceEvents.length },
+      },
+    };
+  } catch {
+    if (controller.signal.aborted) {
+      return fail(
+        503,
+        'unavailable',
+        'LOCAL_PROVIDER_TIMEOUT',
+        'The local model path timed out safely. No external provider was called.',
+        ['Check the approved Hermes tunnel and local Ollama service, then try again.']
+      );
+    }
+    return fail(
+      503,
+      'failed',
+      'LOCALOPS_JOURNEY_FAILED',
+      'The local model path failed safely. No external provider was called.',
+      ['Check the approved Hermes tunnel and local Ollama service, then try again.']
+    );
+  } finally {
+    clearTimeout(timeout);
+    await engine.close().catch(() => undefined);
+  }
+}

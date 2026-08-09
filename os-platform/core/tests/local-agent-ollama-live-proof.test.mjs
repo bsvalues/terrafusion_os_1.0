@@ -345,9 +345,9 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
         timeoutMs: 10,
       });
       assert.strictEqual(result.ok, false);
-      assert.strictEqual(result.status, 'failed');
-      assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_FAILED');
-      assert.match(result.message, /abort/i);
+      assert.strictEqual(result.status, 'unavailable');
+      assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
+      assert.match(result.message, /timed out/i);
 
       const cli = await runCli({
         ...proofEnv(baseUrl),
@@ -359,8 +359,8 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
       assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
       const cliResult = JSON.parse(cli.stdout);
       assert.strictEqual(cliResult.ok, false);
-      assert.strictEqual(cliResult.status, 'failed');
-      assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_FAILED');
+      assert.strictEqual(cliResult.status, 'unavailable');
+      assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
     });
   });
 });

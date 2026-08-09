@@ -680,3 +680,108 @@ test("pilot runtime preview endpoints return overallOk true", async () => {
     await stopChild(child);
   }
 });
+
+test("pilot runtime requires its API host token and refuses a noncanonical model transport", async () => {
+  const pilotPort = await getFreePort();
+  const noncanonicalPort = await getFreePort();
+  const hostToken = "x".repeat(32);
+
+  const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
+  const child = spawn(process.execPath, [runtimePath], {
+    cwd: path.resolve("."),
+    env: {
+      ...process.env,
+      TF_PILOT_PORT: String(pilotPort),
+      LOCALOPS_PRODUCT_JOURNEY_ENABLED: "1",
+      AI_PROFILE: "localops",
+      AI_PROVIDER: "ollama",
+      AI_MODEL: "llama3.2:3b",
+      AI_BASE_URL: `http://127.0.0.1:${noncanonicalPort}`,
+      LOCALOPS_TRANSPORT_BOUNDARY: "hermes-ssh-tunnel",
+      LOCALOPS_PILOT_HOST_TOKEN: hostToken,
+      AI_EXTERNAL_CALLS: "false",
+      AI_ALLOW_WEB: "false",
+      AI_ALLOW_SHELL: "false",
+      AI_ALLOW_MUTATION: "false",
+      AI_REQUIRE_TRACE: "true",
+      AI_REQUIRE_SOURCES: "true",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  try {
+    await waitForReady(child);
+    const unauthorized = await postJson(
+      pilotPort,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" }
+    );
+    assert.equal(unauthorized.status, 401);
+    assert.equal(unauthorized.payload.reasonCode, "LOCALOPS_HOST_UNAUTHORIZED");
+
+    const untraced = await postJson(
+      pilotPort,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" },
+      { headers: { "X-TerraFusion-LocalOps-Host": hostToken } }
+    );
+    assert.equal(untraced.status, 403);
+    assert.equal(untraced.payload.reasonCode, "LOCALOPS_TRACE_CONTEXT_REQUIRED");
+
+    const refused = await postJson(
+      pilotPort,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" },
+      {
+        headers: {
+          "X-TerraFusion-LocalOps-Host": hostToken,
+          "X-TerraFusion-County-Id": "19190019-1919-1919-1919-191919191919",
+          "X-TerraFusion-User-Id": "academy-user",
+        },
+      }
+    );
+    assert.equal(refused.status, 503);
+    assert.equal(refused.payload.ok, false);
+    assert.equal(refused.payload.reasonCode, "UNSAFE_LOCALOPS_ENV");
+  } finally {
+    await stopChild(child);
+  }
+});
+
+test("pilot runtime exposes a visible disabled response without touching a provider", async () => {
+  const port = await getFreePort();
+  const hostToken = "x".repeat(32);
+  const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
+  const child = spawn(process.execPath, [runtimePath], {
+    cwd: path.resolve("."),
+    env: {
+      ...process.env,
+      TF_PILOT_PORT: String(port),
+      LOCALOPS_PRODUCT_JOURNEY_ENABLED: "0",
+      LOCALOPS_PILOT_HOST_TOKEN: hostToken,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  try {
+    await waitForReady(child);
+    const response = await postJson(
+      port,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" },
+      {
+        headers: {
+          "X-TerraFusion-LocalOps-Host": hostToken,
+          "X-TerraFusion-County-Id": "19190019-1919-1919-1919-191919191919",
+          "X-TerraFusion-User-Id": "academy-user",
+        },
+      }
+    );
+    assert.equal(response.status, 503);
+    assert.equal(response.payload.ok, false);
+    assert.equal(response.payload.status, "disabled");
+    assert.equal(response.payload.reasonCode, "PRODUCT_JOURNEY_DISABLED");
+  } finally {
+    await stopChild(child);
+  }
+});
