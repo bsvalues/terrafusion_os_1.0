@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
+import { timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
 import path from "node:path";
 import fs from "node:fs";
@@ -66,6 +67,17 @@ function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
+
+function hasValidLocalOpsHostToken(req) {
+  const expected = process.env.LOCALOPS_PILOT_HOST_TOKEN;
+  const supplied = req.headers["x-terrafusion-localops-host"];
+  if (typeof expected !== "string" || expected.length < 32 || typeof supplied !== "string") {
+    return false;
+  }
+  const expectedBytes = Buffer.from(expected, "utf8");
+  const suppliedBytes = Buffer.from(supplied, "utf8");
+  return expectedBytes.length === suppliedBytes.length && timingSafeEqual(expectedBytes, suppliedBytes);
 }
 
 async function readJsonBody(req) {
@@ -4114,6 +4126,15 @@ const server = createServer(async (req, res) => {
       (pathname === "/pilot/localops/academy/ask" ||
         pathname === "/api/pilot/localops/academy/ask")
     ) {
+      if (!hasValidLocalOpsHostToken(req)) {
+        writeJson(res, 401, {
+          ok: false,
+          status: "refused",
+          reasonCode: "LOCALOPS_HOST_UNAUTHORIZED",
+          message: "LocalOps Academy accepts requests only from the authenticated TerraFusion API host.",
+        });
+        return;
+      }
       const body = await readJsonBody(req);
       const result = await runAcademyLocalOpsJourney({
         repoRoot: REPO_ROOT,

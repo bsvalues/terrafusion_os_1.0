@@ -16,114 +16,118 @@ namespace TerraFusion.API.Services.SpecLock;
 /// </summary>
 public static class SpecLockServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds SpecLock runtime services:
-    /// - ISpecLockManifestLoader (singleton)
-    /// - ISpecLockSignatureVerifier (mode-dependent: Cosign or TSS)
-    /// - SpecLockGuardHostedService (startup guard)
-    /// - SpecLockHealthCheck (ready gate)
-    /// </summary>
-    public static IServiceCollection AddSpecLockRuntime(this IServiceCollection services)
+  /// <summary>
+  /// Adds SpecLock runtime services:
+  /// - ISpecLockManifestLoader (singleton)
+  /// - ISpecLockSignatureVerifier (mode-dependent: Cosign or TSS)
+  /// - SpecLockGuardHostedService (startup guard)
+  /// - SpecLockHealthCheck (ready gate)
+  /// </summary>
+  public static IServiceCollection AddSpecLockRuntime(this IServiceCollection services)
+  {
+    // Use PhysicalFileProvider rooted at content root so relative paths resolve.
+    // This is registered as a named instance to avoid conflicts with other IFileProvider uses.
+    services.AddSingleton<IFileProvider>(sp =>
     {
-        // Use PhysicalFileProvider rooted at content root so relative paths resolve.
-        // This is registered as a named instance to avoid conflicts with other IFileProvider uses.
-        services.AddSingleton<IFileProvider>(sp =>
-        {
-            var env = sp.GetRequiredService<IHostEnvironment>();
-            return new PhysicalFileProvider(env.ContentRootPath);
-        });
+      var env = sp.GetRequiredService<IHostEnvironment>();
+      return new PhysicalFileProvider(env.ContentRootPath);
+    });
 
-        services.AddSingleton<ISpecLockManifestLoader, SpecLockManifestLoader>();
+    services.AddSingleton<ISpecLockManifestLoader, SpecLockManifestLoader>();
 
-        // Mode-dependent verifier registration
-        services.AddSingleton<ISpecLockSignatureVerifier>(sp =>
-        {
-            var cfg = sp.GetRequiredService<IConfiguration>();
-            var env = sp.GetRequiredService<IHostEnvironment>();
-            var files = sp.GetRequiredService<IFileProvider>();
-            var log = sp.GetRequiredService<ILoggerFactory>();
+    // Mode-dependent verifier registration
+    services.AddSingleton<ISpecLockSignatureVerifier>(sp =>
+    {
+      var cfg = sp.GetRequiredService<IConfiguration>();
+      var env = sp.GetRequiredService<IHostEnvironment>();
+      var files = sp.GetRequiredService<IFileProvider>();
+      var log = sp.GetRequiredService<ILoggerFactory>();
 
-            // Check AUTHORITIES.json for mode
-            var mode = GetSignatureMode(cfg, env);
+      // Check AUTHORITIES.json for mode
+      var mode = GetSignatureMode(cfg, env);
 
-            if (string.Equals(mode, "cosmic_tss", StringComparison.OrdinalIgnoreCase))
-            {
-                // COSMIC TIER: FROST-Ed25519 threshold signatures
-                return new SpecLockTssVerifier(
-                    log.CreateLogger<SpecLockTssVerifier>(),
-                    cfg,
-                    env);
-            }
-
-            // MYTHIC/GOD-TIER: Cosign-based verification
-            return new SpecLockCosignVerifier(
-                log.CreateLogger<SpecLockCosignVerifier>(),
-                files,
+      if (string.Equals(mode, "cosmic_tss", StringComparison.OrdinalIgnoreCase))
+      {
+        // COSMIC TIER: FROST-Ed25519 threshold signatures
+        return new SpecLockTssVerifier(
+                log.CreateLogger<SpecLockTssVerifier>(),
                 cfg,
                 env);
+      }
+
+      // MYTHIC/GOD-TIER: Cosign-based verification
+      return new SpecLockCosignVerifier(
+              log.CreateLogger<SpecLockCosignVerifier>(),
+              files,
+              cfg,
+              env);
+    });
+
+    services.AddHostedService<SpecLockGuardHostedService>();
+
+    // 🔒 NO MERCY: State Mesh Guard (fail-closed startup enforcement)
+    services.AddHostedService<StateMeshGuardHostedService>();
+
+    // 🔒 FINAL SEAL: Auto-rollback on quorum loss
+    services.AddHostedService<AutoRollbackService>();
+
+    // 🔒 Public Proof Service (PHASE A: Citizen-Verifiable Trust)
+    services.AddHttpClient("LocalOps") // loopback-only proof and Academy transport
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+          AllowAutoRedirect = false,
         });
+    services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();
 
-        services.AddHostedService<SpecLockGuardHostedService>();
+    // 🔒 FINAL SEAL: Citizen-verifiable state reports
+    services.AddSingleton<ICitizenVerifiableReportService, CitizenVerifiableReportService>();
 
-        // 🔒 NO MERCY: State Mesh Guard (fail-closed startup enforcement)
-        services.AddHostedService<StateMeshGuardHostedService>();
+    return services;
+  }
 
-        // 🔒 FINAL SEAL: Auto-rollback on quorum loss
-        services.AddHostedService<AutoRollbackService>();
+  /// <summary>
+  /// Adds SpecLock health check to the health check builder.
+  /// Tags: "ready", "ops", "speclock"
+  /// </summary>
+  public static IHealthChecksBuilder AddSpecLockCheck(this IHealthChecksBuilder builder)
+  {
+    return builder.AddCheck<SpecLockHealthCheck>(
+        "speclock",
+        tags: new[] { "ready", "ops", "speclock" });
+  }
 
-        // 🔒 Public Proof Service (PHASE A: Citizen-Verifiable Trust)
-        services.AddHttpClient("LocalOps"); // used for proof snapshot (safe to fail)
-        services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();
+  private static string GetSignatureMode(IConfiguration cfg, IHostEnvironment env)
+  {
+    // First check environment variable
+    var envMode = Environment.GetEnvironmentVariable("TF_SPECLOCK_SIGNATURE_MODE")
+        ?? cfg["TF_SPECLOCK_SIGNATURE_MODE"];
+    if (!string.IsNullOrEmpty(envMode))
+      return envMode;
 
-        // 🔒 FINAL SEAL: Citizen-verifiable state reports
-        services.AddSingleton<ICitizenVerifiableReportService, CitizenVerifiableReportService>();
+    // Check AUTHORITIES.json
+    var authPath = Environment.GetEnvironmentVariable("TF_SPECLOCK_AUTHORITIES_PATH")
+        ?? cfg["TF_SPECLOCK_AUTHORITIES_PATH"]
+        ?? "docs/spec-lock/AUTHORITIES.json";
 
-        return services;
-    }
+    var fullPath = Path.IsPathRooted(authPath)
+        ? authPath
+        : Path.Combine(env.ContentRootPath, authPath);
 
-    /// <summary>
-    /// Adds SpecLock health check to the health check builder.
-    /// Tags: "ready", "ops", "speclock"
-    /// </summary>
-    public static IHealthChecksBuilder AddSpecLockCheck(this IHealthChecksBuilder builder)
+    if (!File.Exists(fullPath))
+      return "mythic_cosign";
+
+    try
     {
-        return builder.AddCheck<SpecLockHealthCheck>(
-            "speclock",
-            tags: new[] { "ready", "ops", "speclock" });
+      var json = File.ReadAllText(fullPath);
+      var doc = JsonDocument.Parse(json);
+      if (doc.RootElement.TryGetProperty("mode", out var modeEl))
+        return modeEl.GetString() ?? "mythic_cosign";
     }
-
-    private static string GetSignatureMode(IConfiguration cfg, IHostEnvironment env)
+    catch
     {
-        // First check environment variable
-        var envMode = Environment.GetEnvironmentVariable("TF_SPECLOCK_SIGNATURE_MODE")
-            ?? cfg["TF_SPECLOCK_SIGNATURE_MODE"];
-        if (!string.IsNullOrEmpty(envMode))
-            return envMode;
-
-        // Check AUTHORITIES.json
-        var authPath = Environment.GetEnvironmentVariable("TF_SPECLOCK_AUTHORITIES_PATH")
-            ?? cfg["TF_SPECLOCK_AUTHORITIES_PATH"]
-            ?? "docs/spec-lock/AUTHORITIES.json";
-
-        var fullPath = Path.IsPathRooted(authPath)
-            ? authPath
-            : Path.Combine(env.ContentRootPath, authPath);
-
-        if (!File.Exists(fullPath))
-            return "mythic_cosign";
-
-        try
-        {
-            var json = File.ReadAllText(fullPath);
-            var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.TryGetProperty("mode", out var modeEl))
-                return modeEl.GetString() ?? "mythic_cosign";
-        }
-        catch
-        {
-            // Ignore parse errors, default to mythic
-        }
-
-        return "mythic_cosign";
+      // Ignore parse errors, default to mythic
     }
+
+    return "mythic_cosign";
+  }
 }

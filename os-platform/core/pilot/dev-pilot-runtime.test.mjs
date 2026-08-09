@@ -681,21 +681,10 @@ test("pilot runtime preview endpoints return overallOk true", async () => {
   }
 });
 
-test("pilot runtime serves the enabled Ask Academy journey through LocalOps Ollama", async () => {
+test("pilot runtime requires its API host token and refuses a noncanonical model transport", async () => {
   const pilotPort = await getFreePort();
-  const ollamaPort = 11455;
-  const received = [];
-  const ollama = createServer(async (req, res) => {
-    let body = "";
-    for await (const chunk of req) body += chunk.toString("utf8");
-    received.push({ url: req.url, body: JSON.parse(body) });
-    res.writeHead(200, { "content-type": "application/x-ndjson" });
-    res.end(`${JSON.stringify({ message: { content: "LocalOps is read-only and stays inside the approved county boundary." }, done: false })}\n${JSON.stringify({ done: true })}\n`);
-  });
-  await new Promise((resolve, reject) => {
-    ollama.once("error", reject);
-    ollama.listen(ollamaPort, "127.0.0.1", resolve);
-  });
+  const noncanonicalPort = await getFreePort();
+  const hostToken = "x".repeat(32);
 
   const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
   const child = spawn(process.execPath, [runtimePath], {
@@ -707,8 +696,9 @@ test("pilot runtime serves the enabled Ask Academy journey through LocalOps Olla
       AI_PROFILE: "localops",
       AI_PROVIDER: "ollama",
       AI_MODEL: "llama3.2:3b",
-      AI_BASE_URL: `http://127.0.0.1:${ollamaPort}`,
+      AI_BASE_URL: `http://127.0.0.1:${noncanonicalPort}`,
       LOCALOPS_TRANSPORT_BOUNDARY: "hermes-ssh-tunnel",
+      LOCALOPS_PILOT_HOST_TOKEN: hostToken,
       AI_EXTERNAL_CALLS: "false",
       AI_ALLOW_WEB: "false",
       AI_ALLOW_SHELL: "false",
@@ -721,30 +711,31 @@ test("pilot runtime serves the enabled Ask Academy journey through LocalOps Olla
 
   try {
     await waitForReady(child);
-    const response = await postJson(
+    const unauthorized = await postJson(
       pilotPort,
       "/pilot/localops/academy/ask",
       { questionId: "localops-safety-boundary" }
     );
+    assert.equal(unauthorized.status, 401);
+    assert.equal(unauthorized.payload.reasonCode, "LOCALOPS_HOST_UNAUTHORIZED");
 
-    assert.equal(response.status, 200);
-    assert.equal(response.payload.ok, true);
-    assert.equal(response.payload.answer.grounded, true);
-    assert.match(response.payload.answer.text, /read-only/i);
-    assert.equal(response.payload.provider.model, "llama3.2:3b");
-    assert.equal(response.payload.safety.externalCalls, false);
-    assert.equal(response.payload.safety.allowShell, false);
-    assert.equal(received.length, 1);
-    assert.equal(received[0].url, "/api/chat");
-    assert.equal(received[0].body.model, "llama3.2:3b");
+    const refused = await postJson(
+      pilotPort,
+      "/pilot/localops/academy/ask",
+      { questionId: "localops-safety-boundary" },
+      { headers: { "X-TerraFusion-LocalOps-Host": hostToken } }
+    );
+    assert.equal(refused.status, 503);
+    assert.equal(refused.payload.ok, false);
+    assert.equal(refused.payload.reasonCode, "UNSAFE_LOCALOPS_ENV");
   } finally {
     await stopChild(child);
-    await new Promise((resolve) => ollama.close(resolve));
   }
 });
 
 test("pilot runtime exposes a visible disabled response without touching a provider", async () => {
   const port = await getFreePort();
+  const hostToken = "x".repeat(32);
   const runtimePath = path.resolve("os-platform/core/pilot/dev-pilot-runtime.mjs");
   const child = spawn(process.execPath, [runtimePath], {
     cwd: path.resolve("."),
@@ -752,6 +743,7 @@ test("pilot runtime exposes a visible disabled response without touching a provi
       ...process.env,
       TF_PILOT_PORT: String(port),
       LOCALOPS_PRODUCT_JOURNEY_ENABLED: "0",
+      LOCALOPS_PILOT_HOST_TOKEN: hostToken,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -761,7 +753,8 @@ test("pilot runtime exposes a visible disabled response without touching a provi
     const response = await postJson(
       port,
       "/pilot/localops/academy/ask",
-      { questionId: "localops-safety-boundary" }
+      { questionId: "localops-safety-boundary" },
+      { headers: { "X-TerraFusion-LocalOps-Host": hostToken } }
     );
     assert.equal(response.status, 503);
     assert.equal(response.payload.ok, false);

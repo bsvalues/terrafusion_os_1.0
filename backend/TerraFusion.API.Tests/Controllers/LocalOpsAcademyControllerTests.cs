@@ -47,6 +47,21 @@ public sealed class LocalOpsAcademyControllerTests
     Assert.Equal(200, content.StatusCode);
     Assert.Equal(new Uri("http://127.0.0.1:4317/pilot/localops/academy/ask"), handler.LastUri);
     Assert.Contains("localops-safety-boundary", handler.LastBody);
+    Assert.Equal(new string('x', 32), handler.LastHostToken);
+  }
+
+  [Fact]
+  public async Task Ask_rejects_runtime_redirects_fail_closed()
+  {
+    var handler = new StubHandler(HttpStatusCode.Redirect, "{}");
+    var controller = BuildController(handler, enabled: true);
+
+    var result = await controller.Ask(new AcademyLocalOpsRequest("localops-safety-boundary"), default);
+
+    var content = Assert.IsType<ContentResult>(result);
+    Assert.Equal(503, content.StatusCode);
+    Assert.Contains("LOCALOPS_REDIRECT_REFUSED", content.Content);
+    Assert.Equal(1, handler.CallCount);
   }
 
   [Fact]
@@ -72,6 +87,7 @@ public sealed class LocalOpsAcademyControllerTests
     {
       ["LOCALOPS_PRODUCT_JOURNEY_ENABLED"] = enabled ? "1" : "0",
       ["LOCALOPS_PILOT_RUNTIME_URL"] = runtimeUrl,
+      ["LOCALOPS_PILOT_HOST_TOKEN"] = new string('x', 32),
     };
     var config = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
     return new LocalOpsAcademyController(
@@ -90,6 +106,7 @@ public sealed class LocalOpsAcademyControllerTests
     public int CallCount { get; private set; }
     public Uri? LastUri { get; private set; }
     public string? LastBody { get; private set; }
+    public string? LastHostToken { get; private set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
@@ -97,6 +114,9 @@ public sealed class LocalOpsAcademyControllerTests
     {
       CallCount += 1;
       LastUri = request.RequestUri;
+      LastHostToken = request.Headers.TryGetValues("X-TerraFusion-LocalOps-Host", out var values)
+          ? values.Single()
+          : null;
       LastBody = request.Content is null
           ? null
           : await request.Content.ReadAsStringAsync(cancellationToken);

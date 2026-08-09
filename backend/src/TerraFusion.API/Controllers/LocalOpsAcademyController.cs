@@ -18,6 +18,7 @@ public sealed class LocalOpsAcademyController : ControllerBase
 {
   private const string EnabledKey = "LOCALOPS_PRODUCT_JOURNEY_ENABLED";
   private const string RuntimeUrlKey = "LOCALOPS_PILOT_RUNTIME_URL";
+  private const string HostTokenKey = "LOCALOPS_PILOT_HOST_TOKEN";
   private const string ApprovedRuntimeOrigin = "http://127.0.0.1:4317";
   private static readonly Uri AskEndpoint = new($"{ApprovedRuntimeOrigin}/pilot/localops/academy/ask");
 
@@ -52,6 +53,13 @@ public sealed class LocalOpsAcademyController : ControllerBase
           "LocalOps Academy requires the approved loopback Pilot runtime; no model request was sent.");
     }
 
+    var hostToken = _configuration[HostTokenKey];
+    if (string.IsNullOrEmpty(hostToken) || hostToken.Length < 32)
+    {
+      return SafeJson(503, "misconfigured", "LOCALOPS_HOST_TOKEN_MISSING",
+          "LocalOps Academy requires its internal host credential; no model request was sent.");
+    }
+
     if (string.IsNullOrWhiteSpace(request.QuestionId))
     {
       return SafeJson(400, "refused", "INVALID_SYNTHETIC_QUESTION",
@@ -63,8 +71,18 @@ public sealed class LocalOpsAcademyController : ControllerBase
 
     try
     {
-      var client = _httpClientFactory.CreateClient(nameof(LocalOpsAcademyController));
-      using var upstream = await client.PostAsJsonAsync(AskEndpoint, request, timeout.Token);
+      var client = _httpClientFactory.CreateClient("LocalOps");
+      using var upstreamRequest = new HttpRequestMessage(HttpMethod.Post, AskEndpoint)
+      {
+        Content = JsonContent.Create(request),
+      };
+      upstreamRequest.Headers.TryAddWithoutValidation("X-TerraFusion-LocalOps-Host", hostToken);
+      using var upstream = await client.SendAsync(upstreamRequest, timeout.Token);
+      if ((int)upstream.StatusCode is >= 300 and < 400)
+      {
+        return SafeJson(503, "refused", "LOCALOPS_REDIRECT_REFUSED",
+            "LocalOps refused an unexpected runtime redirect. No external destination was contacted.");
+      }
       var body = await upstream.Content.ReadAsStringAsync(timeout.Token);
       if (body.Length > 128 * 1024)
       {
