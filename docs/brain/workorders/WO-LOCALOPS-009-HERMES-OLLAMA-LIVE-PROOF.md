@@ -11,7 +11,7 @@ does not push, open a pull request, merge, alter a service, or change a remote h
 
 - **Authorization:** `TERRAFUSION_LOCALOPS_OLLAMA_PROOF`, 2026-08-09.
 - **Risk:** R1 — transient, read-only runtime proof.
-- **Final hardened proof head:** `f7f80f50051de3a281790f41e8f45f17b00e26d2`.
+- **Final hardened proof head:** `c9bada21b481c755a8d76644184202e2b1575561`.
 - **Objective:** prove that the existing LocalOps `ollama` provider can complete one
   non-sensitive request through an OMEN-owned SSH loopback forward to Hermes, and fails closed
   once that forward is removed.
@@ -36,6 +36,8 @@ configuration, Atlas, WilliamOS, or the frozen OMEN cockpit.
    `AI_ALLOW_MUTATION` are false; trace and source requirements remain true.
 3. The CLI output is retained only as its single JSON success projection: provider, SHA-256 digest,
    and UTF-8 response byte length. Raw model text is neither persisted nor reported.
+   Every LocalOps safety flag is explicitly present with its required exact value, and the proof
+   transport rejects redirects rather than following them beyond its explicit loopback endpoint.
 4. The tunnel owner records and compares its exact PID and command line before terminating that
    process, then verifies the loopback port is released.
 5. The identical CLI configuration against the released port must emit one structured nonzero
@@ -56,7 +58,7 @@ configuration, Atlas, WilliamOS, or the frozen OMEN cockpit.
 
 - Tunnel model discovery independently finds `llama3.2:3b` through the tunnel.
 - The final hardened CLI succeeds once with the required safe profile, a complete terminal Ollama
-  NDJSON response, and an explicit loopback URL.
+  NDJSON response, an explicit loopback URL, and no followed redirect.
 - Tunnel cleanup is PID-and-command-line guarded and the port is released.
 - Released-port rerun exits nonzero with one structured failure object.
 - Both Atlas TCP-only handshakes succeed while sending zero bytes.

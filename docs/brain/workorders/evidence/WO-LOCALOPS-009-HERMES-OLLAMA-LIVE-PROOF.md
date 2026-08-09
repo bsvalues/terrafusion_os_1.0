@@ -14,7 +14,7 @@ payload, query, mutation, service change, firewall change, binding change, or re
 | Field | Value |
 | --- | --- |
 | Branch | `codex/localops-hermes-ollama-proof` |
-| Final hardened proof head | `f7f80f50051de3a281790f41e8f45f17b00e26d2` |
+| Final hardened proof head | `c9bada21b481c755a8d76644184202e2b1575561` |
 | Final proof CLI | `os-platform/core/pilot/localops-ollama-live-proof.mjs` |
 | Tunnel target | Hermes `127.0.0.1:11434` only |
 | Local forward | OMEN `127.0.0.1:11455` only |
@@ -25,18 +25,19 @@ payload, query, mutation, service change, firewall change, binding change, or re
 The local `127.0.0.1:11455` listener count was zero before launch. One exact process was launched:
 
 ```text
-PID: 17556
+PID: 29204
 "C:\\Windows\\System32\\OpenSSH\\ssh.exe" -N -T -o ExitOnForwardFailure=yes -o BatchMode=yes -o ConnectTimeout=10 -L 127.0.0.1:11455:127.0.0.1:11434 hermes
 ```
 
-The port bound to PID `17556`. `GET /api/tags` through that loopback forward independently found
+The port bound to PID `29204`. `GET /api/tags` through that loopback forward independently found
 `llama3.2:3b`; no model-discovery result was taken from a cached assertion.
 
 The final hardened CLI used the explicit `localops` / `ollama` profile, that model, explicit
 `http://127.0.0.1:11455` base URL, false external/web/shell/mutation flags, and true
 trace/source requirements. It observed every NDJSON line, required one final `done:true` marker and
-a non-empty aggregate, then returned exactly one sanitized JSON result and exited zero. `length` is
-the UTF-8 byte length, not JavaScript string length:
+a non-empty aggregate, and rejects proof-transport redirects rather than following them. It then
+returned exactly one sanitized JSON result and exited zero. `length` is the UTF-8 byte length, not
+JavaScript string length:
 
 ```json
 {
@@ -44,8 +45,8 @@ the UTF-8 byte length, not JavaScript string length:
   "status": "success",
   "provider": "ollama",
   "response": {
-    "sha256": "d3cd72c2c884f577e1d4e79389fbc7b14c2bc8b7cd7170749feca5358d06a8b1",
-    "length": 513
+    "sha256": "70a04cf250614cce019e24b73ed3c04cb56b1a66ebee5fd8d01e891ff3ca8ffd",
+    "length": 181
   }
 }
 ```
@@ -80,7 +81,7 @@ Each socket was disposed immediately after the handshake; no stream was opened o
 
 ## WilliamOS separation proof
 
-Read-only Git inspection from `C:\\Users\\bsval\\william-os-devops` found `origin/main` at
+Read-only Git inspection of the separate WilliamOS checkout found `origin/main` at
 `d46bd5bce523f4bf60337ef1450280651eafaf31` and its remote as
 `git@github.com:bsvalues/terragroq.git`. Its tracked `.env.example` declares a `DATABASE_URL`
 Postgres URL, and `README.md` explicitly identifies Neon Postgres and `DATABASE_URL` as the Neon
@@ -91,7 +92,7 @@ untouched.
 
 | Check | Result | Detail |
 | --- | --- | --- |
-| Final focused proof suite | PASS | `node --test os-platform/core/tests/local-agent-ollama-live-proof.test.mjs`: 13 passed, 0 failed; includes malformed-only, missing-terminal, empty-terminal, post-terminal malformed/additional, and trailing-slash loopback cases. |
+| Final focused proof suite | PASS | `node --test os-platform/core/tests/local-agent-ollama-live-proof.test.mjs`: 15 passed, 0 failed; includes malformed-only, missing-terminal, empty-terminal, post-terminal malformed/additional, trailing-slash loopback, redirect rejection without a followed target request, and every required explicit safety flag. |
 | Applicable provider/Ollama suites | PASS | `node --test os-platform/core/tests/local-agent-localops-provider.test.mjs os-platform/core/tests/local-agent-ollama-adapter.test.mjs`: 25 passed, 0 failed. |
 | Core TypeScript | PASS | Direct repository-local invocation: `node node_modules/typescript/bin/tsc -p tsconfig.core.json`. |
 | Phase 8.3 core tools | PASS | `node --test os-platform/core/tests/phase83-tools.test.mjs`: 56 passed, 0 failed. |
