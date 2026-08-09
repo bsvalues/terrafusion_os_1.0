@@ -2,6 +2,7 @@ import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
 import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
+const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -161,9 +162,15 @@ export async function runAcademyLocalOpsJourney({
   }
 
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
+  const runbookJourney = questionId === 'localops-runbook-guidance';
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
-  const engine = engineFactory({ repoRoot, env: safeEnv, sink });
+  const engine = engineFactory({
+    repoRoot,
+    env: safeEnv,
+    sink,
+    ...(runbookJourney ? { sourceFileAllowlist: [CANONICAL_BENTON_RUNBOOK] } : {}),
+  });
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(new Error('LocalOps Academy provider timeout')),
@@ -206,12 +213,9 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
-    const runbookJourney = questionId === 'localops-runbook-guidance';
     if (
       runbookJourney &&
-      !answer.sources.every(
-        source => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md'
-      )
+      !answer.sources.every(source => source.sourceFile === CANONICAL_BENTON_RUNBOOK)
     ) {
       return fail(
         503,

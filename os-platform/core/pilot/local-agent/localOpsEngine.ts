@@ -109,6 +109,8 @@ export interface CreateLocalOpsEngineOptions {
    * the same events. A failing sink never breaks the operator path.
    */
   sink?: LocalOpsTraceSink;
+  /** Optional exact source-file allowlist applied before evidence reaches the model. */
+  sourceFileAllowlist?: readonly string[];
 }
 
 export interface LocalOpsEngine {
@@ -170,6 +172,9 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
   const provider = createLocalOpsProvider({ config, env, adapter: options.adapter });
   const kb = createLocalOpsKb({ repoRoot: options.repoRoot, env, trace });
   const diagnostics = createLocalOpsDiagnostics({ repoRoot: options.repoRoot, env, trace });
+  const sourceFileAllowlist = options.sourceFileAllowlist
+    ? new Set(options.sourceFileAllowlist)
+    : undefined;
 
   let lastGrounded = false;
   let lastSources: LocalOpsSourceView[] = [];
@@ -209,14 +214,17 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
     // required and nothing supports the question, refuse BEFORE calling the
     // model — an ungrounded confident answer is not permitted.
     const retrieval = kb.retrieve(question);
-    lastGrounded = retrieval.grounded;
-    lastSources = retrieval.sources.slice(0, 5).map(s => ({
+    const allowedSources = sourceFileAllowlist
+      ? retrieval.sources.filter(source => sourceFileAllowlist.has(source.sourceFile))
+      : retrieval.sources;
+    lastGrounded = retrieval.grounded && allowedSources.length > 0;
+    lastSources = allowedSources.slice(0, 5).map(s => ({
       sourceFile: s.sourceFile,
       heading: s.heading,
       snippet: s.snippet,
     }));
 
-    if (config.requireSources && !retrieval.canAnswer) {
+    if (config.requireSources && (!retrieval.canAnswer || lastSources.length === 0)) {
       const refusal: LocalOpsRefusalView = {
         reasonCode: 'NO_GROUNDING',
         status: 'refused',
@@ -236,7 +244,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       return {
         answered: false,
         text: null,
-        grounded: retrieval.grounded,
+        grounded: lastGrounded,
         sources: lastSources,
         refusal,
       };
@@ -288,7 +296,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       return {
         answered: false,
         text: null,
-        grounded: retrieval.grounded,
+        grounded: lastGrounded,
         sources: lastSources,
         refusal,
       };
@@ -319,14 +327,14 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
 
     lastRefusal = undefined;
     lastSources = citationCheck.verified.length > 0 ? citationCheck.verified : lastSources;
-    if (retrieval.grounded) {
+    if (lastGrounded) {
       lastInsight = { text: result.completion.text, grounded: true };
     }
     trace.aiResponded({ status: 'success' });
     return {
       answered: true,
       text: result.completion.text,
-      grounded: retrieval.grounded,
+      grounded: lastGrounded,
       sources: lastSources,
     };
   }

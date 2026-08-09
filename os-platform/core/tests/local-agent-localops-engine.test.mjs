@@ -143,6 +143,35 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     await engine.close();
   });
 
+  it('applies a source-file allowlist before constructing the model grounding context', async () => {
+    let captured;
+    const canonicalRunbook = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+    const adapter = {
+      ...sourceCitingAdapter(),
+      async complete(request) {
+        captured = request;
+        return { text: 'Follow the documented R0 procedure. [1]' };
+      },
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+      sourceFileAllowlist: [canonicalRunbook],
+    });
+
+    const answer = await engine.ask('documented R0 self-readiness procedure and operator step');
+    const contextualSources = [...captured.system.matchAll(/^\[\d+\]\s+([^\s—\r\n]+)/gm)].map(
+      match => match[1]
+    );
+    assert.deepEqual(contextualSources, [canonicalRunbook]);
+    assert.deepEqual(
+      answer.sources.map(source => source.sourceFile),
+      [canonicalRunbook]
+    );
+    await engine.close();
+  });
+
   it('refuses a completion that does not cite a retrieved source', async () => {
     const adapter = {
       ...sourceCitingAdapter(),
