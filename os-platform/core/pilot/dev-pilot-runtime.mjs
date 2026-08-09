@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
+import { runAcademyLocalOpsJourney } from "./localops-academy-journey.mjs";
 
 /** Alias for traceService.emit — used by Canon tool routes */
 const traceEvent = traceService?.emit?.bind(traceService);
@@ -4105,6 +4106,21 @@ const server = createServer(async (req, res) => {
       const body = await readJsonBody(req);
       const result = await handleSummarizeSalesCompsRationale(body);
       writeJson(res, result.status, result.payload);
+      return;
+    }
+
+    if (
+      method === "POST" &&
+      (pathname === "/pilot/localops/academy/ask" ||
+        pathname === "/api/pilot/localops/academy/ask")
+    ) {
+      const body = await readJsonBody(req);
+      const result = await runAcademyLocalOpsJourney({
+        repoRoot: REPO_ROOT,
+        env: process.env,
+        body,
+      });
+      writeJson(res, result.httpStatus, result.payload);
       return;
     }
 

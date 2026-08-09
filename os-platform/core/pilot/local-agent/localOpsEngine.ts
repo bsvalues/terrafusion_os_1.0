@@ -111,7 +111,7 @@ export interface LocalOpsEngine {
   /** Build the current panel view model (no network, read-only). */
   viewModel(): LocalOpsViewModel;
   /** Ask the local engine a question. Local-only, grounded, read-only. */
-  ask(question: string): Promise<LocalOpsAnswer>;
+  ask(question: string, signal?: AbortSignal): Promise<LocalOpsAnswer>;
   /** Release the provider adapter. Idempotent. */
   close(): Promise<void>;
 }
@@ -174,7 +174,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
     };
   }
 
-  async function ask(question: string): Promise<LocalOpsAnswer> {
+  async function ask(question: string, signal?: AbortSignal): Promise<LocalOpsAnswer> {
     trace.aiRequested({ profile: config.profile, provider: config.provider });
 
     // Source grounding (I6): retrieve local sources first; when sources are
@@ -210,7 +210,10 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
 
     // The provider enforces local-only / no-external / no-silent-fallback. We
     // never construct a cloud adapter and never reach the network on refusal.
-    const result = await provider.complete({ messages: [{ role: 'user', content: question }] });
+    const result = await provider.complete(
+      { messages: [{ role: 'user', content: question }] },
+      signal
+    );
 
     if (isLocalOpsProblem(result)) {
       const refusal: LocalOpsRefusalView = {

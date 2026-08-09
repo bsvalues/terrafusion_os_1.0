@@ -75,7 +75,7 @@ function createLocalOpsEngine(options) {
             traceEvents: traceViews(),
         };
     }
-    async function ask(question) {
+    async function ask(question, signal) {
         trace.aiRequested({ profile: config.profile, provider: config.provider });
         // Source grounding (I6): retrieve local sources first; when sources are
         // required and nothing supports the question, refuse BEFORE calling the
@@ -108,7 +108,7 @@ function createLocalOpsEngine(options) {
         }
         // The provider enforces local-only / no-external / no-silent-fallback. We
         // never construct a cloud adapter and never reach the network on refusal.
-        const result = await provider.complete({ messages: [{ role: 'user', content: question }] });
+        const result = await provider.complete({ messages: [{ role: 'user', content: question }] }, signal);
         if ((0, localOpsProvider_js_1.isLocalOpsProblem)(result)) {
             const refusal = {
                 reasonCode: result.reasonCode,
