@@ -11,7 +11,7 @@ does not push, open a pull request, merge, alter a service, or change a remote h
 
 - **Authorization:** `TERRAFUSION_LOCALOPS_OLLAMA_PROOF`, 2026-08-09.
 - **Risk:** R1 — transient, read-only runtime proof.
-- **Task 1 approved head:** `a7545ec42e6146f43e8357fd037f3b56e30a29b3`.
+- **Final hardened proof head:** `f7f80f50051de3a281790f41e8f45f17b00e26d2`.
 - **Objective:** prove that the existing LocalOps `ollama` provider can complete one
   non-sensitive request through an OMEN-owned SSH loopback forward to Hermes, and fails closed
   once that forward is removed.
@@ -23,8 +23,8 @@ This Task 2 commit may contain only:
 - `docs/brain/workorders/WO-LOCALOPS-009-HERMES-OLLAMA-LIVE-PROOF.md`
 - `docs/brain/workorders/evidence/WO-LOCALOPS-009-HERMES-OLLAMA-LIVE-PROOF.md`
 
-Task 1 owns the proof entrypoint, its focused test, and its package script. This task does not
-modify LocalOps runtime code, generated code, services, host bindings, firewall rules, SSH server
+The proof implementation and focused test are limited to their governed LocalOps paths. This work
+order does not modify generated code, services, host bindings, firewall rules, SSH server
 configuration, Atlas, WilliamOS, or the frozen OMEN cockpit.
 
 ## Runtime boundary
@@ -35,7 +35,7 @@ configuration, Atlas, WilliamOS, or the frozen OMEN cockpit.
    loopback `AI_BASE_URL` values. `AI_EXTERNAL_CALLS`, `AI_ALLOW_WEB`, `AI_ALLOW_SHELL`, and
    `AI_ALLOW_MUTATION` are false; trace and source requirements remain true.
 3. The CLI output is retained only as its single JSON success projection: provider, SHA-256 digest,
-   and response length. Raw model text is neither persisted nor reported.
+   and UTF-8 response byte length. Raw model text is neither persisted nor reported.
 4. The tunnel owner records and compares its exact PID and command line before terminating that
    process, then verifies the loopback port is released.
 5. The identical CLI configuration against the released port must emit one structured nonzero
@@ -55,7 +55,8 @@ configuration, Atlas, WilliamOS, or the frozen OMEN cockpit.
 ## Acceptance criteria
 
 - Tunnel model discovery independently finds `llama3.2:3b` through the tunnel.
-- The real Task 1 CLI succeeds once with the required safe profile and an explicit loopback URL.
+- The final hardened CLI succeeds once with the required safe profile, a complete terminal Ollama
+  NDJSON response, and an explicit loopback URL.
 - Tunnel cleanup is PID-and-command-line guarded and the port is released.
 - Released-port rerun exits nonzero with one structured failure object.
 - Both Atlas TCP-only handshakes succeed while sending zero bytes.

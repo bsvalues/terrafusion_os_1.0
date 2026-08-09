@@ -14,8 +14,8 @@ payload, query, mutation, service change, firewall change, binding change, or re
 | Field | Value |
 | --- | --- |
 | Branch | `codex/localops-hermes-ollama-proof` |
-| Task 1 approved head | `a7545ec42e6146f43e8357fd037f3b56e30a29b3` |
-| Task 1 CLI | `os-platform/core/pilot/localops-ollama-live-proof.mjs` |
+| Final hardened proof head | `f7f80f50051de3a281790f41e8f45f17b00e26d2` |
+| Final proof CLI | `os-platform/core/pilot/localops-ollama-live-proof.mjs` |
 | Tunnel target | Hermes `127.0.0.1:11434` only |
 | Local forward | OMEN `127.0.0.1:11455` only |
 | Independently discovered model | `llama3.2:3b` |
@@ -25,16 +25,18 @@ payload, query, mutation, service change, firewall change, binding change, or re
 The local `127.0.0.1:11455` listener count was zero before launch. One exact process was launched:
 
 ```text
-PID: 24728
+PID: 17556
 "C:\\Windows\\System32\\OpenSSH\\ssh.exe" -N -T -o ExitOnForwardFailure=yes -o BatchMode=yes -o ConnectTimeout=10 -L 127.0.0.1:11455:127.0.0.1:11434 hermes
 ```
 
-The port bound to PID `24728`. `GET /api/tags` through that loopback forward independently found
+The port bound to PID `17556`. `GET /api/tags` through that loopback forward independently found
 `llama3.2:3b`; no model-discovery result was taken from a cached assertion.
 
-The CLI used the explicit `localops` / `ollama` profile, that model, explicit
+The final hardened CLI used the explicit `localops` / `ollama` profile, that model, explicit
 `http://127.0.0.1:11455` base URL, false external/web/shell/mutation flags, and true
-trace/source requirements. It returned exactly one sanitized JSON result and exited zero:
+trace/source requirements. It observed every NDJSON line, required one final `done:true` marker and
+a non-empty aggregate, then returned exactly one sanitized JSON result and exited zero. `length` is
+the UTF-8 byte length, not JavaScript string length:
 
 ```json
 {
@@ -42,8 +44,8 @@ trace/source requirements. It returned exactly one sanitized JSON result and exi
   "status": "success",
   "provider": "ollama",
   "response": {
-    "sha256": "a342697335fbad077015784c5097ece9e1983adb393c2304bfb3c79929c9f276",
-    "length": 270
+    "sha256": "d3cd72c2c884f577e1d4e79389fbc7b14c2bc8b7cd7170749feca5358d06a8b1",
+    "length": 513
   }
 }
 ```
@@ -89,7 +91,7 @@ untouched.
 
 | Check | Result | Detail |
 | --- | --- | --- |
-| Task 1 focused proof suite | PASS | `node --test os-platform/core/tests/local-agent-ollama-live-proof.test.mjs`: 6 passed, 0 failed. |
+| Final focused proof suite | PASS | `node --test os-platform/core/tests/local-agent-ollama-live-proof.test.mjs`: 13 passed, 0 failed; includes malformed-only, missing-terminal, empty-terminal, post-terminal malformed/additional, and trailing-slash loopback cases. |
 | Applicable provider/Ollama suites | PASS | `node --test os-platform/core/tests/local-agent-localops-provider.test.mjs os-platform/core/tests/local-agent-ollama-adapter.test.mjs`: 25 passed, 0 failed. |
 | Core TypeScript | PASS | Direct repository-local invocation: `node node_modules/typescript/bin/tsc -p tsconfig.core.json`. |
 | Phase 8.3 core tools | PASS | `node --test os-platform/core/tests/phase83-tools.test.mjs`: 56 passed, 0 failed. |
@@ -98,7 +100,7 @@ untouched.
 | Direct canon GateFast | NOT-GREEN, EXPECTED | `node tools/canon/canon.mjs gatefast` reports dirty worktree (the uncommitted Task 2 docs) and the same unavailable `pnpm run type-check`; Phase 8.3 and naming lint pass. It is not represented as green. |
 | Full registry security runner | BOUNDED-UNAVAILABLE | `node tools/registry/security-scan-runner.mjs` did not return within a 60-second bounded run; no matching runner process remained after timeout. |
 | Exact changed-file secret-assignment scan | PASS | No matches for credential, token, password, secret, or API-key assignment forms in the two Task 2 documents. |
-| Diff and branch scope | PASS | Candidate scope from the approved Task 1 head is exactly the two reserved documentation paths; no other tracked or untracked non-ignored candidate file exists. |
+| Diff and branch scope | PASS | Candidate scope from the final hardened proof head is exactly the two reserved documentation paths; no other tracked or untracked non-ignored candidate file exists. |
 
 ## Non-claims
 
