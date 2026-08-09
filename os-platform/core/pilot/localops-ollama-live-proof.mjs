@@ -83,6 +83,49 @@ function validateOptions(options) {
   return validateLocalOpsEnv(options.env);
 }
 
+function observeOllamaTerminal(baseUrl) {
+  const originalFetch = globalThis.fetch;
+  let observation = Promise.resolve(false);
+
+  if (typeof originalFetch !== 'function') {
+    return {
+      restore() {},
+      terminalSeen: () => observation,
+    };
+  }
+
+  globalThis.fetch = async (url, init) => {
+    const response = await originalFetch(url, init);
+    if (url !== `${baseUrl}/api/chat` || !response.body) return response;
+
+    const copy = response.clone();
+    observation = (async () => {
+      const decoder = new TextDecoder();
+      let buffer = '';
+      for await (const piece of copy.body) {
+        buffer += decoder.decode(piece, { stream: true });
+        let newline = buffer.indexOf('\n');
+        while (newline !== -1) {
+          const line = buffer.slice(0, newline).trim();
+          buffer = buffer.slice(newline + 1);
+          newline = buffer.indexOf('\n');
+          if (line && JSON.parse(line).done === true) return true;
+        }
+      }
+      const tail = buffer.trim();
+      return tail !== '' && JSON.parse(tail).done === true;
+    })().catch(() => false);
+    return response;
+  };
+
+  return {
+    restore() {
+      globalThis.fetch = originalFetch;
+    },
+    terminalSeen: () => observation,
+  };
+}
+
 export async function runLocalOpsOllamaLiveProof(options) {
   const invalid = validateOptions(options);
   if (invalid) return invalid;
@@ -95,6 +138,7 @@ export async function runLocalOpsOllamaLiveProof(options) {
   }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
+  const terminal = observeOllamaTerminal(options.env.AI_BASE_URL);
 
   try {
     const result = await provider.complete(
@@ -110,6 +154,14 @@ export async function runLocalOpsOllamaLiveProof(options) {
         message: 'LocalOps completion did not produce a verified success result.',
       };
     }
+    if (result.completion.text.length === 0 || !await terminal.terminalSeen()) {
+      return {
+        ok: false,
+        status: 'failed',
+        reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
+        message: 'Ollama response did not contain a non-empty terminal completion.',
+      };
+    }
 
     return {
       ok: true,
@@ -117,11 +169,12 @@ export async function runLocalOpsOllamaLiveProof(options) {
       provider: 'ollama',
       response: {
         sha256: createHash('sha256').update(result.completion.text).digest('hex'),
-        length: result.completion.text.length,
+        length: Buffer.byteLength(result.completion.text, 'utf8'),
       },
     };
   } finally {
     clearTimeout(timeout);
+    terminal.restore();
     await provider.close();
   }
 }

@@ -77,6 +77,31 @@ async function withFetchMonitor(run) {
   }
 }
 
+async function assertIncompleteOllamaResponse(body) {
+  await withLoopbackServer((_request, response) => {
+    response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+    response.end(body);
+  }, async baseUrl => {
+    const result = await runLocalOpsOllamaLiveProof({
+      env: proofEnv(baseUrl),
+      prompt: FIXTURE_PROMPT,
+      timeoutMs: 1_000,
+    });
+    assert.deepStrictEqual(result, {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
+      message: 'Ollama response did not contain a non-empty terminal completion.',
+    });
+
+    const cli = await runCli({ ...proofEnv(baseUrl), LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT });
+    assert.strictEqual(cli.code, 1);
+    assert.strictEqual(cli.stderr, '');
+    assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
+    assert.deepStrictEqual(JSON.parse(cli.stdout), result);
+  });
+}
+
 describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', () => {
   it('posts the explicit model and prompt to loopback Ollama and projects the literal response digest and length', async () => {
     let requests = 0;
@@ -109,6 +134,34 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
       });
     });
     assert.strictEqual(requests, 1);
+  });
+
+  it('projects response length as UTF-8 byte length', async () => {
+    const text = '✓';
+    await withLoopbackServer((_request, response) => {
+      response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+      response.end(`{"message":{"content":"${text}"},"done":true}\n`);
+    }, async baseUrl => {
+      const result = await runLocalOpsOllamaLiveProof({
+        env: proofEnv(baseUrl),
+        prompt: FIXTURE_PROMPT,
+        timeoutMs: 1_000,
+      });
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.response.length, Buffer.byteLength(text, 'utf8'));
+    });
+  });
+
+  it('fails closed for malformed-only Ollama NDJSON', async () => {
+    await assertIncompleteOllamaResponse('{not-json}\n');
+  });
+
+  it('fails closed for an Ollama response without terminal done:true', async () => {
+    await assertIncompleteOllamaResponse('{"message":{"content":"partial"}}\n');
+  });
+
+  it('fails closed for an empty terminal Ollama response', async () => {
+    await assertIncompleteOllamaResponse('{"message":{"content":""},"done":true}\n');
   });
 
   it('rejects ordinary remote and userinfo-host bypass URLs before any request', async () => {
