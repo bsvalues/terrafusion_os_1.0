@@ -2,7 +2,6 @@ import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
 import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
-const APPROVED_HERMES_TUNNEL_ORIGIN = 'http://127.0.0.1:11455';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -94,12 +93,19 @@ function validateEnvironment(env) {
       );
     }
   }
-  if (explicitLoopbackOrigin(env.AI_BASE_URL) !== APPROVED_HERMES_TUNNEL_ORIGIN) {
+  const tunnelPort = env.LOCALOPS_HERMES_TUNNEL_PORT;
+  const validTunnelPort =
+    typeof tunnelPort === 'string' &&
+    /^\d+$/.test(tunnelPort) &&
+    Number(tunnelPort) >= 1024 &&
+    Number(tunnelPort) <= 65535;
+  const approvedTunnelOrigin = validTunnelPort ? `http://127.0.0.1:${Number(tunnelPort)}` : null;
+  if (!approvedTunnelOrigin || explicitLoopbackOrigin(env.AI_BASE_URL) !== approvedTunnelOrigin) {
     return fail(
       503,
       'misconfigured',
       'UNSAFE_LOCALOPS_ENV',
-      `LocalOps Academy requires the approved Hermes SSH tunnel at ${APPROVED_HERMES_TUNNEL_ORIGIN}; the request was not sent to a model.`
+      'LocalOps Academy requires an explicit approved loopback Hermes SSH tunnel port; the request was not sent to a model.'
     );
   }
   return null;

@@ -205,7 +205,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
     // model — an ungrounded confident answer is not permitted.
     const retrieval = kb.retrieve(question);
     lastGrounded = retrieval.grounded;
-    lastSources = retrieval.sources.map((s) => ({
+    lastSources = retrieval.sources.slice(0, 5).map((s) => ({
       sourceFile: s.sourceFile,
       heading: s.heading,
       snippet: s.snippet,
@@ -231,8 +231,7 @@ export function createLocalOpsEngine(options: CreateLocalOpsEngineOptions): Loca
       return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
     }
 
-    const groundingContext = retrieval.sources
-      .slice(0, 5)
+    const groundingContext = lastSources
       .map(
         (source, index) =>
           `[${index + 1}] ${source.sourceFile}${source.heading ? ` — ${source.heading}` : ''}\n${source.snippet}`

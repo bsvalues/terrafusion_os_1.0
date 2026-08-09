@@ -75,7 +75,7 @@ public sealed class LocalOpsAcademyControllerTests
   public async Task Ask_refuses_a_noncanonical_runtime_without_contacting_it()
   {
     var handler = new StubHandler(HttpStatusCode.OK, "{}");
-    var controller = BuildController(handler, enabled: true, runtimeUrl: "http://127.0.0.1:9999");
+    var controller = BuildController(handler, enabled: true, runtimeUrl: "http://127.0.0.1:9999/proxy");
 
     var result = await controller.Ask(new AcademyLocalOpsRequest("localops-safety-boundary"), default);
 
@@ -83,6 +83,19 @@ public sealed class LocalOpsAcademyControllerTests
     Assert.Equal(503, content.StatusCode);
     Assert.Contains("UNSAFE_LOCALOPS_RUNTIME", content.Content);
     Assert.Equal(0, handler.CallCount);
+  }
+
+  [Fact]
+  public async Task Ask_accepts_an_explicit_alternate_loopback_runtime_port()
+  {
+    var handler = new StubHandler(HttpStatusCode.OK, "{\"ok\":true}");
+    var controller = BuildController(handler, enabled: true, runtimeUrl: "http://127.0.0.1:54317");
+
+    var result = await controller.Ask(new AcademyLocalOpsRequest("localops-safety-boundary"), default);
+
+    var content = Assert.IsType<ContentResult>(result);
+    Assert.Equal(200, content.StatusCode);
+    Assert.Equal(new Uri("http://127.0.0.1:54317/pilot/localops/academy/ask"), handler.LastUri);
   }
 
   [Fact]

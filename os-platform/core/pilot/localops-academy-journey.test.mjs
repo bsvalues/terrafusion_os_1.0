@@ -12,6 +12,7 @@ const SAFE_ENV = {
   AI_PROVIDER: 'ollama',
   AI_MODEL: 'llama3.2:3b',
   AI_BASE_URL: 'http://127.0.0.1:11455',
+  LOCALOPS_HERMES_TUNNEL_PORT: '11455',
   LOCALOPS_TRANSPORT_BOUNDARY: 'hermes-ssh-tunnel',
   AI_EXTERNAL_CALLS: 'false',
   AI_ALLOW_WEB: 'false',
@@ -178,6 +179,8 @@ test('Academy LocalOps journey rejects unsafe flags and arbitrary prompts before
 test('Academy LocalOps journey refuses any endpoint other than the approved Hermes tunnel', async () => {
   for (const env of [
     { ...SAFE_ENV, AI_BASE_URL: 'http://127.0.0.1:11434' },
+    { ...SAFE_ENV, LOCALOPS_HERMES_TUNNEL_PORT: undefined },
+    { ...SAFE_ENV, LOCALOPS_HERMES_TUNNEL_PORT: '70000' },
     { ...SAFE_ENV, LOCALOPS_TRANSPORT_BOUNDARY: 'loopback' },
   ]) {
     let factoryCalls = 0;

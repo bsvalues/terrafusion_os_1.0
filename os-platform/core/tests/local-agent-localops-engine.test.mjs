@@ -111,6 +111,10 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.ok(captured.system.includes('docs/'));
     assert.ok(captured.system.length < 2500, 'grounding context must stay bounded');
     assert.equal(captured.messages.at(-1).content, 'provider status');
+    assert.ok(answer.sources.length <= 5);
+    for (const source of answer.sources) {
+      assert.ok(captured.system.includes(source.sourceFile));
+    }
     await engine.close();
   });
 

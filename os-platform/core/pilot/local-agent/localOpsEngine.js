@@ -98,7 +98,7 @@ function createLocalOpsEngine(options) {
         // model — an ungrounded confident answer is not permitted.
         const retrieval = kb.retrieve(question);
         lastGrounded = retrieval.grounded;
-        lastSources = retrieval.sources.map((s) => ({
+        lastSources = retrieval.sources.slice(0, 5).map((s) => ({
             sourceFile: s.sourceFile,
             heading: s.heading,
             snippet: s.snippet,
@@ -122,8 +122,7 @@ function createLocalOpsEngine(options) {
             trace.aiResponded({ status: 'refused' });
             return { answered: false, text: null, grounded: retrieval.grounded, sources: lastSources, refusal };
         }
-        const groundingContext = retrieval.sources
-            .slice(0, 5)
+        const groundingContext = lastSources
             .map((source, index) => `[${index + 1}] ${source.sourceFile}${source.heading ? ` — ${source.heading}` : ''}\n${source.snippet}`)
             .join('\n\n');
         // Source excerpts are bounded by the KB (five results, 240 characters per

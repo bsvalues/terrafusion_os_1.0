@@ -22,8 +22,6 @@ public sealed class LocalOpsAcademyController : ControllerBase
   private const string EnabledKey = "LOCALOPS_PRODUCT_JOURNEY_ENABLED";
   private const string RuntimeUrlKey = "LOCALOPS_PILOT_RUNTIME_URL";
   private const string HostTokenKey = "LOCALOPS_PILOT_HOST_TOKEN";
-  private const string ApprovedRuntimeOrigin = "http://127.0.0.1:4317";
-  private static readonly Uri AskEndpoint = new($"{ApprovedRuntimeOrigin}/pilot/localops/academy/ask");
 
   private readonly IHttpClientFactory _httpClientFactory;
   private readonly IConfiguration _configuration;
@@ -50,7 +48,8 @@ public sealed class LocalOpsAcademyController : ControllerBase
           "LocalOps Academy is not enabled in this environment.");
     }
 
-    if (_configuration[RuntimeUrlKey] != ApprovedRuntimeOrigin)
+    var runtimeOrigin = ExplicitLoopbackOrigin(_configuration[RuntimeUrlKey]);
+    if (runtimeOrigin is null)
     {
       return SafeJson(503, "misconfigured", "UNSAFE_LOCALOPS_RUNTIME",
           "LocalOps Academy requires the approved loopback Pilot runtime; no model request was sent.");
@@ -83,7 +82,8 @@ public sealed class LocalOpsAcademyController : ControllerBase
     try
     {
       var client = _httpClientFactory.CreateClient("LocalOps");
-      using var upstreamRequest = new HttpRequestMessage(HttpMethod.Post, AskEndpoint)
+      var askEndpoint = new Uri($"{runtimeOrigin}/pilot/localops/academy/ask");
+      using var upstreamRequest = new HttpRequestMessage(HttpMethod.Post, askEndpoint)
       {
         Content = JsonContent.Create(request),
       };
@@ -127,6 +127,24 @@ public sealed class LocalOpsAcademyController : ControllerBase
       !string.IsNullOrWhiteSpace(value) &&
       value.Length <= 128 &&
       value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.' or ':' or '@');
+
+  private static string? ExplicitLoopbackOrigin(string? value)
+  {
+    if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) ||
+        uri.Scheme != Uri.UriSchemeHttp ||
+        !string.IsNullOrEmpty(uri.UserInfo) ||
+        (uri.Host != "127.0.0.1" && uri.Host != "localhost") ||
+        uri.IsDefaultPort ||
+        uri.Port is < 1024 or > 65535 ||
+        uri.AbsolutePath != "/" ||
+        !string.IsNullOrEmpty(uri.Query) ||
+        !string.IsNullOrEmpty(uri.Fragment))
+    {
+      return null;
+    }
+
+    return $"http://{uri.Host}:{uri.Port}";
+  }
 
   private static ContentResult SafeJson(int statusCode, string status, string reasonCode, string message) =>
       new()
