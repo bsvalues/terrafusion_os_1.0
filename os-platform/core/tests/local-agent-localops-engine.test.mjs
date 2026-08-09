@@ -10,9 +10,7 @@ import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
-const { createLocalOpsEngine } = await import(
-  '../pilot/local-agent/index.js'
-);
+const { createLocalOpsEngine } = await import('../pilot/local-agent/index.js');
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const localopsEnv = { AI_PROFILE: 'localops', AI_PROVIDER: 'ollama', AI_MODEL: 'm' };
@@ -23,7 +21,13 @@ function countingLocalAdapter() {
   return {
     adapter: {
       name: 'counting',
-      capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+      capabilities: {
+        streaming: true,
+        tools: false,
+        vision: false,
+        local: true,
+        maxContextTokens: 4096,
+      },
       // eslint-disable-next-line require-yield
       async *chat() {
         state.calls += 1;
@@ -49,7 +53,13 @@ function firstGroundingSource(system) {
 function sourceCitingAdapter(answerText = 'Local grounded answer about provider status.') {
   return {
     name: 'source-citing',
-    capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+    capabilities: {
+      streaming: true,
+      tools: false,
+      vision: false,
+      local: true,
+      maxContextTokens: 4096,
+    },
     async *chat() {},
     async complete(request) {
       return { text: `${answerText} [source: ${firstGroundingSource(request.system)}]` };
@@ -78,6 +88,10 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.strictEqual(vm.flags.externalCalls, false);
     assert.strictEqual(vm.flags.allowMutation, false);
     assert.strictEqual(vm.providerStatus.ok, true);
+    assert.deepStrictEqual(vm.insight, {
+      text: ans.text,
+      grounded: true,
+    });
     const types = vm.traceEvents.map(e => e.type);
     assert.ok(types.includes('localops.ai.requested'));
     assert.ok(types.includes('localops.ai.responded'));
@@ -90,7 +104,13 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     let captured;
     const adapter = {
       name: 'capturing',
-      capabilities: { streaming: true, tools: false, vision: false, local: true, maxContextTokens: 4096 },
+      capabilities: {
+        streaming: true,
+        tools: false,
+        vision: false,
+        local: true,
+        maxContextTokens: 4096,
+      },
       async *chat() {},
       async complete(request) {
         captured = request;
@@ -221,9 +241,45 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.strictEqual(ans.answered, false);
     assert.ok(ans.refusal);
     assert.strictEqual(ans.refusal.reasonCode, 'NO_GROUNDING');
-    assert.strictEqual(counting.state.calls, 0, 'the model must not be called for an ungrounded ask');
+    assert.strictEqual(
+      counting.state.calls,
+      0,
+      'the model must not be called for an ungrounded ask'
+    );
     const types = engine.viewModel().traceEvents.map(e => e.type);
     assert.ok(types.includes('localops.policy.refused'));
+    await engine.close();
+  });
+
+  it('never labels an ungrounded successful completion as a grounded insight', async () => {
+    const adapter = {
+      name: 'local-uncited',
+      capabilities: {
+        streaming: true,
+        tools: false,
+        vision: false,
+        local: true,
+        maxContextTokens: 4096,
+      },
+      async *chat() {},
+      async complete() {
+        return { text: 'Local-only answer without retrieved evidence.' };
+      },
+      async close() {},
+    };
+    const engine = createLocalOpsEngine({
+      env: { AI_PROFILE: 'cloud-dev', AI_PROVIDER: 'ollama', AI_MODEL: 'm' },
+      repoRoot: REPO_ROOT,
+      adapter,
+    });
+
+    const answer = await engine.ask('zxqwvkplm qbvqwxz fghjkvmn');
+    assert.equal(answer.answered, true);
+    assert.equal(answer.grounded, false);
+    assert.deepEqual(engine.viewModel().insight, {
+      text: answer.text,
+      grounded: false,
+    });
     await engine.close();
   });
 

@@ -70,11 +70,20 @@ LocalOps is now **mounted** in the live shell and **registered** as a governed O
 - The os-localops window home (`pages/LocalOpsHome.tsx`) is a truthful redirect to the side panel, not a
   duplicate full-page surface.
 
-**Still deferred (separately approvable):** the live engine→view-model adapter (mapping WO-001…005 node
-outputs onto `LocalOpsViewModel`). The store ships the honest `disabled`-profile default and a `setData`
-seam; until an adapter is wired, the panel renders that default and performs **no** API calls, mutation,
-or shell execution. Wiring a live adapter crosses the node/browser boundary (needs a backend surface) and
-is intentionally left to a future slice to keep 006.1 dependency-free.
+## Live diagnostic adapter
+
+The live engine→view-model adapter is now wired as an operator-triggered, read-only product journey:
+
+- The in-shell Diagnose section sends one fixed synthetic diagnostic question through the existing
+  authenticated LocalOps product endpoint. It does not accept free-form input.
+- The request reuses the LocalOps engine, local KB, trace bridge, LocalOps provider, and Ollama adapter;
+  it remains fixed to the explicitly configured Hermes SSH-tunnel boundary.
+- Successful responses populate the existing `LocalOpsViewModel` with the local diagnostics, verified
+  sources, trace events, and a source-grounded insight. The browser rejects an unsafe or malformed view
+  model rather than rendering it.
+- Provider, tunnel, runtime, or network failure produces a visible refusal and no insight. There is no
+  cloud fallback, shell access, filesystem access, database access, or mutation path.
+- The store retains its honest `disabled` default until the operator explicitly runs the diagnostic.
 
 ## LocalOps trace events (WO-LOCALOPS-003)
 

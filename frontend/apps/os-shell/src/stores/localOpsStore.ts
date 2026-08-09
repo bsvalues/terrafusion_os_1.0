@@ -6,11 +6,9 @@
  * LocalOps surface is shell chrome — a persistent panel, not a window — so its
  * visibility lives here rather than in the window/desktop store.
  *
- * Scope note (006.1): this slice mounts and registers the panel. The default
- * view model is the honest `disabled`-profile shape — the live engine→view-model
- * adapter (mapping WO-001..005 outputs onto `LocalOpsViewModel`) is intentionally
- * NOT wired here. A future, separately-approved slice supplies real data through
- * `setData`. The panel performs no API calls, mutation, or shell execution.
+ * The default view model is the honest `disabled`-profile shape. The mounted
+ * LocalOps surface supplies authenticated, operator-triggered live data through
+ * `setData`; the store itself performs no API calls, mutation, or shell execution.
  *
  * @module stores/localOpsStore
  */

@@ -1,6 +1,10 @@
 import { apiFetch } from '../lib/apiBase';
+import type { LocalOpsViewModel } from '../components/localops/LocalOpsPanel';
 
-export type AcademyLocalOpsQuestionId = 'localops-safety-boundary' | 'source-grounded-evidence';
+export type AcademyLocalOpsQuestionId =
+  | 'localops-safety-boundary'
+  | 'source-grounded-evidence'
+  | 'localops-panel-diagnostic';
 
 export interface AcademyLocalOpsRequest {
   questionId: AcademyLocalOpsQuestionId;
@@ -15,7 +19,7 @@ export interface AcademyLocalOpsSource {
 export interface AcademyLocalOpsSuccess {
   ok: true;
   status: 'success';
-  journey: 'academy-localops';
+  journey: 'academy-localops' | 'localops-diagnostic-panel';
   question: { id: AcademyLocalOpsQuestionId; label: string };
   answer: {
     text: string;
@@ -32,6 +36,7 @@ export interface AcademyLocalOpsSuccess {
     requireSources: true;
   };
   trace: { eventCount: number };
+  viewModel?: LocalOpsViewModel;
 }
 
 export interface AcademyLocalOpsFailure {

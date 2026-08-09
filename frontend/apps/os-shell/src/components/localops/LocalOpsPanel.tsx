@@ -21,6 +21,7 @@
 
 import React, { useState } from 'react';
 import { Z } from '../../shell/desktop/zIndex';
+import { ErrorDisplay, type ErrorDisplayProps } from '../errors/ErrorDisplay';
 
 // ============================================================================
 // View model (UI-facing; mirrors WO-001..005 public outputs, no node imports)
@@ -81,6 +82,10 @@ export interface LocalOpsViewModel {
   grounded: boolean;
   sources: LocalOpsSourceView[];
   traceEvents: LocalOpsTraceView[];
+  insight?: {
+    text: string;
+    grounded: boolean;
+  };
 }
 
 export type LocalOpsSection = 'ask' | 'explain' | 'diagnose' | 'runbook' | 'sources' | 'trace';
@@ -101,6 +106,12 @@ export interface LocalOpsPanelProps {
   open?: boolean;
   /** Close affordance (UI-only). */
   onClose?: () => void;
+  /** Operator-triggered, read-only local diagnostic request. */
+  onDiagnose?: () => void;
+  /** Prevents duplicate requests while the local provider is running. */
+  diagnosePending?: boolean;
+  /** Correlation-first shell error for transport-level failures. */
+  networkFailure?: ErrorDisplayProps['error'];
 }
 
 // ============================================================================
@@ -308,7 +319,14 @@ const ReadOnlyNote: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 // LocalOpsPanel — root export
 // ============================================================================
 
-export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({ data, open = true, onClose }) => {
+export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
+  data,
+  open = true,
+  onClose,
+  onDiagnose,
+  diagnosePending = false,
+  networkFailure,
+}) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
 
   return (
@@ -483,7 +501,46 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({ data, open = true,
                 found.
               </ReadOnlyNote>
             )}
-            {section === 'diagnose' && <DiagnosticsView items={data.diagnostics} />}
+            {section === 'diagnose' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {onDiagnose && (
+                  <button
+                    type='button'
+                    data-testid='localops-run-diagnostic'
+                    onClick={onDiagnose}
+                    disabled={diagnosePending}
+                    style={{
+                      alignSelf: 'flex-start',
+                      border: `1px solid ${PILOT}`,
+                      borderRadius: 4,
+                      background: 'transparent',
+                      color: TEXT,
+                      cursor: diagnosePending ? 'wait' : 'pointer',
+                      fontSize: 11,
+                      padding: '6px 9px',
+                    }}
+                  >
+                    {diagnosePending ? 'Running locally…' : 'Run local diagnostic'}
+                  </button>
+                )}
+                {networkFailure && <ErrorDisplay error={networkFailure} />}
+                {data.insight && (
+                  <div
+                    data-testid='localops-diagnostic-insight'
+                    style={{
+                      borderLeft: `2px solid ${PILOT}`,
+                      paddingLeft: 8,
+                      color: TEXT,
+                      fontSize: 11,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {data.insight.text}
+                  </div>
+                )}
+                <DiagnosticsView items={data.diagnostics} />
+              </div>
+            )}
             {section === 'runbook' && (
               <ReadOnlyNote>
                 Operator runbooks live in <code>docs/localops/BENTON_SERVER_RUNBOOK.md</code>.
