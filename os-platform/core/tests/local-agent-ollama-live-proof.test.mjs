@@ -164,6 +164,29 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     await assertIncompleteOllamaResponse('{"message":{"content":""},"done":true}\n');
   });
 
+  it('fails closed when terminal done:true is followed by malformed Ollama NDJSON', async () => {
+    await assertIncompleteOllamaResponse('{"message":{"content":"complete"},"done":true}\n{not-json}\n');
+  });
+
+  it('fails closed when terminal done:true is followed by another Ollama response line', async () => {
+    await assertIncompleteOllamaResponse('{"message":{"content":"complete"},"done":true}\n{"message":{"content":"trailing"}}\n');
+  });
+
+  it('accepts a permitted loopback base URL with a trailing slash', async () => {
+    await withLoopbackServer((_request, response) => {
+      response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+      response.end('{"message":{"content":"complete"},"done":true}\n');
+    }, async baseUrl => {
+      const result = await runLocalOpsOllamaLiveProof({
+        env: proofEnv(`${baseUrl}/`),
+        prompt: FIXTURE_PROMPT,
+        timeoutMs: 1_000,
+      });
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.status, 'success');
+    });
+  });
+
   it('rejects ordinary remote and userinfo-host bypass URLs before any request', async () => {
     for (const baseUrl of [
       'http://models.example.test:11434',

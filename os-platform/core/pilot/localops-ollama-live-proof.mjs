@@ -28,11 +28,11 @@ function inputProblem(message) {
   };
 }
 
-function isExplicitLoopbackUrl(value) {
+function normalizeExplicitLoopbackUrl(value) {
   if (typeof value !== 'string') return false;
   try {
     const url = new URL(value);
-    return url.protocol === 'http:'
+    const permitted = url.protocol === 'http:'
       && url.username === ''
       && url.password === ''
       && (url.hostname === '127.0.0.1' || url.hostname === 'localhost')
@@ -40,12 +40,13 @@ function isExplicitLoopbackUrl(value) {
       && url.pathname === '/'
       && url.search === ''
       && url.hash === '';
+    return permitted ? url.origin : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
-function validateLocalOpsEnv(env) {
+function validateLocalOpsEnv(env, baseUrl) {
   if (env.AI_PROFILE !== 'localops') {
     return inputProblem('AI_PROFILE must be exactly localops');
   }
@@ -55,7 +56,7 @@ function validateLocalOpsEnv(env) {
   if (typeof env.AI_MODEL !== 'string' || env.AI_MODEL.trim() === '') {
     return inputProblem('AI_MODEL must be a non-empty string');
   }
-  if (!isExplicitLoopbackUrl(env.AI_BASE_URL)) {
+  if (!baseUrl) {
     return inputProblem('AI_BASE_URL must be an explicit HTTP loopback URL without userinfo');
   }
   for (const [key, allowedValues] of Object.entries(REQUIRED_LOCALOPS_FLAGS)) {
@@ -69,18 +70,19 @@ function validateLocalOpsEnv(env) {
 
 function validateOptions(options) {
   if (typeof options !== 'object' || options === null || Array.isArray(options)) {
-    return inputProblem('proof options must be an object');
+    return { problem: inputProblem('proof options must be an object') };
   }
   if (typeof options.env !== 'object' || options.env === null || Array.isArray(options.env)) {
-    return inputProblem('proof env must be an object');
+    return { problem: inputProblem('proof env must be an object') };
   }
   if (typeof options.prompt !== 'string' || options.prompt.trim() === '') {
-    return inputProblem('proof prompt must be a non-empty string');
+    return { problem: inputProblem('proof prompt must be a non-empty string') };
   }
   if (!Number.isSafeInteger(options.timeoutMs) || options.timeoutMs < 1 || options.timeoutMs > MAX_TIMEOUT_MS) {
-    return inputProblem(`proof timeoutMs must be an integer from 1 to ${MAX_TIMEOUT_MS}`);
+    return { problem: inputProblem(`proof timeoutMs must be an integer from 1 to ${MAX_TIMEOUT_MS}`) };
   }
-  return validateLocalOpsEnv(options.env);
+  const baseUrl = normalizeExplicitLoopbackUrl(options.env.AI_BASE_URL);
+  return { problem: validateLocalOpsEnv(options.env, baseUrl), baseUrl };
 }
 
 function observeOllamaTerminal(baseUrl) {
@@ -102,6 +104,14 @@ function observeOllamaTerminal(baseUrl) {
     observation = (async () => {
       const decoder = new TextDecoder();
       let buffer = '';
+      let terminalSeen = false;
+      const observeLine = line => {
+        if (line === '') return true;
+        const parsed = JSON.parse(line);
+        if (terminalSeen) return false;
+        if (parsed.done === true) terminalSeen = true;
+        return true;
+      };
       for await (const piece of copy.body) {
         buffer += decoder.decode(piece, { stream: true });
         let newline = buffer.indexOf('\n');
@@ -109,11 +119,11 @@ function observeOllamaTerminal(baseUrl) {
           const line = buffer.slice(0, newline).trim();
           buffer = buffer.slice(newline + 1);
           newline = buffer.indexOf('\n');
-          if (line && JSON.parse(line).done === true) return true;
+          if (!observeLine(line)) return false;
         }
       }
       const tail = buffer.trim();
-      return tail !== '' && JSON.parse(tail).done === true;
+      return observeLine(tail) && terminalSeen;
     })().catch(() => false);
     return response;
   };
@@ -127,18 +137,18 @@ function observeOllamaTerminal(baseUrl) {
 }
 
 export async function runLocalOpsOllamaLiveProof(options) {
-  const invalid = validateOptions(options);
+  const { problem: invalid, baseUrl } = validateOptions(options);
   if (invalid) return invalid;
 
   let provider;
   try {
-    provider = createLocalOpsProvider({ env: options.env });
+    provider = createLocalOpsProvider({ env: { ...options.env, AI_BASE_URL: baseUrl } });
   } catch {
     return inputProblem('LocalOps proof environment is invalid');
   }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
-  const terminal = observeOllamaTerminal(options.env.AI_BASE_URL);
+  const terminal = observeOllamaTerminal(baseUrl);
 
   try {
     const result = await provider.complete(
