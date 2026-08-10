@@ -38,6 +38,8 @@ async function canConnect(port) {
 
 function tunnelFixture({ models = [MODEL], releaseOnKill = true, onHealth, onChat } = {}) {
   let server;
+  let serverClosed = Promise.resolve();
+  const sockets = new Set();
   const child = new EventEmitter();
   child.pid = 4242;
   child.exitCode = null;
@@ -67,14 +69,25 @@ function tunnelFixture({ models = [MODEL], releaseOnKill = true, onHealth, onCha
         response.end(JSON.stringify({ models: models.map(name => ({ name })) }));
         onHealth?.(child);
       });
+      server.on('connection', socket => {
+        sockets.add(socket);
+        socket.once('close', () => sockets.delete(socket));
+      });
+      serverClosed = once(server, 'close');
       server.listen(localPort, '127.0.0.1');
       await once(server, 'listening');
       return child;
     },
     async forceClose() {
-      if (!server?.listening) return;
-      server.close();
-      await once(server, 'close');
+      if (!server) return;
+      if (server.listening) server.close();
+      for (const socket of sockets) socket.destroy();
+      await Promise.race([
+        serverClosed,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('fixture server did not close')), 500)
+        ),
+      ]);
     },
   };
 }
