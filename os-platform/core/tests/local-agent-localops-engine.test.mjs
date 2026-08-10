@@ -172,6 +172,8 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     assert.match(captured.system, /Human-approved action/);
     assert.match(captured.system, /Escalation/);
     assert.doesNotMatch(captured.system, /R1 — TerraFusion API/);
+    assert.match(captured.system, /final Sources: \[1\]\./);
+    assert.doesNotMatch(captured.system, /Sources: \[1\] \[2\]/);
     assert.deepEqual(
       answer.sources.map(source => source.sourceFile),
       [canonicalRunbook]
