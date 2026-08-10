@@ -376,7 +376,8 @@ test('LocalOps Ask returns a deployment-readiness brief grounded only in the can
       {
         sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
         heading: 'Stop conditions',
-        snippet: 'Unanswered egress, data, and approval questions are stop conditions.',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
       },
     ],
   };
@@ -417,7 +418,8 @@ test('LocalOps Ask never displays a model-generated readiness claim', async () =
       {
         sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
         heading: 'Stop conditions',
-        snippet: 'Unanswered egress, data, and approval questions are stop conditions.',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
       },
     ],
   });
@@ -434,6 +436,34 @@ test('LocalOps Ask never displays a model-generated readiness claim', async () =
   assert.doesNotMatch(result.payload.answer.text, /fully ready/i);
   assert.doesNotMatch(result.payload.viewModel.insight.text, /fully ready/i);
   assert.match(result.payload.answer.text, /Deployment readiness is not asserted/);
+});
+
+test('LocalOps Ask fails closed when canonical stop-condition text drifts', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A response citing changed stop conditions. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- The canonical conditions changed without projection review.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_DRIFT');
+  assert.equal(result.payload.answer, undefined);
 });
 
 test('LocalOps Ask refuses a deployment-readiness brief grounded in any noncanonical source', async () => {

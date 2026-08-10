@@ -8,11 +8,27 @@ const CANONICAL_LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 const CANONICAL_BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
 const CANONICAL_BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
+const DEPLOYMENT_READINESS_CONDITIONS = Object.freeze([
+  Object.freeze({
+    source:
+      'If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).',
+    brief: 'Q1–Q4: unanswered egress questions block provider work.',
+  }),
+  Object.freeze({
+    source:
+      'If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).',
+    brief: 'Q9–Q11: unanswered data questions block KB/RAG indexing.',
+  }),
+  Object.freeze({
+    source:
+      'If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
+    brief:
+      'Q17 and Q20: unanswered approval-authority questions block every capability above read_only.',
+  }),
+]);
 const DEPLOYMENT_READINESS_BRIEF = [
   'Deployment readiness is not asserted. Confirm these canonical prerequisites:',
-  '- Q1–Q4: unanswered egress questions block provider work.',
-  '- Q9–Q11: unanswered data questions block KB/RAG indexing.',
-  '- Q17 and Q20: unanswered approval-authority questions block every capability above read_only.',
+  ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.brief}`),
   'Treat each item as unresolved until the authorized owner supplies the answer. [1]',
 ].join('\n');
 
@@ -306,6 +322,20 @@ export async function runAcademyLocalOpsJourney({
         'refused',
         'DEPLOYMENT_READINESS_SOURCE_REQUIRED',
         'LocalOps did not ground this readiness brief in the canonical Benton IT and security questions, so no readiness brief will be displayed.'
+      );
+    }
+
+    if (
+      panelJourney?.journey === 'localops-deployment-readiness' &&
+      !DEPLOYMENT_READINESS_CONDITIONS.every(condition =>
+        answer.sources[0].snippet.includes(condition.source)
+      )
+    ) {
+      return fail(
+        503,
+        'refused',
+        'DEPLOYMENT_READINESS_SOURCE_DRIFT',
+        'The canonical Benton stop-condition text no longer matches this bounded readiness projection, so no readiness brief will be displayed.'
       );
     }
 
