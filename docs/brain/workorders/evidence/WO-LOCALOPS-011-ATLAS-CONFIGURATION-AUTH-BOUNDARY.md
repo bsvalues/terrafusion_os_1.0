@@ -17,8 +17,8 @@
 
 ## Automated proof
 
-- Focused Atlas boundary suite: 8 passed.
-- Atlas plus existing Academy/Ollama/lifecycle regressions: 71 passed.
+- Focused Atlas boundary suite: 10 passed.
+- Atlas plus existing Academy/Ollama/lifecycle regressions: 73 passed.
 - Phase 8.3 core gate: 56 passed.
 - Core TypeScript check: passed.
 - Generated JavaScript header check: passed.

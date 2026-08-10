@@ -14,13 +14,15 @@ query, running a migration, or mutating state.
 
 - Inspect only the committed production connection templates, runtime connection resolver,
   authentication registration, and the effective fixed `atlas` SSH alias configuration.
-- Use `ssh -G atlas` only. It expands local SSH configuration and makes no SSH or network connection.
+- Use `ssh -G atlas` only. It expands local SSH configuration and makes no SSH or network connection;
+  the resolved hostname must remain the approved Atlas endpoint `192.168.1.156`.
 - Emit endpoint identity, ports, database/principal names, configuration keys, and credential-reference
   names. Never read or emit a credential value or a fully resolved connection string.
 - Treat `${TF_DB_HOST}` and `${TF_REDIS_HOST}` as deployment-template references. Do not claim that
   .NET configuration expands those placeholders automatically.
-- Fail closed for source drift, missing sources, an unavailable alias, an unsafe hostname, inherited
-  forwarding, or any input beyond the repository root.
+- Fail closed for source drift, disconnected authentication registration, missing sources, an
+  unavailable or endpoint-drifted alias, an unsafe hostname, inherited forwarding, or any input beyond
+  the repository root.
 - Do not import network, database, Redis, or migration clients. Do not access county data, Hermes,
   Forge, production, or any database service.
 

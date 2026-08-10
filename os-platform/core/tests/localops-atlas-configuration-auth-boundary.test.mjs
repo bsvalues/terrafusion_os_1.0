@@ -11,6 +11,7 @@ const productionConfigPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/appsettings.Production.json'
 );
+const programPath = path.join(repoRoot, 'backend/src/TerraFusion.API/Program.cs');
 const authPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs'
@@ -135,8 +136,56 @@ describe('Atlas configuration and authentication boundary', () => {
     assert.strictEqual(result.reasonCode, 'ATLAS_AUTHENTICATION_CONTRACT_DRIFT');
   });
 
-  it('refuses an Atlas alias with inherited forwarding or an unsafe hostname', async () => {
+  it('ties the local override contract to the main WebApplication builder', async () => {
+    const actualProgram = await readFile(programPath, 'utf8');
+    const disconnectedMainOverride = actualProgram.replace(
+      'builder.Configuration.AddJsonFile(\n    $"appsettings.{builder.Environment.EnvironmentName}.local.json",',
+      'builder.Configuration.AddJsonFile(\n    $"appsettings.Disconnected.local.json",'
+    );
+    assert.notStrictEqual(disconnectedMainOverride, actualProgram);
+
+    const result = await runAtlasConfigurationAuthBoundary(
+      { repoRoot },
+      {
+        inspectSshConfiguration: () => atlasSshConfig(),
+        readFile: async filePath =>
+          path.resolve(filePath) === programPath
+            ? disconnectedMainOverride
+            : readFile(filePath, 'utf8'),
+      }
+    );
+
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.reasonCode, 'ATLAS_CONFIGURATION_CONTRACT_DRIFT');
+  });
+
+  it('fails closed when authentication is not registered on the main API builder', async () => {
+    const actualProgram = await readFile(programPath, 'utf8');
+    const disconnectedAuthentication = actualProgram.replace(
+      'builder.Services.AddTerraFusionAuthentication(builder.Configuration, builder.Environment);',
+      '// authentication registration disconnected'
+    );
+    assert.notStrictEqual(disconnectedAuthentication, actualProgram);
+
+    const result = await runAtlasConfigurationAuthBoundary(
+      { repoRoot },
+      {
+        inspectSshConfiguration: () => atlasSshConfig(),
+        readFile: async filePath =>
+          path.resolve(filePath) === programPath
+            ? disconnectedAuthentication
+            : readFile(filePath, 'utf8'),
+      }
+    );
+
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.reasonCode, 'ATLAS_AUTHENTICATION_CONTRACT_DRIFT');
+  });
+
+  it('refuses a missing, drifted, forwarded, or syntactically unsafe Atlas alias', async () => {
     for (const sshConfig of [
+      atlasSshConfig('atlas'),
+      atlasSshConfig('192.168.1.157'),
       `${atlasSshConfig()}localforward 15432 127.0.0.1:5432\n`,
       atlasSshConfig('atlas host'),
     ]) {

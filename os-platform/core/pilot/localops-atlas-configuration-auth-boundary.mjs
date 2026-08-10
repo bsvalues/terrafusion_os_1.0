@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ATLAS_SSH_ALIAS = 'atlas';
+const APPROVED_ATLAS_HOSTNAME = '192.168.1.156';
 const PRODUCTION_CONFIG = 'backend/src/TerraFusion.API/appsettings.Production.json';
 const PROGRAM_SOURCE = 'backend/src/TerraFusion.API/Program.cs';
 const AUTH_SOURCE = 'backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs';
@@ -46,16 +47,43 @@ function validateProductionConfiguration(source) {
   );
 }
 
+function withoutCSharpComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+}
+
 function validateProgramContract(source) {
-  return [
-    /WebApplication\.CreateBuilder\(/,
-    /AddJsonFile\(\s*\$"appsettings\.\{builder\.Environment\.EnvironmentName\}\.local\.json"/s,
-    /GetConnectionString\("DefaultConnection"\)/,
-    /ResolvePrimaryConnectionString\(builder\.Configuration, builder\.Environment\)/,
-  ].every(pattern => pattern.test(source));
+  const uncommented = withoutCSharpComments(source);
+  const mainBuilderStart = uncommented.indexOf('var builder = WebApplication.CreateBuilder(');
+  const localConfigurationEnd = uncommented.indexOf(
+    'static string ResolveSqliteConnectionString',
+    mainBuilderStart
+  );
+  if (mainBuilderStart < 0 || localConfigurationEnd < 0) return false;
+  const mainBuilderConfiguration = uncommented.slice(mainBuilderStart, localConfigurationEnd);
+  return (
+    [
+      /AddJsonFile\(\s*\$"appsettings\.\{builder\.Environment\.EnvironmentName\}\.local\.json"/s,
+    ].every(pattern => pattern.test(mainBuilderConfiguration)) &&
+    [
+      /GetConnectionString\("DefaultConnection"\)/,
+      /ResolvePrimaryConnectionString\(builder\.Configuration, builder\.Environment\)/,
+    ].every(pattern => pattern.test(uncommented))
+  );
+}
+
+function validateAuthenticationRegistration(source) {
+  const uncommented = withoutCSharpComments(source);
+  const mainBuilderStart = uncommented.indexOf('var builder = WebApplication.CreateBuilder(');
+  return (
+    mainBuilderStart >= 0 &&
+    /builder\.Services\.AddTerraFusionAuthentication\(builder\.Configuration, builder\.Environment\);/.test(
+      uncommented.slice(mainBuilderStart)
+    )
+  );
 }
 
 function validateAuthenticationContract(source) {
+  const uncommented = withoutCSharpComments(source);
   return [
     /GetSection\("JwtSettings"\)/,
     /jwtSettings\["SecretKey"\]/,
@@ -72,7 +100,7 @@ function validateAuthenticationContract(source) {
     /ValidIssuer = issuer/,
     /ValidAudience = audience/,
     /FallbackPolicy = new AuthorizationPolicyBuilder\(\)\s*\.RequireAuthenticatedUser\(\)/s,
-  ].every(pattern => pattern.test(source));
+  ].every(pattern => pattern.test(uncommented));
 }
 
 function inspectAtlasSshConfiguration() {
@@ -97,6 +125,7 @@ function resolveAtlasHostname(sshConfiguration) {
   const hostname = sshConfiguration.match(/^hostname\s+(\S+)\s*$/im)?.[1];
   if (
     !hostname ||
+    hostname !== APPROVED_ATLAS_HOSTNAME ||
     !/^[A-Za-z0-9.-]+$/.test(hostname) ||
     hostname.startsWith('-') ||
     hostname.includes('..')
@@ -142,6 +171,12 @@ export async function runAtlasConfigurationAuthBoundary(options, dependencies = 
       'Committed TerraFusion authentication contract has drifted.'
     );
   }
+  if (!validateAuthenticationRegistration(programSource)) {
+    return problem(
+      'ATLAS_AUTHENTICATION_CONTRACT_DRIFT',
+      'Committed TerraFusion authentication contract has drifted.'
+    );
+  }
 
   let sshConfiguration;
   try {
@@ -156,7 +191,7 @@ export async function runAtlasConfigurationAuthBoundary(options, dependencies = 
   if (!hostname) {
     return problem(
       'ATLAS_SSH_CONFIGURATION_UNSAFE',
-      'The fixed atlas SSH alias has an unsafe hostname or inherited forwarding.'
+      'The fixed atlas SSH alias does not resolve to the approved endpoint or has inherited forwarding.'
     );
   }
 
