@@ -36,17 +36,6 @@ const LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 const BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
 const BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
-const SYNTHETIC_EXEMPTION_SOURCE = 'synthetic-demo/localops-exemption-review-v1';
-const SYNTHETIC_EXEMPTION_HEADING = 'Fixed senior exemption review facts';
-const SYNTHETIC_EXEMPTION_FACTS = [
-  'applicantAge: 71',
-  'ownerOccupied: true',
-  'incomeDocumentation: not_provided',
-  'residencyDocumentation: provided',
-] as const;
-const SYNTHETIC_EXEMPTION_SNIPPET = SYNTHETIC_EXEMPTION_FACTS.join('; ');
-const EXEMPTION_DISCLAIMER =
-  'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.';
 
 type PanelJourney =
   | 'localops-diagnostic-panel'
@@ -85,25 +74,23 @@ function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure 
   );
 }
 
-function isExactSyntheticExemptionAdvisory(vm: Partial<LocalOpsViewModel>): boolean {
+function isSafeSyntheticExemptionAdvisory(vm: Partial<LocalOpsViewModel>): boolean {
   const advisory = vm.exemptionAdvisory;
   if (!isRecord(advisory)) return false;
-  const allowedVerdicts = ['likely_eligible', 'needs_review', 'likely_ineligible'];
   return (
     vm.insightKind === 'synthetic-exemption-advisory' &&
     vm.insight === undefined &&
     Object.keys(advisory).sort().join(',') === 'disclaimer,groundingFacts,synthetic,verdict' &&
     advisory.synthetic === true &&
-    typeof advisory.verdict === 'string' &&
-    allowedVerdicts.includes(advisory.verdict) &&
+    advisory.verdict === 'needs_review' &&
     Array.isArray(advisory.groundingFacts) &&
-    advisory.groundingFacts.length === SYNTHETIC_EXEMPTION_FACTS.length &&
-    advisory.groundingFacts.every((fact, index) => fact === SYNTHETIC_EXEMPTION_FACTS[index]) &&
-    advisory.disclaimer === EXEMPTION_DISCLAIMER &&
+    advisory.groundingFacts.length > 0 &&
+    advisory.groundingFacts.length <= 16 &&
+    advisory.groundingFacts.every((fact) => boundedString(fact)) &&
+    new Set(advisory.groundingFacts).size === advisory.groundingFacts.length &&
+    boundedString(advisory.disclaimer) &&
     vm.sources?.length === 1 &&
-    vm.sources[0].sourceFile === SYNTHETIC_EXEMPTION_SOURCE &&
-    vm.sources[0].heading === SYNTHETIC_EXEMPTION_HEADING &&
-    vm.sources[0].snippet === SYNTHETIC_EXEMPTION_SNIPPET
+    vm.sources[0].sourceFile.startsWith('synthetic-demo/')
   );
 }
 
@@ -125,7 +112,7 @@ const JOURNEY_VIEW_MODEL_VALIDATORS: Record<
     vm.sources?.length === 1 &&
     vm.sources[0].sourceFile === BENTON_IT_QUESTIONS &&
     vm.sources[0].heading === BENTON_IT_STOP_CONDITIONS,
-  'localops-synthetic-exemption-advisory': isExactSyntheticExemptionAdvisory,
+  'localops-synthetic-exemption-advisory': isSafeSyntheticExemptionAdvisory,
 };
 
 function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is LocalOpsViewModel {
@@ -167,7 +154,7 @@ function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is L
         boundedString(source.sourceFile) &&
         (source.sourceFile.startsWith('docs/') ||
           (journey === 'localops-synthetic-exemption-advisory' &&
-            source.sourceFile === SYNTHETIC_EXEMPTION_SOURCE)) &&
+            source.sourceFile.startsWith('synthetic-demo/'))) &&
         !source.sourceFile.includes('..') &&
         (source.heading === undefined || boundedString(source.heading, true)) &&
         boundedString(source.snippet, true)

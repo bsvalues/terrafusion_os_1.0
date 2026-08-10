@@ -351,4 +351,23 @@ describe('LocalOpsPanel synthetic exemption advisory journey', () => {
       screen.queryByRole('button', { name: /approve|apply|grant|deny|update/i })
     ).not.toBeInTheDocument();
   });
+
+  it('shows an exemption-scoped correlation error without rendering an advisory', async () => {
+    const user = userEvent.setup();
+    render(
+      <LocalOpsPanel
+        data={baseVm({ insightKind: 'synthetic-exemption-advisory' })}
+        onAskExemption={vi.fn()}
+        askExemptionNetworkFailure={{
+          message: 'The local exemption advisor failed safely.',
+          correlationId: 'corr-localops-exemption-proof',
+        }}
+      />
+    );
+
+    await user.click(screen.getByTestId('localops-section-ask'));
+    expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-exemption-proof');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
 });

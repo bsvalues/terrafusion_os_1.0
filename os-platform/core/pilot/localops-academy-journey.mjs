@@ -61,6 +61,7 @@ const SYNTHETIC_EXEMPTION_REVIEW = Object.freeze({
 const EXEMPTION_DISCLAIMER =
   'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.';
 const EXEMPTION_VERDICTS = Object.freeze(['likely_eligible', 'needs_review', 'likely_ineligible']);
+const EXEMPTION_PRODUCT_VERDICT = 'needs_review';
 
 function normalizeCanonicalSection(value) {
   return value.replace(/\r\n/g, '\n').trim();
@@ -353,7 +354,7 @@ export async function runAcademyLocalOpsJourney({
         insightKind: panelJourney.insightKind,
         exemptionAdvisory: {
           synthetic: true,
-          verdict: advisory.verdict,
+          verdict: EXEMPTION_PRODUCT_VERDICT,
           groundingFacts: [...SYNTHETIC_EXEMPTION_FACTS],
           disclaimer: EXEMPTION_DISCLAIMER,
         },
@@ -366,7 +367,7 @@ export async function runAcademyLocalOpsJourney({
           journey: panelJourney.journey,
           question: { id: questionId, label: question.label },
           answer: {
-            text: `Synthetic demo advisory signal: ${advisory.verdict}. ${EXEMPTION_DISCLAIMER}`,
+            text: `Synthetic demo advisory signal: ${EXEMPTION_PRODUCT_VERDICT}. ${EXEMPTION_DISCLAIMER}`,
             grounded: true,
             sources: [source],
           },

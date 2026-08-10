@@ -759,7 +759,7 @@ describe('LocalOpsSurface synthetic exemption advisory journey', () => {
     });
   });
 
-  it('rejects a synthetic exemption advisory when any fixed grounding fact drifts', async () => {
+  it('rejects a directional verdict from a synthetic evidence-only advisory', async () => {
     askLocalOpsMock.mockResolvedValue({
       ok: true,
       status: 'success',
@@ -797,6 +797,38 @@ describe('LocalOpsSurface synthetic exemption advisory journey', () => {
         'INVALID_LOCALOPS_PANEL_RESPONSE'
       )
     );
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
+
+  it('preserves an exemption backend correlation ID and renders no advisory', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCAL_PROVIDER_FAILED',
+      message: 'The local exemption advisor failed safely.',
+      correlationId: 'corr-localops-exemption-503',
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('corr-localops-exemption-503');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
+
+  it('normalizes a rejected exemption request to a net correlation ID and no advisory', async () => {
+    askLocalOpsMock.mockRejectedValue(new Error('approved tunnel unavailable'));
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Could not reach LocalOps');
+    expect(alert).toHaveTextContent(/net-[a-z0-9-]+/i);
     expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
   });
 });

@@ -565,7 +565,7 @@ test('LocalOps Ask refuses the canonical readiness file with a mismatched sectio
   assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_REQUIRED');
 });
 
-test('LocalOps Ask returns a structured exemption advisory over fixed synthetic facts without exposing model rationale', async () => {
+test('LocalOps Ask constrains a directional model label to needs_review without exposing model rationale', async () => {
   const expectedFacts = [
     'applicantAge: 71',
     'ownerOccupied: true',
@@ -577,7 +577,7 @@ test('LocalOps Ask returns a structured exemption advisory over fixed synthetic 
     advisoryOnly: true,
     available: true,
     status: 'success',
-    verdict: 'needs_review',
+    verdict: 'likely_eligible',
     rationale: 'model-only rationale must not cross the product boundary',
     groundingFacts: expectedFacts,
     disclaimer:
