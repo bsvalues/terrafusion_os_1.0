@@ -9,6 +9,28 @@ const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 const CANONICAL_BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
 const CANONICAL_BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
 
+const PANEL_JOURNEYS = Object.freeze({
+  'localops-panel-diagnostic': Object.freeze({ journey: 'localops-diagnostic-panel' }),
+  'localops-runbook-guidance': Object.freeze({
+    journey: 'localops-runbook-guidance',
+    insightKind: 'runbook-guidance',
+    sourceFile: CANONICAL_BENTON_RUNBOOK,
+    heading: CANONICAL_R0_HEADING,
+  }),
+  'localops-source-grounded-explain': Object.freeze({
+    journey: 'localops-source-grounded-explain',
+    insightKind: 'source-grounded-explain',
+    sourceFile: CANONICAL_LOCALOPS_DOCTRINE,
+    heading: CANONICAL_LOCALOPS_DOCTRINE_HEADING,
+  }),
+  'localops-deployment-readiness': Object.freeze({
+    journey: 'localops-deployment-readiness',
+    insightKind: 'deployment-readiness-ask',
+    sourceFile: CANONICAL_BENTON_IT_QUESTIONS,
+    heading: CANONICAL_BENTON_IT_STOP_CONDITIONS,
+  }),
+});
+
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
     label: 'Why is LocalOps read-only?',
@@ -177,40 +199,20 @@ export async function runAcademyLocalOpsJourney({
   }
 
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
-  const runbookJourney = questionId === 'localops-runbook-guidance';
-  const explainJourney = questionId === 'localops-source-grounded-explain';
-  const readinessJourney = questionId === 'localops-deployment-readiness';
+  const panelJourney = PANEL_JOURNEYS[questionId];
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
   const engine = engineFactory({
     repoRoot,
     env: safeEnv,
     sink,
-    ...(runbookJourney || explainJourney || readinessJourney
+    ...(panelJourney?.sourceFile
       ? {
-          sourceFileAllowlist: [
-            runbookJourney
-              ? CANONICAL_BENTON_RUNBOOK
-              : explainJourney
-                ? CANONICAL_LOCALOPS_DOCTRINE
-                : CANONICAL_BENTON_IT_QUESTIONS,
-          ],
-          ...(runbookJourney || explainJourney || readinessJourney
-            ? {
-                sourceSection: {
-                  sourceFile: runbookJourney
-                    ? CANONICAL_BENTON_RUNBOOK
-                    : explainJourney
-                      ? CANONICAL_LOCALOPS_DOCTRINE
-                      : CANONICAL_BENTON_IT_QUESTIONS,
-                  heading: runbookJourney
-                    ? CANONICAL_R0_HEADING
-                    : explainJourney
-                      ? CANONICAL_LOCALOPS_DOCTRINE_HEADING
-                      : CANONICAL_BENTON_IT_STOP_CONDITIONS,
-                },
-              }
-            : {}),
+          sourceFileAllowlist: [panelJourney.sourceFile],
+          sourceSection: {
+            sourceFile: panelJourney.sourceFile,
+            heading: panelJourney.heading,
+          },
         }
       : {}),
   });
@@ -257,7 +259,7 @@ export async function runAcademyLocalOpsJourney({
     }
 
     if (
-      runbookJourney &&
+      panelJourney?.journey === 'localops-runbook-guidance' &&
       !answer.sources.every(source => source.sourceFile === CANONICAL_BENTON_RUNBOOK)
     ) {
       return fail(
@@ -269,7 +271,7 @@ export async function runAcademyLocalOpsJourney({
     }
 
     if (
-      explainJourney &&
+      panelJourney?.journey === 'localops-source-grounded-explain' &&
       !(
         answer.sources.length === 1 &&
         answer.sources[0].sourceFile === CANONICAL_LOCALOPS_DOCTRINE &&
@@ -285,7 +287,7 @@ export async function runAcademyLocalOpsJourney({
     }
 
     if (
-      readinessJourney &&
+      panelJourney?.journey === 'localops-deployment-readiness' &&
       !(
         answer.sources.length === 1 &&
         answer.sources[0].sourceFile === CANONICAL_BENTON_IT_QUESTIONS &&
@@ -300,21 +302,12 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
-    const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
       payload: {
         ok: true,
         status: 'success',
-        journey: runbookJourney
-          ? 'localops-runbook-guidance'
-          : explainJourney
-            ? 'localops-source-grounded-explain'
-            : readinessJourney
-              ? 'localops-deployment-readiness'
-              : panelJourney
-                ? 'localops-diagnostic-panel'
-                : 'academy-localops',
+        journey: panelJourney?.journey ?? 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -328,15 +321,11 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney || runbookJourney || explainJourney || readinessJourney
+        ...(panelJourney
           ? {
-              viewModel: runbookJourney
-                ? { ...viewModel, insightKind: 'runbook-guidance' }
-                : explainJourney
-                  ? { ...viewModel, insightKind: 'source-grounded-explain' }
-                  : readinessJourney
-                    ? { ...viewModel, insightKind: 'deployment-readiness-ask' }
-                    : viewModel,
+              viewModel: panelJourney.insightKind
+                ? { ...viewModel, insightKind: panelJourney.insightKind }
+                : viewModel,
             }
           : {}),
       },
