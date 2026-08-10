@@ -10,10 +10,10 @@
 
 ## Automated proof
 
-- Lifecycle suite: 11 passed. Covers positive lifecycle, missing model, provider failure, unexpected
+- Lifecycle suite: 15 passed. Covers positive lifecycle, missing model, provider failure, unexpected
   use failure, interruption, listener cleanup failure, early SSH exit, occupied-port refusal, fixed
   boundary enforcement, exact SSH arguments, and inherited-forward refusal.
-- LocalOps journey plus Ollama/lifecycle regressions: 52 passed after the final remediation.
+- LocalOps journey plus Ollama/lifecycle regressions: 57 passed after the final remediation.
 - Phase 8.3 core gate: 56 passed.
 - Core TypeScript check: passed.
 - Generated JavaScript header check: passed.
