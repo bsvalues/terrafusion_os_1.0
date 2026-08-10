@@ -154,6 +154,8 @@ function createLocalOpsEngine(options) {
             'Keep the answer concise and cite supporting evidence with its bracketed number, such as [1].',
             '',
             groundingContext,
+            '',
+            `Required final line (copy exactly): ${citationExample}`,
         ].join('\n');
         // The provider enforces local-only / no-external / no-silent-fallback. We
         // never construct a cloud adapter and never reach the network on refusal.
