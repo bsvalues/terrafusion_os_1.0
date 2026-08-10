@@ -150,6 +150,42 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('offers a source-grounded Explain journey without mutation affordances', async () => {
+    const user = userEvent.setup();
+    const onExplain = vi.fn();
+    const data = baseVm({
+      sources: [
+        {
+          sourceFile: 'docs/localops/LOCALOPS_DOCTRINE.md',
+          heading: '2. What LocalOps IS',
+          snippet: 'LocalOps v1 observes and explains without mutation.',
+        },
+      ],
+      insight: {
+        text: 'LocalOps is local-first, source-grounded, trace-emitting, and read-only. [1]',
+        grounded: true,
+      },
+      insightKind: 'source-grounded-explain',
+    });
+
+    render(<LocalOpsPanel data={data} onExplain={onExplain} explainPending={false} />);
+
+    await user.click(screen.getByTestId('localops-section-explain'));
+    expect(screen.getByTestId('localops-explain-workflow')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-get-explanation')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-explanation')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-explain-source')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-explanation')).toHaveTextContent('source-grounded');
+    expect(screen.getByTestId('localops-explain-source')).toHaveTextContent(
+      'docs/localops/LOCALOPS_DOCTRINE.md'
+    );
+    await user.click(screen.getByTestId('localops-get-explanation'));
+    expect(onExplain).toHaveBeenCalledTimes(1);
+    expect(
+      screen.queryByRole('button', { name: /execute|restart|apply/i })
+    ).not.toBeInTheDocument();
+  });
+
   it('shows a structured refusal card clearly when present', () => {
     render(
       <LocalOpsPanel
