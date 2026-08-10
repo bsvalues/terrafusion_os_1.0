@@ -2,10 +2,15 @@ import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import { createServer } from 'node:http';
 import net from 'node:net';
+import { PassThrough } from 'node:stream';
 import { describe, it } from 'node:test';
 
-const { buildHermesSshArguments, runLocalOpsHermesLifecycle, validateHermesSshConfiguration } =
-  await import('../pilot/localops-hermes-lifecycle.mjs');
+const {
+  buildHermesSshArguments,
+  runLocalOpsHermesLifecycle,
+  validateHermesSshConfiguration,
+  waitForSshForwardReady,
+} = await import('../pilot/localops-hermes-lifecycle.mjs');
 
 const MODEL = 'llama3.2:3b';
 
@@ -399,6 +404,31 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
     }
   });
 
+  it('honors cancellation before starting SSH', async () => {
+    const localPort = await reservePort();
+    const interrupted = new AbortController();
+    interrupted.abort();
+    let starts = 0;
+    const result = await runLocalOpsHermesLifecycle(
+      { ...lifecycleOptions(localPort), signal: interrupted.signal },
+      {
+        startTunnel: async () => {
+          starts += 1;
+          throw new Error('must not start');
+        },
+      }
+    );
+
+    assert.strictEqual(starts, 0);
+    assert.deepStrictEqual(result, {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCALOPS_LIFECYCLE_INTERRUPTED',
+      message: 'Lifecycle interrupted before Hermes SSH startup.',
+      cleanup: 'not-started',
+    });
+  });
+
   it('rejects attempts to override the fixed host, model, or synthetic prompt boundary', async () => {
     const localPort = await reservePort();
     let starts = 0;
@@ -445,6 +475,7 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
 
   it('builds one exact foreground SSH forward and neutralizes ownership-affecting config', () => {
     assert.deepStrictEqual(buildHermesSshArguments(11455), [
+      '-v',
       '-N',
       '-T',
       '-o',
@@ -469,6 +500,54 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
       'ServerAliveCountMax=2',
       'hermes',
     ]);
+  });
+
+  it('does not acknowledge tunnel readiness until OpenSSH confirms the owned forward', async () => {
+    const child = new EventEmitter();
+    child.stderr = new PassThrough();
+    child.exitCode = null;
+    child.signalCode = null;
+    let settled = false;
+    const ready = waitForSshForwardReady(child, 11455, 500).then(() => {
+      settled = true;
+    });
+
+    child.stderr.write('debug1: Authentication succeeded (publickey).\n');
+    await new Promise(resolve => setImmediate(resolve));
+    assert.strictEqual(settled, false);
+    child.stderr.write('debug1: Local forwarding listening on 127.0.0.1 port 11455.\n');
+    await ready;
+    assert.strictEqual(settled, true);
+  });
+
+  it('fails tunnel readiness when SSH exits before confirming the owned forward', async () => {
+    const child = new EventEmitter();
+    child.stderr = new PassThrough();
+    child.exitCode = null;
+    child.signalCode = null;
+    const ready = waitForSshForwardReady(child, 11455, 500);
+    child.exitCode = 255;
+    child.emit('close', 255, null);
+
+    await assert.rejects(ready, error => {
+      assert.strictEqual(error.cause.reasonCode, 'LOCALOPS_TUNNEL_NOT_READY');
+      return true;
+    });
+  });
+
+  it('cancels tunnel readiness without waiting for its timeout', async () => {
+    const child = new EventEmitter();
+    child.stderr = new PassThrough();
+    child.exitCode = null;
+    child.signalCode = null;
+    const interrupted = new AbortController();
+    const ready = waitForSshForwardReady(child, 11455, 5_000, interrupted.signal);
+    interrupted.abort();
+
+    await assert.rejects(ready, error => {
+      assert.strictEqual(error.cause.reasonCode, 'LOCALOPS_LIFECYCLE_INTERRUPTED');
+      return true;
+    });
   });
 
   it('refuses inherited SSH forwards before starting the owned tunnel', () => {

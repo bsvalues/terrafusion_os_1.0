@@ -85,6 +85,7 @@ async function isPortOpen(localPort) {
 
 export function buildHermesSshArguments(localPort) {
   return [
+    '-v',
     '-N',
     '-T',
     '-o',
@@ -135,7 +136,61 @@ function inspectHermesSshConfiguration() {
   return validateHermesSshConfiguration(inspection.stdout);
 }
 
-async function startSshTunnel({ localPort }) {
+export function waitForSshForwardReady(child, localPort, timeoutMs = 5_000, signal) {
+  return new Promise((resolve, reject) => {
+    let stderr = '';
+    const readyPattern = new RegExp(
+      `Local forwarding listening on 127\\.0\\.0\\.1 port ${localPort}\\.`
+    );
+    const readyProblem = message =>
+      new Error(message, {
+        cause: problem(
+          'LOCALOPS_TUNNEL_NOT_READY',
+          'Hermes SSH exited or timed out before confirming the owned loopback forward.'
+        ),
+      });
+    const cleanup = () => {
+      clearTimeout(timer);
+      child.stderr?.removeListener('data', onData);
+      child.removeListener('error', onError);
+      child.removeListener('close', onClose);
+      signal?.removeEventListener('abort', onAbort);
+    };
+    const finish = callback => value => {
+      cleanup();
+      callback(value);
+    };
+    const succeed = finish(resolve);
+    const fail = finish(reject);
+    const onData = chunk => {
+      stderr = `${stderr}${chunk.toString()}`.slice(-8_192);
+      if (readyPattern.test(stderr)) succeed();
+    };
+    const onError = error => fail(error);
+    const onClose = () => fail(readyProblem('SSH exited before tunnel readiness.'));
+    const onAbort = () =>
+      fail(
+        new Error('Lifecycle interrupted before SSH readiness.', {
+          cause: problem(
+            'LOCALOPS_LIFECYCLE_INTERRUPTED',
+            'Lifecycle interrupted before SSH readiness.'
+          ),
+        })
+      );
+    const timer = setTimeout(
+      () => fail(readyProblem('SSH tunnel readiness timed out.')),
+      timeoutMs
+    );
+
+    child.stderr?.on('data', onData);
+    child.once('error', onError);
+    child.once('close', onClose);
+    signal?.addEventListener('abort', onAbort, { once: true });
+    if (signal?.aborted) onAbort();
+  });
+}
+
+async function startSshTunnel({ localPort, healthTimeoutMs, signal }) {
   const unsafeConfig = inspectHermesSshConfiguration();
   if (unsafeConfig) throw new Error(unsafeConfig.message, { cause: unsafeConfig });
   const child = spawn('ssh', buildHermesSshArguments(localPort), {
@@ -143,12 +198,19 @@ async function startSshTunnel({ localPort }) {
     stdio: ['ignore', 'ignore', 'pipe'],
     windowsHide: true,
   });
-  child.stderr?.resume();
-  await new Promise((resolve, reject) => {
-    child.once('spawn', resolve);
-    child.once('error', reject);
-  });
-  return child;
+  try {
+    await waitForSshForwardReady(child, localPort, healthTimeoutMs, signal);
+    child.stderr?.resume();
+    return child;
+  } catch (error) {
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
+    let exited = await waitForChildExit(child, 1_000);
+    if (!exited) {
+      child.kill('SIGKILL');
+      exited = await waitForChildExit(child, 1_000);
+    }
+    throw error;
+  }
 }
 
 async function waitForHealth({ localPort, healthTimeoutMs, signal }, fetchImpl) {
@@ -251,6 +313,12 @@ export async function runLocalOpsHermesLifecycle(options, dependencies = {}) {
       `Loopback port ${options.localPort} is already in use; refusing to touch an unowned listener.`
     );
   }
+  if (options.signal?.aborted) {
+    return problem(
+      'LOCALOPS_LIFECYCLE_INTERRUPTED',
+      'Lifecycle interrupted before Hermes SSH startup.'
+    );
+  }
 
   const startTunnel = dependencies.startTunnel ?? startSshTunnel;
   const runProof = dependencies.runProof ?? runLocalOpsOllamaLiveProof;
@@ -298,8 +366,8 @@ export async function runLocalOpsHermesLifecycle(options, dependencies = {}) {
       phase === 'starting' && isLifecycleProblem(error?.cause)
         ? error.cause
         : phase === 'using'
-        ? problem('LOCALOPS_USE_FAILED', 'LocalOps proof failed unexpectedly.')
-        : problem('LOCALOPS_TUNNEL_START_FAILED', 'Hermes SSH tunnel could not be started.');
+          ? problem('LOCALOPS_USE_FAILED', 'LocalOps proof failed unexpectedly.')
+          : problem('LOCALOPS_TUNNEL_START_FAILED', 'Hermes SSH tunnel could not be started.');
   }
 
   const cleanup = await cleanupTunnel(child, options.localPort, options.cleanupTimeoutMs);

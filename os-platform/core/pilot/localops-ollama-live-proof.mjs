@@ -37,6 +37,22 @@ function interruptedProblem() {
   };
 }
 
+function incompleteResponseProblem() {
+  return {
+    ok: false,
+    status: 'failed',
+    reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
+    message: 'Ollama response did not contain a non-empty terminal completion.',
+  };
+}
+
+export async function validateTerminalCompletion(text, terminalSeen, signal) {
+  if (text.length === 0) return incompleteResponseProblem();
+  const terminalWasSeen = await terminalSeen();
+  if (signal?.aborted) return interruptedProblem();
+  return terminalWasSeen ? null : incompleteResponseProblem();
+}
+
 function normalizeExplicitLoopbackUrl(value) {
   if (typeof value !== 'string') return false;
   try {
@@ -187,14 +203,12 @@ export async function runLocalOpsOllamaLiveProof(options) {
         message: 'LocalOps completion did not produce a verified success result.',
       };
     }
-    if (result.completion.text.length === 0 || !(await terminal.terminalSeen())) {
-      return {
-        ok: false,
-        status: 'failed',
-        reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
-        message: 'Ollama response did not contain a non-empty terminal completion.',
-      };
-    }
+    const terminalProblem = await validateTerminalCompletion(
+      result.completion.text,
+      terminal.terminalSeen,
+      options.signal
+    );
+    if (terminalProblem) return terminalProblem;
 
     return {
       ok: true,

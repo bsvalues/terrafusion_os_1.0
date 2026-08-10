@@ -5,7 +5,8 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
-const { runLocalOpsOllamaLiveProof } = await import('../pilot/localops-ollama-live-proof.mjs');
+const { runLocalOpsOllamaLiveProof, validateTerminalCompletion } =
+  await import('../pilot/localops-ollama-live-proof.mjs');
 
 const PROOF_PATH = new URL('../pilot/localops-ollama-live-proof.mjs', import.meta.url);
 const FIXTURE_MODEL = 'ollama-loopback-fixture';
@@ -140,14 +141,62 @@ async function assertIncompleteOllamaResponse(body) {
 describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', () => {
   it('fails closed when an owning lifecycle interrupts the active proof', async () => {
     const interrupted = new AbortController();
-    interrupted.abort();
-    const result = await runLocalOpsOllamaLiveProof({
-      env: proofEnv(await closedLoopbackUrl()),
-      prompt: FIXTURE_PROMPT,
-      timeoutMs: 1_000,
-      signal: interrupted.signal,
+    let markRequestStarted;
+    const requestStarted = new Promise(resolve => {
+      markRequestStarted = resolve;
     });
-    assert.deepStrictEqual(result, {
+    await withLoopbackServer(
+      async (request, response) => {
+        for await (const _chunk of request) {
+          // Consume the complete request before holding the response open.
+        }
+        response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+        response.flushHeaders();
+        markRequestStarted();
+      },
+      async baseUrl => {
+        const proof = runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+          signal: interrupted.signal,
+        });
+        await requestStarted;
+        interrupted.abort();
+        assert.deepStrictEqual(await proof, {
+          ok: false,
+          status: 'failed',
+          reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
+          message: 'LocalOps proof was interrupted by its owning lifecycle.',
+        });
+      }
+    );
+  });
+
+  it('fails closed when cancellation arrives while terminal validation is pending', async () => {
+    const interrupted = new AbortController();
+    let markValidationStarted;
+    const validationStarted = new Promise(resolve => {
+      markValidationStarted = resolve;
+    });
+    let releaseValidation;
+    const validationReleased = new Promise(resolve => {
+      releaseValidation = resolve;
+    });
+    const validation = validateTerminalCompletion(
+      FIXTURE_TEXT,
+      async () => {
+        markValidationStarted();
+        await validationReleased;
+        return true;
+      },
+      interrupted.signal
+    );
+    await validationStarted;
+    interrupted.abort();
+    releaseValidation();
+
+    assert.deepStrictEqual(await validation, {
       ok: false,
       status: 'failed',
       reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
