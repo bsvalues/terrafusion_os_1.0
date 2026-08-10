@@ -22,6 +22,7 @@
 import React, { useState } from 'react';
 import { Z } from '../../shell/desktop/zIndex';
 import { ErrorDisplay, type ErrorDisplayProps } from '../errors/ErrorDisplay';
+import styles from './LocalOpsPanel.module.css';
 
 // ============================================================================
 // View model (UI-facing; mirrors WO-001..005 public outputs, no node imports)
@@ -514,7 +515,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
               </ReadOnlyNote>
             )}
             {section === 'explain' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className={styles.explainWorkflow} data-testid='localops-explain-workflow'>
                 <ReadOnlyNote>
                   Explain summarizes the canonical LocalOps operating boundary with citations. It
                   does not inspect county records, claim current status, or execute any action.
@@ -525,40 +526,19 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                     data-testid='localops-get-explanation'
                     onClick={onExplain}
                     disabled={explainPending}
-                    style={{
-                      alignSelf: 'flex-start',
-                      border: `1px solid ${PILOT}`,
-                      borderRadius: 4,
-                      background: 'transparent',
-                      color: TEXT,
-                      cursor: explainPending ? 'wait' : 'pointer',
-                      fontSize: 11,
-                      padding: '6px 9px',
-                    }}
+                    className={styles.explainButton}
                   >
                     {explainPending ? 'Local request in progress…' : 'Explain LocalOps boundaries'}
                   </button>
                 )}
                 {explainNetworkFailure && <ErrorDisplay error={explainNetworkFailure} />}
                 {data.insight?.grounded && data.insightKind === 'source-grounded-explain' && (
-                  <div
-                    data-testid='localops-explanation'
-                    style={{
-                      borderLeft: `2px solid ${PILOT}`,
-                      paddingLeft: 8,
-                      color: TEXT,
-                      fontSize: 11,
-                      lineHeight: 1.5,
-                    }}
-                  >
+                  <div data-testid='localops-explanation' className={styles.explanation}>
                     {data.insight.text}
                   </div>
                 )}
                 {data.insightKind === 'source-grounded-explain' && (
-                  <div
-                    data-testid='localops-explain-source'
-                    style={{ color: PILOT, fontFamily: 'ui-monospace, monospace', fontSize: 10 }}
-                  >
+                  <div data-testid='localops-explain-source' className={styles.explainSource}>
                     docs/localops/LOCALOPS_DOCTRINE.md
                   </div>
                 )}

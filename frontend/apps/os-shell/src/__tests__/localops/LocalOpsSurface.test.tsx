@@ -404,6 +404,28 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('preserves an Explain backend correlation ID and copy control', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCAL_PROVIDER_FAILED',
+      message: 'The local provider failed safely.',
+      correlationId: 'corr-localops-explain-proof',
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-explain'));
+    fireEvent.click(screen.getByTestId('localops-get-explanation'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('corr-localops-explain-proof');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-explanation')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('fails closed and shows no runbook guidance when the canonical runbook source is missing', async () => {
     askLocalOpsMock.mockResolvedValue({
       ok: true,

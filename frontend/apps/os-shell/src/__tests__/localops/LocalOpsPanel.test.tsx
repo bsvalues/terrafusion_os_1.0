@@ -171,6 +171,10 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     render(<LocalOpsPanel data={data} onExplain={onExplain} explainPending={false} />);
 
     await user.click(screen.getByTestId('localops-section-explain'));
+    expect(screen.getByTestId('localops-explain-workflow')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-get-explanation')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-explanation')).not.toHaveAttribute('style');
+    expect(screen.getByTestId('localops-explain-source')).not.toHaveAttribute('style');
     expect(screen.getByTestId('localops-explanation')).toHaveTextContent('source-grounded');
     expect(screen.getByTestId('localops-explain-source')).toHaveTextContent(
       'docs/localops/LOCALOPS_DOCTRINE.md'
