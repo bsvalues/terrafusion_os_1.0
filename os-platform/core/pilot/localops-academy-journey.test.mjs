@@ -466,6 +466,34 @@ test('LocalOps Ask fails closed when canonical stop-condition text drifts', asyn
   assert.equal(result.payload.answer, undefined);
 });
 
+test('LocalOps Ask fails closed when another stop condition is added to the canonical section', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A response citing an expanded set of stop conditions. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.\n- If a new prerequisite is unanswered, **do not** claim deployment readiness.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_DRIFT');
+  assert.equal(result.payload.answer, undefined);
+});
+
 test('LocalOps Ask refuses a deployment-readiness brief grounded in any noncanonical source', async () => {
   const engine = recordingEngineFactory({
     answered: true,

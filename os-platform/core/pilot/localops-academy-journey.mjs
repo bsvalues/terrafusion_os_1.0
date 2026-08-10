@@ -26,11 +26,20 @@ const DEPLOYMENT_READINESS_CONDITIONS = Object.freeze([
       'Q17 and Q20: unanswered approval-authority questions block every capability above read_only.',
   }),
 ]);
+const CANONICAL_DEPLOYMENT_READINESS_SECTION = [
+  `## ${CANONICAL_BENTON_IT_STOP_CONDITIONS}`,
+  '',
+  ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.source}`),
+].join('\n');
 const DEPLOYMENT_READINESS_BRIEF = [
   'Deployment readiness is not asserted. Confirm these canonical prerequisites:',
   ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.brief}`),
   'Treat each item as unresolved until the authorized owner supplies the answer. [1]',
 ].join('\n');
+
+function normalizeCanonicalSection(value) {
+  return value.replace(/\r\n/g, '\n').trim();
+}
 
 const PANEL_JOURNEYS = Object.freeze({
   'localops-panel-diagnostic': Object.freeze({ journey: 'localops-diagnostic-panel' }),
@@ -327,9 +336,8 @@ export async function runAcademyLocalOpsJourney({
 
     if (
       panelJourney?.journey === 'localops-deployment-readiness' &&
-      !DEPLOYMENT_READINESS_CONDITIONS.every(condition =>
-        answer.sources[0].snippet.includes(condition.source)
-      )
+      normalizeCanonicalSection(answer.sources[0].snippet) !==
+        CANONICAL_DEPLOYMENT_READINESS_SECTION
     ) {
       return fail(
         503,
