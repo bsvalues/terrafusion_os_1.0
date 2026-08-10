@@ -196,6 +196,28 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     await engine.close();
   });
 
+  it('does not call the model when the required exact runbook section is missing', async () => {
+    const counting = countingLocalAdapter();
+    const canonicalRunbook = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter: counting.adapter,
+      sourceFileAllowlist: [canonicalRunbook],
+      sourceSection: {
+        sourceFile: canonicalRunbook,
+        heading: 'R0 — Missing exact section',
+      },
+    });
+
+    const answer = await engine.ask('documented R0 self-readiness procedure');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.refusal.reasonCode, 'NO_GROUNDING');
+    assert.equal(answer.sources.length, 0);
+    assert.equal(counting.state.calls, 0, 'missing exact evidence must refuse before inference');
+    await engine.close();
+  });
+
   it('refuses a completion that does not cite a retrieved source', async () => {
     const adapter = {
       ...sourceCitingAdapter(),
