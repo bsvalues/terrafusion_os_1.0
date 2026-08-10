@@ -87,7 +87,17 @@ export interface LocalOpsViewModel {
     text: string;
     grounded: boolean;
   };
-  insightKind?: 'runbook-guidance' | 'source-grounded-explain' | 'deployment-readiness-ask';
+  insightKind?:
+    | 'runbook-guidance'
+    | 'source-grounded-explain'
+    | 'deployment-readiness-ask'
+    | 'synthetic-exemption-advisory';
+  exemptionAdvisory?: {
+    synthetic: true;
+    verdict: 'likely_eligible' | 'needs_review' | 'likely_ineligible';
+    groundingFacts: string[];
+    disclaimer: string;
+  };
 }
 
 export type LocalOpsSection = 'ask' | 'explain' | 'diagnose' | 'runbook' | 'sources' | 'trace';
@@ -124,6 +134,10 @@ export interface LocalOpsPanelProps {
   onAskReadiness?: () => void;
   /** Prevents duplicate Ask requests while the local provider is running. */
   askReadinessPending?: boolean;
+  /** Operator-triggered review of fixed synthetic exemption facts. */
+  onAskExemption?: () => void;
+  /** Prevents duplicate exemption advisory requests. */
+  askExemptionPending?: boolean;
   /** Correlation-first shell error for transport-level failures. */
   networkFailure?: ErrorDisplayProps['error'];
   /** Correlation-first Explain error scoped to the Explain journey. */
@@ -132,6 +146,8 @@ export interface LocalOpsPanelProps {
   runbookNetworkFailure?: ErrorDisplayProps['error'];
   /** Correlation-first readiness error scoped to the Ask journey. */
   askReadinessNetworkFailure?: ErrorDisplayProps['error'];
+  /** Correlation-first exemption-advisory error scoped to the Ask journey. */
+  askExemptionNetworkFailure?: ErrorDisplayProps['error'];
 }
 
 // ============================================================================
@@ -351,10 +367,13 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
   runbookGuidancePending = false,
   onAskReadiness,
   askReadinessPending = false,
+  onAskExemption,
+  askExemptionPending = false,
   networkFailure,
   explainNetworkFailure,
   runbookNetworkFailure,
   askReadinessNetworkFailure,
+  askExemptionNetworkFailure,
 }) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
 
@@ -548,6 +567,47 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                     className={styles.askSource}
                   >
                     docs/localops/BENTON_IT_QUESTIONS.md
+                  </div>
+                )}
+                <div className={styles.askDivider} />
+                <ReadOnlyNote>
+                  Review a fixed synthetic senior-exemption scenario through the governed local
+                  advisor. The result is a non-binding signal for a human assessor; it never reads a
+                  parcel or grants, denies, applies, or updates an exemption.
+                </ReadOnlyNote>
+                {onAskExemption && (
+                  <button
+                    type='button'
+                    data-testid='localops-get-exemption-advisory'
+                    onClick={onAskExemption}
+                    disabled={askExemptionPending}
+                    className={styles.askButton}
+                  >
+                    {askExemptionPending
+                      ? 'Local request in progress…'
+                      : 'Review synthetic exemption facts'}
+                  </button>
+                )}
+                {askExemptionNetworkFailure && <ErrorDisplay error={askExemptionNetworkFailure} />}
+                {data.insightKind === 'synthetic-exemption-advisory' && data.exemptionAdvisory && (
+                  <div
+                    data-testid='localops-exemption-advisory'
+                    className={styles.exemptionAdvisory}
+                  >
+                    <div className={styles.exemptionHeader}>
+                      <span className={styles.syntheticBadge}>SYNTHETIC DEMO</span>
+                      <span className={styles.exemptionVerdict}>
+                        {data.exemptionAdvisory.verdict.replaceAll('_', ' ')}
+                      </span>
+                    </div>
+                    <ul className={styles.exemptionFacts}>
+                      {data.exemptionAdvisory.groundingFacts.map((fact) => (
+                        <li key={fact}>{fact}</li>
+                      ))}
+                    </ul>
+                    <div className={styles.exemptionDisclaimer}>
+                      {data.exemptionAdvisory.disclaimer}
+                    </div>
                   </div>
                 )}
               </div>

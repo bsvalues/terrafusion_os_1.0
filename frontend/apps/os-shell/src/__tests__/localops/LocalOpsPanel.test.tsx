@@ -308,3 +308,47 @@ describe('LocalOpsPanel deployment-readiness Ask journey', () => {
     expect(screen.queryByTestId('localops-deployment-readiness-source')).not.toBeInTheDocument();
   });
 });
+
+describe('LocalOpsPanel synthetic exemption advisory journey', () => {
+  it('renders bounded synthetic facts, a non-determination disclaimer, and no action affordance', async () => {
+    const user = userEvent.setup();
+    const onAskExemption = vi.fn();
+    const data = baseVm({
+      sources: [
+        {
+          sourceFile: 'synthetic-demo/localops-exemption-review-v1',
+          heading: 'Fixed senior exemption review facts',
+          snippet:
+            'applicantAge: 71; ownerOccupied: true; incomeDocumentation: not_provided; residencyDocumentation: provided',
+        },
+      ],
+      insightKind: 'synthetic-exemption-advisory',
+      exemptionAdvisory: {
+        synthetic: true,
+        verdict: 'needs_review',
+        groundingFacts: [
+          'applicantAge: 71',
+          'ownerOccupied: true',
+          'incomeDocumentation: not_provided',
+          'residencyDocumentation: provided',
+        ],
+        disclaimer:
+          'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.',
+      },
+    });
+
+    render(<LocalOpsPanel data={data} onAskExemption={onAskExemption} />);
+
+    await user.click(screen.getByTestId('localops-section-ask'));
+    expect(screen.getByTestId('localops-exemption-advisory')).toHaveTextContent('needs review');
+    expect(screen.getByTestId('localops-exemption-advisory')).toHaveTextContent('applicantAge: 71');
+    expect(screen.getByTestId('localops-exemption-advisory')).toHaveTextContent(
+      'not an exemption determination'
+    );
+    await user.click(screen.getByTestId('localops-get-exemption-advisory'));
+    expect(onAskExemption).toHaveBeenCalledTimes(1);
+    expect(
+      screen.queryByRole('button', { name: /approve|apply|grant|deny|update/i })
+    ).not.toBeInTheDocument();
+  });
+});

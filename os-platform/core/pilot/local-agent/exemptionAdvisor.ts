@@ -143,7 +143,7 @@ export interface CreateExemptionAdvisorOptions {
 
 export interface ExemptionAdvisor {
   /** Produce a grounded, advisory-only exemption review. Read-only. */
-  review(input: ExemptionReviewInput): Promise<ExemptionAdvisory>;
+  review(input: ExemptionReviewInput, signal?: AbortSignal): Promise<ExemptionAdvisory>;
   /** Release the provider adapter. Idempotent. */
   close(): Promise<void>;
 }
@@ -179,7 +179,7 @@ export function createExemptionAdvisor(
   }
 
   return {
-    async review(input: ExemptionReviewInput): Promise<ExemptionAdvisory> {
+    async review(input: ExemptionReviewInput, signal?: AbortSignal): Promise<ExemptionAdvisory> {
       const groundingFacts = factLines(input);
       const status = provider.status();
 
@@ -204,7 +204,7 @@ export function createExemptionAdvisor(
         );
       }
 
-      const result = await provider.complete(buildRequest(input));
+      const result = await provider.complete(buildRequest(input), signal);
       if (!isLocalOpsSuccess(result)) {
         trace.policyRefused(result);
         return unavailable(result.status, result.reasonCode, result.message, groundingFacts);

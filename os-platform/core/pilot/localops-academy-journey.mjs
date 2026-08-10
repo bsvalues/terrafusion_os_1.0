@@ -1,5 +1,10 @@
 import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
-import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
+import { createExemptionAdvisor } from './local-agent/exemptionAdvisor.js';
+import { createRecordingLocalOpsTraceSink } from './local-agent/localOpsTrace.js';
+import {
+  composeLocalOpsTraceSinks,
+  createTerraTraceBridgeSink,
+} from './local-agent/localOpsTraceBridge.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
@@ -36,6 +41,26 @@ const DEPLOYMENT_READINESS_BRIEF = [
   ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.brief}`),
   'Treat each item as unresolved until the authorized owner supplies the answer. [1]',
 ].join('\n');
+const SYNTHETIC_EXEMPTION_SOURCE = 'synthetic-demo/localops-exemption-review-v1';
+const SYNTHETIC_EXEMPTION_HEADING = 'Fixed senior exemption review facts';
+const SYNTHETIC_EXEMPTION_FACTS = Object.freeze([
+  'applicantAge: 71',
+  'ownerOccupied: true',
+  'incomeDocumentation: not_provided',
+  'residencyDocumentation: provided',
+]);
+const SYNTHETIC_EXEMPTION_REVIEW = Object.freeze({
+  exemptionCategory: 'senior',
+  facts: Object.freeze({
+    applicantAge: 71,
+    ownerOccupied: true,
+    incomeDocumentation: 'not_provided',
+    residencyDocumentation: 'provided',
+  }),
+});
+const EXEMPTION_DISCLAIMER =
+  'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.';
+const EXEMPTION_VERDICTS = Object.freeze(['likely_eligible', 'needs_review', 'likely_ineligible']);
 
 function normalizeCanonicalSection(value) {
   return value.replace(/\r\n/g, '\n').trim();
@@ -60,6 +85,10 @@ const PANEL_JOURNEYS = Object.freeze({
     insightKind: 'deployment-readiness-ask',
     sourceFile: CANONICAL_BENTON_IT_QUESTIONS,
     heading: CANONICAL_BENTON_IT_STOP_CONDITIONS,
+  }),
+  'localops-synthetic-exemption-advisory': Object.freeze({
+    journey: 'localops-synthetic-exemption-advisory',
+    insightKind: 'synthetic-exemption-advisory',
   }),
 });
 
@@ -93,6 +122,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     label: 'Prepare a LocalOps deployment-readiness brief',
     prompt:
       'Using only the canonical Benton County IT and security stop conditions, prepare a concise deployment-readiness gate brief. Identify the exact unanswered question ranges that block provider work, KB/RAG indexing, or any capability above read_only. Label each as a prerequisite to confirm and cite the source. Do not infer an answer, claim readiness, inspect a live system, or execute, enable, write, or mutate anything.',
+  }),
+  'localops-synthetic-exemption-advisory': Object.freeze({
+    label: 'Review a fixed synthetic senior exemption scenario',
+    prompt:
+      'Review only the fixed synthetic senior-exemption facts supplied by TerraFusion. Return a non-binding advisory for a human assessor. Do not access a parcel, database, filesystem, shell, or external provider; do not make or apply an exemption determination.',
   }),
 });
 
@@ -196,6 +230,7 @@ export async function runAcademyLocalOpsJourney({
   env = process.env,
   body,
   engineFactory = createLocalOpsEngine,
+  exemptionAdvisorFactory = createExemptionAdvisor,
   timeoutMs = DEFAULT_TIMEOUT_MS,
   traceEmitter,
   traceContext,
@@ -234,6 +269,133 @@ export async function runAcademyLocalOpsJourney({
   const panelJourney = PANEL_JOURNEYS[questionId];
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
+
+  if (panelJourney?.journey === 'localops-synthetic-exemption-advisory') {
+    const recordingSink = createRecordingLocalOpsTraceSink();
+    const advisor = exemptionAdvisorFactory({
+      env: safeEnv,
+      sink: composeLocalOpsTraceSinks(recordingSink, sink),
+    });
+    let timeout;
+    let timedOut = false;
+    const controller = new AbortController();
+    try {
+      const advisory = await Promise.race([
+        advisor.review(SYNTHETIC_EXEMPTION_REVIEW, controller.signal),
+        new Promise((_, reject) => {
+          timeout = setTimeout(() => {
+            timedOut = true;
+            controller.abort(new Error('LocalOps exemption advisor timeout'));
+            reject(new Error('LocalOps exemption advisor timeout'));
+          }, timeoutMs);
+        }),
+      ]);
+
+      if (!advisory.available || advisory.status !== 'success') {
+        return fail(
+          503,
+          advisory.status ?? 'unavailable',
+          advisory.reasonCode ?? 'LOCAL_PROVIDER_FAILED',
+          'The local exemption advisor is unavailable. No advisory was displayed and no external provider was called.',
+          ['Check the approved Hermes tunnel and local Ollama service, then try again.']
+        );
+      }
+      if (
+        advisory.readonly !== true ||
+        advisory.advisoryOnly !== true ||
+        !EXEMPTION_VERDICTS.includes(advisory.verdict)
+      ) {
+        return fail(
+          503,
+          'refused',
+          'INVALID_EXEMPTION_ADVISORY',
+          'The local exemption advisor returned an unsafe or invalid result, so no advisory was displayed.'
+        );
+      }
+      if (
+        advisory.groundingFacts.length !== SYNTHETIC_EXEMPTION_FACTS.length ||
+        !advisory.groundingFacts.every((fact, index) => fact === SYNTHETIC_EXEMPTION_FACTS[index])
+      ) {
+        return fail(
+          503,
+          'refused',
+          'EXEMPTION_EVIDENCE_DRIFT',
+          'The exemption advisory did not match the fixed synthetic evidence, so no advisory was displayed.'
+        );
+      }
+
+      const source = {
+        sourceFile: SYNTHETIC_EXEMPTION_SOURCE,
+        heading: SYNTHETIC_EXEMPTION_HEADING,
+        snippet: SYNTHETIC_EXEMPTION_FACTS.join('; '),
+      };
+      const viewModel = {
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        flags: {
+          externalCalls: false,
+          allowWeb: false,
+          allowShell: false,
+          allowMutation: false,
+          requireTrace: true,
+          requireSources: true,
+        },
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        diagnostics: [],
+        grounded: true,
+        sources: [source],
+        traceEvents: recordingSink.events.map(event => ({
+          type: event.type,
+          ts: event.ts,
+          summary: event.summary,
+        })),
+        insightKind: panelJourney.insightKind,
+        exemptionAdvisory: {
+          synthetic: true,
+          verdict: advisory.verdict,
+          groundingFacts: [...SYNTHETIC_EXEMPTION_FACTS],
+          disclaimer: EXEMPTION_DISCLAIMER,
+        },
+      };
+      return {
+        httpStatus: 200,
+        payload: {
+          ok: true,
+          status: 'success',
+          journey: panelJourney.journey,
+          question: { id: questionId, label: question.label },
+          answer: {
+            text: `Synthetic demo advisory signal: ${advisory.verdict}. ${EXEMPTION_DISCLAIMER}`,
+            grounded: true,
+            sources: [source],
+          },
+          provider: {
+            name: 'ollama',
+            model: 'llama3.2:3b',
+            boundary: 'hermes-ssh-tunnel',
+          },
+          safety: viewModel.flags,
+          trace: { eventCount: viewModel.traceEvents.length },
+          viewModel,
+        },
+      };
+    } catch {
+      return fail(
+        503,
+        timedOut ? 'unavailable' : 'failed',
+        timedOut ? 'LOCAL_PROVIDER_TIMEOUT' : 'LOCALOPS_JOURNEY_FAILED',
+        timedOut
+          ? 'The local exemption advisor timed out safely. No advisory was displayed and no external provider was called.'
+          : 'The local exemption advisor failed safely. No advisory was displayed and no external provider was called.',
+        ['Check the approved Hermes tunnel and local Ollama service, then try again.']
+      );
+    } finally {
+      clearTimeout(timeout);
+      await advisor.close().catch(() => undefined);
+    }
+  }
+
   const engine = engineFactory({
     repoRoot,
     env: safeEnv,

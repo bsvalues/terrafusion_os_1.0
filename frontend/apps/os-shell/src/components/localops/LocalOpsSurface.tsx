@@ -36,12 +36,24 @@ const LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 const BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
 const BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
+const SYNTHETIC_EXEMPTION_SOURCE = 'synthetic-demo/localops-exemption-review-v1';
+const SYNTHETIC_EXEMPTION_HEADING = 'Fixed senior exemption review facts';
+const SYNTHETIC_EXEMPTION_FACTS = [
+  'applicantAge: 71',
+  'ownerOccupied: true',
+  'incomeDocumentation: not_provided',
+  'residencyDocumentation: provided',
+] as const;
+const SYNTHETIC_EXEMPTION_SNIPPET = SYNTHETIC_EXEMPTION_FACTS.join('; ');
+const EXEMPTION_DISCLAIMER =
+  'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.';
 
 type PanelJourney =
   | 'localops-diagnostic-panel'
   | 'localops-runbook-guidance'
   | 'localops-source-grounded-explain'
-  | 'localops-deployment-readiness';
+  | 'localops-deployment-readiness'
+  | 'localops-synthetic-exemption-advisory';
 
 function boundedString(value: unknown, allowEmpty = false): value is string {
   return (
@@ -73,6 +85,28 @@ function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure 
   );
 }
 
+function isExactSyntheticExemptionAdvisory(vm: Partial<LocalOpsViewModel>): boolean {
+  const advisory = vm.exemptionAdvisory;
+  if (!isRecord(advisory)) return false;
+  const allowedVerdicts = ['likely_eligible', 'needs_review', 'likely_ineligible'];
+  return (
+    vm.insightKind === 'synthetic-exemption-advisory' &&
+    vm.insight === undefined &&
+    Object.keys(advisory).sort().join(',') === 'disclaimer,groundingFacts,synthetic,verdict' &&
+    advisory.synthetic === true &&
+    typeof advisory.verdict === 'string' &&
+    allowedVerdicts.includes(advisory.verdict) &&
+    Array.isArray(advisory.groundingFacts) &&
+    advisory.groundingFacts.length === SYNTHETIC_EXEMPTION_FACTS.length &&
+    advisory.groundingFacts.every((fact, index) => fact === SYNTHETIC_EXEMPTION_FACTS[index]) &&
+    advisory.disclaimer === EXEMPTION_DISCLAIMER &&
+    vm.sources?.length === 1 &&
+    vm.sources[0].sourceFile === SYNTHETIC_EXEMPTION_SOURCE &&
+    vm.sources[0].heading === SYNTHETIC_EXEMPTION_HEADING &&
+    vm.sources[0].snippet === SYNTHETIC_EXEMPTION_SNIPPET
+  );
+}
+
 const JOURNEY_VIEW_MODEL_VALIDATORS: Record<
   PanelJourney,
   (vm: Partial<LocalOpsViewModel>) => boolean
@@ -91,6 +125,7 @@ const JOURNEY_VIEW_MODEL_VALIDATORS: Record<
     vm.sources?.length === 1 &&
     vm.sources[0].sourceFile === BENTON_IT_QUESTIONS &&
     vm.sources[0].heading === BENTON_IT_STOP_CONDITIONS,
+  'localops-synthetic-exemption-advisory': isExactSyntheticExemptionAdvisory,
 };
 
 function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is LocalOpsViewModel {
@@ -130,7 +165,9 @@ function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is L
       (source) =>
         isRecord(source) &&
         boundedString(source.sourceFile) &&
-        source.sourceFile.startsWith('docs/') &&
+        (source.sourceFile.startsWith('docs/') ||
+          (journey === 'localops-synthetic-exemption-advisory' &&
+            source.sourceFile === SYNTHETIC_EXEMPTION_SOURCE)) &&
         !source.sourceFile.includes('..') &&
         (source.heading === undefined || boundedString(source.heading, true)) &&
         boundedString(source.snippet, true)
@@ -144,8 +181,8 @@ function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is L
         boundedString(event.ts) &&
         boundedString(event.summary, true)
     ) &&
-    boundedString(vm.insight?.text) &&
-    vm.insight.grounded === true &&
+    (journey === 'localops-synthetic-exemption-advisory' ||
+      (boundedString(vm.insight?.text) && vm.insight.grounded === true)) &&
     JOURNEY_VIEW_MODEL_VALIDATORS[journey](vm)
   );
 }
@@ -203,11 +240,7 @@ export const LocalOpsSurface: React.FC = () => {
   const [requestPending, setRequestPending] = useState(false);
   const [networkFailure, setNetworkFailure] = useState<
     | {
-        journey:
-          | 'localops-diagnostic-panel'
-          | 'localops-runbook-guidance'
-          | 'localops-source-grounded-explain'
-          | 'localops-deployment-readiness';
+        journey: PanelJourney;
         error: ErrorDisplayProps['error'];
       }
     | undefined
@@ -226,14 +259,7 @@ export const LocalOpsSurface: React.FC = () => {
     },
   });
 
-  async function runPanelJourney(
-    questionId: AcademyLocalOpsQuestionId,
-    journey:
-      | 'localops-diagnostic-panel'
-      | 'localops-runbook-guidance'
-      | 'localops-source-grounded-explain'
-      | 'localops-deployment-readiness'
-  ) {
+  async function runPanelJourney(questionId: AcademyLocalOpsQuestionId, journey: PanelJourney) {
     if (requestInFlight.current) return;
     requestInFlight.current = true;
     setRequestPending(true);
@@ -315,6 +341,13 @@ export const LocalOpsSurface: React.FC = () => {
     return runPanelJourney('localops-deployment-readiness', 'localops-deployment-readiness');
   }
 
+  function runAskExemption() {
+    return runPanelJourney(
+      'localops-synthetic-exemption-advisory',
+      'localops-synthetic-exemption-advisory'
+    );
+  }
+
   return (
     <div data-testid='localops-surface'>
       <PullTab open={isOpen} onOpen={open} />
@@ -330,6 +363,8 @@ export const LocalOpsSurface: React.FC = () => {
         runbookGuidancePending={requestPending}
         onAskReadiness={runAskReadiness}
         askReadinessPending={requestPending}
+        onAskExemption={runAskExemption}
+        askExemptionPending={requestPending}
         networkFailure={
           networkFailure?.journey === 'localops-diagnostic-panel' ? networkFailure.error : undefined
         }
@@ -343,6 +378,11 @@ export const LocalOpsSurface: React.FC = () => {
         }
         askReadinessNetworkFailure={
           networkFailure?.journey === 'localops-deployment-readiness'
+            ? networkFailure.error
+            : undefined
+        }
+        askExemptionNetworkFailure={
+          networkFailure?.journey === 'localops-synthetic-exemption-advisory'
             ? networkFailure.error
             : undefined
         }
