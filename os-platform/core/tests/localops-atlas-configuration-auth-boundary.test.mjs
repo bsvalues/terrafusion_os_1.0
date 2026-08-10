@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 const { runAtlasConfigurationAuthBoundary } =
   await import('../pilot/localops-atlas-configuration-auth-boundary.mjs');
@@ -20,12 +21,32 @@ const authPath = path.join(
 const allowedBoundaryImports = ['node:fs/promises', 'node:path', 'node:url'];
 
 function assertBoundaryImportsAreSafe(implementation) {
-  const importedModules = [
-    ...implementation.matchAll(
-      /(?:\bfrom\s+|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)['"]([^'"]+)['"]/g
-    ),
-  ].map(match => match[1]);
-  assert.doesNotMatch(implementation, /\b(?:import|require)\s*\(\s*(?!['"])/);
+  const sourceFile = ts.createSourceFile(
+    'localops-atlas-configuration-auth-boundary.mjs',
+    implementation,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS
+  );
+  assert.deepStrictEqual(sourceFile.parseDiagnostics, []);
+  const importedModules = [];
+  function visit(node) {
+    if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier) {
+      assert.ok(ts.isStringLiteralLike(node.moduleSpecifier));
+      importedModules.push(node.moduleSpecifier.text);
+    }
+    if (
+      ts.isCallExpression(node) &&
+      (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(node.expression) && node.expression.text === 'require'))
+    ) {
+      assert.strictEqual(node.arguments.length, 1);
+      assert.ok(ts.isStringLiteralLike(node.arguments[0]));
+      importedModules.push(node.arguments[0].text);
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(sourceFile);
   assert.deepStrictEqual(importedModules.sort(), allowedBoundaryImports);
 }
 
@@ -243,6 +264,13 @@ describe('Atlas configuration and authentication boundary', () => {
     assert.throws(() => assertBoundaryImportsAreSafe(`${implementation}\nimport 'pg';`));
     assert.throws(() =>
       assertBoundaryImportsAreSafe(`${implementation}\nawait import(targetModule);`)
+    );
+    assert.throws(() =>
+      assertBoundaryImportsAreSafe(`${implementation}\nawait import/*gap*/(targetModule);`)
+    );
+    assert.throws(() => assertBoundaryImportsAreSafe(`${implementation}\nrequire('pg');`));
+    assert.throws(() =>
+      assertBoundaryImportsAreSafe(`${implementation}\nrequire/*gap*/(targetModule);`)
     );
     assert.doesNotMatch(implementation, /\bfetch\s*\(/i);
     assert.doesNotMatch(
