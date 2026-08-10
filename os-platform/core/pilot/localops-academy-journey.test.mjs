@@ -5,6 +5,7 @@ import {
   ACADEMY_LOCALOPS_QUESTIONS,
   runAcademyLocalOpsJourney,
 } from './localops-academy-journey.mjs';
+import { createExemptionAdvisor } from './local-agent/exemptionAdvisor.js';
 
 const SAFE_ENV = {
   LOCALOPS_PRODUCT_JOURNEY_ENABLED: '1',
@@ -61,6 +62,23 @@ function recordingEngineFactory(answer) {
             ? { insight: { text: answer.text, grounded: true } }
             : {}),
         };
+      },
+      async close() {
+        calls.push({ closed: true });
+      },
+    };
+  };
+  return { factory, calls };
+}
+
+function recordingExemptionAdvisorFactory(advisory) {
+  const calls = [];
+  const factory = options => {
+    calls.push({ options });
+    return {
+      async review(input) {
+        calls.push({ input });
+        return advisory;
       },
       async close() {
         calls.push({ closed: true });
@@ -545,6 +563,166 @@ test('LocalOps Ask refuses the canonical readiness file with a mismatched sectio
 
   assert.equal(result.httpStatus, 503);
   assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_REQUIRED');
+});
+
+test('LocalOps Ask constrains a directional model label to needs_review without exposing model rationale', async () => {
+  const expectedFacts = [
+    'applicantAge: 71',
+    'ownerOccupied: true',
+    'incomeDocumentation: not_provided',
+    'residencyDocumentation: provided',
+  ];
+  const advisor = recordingExemptionAdvisorFactory({
+    readonly: true,
+    advisoryOnly: true,
+    available: true,
+    status: 'success',
+    verdict: 'likely_eligible',
+    rationale: 'model-only rationale must not cross the product boundary',
+    groundingFacts: expectedFacts,
+    disclaimer:
+      'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.',
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-synthetic-exemption-advisory' },
+    engineFactory: () => {
+      throw new Error('the generic engine must not replace the governed exemption advisor');
+    },
+    exemptionAdvisorFactory: advisor.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.payload.journey, 'localops-synthetic-exemption-advisory');
+  assert.deepEqual(advisor.calls[1], {
+    input: {
+      exemptionCategory: 'senior',
+      facts: {
+        applicantAge: 71,
+        ownerOccupied: true,
+        incomeDocumentation: 'not_provided',
+        residencyDocumentation: 'provided',
+      },
+    },
+  });
+  assert.deepEqual(result.payload.viewModel.exemptionAdvisory, {
+    synthetic: true,
+    verdict: 'needs_review',
+    groundingFacts: expectedFacts,
+    disclaimer:
+      'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.',
+  });
+  assert.equal(result.payload.viewModel.insightKind, 'synthetic-exemption-advisory');
+  assert.equal(
+    result.payload.viewModel.sources[0].sourceFile,
+    'synthetic-demo/localops-exemption-review-v1'
+  );
+  assert.doesNotMatch(JSON.stringify(result.payload), /model-only rationale/);
+  assert.equal(result.payload.safety.allowMutation, false);
+});
+
+test('LocalOps Ask fails closed without an exemption advisory and exposes no partial product result', async () => {
+  const advisor = recordingExemptionAdvisorFactory({
+    readonly: true,
+    advisoryOnly: true,
+    available: false,
+    status: 'failed',
+    verdict: 'unavailable',
+    rationale: 'transport failed',
+    groundingFacts: [
+      'applicantAge: 71',
+      'ownerOccupied: true',
+      'incomeDocumentation: not_provided',
+      'residencyDocumentation: provided',
+    ],
+    disclaimer: 'Advisory only.',
+    reasonCode: 'LOCAL_PROVIDER_FAILED',
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-synthetic-exemption-advisory' },
+    exemptionAdvisorFactory: advisor.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'LOCAL_PROVIDER_FAILED');
+  assert.equal(result.payload.answer, undefined);
+  assert.equal(result.payload.viewModel, undefined);
+  assert.equal(result.payload.provider, undefined);
+});
+
+test('LocalOps Ask rejects exemption grounding-fact drift before displaying an advisory', async () => {
+  const advisor = recordingExemptionAdvisorFactory({
+    readonly: true,
+    advisoryOnly: true,
+    available: true,
+    status: 'success',
+    verdict: 'likely_eligible',
+    rationale: 'unsafe drift',
+    groundingFacts: ['applicantAge: 72'],
+    disclaimer: 'Advisory only.',
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-synthetic-exemption-advisory' },
+    exemptionAdvisorFactory: advisor.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'EXEMPTION_EVIDENCE_DRIFT');
+  assert.equal(result.payload.viewModel, undefined);
+});
+
+test('LocalOps Ask timeout aborts an in-flight exemption request without a later success trace', async () => {
+  TRACE_EVENTS.length = 0;
+  let observedSignal;
+  const adapter = {
+    name: 'pending-local-adapter',
+    capabilities: {
+      streaming: false,
+      tools: false,
+      vision: false,
+      local: true,
+      maxContextTokens: 4096,
+    },
+    async *chat() {
+      yield { kind: 'done' };
+    },
+    complete(_request, signal) {
+      observedSignal = signal;
+      return new Promise((_resolve, reject) => {
+        signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+      });
+    },
+    async close() {},
+  };
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-synthetic-exemption-advisory' },
+    timeoutMs: 5,
+    exemptionAdvisorFactory: options => createExemptionAdvisor({ ...options, adapter }),
+  });
+  await new Promise(resolve => setImmediate(resolve));
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
+  assert.equal(observedSignal?.aborted, true, 'product timer aborts the in-flight adapter signal');
+  assert.ok(
+    !TRACE_EVENTS.some(event => event.type === 'tool_completed'),
+    'timed-out exemption inference must not emit a later success trace'
+  );
 });
 
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
