@@ -704,3 +704,131 @@ describe('LocalOpsSurface deployment-readiness Ask journey', () => {
     expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
   });
 });
+
+describe('LocalOpsSurface synthetic exemption advisory journey', () => {
+  beforeEach(() => {
+    askLocalOpsMock.mockReset();
+    useLocalOpsStore.setState({ isOpen: true, data: DEFAULT_LOCALOPS_VIEW_MODEL });
+  });
+
+  it('renders the fixed synthetic exemption advisory through the existing LocalOps request path', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-synthetic-exemption-advisory',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'synthetic-demo/localops-exemption-review-v1',
+            heading: 'Fixed senior exemption review facts',
+            snippet:
+              'applicantAge: 71; ownerOccupied: true; incomeDocumentation: not_provided; residencyDocumentation: provided',
+          },
+        ],
+        insightKind: 'synthetic-exemption-advisory',
+        exemptionAdvisory: {
+          synthetic: true,
+          verdict: 'needs_review',
+          groundingFacts: [
+            'applicantAge: 71',
+            'ownerOccupied: true',
+            'incomeDocumentation: not_provided',
+            'residencyDocumentation: provided',
+          ],
+          disclaimer:
+            'Advisory only — not an exemption determination. A human assessor must verify against statute and evidence before any action.',
+        },
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-exemption-advisory')).toHaveTextContent('needs review')
+    );
+    expect(askLocalOpsMock).toHaveBeenCalledWith({
+      questionId: 'localops-synthetic-exemption-advisory',
+    });
+  });
+
+  it('rejects a directional verdict from a synthetic evidence-only advisory', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-synthetic-exemption-advisory',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'synthetic-demo/localops-exemption-review-v1',
+            heading: 'Fixed senior exemption review facts',
+            snippet: 'applicantAge: 72',
+          },
+        ],
+        insightKind: 'synthetic-exemption-advisory',
+        exemptionAdvisory: {
+          synthetic: true,
+          verdict: 'likely_eligible',
+          groundingFacts: ['applicantAge: 72'],
+          disclaimer: 'Advisory only.',
+        },
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
+
+  it('preserves an exemption backend correlation ID and renders no advisory', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCAL_PROVIDER_FAILED',
+      message: 'The local exemption advisor failed safely.',
+      correlationId: 'corr-localops-exemption-503',
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('corr-localops-exemption-503');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
+
+  it('normalizes a rejected exemption request to a net correlation ID and no advisory', async () => {
+    askLocalOpsMock.mockRejectedValue(new Error('approved tunnel unavailable'));
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-exemption-advisory'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Could not reach LocalOps');
+    expect(alert).toHaveTextContent(/net-[a-z0-9-]+/i);
+    expect(screen.queryByTestId('localops-exemption-advisory')).not.toBeInTheDocument();
+  });
+});

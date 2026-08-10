@@ -41,7 +41,8 @@ type PanelJourney =
   | 'localops-diagnostic-panel'
   | 'localops-runbook-guidance'
   | 'localops-source-grounded-explain'
-  | 'localops-deployment-readiness';
+  | 'localops-deployment-readiness'
+  | 'localops-synthetic-exemption-advisory';
 
 function boundedString(value: unknown, allowEmpty = false): value is string {
   return (
@@ -73,6 +74,26 @@ function isSafeFailureResponse(value: unknown): value is AcademyLocalOpsFailure 
   );
 }
 
+function isSafeSyntheticExemptionAdvisory(vm: Partial<LocalOpsViewModel>): boolean {
+  const advisory = vm.exemptionAdvisory;
+  if (!isRecord(advisory)) return false;
+  return (
+    vm.insightKind === 'synthetic-exemption-advisory' &&
+    vm.insight === undefined &&
+    Object.keys(advisory).sort().join(',') === 'disclaimer,groundingFacts,synthetic,verdict' &&
+    advisory.synthetic === true &&
+    advisory.verdict === 'needs_review' &&
+    Array.isArray(advisory.groundingFacts) &&
+    advisory.groundingFacts.length > 0 &&
+    advisory.groundingFacts.length <= 16 &&
+    advisory.groundingFacts.every((fact) => boundedString(fact)) &&
+    new Set(advisory.groundingFacts).size === advisory.groundingFacts.length &&
+    boundedString(advisory.disclaimer) &&
+    vm.sources?.length === 1 &&
+    vm.sources[0].sourceFile.startsWith('synthetic-demo/')
+  );
+}
+
 const JOURNEY_VIEW_MODEL_VALIDATORS: Record<
   PanelJourney,
   (vm: Partial<LocalOpsViewModel>) => boolean
@@ -91,6 +112,7 @@ const JOURNEY_VIEW_MODEL_VALIDATORS: Record<
     vm.sources?.length === 1 &&
     vm.sources[0].sourceFile === BENTON_IT_QUESTIONS &&
     vm.sources[0].heading === BENTON_IT_STOP_CONDITIONS,
+  'localops-synthetic-exemption-advisory': isSafeSyntheticExemptionAdvisory,
 };
 
 function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is LocalOpsViewModel {
@@ -130,7 +152,9 @@ function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is L
       (source) =>
         isRecord(source) &&
         boundedString(source.sourceFile) &&
-        source.sourceFile.startsWith('docs/') &&
+        (source.sourceFile.startsWith('docs/') ||
+          (journey === 'localops-synthetic-exemption-advisory' &&
+            source.sourceFile.startsWith('synthetic-demo/'))) &&
         !source.sourceFile.includes('..') &&
         (source.heading === undefined || boundedString(source.heading, true)) &&
         boundedString(source.snippet, true)
@@ -144,8 +168,8 @@ function isSafePanelViewModel(value: unknown, journey: PanelJourney): value is L
         boundedString(event.ts) &&
         boundedString(event.summary, true)
     ) &&
-    boundedString(vm.insight?.text) &&
-    vm.insight.grounded === true &&
+    (journey === 'localops-synthetic-exemption-advisory' ||
+      (boundedString(vm.insight?.text) && vm.insight.grounded === true)) &&
     JOURNEY_VIEW_MODEL_VALIDATORS[journey](vm)
   );
 }
@@ -203,11 +227,7 @@ export const LocalOpsSurface: React.FC = () => {
   const [requestPending, setRequestPending] = useState(false);
   const [networkFailure, setNetworkFailure] = useState<
     | {
-        journey:
-          | 'localops-diagnostic-panel'
-          | 'localops-runbook-guidance'
-          | 'localops-source-grounded-explain'
-          | 'localops-deployment-readiness';
+        journey: PanelJourney;
         error: ErrorDisplayProps['error'];
       }
     | undefined
@@ -226,14 +246,7 @@ export const LocalOpsSurface: React.FC = () => {
     },
   });
 
-  async function runPanelJourney(
-    questionId: AcademyLocalOpsQuestionId,
-    journey:
-      | 'localops-diagnostic-panel'
-      | 'localops-runbook-guidance'
-      | 'localops-source-grounded-explain'
-      | 'localops-deployment-readiness'
-  ) {
+  async function runPanelJourney(questionId: AcademyLocalOpsQuestionId, journey: PanelJourney) {
     if (requestInFlight.current) return;
     requestInFlight.current = true;
     setRequestPending(true);
@@ -315,6 +328,13 @@ export const LocalOpsSurface: React.FC = () => {
     return runPanelJourney('localops-deployment-readiness', 'localops-deployment-readiness');
   }
 
+  function runAskExemption() {
+    return runPanelJourney(
+      'localops-synthetic-exemption-advisory',
+      'localops-synthetic-exemption-advisory'
+    );
+  }
+
   return (
     <div data-testid='localops-surface'>
       <PullTab open={isOpen} onOpen={open} />
@@ -330,6 +350,8 @@ export const LocalOpsSurface: React.FC = () => {
         runbookGuidancePending={requestPending}
         onAskReadiness={runAskReadiness}
         askReadinessPending={requestPending}
+        onAskExemption={runAskExemption}
+        askExemptionPending={requestPending}
         networkFailure={
           networkFailure?.journey === 'localops-diagnostic-panel' ? networkFailure.error : undefined
         }
@@ -343,6 +365,11 @@ export const LocalOpsSurface: React.FC = () => {
         }
         askReadinessNetworkFailure={
           networkFailure?.journey === 'localops-deployment-readiness'
+            ? networkFailure.error
+            : undefined
+        }
+        askExemptionNetworkFailure={
+          networkFailure?.journey === 'localops-synthetic-exemption-advisory'
             ? networkFailure.error
             : undefined
         }

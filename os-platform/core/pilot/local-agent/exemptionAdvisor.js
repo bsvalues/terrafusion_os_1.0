@@ -111,7 +111,7 @@ function createExemptionAdvisor(options = {}) {
         };
     }
     return {
-        async review(input) {
+        async review(input, signal) {
             const groundingFacts = factLines(input);
             const status = provider.status();
             // Requested event — redacted; parcelId is never emitted raw.
@@ -128,7 +128,7 @@ function createExemptionAdvisor(options = {}) {
                 }
                 return unavailable(status.status, status.problem?.reasonCode, 'No local model is available; exemption advisory is unavailable. No external call was made.', groundingFacts);
             }
-            const result = await provider.complete(buildRequest(input));
+            const result = await provider.complete(buildRequest(input), signal);
             if (!(0, localOpsProvider_js_1.isLocalOpsSuccess)(result)) {
                 trace.policyRefused(result);
                 return unavailable(result.status, result.reasonCode, result.message, groundingFacts);

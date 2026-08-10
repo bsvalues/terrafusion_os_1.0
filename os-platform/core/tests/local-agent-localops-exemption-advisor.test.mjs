@@ -8,7 +8,13 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-const { createExemptionAdvisor, FakeModelAdapter, TraceService, createTerraTraceBridgeSink } =
+const {
+  createExemptionAdvisor,
+  createRecordingLocalOpsTraceSink,
+  FakeModelAdapter,
+  TraceService,
+  createTerraTraceBridgeSink,
+} =
   await import('../pilot/local-agent/index.js').then(async (m) => ({
     ...m,
     ...(await import('../trace/index.js')),
@@ -108,6 +114,43 @@ describe('LocalOps exemption advisor (WO-AI-CONSOLIDATION-005)', () => {
       globalThis.fetch = realFetch;
     }
     assert.strictEqual(calls.length, 0, 'no external call on the unavailable path');
+  });
+
+  it('threads cancellation to the adapter and emits no success after an aborted request', async () => {
+    let observedSignal;
+    const adapter = {
+      name: 'cancellation-proof',
+      capabilities: {
+        streaming: false,
+        tools: false,
+        vision: false,
+        local: true,
+        maxContextTokens: 4096,
+      },
+      async *chat() {
+        yield { kind: 'done' };
+      },
+      async complete(_request, signal) {
+        observedSignal = signal;
+        if (signal?.aborted) throw signal.reason ?? new Error('aborted');
+        return { text: 'likely_eligible', promptTokens: 1, completionTokens: 1 };
+      },
+      async close() {},
+    };
+    const sink = createRecordingLocalOpsTraceSink();
+    const advisor = createExemptionAdvisor({ env: localopsEnv, adapter, sink });
+    const controller = new AbortController();
+    controller.abort(new Error('product timeout'));
+
+    const out = await advisor.review(SAMPLE_INPUT, controller.signal);
+
+    assert.strictEqual(observedSignal, controller.signal, 'adapter receives the product signal');
+    assert.strictEqual(out.available, false);
+    assert.ok(
+      !sink.events.some((event) => event.type === 'localops.ai.responded'),
+      'an aborted request must not emit a post-timeout success event'
+    );
+    await advisor.close();
   });
 
   it('emits an invoked/responded pair onto a REAL TerraTrace spine, PII-redacted', () => {

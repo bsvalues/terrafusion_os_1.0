@@ -7,7 +7,8 @@ export type AcademyLocalOpsQuestionId =
   | 'localops-panel-diagnostic'
   | 'localops-runbook-guidance'
   | 'localops-source-grounded-explain'
-  | 'localops-deployment-readiness';
+  | 'localops-deployment-readiness'
+  | 'localops-synthetic-exemption-advisory';
 
 export interface AcademyLocalOpsRequest {
   questionId: AcademyLocalOpsQuestionId;
@@ -27,7 +28,8 @@ export interface AcademyLocalOpsSuccess {
     | 'localops-diagnostic-panel'
     | 'localops-runbook-guidance'
     | 'localops-source-grounded-explain'
-    | 'localops-deployment-readiness';
+    | 'localops-deployment-readiness'
+    | 'localops-synthetic-exemption-advisory';
   question: { id: AcademyLocalOpsQuestionId; label: string };
   answer: {
     text: string;
