@@ -201,6 +201,10 @@ test('LocalOps runbook guidance returns the engine view model only when grounded
   });
   assert.deepEqual(result.payload.answer.sources, answer.sources);
   assert.deepEqual(engine.calls[0].sourceFileAllowlist, ['docs/localops/BENTON_SERVER_RUNBOOK.md']);
+  assert.deepEqual(engine.calls[0].sourceSection, {
+    sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+    heading: 'R0 — Is LocalOps itself available? (LocalOps-automatable)',
+  });
   assert.deepEqual(engine.calls[1], {
     question: ACADEMY_LOCALOPS_QUESTIONS['localops-runbook-guidance'].prompt,
   });

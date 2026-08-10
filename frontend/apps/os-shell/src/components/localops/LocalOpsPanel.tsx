@@ -530,7 +530,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                       padding: '6px 9px',
                     }}
                   >
-                    {diagnosePending ? 'Running locally…' : 'Run local diagnostic'}
+                    {diagnosePending ? 'Local request in progress…' : 'Run local diagnostic'}
                   </button>
                 )}
                 {networkFailure && <ErrorDisplay error={networkFailure} />}
@@ -576,7 +576,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                     }}
                   >
                     {runbookGuidancePending
-                      ? 'Grounding locally…'
+                      ? 'Local request in progress…'
                       : 'Get grounded runbook guidance'}
                   </button>
                 )}

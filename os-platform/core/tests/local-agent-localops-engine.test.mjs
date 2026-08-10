@@ -158,6 +158,10 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
       repoRoot: REPO_ROOT,
       adapter,
       sourceFileAllowlist: [canonicalRunbook],
+      sourceSection: {
+        sourceFile: canonicalRunbook,
+        heading: 'R0 — Is LocalOps itself available? (LocalOps-automatable)',
+      },
     });
 
     const answer = await engine.ask('documented R0 self-readiness procedure and operator step');
@@ -165,6 +169,9 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
       match => match[1]
     );
     assert.deepEqual(contextualSources, [canonicalRunbook]);
+    assert.match(captured.system, /Human-approved action/);
+    assert.match(captured.system, /Escalation/);
+    assert.doesNotMatch(captured.system, /R1 — TerraFusion API/);
     assert.deepEqual(
       answer.sources.map(source => source.sourceFile),
       [canonicalRunbook]

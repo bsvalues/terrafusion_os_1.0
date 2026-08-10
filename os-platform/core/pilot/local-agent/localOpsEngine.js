@@ -100,7 +100,9 @@ function createLocalOpsEngine(options) {
         // Source grounding (I6): retrieve local sources first; when sources are
         // required and nothing supports the question, refuse BEFORE calling the
         // model — an ungrounded confident answer is not permitted.
-        const retrieval = kb.retrieve(question);
+        const retrieval = options.sourceSection
+            ? kb.retrieveSection(options.sourceSection.sourceFile, options.sourceSection.heading)
+            : kb.retrieve(question);
         const allowedSources = sourceFileAllowlist
             ? retrieval.sources.filter(source => sourceFileAllowlist.has(source.sourceFile))
             : retrieval.sources;

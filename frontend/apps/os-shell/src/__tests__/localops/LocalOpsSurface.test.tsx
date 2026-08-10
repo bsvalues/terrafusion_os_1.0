@@ -160,6 +160,13 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
       'LOCALOPS_NETWORK_UNAVAILABLE'
     );
+
+    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+    const runbookAlert = await screen.findByRole('alert');
+    expect(runbookAlert).toHaveTextContent('Could not reach LocalOps');
+    expect(runbookAlert).toHaveTextContent(/net-[a-z0-9-]+/i);
+    expect(screen.queryByTestId('localops-runbook-guidance')).not.toBeInTheDocument();
+    expect(askLocalOpsMock).toHaveBeenCalledTimes(2);
   });
 
   it('fails closed when a provider refusal contains malformed fields', async () => {

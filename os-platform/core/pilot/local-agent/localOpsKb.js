@@ -27,6 +27,7 @@ exports.KB_ALLOWED_ROOT_PREFIXES = ['docs/'];
 const MAX_FILES = 400;
 const MAX_FILE_BYTES = 512 * 1024;
 const SNIPPET_MAX = 240;
+const SECTION_SNIPPET_MAX = 1600;
 const DEFAULT_MAX_RESULTS = 5;
 function isUnderAllowedPrefix(repoRelative) {
     const normalized = repoRelative.split(node_path_1.sep).join('/');
@@ -214,6 +215,66 @@ class LocalOpsKb {
             sourceCount: top.length,
             filesScanned: files.length,
             ...(top[0] ? { topSource: top[0].sourceFile } : {}),
+        });
+        return result;
+    }
+    /** Retrieve one exact bounded markdown section from the governed docs roots. */
+    retrieveSection(sourceFile, heading) {
+        const files = this.collectFiles();
+        const normalizedSource = sourceFile.split(node_path_1.sep).join('/').replace(/^\.\//, '');
+        const target = files.find(file => (0, node_path_1.relative)(this.repoRoot, file).split(node_path_1.sep).join('/') === normalizedSource);
+        const sources = [];
+        if (target) {
+            try {
+                if ((0, node_fs_1.statSync)(target).size <= MAX_FILE_BYTES) {
+                    const text = (0, node_fs_1.readFileSync)(target, 'utf8');
+                    const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const marker = new RegExp(`^##\\s+${escapedHeading}\\s*$`, 'm');
+                    const match = marker.exec(text);
+                    if (match) {
+                        const sectionStart = match.index;
+                        const remaining = text.slice(sectionStart + match[0].length);
+                        const nextHeading = /^##\s+/m.exec(remaining);
+                        const sectionEnd = nextHeading
+                            ? sectionStart + match[0].length + nextHeading.index
+                            : text.length;
+                        const snippet = (0, redact_js_1.redactStringValue)(text.slice(sectionStart, sectionEnd).slice(0, SECTION_SNIPPET_MAX).trim());
+                        if (snippet.length > 0) {
+                            sources.push({
+                                sourceFile: normalizedSource,
+                                heading,
+                                snippet,
+                                score: 1,
+                                matchReason: `exact section: ${heading}`,
+                            });
+                        }
+                    }
+                }
+            }
+            catch {
+                // Missing/unreadable exact evidence is represented as an empty result.
+            }
+        }
+        const grounded = sources.length === 1;
+        const result = {
+            query: (0, redact_js_1.redactStringValue)(`section: ${heading}`),
+            grounded,
+            requireSources: this.config.requireSources,
+            canAnswer: grounded || !this.config.requireSources,
+            sources,
+            message: grounded
+                ? 'found exact local runbook section'
+                : 'exact local runbook section not found',
+            rootsScanned: this.roots,
+            rootsExcluded: this.rootsExcluded,
+            filesScanned: files.length,
+        };
+        this.trace?.ragRetrieved({
+            grounded,
+            requireSources: result.requireSources,
+            sourceCount: sources.length,
+            rootsScanned: this.roots,
+            rootsExcluded: this.rootsExcluded,
         });
         return result;
     }

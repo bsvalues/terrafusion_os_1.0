@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { LocalOpsPanel, type LocalOpsViewModel } from '../../components/localops/LocalOpsPanel';
 
 function baseVm(overrides: Partial<LocalOpsViewModel> = {}): LocalOpsViewModel {
@@ -109,7 +110,8 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     expect(onDiagnose).toHaveBeenCalledTimes(1);
   });
 
-  it('offers grounded runbook guidance without an execution affordance', () => {
+  it('offers grounded runbook guidance without an execution affordance', async () => {
+    const user = userEvent.setup();
     const onRunbookGuidance = vi.fn();
     const data = baseVm({
       sources: [
@@ -134,14 +136,14 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    await user.click(screen.getByTestId('localops-section-runbook'));
     expect(screen.getByTestId('localops-runbook-guidance')).toHaveTextContent(
       'perform R1 manually'
     );
     expect(screen.getByTestId('localops-runbook-source')).toHaveTextContent(
       'docs/localops/BENTON_SERVER_RUNBOOK.md'
     );
-    fireEvent.click(screen.getByTestId('localops-get-runbook-guidance'));
+    await user.click(screen.getByTestId('localops-get-runbook-guidance'));
     expect(onRunbookGuidance).toHaveBeenCalledTimes(1);
     expect(
       screen.queryByRole('button', { name: /execute|restart|apply/i })

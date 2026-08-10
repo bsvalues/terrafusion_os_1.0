@@ -26,6 +26,7 @@ export const KB_ALLOWED_ROOT_PREFIXES = ['docs/'] as const;
 const MAX_FILES = 400;
 const MAX_FILE_BYTES = 512 * 1024;
 const SNIPPET_MAX = 240;
+const SECTION_SNIPPET_MAX = 1600;
 const DEFAULT_MAX_RESULTS = 5;
 
 export interface KbSourceRef {
@@ -282,6 +283,72 @@ export class LocalOpsKb {
       ...(top[0] ? { topSource: top[0].sourceFile } : {}),
     });
 
+    return result;
+  }
+
+  /** Retrieve one exact bounded markdown section from the governed docs roots. */
+  retrieveSection(sourceFile: string, heading: string): KbRetrieveResult {
+    const files = this.collectFiles();
+    const normalizedSource = sourceFile.split(sep).join('/').replace(/^\.\//, '');
+    const target = files.find(
+      file => relative(this.repoRoot, file).split(sep).join('/') === normalizedSource
+    );
+    const sources: KbSourceRef[] = [];
+
+    if (target) {
+      try {
+        if (statSync(target).size <= MAX_FILE_BYTES) {
+          const text = readFileSync(target, 'utf8');
+          const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const marker = new RegExp(`^##\\s+${escapedHeading}\\s*$`, 'm');
+          const match = marker.exec(text);
+          if (match) {
+            const sectionStart = match.index;
+            const remaining = text.slice(sectionStart + match[0].length);
+            const nextHeading = /^##\s+/m.exec(remaining);
+            const sectionEnd = nextHeading
+              ? sectionStart + match[0].length + nextHeading.index
+              : text.length;
+            const snippet = redactStringValue(
+              text.slice(sectionStart, sectionEnd).slice(0, SECTION_SNIPPET_MAX).trim()
+            );
+            if (snippet.length > 0) {
+              sources.push({
+                sourceFile: normalizedSource,
+                heading,
+                snippet,
+                score: 1,
+                matchReason: `exact section: ${heading}`,
+              });
+            }
+          }
+        }
+      } catch {
+        // Missing/unreadable exact evidence is represented as an empty result.
+      }
+    }
+
+    const grounded = sources.length === 1;
+    const result: KbRetrieveResult = {
+      query: redactStringValue(`section: ${heading}`),
+      grounded,
+      requireSources: this.config.requireSources,
+      canAnswer: grounded || !this.config.requireSources,
+      sources,
+      message: grounded
+        ? 'found exact local runbook section'
+        : 'exact local runbook section not found',
+      rootsScanned: this.roots,
+      rootsExcluded: this.rootsExcluded,
+      filesScanned: files.length,
+    };
+    this.trace?.ragRetrieved({
+      grounded,
+      requireSources: result.requireSources,
+      sourceCount: sources.length,
+      rootsScanned: this.roots,
+      rootsExcluded: this.rootsExcluded,
+    });
     return result;
   }
 }

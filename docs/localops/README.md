@@ -94,6 +94,9 @@ free-form prompt and no parallel provider or diagnostic path.
 - A successful response must be grounded exclusively in
   [`BENTON_SERVER_RUNBOOK.md`](BENTON_SERVER_RUNBOOK.md). If that canonical source is absent, the
   journey fails closed and displays no guidance.
+- Before inference, the journey retrieves only the bounded `R0 — Is LocalOps itself available?`
+  section so the diagnostic, human-approved action, and escalation rule are all present in the
+  model evidence context.
 - The local model explains the documented R0 procedure and how to interpret the latest diagnostic
   cards, identifies the read-only diagnostic, proposes the human-performed next step, and states when
   to escalate. Current status remains the responsibility of the diagnostic cards; the model cannot

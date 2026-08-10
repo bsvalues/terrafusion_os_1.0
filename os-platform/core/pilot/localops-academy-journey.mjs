@@ -3,6 +3,7 @@ import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+const CANONICAL_R0_HEADING = 'R0 — Is LocalOps itself available? (LocalOps-automatable)';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -169,7 +170,15 @@ export async function runAcademyLocalOpsJourney({
     repoRoot,
     env: safeEnv,
     sink,
-    ...(runbookJourney ? { sourceFileAllowlist: [CANONICAL_BENTON_RUNBOOK] } : {}),
+    ...(runbookJourney
+      ? {
+          sourceFileAllowlist: [CANONICAL_BENTON_RUNBOOK],
+          sourceSection: {
+            sourceFile: CANONICAL_BENTON_RUNBOOK,
+            heading: CANONICAL_R0_HEADING,
+          },
+        }
+      : {}),
   });
   const controller = new AbortController();
   const timeout = setTimeout(
