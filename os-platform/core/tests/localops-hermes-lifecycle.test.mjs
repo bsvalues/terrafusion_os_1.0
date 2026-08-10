@@ -260,6 +260,43 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
     }
   });
 
+  it('preserves a specific SSH configuration rejection without inventing cleanup ownership', async () => {
+    const localPort = await reservePort();
+    const configProblem = {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCALOPS_SSH_CONFIG_UNSAFE',
+      message: 'The hermes SSH alias contains inherited forwarding directives.',
+      cleanup: 'not-started',
+    };
+    const result = await runLocalOpsHermesLifecycle(lifecycleOptions(localPort), {
+      startTunnel: async () => {
+        throw new Error(configProblem.message, { cause: configProblem });
+      },
+    });
+
+    assert.deepStrictEqual(result, configProblem);
+    assert.strictEqual(await canConnect(localPort), false);
+  });
+
+  it('reports a generic SSH start failure with no cleanup ownership when no child exists', async () => {
+    const localPort = await reservePort();
+    const result = await runLocalOpsHermesLifecycle(lifecycleOptions(localPort), {
+      startTunnel: async () => {
+        throw new Error('spawn failed');
+      },
+    });
+
+    assert.deepStrictEqual(result, {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCALOPS_TUNNEL_START_FAILED',
+      message: 'Hermes SSH tunnel could not be started.',
+      cleanup: 'not-started',
+    });
+    assert.strictEqual(await canConnect(localPort), false);
+  });
+
   it('refuses to start when the requested loopback port is already owned', async () => {
     const listener = net.createServer();
     listener.listen(0, '127.0.0.1');

@@ -19,6 +19,15 @@ function problem(reasonCode, message, cleanup = 'not-started') {
   return { ok: false, status: 'failed', reasonCode, message, cleanup };
 }
 
+function isLifecycleProblem(value) {
+  return (
+    value?.ok === false &&
+    value?.status === 'failed' &&
+    typeof value?.reasonCode === 'string' &&
+    typeof value?.message === 'string'
+  );
+}
+
 function validateOptions(options) {
   if (!options || typeof options !== 'object' || Array.isArray(options)) {
     return problem('INVALID_LIFECYCLE_INPUT', 'Lifecycle options must be an object.');
@@ -128,7 +137,7 @@ function inspectHermesSshConfiguration() {
 
 async function startSshTunnel({ localPort }) {
   const unsafeConfig = inspectHermesSshConfiguration();
-  if (unsafeConfig) throw new Error(unsafeConfig.reasonCode);
+  if (unsafeConfig) throw new Error(unsafeConfig.message, { cause: unsafeConfig });
   const child = spawn('ssh', buildHermesSshArguments(localPort), {
     detached: false,
     stdio: ['ignore', 'ignore', 'pipe'],
@@ -284,15 +293,17 @@ export async function runLocalOpsHermesLifecycle(options, dependencies = {}) {
             }
           : proofResult;
     }
-  } catch {
+  } catch (error) {
     operationResult =
-      phase === 'using'
+      phase === 'starting' && isLifecycleProblem(error?.cause)
+        ? error.cause
+        : phase === 'using'
         ? problem('LOCALOPS_USE_FAILED', 'LocalOps proof failed unexpectedly.')
         : problem('LOCALOPS_TUNNEL_START_FAILED', 'Hermes SSH tunnel could not be started.');
   }
 
   const cleanup = await cleanupTunnel(child, options.localPort, options.cleanupTimeoutMs);
-  if (cleanup !== 'released') {
+  if (child && cleanup !== 'released') {
     return problem(
       'LOCALOPS_TUNNEL_CLEANUP_FAILED',
       'Owned Hermes SSH tunnel did not exit cleanly and release its loopback listener.',
