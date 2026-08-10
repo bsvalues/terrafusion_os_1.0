@@ -367,6 +367,186 @@ test('LocalOps Explain refuses the canonical doctrine file with a wrong or missi
   }
 });
 
+test('LocalOps Ask returns a deployment-readiness brief grounded only in the canonical Benton IT questions', async () => {
+  const answer = {
+    answered: true,
+    text: 'Before enablement, Benton IT must confirm the documented provider, KB/RAG, and above-read-only gates. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
+      },
+    ],
+  };
+  const engine = recordingEngineFactory(answer);
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.payload.journey, 'localops-deployment-readiness');
+  assert.equal(result.payload.viewModel.insightKind, 'deployment-readiness-ask');
+  assert.deepEqual(engine.calls[0].sourceFileAllowlist, ['docs/localops/BENTON_IT_QUESTIONS.md']);
+  assert.deepEqual(engine.calls[0].sourceSection, {
+    sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+    heading: 'Stop conditions',
+  });
+  assert.deepEqual(engine.calls[1], {
+    question: ACADEMY_LOCALOPS_QUESTIONS['localops-deployment-readiness'].prompt,
+  });
+  assert.match(result.payload.answer.text, /Q1–Q4.*block provider work/s);
+  assert.match(result.payload.answer.text, /Q9–Q11.*block KB\/RAG indexing/s);
+  assert.match(result.payload.answer.text, /Q17 and Q20.*block every capability above read_only/s);
+  assert.equal(result.payload.viewModel.insight.text, result.payload.answer.text);
+  assert.doesNotMatch(result.payload.answer.text, /Benton is fully ready/i);
+});
+
+test('LocalOps Ask never displays a model-generated readiness claim', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Benton is fully ready for deployment. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.doesNotMatch(result.payload.answer.text, /fully ready/i);
+  assert.doesNotMatch(result.payload.viewModel.insight.text, /fully ready/i);
+  assert.match(result.payload.answer.text, /Deployment readiness is not asserted/);
+});
+
+test('LocalOps Ask fails closed when canonical stop-condition text drifts', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A response citing changed stop conditions. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- The canonical conditions changed without projection review.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_DRIFT');
+  assert.equal(result.payload.answer, undefined);
+});
+
+test('LocalOps Ask fails closed when another stop condition is added to the canonical section', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A response citing an expanded set of stop conditions. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet:
+          '## Stop conditions\n\n- If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).\n- If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).\n- If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.\n- If a new prerequisite is unanswered, **do not** claim deployment readiness.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_DRIFT');
+  assert.equal(result.payload.answer, undefined);
+});
+
+test('LocalOps Ask refuses a deployment-readiness brief grounded in any noncanonical source', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A readiness answer assembled from unrelated evidence. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/operations/UNRELATED.md',
+        heading: 'Readiness',
+        snippet: 'Outside the fixed deployment-readiness contract.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.ok, false);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_REQUIRED');
+});
+
+test('LocalOps Ask refuses the canonical readiness file with a mismatched section heading', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'A readiness answer from the wrong section. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: '1. Network & egress',
+        snippet: 'This section does not contain the complete documented stop-condition contract.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'DEPLOYMENT_READINESS_SOURCE_REQUIRED');
+});
+
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({

@@ -87,7 +87,7 @@ export interface LocalOpsViewModel {
     text: string;
     grounded: boolean;
   };
-  insightKind?: 'runbook-guidance' | 'source-grounded-explain';
+  insightKind?: 'runbook-guidance' | 'source-grounded-explain' | 'deployment-readiness-ask';
 }
 
 export type LocalOpsSection = 'ask' | 'explain' | 'diagnose' | 'runbook' | 'sources' | 'trace';
@@ -120,12 +120,18 @@ export interface LocalOpsPanelProps {
   onRunbookGuidance?: () => void;
   /** Prevents duplicate guidance requests while the local provider is running. */
   runbookGuidancePending?: boolean;
+  /** Operator-triggered request for a canonical deployment-readiness brief. */
+  onAskReadiness?: () => void;
+  /** Prevents duplicate Ask requests while the local provider is running. */
+  askReadinessPending?: boolean;
   /** Correlation-first shell error for transport-level failures. */
   networkFailure?: ErrorDisplayProps['error'];
   /** Correlation-first Explain error scoped to the Explain journey. */
   explainNetworkFailure?: ErrorDisplayProps['error'];
   /** Correlation-first runbook error scoped to the runbook journey. */
   runbookNetworkFailure?: ErrorDisplayProps['error'];
+  /** Correlation-first readiness error scoped to the Ask journey. */
+  askReadinessNetworkFailure?: ErrorDisplayProps['error'];
 }
 
 // ============================================================================
@@ -343,9 +349,12 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
   explainPending = false,
   onRunbookGuidance,
   runbookGuidancePending = false,
+  onAskReadiness,
+  askReadinessPending = false,
   networkFailure,
   explainNetworkFailure,
   runbookNetworkFailure,
+  askReadinessNetworkFailure,
 }) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
 
@@ -508,11 +517,40 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
           {/* Section body */}
           <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: 14 }}>
             {section === 'ask' && (
-              <ReadOnlyNote>
-                LocalOps answers are local-first and source-grounded. In v1 the assistant is
-                read-only: it observes and explains, and never mutates records. Ask requires a
-                connected local provider (current status above).
-              </ReadOnlyNote>
+              <div className={styles.askWorkflow} data-testid='localops-ask-workflow'>
+                <ReadOnlyNote>
+                  Prepare a source-grounded brief of the documented Benton IT and security gates
+                  that block provider work, KB/RAG indexing, or capabilities above read-only. The
+                  brief never infers readiness, inspects a live system, or enables anything.
+                </ReadOnlyNote>
+                {onAskReadiness && (
+                  <button
+                    type='button'
+                    data-testid='localops-get-deployment-readiness'
+                    onClick={onAskReadiness}
+                    disabled={askReadinessPending}
+                    className={styles.askButton}
+                  >
+                    {askReadinessPending
+                      ? 'Local request in progress…'
+                      : 'Prepare deployment-readiness brief'}
+                  </button>
+                )}
+                {askReadinessNetworkFailure && <ErrorDisplay error={askReadinessNetworkFailure} />}
+                {data.insight?.grounded && data.insightKind === 'deployment-readiness-ask' && (
+                  <div data-testid='localops-deployment-readiness' className={styles.askBrief}>
+                    {data.insight.text}
+                  </div>
+                )}
+                {data.insight?.grounded && data.insightKind === 'deployment-readiness-ask' && (
+                  <div
+                    data-testid='localops-deployment-readiness-source'
+                    className={styles.askSource}
+                  >
+                    docs/localops/BENTON_IT_QUESTIONS.md
+                  </div>
+                )}
+              </div>
             )}
             {section === 'explain' && (
               <div className={styles.explainWorkflow} data-testid='localops-explain-workflow'>

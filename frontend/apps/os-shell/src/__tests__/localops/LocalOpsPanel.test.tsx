@@ -250,3 +250,61 @@ describe('LocalOpsPanel (WO-LOCALOPS-006)', () => {
     expect(buttons.length).toBe(6);
   });
 });
+
+describe('LocalOpsPanel deployment-readiness Ask journey', () => {
+  it('offers a grounded readiness brief without an execution or mutation affordance', async () => {
+    const user = userEvent.setup();
+    const onAskReadiness = vi.fn();
+    const data = baseVm({
+      sources: [
+        {
+          sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+          heading: 'Stop conditions',
+          snippet: 'Unanswered boundary questions are stop conditions.',
+        },
+      ],
+      insight: {
+        text: 'Confirm the documented gates for provider work, KB/RAG indexing, and capabilities above read-only. [1]',
+        grounded: true,
+      },
+      insightKind: 'deployment-readiness-ask',
+    });
+
+    render(
+      <LocalOpsPanel data={data} onAskReadiness={onAskReadiness} askReadinessPending={false} />
+    );
+
+    await user.click(screen.getByTestId('localops-section-ask'));
+    expect(screen.getByTestId('localops-deployment-readiness')).toHaveTextContent(
+      'provider work, KB/RAG indexing'
+    );
+    expect(screen.getByTestId('localops-deployment-readiness-source')).toHaveTextContent(
+      'docs/localops/BENTON_IT_QUESTIONS.md'
+    );
+    await user.click(screen.getByTestId('localops-get-deployment-readiness'));
+    expect(onAskReadiness).toHaveBeenCalledTimes(1);
+    expect(
+      screen.queryByRole('button', { name: /execute|restart|apply|enable now/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a readiness-scoped correlation ID and copy control without a brief', async () => {
+    const user = userEvent.setup();
+    render(
+      <LocalOpsPanel
+        data={baseVm({ insightKind: 'deployment-readiness-ask' })}
+        onAskReadiness={vi.fn()}
+        askReadinessNetworkFailure={{
+          message: 'The local provider failed safely.',
+          correlationId: 'corr-localops-readiness-proof',
+        }}
+      />
+    );
+
+    await user.click(screen.getByTestId('localops-section-ask'));
+    expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-readiness-proof');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('localops-deployment-readiness-source')).not.toBeInTheDocument();
+  });
+});

@@ -6,6 +6,62 @@ const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
 const CANONICAL_R0_HEADING = 'R0 — Is LocalOps itself available? (LocalOps-automatable)';
 const CANONICAL_LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
+const CANONICAL_BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
+const CANONICAL_BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
+const DEPLOYMENT_READINESS_CONDITIONS = Object.freeze([
+  Object.freeze({
+    source:
+      'If Q1–Q4 (egress) are unanswered, **do not** implement any provider work (WO-LOCALOPS-002).',
+    brief: 'Q1–Q4: unanswered egress questions block provider work.',
+  }),
+  Object.freeze({
+    source:
+      'If Q9–Q11 (data) are unanswered, **do not** implement KB/RAG indexing (WO-LOCALOPS-004).',
+    brief: 'Q9–Q11: unanswered data questions block KB/RAG indexing.',
+  }),
+  Object.freeze({
+    source:
+      'If Q17/Q20 (approval authority) are unanswered, **do not** implement anything above `read_only`.',
+    brief:
+      'Q17 and Q20: unanswered approval-authority questions block every capability above read_only.',
+  }),
+]);
+const CANONICAL_DEPLOYMENT_READINESS_SECTION = [
+  `## ${CANONICAL_BENTON_IT_STOP_CONDITIONS}`,
+  '',
+  ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.source}`),
+].join('\n');
+const DEPLOYMENT_READINESS_BRIEF = [
+  'Deployment readiness is not asserted. Confirm these canonical prerequisites:',
+  ...DEPLOYMENT_READINESS_CONDITIONS.map(condition => `- ${condition.brief}`),
+  'Treat each item as unresolved until the authorized owner supplies the answer. [1]',
+].join('\n');
+
+function normalizeCanonicalSection(value) {
+  return value.replace(/\r\n/g, '\n').trim();
+}
+
+const PANEL_JOURNEYS = Object.freeze({
+  'localops-panel-diagnostic': Object.freeze({ journey: 'localops-diagnostic-panel' }),
+  'localops-runbook-guidance': Object.freeze({
+    journey: 'localops-runbook-guidance',
+    insightKind: 'runbook-guidance',
+    sourceFile: CANONICAL_BENTON_RUNBOOK,
+    heading: CANONICAL_R0_HEADING,
+  }),
+  'localops-source-grounded-explain': Object.freeze({
+    journey: 'localops-source-grounded-explain',
+    insightKind: 'source-grounded-explain',
+    sourceFile: CANONICAL_LOCALOPS_DOCTRINE,
+    heading: CANONICAL_LOCALOPS_DOCTRINE_HEADING,
+  }),
+  'localops-deployment-readiness': Object.freeze({
+    journey: 'localops-deployment-readiness',
+    insightKind: 'deployment-readiness-ask',
+    sourceFile: CANONICAL_BENTON_IT_QUESTIONS,
+    heading: CANONICAL_BENTON_IT_STOP_CONDITIONS,
+  }),
+});
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -32,6 +88,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     label: 'Explain the LocalOps operating boundary',
     prompt:
       'Using only the canonical LocalOps doctrine, explain what LocalOps is, why it is local-first, source-grounded, trace-emitting, and read-only, and cite the source. Do not claim a current system status, access any county record, or execute, apply, write, or mutate anything.',
+  }),
+  'localops-deployment-readiness': Object.freeze({
+    label: 'Prepare a LocalOps deployment-readiness brief',
+    prompt:
+      'Using only the canonical Benton County IT and security stop conditions, prepare a concise deployment-readiness gate brief. Identify the exact unanswered question ranges that block provider work, KB/RAG indexing, or any capability above read_only. Label each as a prerequisite to confirm and cite the source. Do not infer an answer, claim readiness, inspect a live system, or execute, enable, write, or mutate anything.',
   }),
 });
 
@@ -170,22 +231,19 @@ export async function runAcademyLocalOpsJourney({
   }
 
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
-  const runbookJourney = questionId === 'localops-runbook-guidance';
-  const explainJourney = questionId === 'localops-source-grounded-explain';
+  const panelJourney = PANEL_JOURNEYS[questionId];
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
   const engine = engineFactory({
     repoRoot,
     env: safeEnv,
     sink,
-    ...(runbookJourney || explainJourney
+    ...(panelJourney?.sourceFile
       ? {
-          sourceFileAllowlist: [
-            runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
-          ],
+          sourceFileAllowlist: [panelJourney.sourceFile],
           sourceSection: {
-            sourceFile: runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
-            heading: runbookJourney ? CANONICAL_R0_HEADING : CANONICAL_LOCALOPS_DOCTRINE_HEADING,
+            sourceFile: panelJourney.sourceFile,
+            heading: panelJourney.heading,
           },
         }
       : {}),
@@ -233,7 +291,7 @@ export async function runAcademyLocalOpsJourney({
     }
 
     if (
-      runbookJourney &&
+      panelJourney?.journey === 'localops-runbook-guidance' &&
       !answer.sources.every(source => source.sourceFile === CANONICAL_BENTON_RUNBOOK)
     ) {
       return fail(
@@ -245,7 +303,7 @@ export async function runAcademyLocalOpsJourney({
     }
 
     if (
-      explainJourney &&
+      panelJourney?.journey === 'localops-source-grounded-explain' &&
       !(
         answer.sources.length === 1 &&
         answer.sources[0].sourceFile === CANONICAL_LOCALOPS_DOCTRINE &&
@@ -260,22 +318,53 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
-    const panelJourney = questionId === 'localops-panel-diagnostic';
+    if (
+      panelJourney?.journey === 'localops-deployment-readiness' &&
+      !(
+        answer.sources.length === 1 &&
+        answer.sources[0].sourceFile === CANONICAL_BENTON_IT_QUESTIONS &&
+        answer.sources[0].heading === CANONICAL_BENTON_IT_STOP_CONDITIONS
+      )
+    ) {
+      return fail(
+        503,
+        'refused',
+        'DEPLOYMENT_READINESS_SOURCE_REQUIRED',
+        'LocalOps did not ground this readiness brief in the canonical Benton IT and security questions, so no readiness brief will be displayed.'
+      );
+    }
+
+    if (
+      panelJourney?.journey === 'localops-deployment-readiness' &&
+      normalizeCanonicalSection(answer.sources[0].snippet) !==
+        CANONICAL_DEPLOYMENT_READINESS_SECTION
+    ) {
+      return fail(
+        503,
+        'refused',
+        'DEPLOYMENT_READINESS_SOURCE_DRIFT',
+        'The canonical Benton stop-condition text no longer matches this bounded readiness projection, so no readiness brief will be displayed.'
+      );
+    }
+
+    const responseText =
+      panelJourney?.journey === 'localops-deployment-readiness'
+        ? DEPLOYMENT_READINESS_BRIEF
+        : answer.text;
+    const responseViewModel =
+      panelJourney?.journey === 'localops-deployment-readiness'
+        ? { ...viewModel, insight: { text: DEPLOYMENT_READINESS_BRIEF, grounded: true } }
+        : viewModel;
+
     return {
       httpStatus: 200,
       payload: {
         ok: true,
         status: 'success',
-        journey: runbookJourney
-          ? 'localops-runbook-guidance'
-          : explainJourney
-            ? 'localops-source-grounded-explain'
-            : panelJourney
-              ? 'localops-diagnostic-panel'
-              : 'academy-localops',
+        journey: panelJourney?.journey ?? 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
-          text: answer.text,
+          text: responseText,
           grounded: true,
           sources: answer.sources,
         },
@@ -286,13 +375,11 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney || runbookJourney || explainJourney
+        ...(panelJourney
           ? {
-              viewModel: runbookJourney
-                ? { ...viewModel, insightKind: 'runbook-guidance' }
-                : explainJourney
-                  ? { ...viewModel, insightKind: 'source-grounded-explain' }
-                  : viewModel,
+              viewModel: panelJourney.insightKind
+                ? { ...responseViewModel, insightKind: panelJourney.insightKind }
+                : responseViewModel,
             }
           : {}),
       },
