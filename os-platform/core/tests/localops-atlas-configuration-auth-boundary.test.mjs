@@ -2,11 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const { runAtlasConfigurationAuthBoundary } =
   await import('../pilot/localops-atlas-configuration-auth-boundary.mjs');
 
-const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..');
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const productionConfigPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/appsettings.Production.json'
@@ -227,10 +228,11 @@ describe('Atlas configuration and authentication boundary', () => {
       path.join(repoRoot, 'os-platform/core/pilot/localops-atlas-configuration-auth-boundary.mjs'),
       'utf8'
     );
-    assert.doesNotMatch(
-      implementation,
-      /from\s+['"](?:node:(?:child_process|net|http|https)|pg|postgres|redis|ioredis)['"]|\bfetch\s*\(/i
-    );
+    const importedModules = [
+      ...implementation.matchAll(/(?:from\s+|import\s*\(\s*|require\s*\(\s*)['"]([^'"]+)['"]/g),
+    ].map(match => match[1]);
+    assert.deepStrictEqual(importedModules.sort(), ['node:fs/promises', 'node:path', 'node:url']);
+    assert.doesNotMatch(implementation, /\bfetch\s*\(/i);
     assert.doesNotMatch(
       implementation,
       /\.Migrate\s*\(|dotnet\s+ef|child_process\.exec|shell:\s*true/i
