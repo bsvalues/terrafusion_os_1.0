@@ -17,6 +17,17 @@ const authPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs'
 );
+const allowedBoundaryImports = ['node:fs/promises', 'node:path', 'node:url'];
+
+function assertBoundaryImportsAreSafe(implementation) {
+  const importedModules = [
+    ...implementation.matchAll(
+      /(?:\bfrom\s+|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)['"]([^'"]+)['"]/g
+    ),
+  ].map(match => match[1]);
+  assert.doesNotMatch(implementation, /\b(?:import|require)\s*\(\s*(?!['"])/);
+  assert.deepStrictEqual(importedModules.sort(), allowedBoundaryImports);
+}
 
 describe('Atlas configuration and authentication boundary', () => {
   it('resolves the fixed Atlas endpoints and credential references without accessing state', async () => {
@@ -228,10 +239,11 @@ describe('Atlas configuration and authentication boundary', () => {
       path.join(repoRoot, 'os-platform/core/pilot/localops-atlas-configuration-auth-boundary.mjs'),
       'utf8'
     );
-    const importedModules = [
-      ...implementation.matchAll(/(?:from\s+|import\s*\(\s*|require\s*\(\s*)['"]([^'"]+)['"]/g),
-    ].map(match => match[1]);
-    assert.deepStrictEqual(importedModules.sort(), ['node:fs/promises', 'node:path', 'node:url']);
+    assertBoundaryImportsAreSafe(implementation);
+    assert.throws(() => assertBoundaryImportsAreSafe(`${implementation}\nimport 'pg';`));
+    assert.throws(() =>
+      assertBoundaryImportsAreSafe(`${implementation}\nawait import(targetModule);`)
+    );
     assert.doesNotMatch(implementation, /\bfetch\s*\(/i);
     assert.doesNotMatch(
       implementation,
