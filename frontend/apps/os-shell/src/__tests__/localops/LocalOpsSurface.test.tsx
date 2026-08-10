@@ -349,6 +349,45 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.queryByTestId('localops-explanation')).not.toBeInTheDocument();
   });
 
+  it.each([
+    ['a wrong doctrine heading', '3. What LocalOps IS NOT — hard prohibitions'],
+    ['a missing doctrine heading', undefined],
+  ])('fails closed when Explain returns %s', async (_case, heading) => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-source-grounded-explain',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/LOCALOPS_DOCTRINE.md',
+            ...(heading ? { heading } : {}),
+            snippet: 'This evidence does not satisfy the fixed Explain contract.',
+          },
+        ],
+        insight: { text: 'Unsafe explanation. [1]', grounded: true },
+        insightKind: 'source-grounded-explain',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-explain'));
+    fireEvent.click(screen.getByTestId('localops-get-explanation'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-explanation')).not.toBeInTheDocument();
+  });
+
   it('scopes an unavailable-provider error to Explain and shows no explanation', async () => {
     askLocalOpsMock.mockRejectedValue(new Error('approved tunnel unavailable'));
 

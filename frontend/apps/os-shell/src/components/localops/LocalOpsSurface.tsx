@@ -126,7 +126,9 @@ function isSafePanelViewModel(
         vm.sources.every((source) => source.sourceFile === 'docs/localops/BENTON_SERVER_RUNBOOK.md')
       : journey === 'localops-source-grounded-explain'
         ? vm.insightKind === 'source-grounded-explain' &&
-          vm.sources.every((source) => source.sourceFile === 'docs/localops/LOCALOPS_DOCTRINE.md')
+          vm.sources.length === 1 &&
+          vm.sources[0].sourceFile === 'docs/localops/LOCALOPS_DOCTRINE.md' &&
+          vm.sources[0].heading === '2. What LocalOps IS'
         : vm.insightKind === undefined)
   );
 }

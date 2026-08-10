@@ -339,6 +339,34 @@ test('LocalOps Explain refuses mixed sources instead of broadening beyond the ca
   assert.equal(result.payload.reasonCode, 'EXPLAIN_SOURCE_REQUIRED');
 });
 
+test('LocalOps Explain refuses the canonical doctrine file with a wrong or missing section heading', async () => {
+  for (const heading of ['3. What LocalOps IS NOT — hard prohibitions', undefined]) {
+    const engine = recordingEngineFactory({
+      answered: true,
+      text: 'An explanation from the wrong doctrine section. [1]',
+      grounded: true,
+      sources: [
+        {
+          sourceFile: 'docs/localops/LOCALOPS_DOCTRINE.md',
+          ...(heading ? { heading } : {}),
+          snippet: 'This evidence does not satisfy the fixed Explain contract.',
+        },
+      ],
+    });
+
+    const result = await runAcademyLocalOpsJourney({
+      ...TRACE_OPTIONS,
+      repoRoot: 'C:/repo',
+      env: SAFE_ENV,
+      body: { questionId: 'localops-source-grounded-explain' },
+      engineFactory: engine.factory,
+    });
+
+    assert.equal(result.httpStatus, 503);
+    assert.equal(result.payload.reasonCode, 'EXPLAIN_SOURCE_REQUIRED');
+  }
+});
+
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({

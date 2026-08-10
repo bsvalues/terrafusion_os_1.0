@@ -246,7 +246,11 @@ export async function runAcademyLocalOpsJourney({
 
     if (
       explainJourney &&
-      !answer.sources.every(source => source.sourceFile === CANONICAL_LOCALOPS_DOCTRINE)
+      !(
+        answer.sources.length === 1 &&
+        answer.sources[0].sourceFile === CANONICAL_LOCALOPS_DOCTRINE &&
+        answer.sources[0].heading === CANONICAL_LOCALOPS_DOCTRINE_HEADING
+      )
     ) {
       return fail(
         503,
