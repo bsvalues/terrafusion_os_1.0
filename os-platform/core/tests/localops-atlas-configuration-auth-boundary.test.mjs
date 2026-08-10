@@ -11,7 +11,6 @@ const productionConfigPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/appsettings.Production.json'
 );
-const programPath = path.join(repoRoot, 'backend/src/TerraFusion.API/Program.cs');
 const authPath = path.join(
   repoRoot,
   'backend/src/TerraFusion.API/Security/AuthenticationConfiguration.cs'
@@ -201,6 +200,7 @@ describe('Atlas configuration and authentication boundary', () => {
       implementation,
       /\.Migrate\s*\(|dotnet\s+ef|child_process\.exec|shell:\s*true/i
     );
+    assert.strictEqual(implementation.match(/\bspawnSync\s*\(/g)?.length, 1);
     assert.match(implementation, /spawnSync\('ssh', \['-G', ATLAS_SSH_ALIAS\]/);
   });
 });
