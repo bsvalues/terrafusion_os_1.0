@@ -588,3 +588,87 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-runbook-503');
   });
 });
+
+describe('LocalOpsSurface deployment-readiness Ask journey', () => {
+  beforeEach(() => {
+    askLocalOpsMock.mockReset();
+    useLocalOpsStore.setState({ isOpen: true, data: DEFAULT_LOCALOPS_VIEW_MODEL });
+  });
+
+  it('renders the canonical readiness brief through the existing LocalOps path', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-deployment-readiness',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+            heading: 'Stop conditions',
+            snippet: 'Unanswered boundary questions are stop conditions.',
+          },
+        ],
+        insight: {
+          text: 'Confirm the documented gates for provider work, KB/RAG indexing, and capabilities above read-only. [1]',
+          grounded: true,
+        },
+        insightKind: 'deployment-readiness-ask',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-deployment-readiness'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-deployment-readiness')).toHaveTextContent(
+        'provider work, KB/RAG indexing'
+      )
+    );
+    expect(askLocalOpsMock).toHaveBeenCalledWith({
+      questionId: 'localops-deployment-readiness',
+    });
+  });
+
+  it('shows no readiness brief when the response cites a mismatched readiness section', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-deployment-readiness',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+            heading: '1. Network & egress',
+            snippet: 'Outside the fixed stop-condition section contract.',
+          },
+        ],
+        insight: { text: 'Unsafe readiness answer. [1]', grounded: true },
+        insightKind: 'deployment-readiness-ask',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-deployment-readiness'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
+  });
+});

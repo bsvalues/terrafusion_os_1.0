@@ -6,6 +6,8 @@ const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
 const CANONICAL_R0_HEADING = 'R0 — Is LocalOps itself available? (LocalOps-automatable)';
 const CANONICAL_LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
+const CANONICAL_BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
+const CANONICAL_BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -32,6 +34,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     label: 'Explain the LocalOps operating boundary',
     prompt:
       'Using only the canonical LocalOps doctrine, explain what LocalOps is, why it is local-first, source-grounded, trace-emitting, and read-only, and cite the source. Do not claim a current system status, access any county record, or execute, apply, write, or mutate anything.',
+  }),
+  'localops-deployment-readiness': Object.freeze({
+    label: 'Prepare a LocalOps deployment-readiness brief',
+    prompt:
+      'Using only the canonical Benton County IT and security stop conditions, prepare a concise deployment-readiness gate brief. Identify the exact unanswered question ranges that block provider work, KB/RAG indexing, or any capability above read_only. Label each as a prerequisite to confirm and cite the source. Do not infer an answer, claim readiness, inspect a live system, or execute, enable, write, or mutate anything.',
   }),
 });
 
@@ -172,21 +179,38 @@ export async function runAcademyLocalOpsJourney({
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
   const runbookJourney = questionId === 'localops-runbook-guidance';
   const explainJourney = questionId === 'localops-source-grounded-explain';
+  const readinessJourney = questionId === 'localops-deployment-readiness';
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
   const engine = engineFactory({
     repoRoot,
     env: safeEnv,
     sink,
-    ...(runbookJourney || explainJourney
+    ...(runbookJourney || explainJourney || readinessJourney
       ? {
           sourceFileAllowlist: [
-            runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
+            runbookJourney
+              ? CANONICAL_BENTON_RUNBOOK
+              : explainJourney
+                ? CANONICAL_LOCALOPS_DOCTRINE
+                : CANONICAL_BENTON_IT_QUESTIONS,
           ],
-          sourceSection: {
-            sourceFile: runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
-            heading: runbookJourney ? CANONICAL_R0_HEADING : CANONICAL_LOCALOPS_DOCTRINE_HEADING,
-          },
+          ...(runbookJourney || explainJourney || readinessJourney
+            ? {
+                sourceSection: {
+                  sourceFile: runbookJourney
+                    ? CANONICAL_BENTON_RUNBOOK
+                    : explainJourney
+                      ? CANONICAL_LOCALOPS_DOCTRINE
+                      : CANONICAL_BENTON_IT_QUESTIONS,
+                  heading: runbookJourney
+                    ? CANONICAL_R0_HEADING
+                    : explainJourney
+                      ? CANONICAL_LOCALOPS_DOCTRINE_HEADING
+                      : CANONICAL_BENTON_IT_STOP_CONDITIONS,
+                },
+              }
+            : {}),
         }
       : {}),
   });
@@ -260,6 +284,22 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    if (
+      readinessJourney &&
+      !(
+        answer.sources.length === 1 &&
+        answer.sources[0].sourceFile === CANONICAL_BENTON_IT_QUESTIONS &&
+        answer.sources[0].heading === CANONICAL_BENTON_IT_STOP_CONDITIONS
+      )
+    ) {
+      return fail(
+        503,
+        'refused',
+        'DEPLOYMENT_READINESS_SOURCE_REQUIRED',
+        'LocalOps did not ground this readiness brief in the canonical Benton IT and security questions, so no readiness brief will be displayed.'
+      );
+    }
+
     const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
@@ -270,9 +310,11 @@ export async function runAcademyLocalOpsJourney({
           ? 'localops-runbook-guidance'
           : explainJourney
             ? 'localops-source-grounded-explain'
-            : panelJourney
-              ? 'localops-diagnostic-panel'
-              : 'academy-localops',
+            : readinessJourney
+              ? 'localops-deployment-readiness'
+              : panelJourney
+                ? 'localops-diagnostic-panel'
+                : 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -286,13 +328,15 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney || runbookJourney || explainJourney
+        ...(panelJourney || runbookJourney || explainJourney || readinessJourney
           ? {
               viewModel: runbookJourney
                 ? { ...viewModel, insightKind: 'runbook-guidance' }
                 : explainJourney
                   ? { ...viewModel, insightKind: 'source-grounded-explain' }
-                  : viewModel,
+                  : readinessJourney
+                    ? { ...viewModel, insightKind: 'deployment-readiness-ask' }
+                    : viewModel,
             }
           : {}),
       },

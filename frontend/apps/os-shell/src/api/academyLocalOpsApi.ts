@@ -6,7 +6,8 @@ export type AcademyLocalOpsQuestionId =
   | 'source-grounded-evidence'
   | 'localops-panel-diagnostic'
   | 'localops-runbook-guidance'
-  | 'localops-source-grounded-explain';
+  | 'localops-source-grounded-explain'
+  | 'localops-deployment-readiness';
 
 export interface AcademyLocalOpsRequest {
   questionId: AcademyLocalOpsQuestionId;
@@ -25,7 +26,8 @@ export interface AcademyLocalOpsSuccess {
     | 'academy-localops'
     | 'localops-diagnostic-panel'
     | 'localops-runbook-guidance'
-    | 'localops-source-grounded-explain';
+    | 'localops-source-grounded-explain'
+    | 'localops-deployment-readiness';
   question: { id: AcademyLocalOpsQuestionId; label: string };
   answer: {
     text: string;

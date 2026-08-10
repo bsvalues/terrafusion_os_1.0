@@ -68,6 +68,7 @@ function isSafePanelViewModel(
     | 'localops-diagnostic-panel'
     | 'localops-runbook-guidance'
     | 'localops-source-grounded-explain'
+    | 'localops-deployment-readiness'
 ): value is LocalOpsViewModel {
   if (typeof value !== 'object' || value === null) return false;
   const vm = value as Partial<LocalOpsViewModel>;
@@ -129,7 +130,12 @@ function isSafePanelViewModel(
           vm.sources.length === 1 &&
           vm.sources[0].sourceFile === 'docs/localops/LOCALOPS_DOCTRINE.md' &&
           vm.sources[0].heading === '2. What LocalOps IS'
-        : vm.insightKind === undefined)
+        : journey === 'localops-deployment-readiness'
+          ? vm.insightKind === 'deployment-readiness-ask' &&
+            vm.sources.length === 1 &&
+            vm.sources[0].sourceFile === 'docs/localops/BENTON_IT_QUESTIONS.md' &&
+            vm.sources[0].heading === 'Stop conditions'
+          : vm.insightKind === undefined)
   );
 }
 
@@ -189,7 +195,8 @@ export const LocalOpsSurface: React.FC = () => {
         journey:
           | 'localops-diagnostic-panel'
           | 'localops-runbook-guidance'
-          | 'localops-source-grounded-explain';
+          | 'localops-source-grounded-explain'
+          | 'localops-deployment-readiness';
         error: ErrorDisplayProps['error'];
       }
     | undefined
@@ -214,6 +221,7 @@ export const LocalOpsSurface: React.FC = () => {
       | 'localops-diagnostic-panel'
       | 'localops-runbook-guidance'
       | 'localops-source-grounded-explain'
+      | 'localops-deployment-readiness'
   ) {
     if (requestInFlight.current) return;
     requestInFlight.current = true;
@@ -292,6 +300,10 @@ export const LocalOpsSurface: React.FC = () => {
     return runPanelJourney('localops-runbook-guidance', 'localops-runbook-guidance');
   }
 
+  function runAskReadiness() {
+    return runPanelJourney('localops-deployment-readiness', 'localops-deployment-readiness');
+  }
+
   return (
     <div data-testid='localops-surface'>
       <PullTab open={isOpen} onOpen={open} />
@@ -305,6 +317,8 @@ export const LocalOpsSurface: React.FC = () => {
         explainPending={requestPending}
         onRunbookGuidance={runRunbookGuidance}
         runbookGuidancePending={requestPending}
+        onAskReadiness={runAskReadiness}
+        askReadinessPending={requestPending}
         networkFailure={
           networkFailure?.journey === 'localops-diagnostic-panel' ? networkFailure.error : undefined
         }
@@ -315,6 +329,11 @@ export const LocalOpsSurface: React.FC = () => {
         }
         runbookNetworkFailure={
           networkFailure?.journey === 'localops-runbook-guidance' ? networkFailure.error : undefined
+        }
+        askReadinessNetworkFailure={
+          networkFailure?.journey === 'localops-deployment-readiness'
+            ? networkFailure.error
+            : undefined
         }
       />
     </div>
