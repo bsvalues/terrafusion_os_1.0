@@ -201,6 +201,7 @@
     "tf:la": "node os-platform/core/pilot/local-agent/cli.js",
     "proof:local-agent:release": "node os-platform/core/pilot/local-agent-release-proof.mjs",
     "proof:localops:ollama": "node os-platform/core/pilot/localops-ollama-live-proof.mjs",
+    "localops:hermes": "node os-platform/core/pilot/localops-hermes-lifecycle.mjs",
     "proof:local-agent:release:ps1": "pwsh -File os-platform/core/pilot/run-local-agent-release-proof.ps1",
     "proof:local-agent:doc-truth": "pnpm run build:core-js && node os-platform/core/pilot/local-agent/cli.js doc-truth",
     "proof:local-agent:gate": "pnpm run test:local-agent && pnpm run proof:local-agent:release",

@@ -1,22 +1,39 @@
-# TerraFusion LocalOps — Planning Envelope
+# TerraFusion LocalOps
+
+## Current repeatable Hermes lifecycle
+
+Routine local proof no longer requires manually starting and stopping an SSH tunnel:
+
+```powershell
+pnpm run localops:hermes
+```
+
+The command owns one loopback-only SSH forward to the configured `hermes` alias, verifies the
+Ollama health endpoint and `llama3.2:3b`, runs the existing read-only LocalOps proof, then terminates
+the exact SSH child and verifies that its listener was released. It refuses a pre-existing listener
+because that process is not owned by the lifecycle. Health, model, provider, interruption, or cleanup
+failure returns a single non-success JSON result and a nonzero exit code.
+
+Optional operator settings are `LOCALOPS_HERMES_TUNNEL_PORT`,
+`LOCALOPS_HERMES_HEALTH_TIMEOUT_MS`, `LOCALOPS_OLLAMA_PROOF_TIMEOUT_MS`, and
+`LOCALOPS_HERMES_CLEANUP_TIMEOUT_MS`. The SSH alias, model, and synthetic proof prompt are fixed to
+the approved Hermes boundary. External calls, web, shell, and mutation remain explicitly disabled.
 
 > **Work Order:** WO-LOCALOPS-000 — LocalOps Planning Envelope
-> **Status:** PLANNING ONLY. Nothing in this directory is implemented or runtime-ready.
+> **Status:** ACTIVE. This directory preserves the original planning envelope and documents the
+> incrementally delivered LocalOps runtime work orders.
 > **Governance:** TerraFusion Brain/Cortex. One Brain, many packs. See root [`AGENTS.md`](../../AGENTS.md).
 
 ## What this is
 
-This directory is the **governed planning envelope** for **TerraPilot LocalOps Mode** — a local,
-county-boundary-safe AI operator that runs **inside the TerraFusion shell** so the OS can help a
-Benton County operator when external AI tools are unavailable, blocked, or prohibited.
+This directory began as the **governed planning envelope** for **TerraPilot LocalOps Mode** and now
+contains both that historical plan and the runbooks/evidence for implemented LocalOps work orders.
+LocalOps is a local, county-boundary-safe AI operator that runs **inside the TerraFusion shell** so
+the OS can help a Benton County operator when external AI tools are unavailable, blocked, or
+prohibited.
 
-It is **not** demo AI and **not** implementation. It is the plan that future LocalOps implementation
-work orders (WO-LOCALOPS-001 … 008) will ride on, written **against actual governance** — the Brain
-packs and path router that landed in WO-BRAIN-0013 and WO-BRAIN-0014.
-
-**Read this honestly:** every capability described here is a *target*, not a *current state*. No
-provider, RAG, diagnostic, or UI is built by this work order. Where a doc describes behavior, it is
-describing what a future, human-approved implementation work order must deliver and prove.
+The WO-LOCALOPS-000 documents remain planning artifacts. Sections that name a subsequently delivered
+work order describe current implementation only where their linked code and evidence exist.
 
 ## Documents
 
