@@ -274,6 +274,97 @@ describe('LocalOpsSurface live diagnostic adapter', () => {
     );
   });
 
+  it('renders a canonical source-grounded explanation through the existing LocalOps journey', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-source-grounded-explain',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/localops/LOCALOPS_DOCTRINE.md',
+            heading: '2. What LocalOps IS',
+            snippet: 'LocalOps v1 observes and explains without mutation.',
+          },
+        ],
+        insight: {
+          text: 'LocalOps is local-first, source-grounded, trace-emitting, and read-only. [1]',
+          grounded: true,
+        },
+        insightKind: 'source-grounded-explain',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-explain'));
+    fireEvent.click(screen.getByTestId('localops-get-explanation'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-explanation')).toHaveTextContent('source-grounded')
+    );
+    expect(askLocalOpsMock).toHaveBeenCalledWith({
+      questionId: 'localops-source-grounded-explain',
+    });
+  });
+
+  it('fails closed and shows no explanation when Explain returns a noncanonical source', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: true,
+      status: 'success',
+      journey: 'localops-source-grounded-explain',
+      viewModel: {
+        ...DEFAULT_LOCALOPS_VIEW_MODEL,
+        profile: 'localops',
+        provider: 'ollama',
+        model: 'llama3.2:3b',
+        providerStatus: { ok: true, status: 'success', adapter: 'ollama' },
+        grounded: true,
+        sources: [
+          {
+            sourceFile: 'docs/operations/UNRELATED.md',
+            heading: 'Unrelated',
+            snippet: 'Outside the fixed Explain contract.',
+          },
+        ],
+        insight: { text: 'Unsafe explanation. [1]', grounded: true },
+        insightKind: 'source-grounded-explain',
+      },
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-explain'));
+    fireEvent.click(screen.getByTestId('localops-get-explanation'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('localops-refusal-card')).toHaveTextContent(
+        'INVALID_LOCALOPS_PANEL_RESPONSE'
+      )
+    );
+    expect(screen.queryByTestId('localops-explanation')).not.toBeInTheDocument();
+  });
+
+  it('scopes an unavailable-provider error to Explain and shows no explanation', async () => {
+    askLocalOpsMock.mockRejectedValue(new Error('approved tunnel unavailable'));
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-explain'));
+    fireEvent.click(screen.getByTestId('localops-get-explanation'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Could not reach LocalOps');
+    expect(alert).toHaveTextContent(/net-[a-z0-9-]+/i);
+    expect(screen.queryByTestId('localops-explanation')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('localops-section-runbook'));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('fails closed and shows no runbook guidance when the canonical runbook source is missing', async () => {
     askLocalOpsMock.mockResolvedValue({
       ok: true,

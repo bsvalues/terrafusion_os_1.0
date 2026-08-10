@@ -105,6 +105,22 @@ free-form prompt and no parallel provider or diagnostic path.
   refusals with no silent fallback. The default store state remains disabled until an operator makes
   the explicit request.
 
+## Source-grounded Explain journey
+
+The in-shell **Explain** section now sends one fixed synthetic question through the same authenticated
+LocalOps product endpoint and established LocalOps provider/Ollama adapter path. It does not accept
+free-form prompts or create a parallel AI implementation.
+
+- Before inference, retrieval is restricted to the `2. What LocalOps IS` section of
+  [`LOCALOPS_DOCTRINE.md`](LOCALOPS_DOCTRINE.md). Mixed, missing, or mismatched sources fail closed and
+  no explanation is shown.
+- The explanation describes the documented local-first, source-grounded, trace-emitting, read-only
+  boundary. It cannot inspect county records, claim current system status, execute actions, access a
+  shell, or mutate files or databases.
+- Provider, tunnel, runtime, network, and malformed-response failures produce a visible refusal with
+  no external-provider fallback. The default store state remains disabled until the operator makes
+  the explicit request.
+
 ## LocalOps trace events (WO-LOCALOPS-003)
 
 LocalOps emits an append-only, **TerraTrace-compatible** event stream via

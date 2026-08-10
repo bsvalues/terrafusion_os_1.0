@@ -86,7 +86,7 @@ export interface LocalOpsViewModel {
     text: string;
     grounded: boolean;
   };
-  insightKind?: 'runbook-guidance';
+  insightKind?: 'runbook-guidance' | 'source-grounded-explain';
 }
 
 export type LocalOpsSection = 'ask' | 'explain' | 'diagnose' | 'runbook' | 'sources' | 'trace';
@@ -111,12 +111,18 @@ export interface LocalOpsPanelProps {
   onDiagnose?: () => void;
   /** Prevents duplicate requests while the local provider is running. */
   diagnosePending?: boolean;
+  /** Operator-triggered request for a doctrine-grounded LocalOps explanation. */
+  onExplain?: () => void;
+  /** Prevents duplicate Explain requests while the local provider is running. */
+  explainPending?: boolean;
   /** Operator-triggered request for grounded, non-executing runbook guidance. */
   onRunbookGuidance?: () => void;
   /** Prevents duplicate guidance requests while the local provider is running. */
   runbookGuidancePending?: boolean;
   /** Correlation-first shell error for transport-level failures. */
   networkFailure?: ErrorDisplayProps['error'];
+  /** Correlation-first Explain error scoped to the Explain journey. */
+  explainNetworkFailure?: ErrorDisplayProps['error'];
   /** Correlation-first runbook error scoped to the runbook journey. */
   runbookNetworkFailure?: ErrorDisplayProps['error'];
 }
@@ -332,9 +338,12 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
   onClose,
   onDiagnose,
   diagnosePending = false,
+  onExplain,
+  explainPending = false,
   onRunbookGuidance,
   runbookGuidancePending = false,
   networkFailure,
+  explainNetworkFailure,
   runbookNetworkFailure,
 }) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
@@ -505,11 +514,55 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
               </ReadOnlyNote>
             )}
             {section === 'explain' && (
-              <ReadOnlyNote>
-                Explain summarizes local context with citations. Answers must cite a local source
-                when sources are required; otherwise LocalOps reports that no local source was
-                found.
-              </ReadOnlyNote>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <ReadOnlyNote>
+                  Explain summarizes the canonical LocalOps operating boundary with citations. It
+                  does not inspect county records, claim current status, or execute any action.
+                </ReadOnlyNote>
+                {onExplain && (
+                  <button
+                    type='button'
+                    data-testid='localops-get-explanation'
+                    onClick={onExplain}
+                    disabled={explainPending}
+                    style={{
+                      alignSelf: 'flex-start',
+                      border: `1px solid ${PILOT}`,
+                      borderRadius: 4,
+                      background: 'transparent',
+                      color: TEXT,
+                      cursor: explainPending ? 'wait' : 'pointer',
+                      fontSize: 11,
+                      padding: '6px 9px',
+                    }}
+                  >
+                    {explainPending ? 'Local request in progress…' : 'Explain LocalOps boundaries'}
+                  </button>
+                )}
+                {explainNetworkFailure && <ErrorDisplay error={explainNetworkFailure} />}
+                {data.insight?.grounded && data.insightKind === 'source-grounded-explain' && (
+                  <div
+                    data-testid='localops-explanation'
+                    style={{
+                      borderLeft: `2px solid ${PILOT}`,
+                      paddingLeft: 8,
+                      color: TEXT,
+                      fontSize: 11,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {data.insight.text}
+                  </div>
+                )}
+                {data.insightKind === 'source-grounded-explain' && (
+                  <div
+                    data-testid='localops-explain-source'
+                    style={{ color: PILOT, fontFamily: 'ui-monospace, monospace', fontSize: 10 }}
+                  >
+                    docs/localops/LOCALOPS_DOCTRINE.md
+                  </div>
+                )}
+              </div>
             )}
             {section === 'diagnose' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -534,7 +587,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                   </button>
                 )}
                 {networkFailure && <ErrorDisplay error={networkFailure} />}
-                {data.insight && data.insightKind !== 'runbook-guidance' && (
+                {data.insight && data.insightKind === undefined && (
                   <div
                     data-testid='localops-diagnostic-insight'
                     style={{

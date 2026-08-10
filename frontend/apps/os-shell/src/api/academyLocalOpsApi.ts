@@ -5,7 +5,8 @@ export type AcademyLocalOpsQuestionId =
   | 'localops-safety-boundary'
   | 'source-grounded-evidence'
   | 'localops-panel-diagnostic'
-  | 'localops-runbook-guidance';
+  | 'localops-runbook-guidance'
+  | 'localops-source-grounded-explain';
 
 export interface AcademyLocalOpsRequest {
   questionId: AcademyLocalOpsQuestionId;
@@ -20,7 +21,11 @@ export interface AcademyLocalOpsSource {
 export interface AcademyLocalOpsSuccess {
   ok: true;
   status: 'success';
-  journey: 'academy-localops' | 'localops-diagnostic-panel' | 'localops-runbook-guidance';
+  journey:
+    | 'academy-localops'
+    | 'localops-diagnostic-panel'
+    | 'localops-runbook-guidance'
+    | 'localops-source-grounded-explain';
   question: { id: AcademyLocalOpsQuestionId; label: string };
   answer: {
     text: string;

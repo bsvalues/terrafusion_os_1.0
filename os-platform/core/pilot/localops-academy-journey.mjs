@@ -4,6 +4,8 @@ import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js
 const DEFAULT_TIMEOUT_MS = 30_000;
 const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
 const CANONICAL_R0_HEADING = 'R0 — Is LocalOps itself available? (LocalOps-automatable)';
+const CANONICAL_LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
+const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -25,6 +27,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     label: 'Explain the documented LocalOps operator step',
     prompt:
       'Using only the Benton County server runbook, explain the documented R0 self-readiness procedure, identify the read-only diagnostic, describe how an operator should interpret the latest diagnostic cards shown in the LocalOps panel, propose the human-performed next step, state when to escalate, and cite the source. Do not claim a current status and do not execute or imply execution of any step.',
+  }),
+  'localops-source-grounded-explain': Object.freeze({
+    label: 'Explain the LocalOps operating boundary',
+    prompt:
+      'Using only the canonical LocalOps doctrine, explain what LocalOps is, why it is local-first, source-grounded, trace-emitting, and read-only, and cite the source. Do not claim a current system status, access any county record, or execute, apply, write, or mutate anything.',
   }),
 });
 
@@ -164,18 +171,21 @@ export async function runAcademyLocalOpsJourney({
 
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
   const runbookJourney = questionId === 'localops-runbook-guidance';
+  const explainJourney = questionId === 'localops-source-grounded-explain';
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
   const engine = engineFactory({
     repoRoot,
     env: safeEnv,
     sink,
-    ...(runbookJourney
+    ...(runbookJourney || explainJourney
       ? {
-          sourceFileAllowlist: [CANONICAL_BENTON_RUNBOOK],
+          sourceFileAllowlist: [
+            runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
+          ],
           sourceSection: {
-            sourceFile: CANONICAL_BENTON_RUNBOOK,
-            heading: CANONICAL_R0_HEADING,
+            sourceFile: runbookJourney ? CANONICAL_BENTON_RUNBOOK : CANONICAL_LOCALOPS_DOCTRINE,
+            heading: runbookJourney ? CANONICAL_R0_HEADING : CANONICAL_LOCALOPS_DOCTRINE_HEADING,
           },
         }
       : {}),
@@ -234,6 +244,18 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    if (
+      explainJourney &&
+      !answer.sources.every(source => source.sourceFile === CANONICAL_LOCALOPS_DOCTRINE)
+    ) {
+      return fail(
+        503,
+        'refused',
+        'EXPLAIN_SOURCE_REQUIRED',
+        'LocalOps did not ground this explanation in the canonical LocalOps doctrine, so no explanation will be displayed.'
+      );
+    }
+
     const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
@@ -242,9 +264,11 @@ export async function runAcademyLocalOpsJourney({
         status: 'success',
         journey: runbookJourney
           ? 'localops-runbook-guidance'
-          : panelJourney
-            ? 'localops-diagnostic-panel'
-            : 'academy-localops',
+          : explainJourney
+            ? 'localops-source-grounded-explain'
+            : panelJourney
+              ? 'localops-diagnostic-panel'
+              : 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -258,11 +282,13 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney || runbookJourney
+        ...(panelJourney || runbookJourney || explainJourney
           ? {
               viewModel: runbookJourney
                 ? { ...viewModel, insightKind: 'runbook-guidance' }
-                : viewModel,
+                : explainJourney
+                  ? { ...viewModel, insightKind: 'source-grounded-explain' }
+                  : viewModel,
             }
           : {}),
       },
