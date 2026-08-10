@@ -39,13 +39,23 @@ function validateOptions(options) {
       'localPort must be an integer from 1024 through 65535.'
     );
   }
-  for (const key of ['healthTimeoutMs', 'proofTimeoutMs', 'cleanupTimeoutMs']) {
+  for (const key of ['healthTimeoutMs', 'cleanupTimeoutMs']) {
     if (!Number.isSafeInteger(options[key]) || options[key] < 1 || options[key] > MAX_TIMEOUT_MS) {
       return problem(
         'INVALID_LIFECYCLE_INPUT',
         `${key} must be an integer from 1 through ${MAX_TIMEOUT_MS}.`
       );
     }
+  }
+  if (
+    !Number.isSafeInteger(options.proofTimeoutMs) ||
+    options.proofTimeoutMs < 1 ||
+    options.proofTimeoutMs > DEFAULT_PROOF_TIMEOUT_MS
+  ) {
+    return problem(
+      'INVALID_LIFECYCLE_INPUT',
+      `proofTimeoutMs must be an integer from 1 through ${DEFAULT_PROOF_TIMEOUT_MS}.`
+    );
   }
   return null;
 }

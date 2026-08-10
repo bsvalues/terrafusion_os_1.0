@@ -311,6 +311,29 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
     assert.strictEqual(result.reasonCode, 'INVALID_LIFECYCLE_INPUT');
   });
 
+  it('rejects a proof timeout above the underlying proof contract before starting SSH', async () => {
+    const localPort = await reservePort();
+    let starts = 0;
+    const result = await runLocalOpsHermesLifecycle(
+      { ...lifecycleOptions(localPort), proofTimeoutMs: 30_001 },
+      {
+        startTunnel: async () => {
+          starts += 1;
+          throw new Error('must not start');
+        },
+      }
+    );
+
+    assert.strictEqual(starts, 0);
+    assert.deepStrictEqual(result, {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'INVALID_LIFECYCLE_INPUT',
+      message: 'proofTimeoutMs must be an integer from 1 through 30000.',
+      cleanup: 'not-started',
+    });
+  });
+
   it('builds one exact foreground SSH forward and neutralizes ownership-affecting config', () => {
     assert.deepStrictEqual(buildHermesSshArguments(11455), [
       '-N',
