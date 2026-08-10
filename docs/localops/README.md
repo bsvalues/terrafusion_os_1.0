@@ -1,5 +1,21 @@
 # TerraFusion LocalOps
 
+## Current Atlas configuration/auth boundary
+
+TerraFusion can prove its intended Atlas configuration and authentication boundary without opening a
+database or Redis connection:
+
+```powershell
+pnpm run localops:atlas-boundary
+```
+
+The command reads the committed production connection templates, runtime resolver, and authentication
+registration, then expands the fixed local `atlas` SSH alias with `ssh -G` (configuration output only;
+no connection). It reports the Atlas endpoint, ports, database/principal, and credential-reference
+names while never reading credential values or producing a resolved connection string. Source drift,
+missing sources, alias drift, inherited forwarding, and unsafe hostnames fail closed. The entrypoint has
+no network, database, Redis, or migration client.
+
 ## Current repeatable Hermes lifecycle
 
 Routine local proof no longer requires manually starting and stopping an SSH tunnel:
