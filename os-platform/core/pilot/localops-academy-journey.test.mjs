@@ -401,6 +401,39 @@ test('LocalOps Ask returns a deployment-readiness brief grounded only in the can
   assert.deepEqual(engine.calls[1], {
     question: ACADEMY_LOCALOPS_QUESTIONS['localops-deployment-readiness'].prompt,
   });
+  assert.match(result.payload.answer.text, /Q1–Q4.*block provider work/s);
+  assert.match(result.payload.answer.text, /Q9–Q11.*block KB\/RAG indexing/s);
+  assert.match(result.payload.answer.text, /Q17 and Q20.*block every capability above read_only/s);
+  assert.equal(result.payload.viewModel.insight.text, result.payload.answer.text);
+  assert.doesNotMatch(result.payload.answer.text, /Benton is fully ready/i);
+});
+
+test('LocalOps Ask never displays a model-generated readiness claim', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Benton is fully ready for deployment. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_IT_QUESTIONS.md',
+        heading: 'Stop conditions',
+        snippet: 'Unanswered egress, data, and approval questions are stop conditions.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-deployment-readiness' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.doesNotMatch(result.payload.answer.text, /fully ready/i);
+  assert.doesNotMatch(result.payload.viewModel.insight.text, /fully ready/i);
+  assert.match(result.payload.answer.text, /Deployment readiness is not asserted/);
 });
 
 test('LocalOps Ask refuses a deployment-readiness brief grounded in any noncanonical source', async () => {

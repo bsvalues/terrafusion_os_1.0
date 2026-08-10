@@ -287,4 +287,24 @@ describe('LocalOpsPanel deployment-readiness Ask journey', () => {
       screen.queryByRole('button', { name: /execute|restart|apply|enable now/i })
     ).not.toBeInTheDocument();
   });
+
+  it('shows a readiness-scoped correlation ID and copy control without a brief', async () => {
+    const user = userEvent.setup();
+    render(
+      <LocalOpsPanel
+        data={baseVm({ insightKind: 'deployment-readiness-ask' })}
+        onAskReadiness={vi.fn()}
+        askReadinessNetworkFailure={{
+          message: 'The local provider failed safely.',
+          correlationId: 'corr-localops-readiness-proof',
+        }}
+      />
+    );
+
+    await user.click(screen.getByTestId('localops-section-ask'));
+    expect(screen.getByRole('alert')).toHaveTextContent('corr-localops-readiness-proof');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('localops-deployment-readiness-source')).not.toBeInTheDocument();
+  });
 });

@@ -8,6 +8,13 @@ const CANONICAL_LOCALOPS_DOCTRINE = 'docs/localops/LOCALOPS_DOCTRINE.md';
 const CANONICAL_LOCALOPS_DOCTRINE_HEADING = '2. What LocalOps IS';
 const CANONICAL_BENTON_IT_QUESTIONS = 'docs/localops/BENTON_IT_QUESTIONS.md';
 const CANONICAL_BENTON_IT_STOP_CONDITIONS = 'Stop conditions';
+const DEPLOYMENT_READINESS_BRIEF = [
+  'Deployment readiness is not asserted. Confirm these canonical prerequisites:',
+  '- Q1–Q4: unanswered egress questions block provider work.',
+  '- Q9–Q11: unanswered data questions block KB/RAG indexing.',
+  '- Q17 and Q20: unanswered approval-authority questions block every capability above read_only.',
+  'Treat each item as unresolved until the authorized owner supplies the answer. [1]',
+].join('\n');
 
 const PANEL_JOURNEYS = Object.freeze({
   'localops-panel-diagnostic': Object.freeze({ journey: 'localops-diagnostic-panel' }),
@@ -302,6 +309,15 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    const responseText =
+      panelJourney?.journey === 'localops-deployment-readiness'
+        ? DEPLOYMENT_READINESS_BRIEF
+        : answer.text;
+    const responseViewModel =
+      panelJourney?.journey === 'localops-deployment-readiness'
+        ? { ...viewModel, insight: { text: DEPLOYMENT_READINESS_BRIEF, grounded: true } }
+        : viewModel;
+
     return {
       httpStatus: 200,
       payload: {
@@ -310,7 +326,7 @@ export async function runAcademyLocalOpsJourney({
         journey: panelJourney?.journey ?? 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
-          text: answer.text,
+          text: responseText,
           grounded: true,
           sources: answer.sources,
         },
@@ -324,8 +340,8 @@ export async function runAcademyLocalOpsJourney({
         ...(panelJourney
           ? {
               viewModel: panelJourney.insightKind
-                ? { ...viewModel, insightKind: panelJourney.insightKind }
-                : viewModel,
+                ? { ...responseViewModel, insightKind: panelJourney.insightKind }
+                : responseViewModel,
             }
           : {}),
       },

@@ -671,4 +671,36 @@ describe('LocalOpsSurface deployment-readiness Ask journey', () => {
     );
     expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
   });
+
+  it('preserves a readiness backend correlation ID and renders no readiness brief', async () => {
+    askLocalOpsMock.mockResolvedValue({
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCAL_PROVIDER_FAILED',
+      message: 'The local provider failed safely.',
+      correlationId: 'corr-localops-readiness-503',
+    });
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-deployment-readiness'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('corr-localops-readiness-503');
+    expect(screen.getByRole('button', { name: 'Copy Correlation ID' })).toBeInTheDocument();
+    expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
+  });
+
+  it('normalizes a rejected readiness request to a net correlation ID and no brief', async () => {
+    askLocalOpsMock.mockRejectedValue(new Error('approved tunnel unavailable'));
+
+    render(<LocalOpsSurface />);
+    fireEvent.click(screen.getByTestId('localops-section-ask'));
+    fireEvent.click(screen.getByTestId('localops-get-deployment-readiness'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Could not reach LocalOps');
+    expect(alert).toHaveTextContent(/net-[a-z0-9-]+/i);
+    expect(screen.queryByTestId('localops-deployment-readiness')).not.toBeInTheDocument();
+  });
 });

@@ -32,3 +32,38 @@
   font-family: ui-monospace, monospace;
   font-size: 10px;
 }
+
+.askWorkflow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.askButton {
+  align-self: flex-start;
+  padding: 6px 9px;
+  border: 1px solid hsl(var(--tf-suite-pilot-hs, 226 58%) 60%);
+  border-radius: 4px;
+  background: transparent;
+  color: hsl(var(--tf-text));
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.askButton:disabled {
+  cursor: wait;
+}
+
+.askBrief {
+  padding-left: 8px;
+  border-left: 2px solid hsl(var(--tf-suite-pilot-hs, 226 58%) 60%);
+  color: hsl(var(--tf-text));
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.askSource {
+  color: hsl(var(--tf-suite-pilot-hs, 226 58%) 60%);
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+}

@@ -517,7 +517,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
           {/* Section body */}
           <div style={{ flex: 1, overflow: 'auto', minHeight: 0, padding: 14 }}>
             {section === 'ask' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className={styles.askWorkflow} data-testid='localops-ask-workflow'>
                 <ReadOnlyNote>
                   Prepare a source-grounded brief of the documented Benton IT and security gates
                   that block provider work, KB/RAG indexing, or capabilities above read-only. The
@@ -529,16 +529,7 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                     data-testid='localops-get-deployment-readiness'
                     onClick={onAskReadiness}
                     disabled={askReadinessPending}
-                    style={{
-                      alignSelf: 'flex-start',
-                      border: `1px solid ${PILOT}`,
-                      borderRadius: 4,
-                      background: 'transparent',
-                      color: TEXT,
-                      cursor: askReadinessPending ? 'wait' : 'pointer',
-                      fontSize: 11,
-                      padding: '6px 9px',
-                    }}
+                    className={styles.askButton}
                   >
                     {askReadinessPending
                       ? 'Local request in progress…'
@@ -547,23 +538,14 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                 )}
                 {askReadinessNetworkFailure && <ErrorDisplay error={askReadinessNetworkFailure} />}
                 {data.insight?.grounded && data.insightKind === 'deployment-readiness-ask' && (
-                  <div
-                    data-testid='localops-deployment-readiness'
-                    style={{
-                      borderLeft: `2px solid ${PILOT}`,
-                      paddingLeft: 8,
-                      color: TEXT,
-                      fontSize: 11,
-                      lineHeight: 1.5,
-                    }}
-                  >
+                  <div data-testid='localops-deployment-readiness' className={styles.askBrief}>
                     {data.insight.text}
                   </div>
                 )}
-                {data.insightKind === 'deployment-readiness-ask' && (
+                {data.insight?.grounded && data.insightKind === 'deployment-readiness-ask' && (
                   <div
                     data-testid='localops-deployment-readiness-source'
-                    style={{ color: PILOT, fontFamily: 'ui-monospace, monospace', fontSize: 10 }}
+                    className={styles.askSource}
                   >
                     docs/localops/BENTON_IT_QUESTIONS.md
                   </div>
