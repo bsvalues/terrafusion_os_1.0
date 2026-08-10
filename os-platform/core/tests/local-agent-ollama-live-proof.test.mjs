@@ -81,8 +81,12 @@ function runCli(env) {
     let stderr = '';
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
-    child.stdout.on('data', chunk => { stdout += chunk; });
-    child.stderr.on('data', chunk => { stderr += chunk; });
+    child.stdout.on('data', chunk => {
+      stdout += chunk;
+    });
+    child.stderr.on('data', chunk => {
+      stderr += chunk;
+    });
     child.once('error', reject);
     child.once('close', code => resolve({ code, stdout, stderr }));
   });
@@ -103,78 +107,109 @@ async function withFetchMonitor(run) {
 }
 
 async function assertIncompleteOllamaResponse(body) {
-  await withLoopbackServer((_request, response) => {
-    response.writeHead(200, { 'content-type': 'application/x-ndjson' });
-    response.end(body);
-  }, async baseUrl => {
-    const result = await runLocalOpsOllamaLiveProof({
-      env: proofEnv(baseUrl),
-      prompt: FIXTURE_PROMPT,
-      timeoutMs: 1_000,
-    });
-    assert.deepStrictEqual(result, {
-      ok: false,
-      status: 'failed',
-      reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
-      message: 'Ollama response did not contain a non-empty terminal completion.',
-    });
-
-    const cli = await runCli({ ...proofEnv(baseUrl), LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT });
-    assert.strictEqual(cli.code, 1);
-    assert.strictEqual(cli.stderr, '');
-    assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
-    assert.deepStrictEqual(JSON.parse(cli.stdout), result);
-  });
-}
-
-describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', () => {
-  it('posts the explicit model and prompt to loopback Ollama and projects the literal response digest and length', async () => {
-    let requests = 0;
-    await withLoopbackServer(async (request, response) => {
-      requests += 1;
-      assert.strictEqual(request.method, 'POST');
-      assert.strictEqual(request.url, '/api/chat');
-      let body = '';
-      for await (const chunk of request) body += chunk;
-      const payload = JSON.parse(body);
-      assert.strictEqual(payload.model, FIXTURE_MODEL);
-      assert.deepStrictEqual(payload.messages, [{ role: 'user', content: FIXTURE_PROMPT }]);
-      assert.strictEqual(payload.stream, true);
+  await withLoopbackServer(
+    (_request, response) => {
       response.writeHead(200, { 'content-type': 'application/x-ndjson' });
-      response.end('{"message":{"content":"LocalOps loopback "}}\n{"message":{"content":"proof"},"done":true}\n');
-    }, async baseUrl => {
+      response.end(body);
+    },
+    async baseUrl => {
       const result = await runLocalOpsOllamaLiveProof({
         env: proofEnv(baseUrl),
         prompt: FIXTURE_PROMPT,
         timeoutMs: 1_000,
       });
       assert.deepStrictEqual(result, {
-        ok: true,
-        status: 'success',
-        provider: 'ollama',
-        response: {
-          sha256: FIXTURE_DIGEST,
-          length: 23,
-        },
+        ok: false,
+        status: 'failed',
+        reasonCode: 'INCOMPLETE_OLLAMA_RESPONSE',
+        message: 'Ollama response did not contain a non-empty terminal completion.',
       });
+
+      const cli = await runCli({
+        ...proofEnv(baseUrl),
+        LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT,
+      });
+      assert.strictEqual(cli.code, 1);
+      assert.strictEqual(cli.stderr, '');
+      assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
+      assert.deepStrictEqual(JSON.parse(cli.stdout), result);
+    }
+  );
+}
+
+describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', () => {
+  it('fails closed when an owning lifecycle interrupts the active proof', async () => {
+    const interrupted = new AbortController();
+    interrupted.abort();
+    const result = await runLocalOpsOllamaLiveProof({
+      env: proofEnv(await closedLoopbackUrl()),
+      prompt: FIXTURE_PROMPT,
+      timeoutMs: 1_000,
+      signal: interrupted.signal,
     });
+    assert.deepStrictEqual(result, {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
+      message: 'LocalOps proof was interrupted by its owning lifecycle.',
+    });
+  });
+
+  it('posts the explicit model and prompt to loopback Ollama and projects the literal response digest and length', async () => {
+    let requests = 0;
+    await withLoopbackServer(
+      async (request, response) => {
+        requests += 1;
+        assert.strictEqual(request.method, 'POST');
+        assert.strictEqual(request.url, '/api/chat');
+        let body = '';
+        for await (const chunk of request) body += chunk;
+        const payload = JSON.parse(body);
+        assert.strictEqual(payload.model, FIXTURE_MODEL);
+        assert.deepStrictEqual(payload.messages, [{ role: 'user', content: FIXTURE_PROMPT }]);
+        assert.strictEqual(payload.stream, true);
+        response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+        response.end(
+          '{"message":{"content":"LocalOps loopback "}}\n{"message":{"content":"proof"},"done":true}\n'
+        );
+      },
+      async baseUrl => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
+        assert.deepStrictEqual(result, {
+          ok: true,
+          status: 'success',
+          provider: 'ollama',
+          response: {
+            sha256: FIXTURE_DIGEST,
+            length: 23,
+          },
+        });
+      }
+    );
     assert.strictEqual(requests, 1);
   });
 
   it('projects response length as UTF-8 byte length', async () => {
     const text = '✓';
-    await withLoopbackServer((_request, response) => {
-      response.writeHead(200, { 'content-type': 'application/x-ndjson' });
-      response.end(`{"message":{"content":"${text}"},"done":true}\n`);
-    }, async baseUrl => {
-      const result = await runLocalOpsOllamaLiveProof({
-        env: proofEnv(baseUrl),
-        prompt: FIXTURE_PROMPT,
-        timeoutMs: 1_000,
-      });
-      assert.strictEqual(result.ok, true);
-      assert.strictEqual(result.response.length, Buffer.byteLength(text, 'utf8'));
-    });
+    await withLoopbackServer(
+      (_request, response) => {
+        response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+        response.end(`{"message":{"content":"${text}"},"done":true}\n`);
+      },
+      async baseUrl => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
+        assert.strictEqual(result.ok, true);
+        assert.strictEqual(result.response.length, Buffer.byteLength(text, 'utf8'));
+      }
+    );
   });
 
   it('fails closed for malformed-only Ollama NDJSON', async () => {
@@ -190,44 +225,54 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
   });
 
   it('fails closed when terminal done:true is followed by malformed Ollama NDJSON', async () => {
-    await assertIncompleteOllamaResponse('{"message":{"content":"complete"},"done":true}\n{not-json}\n');
+    await assertIncompleteOllamaResponse(
+      '{"message":{"content":"complete"},"done":true}\n{not-json}\n'
+    );
   });
 
   it('fails closed when terminal done:true is followed by another Ollama response line', async () => {
-    await assertIncompleteOllamaResponse('{"message":{"content":"complete"},"done":true}\n{"message":{"content":"trailing"}}\n');
+    await assertIncompleteOllamaResponse(
+      '{"message":{"content":"complete"},"done":true}\n{"message":{"content":"trailing"}}\n'
+    );
   });
 
   it('accepts a permitted loopback base URL with a trailing slash', async () => {
-    await withLoopbackServer((_request, response) => {
-      response.writeHead(200, { 'content-type': 'application/x-ndjson' });
-      response.end('{"message":{"content":"complete"},"done":true}\n');
-    }, async baseUrl => {
-      const result = await runLocalOpsOllamaLiveProof({
-        env: proofEnv(`${baseUrl}/`),
-        prompt: FIXTURE_PROMPT,
-        timeoutMs: 1_000,
-      });
-      assert.strictEqual(result.ok, true);
-      assert.strictEqual(result.status, 'success');
-    });
+    await withLoopbackServer(
+      (_request, response) => {
+        response.writeHead(200, { 'content-type': 'application/x-ndjson' });
+        response.end('{"message":{"content":"complete"},"done":true}\n');
+      },
+      async baseUrl => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(`${baseUrl}/`),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
+        assert.strictEqual(result.ok, true);
+        assert.strictEqual(result.status, 'success');
+      }
+    );
   });
 
   it('fails closed without following a loopback proof redirect to another target', async () => {
     await withRedirectTarget(async (targetUrl, requestCount) => {
-      await withLoopbackServer((_request, response) => {
-        response.writeHead(302, { location: `${targetUrl}/redirected` });
-        response.end();
-      }, async baseUrl => {
-        const result = await runLocalOpsOllamaLiveProof({
-          env: proofEnv(baseUrl),
-          prompt: FIXTURE_PROMPT,
-          timeoutMs: 1_000,
-        });
-        assert.strictEqual(result.ok, false);
-        assert.strictEqual(result.status, 'failed');
-        assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_FAILED');
-        assert.strictEqual(requestCount(), 0);
-      });
+      await withLoopbackServer(
+        (_request, response) => {
+          response.writeHead(302, { location: `${targetUrl}/redirected` });
+          response.end();
+        },
+        async baseUrl => {
+          const result = await runLocalOpsOllamaLiveProof({
+            env: proofEnv(baseUrl),
+            prompt: FIXTURE_PROMPT,
+            timeoutMs: 1_000,
+          });
+          assert.strictEqual(result.ok, false);
+          assert.strictEqual(result.status, 'failed');
+          assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_FAILED');
+          assert.strictEqual(requestCount(), 0);
+        }
+      );
     });
   });
 
@@ -243,7 +288,11 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
       const env = proofEnv('http://127.0.0.1:11434');
       delete env[key];
       await withFetchMonitor(async requestCount => {
-        const result = await runLocalOpsOllamaLiveProof({ env, prompt: FIXTURE_PROMPT, timeoutMs: 1_000 });
+        const result = await runLocalOpsOllamaLiveProof({
+          env,
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
         assert.strictEqual(result.ok, false);
         assert.strictEqual(result.status, 'misconfigured');
         assert.strictEqual(result.reasonCode, 'INVALID_PROOF_INPUT');
@@ -305,7 +354,11 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     ];
     for (const env of unsafeEnvs) {
       await withFetchMonitor(async requestCount => {
-        const result = await runLocalOpsOllamaLiveProof({ env, prompt: FIXTURE_PROMPT, timeoutMs: 1_000 });
+        const result = await runLocalOpsOllamaLiveProof({
+          env,
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 1_000,
+        });
         assert.strictEqual(result.ok, false);
         assert.strictEqual(result.status, 'misconfigured');
         assert.strictEqual(result.reasonCode, 'INVALID_PROOF_INPUT');
@@ -325,7 +378,10 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
     assert.strictEqual(result.status, 'failed');
     assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_FAILED');
 
-    const cli = await runCli({ ...proofEnv(baseUrl), LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT });
+    const cli = await runCli({
+      ...proofEnv(baseUrl),
+      LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT,
+    });
     assert.strictEqual(cli.code, 1);
     assert.strictEqual(cli.stderr, '');
     assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
@@ -336,31 +392,34 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
   });
 
   it('returns a structured abort timeout and exits the CLI nonzero', async () => {
-    await withLoopbackServer(() => {
-      // Intentionally leave the request open until the proof's bounded abort fires.
-    }, async baseUrl => {
-      const result = await runLocalOpsOllamaLiveProof({
-        env: proofEnv(baseUrl),
-        prompt: FIXTURE_PROMPT,
-        timeoutMs: 10,
-      });
-      assert.strictEqual(result.ok, false);
-      assert.strictEqual(result.status, 'unavailable');
-      assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
-      assert.match(result.message, /timed out/i);
+    await withLoopbackServer(
+      () => {
+        // Intentionally leave the request open until the proof's bounded abort fires.
+      },
+      async baseUrl => {
+        const result = await runLocalOpsOllamaLiveProof({
+          env: proofEnv(baseUrl),
+          prompt: FIXTURE_PROMPT,
+          timeoutMs: 10,
+        });
+        assert.strictEqual(result.ok, false);
+        assert.strictEqual(result.status, 'unavailable');
+        assert.strictEqual(result.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
+        assert.match(result.message, /timed out/i);
 
-      const cli = await runCli({
-        ...proofEnv(baseUrl),
-        LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT,
-        LOCALOPS_OLLAMA_PROOF_TIMEOUT_MS: '10',
-      });
-      assert.strictEqual(cli.code, 1);
-      assert.strictEqual(cli.stderr, '');
-      assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
-      const cliResult = JSON.parse(cli.stdout);
-      assert.strictEqual(cliResult.ok, false);
-      assert.strictEqual(cliResult.status, 'unavailable');
-      assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
-    });
+        const cli = await runCli({
+          ...proofEnv(baseUrl),
+          LOCALOPS_OLLAMA_PROOF_PROMPT: FIXTURE_PROMPT,
+          LOCALOPS_OLLAMA_PROOF_TIMEOUT_MS: '10',
+        });
+        assert.strictEqual(cli.code, 1);
+        assert.strictEqual(cli.stderr, '');
+        assert.strictEqual(cli.stdout.trim().split('\n').length, 1);
+        const cliResult = JSON.parse(cli.stdout);
+        assert.strictEqual(cliResult.ok, false);
+        assert.strictEqual(cliResult.status, 'unavailable');
+        assert.strictEqual(cliResult.reasonCode, 'LOCAL_PROVIDER_TIMEOUT');
+      }
+    );
   });
 });

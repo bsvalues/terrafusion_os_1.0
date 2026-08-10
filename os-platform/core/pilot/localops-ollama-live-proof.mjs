@@ -28,18 +28,28 @@ function inputProblem(message) {
   };
 }
 
+function interruptedProblem() {
+  return {
+    ok: false,
+    status: 'failed',
+    reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
+    message: 'LocalOps proof was interrupted by its owning lifecycle.',
+  };
+}
+
 function normalizeExplicitLoopbackUrl(value) {
   if (typeof value !== 'string') return false;
   try {
     const url = new URL(value);
-    const permitted = url.protocol === 'http:'
-      && url.username === ''
-      && url.password === ''
-      && (url.hostname === '127.0.0.1' || url.hostname === 'localhost')
-      && url.port !== ''
-      && url.pathname === '/'
-      && url.search === ''
-      && url.hash === '';
+    const permitted =
+      url.protocol === 'http:' &&
+      url.username === '' &&
+      url.password === '' &&
+      (url.hostname === '127.0.0.1' || url.hostname === 'localhost') &&
+      url.port !== '' &&
+      url.pathname === '/' &&
+      url.search === '' &&
+      url.hash === '';
     return permitted ? url.origin : null;
   } catch {
     return null;
@@ -77,8 +87,14 @@ function validateOptions(options) {
   if (typeof options.prompt !== 'string' || options.prompt.trim() === '') {
     return { problem: inputProblem('proof prompt must be a non-empty string') };
   }
-  if (!Number.isSafeInteger(options.timeoutMs) || options.timeoutMs < 1 || options.timeoutMs > MAX_TIMEOUT_MS) {
-    return { problem: inputProblem(`proof timeoutMs must be an integer from 1 to ${MAX_TIMEOUT_MS}`) };
+  if (
+    !Number.isSafeInteger(options.timeoutMs) ||
+    options.timeoutMs < 1 ||
+    options.timeoutMs > MAX_TIMEOUT_MS
+  ) {
+    return {
+      problem: inputProblem(`proof timeoutMs must be an integer from 1 to ${MAX_TIMEOUT_MS}`),
+    };
   }
   const baseUrl = normalizeExplicitLoopbackUrl(options.env.AI_BASE_URL);
   return { problem: validateLocalOpsEnv(options.env, baseUrl), baseUrl };
@@ -97,7 +113,10 @@ function observeOllamaTerminal(baseUrl) {
 
   globalThis.fetch = async (url, init) => {
     const isProofRequest = url === `${baseUrl}/api/chat`;
-    const response = await originalFetch(url, isProofRequest ? { ...init, redirect: 'error' } : init);
+    const response = await originalFetch(
+      url,
+      isProofRequest ? { ...init, redirect: 'error' } : init
+    );
     if (!isProofRequest || !response.body) return response;
 
     const copy = response.clone();
@@ -139,6 +158,7 @@ function observeOllamaTerminal(baseUrl) {
 export async function runLocalOpsOllamaLiveProof(options) {
   const { problem: invalid, baseUrl } = validateOptions(options);
   if (invalid) return invalid;
+  if (options.signal?.aborted) return interruptedProblem();
 
   let provider;
   try {
@@ -147,14 +167,17 @@ export async function runLocalOpsOllamaLiveProof(options) {
     return inputProblem('LocalOps proof environment is invalid');
   }
   const controller = new AbortController();
+  const interrupt = () => controller.abort();
+  options.signal?.addEventListener('abort', interrupt, { once: true });
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
   const terminal = observeOllamaTerminal(baseUrl);
 
   try {
     const result = await provider.complete(
       { messages: [{ role: 'user', content: options.prompt }] },
-      controller.signal,
+      controller.signal
     );
+    if (options.signal?.aborted) return interruptedProblem();
     if (isLocalOpsProblem(result)) return result;
     if (!isLocalOpsSuccess(result)) {
       return {
@@ -164,7 +187,7 @@ export async function runLocalOpsOllamaLiveProof(options) {
         message: 'LocalOps completion did not produce a verified success result.',
       };
     }
-    if (result.completion.text.length === 0 || !await terminal.terminalSeen()) {
+    if (result.completion.text.length === 0 || !(await terminal.terminalSeen())) {
       return {
         ok: false,
         status: 'failed',
@@ -184,6 +207,7 @@ export async function runLocalOpsOllamaLiveProof(options) {
     };
   } finally {
     clearTimeout(timeout);
+    options.signal?.removeEventListener('abort', interrupt);
     terminal.restore();
     await provider.close();
   }
@@ -205,12 +229,14 @@ async function main() {
     process.exitCode = result.ok === true && result.status === 'success' ? 0 : 1;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    process.stdout.write(`${JSON.stringify({
-      ok: false,
-      status: 'failed',
-      reasonCode: 'LOCALOPS_PROOF_UNEXPECTED_ERROR',
-      message,
-    })}\n`);
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: false,
+        status: 'failed',
+        reasonCode: 'LOCALOPS_PROOF_UNEXPECTED_ERROR',
+        message,
+      })}\n`
+    );
     process.exitCode = 1;
   }
 }
