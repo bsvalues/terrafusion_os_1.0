@@ -209,6 +209,7 @@ async function startSshTunnel({ localPort, healthTimeoutMs, signal }) {
       child.kill('SIGKILL');
       exited = await waitForChildExit(child, 1_000);
     }
+    error.ownedChild = child;
     throw error;
   }
 }
@@ -362,6 +363,7 @@ export async function runLocalOpsHermesLifecycle(options, dependencies = {}) {
           : proofResult;
     }
   } catch (error) {
+    child = error?.ownedChild ?? child;
     operationResult =
       phase === 'starting' && isLifecycleProblem(error?.cause)
         ? error.cause

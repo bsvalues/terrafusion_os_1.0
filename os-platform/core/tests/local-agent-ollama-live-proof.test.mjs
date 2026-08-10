@@ -155,20 +155,31 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
         markRequestStarted();
       },
       async baseUrl => {
-        const proof = runLocalOpsOllamaLiveProof({
-          env: proofEnv(baseUrl),
-          prompt: FIXTURE_PROMPT,
-          timeoutMs: 1_000,
-          signal: interrupted.signal,
-        });
-        await requestStarted;
-        interrupted.abort();
-        assert.deepStrictEqual(await proof, {
-          ok: false,
-          status: 'failed',
-          reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
-          message: 'LocalOps proof was interrupted by its owning lifecycle.',
-        });
+        let proof;
+        try {
+          proof = runLocalOpsOllamaLiveProof({
+            env: proofEnv(baseUrl),
+            prompt: FIXTURE_PROMPT,
+            timeoutMs: 1_000,
+            signal: interrupted.signal,
+          });
+          await Promise.race([
+            requestStarted,
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('active proof request did not start')), 500)
+            ),
+          ]);
+          interrupted.abort();
+          assert.deepStrictEqual(await proof, {
+            ok: false,
+            status: 'failed',
+            reasonCode: 'LOCALOPS_PROOF_INTERRUPTED',
+            message: 'LocalOps proof was interrupted by its owning lifecycle.',
+          });
+        } finally {
+          interrupted.abort();
+          await proof?.catch(() => undefined);
+        }
       }
     );
   });

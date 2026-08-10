@@ -374,6 +374,38 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
     assert.strictEqual(await canConnect(localPort), false);
   });
 
+  it('retains child ownership when SSH readiness fails and cleanup cannot stop it', async () => {
+    const localPort = await reservePort();
+    const child = new EventEmitter();
+    child.exitCode = null;
+    child.signalCode = null;
+    child.kill = () => true;
+    const readinessProblem = {
+      ok: false,
+      status: 'failed',
+      reasonCode: 'LOCALOPS_TUNNEL_NOT_READY',
+      message: 'Hermes SSH exited or timed out before confirming the owned loopback forward.',
+      cleanup: 'not-started',
+    };
+    const startupError = new Error('SSH tunnel readiness timed out.', {
+      cause: readinessProblem,
+    });
+    startupError.ownedChild = child;
+
+    const result = await runLocalOpsHermesLifecycle(
+      { ...lifecycleOptions(localPort), cleanupTimeoutMs: 10 },
+      {
+        startTunnel: async () => {
+          throw startupError;
+        },
+      }
+    );
+
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.reasonCode, 'LOCALOPS_TUNNEL_CLEANUP_FAILED');
+    assert.strictEqual(result.cleanup, 'listener-still-open');
+  });
+
   it('refuses to start when the requested loopback port is already owned', async () => {
     const listener = net.createServer();
     listener.listen(0, '127.0.0.1');
