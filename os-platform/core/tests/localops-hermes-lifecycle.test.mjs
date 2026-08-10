@@ -240,24 +240,36 @@ describe('LocalOps Hermes tunnel lifecycle', () => {
       },
     });
 
-    const lifecycle = runLocalOpsHermesLifecycle(
-      { ...lifecycleOptions(localPort), signal: interrupted.signal },
-      { startTunnel: options => tunnel.start(options) }
-    );
-    await Promise.race([
-      requestStarted,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('in-flight Ollama request did not begin')), 500)
-      ),
-    ]);
-    interrupted.abort();
+    let lifecycle;
+    try {
+      lifecycle = runLocalOpsHermesLifecycle(
+        { ...lifecycleOptions(localPort), signal: interrupted.signal },
+        { startTunnel: options => tunnel.start(options) }
+      );
+      await Promise.race([
+        requestStarted,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('in-flight Ollama request did not begin')), 500)
+        ),
+      ]);
+      interrupted.abort();
 
-    const result = await lifecycle;
-    await responseClosed;
-    assert.strictEqual(result.ok, false);
-    assert.strictEqual(result.reasonCode, 'LOCALOPS_LIFECYCLE_INTERRUPTED');
-    assert.strictEqual(result.cleanup, 'released');
-    assert.strictEqual(await canConnect(localPort), false);
+      const result = await lifecycle;
+      await Promise.race([
+        responseClosed,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('aborted Ollama response did not close')), 500)
+        ),
+      ]);
+      assert.strictEqual(result.ok, false);
+      assert.strictEqual(result.reasonCode, 'LOCALOPS_LIFECYCLE_INTERRUPTED');
+      assert.strictEqual(result.cleanup, 'released');
+      assert.strictEqual(await canConnect(localPort), false);
+    } finally {
+      interrupted.abort();
+      await lifecycle?.catch(() => undefined);
+      await tunnel.forceClose();
+    }
   });
 
   it('reports cleanup failure instead of success when its listener remains open', async () => {
