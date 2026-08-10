@@ -86,6 +86,7 @@ export interface LocalOpsViewModel {
     text: string;
     grounded: boolean;
   };
+  insightKind?: 'runbook-guidance';
 }
 
 export type LocalOpsSection = 'ask' | 'explain' | 'diagnose' | 'runbook' | 'sources' | 'trace';
@@ -110,8 +111,14 @@ export interface LocalOpsPanelProps {
   onDiagnose?: () => void;
   /** Prevents duplicate requests while the local provider is running. */
   diagnosePending?: boolean;
+  /** Operator-triggered request for grounded, non-executing runbook guidance. */
+  onRunbookGuidance?: () => void;
+  /** Prevents duplicate guidance requests while the local provider is running. */
+  runbookGuidancePending?: boolean;
   /** Correlation-first shell error for transport-level failures. */
   networkFailure?: ErrorDisplayProps['error'];
+  /** Correlation-first runbook error scoped to the runbook journey. */
+  runbookNetworkFailure?: ErrorDisplayProps['error'];
 }
 
 // ============================================================================
@@ -325,7 +332,10 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
   onClose,
   onDiagnose,
   diagnosePending = false,
+  onRunbookGuidance,
+  runbookGuidancePending = false,
   networkFailure,
+  runbookNetworkFailure,
 }) => {
   const [section, setSection] = useState<LocalOpsSection>('diagnose');
 
@@ -520,11 +530,11 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
                       padding: '6px 9px',
                     }}
                   >
-                    {diagnosePending ? 'Running locally…' : 'Run local diagnostic'}
+                    {diagnosePending ? 'Local request in progress…' : 'Run local diagnostic'}
                   </button>
                 )}
                 {networkFailure && <ErrorDisplay error={networkFailure} />}
-                {data.insight && (
+                {data.insight && data.insightKind !== 'runbook-guidance' && (
                   <div
                     data-testid='localops-diagnostic-insight'
                     style={{
@@ -542,11 +552,58 @@ export const LocalOpsPanel: React.FC<LocalOpsPanelProps> = ({
               </div>
             )}
             {section === 'runbook' && (
-              <ReadOnlyNote>
-                Operator runbooks live in <code>docs/localops/BENTON_SERVER_RUNBOOK.md</code>.
-                LocalOps surfaces read-only findings and proposes the documented step — it never
-                executes it.
-              </ReadOnlyNote>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <ReadOnlyNote>
+                  Operator runbooks live in <code>docs/localops/BENTON_SERVER_RUNBOOK.md</code>.
+                  LocalOps surfaces read-only findings and proposes the documented step — it never
+                  executes it.
+                </ReadOnlyNote>
+                {onRunbookGuidance && (
+                  <button
+                    type='button'
+                    data-testid='localops-get-runbook-guidance'
+                    onClick={onRunbookGuidance}
+                    disabled={runbookGuidancePending}
+                    style={{
+                      alignSelf: 'flex-start',
+                      border: `1px solid ${PILOT}`,
+                      borderRadius: 4,
+                      background: 'transparent',
+                      color: TEXT,
+                      cursor: runbookGuidancePending ? 'wait' : 'pointer',
+                      fontSize: 11,
+                      padding: '6px 9px',
+                    }}
+                  >
+                    {runbookGuidancePending
+                      ? 'Local request in progress…'
+                      : 'Get grounded runbook guidance'}
+                  </button>
+                )}
+                {runbookNetworkFailure && <ErrorDisplay error={runbookNetworkFailure} />}
+                {data.insight?.grounded && data.insightKind === 'runbook-guidance' && (
+                  <div
+                    data-testid='localops-runbook-guidance'
+                    style={{
+                      borderLeft: `2px solid ${PILOT}`,
+                      paddingLeft: 8,
+                      color: TEXT,
+                      fontSize: 11,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {data.insight.text}
+                  </div>
+                )}
+                {data.insightKind === 'runbook-guidance' && (
+                  <div
+                    data-testid='localops-runbook-source'
+                    style={{ color: PILOT, fontFamily: 'ui-monospace, monospace', fontSize: 10 }}
+                  >
+                    docs/localops/BENTON_SERVER_RUNBOOK.md
+                  </div>
+                )}
+              </div>
             )}
             {section === 'sources' && <SourcesView vm={data} />}
             {section === 'trace' && <TraceView events={data.traceEvents} />}

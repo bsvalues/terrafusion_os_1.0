@@ -4,7 +4,8 @@ import type { LocalOpsViewModel } from '../components/localops/LocalOpsPanel';
 export type AcademyLocalOpsQuestionId =
   | 'localops-safety-boundary'
   | 'source-grounded-evidence'
-  | 'localops-panel-diagnostic';
+  | 'localops-panel-diagnostic'
+  | 'localops-runbook-guidance';
 
 export interface AcademyLocalOpsRequest {
   questionId: AcademyLocalOpsQuestionId;
@@ -19,7 +20,7 @@ export interface AcademyLocalOpsSource {
 export interface AcademyLocalOpsSuccess {
   ok: true;
   status: 'success';
-  journey: 'academy-localops' | 'localops-diagnostic-panel';
+  journey: 'academy-localops' | 'localops-diagnostic-panel' | 'localops-runbook-guidance';
   question: { id: AcademyLocalOpsQuestionId; label: string };
   answer: {
     text: string;

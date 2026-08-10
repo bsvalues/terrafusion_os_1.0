@@ -143,6 +143,84 @@ describe('LocalOps engine (WO-AI-CONSOLIDATION-001)', () => {
     await engine.close();
   });
 
+  it('applies a source-file allowlist before constructing the model grounding context', async () => {
+    let captured;
+    const canonicalRunbook = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+    const adapter = {
+      ...sourceCitingAdapter(),
+      async complete(request) {
+        captured = request;
+        return { text: 'Follow the documented R0 procedure. [1]' };
+      },
+    };
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter,
+      sourceFileAllowlist: [canonicalRunbook],
+      sourceSection: {
+        sourceFile: canonicalRunbook,
+        heading: 'R0 — Is LocalOps itself available? (LocalOps-automatable)',
+      },
+    });
+
+    const answer = await engine.ask('documented R0 self-readiness procedure and operator step');
+    const contextualSources = [...captured.system.matchAll(/^\[\d+\]\s+([^\s—\r\n]+)/gm)].map(
+      match => match[1]
+    );
+    assert.deepEqual(contextualSources, [canonicalRunbook]);
+    assert.match(captured.system, /Human-approved action/);
+    assert.match(captured.system, /Escalation/);
+    assert.doesNotMatch(captured.system, /R1 — TerraFusion API/);
+    assert.match(captured.system, /final Sources: \[1\]\./);
+    assert.doesNotMatch(captured.system, /Sources: \[1\] \[2\]/);
+    assert.ok(captured.system.endsWith('Required final line (copy exactly): Sources: [1].'));
+    assert.deepEqual(
+      answer.sources.map(source => source.sourceFile),
+      [canonicalRunbook]
+    );
+    await engine.close();
+  });
+
+  it('does not call the model when retrieved evidence is removed by the source allowlist', async () => {
+    const counting = countingLocalAdapter();
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter: counting.adapter,
+      sourceFileAllowlist: ['docs/localops/NOT_AN_INDEXED_SOURCE.md'],
+    });
+
+    const answer = await engine.ask('provider status');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.refusal.reasonCode, 'NO_GROUNDING');
+    assert.equal(answer.sources.length, 0);
+    assert.equal(counting.state.calls, 0, 'filtered evidence must refuse before model invocation');
+    await engine.close();
+  });
+
+  it('does not call the model when the required exact runbook section is missing', async () => {
+    const counting = countingLocalAdapter();
+    const canonicalRunbook = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+    const engine = createLocalOpsEngine({
+      env: { ...localopsEnv, AI_REQUIRE_SOURCES: 'true' },
+      repoRoot: REPO_ROOT,
+      adapter: counting.adapter,
+      sourceFileAllowlist: [canonicalRunbook],
+      sourceSection: {
+        sourceFile: canonicalRunbook,
+        heading: 'R0 — Missing exact section',
+      },
+    });
+
+    const answer = await engine.ask('documented R0 self-readiness procedure');
+    assert.equal(answer.answered, false);
+    assert.equal(answer.refusal.reasonCode, 'NO_GROUNDING');
+    assert.equal(answer.sources.length, 0);
+    assert.equal(counting.state.calls, 0, 'missing exact evidence must refuse before inference');
+    await engine.close();
+  });
+
   it('refuses a completion that does not cite a retrieved source', async () => {
     const adapter = {
       ...sourceCitingAdapter(),

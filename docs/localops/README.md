@@ -85,6 +85,26 @@ The live engine→view-model adapter is now wired as an operator-triggered, read
   cloud fallback, shell access, filesystem access, database access, or mutation path.
 - The store retains its honest `disabled` default until the operator explicitly runs the diagnostic.
 
+## Diagnostic-linked runbook guidance
+
+The in-shell **Runbook** section now consumes the same authenticated LocalOps product endpoint as the
+live diagnostic adapter. An operator can request one fixed synthetic guidance question; there is no
+free-form prompt and no parallel provider or diagnostic path.
+
+- A successful response must be grounded exclusively in
+  [`BENTON_SERVER_RUNBOOK.md`](BENTON_SERVER_RUNBOOK.md). If that canonical source is absent, the
+  journey fails closed and displays no guidance.
+- Before inference, the journey retrieves only the bounded `R0 — Is LocalOps itself available?`
+  section so the diagnostic, human-approved action, and escalation rule are all present in the
+  model evidence context.
+- The local model explains the documented R0 procedure and how to interpret the latest diagnostic
+  cards, identifies the read-only diagnostic, proposes the human-performed next step, and states when
+  to escalate. Current status remains the responsibility of the diagnostic cards; the model cannot
+  claim it, execute, apply, restart, write, or mutate anything.
+- Provider, tunnel, runtime, network, malformed-response, and missing-source failures remain visible
+  refusals with no silent fallback. The default store state remains disabled until an operator makes
+  the explicit request.
+
 ## LocalOps trace events (WO-LOCALOPS-003)
 
 LocalOps emits an append-only, **TerraTrace-compatible** event stream via

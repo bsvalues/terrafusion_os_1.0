@@ -2,6 +2,8 @@ import { createLocalOpsEngine } from './local-agent/localOpsEngine.js';
 import { createTerraTraceBridgeSink } from './local-agent/localOpsTraceBridge.js';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
+const CANONICAL_BENTON_RUNBOOK = 'docs/localops/BENTON_SERVER_RUNBOOK.md';
+const CANONICAL_R0_HEADING = 'R0 — Is LocalOps itself available? (LocalOps-automatable)';
 
 export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
   'localops-safety-boundary': Object.freeze({
@@ -18,6 +20,11 @@ export const ACADEMY_LOCALOPS_QUESTIONS = Object.freeze({
     label: 'Explain LocalOps diagnostic readiness',
     prompt:
       'Explain the current TerraFusion LocalOps read-only diagnostic boundary and how an operator should interpret provider readiness.',
+  }),
+  'localops-runbook-guidance': Object.freeze({
+    label: 'Explain the documented LocalOps operator step',
+    prompt:
+      'Using only the Benton County server runbook, explain the documented R0 self-readiness procedure, identify the read-only diagnostic, describe how an operator should interpret the latest diagnostic cards shown in the LocalOps panel, propose the human-performed next step, state when to escalate, and cite the source. Do not claim a current status and do not execute or imply execution of any step.',
   }),
 });
 
@@ -156,9 +163,23 @@ export async function runAcademyLocalOpsJourney({
   }
 
   const question = ACADEMY_LOCALOPS_QUESTIONS[questionId];
+  const runbookJourney = questionId === 'localops-runbook-guidance';
   const safeEnv = { ...env, AI_BASE_URL: explicitLoopbackOrigin(env.AI_BASE_URL) };
   const sink = createTerraTraceBridgeSink({ trace: traceEmitter, context: traceContext });
-  const engine = engineFactory({ repoRoot, env: safeEnv, sink });
+  const engine = engineFactory({
+    repoRoot,
+    env: safeEnv,
+    sink,
+    ...(runbookJourney
+      ? {
+          sourceFileAllowlist: [CANONICAL_BENTON_RUNBOOK],
+          sourceSection: {
+            sourceFile: CANONICAL_BENTON_RUNBOOK,
+            heading: CANONICAL_R0_HEADING,
+          },
+        }
+      : {}),
+  });
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(new Error('LocalOps Academy provider timeout')),
@@ -201,13 +222,29 @@ export async function runAcademyLocalOpsJourney({
       );
     }
 
+    if (
+      runbookJourney &&
+      !answer.sources.every(source => source.sourceFile === CANONICAL_BENTON_RUNBOOK)
+    ) {
+      return fail(
+        503,
+        'refused',
+        'RUNBOOK_SOURCE_REQUIRED',
+        'LocalOps did not ground this guidance in the canonical Benton server runbook, so no operator step will be displayed.'
+      );
+    }
+
     const panelJourney = questionId === 'localops-panel-diagnostic';
     return {
       httpStatus: 200,
       payload: {
         ok: true,
         status: 'success',
-        journey: panelJourney ? 'localops-diagnostic-panel' : 'academy-localops',
+        journey: runbookJourney
+          ? 'localops-runbook-guidance'
+          : panelJourney
+            ? 'localops-diagnostic-panel'
+            : 'academy-localops',
         question: { id: questionId, label: question.label },
         answer: {
           text: answer.text,
@@ -221,7 +258,13 @@ export async function runAcademyLocalOpsJourney({
         },
         safety: viewModel.flags,
         trace: { eventCount: viewModel.traceEvents.length },
-        ...(panelJourney ? { viewModel } : {}),
+        ...(panelJourney || runbookJourney
+          ? {
+              viewModel: runbookJourney
+                ? { ...viewModel, insightKind: 'runbook-guidance' }
+                : viewModel,
+            }
+          : {}),
       },
     };
   } catch {

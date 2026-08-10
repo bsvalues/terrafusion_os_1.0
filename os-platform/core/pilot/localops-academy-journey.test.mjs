@@ -169,6 +169,113 @@ test('LocalOps panel diagnostic journey returns the engine view model for the ex
   });
 });
 
+test('LocalOps runbook guidance returns the engine view model only when grounded in the canonical Benton runbook', async () => {
+  const answer = {
+    answered: true,
+    text: 'The diagnostic is read-only. The operator performs the documented check and escalates if it fails. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+        heading: 'R0 — LocalOps self-readiness diagnostic',
+        snippet: 'LocalOps proposes the next documented step but never executes it.',
+      },
+    ],
+  };
+  const engine = recordingEngineFactory(answer);
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.payload.ok, true);
+  assert.equal(result.payload.journey, 'localops-runbook-guidance');
+  assert.deepEqual(result.payload.viewModel.insight, {
+    text: answer.text,
+    grounded: true,
+  });
+  assert.deepEqual(result.payload.answer.sources, answer.sources);
+  assert.deepEqual(engine.calls[0].sourceFileAllowlist, ['docs/localops/BENTON_SERVER_RUNBOOK.md']);
+  assert.deepEqual(engine.calls[0].sourceSection, {
+    sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+    heading: 'R0 — Is LocalOps itself available? (LocalOps-automatable)',
+  });
+  assert.deepEqual(engine.calls[1], {
+    question: ACADEMY_LOCALOPS_QUESTIONS['localops-runbook-guidance'].prompt,
+  });
+});
+
+test('LocalOps runbook guidance fails closed without the canonical Benton runbook source', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Generic operational advice. [1]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/README.md',
+        heading: 'Overview',
+        snippet: 'LocalOps is read-only.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.ok, false);
+  assert.equal(result.payload.status, 'refused');
+  assert.equal(result.payload.reasonCode, 'RUNBOOK_SOURCE_REQUIRED');
+  assert.match(result.payload.message, /Benton server runbook/i);
+});
+
+test('LocalOps runbook guidance refuses mixed sources instead of broadening beyond the canonical runbook', async () => {
+  const engine = recordingEngineFactory({
+    answered: true,
+    text: 'Runbook guidance with an unrelated operational source. [1] [2]',
+    grounded: true,
+    sources: [
+      {
+        sourceFile: 'docs/localops/BENTON_SERVER_RUNBOOK.md',
+        heading: 'R0 — LocalOps self-readiness diagnostic',
+        snippet: 'The operator performs the documented step.',
+      },
+      {
+        sourceFile: 'docs/operations/UNRELATED_RUNBOOK.md',
+        heading: 'Unrelated procedure',
+        snippet: 'This source is outside the fixed LocalOps runbook contract.',
+      },
+    ],
+  });
+
+  const result = await runAcademyLocalOpsJourney({
+    ...TRACE_OPTIONS,
+    repoRoot: 'C:/repo',
+    env: SAFE_ENV,
+    body: { questionId: 'localops-runbook-guidance' },
+    engineFactory: engine.factory,
+  });
+
+  assert.equal(result.httpStatus, 503);
+  assert.equal(result.payload.reasonCode, 'RUNBOOK_SOURCE_REQUIRED');
+});
+
+test('LocalOps runbook guidance asks for documented procedure, not an unsupplied current finding', () => {
+  const prompt = ACADEMY_LOCALOPS_QUESTIONS['localops-runbook-guidance'].prompt;
+  assert.match(prompt, /documented R0 self-readiness procedure/i);
+  assert.doesNotMatch(prompt, /current LocalOps self-readiness finding/i);
+});
+
 test('Academy LocalOps journey is default-off and never constructs an engine when not explicitly enabled', async () => {
   let factoryCalls = 0;
   const result = await runAcademyLocalOpsJourney({
