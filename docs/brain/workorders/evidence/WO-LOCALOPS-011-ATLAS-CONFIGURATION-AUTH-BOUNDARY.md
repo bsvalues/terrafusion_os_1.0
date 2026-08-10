@@ -2,7 +2,7 @@
 
 ## Contract proved
 
-- Fixed identity anchor: local `ssh -G atlas` configuration only; no SSH connection.
+- Fixed identity anchor: approved endpoint `192.168.1.156`, pinned in the proof; no subprocess.
 - PostgreSQL: port `5432`, database `terrafusion_production`, principal `terrafusion`.
 - Redis: port `6379`.
 - Deployment host references: `TF_DB_HOST`, `TF_REDIS_HOST`.
@@ -23,16 +23,16 @@
 - Core TypeScript check: passed.
 - Generated JavaScript header check: passed.
 - Positive and negative sources are committed synthetic/configuration fixtures only.
-- Static client scan: no network, database, Redis, migration, or shell-exec client.
+- Static client scan: no subprocess, network, database, Redis, or migration client.
 - Broader repository and build results are recorded on the pull request at the exact reviewed head.
 
 ## Live local proof
 
-- Positive: `pnpm run localops:atlas-boundary` returned `status: ready`, fixed alias `atlas`, hostname
-  `192.168.1.156`, PostgreSQL `5432`, Redis `6379`, the documented credential-reference names, and
-  all safety flags false. It read committed contracts and invoked only `ssh -G atlas`.
+- Positive: `pnpm run localops:atlas-boundary` returned `status: ready`, hostname `192.168.1.156`,
+  PostgreSQL `5432`, Redis `6379`, the documented credential-reference names, and all safety flags
+  false. It read committed contracts and started no subprocess.
 - Negative: invoking the entrypoint from a directory without the required committed sources returned
-  `ATLAS_BOUNDARY_SOURCE_UNAVAILABLE` and exit `1` before SSH inspection. There was no fallback.
+  `ATLAS_BOUNDARY_SOURCE_UNAVAILABLE` and exit `1`. There was no fallback.
 
 ## Safety
 

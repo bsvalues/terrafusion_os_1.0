@@ -9,12 +9,11 @@ database or Redis connection:
 pnpm run localops:atlas-boundary
 ```
 
-The command reads the committed production connection templates, runtime resolver, and authentication
-registration, then expands the fixed local `atlas` SSH alias with `ssh -G` (configuration output only;
-no connection). It reports the Atlas endpoint, ports, database/principal, and credential-reference
-names while never reading credential values or producing a resolved connection string. Source drift,
-missing sources, alias drift, inherited forwarding, and unsafe hostnames fail closed. The entrypoint has
-no network, database, Redis, or migration client.
+The command reads the committed production connection templates, primary runtime resolver, and
+authentication registration, then reports the pinned approved Atlas endpoint, ports,
+database/principal, and credential-reference names. It never reads credential values or produces a
+resolved connection string. Source drift, disconnected resolver/authentication wiring, and missing
+sources fail closed. The entrypoint has no subprocess, network, database, Redis, or migration client.
 
 ## Current repeatable Hermes lifecycle
 

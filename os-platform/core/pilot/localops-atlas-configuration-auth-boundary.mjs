@@ -1,9 +1,7 @@
-import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ATLAS_SSH_ALIAS = 'atlas';
 const APPROVED_ATLAS_HOSTNAME = '192.168.1.156';
 const PRODUCTION_CONFIG = 'backend/src/TerraFusion.API/appsettings.Production.json';
 const PROGRAM_SOURCE = 'backend/src/TerraFusion.API/Program.cs';
@@ -60,14 +58,24 @@ function validateProgramContract(source) {
   );
   if (mainBuilderStart < 0 || localConfigurationEnd < 0) return false;
   const mainBuilderConfiguration = uncommented.slice(mainBuilderStart, localConfigurationEnd);
+  const resolverStart = uncommented.indexOf(
+    'static string ResolvePrimaryConnectionString',
+    localConfigurationEnd
+  );
+  const resolverEnd = uncommented.indexOf('static bool TryReadBoolean', resolverStart);
+  if (resolverStart < 0 || resolverEnd < 0) return false;
+  const primaryResolver = uncommented.slice(resolverStart, resolverEnd);
   return (
     [
       /AddJsonFile\(\s*\$"appsettings\.\{builder\.Environment\.EnvironmentName\}\.local\.json"/s,
     ].every(pattern => pattern.test(mainBuilderConfiguration)) &&
-    [
-      /GetConnectionString\("DefaultConnection"\)/,
-      /ResolvePrimaryConnectionString\(builder\.Configuration, builder\.Environment\)/,
-    ].every(pattern => pattern.test(uncommented))
+    /configuration\.GetConnectionString\("DefaultConnection"\)\s*\?\?\s*"Data Source=terrafusion\.db"/.test(
+      primaryResolver
+    ) &&
+    /return connectionString;/.test(primaryResolver) &&
+    /ResolvePrimaryConnectionString\(builder\.Configuration, builder\.Environment\)/.test(
+      uncommented.slice(resolverEnd)
+    )
   );
 }
 
@@ -99,40 +107,9 @@ function validateAuthenticationContract(source) {
     /ValidateIssuerSigningKey = true/,
     /ValidIssuer = issuer/,
     /ValidAudience = audience/,
+    /IssuerSigningKey = new SymmetricSecurityKey\(Encoding\.UTF8\.GetBytes\(secretKey\)\)/,
     /FallbackPolicy = new AuthorizationPolicyBuilder\(\)\s*\.RequireAuthenticatedUser\(\)/s,
   ].every(pattern => pattern.test(uncommented));
-}
-
-function inspectAtlasSshConfiguration() {
-  const inspection = spawnSync('ssh', ['-G', ATLAS_SSH_ALIAS], {
-    encoding: 'utf8',
-    timeout: 5_000,
-    windowsHide: true,
-  });
-  if (inspection.error || inspection.status !== 0) {
-    throw new Error('The fixed atlas SSH alias could not be inspected.');
-  }
-  return inspection.stdout;
-}
-
-function resolveAtlasHostname(sshConfiguration) {
-  if (
-    typeof sshConfiguration !== 'string' ||
-    /^(localforward|remoteforward|dynamicforward)\s/im.test(sshConfiguration)
-  ) {
-    return null;
-  }
-  const hostname = sshConfiguration.match(/^hostname\s+(\S+)\s*$/im)?.[1];
-  if (
-    !hostname ||
-    hostname !== APPROVED_ATLAS_HOSTNAME ||
-    !/^[A-Za-z0-9.-]+$/.test(hostname) ||
-    hostname.startsWith('-') ||
-    hostname.includes('..')
-  ) {
-    return null;
-  }
-  return hostname;
 }
 
 export async function runAtlasConfigurationAuthBoundary(options, dependencies = {}) {
@@ -178,30 +155,12 @@ export async function runAtlasConfigurationAuthBoundary(options, dependencies = 
     );
   }
 
-  let sshConfiguration;
-  try {
-    sshConfiguration = (dependencies.inspectSshConfiguration ?? inspectAtlasSshConfiguration)();
-  } catch {
-    return problem(
-      'ATLAS_SSH_CONFIGURATION_UNAVAILABLE',
-      'The fixed atlas SSH alias could not be inspected without a network connection.'
-    );
-  }
-  const hostname = resolveAtlasHostname(sshConfiguration);
-  if (!hostname) {
-    return problem(
-      'ATLAS_SSH_CONFIGURATION_UNSAFE',
-      'The fixed atlas SSH alias does not resolve to the approved endpoint or has inherited forwarding.'
-    );
-  }
-
   return {
     ok: true,
     status: 'ready',
     boundary: 'atlas-configuration-auth',
     atlas: {
-      alias: ATLAS_SSH_ALIAS,
-      hostname,
+      hostname: APPROVED_ATLAS_HOSTNAME,
       database: {
         provider: 'postgresql',
         port: 5432,
@@ -235,6 +194,7 @@ export async function runAtlasConfigurationAuthBoundary(options, dependencies = 
     },
     safety: {
       secretValuesInspected: false,
+      subprocesses: false,
       networkConnections: false,
       databaseQueries: false,
       migrations: false,
