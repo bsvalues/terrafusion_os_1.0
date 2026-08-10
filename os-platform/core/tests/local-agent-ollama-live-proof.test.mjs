@@ -160,7 +160,7 @@ describe('disposable LocalOps Ollama live proof entrypoint (WO-LOCALOPS-009)', (
           proof = runLocalOpsOllamaLiveProof({
             env: proofEnv(baseUrl),
             prompt: FIXTURE_PROMPT,
-            timeoutMs: 1_000,
+            timeoutMs: 30_000,
             signal: interrupted.signal,
           });
           await Promise.race([

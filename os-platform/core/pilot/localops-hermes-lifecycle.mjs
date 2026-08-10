@@ -190,24 +190,29 @@ export function waitForSshForwardReady(child, localPort, timeoutMs = 5_000, sign
   });
 }
 
-async function startSshTunnel({ localPort, healthTimeoutMs, signal }) {
-  const unsafeConfig = inspectHermesSshConfiguration();
+async function startSshTunnel({ localPort, healthTimeoutMs, signal }, dependencies = {}) {
+  const inspectConfiguration =
+    dependencies.inspectConfiguration ?? inspectHermesSshConfiguration;
+  const spawnTunnel = dependencies.spawn ?? spawn;
+  const waitForReady = dependencies.waitForReady ?? waitForSshForwardReady;
+  const waitForExit = dependencies.waitForExit ?? waitForChildExit;
+  const unsafeConfig = inspectConfiguration();
   if (unsafeConfig) throw new Error(unsafeConfig.message, { cause: unsafeConfig });
-  const child = spawn('ssh', buildHermesSshArguments(localPort), {
+  const child = spawnTunnel('ssh', buildHermesSshArguments(localPort), {
     detached: false,
     stdio: ['ignore', 'ignore', 'pipe'],
     windowsHide: true,
   });
   try {
-    await waitForSshForwardReady(child, localPort, healthTimeoutMs, signal);
+    await waitForReady(child, localPort, healthTimeoutMs, signal);
     child.stderr?.resume();
     return child;
   } catch (error) {
     if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
-    let exited = await waitForChildExit(child, 1_000);
+    let exited = await waitForExit(child, 1_000);
     if (!exited) {
       child.kill('SIGKILL');
-      exited = await waitForChildExit(child, 1_000);
+      exited = await waitForExit(child, 1_000);
     }
     error.ownedChild = child;
     throw error;
@@ -321,7 +326,9 @@ export async function runLocalOpsHermesLifecycle(options, dependencies = {}) {
     );
   }
 
-  const startTunnel = dependencies.startTunnel ?? startSshTunnel;
+  const startTunnel =
+    dependencies.startTunnel ??
+    (tunnelOptions => startSshTunnel(tunnelOptions, dependencies.ssh));
   const runProof = dependencies.runProof ?? runLocalOpsOllamaLiveProof;
   const fetchImpl = dependencies.fetchImpl ?? globalThis.fetch;
   let child;
