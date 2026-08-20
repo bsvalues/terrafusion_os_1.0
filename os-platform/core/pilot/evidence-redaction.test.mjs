@@ -92,6 +92,56 @@ test("assignment redaction consumes complete quoted and whitespace-bearing value
   assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
   assert.equal(findEvidenceCredentialFindings(firstPass).length, 0);
   assert.equal(findEvidenceCredentialFindings(escapedFirstPass).length, 0);
+
+  for (let escapeDepth = 0; escapeDepth <= 5; escapeDepth += 1) {
+    const delimiter = "\\".repeat(escapeDepth) + '"';
+    const nested = `response={${delimiter}token${delimiter}:${delimiter}opaque-depth-${escapeDepth}${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;
+    const expected = `response={${delimiter}token${delimiter}:${delimiter}[REDACTED]${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;
+    const nestedFirstPass = redactEvidenceText(nested);
+    assert.equal(nestedFirstPass, expected);
+    assert.equal(redactEvidenceText(nestedFirstPass), nestedFirstPass);
+    assert.ok(!nestedFirstPass.includes(`opaque-depth-${escapeDepth}`));
+    assert.ok(findEvidenceCredentialFindings(nested).some((finding) => finding.kind === "sensitive-text"));
+    assert.equal(findEvidenceCredentialFindings(nestedFirstPass).length, 0);
+  }
+
+  const multiplyEscaped =
+    String.raw`response={\\\"token\\\":\\\"opaque-nested\\\",\\\"next\\\":\\\"safe\\\"}`;
+  const multiplyEscapedFirstPass = redactEvidenceText(multiplyEscaped);
+  assert.equal(
+    multiplyEscapedFirstPass,
+    String.raw`response={\\\"token\\\":\\\"[REDACTED]\\\",\\\"next\\\":\\\"safe\\\"}`
+  );
+  assert.equal(redactEvidenceText(multiplyEscapedFirstPass), multiplyEscapedFirstPass);
+  assert.ok(!multiplyEscapedFirstPass.includes("opaque-nested"));
+  assert.ok(
+    findEvidenceCredentialFindings(multiplyEscaped).some(
+      (finding) => finding.kind === "sensitive-text"
+    )
+  );
+  assert.equal(findEvidenceCredentialFindings(multiplyEscapedFirstPass).length, 0);
+
+  const escapedContent =
+    String.raw`response={\"token\":\"sec\\\"ret\",\"next\":\"safe\"}`;
+  const escapedContentFirstPass = redactEvidenceText(escapedContent);
+  assert.equal(
+    escapedContentFirstPass,
+    String.raw`response={\"token\":\"[REDACTED]\",\"next\":\"safe\"}`
+  );
+  assert.equal(redactEvidenceText(escapedContentFirstPass), escapedContentFirstPass);
+  assert.ok(!escapedContentFirstPass.includes("ret"));
+  assert.ok(
+    findEvidenceCredentialFindings(escapedContent).some(
+      (finding) => finding.kind === "sensitive-text"
+    )
+  );
+  assert.equal(findEvidenceCredentialFindings(escapedContentFirstPass).length, 0);
+});
+
+test("credential findings use an independent assignment detector", async () => {
+  const source = await fs.readFile(path.join(PILOT_DIRECTORY, "evidence-redaction.mjs"), "utf8");
+  assert.doesNotMatch(source, /redactEvidenceText\(node\)\s*!==\s*node/);
+  assert.match(source, /containsPopulatedSensitiveAssignment\(node\)/);
 });
 
 test("dev-data truth evidence uses the shared redaction boundary for JSON and Markdown", async () => {
