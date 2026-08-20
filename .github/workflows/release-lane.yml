@@ -47,34 +47,48 @@ jobs:
           ref: ${{ inputs.release_sha }}
           fetch-depth: 0
 
-      - name: Overlay deploy infrastructure from default branch
+      - name: Verify immutable candidate checkout
         shell: bash
         run: |
           set -euo pipefail
-          # Deploy infrastructure (Caddyfile, compose template) lives on the default
-          # branch and must match the pipeline expectations (service names, health
-          # headers, etc.).  Always overlay from main — old release SHAs may have
-          # incompatible versions (e.g. wrong service names in Caddyfile).
-          git fetch origin main --no-tags --depth=1 2>/dev/null || true
+
+          if [[ ! "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "release_sha must be a full lowercase 40-character git SHA"
+            exit 1
+          fi
+
+          # Protected deployment assets may execute with host privileges. Only a
+          # commit already contained in the canonical main branch is eligible.
+          git fetch --no-tags --prune origin \
+            "+refs/heads/main:refs/remotes/origin/main"
+          TRUSTED_MAIN_SHA="$(git rev-parse refs/remotes/origin/main)"
+          if ! git merge-base --is-ancestor "$RELEASE_SHA" "$TRUSTED_MAIN_SHA"; then
+            echo "release_sha is not contained in trusted origin/main; refusing protected deployment"
+            exit 1
+          fi
+
+          CHECKED_OUT_SHA="$(git rev-parse HEAD)"
+          CANDIDATE_TREE_SHA="$(git rev-parse 'HEAD^{tree}')"
+          test "$CHECKED_OUT_SHA" = "$RELEASE_SHA"
+
+          if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
+            echo "Candidate checkout is not clean; refusing to build a release image"
+            git status --short
+            exit 1
+          fi
+
           for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml frontend/Dockerfile backend/Dockerfile; do
-            dir="$(dirname "$path")"
-            mkdir -p "$dir"
-            echo "Overlaying $path from origin/main"
-            git show "origin/main:$path" > "$path"
+            test -f "$path" || {
+              echo "Candidate is missing required release asset: $path"
+              exit 1
+            }
           done
 
-          # Old SHAs restore from TerraFusion.sln which requires test projects
-          # that are excluded by .dockerignore.  Switch to project-level restore
-          # which resolves transitive deps without needing test .csproj files.
-          if grep -q 'dotnet restore TerraFusion.sln' backend/Dockerfile; then
-            echo "Patching Dockerfile: sln restore → project restore"
-            sed -i 's|dotnet restore TerraFusion\.sln|dotnet restore src/TerraFusion.API/TerraFusion.API.csproj|g' backend/Dockerfile
-          fi
-
-          if grep -q 'RUN npx vite build --outDir /app/dist' frontend/Dockerfile; then
-            echo "Patching frontend Dockerfile: raise Node heap for Vite production build"
-            sed -i 's|RUN npx vite build --outDir /app/dist|RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist|g' frontend/Dockerfile
-          fi
+          {
+            printf 'CHECKED_OUT_SHA=%s\n' "$CHECKED_OUT_SHA"
+            printf 'CANDIDATE_TREE_SHA=%s\n' "$CANDIDATE_TREE_SHA"
+            printf 'TRUSTED_MAIN_SHA=%s\n' "$TRUSTED_MAIN_SHA"
+          } >> "$GITHUB_ENV"
 
       - name: Validate environment configuration
         shell: bash
@@ -237,12 +251,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Reverify immutable candidate before image builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CHECKED_OUT_SHA"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$CANDIDATE_TREE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=all)"
+
       - name: Build and push backend image
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target runtime --build-arg GIT_SHA="$RELEASE_SHA" -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
+          docker build --pull --target runtime \
+            --build-arg GIT_SHA="$RELEASE_SHA" \
+            --label "org.opencontainers.image.revision=$CHECKED_OUT_SHA" \
+            --label "org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA" \
+            -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
           docker push "$BACKEND_IMAGE"
+          BACKEND_IMAGE_DIGEST="$(docker image inspect --format '{{index .RepoDigests 0}}' "$BACKEND_IMAGE")"
+          BACKEND_IMAGE_DIGEST="${BACKEND_IMAGE_DIGEST##*@}"
+          [[ "$BACKEND_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          BACKEND_IMAGE_REF="${BACKEND_IMAGE}@${BACKEND_IMAGE_DIGEST}"
+          {
+            printf 'BACKEND_IMAGE_DIGEST=%s\n' "$BACKEND_IMAGE_DIGEST"
+            printf 'BACKEND_IMAGE_REF=%s\n' "$BACKEND_IMAGE_REF"
+          } >> "$GITHUB_ENV"
 
       - name: Reclaim runner disk before frontend image
         shell: bash
@@ -265,8 +301,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --pull --target production --build-arg VITE_BUILD_SHA="$RELEASE_SHA" -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
+          docker build --pull --target production \
+            --build-arg VITE_BUILD_SHA="$RELEASE_SHA" \
+            --label "org.opencontainers.image.revision=$CHECKED_OUT_SHA" \
+            --label "org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA" \
+            -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
           docker push "$FRONTEND_IMAGE"
+          FRONTEND_IMAGE_DIGEST="$(docker image inspect --format '{{index .RepoDigests 0}}' "$FRONTEND_IMAGE")"
+          FRONTEND_IMAGE_DIGEST="${FRONTEND_IMAGE_DIGEST##*@}"
+          [[ "$FRONTEND_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          FRONTEND_IMAGE_REF="${FRONTEND_IMAGE}@${FRONTEND_IMAGE_DIGEST}"
+          {
+            printf 'FRONTEND_IMAGE_DIGEST=%s\n' "$FRONTEND_IMAGE_DIGEST"
+            printf 'FRONTEND_IMAGE_REF=%s\n' "$FRONTEND_IMAGE_REF"
+          } >> "$GITHUB_ENV"
 
       - name: Prepare runtime bundle
         shell: bash
@@ -301,12 +349,70 @@ jobs:
           TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
           TF_PUBLIC_URL=${PUBLIC_URL}
           TF_PUBLIC_HOST=${PUBLIC_HOST}
-          TF_BACKEND_IMAGE=${BACKEND_IMAGE}
-          TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
+          TF_BACKEND_IMAGE=${BACKEND_IMAGE_REF}
+          TF_FRONTEND_IMAGE=${FRONTEND_IMAGE_REF}
           TERRAFUSION_BOOTSTRAP_EMAIL=${TF_AUTH_BOOTSTRAP_EMAIL}
           TERRAFUSION_BOOTSTRAP_PASSWORD=${TF_AUTH_BOOTSTRAP_PASSWORD}
           TERRAFUSION_BOOTSTRAP_ROLES=${TF_AUTH_BOOTSTRAP_ROLES}
           EOF
+
+      - name: Preserve exact current release bundle for rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          set -euo pipefail
+          if [ ! -f "$APP_ROOT/current.sha" ]; then
+            exit 0
+          fi
+
+          CURRENT_SHA="$(cat "$APP_ROOT/current.sha")"
+          [[ "$CURRENT_SHA" =~ ^[0-9a-f]{40}$ ]]
+          SNAPSHOT_ROOT="$APP_ROOT/releases/$CURRENT_SHA"
+          if [ -e "$SNAPSHOT_ROOT" ]; then
+            test -d "$SNAPSHOT_ROOT"
+            for file in release.sha release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              test -f "$SNAPSHOT_ROOT/$file"
+            done
+            test -d "$SNAPSHOT_ROOT/docs/spec-lock"
+            test -d "$SNAPSHOT_ROOT/config"
+            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              cmp -s "$APP_ROOT/$file" "$SNAPSHOT_ROOT/$file"
+            done
+            diff -qr "$APP_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/docs/spec-lock" >/dev/null
+            if [ -d "$APP_ROOT/config" ]; then
+              diff -qr "$APP_ROOT/config" "$SNAPSHOT_ROOT/config" >/dev/null
+            fi
+            test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$CURRENT_SHA"
+            test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$CURRENT_SHA"
+            BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
+            FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
+            [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+            [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+            exit 0
+          fi
+
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$APP_ROOT/$file"
+          done
+          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$APP_ROOT/release.env")" = "$CURRENT_SHA"
+          BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$APP_ROOT/release.env")"
+          FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$APP_ROOT/release.env")"
+          [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+          [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+          install -d -m 0700 "$SNAPSHOT_ROOT"
+          printf '%s\n' "$CURRENT_SHA" > "$SNAPSHOT_ROOT/release.sha"
+          chmod 0600 "$SNAPSHOT_ROOT/release.sha"
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$APP_ROOT/$file" "$SNAPSHOT_ROOT/$file"
+          done
+          install -d -m 0700 "$SNAPSHOT_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/config"
+          test -d "$APP_ROOT/docs/spec-lock"
+          cp -a "$APP_ROOT/docs/spec-lock/." "$SNAPSHOT_ROOT/docs/spec-lock/"
+          if [ -d "$APP_ROOT/config" ]; then
+            cp -a "$APP_ROOT/config/." "$SNAPSHOT_ROOT/config/"
+          fi
+          SSH
 
       - name: Upload runtime bundle to VPS
         shell: bash
@@ -351,7 +457,7 @@ jobs:
           # Trailing newline ensures --password-stdin reads the complete token immediately.
           printf '%s\n' "$GHCR_TOKEN" | ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
             "docker login ghcr.io -u ${{ github.actor }} --password-stdin" >/dev/null 2>&1
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "BACKEND_IMAGE_REF='$BACKEND_IMAGE_REF' FRONTEND_IMAGE_REF='$FRONTEND_IMAGE_REF' bash -s" <<'SSH'
           set -euo pipefail
 
           print_release_disk() {
@@ -423,9 +529,9 @@ jobs:
           require_release_disk
 
           echo "Pulling backend image..."
-          docker pull "$BACKEND_IMAGE"
+          docker pull "$BACKEND_IMAGE_REF"
           echo "Pulling frontend image..."
-          docker pull "$FRONTEND_IMAGE"
+          docker pull "$FRONTEND_IMAGE_REF"
           SSH
 
       - name: Deploy runtime bundle on VPS
@@ -638,6 +744,37 @@ jobs:
           set -euo pipefail
           cd "$APP_ROOT"
           test "$(cat requested.sha)" = "$RELEASE_SHA"
+          test "$(sed -n 's/^TF_RELEASE_SHA=//p' release.env)" = "$RELEASE_SHA"
+          BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' release.env)"
+          FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' release.env)"
+          [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+          [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+
+          SNAPSHOT_ROOT="$APP_ROOT/releases/$RELEASE_SHA"
+          if [ ! -e "$SNAPSHOT_ROOT" ]; then
+            install -d -m 0700 "$SNAPSHOT_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/config"
+            printf '%s\n' "$RELEASE_SHA" > "$SNAPSHOT_ROOT/release.sha"
+            chmod 0600 "$SNAPSHOT_ROOT/release.sha"
+            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              install -m 0600 "$file" "$SNAPSHOT_ROOT/$file"
+            done
+            cp -a docs/spec-lock/. "$SNAPSHOT_ROOT/docs/spec-lock/"
+            cp -a config/. "$SNAPSHOT_ROOT/config/"
+          fi
+          for file in release.sha release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$SNAPSHOT_ROOT/$file"
+          done
+          test -d "$SNAPSHOT_ROOT/docs/spec-lock"
+          test -d "$SNAPSHOT_ROOT/config"
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            cmp -s "$file" "$SNAPSHOT_ROOT/$file"
+          done
+          diff -qr docs/spec-lock "$SNAPSHOT_ROOT/docs/spec-lock" >/dev/null
+          diff -qr config "$SNAPSHOT_ROOT/config" >/dev/null
+          test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$RELEASE_SHA"
+          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$RELEASE_SHA"
+          test "$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")" = "$BACKEND_IMAGE_REF"
+          test "$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")" = "$FRONTEND_IMAGE_REF"
           printf '%s\n' "$RELEASE_SHA" > current.sha
           SSH
 
@@ -677,11 +814,18 @@ jobs:
           aspnetcore_environment=${ASPNETCORE_ENV_LABEL}
           public_url=${PUBLIC_URL}
           release_sha=${RELEASE_SHA}
+          checked_out_sha=${CHECKED_OUT_SHA}
+          candidate_tree_sha=${CANDIDATE_TREE_SHA}
+          trusted_main_sha=${TRUSTED_MAIN_SHA}
           requested_sha=${REQUESTED_SHA}
           current_sha=${CURRENT_SHA}
           header_sha=${HEADER_SHA}
           backend_image=${BACKEND_IMAGE}
+          backend_image_digest=${BACKEND_IMAGE_DIGEST}
+          backend_image_ref=${BACKEND_IMAGE_REF}
           frontend_image=${FRONTEND_IMAGE}
+          frontend_image_digest=${FRONTEND_IMAGE_DIGEST}
+          frontend_image_ref=${FRONTEND_IMAGE_REF}
           workflow_run_id=${GITHUB_RUN_ID}
           workflow_run_attempt=${GITHUB_RUN_ATTEMPT}
           deployed_at_utc=${DEPLOYED_AT}
@@ -694,11 +838,18 @@ jobs:
             "aspnetcoreEnvironment": "${ASPNETCORE_ENV_LABEL}",
             "publicUrl": "${PUBLIC_URL}",
             "releaseSha": "${RELEASE_SHA}",
+            "checkedOutSha": "${CHECKED_OUT_SHA}",
+            "candidateTreeSha": "${CANDIDATE_TREE_SHA}",
+            "trustedMainSha": "${TRUSTED_MAIN_SHA}",
             "requestedSha": "${REQUESTED_SHA}",
             "currentSha": "${CURRENT_SHA}",
             "headerSha": "${HEADER_SHA}",
             "backendImage": "${BACKEND_IMAGE}",
+            "backendImageDigest": "${BACKEND_IMAGE_DIGEST}",
+            "backendImageRef": "${BACKEND_IMAGE_REF}",
             "frontendImage": "${FRONTEND_IMAGE}",
+            "frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}",
+            "frontendImageRef": "${FRONTEND_IMAGE_REF}",
             "workflowRunId": "${GITHUB_RUN_ID}",
             "workflowRunAttempt": "${GITHUB_RUN_ATTEMPT}",
             "deployedAtUtc": "${DEPLOYED_AT}"
@@ -712,6 +863,39 @@ jobs:
           for required in evidence.json evidence.txt curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
             test -s "evidence/$required"
           done
+
+          node <<'NODE'
+          const fs = require('node:fs');
+          const evidence = JSON.parse(fs.readFileSync('evidence/evidence.json', 'utf8'));
+          const shaPattern = /^[0-9a-f]{40}$/;
+          const digestPattern = /^sha256:[0-9a-f]{64}$/;
+
+          if (!shaPattern.test(evidence.releaseSha)) {
+            throw new Error('releaseSha is not a full git SHA');
+          }
+          for (const field of ['checkedOutSha', 'requestedSha', 'currentSha', 'headerSha']) {
+            if (evidence[field] !== evidence.releaseSha) {
+              throw new Error(`${field} does not match releaseSha`);
+            }
+          }
+          if (!shaPattern.test(evidence.candidateTreeSha)) {
+            throw new Error('candidateTreeSha is not a full git tree SHA');
+          }
+          if (!shaPattern.test(evidence.trustedMainSha)) {
+            throw new Error('trustedMainSha is not a full git SHA');
+          }
+          for (const [imageField, digestField, refField] of [
+            ['backendImage', 'backendImageDigest', 'backendImageRef'],
+            ['frontendImage', 'frontendImageDigest', 'frontendImageRef'],
+          ]) {
+            if (!digestPattern.test(evidence[digestField])) {
+              throw new Error(`${digestField} is not a registry image digest`);
+            }
+            if (evidence[refField] !== `${evidence[imageField]}@${evidence[digestField]}`) {
+              throw new Error(`${refField} is not bound to the recorded image and digest`);
+            }
+          }
+          NODE
 
       - name: Upload deploy evidence
         uses: actions/upload-artifact@v7

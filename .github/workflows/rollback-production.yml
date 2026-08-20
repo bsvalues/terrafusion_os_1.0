@@ -131,8 +131,19 @@ jobs:
           set -euo pipefail
           CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
           ROLLBACK_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/previous.sha'")"
-          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend-internal:${ROLLBACK_SHA}"
-          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend-internal:${ROLLBACK_SHA}"
+          [[ "$CURRENT_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ROLLBACK_SHA" =~ ^[0-9a-f]{40}$ ]]
+          SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "test -f '$SNAPSHOT_ROOT/release.sha' && test -f '$SNAPSHOT_ROOT/release.env' && test -f '$SNAPSHOT_ROOT/runtime-compose.yml' && test -f '$SNAPSHOT_ROOT/Caddyfile' && test -f '$SNAPSHOT_ROOT/sovereign.yaml'"
+          SNAPSHOT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$SNAPSHOT_ROOT/release.sha'")"
+          RELEASE_ENV_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_RELEASE_SHA=//p' '$SNAPSHOT_ROOT/release.env'")"
+          BACKEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_BACKEND_IMAGE=//p' '$SNAPSHOT_ROOT/release.env'")"
+          FRONTEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_FRONTEND_IMAGE=//p' '$SNAPSHOT_ROOT/release.env'")"
+          test "$SNAPSHOT_SHA" = "$ROLLBACK_SHA"
+          test "$RELEASE_ENV_SHA" = "$ROLLBACK_SHA"
+          [[ "$BACKEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+          [[ "$FRONTEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
 
           {
             printf 'current_sha=%s\n' "$CURRENT_SHA"
@@ -177,28 +188,30 @@ jobs:
           fi
           SSH
 
-      - name: Roll back runtime bundle on VPS
+      - name: Roll back exact runtime bundle on VPS
         shell: bash
         run: |
           set -euo pipefail
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "APP_ROOT='$APP_ROOT' ROLLBACK_SHA='$ROLLBACK_SHA' TARGET_ENV='$TARGET_ENV' PUBLIC_URL='$PUBLIC_URL' PUBLIC_HOST='$PUBLIC_HOST' BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' DEPLOYED_AT='$DEPLOYED_AT' bash -s" <<'SSH'
+            "APP_ROOT='$APP_ROOT' ROLLBACK_SHA='$ROLLBACK_SHA' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
+          SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"
+          test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$ROLLBACK_SHA"
+          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$ROLLBACK_SHA"
+          BACKEND_IMAGE="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
+          FRONTEND_IMAGE="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
+          [[ "$BACKEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+          [[ "$FRONTEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
 
           printf '%s\n' "$ROLLBACK_SHA" > requested.sha
-          cat > release.env <<EOF
-          COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
-          TF_RELEASE_SHA=${ROLLBACK_SHA}
-          TF_RELEASE_ENV=${TARGET_ENV}
-          TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
-          TF_PUBLIC_URL=${PUBLIC_URL}
-          TF_PUBLIC_HOST=${PUBLIC_HOST}
-          TF_BACKEND_IMAGE=${BACKEND_IMAGE}
-          TF_FRONTEND_IMAGE=${FRONTEND_IMAGE}
-          EOF
-
-          sed -i -E "s/ASPNETCORE_ENVIRONMENT: .*/ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENV_LABEL}/" runtime-compose.yml
+          install -m 0600 "$SNAPSHOT_ROOT/release.env" release.env
+          install -m 0600 "$SNAPSHOT_ROOT/runtime-compose.yml" runtime-compose.yml
+          install -m 0600 "$SNAPSHOT_ROOT/Caddyfile" Caddyfile
+          install -m 0600 "$SNAPSHOT_ROOT/sovereign.yaml" sovereign.yaml
+          install -d -m 0700 docs/spec-lock config
+          cp -a "$SNAPSHOT_ROOT/docs/spec-lock/." docs/spec-lock/
+          cp -a "$SNAPSHOT_ROOT/config/." config/
           docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
