@@ -47,19 +47,7 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** `WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption` is active under
-Issue #1426 and exact decision
-`OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807`. It adds one strict
-authenticated county- and parcel-scoped frozen-contract read and truthful canonical panel without
-writes, custody mutation, live data, routing changes, or cutover. The Development-only Benton
-fallback is explicitly prohibited for this route. Before activation, `WO-SR-009C - Atlas Workbench
-Canonical Projection Adoption` completed in PR #1424. Exact assured head
-`e70548cb4938da92b2c0b254d71c5361aa10a6ed` merged as
-`b5a02db1758deda45d84c0ec99adb8f31d328c7b`, proving authenticated canonical Polygon, truthful
-unavailable, and cross-county non-disclosure through the real API and existing Atlas tab.
-Configuration remains default `Disabled`; Point is not claimed; the frozen adapter and legacy
-anonymous GIS path remain unchanged. The bounded authority is consumed and portfolio reconciliation
-selected WO-SR-009D; no parallel successor authority is inferred.
+**Current state:** `WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption` completed in PR #1427. Exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`, proving the authenticated county-scoped frozen-contract read, same-county canonical rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest Workbench states, and disposable synthetic proof. The Development fallback, writes, custody mutation, live data, routing changes, and cutover remain denied. Decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` is completed and consumed. Portfolio reconciliation is current; no parallel or successor authority is inferred.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and

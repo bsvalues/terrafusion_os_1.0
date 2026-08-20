@@ -2,8 +2,7 @@
 
 ## Current State
 
-Implementation is active from sovereign base `6622ca14e93d6a853c9629308e37a42620c0e08f` under Issue #1426
-and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807`.
+Implementation completed from sovereign base `6622ca14e93d6a853c9629308e37a42620c0e08f` under Issue #1426 and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807`. PR #1427 exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`; current main `ffd2fa35f5152de2b95e7f63b220050d18193d7a` contains the merge.
 
 ## Boundary Implemented
 
@@ -28,7 +27,7 @@ and decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-2026080
 | Frontend TypeScript | Pass | PASS - `tsc --noEmit` |
 | Frozen contract hashes | Unchanged | PASS - DTO and adapter Git blobs match base |
 | JSON, Work Order query/planner, diff, exact scope | Pass | PASS - query plus 46/46 tooling tests; exact 17 paths |
-| Remote checks, exact-head assurance, review threads | Green, pass, zero | Pending delivery |
+| Remote checks, exact-head assurance, review threads | Green, pass, zero | PASS - 19/19 recorded workflow runs successful; 10/10 substantive threads resolved; exact assured head merged |
 
 The disposable proof exposed and closed two local-only fixture/provider gaps without weakening the
 contract: synthetic county parents now satisfy the real Dossier foreign key, and SQLite's demonstrated
@@ -50,5 +49,4 @@ unchanged, and no schema, data, route identity, tab identity, or custody state r
 
 ## Terminal Evidence
 
-The implementation and merge SHAs, final validation results, authority consumption, and portfolio
-reconciliation state will be recorded by the governance-only closeout after the product PR merges.
+PR #1427 delivered exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` and merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. All recorded workflow runs succeeded, all substantive review threads are resolved, and post-merge main `ffd2fa35f5152de2b95e7f63b220050d18193d7a` contains the implementation. The terminal condition is satisfied. Authority is completed and consumed, all execution flags are false, and the Five-Suite program returns to portfolio reconciliation with no successor inferred.
