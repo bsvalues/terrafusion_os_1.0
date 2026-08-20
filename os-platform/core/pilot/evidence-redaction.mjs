@@ -47,7 +47,21 @@ function isAlreadyRedactedAssignmentValue(value) {
       (trimmed.startsWith("'") && trimmed.endsWith("'")))
       ? trimmed.slice(1, -1)
       : trimmed;
-  return unquoted === REDACTION_MARKER;
+  return (
+    unquoted === REDACTION_MARKER ||
+    /^\[REDACTED\](?:\s*[}\]])+\s*$/.test(unquoted)
+  );
+}
+
+function redactedAssignmentValue(value) {
+  const trimmed = String(value).trim();
+  const quote =
+    trimmed.length >= 2 &&
+    ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'")))
+      ? trimmed[0]
+      : null;
+  return quote ? `${quote}${REDACTION_MARKER}${quote}` : REDACTION_MARKER;
 }
 
 function patternMatches(pattern, value) {
@@ -87,7 +101,9 @@ export function redactEvidenceText(value) {
     .replace(COOKIE_HEADER_PATTERN, `$1${REDACTION_MARKER}`)
     .replace(BEARER_PATTERN, `Bearer ${REDACTION_MARKER}`)
     .replace(SENSITIVE_ASSIGNMENT_PATTERN, (match, prefix, assignmentValue) =>
-      isAlreadyRedactedAssignmentValue(assignmentValue) ? match : `${prefix}${REDACTION_MARKER}`
+      isAlreadyRedactedAssignmentValue(assignmentValue)
+        ? match
+        : `${prefix}${redactedAssignmentValue(assignmentValue)}`
     );
 }
 
