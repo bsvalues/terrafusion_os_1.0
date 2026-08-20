@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009C Atlas Workbench canonical projection terminal closeout",
-  "generatedAt": "2026-08-07T00:00:00Z",
-  "description": "WO-SR-009C is complete and its bounded authority is consumed. PR #1424 proves canonical Polygon, truthful unavailable, and cross-county non-disclosure; Point, frozen-adapter, live-provider, protected-resource, and cutover denials remain active.",
+  "generatedBy": "WO-SR-009D Dossier Workbench canonical evidence read terminal closeout",
+  "generatedAt": "2026-08-20T00:00:00Z",
+  "description": "WO-SR-009D is complete and its bounded authority is consumed. PR #1427 proves the authenticated county-scoped canonical Dossier evidence read is reachable and truthful in the Property Workbench without writes, custody mutation, or live data; all existing denials remain active.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10606,17 +10606,21 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Make the frozen county-scoped Dossier evidence registry read reachable and truthful in the Property Workbench without writes, custody mutation, or live data.",
       "riskClass": "R3",
-      "status": "in_progress",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-009C",
           "status": "satisfied",
-          "evidence": ["PR #1425 terminally closed WO-SR-009C at base 6622ca14e93d6a853c9629308e37a42620c0e08f."]
+          "evidence": [
+            "PR #1425 terminally closed WO-SR-009C at base 6622ca14e93d6a853c9629308e37a42620c0e08f."
+          ]
         },
         {
           "id": "OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
           "status": "satisfied",
-          "evidence": ["Owner approved the exact Issue #1426 packet on 2026-08-07."]
+          "evidence": [
+            "Owner approved the exact Issue #1426 packet on 2026-08-07."
+          ]
         }
       ],
       "allowedSystems": [
@@ -10644,8 +10648,12 @@
         }
       ],
       "blockedSystems": [
-        { "name": "Evidence or custody writes, custody semantics, persistence, schema, migration, provider, or frozen-contract changes" },
-        { "name": "Live county/PACS/SQL data, credentials, deployment, production, publication, source retirement, or cutover" }
+        {
+          "name": "Evidence or custody writes, custody semantics, persistence, schema, migration, provider, or frozen-contract changes"
+        },
+        {
+          "name": "Live county/PACS/SQL data, credentials, deployment, production, publication, source retirement, or cutover"
+        }
       ],
       "allowedFiles": [
         ".governance/owner-decisions.json",
@@ -10698,14 +10706,14 @@
           "name": "Remote delivery and exact-head assurance",
           "command": "required checks, zero substantive threads, CLEAN merge state, and independent exact-head assurance",
           "required": true,
-          "result": "pending"
+          "result": "pass"
         }
       ],
       "evidenceProduced": [
         {
           "kind": "other",
           "location": "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md",
-          "summary": "Active implementation and delivery evidence for the exact Issue #1426 boundary."
+          "summary": "Terminal evidence for PR #1427 exact head, merge, checks, resolved threads, post-merge main, authority consumption, and preserved denials."
         }
       ],
       "stopConditions": [
@@ -10716,19 +10724,30 @@
       ],
       "nextCandidates": [],
       "authority": {
-        "mayWrite": true,
-        "mayCommit": true,
-        "mayPush": true,
-        "mayOpenPr": true,
-        "mayMarkReady": true,
-        "mayMerge": true,
+        "mayWrite": false,
+        "mayCommit": false,
+        "mayPush": false,
+        "mayOpenPr": false,
+        "mayMarkReady": false,
+        "mayMerge": false,
         "mayCleanup": false,
-        "notes": "Exact bounded R3 Issue #1426 authority is active through one product merge and one governance-only terminal closeout."
+        "notes": "WO-SR-009D is complete; its bounded authority is consumed and no successor authority is inferred."
       },
       "provenance": {
         "createdAt": "2026-08-07T00:00:00Z",
-        "source": "Issue #1426 and OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
+        "source": "Issue #1426, OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807, PR #1427 exact head 85818a749d4268f84cf8638d991d9cef657a0d19, merge c7f2d78619a9eb19186c2c724876fb4d11c81b00, and post-merge main ffd2fa35f5152de2b95e7f63b220050d18193d7a",
         "schemaVersion": "0.1.0"
+      },
+      "completion": {
+        "issue": 1426,
+        "implementationPr": 1427,
+        "implementationHead": "85818a749d4268f84cf8638d991d9cef657a0d19",
+        "implementationMerge": "c7f2d78619a9eb19186c2c724876fb4d11c81b00",
+        "postMergeMain": "ffd2fa35f5152de2b95e7f63b220050d18193d7a",
+        "reviewThreads": "10/10 substantive threads resolved",
+        "remoteChecks": "19/19 recorded workflow runs successful; combined CodeRabbit status successful",
+        "terminalCondition": "DOSSIER_COUNTY_SCOPED_CANONICAL_EVIDENCE_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_CUSTODY_MUTATION_OR_LIVE_DATA",
+        "authorityState": "COMPLETED_AND_CONSUMED"
       }
     }
   ]
