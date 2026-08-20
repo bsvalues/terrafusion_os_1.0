@@ -122,6 +122,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend release image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/Dockerfile
+          target: runtime
+          push: false
+          load: true
+          tags: terrafusion-backend:release
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+
+      - name: Build frontend release image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: frontend/Dockerfile
+          target: production
+          push: false
+          load: true
+          tags: terrafusion-frontend:release
+          build-args: |
+            VITE_BUILD_SHA=${{ github.sha }}
+
       - name: Install Syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
@@ -130,22 +157,25 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Generate SBOM (SPDX)
+      - name: Generate release image SBOMs (SPDX)
         run: |
-          syft dir:. -o spdx-json=sbom-spdx.json
+          syft terrafusion-backend:release -o spdx-json=sbom-backend-spdx.json
+          syft terrafusion-frontend:release -o spdx-json=sbom-frontend-spdx.json
 
-      - name: Generate SBOM (CycloneDX)
+      - name: Generate release image SBOMs (CycloneDX)
         run: |
-          syft dir:. -o cyclonedx-json=sbom-cyclonedx.json
+          syft terrafusion-backend:release -o cyclonedx-json=sbom-backend-cyclonedx.json
+          syft terrafusion-frontend:release -o cyclonedx-json=sbom-frontend-cyclonedx.json
 
-      - name: Vulnerability scan (SBOM)
+      - name: Vulnerability scan (release image SBOMs)
         run: |
-          grype sbom:sbom-spdx.json -o table --fail-on critical
+          grype sbom:sbom-backend-spdx.json -o table --fail-on critical
+          grype sbom:sbom-frontend-spdx.json -o table --fail-on critical
 
       - name: License compliance check
         run: |
           # Check for prohibited licenses (GPL, AGPL in proprietary context)
-          jq -r '.packages[] | select(.licenseConcluded | test("GPL|AGPL"; "i")) | .name' sbom-spdx.json > prohibited.txt || true
+          jq -r '.packages[] | select((.licenseConcluded // "") | test("GPL|AGPL"; "i")) | .name' sbom-*-spdx.json > prohibited.txt || true
           if [ -s prohibited.txt ]; then
             echo "⚠️ WARNING: Packages with potentially prohibited licenses:"
             cat prohibited.txt
@@ -169,33 +199,55 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: backend
+            context: backend
+            dockerfile: backend/Dockerfile
+            target: runtime
+            image: terrafusion-backend:release
+            build_args: GIT_SHA=${{ github.sha }}
+          - component: frontend
+            context: .
+            dockerfile: frontend/Dockerfile
+            target: production
+            image: terrafusion-frontend:release
+            build_args: VITE_BUILD_SHA=${{ github.sha }}
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build container (backend)
-        run: |
-          docker build -t terrafusion-backend:release -f Dockerfile . || \
-          docker build -t terrafusion-backend:release -f Dockerfile.backend . || \
-          echo "No backend Dockerfile found"
-        continue-on-error: true
+      - name: Build release container (${{ matrix.component }})
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          target: ${{ matrix.target }}
+          push: false
+          load: true
+          tags: ${{ matrix.image }}
+          build-args: ${{ matrix.build_args }}
 
-      - name: Trivy container scan
+      - name: Trivy release container scan (${{ matrix.component }})
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'terrafusion-backend:release'
+          image-ref: ${{ matrix.image }}
           format: 'sarif'
-          output: 'container-trivy.sarif'
+          output: 'container-trivy-${{ matrix.component }}.sarif'
           severity: 'CRITICAL,HIGH'
-        continue-on-error: true
+          exit-code: '1'
 
       - name: Upload container security results
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'container-trivy.sarif'
-        continue-on-error: true
+          sarif_file: 'container-trivy-${{ matrix.component }}.sarif'
+          category: 'release-container-${{ matrix.component }}'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Security Deep Scan
@@ -214,6 +266,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: javascript, typescript, csharp
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Autobuild for CodeQL
         uses: github/codeql-action/autobuild@v3
@@ -222,19 +275,22 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-      - name: Trivy filesystem scan
+      - name: Trivy canonical source scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          scan-ref: 'backend'
           format: 'sarif'
-          output: 'trivy-fs.sarif'
+          output: 'trivy-fs-backend.sarif'
           severity: 'CRITICAL,HIGH'
+          exit-code: '1'
 
-      - name: Upload Trivy results
+      - name: Upload backend Trivy results
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-fs.sarif'
+          sarif_file: 'trivy-fs-backend.sarif'
+          category: 'release-source-backend'
 
   # ═══════════════════════════════════════════════════════════════════════════
   # SLSA Provenance (supply chain attestation)
@@ -257,7 +313,7 @@ jobs:
       - name: Generate provenance attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: './sbom/sbom-spdx.json'
+          subject-path: './sbom/sbom-*-spdx.json'
         continue-on-error: true
 
       - name: Create release summary
@@ -313,7 +369,8 @@ jobs:
           fi
 
           if [ "${{ needs.container-security.result }}" != "success" ]; then
-            echo "⚠️ Container Security: FAILED (non-blocking)"
+            echo "❌ Container Security: FAILED"
+            FAILED=1
           else
             echo "✅ Container Security: passed"
           fi
