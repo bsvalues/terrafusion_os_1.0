@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active; WO-SR-009D authorized and executing
+**Status:** Active between cohorts; WO-SR-009D complete and authority consumed; portfolio reconciliation current
 
 ## Ratified topology
 
@@ -91,7 +91,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-009B | Make the county-scoped Dais appeal read reachable in the Property Workbench | Complete R3; PR #1419 merged exact assured head `11bc49507`; authority consumed; no write or live data |
 | WO-TF-POST-DAIS-001 | Reconcile authoritative post-Dais portfolio state and admit one successor | Complete R2; PR #1421 merged and selected WO-SR-009C |
 | WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
-| WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Active R3; Issue #1426 exact authority; strict authenticated county context, no Development fallback, writes, custody mutation, live data, or cutover |
+| WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Complete R3; PR #1427 exact assured head `85818a749` merged as `c7f2d7861`; authority consumed; no writes, custody mutation, live data, or cutover |
 
 ## Extraction and provenance policy
 
@@ -316,12 +316,4 @@ current and no successor implementation inferred. No WO-SR-009C stage remains ex
 adapter and tests remain unchanged, and all live-provider, protected-resource, deployment, cutover,
 routing, and legacy-anonymous-path denials remain intact.
 
-Issue #1426 then activated `WO-SR-009D` under
-`OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` at exact base
-`6622ca14e93d6a853c9629308e37a42620c0e08f`. The bounded sequence adds one authenticated
-`read:dossier` county- and parcel-scoped route through the unchanged frozen adapter, a separate
-canonical Property Dossier panel, focused fail-closed proof, and disposable synthetic journey. The
-route must use a canonical authenticated `countyId` and never the controller's Development-only
-Benton fallback. Evidence/custody writes, frozen contract or adapter changes, entities, migrations,
-persistence, live data, protected resources, routing/tab changes, deployment, and cutover remain
-denied.
+Issue #1426 activated `WO-SR-009D` under `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` at exact base `6622ca14e93d6a853c9629308e37a42620c0e08f`. PR #1427 then merged exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. The real API and existing Property Dossier tab prove the authenticated frozen-contract read, same-county rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest states, and disposable synthetic journey. The route never uses the Development fallback. Evidence/custody writes, frozen contract or adapter changes, entities, migrations, persistence, live data, protected resources, routing/tab changes, deployment, and cutover remain denied. The authority is completed and consumed; portfolio reconciliation is current and no successor is inferred.
