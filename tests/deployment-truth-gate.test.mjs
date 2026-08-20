@@ -392,158 +392,151 @@ describe('D. CI release gate coverage', () => {
     );
   });
 
-  it('D14: canonical backend container builds preserve the exact source revision', () => {
+  it('D14: canonical backend image publication preserves the exact source revision', () => {
     const ci = readFileSync(join(WORKFLOWS, 'ci.yml'), 'utf8');
-    const releaseLane = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const compliance = readFileSync(join(WORKFLOWS, 'release-compliance.yml'), 'utf8');
     const backendDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
     const apiDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile.API'), 'utf8');
-
-    assert.ok(
-      ci.includes('--build-arg GIT_SHA=${{ github.sha }}'),
-      'Canonical CI must pass github.sha into the backend image build'
-    );
-    assert.ok(
-      releaseLane.includes('--build-arg GIT_SHA="$RELEASE_SHA"'),
-      'Release lane must pass its validated RELEASE_SHA into the backend image build'
-    );
-
-    for (const [name, content] of [
-      ['backend/Dockerfile', backendDockerfile],
-      ['backend/Dockerfile.API', apiDockerfile],
-    ]) {
-      assert.ok(
-        content.includes('/p:SourceRevisionId="${GIT_SHA}"'),
-        `${name} must stamp the supplied GIT_SHA into the published assembly`
-      );
-      assert.ok(
-        content.includes('ENV TF_GIT_SHA=${GIT_SHA}'),
-        `${name} must expose the supplied GIT_SHA to the runtime health endpoint`
-      );
+    assert.ok(ci.includes('--build-arg GIT_SHA=${{ github.sha }}'));
+    assert.ok(compliance.includes('GIT_SHA=${{ github.sha }}'));
+    for (const content of [backendDockerfile, apiDockerfile]) {
+      assert.ok(content.includes('/p:SourceRevisionId="${GIT_SHA}"'));
+      assert.ok(content.includes('ENV TF_GIT_SHA=${GIT_SHA}'));
     }
   });
 
-  it('D15: release-lane builds only from an immutable exact candidate checkout', () => {
+  it('D15: release lane consumes an approved immutable manifest and never rebuilds', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-
-    for (const forbidden of [
-      'Overlay deploy infrastructure from default branch',
-      'git fetch origin main',
-      'git show "origin/main:',
-      "sed -i 's|dotnet restore TerraFusion",
-      "sed -i 's|RUN npx vite build",
-    ]) {
-      assert.ok(
-        !content.includes(forbidden),
-        `Release lane must not mutate candidates via: ${forbidden}`
-      );
-    }
-
     for (const required of [
-      'Verify immutable candidate checkout',
-      'CHECKED_OUT_SHA="$(git rev-parse HEAD)"',
-      'CANDIDATE_TREE_SHA="$(git rev-parse \'HEAD^{tree}\')"',
-      'test "$CHECKED_OUT_SHA" = "$RELEASE_SHA"',
-      'git status --porcelain --untracked-files=all',
-      'Reverify immutable candidate before image builds',
-      'git diff --cached --quiet',
-    ]) {
-      assert.ok(
-        content.includes(required),
-        `Release lane is missing immutable-candidate guard: ${required}`
-      );
+      'compliance_run_id:',
+      'Resolve approved compliance manifest',
+      "run.path !== '.github/workflows/release-compliance.yml'",
+      'run.head_sha !== process.env.RELEASE_SHA',
+      "artifact.name === 'approved-release-images' && !artifact.expired",
+      'release_image_manifest.mjs verify',
+      'Reverify immutable candidate before packaging',
+    ])
+      assert.ok(content.includes(required), 'missing approved-artifact guard: ' + required);
+    for (const forbidden of ['docker build', 'docker push', 'origin/main:', 'packages: write']) {
+      assert.ok(!content.includes(forbidden), 'release lane must not contain ' + forbidden);
     }
   });
 
-  it('D16: release evidence binds the candidate tree and pushed image digests', () => {
+  it('D16: deploy evidence binds candidate, compliance run, and exact image digests', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-
     for (const required of [
-      'org.opencontainers.image.revision=$CHECKED_OUT_SHA',
-      'org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA',
-      'BACKEND_IMAGE_DIGEST=',
-      'FRONTEND_IMAGE_DIGEST=',
       'TF_BACKEND_IMAGE=${BACKEND_IMAGE_REF}',
       'TF_FRONTEND_IMAGE=${FRONTEND_IMAGE_REF}',
       'docker pull "$BACKEND_IMAGE_REF"',
       'docker pull "$FRONTEND_IMAGE_REF"',
       '"checkedOutSha": "${CHECKED_OUT_SHA}"',
       '"candidateTreeSha": "${CANDIDATE_TREE_SHA}"',
+      '"complianceRunId": "${COMPLIANCE_RUN_ID}"',
       '"backendImageDigest": "${BACKEND_IMAGE_DIGEST}"',
       '"frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}"',
-      '"backendImageRef": "${BACKEND_IMAGE_REF}"',
-      '"frontendImageRef": "${FRONTEND_IMAGE_REF}"',
-      'evidence[refField] !== `${evidence[imageField]}@${evidence[digestField]}`',
       'const digestPattern = /^sha256:[0-9a-f]{64}$/;',
-    ]) {
-      assert.ok(
-        content.includes(required),
-        `Release evidence is missing provenance binding: ${required}`
-      );
-    }
+    ])
+      assert.ok(content.includes(required), 'missing evidence binding: ' + required);
   });
 
-  it('D17: provenance hardening preserves protected environment deployment boundaries', () => {
+  it('D17: protected deployment boundaries and workflow-definition trust remain enforced', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-
-    assert.ok(
-      content.includes('workflow_dispatch'),
-      'Release lane must remain manually dispatched'
-    );
-    assert.ok(
-      content.includes('environment: ${{ inputs.target_env }}'),
-      'Release lane must retain the selected protected environment boundary'
-    );
-    assert.ok(
-      content.includes('cancel-in-progress: false'),
-      'Release lane must retain serialized, non-cancelling environment deployments'
-    );
+    assert.ok(content.includes('workflow_dispatch'));
+    assert.ok(content.includes('environment: ${{ inputs.target_env }}'));
+    assert.ok(content.includes('group: terrafusion-runtime-${{ inputs.target_env }}'));
+    assert.ok(content.includes('cancel-in-progress: false'));
+    assert.ok(content.includes('if [ "$GITHUB_REF" != "refs/heads/main" ]'));
   });
 
   it('D18: protected deployments accept only candidates contained in trusted main', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    const trustCheck = content.indexOf(
+    const trust = content.indexOf(
       'git merge-base --is-ancestor "$RELEASE_SHA" "$TRUSTED_MAIN_SHA"'
     );
-    const firstPrivilegedUpload = content.indexOf('Upload runtime bundle to VPS');
-
+    const upload = content.indexOf('Stage and validate exact runtime bundle');
     assert.ok(content.includes('+refs/heads/main:refs/remotes/origin/main'));
-    assert.ok(content.includes('TRUSTED_MAIN_SHA="$(git rev-parse refs/remotes/origin/main)"'));
-    assert.ok(trustCheck >= 0, 'Release lane must prove candidate ancestry against canonical main');
-    assert.ok(
-      trustCheck < firstPrivilegedUpload,
-      'Trusted-main proof must occur before any candidate-controlled runtime asset reaches a host'
-    );
+    assert.ok(trust >= 0 && trust < upload);
   });
 
-  it('D19: release and rollback workflows preserve and restore exact digest-pinned bundles', () => {
-    const releaseLane = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    const preserve = releaseLane.indexOf('Preserve exact current release bundle for rollback');
-    const upload = releaseLane.indexOf('Upload runtime bundle to VPS');
-    assert.ok(
-      preserve >= 0 && preserve < upload,
-      'Current bundle must be snapshotted before overwrite'
-    );
-    assert.ok(releaseLane.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$CURRENT_SHA"'));
-    assert.ok(releaseLane.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$RELEASE_SHA"'));
-    assert.ok(releaseLane.includes('"trustedMainSha": "${TRUSTED_MAIN_SHA}"'));
-
+  it('D19: first migration and rollback use secretless exact artifacts with explicit targets', () => {
+    const release = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(release.includes('Preserve exact current artifact bundle for rollback'));
+    assert.ok(release.includes('resolve_running_ref()'));
+    assert.ok(release.includes('artifact.env'));
+    assert.ok(release.includes('Stage and validate exact runtime bundle'));
+    assert.ok(release.includes('.release-incoming-$RUN_TOKEN'));
+    assert.ok(release.includes('.release-backup-$RUN_TOKEN'));
+    const releaseRequestedSnapshot = release.indexOf('touch "$BACKUP/requested.absent"');
+    const releaseBackupReady = release.indexOf('touch "$BACKUP/backup.ready"');
+    const releaseTrap = release.indexOf('trap restore_previous ERR', releaseBackupReady);
+    assert.ok(releaseRequestedSnapshot >= 0 && releaseBackupReady > releaseRequestedSnapshot);
+    assert.ok(releaseBackupReady >= 0 && releaseTrap > releaseBackupReady);
+    assert.ok(release.includes('if [ ! -f "$BACKUP/backup.ready" ]'));
+    assert.ok(release.includes('preserving $BACKUP for governed recovery'));
+    assert.ok(release.includes('trap restore_previous ERR'));
+    assert.ok(release.includes('Restore prior runtime if deployment did not commit'));
+    assert.ok(release.includes('DEPLOY_SSH_KNOWN_HOSTS'));
+    assert.ok(release.includes('StrictHostKeyChecking yes'));
+    assert.ok(!release.includes('ssh-keyscan'));
+    assert.ok(!release.includes('StrictHostKeyChecking accept-new'));
+    assert.ok(release.includes('TARGET_SNAPSHOT="$APP_ROOT/releases/$RELEASE_SHA"'));
+    assert.ok(release.includes('TARGET_SNAPSHOT/artifact.env'));
+    assert.ok(!release.includes('previous.sha'));
     for (const workflow of ['rollback-production.yml', 'rollback-staging.yml']) {
       const content = readFileSync(join(WORKFLOWS, workflow), 'utf8');
-      assert.ok(content.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"'));
-      assert.ok(content.includes("sed -n 's/^TF_BACKEND_IMAGE=//p'"));
-      assert.ok(content.includes("sed -n 's/^TF_FRONTEND_IMAGE=//p'"));
-      assert.ok(content.includes('backend-internal@sha256:[0-9a-f]{64}'));
-      assert.ok(content.includes('frontend-internal@sha256:[0-9a-f]{64}'));
-      assert.ok(content.includes('install -m 0600 "$SNAPSHOT_ROOT/release.env" release.env'));
-      assert.ok(
-        !content.includes('internal:${ROLLBACK_SHA}'),
-        workflow + ' must not reconstruct mutable tags'
+      const environment = workflow.includes('production') ? 'production' : 'staging';
+      assert.ok(content.includes('rollback_sha:'));
+      assert.ok(content.includes('group: terrafusion-runtime-' + environment));
+      assert.ok(content.includes('ROLLBACK_NOOP=true'));
+      const noOpDecision = content.indexOf('ROLLBACK_NOOP=true');
+      const noOpRequestedWrite = content.indexOf("'$APP_ROOT/requested.sha'", noOpDecision);
+      const transactionStart = content.indexOf('Restore exact artifact bundle transactionally');
+      const transactionalRequestedWrite = content.indexOf(
+        `printf '%s\\n' "$ROLLBACK_SHA" > requested.sha`,
+        transactionStart
       );
-      assert.ok(
-        !content.includes('cat > release.env'),
-        workflow + ' must restore the recorded environment'
+      assert.ok(noOpRequestedWrite > noOpDecision);
+      assert.ok(transactionalRequestedWrite > transactionStart);
+      assert.ok(content.includes('cmp "$SNAPSHOT_ROOT/artifact.env" release.env'));
+      const rollbackRequestedSnapshot = content.indexOf('touch "$BACKUP/requested.absent"');
+      const rollbackBackupReady = content.indexOf('touch "$BACKUP/backup.ready"');
+      const rollbackTrap = content.indexOf('trap restore_previous ERR', rollbackBackupReady);
+      assert.ok(rollbackRequestedSnapshot >= 0 && rollbackBackupReady > rollbackRequestedSnapshot);
+      const rollbackFinalize = content.indexOf('Finalize explicit idempotent rollback identity');
+      const rollbackRecovery = content.indexOf(
+        'Restore pre-rollback runtime if rollback did not commit'
       );
+      const rollbackVerify = content.indexOf('Verify requested/current/header invariant');
+      assert.ok(rollbackBackupReady >= 0 && rollbackTrap > rollbackBackupReady);
+      assert.ok(rollbackFinalize >= 0 && rollbackRecovery > rollbackFinalize);
+      assert.ok(rollbackVerify > rollbackRecovery);
+      assert.ok(content.includes('if [ ! -f "$BACKUP/backup.ready" ]'));
+      assert.ok(content.includes('preserving $BACKUP for governed recovery'));
+      assert.ok(content.includes('trap restore_previous ERR'));
+      assert.ok(content.includes('Restore pre-rollback runtime if rollback did not commit'));
+      assert.ok(content.includes('$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT'));
+      assert.ok(content.includes('if [ "$GITHUB_REF" != "refs/heads/main" ]'));
+      assert.ok(content.includes('DEPLOY_SSH_KNOWN_HOSTS'));
+      assert.ok(!content.includes('ssh-keyscan'));
+      assert.ok(!content.includes('StrictHostKeyChecking accept-new'));
+      assert.ok(content.includes('artifact.env'));
+      assert.ok(content.includes('.rollback-backup-'));
+      assert.ok(content.includes('last-rollback-from.sha'));
+      assert.ok(!content.includes('previous.sha'));
+      assert.ok(!content.includes('internal:${ROLLBACK_SHA}'));
     }
+  });
+
+  it('D20: lifecycle state fixtures reject digest rebinding and rollback oscillation', () => {
+    const policy = readFileSync(join(ROOT, 'scripts', 'ci', 'release_state_policy.mjs'), 'utf8');
+    const tests = readFileSync(
+      join(ROOT, 'scripts', 'ci', 'release_state_policy.test.mjs'),
+      'utf8'
+    );
+    assert.ok(policy.includes('same SHA cannot be rebound to different image digests'));
+    assert.ok(tests.includes('repeated rollback is a no-op'));
+    assert.ok(tests.includes('legacy current state is preserved once'));
+    assert.ok(tests.includes('excludes protected values'));
   });
 });
 

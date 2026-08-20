@@ -1,0 +1,11 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "packages": [
+    {
+      "name": "allowed-package",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "Apache-2.0",
+      "licenseInfoFromFiles": ["LGPL-3.0-only"]
+    }
+  ]
+}

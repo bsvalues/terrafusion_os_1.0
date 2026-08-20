@@ -2,39 +2,52 @@ name: rollback-production
 
 on:
   workflow_dispatch:
+    inputs:
+      rollback_sha:
+        description: Exact previously approved release SHA to restore
+        required: true
+        type: string
 
 permissions:
   contents: read
   packages: read
 
 concurrency:
-  group: rollback-production
+  group: terrafusion-runtime-production
   cancel-in-progress: false
 
 jobs:
   rollback:
-    name: Roll back production to previous SHA
+    name: Roll back production to explicit approved SHA
     runs-on: ubuntu-latest
     environment: production
     env:
       TARGET_ENV: production
+      ROLLBACK_SHA: ${{ inputs.rollback_sha }}
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       APP_ROOT: ${{ vars.APP_ROOT }}
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
     steps:
       - name: Validate environment configuration
         shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
+
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "Rollback must be dispatched from the protected main workflow definition"
+            exit 1
+          fi
 
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
           PUBLIC_URL="${PUBLIC_URL%/}"
 
-          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY; do
+          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY DEPLOY_SSH_KNOWN_HOSTS; do
             if [ -z "${!required:-}" ]; then
               echo "Missing required environment configuration: ${required}"
               exit 1
@@ -42,7 +55,6 @@ jobs:
           done
 
           PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
-          OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
           DEPLOYED_AT="$(date -u +%FT%TZ)"
           ASPNETCORE_ENV_LABEL="Production"
 
@@ -51,38 +63,35 @@ jobs:
             printf 'APP_ROOT=%s\n' "$APP_ROOT"
             printf 'PUBLIC_URL=%s\n' "$PUBLIC_URL"
             printf 'PUBLIC_HOST=%s\n' "$PUBLIC_HOST"
-            printf 'OWNER=%s\n' "$OWNER"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
           } >> "$GITHUB_ENV"
 
-      - name: Configure SSH key
+      - name: Configure pinned SSH host trust
         shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
         run: |
-          set -euo pipefail
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
 
-          for i in 1 2 3; do
-            ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
-            echo "ssh-keyscan attempt $i failed, retrying in 5s..."
-            sleep 5
-          done
+          if ! ssh-keygen -F "[$DEPLOY_HOST]:$DEPLOY_PORT" -f ~/.ssh/known_hosts >/dev/null &&
+             ! ssh-keygen -F "$DEPLOY_HOST" -f ~/.ssh/known_hosts >/dev/null; then
+            echo "Protected DEPLOY_SSH_KNOWN_HOSTS does not contain the deployment host"
+            exit 1
+          fi
 
-          # Global SSH options: faster timeout + keepalive for Hostinger VPS
           cat > ~/.ssh/config <<SSHCFG
           Host $DEPLOY_HOST
             ConnectTimeout 30
             ServerAliveInterval 15
             ServerAliveCountMax 3
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
           SSHCFG
-
-          # Fallback: if keyscan still failed, accept new keys on first connect
-          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
-            echo "WARNING: ssh-keyscan returned no keys; using StrictHostKeyChecking=accept-new"
-            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
-          fi
           chmod 600 ~/.ssh/config
 
       - name: Preflight - public DNS resolution
@@ -110,7 +119,6 @@ jobs:
           test -f "$APP_ROOT/runtime-compose.yml"
           test -f "$APP_ROOT/release.env"
           test -f "$APP_ROOT/current.sha"
-          test -f "$APP_ROOT/previous.sha"
           SSH
             rc=$?
             set -e
@@ -124,42 +132,67 @@ jobs:
           echo "ERROR: SSH preflight failed after 3 attempts"
           exit 1
 
-      - name: Read rollback SHAs
+      - name: Validate explicit rollback target and immutable artifact
         id: shas
         shell: bash
         run: |
           set -euo pipefail
-          CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
-          ROLLBACK_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/previous.sha'")"
-          [[ "$CURRENT_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$ROLLBACK_SHA" =~ ^[0-9a-f]{40}$ ]]
+          CURRENT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$APP_ROOT/current.sha'")"
+          [[ "$CURRENT_SHA" =~ ^[0-9a-f]{40}$ ]]
           SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "test -f '$SNAPSHOT_ROOT/release.sha' && test -f '$SNAPSHOT_ROOT/release.env' && test -f '$SNAPSHOT_ROOT/runtime-compose.yml' && test -f '$SNAPSHOT_ROOT/Caddyfile' && test -f '$SNAPSHOT_ROOT/sovereign.yaml'"
+            "test -f '$SNAPSHOT_ROOT/release.sha' && test -f '$SNAPSHOT_ROOT/artifact.env' && test -f '$SNAPSHOT_ROOT/runtime-compose.yml' && test -f '$SNAPSHOT_ROOT/Caddyfile' && test -f '$SNAPSHOT_ROOT/sovereign.yaml' && test -d '$SNAPSHOT_ROOT/docs/spec-lock' && test -d '$SNAPSHOT_ROOT/config'"
           SNAPSHOT_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "cat '$SNAPSHOT_ROOT/release.sha'")"
-          RELEASE_ENV_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_RELEASE_SHA=//p' '$SNAPSHOT_ROOT/release.env'")"
-          BACKEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_BACKEND_IMAGE=//p' '$SNAPSHOT_ROOT/release.env'")"
-          FRONTEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_FRONTEND_IMAGE=//p' '$SNAPSHOT_ROOT/release.env'")"
+          RELEASE_ENV_SHA="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_RELEASE_SHA=//p' '$SNAPSHOT_ROOT/artifact.env'")"
+          BACKEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_BACKEND_IMAGE=//p' '$SNAPSHOT_ROOT/artifact.env'")"
+          FRONTEND_IMAGE="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "sed -n 's/^TF_FRONTEND_IMAGE=//p' '$SNAPSHOT_ROOT/artifact.env'")"
           test "$SNAPSHOT_SHA" = "$ROLLBACK_SHA"
           test "$RELEASE_ENV_SHA" = "$ROLLBACK_SHA"
           [[ "$BACKEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
           [[ "$FRONTEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
-
+          ! ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "grep -qE '^(TERRAFUSION_BOOTSTRAP_|.*PASSWORD|.*TOKEN|.*SECRET)' '$SNAPSHOT_ROOT/artifact.env'"
+          ROLLBACK_NOOP=false
+          if [ "$CURRENT_SHA" = "$ROLLBACK_SHA" ] && ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' SNAPSHOT_ROOT='$SNAPSHOT_ROOT' BACKEND_IMAGE='$BACKEND_IMAGE' FRONTEND_IMAGE='$FRONTEND_IMAGE' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          cmp "$SNAPSHOT_ROOT/artifact.env" release.env
+          for file in runtime-compose.yml Caddyfile sovereign.yaml; do
+            cmp "$SNAPSHOT_ROOT/$file" "$file"
+          done
+          diff -qr "$SNAPSHOT_ROOT/docs/spec-lock" docs/spec-lock >/dev/null
+          diff -qr "$SNAPSHOT_ROOT/config" config >/dev/null
+          docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
+          BACKEND_CONTAINER="$(docker compose -f runtime-compose.yml --env-file release.env ps -q backend)"
+          FRONTEND_CONTAINER="$(docker compose -f runtime-compose.yml --env-file release.env ps -q frontend)"
+          test -n "$BACKEND_CONTAINER"
+          test -n "$FRONTEND_CONTAINER"
+          test "$(docker inspect --format '{{.Config.Image}}' "$BACKEND_CONTAINER")" = "$BACKEND_IMAGE"
+          test "$(docker inspect --format '{{.Config.Image}}' "$FRONTEND_CONTAINER")" = "$FRONTEND_IMAGE"
+          SSH
+          then
+            ROLLBACK_NOOP=true
+            ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+              "printf '%s\n' '$ROLLBACK_SHA' > '$APP_ROOT/requested.sha'"
+          fi
+          echo "ROLLBACK_NOOP=$ROLLBACK_NOOP" >> "$GITHUB_ENV"
+          echo "ROLLBACK_RUN_TOKEN=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
           {
             printf 'current_sha=%s\n' "$CURRENT_SHA"
             printf 'rollback_sha=%s\n' "$ROLLBACK_SHA"
             printf 'backend_image=%s\n' "$BACKEND_IMAGE"
             printf 'frontend_image=%s\n' "$FRONTEND_IMAGE"
           } >> "$GITHUB_OUTPUT"
-
           {
             printf 'CURRENT_SHA=%s\n' "$CURRENT_SHA"
-            printf 'ROLLBACK_SHA=%s\n' "$ROLLBACK_SHA"
             printf 'BACKEND_IMAGE=%s\n' "$BACKEND_IMAGE"
             printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
           } >> "$GITHUB_ENV"
 
       - name: Prove GHCR pull on VPS
+        if: env.ROLLBACK_NOOP != 'true'
         shell: bash
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -175,7 +208,8 @@ jobs:
           docker pull "$FRONTEND_IMAGE"
           SSH
 
-      - name: Ensure edge proxy is running
+      - name: Ensure governed edge proxy is running
+        if: env.ROLLBACK_NOOP != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -188,33 +222,95 @@ jobs:
           fi
           SSH
 
-      - name: Roll back exact runtime bundle on VPS
+      - name: Restore exact artifact bundle transactionally
+        id: rollback-runtime
+        if: env.ROLLBACK_NOOP != 'true'
         shell: bash
         run: |
           set -euo pipefail
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "APP_ROOT='$APP_ROOT' ROLLBACK_SHA='$ROLLBACK_SHA' bash -s" <<'SSH'
+            "APP_ROOT='$APP_ROOT' CURRENT_SHA='$CURRENT_SHA' ROLLBACK_SHA='$ROLLBACK_SHA' RUN_TOKEN='$ROLLBACK_RUN_TOKEN' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
           SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"
           test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$ROLLBACK_SHA"
-          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$ROLLBACK_SHA"
-          BACKEND_IMAGE="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
-          FRONTEND_IMAGE="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
+          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/artifact.env")" = "$ROLLBACK_SHA"
+          BACKEND_IMAGE="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/artifact.env")"
+          FRONTEND_IMAGE="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/artifact.env")"
           [[ "$BACKEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
           [[ "$FRONTEND_IMAGE" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+          ! grep -qE '^(TERRAFUSION_BOOTSTRAP_|.*PASSWORD|.*TOKEN|.*SECRET)' "$SNAPSHOT_ROOT/artifact.env"
 
+          INCOMING="$APP_ROOT/.rollback-incoming-$RUN_TOKEN"
+          BACKUP="$APP_ROOT/.rollback-backup-$RUN_TOKEN"
+          test ! -e "$INCOMING"
+          test ! -e "$BACKUP"
+          install -d -m 0700 "$INCOMING/docs/spec-lock" "$INCOMING/config" "$BACKUP"
+          install -m 0600 "$SNAPSHOT_ROOT/artifact.env" "$INCOMING/release.env"
+          for file in runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$SNAPSHOT_ROOT/$file" "$INCOMING/$file"
+            install -m 0600 "$file" "$BACKUP/$file"
+          done
+          install -m 0600 release.env "$BACKUP/release.env"
+          cp -a "$SNAPSHOT_ROOT/docs/spec-lock/." "$INCOMING/docs/spec-lock/"
+          cp -a "$SNAPSHOT_ROOT/config/." "$INCOMING/config/"
+          cp -a docs/spec-lock "$BACKUP/spec-lock"
+          cp -a config "$BACKUP/config"
+          ln -s "$APP_ROOT/app.env" "$INCOMING/app.env"
+          docker compose -f "$INCOMING/runtime-compose.yml" --env-file "$INCOMING/release.env" config >/dev/null
+          rm -f "$INCOMING/app.env"
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$BACKUP/$file"
+          done
+          test -d "$BACKUP/spec-lock"
+          test -d "$BACKUP/config"
+          if [ -f requested.sha ]; then
+            install -m 0600 requested.sha "$BACKUP/requested.sha"
+          else
+            touch "$BACKUP/requested.absent"
+          fi
+          test -f "$BACKUP/requested.sha" || test -f "$BACKUP/requested.absent"
+          touch "$BACKUP/backup.ready"
+
+          restore_previous() {
+            trap - ERR
+            set +e
+            failed=0
+            rm -rf docs/spec-lock config || failed=1
+            cp -a "$BACKUP/spec-lock" docs/spec-lock || failed=1
+            cp -a "$BACKUP/config" config || failed=1
+            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              install -m 0600 "$BACKUP/$file" "$file" || failed=1
+            done
+            if [ -f "$BACKUP/requested.sha" ]; then
+              install -m 0600 "$BACKUP/requested.sha" requested.sha || failed=1
+            elif [ -f "$BACKUP/requested.absent" ]; then
+              rm -f requested.sha || failed=1
+            else
+              failed=1
+            fi
+            docker compose -f runtime-compose.yml --env-file release.env config >/dev/null || failed=1
+            docker compose -f runtime-compose.yml --env-file release.env pull || failed=1
+            docker compose -f runtime-compose.yml --env-file release.env up -d || failed=1
+            if [ "$failed" -ne 0 ]; then
+              echo "Automatic rollback restore failed; preserving $BACKUP for governed recovery" >&2
+              exit 1
+            fi
+            rm -rf "$INCOMING" "$BACKUP"
+            exit 1
+          }
+          trap restore_previous ERR
+
+          rm -rf docs/spec-lock config
+          mv "$INCOMING/docs/spec-lock" docs/spec-lock
+          mv "$INCOMING/config" config
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$INCOMING/$file" "$file"
+          done
           printf '%s\n' "$ROLLBACK_SHA" > requested.sha
-          install -m 0600 "$SNAPSHOT_ROOT/release.env" release.env
-          install -m 0600 "$SNAPSHOT_ROOT/runtime-compose.yml" runtime-compose.yml
-          install -m 0600 "$SNAPSHOT_ROOT/Caddyfile" Caddyfile
-          install -m 0600 "$SNAPSHOT_ROOT/sovereign.yaml" sovereign.yaml
-          install -d -m 0700 docs/spec-lock config
-          cp -a "$SNAPSHOT_ROOT/docs/spec-lock/." docs/spec-lock/
-          cp -a "$SNAPSHOT_ROOT/config/." config/
-          docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
+          trap - ERR
           SSH
 
       - name: Verify public health and release header
@@ -244,17 +340,66 @@ jobs:
 
           grep -iE '^HTTP/.* 200' curl_headers.txt
 
-      - name: Finalize rollback SHA on VPS
+      - name: Finalize explicit idempotent rollback identity
         shell: bash
         run: |
           set -euo pipefail
           ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "APP_ROOT='$APP_ROOT' CURRENT_SHA='$CURRENT_SHA' ROLLBACK_SHA='$ROLLBACK_SHA' bash -s" <<'SSH'
+            "APP_ROOT='$APP_ROOT' CURRENT_SHA='$CURRENT_SHA' ROLLBACK_SHA='$ROLLBACK_SHA' ROLLBACK_RUN_TOKEN='$ROLLBACK_RUN_TOKEN' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
           test "$(cat requested.sha)" = "$ROLLBACK_SHA"
+          if [ "$CURRENT_SHA" != "$ROLLBACK_SHA" ]; then
+            printf '%s\n' "$CURRENT_SHA" > last-rollback-from.sha
+          fi
           printf '%s\n' "$ROLLBACK_SHA" > current.sha
-          printf '%s\n' "$CURRENT_SHA" > previous.sha
+          rm -rf "$APP_ROOT/.rollback-incoming-$ROLLBACK_RUN_TOKEN" "$APP_ROOT/.rollback-backup-$ROLLBACK_RUN_TOKEN"
+          SSH
+
+      - name: Restore pre-rollback runtime if rollback did not commit
+        if: failure() && env.ROLLBACK_NOOP != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' CURRENT_SHA='$CURRENT_SHA' ROLLBACK_SHA='$ROLLBACK_SHA' RUN_TOKEN='$ROLLBACK_RUN_TOKEN' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          if [ -f current.sha ] && [ "$(cat current.sha)" = "$ROLLBACK_SHA" ]; then
+            exit 0
+          fi
+          BACKUP="$APP_ROOT/.rollback-backup-$RUN_TOKEN"
+          INCOMING="$APP_ROOT/.rollback-incoming-$RUN_TOKEN"
+          if [ ! -e "$BACKUP" ]; then
+            exit 0
+          fi
+          if [ ! -f "$BACKUP/backup.ready" ]; then
+            echo "Incomplete rollback backup retained at $BACKUP; live state was not mutated" >&2
+            exit 1
+          fi
+          set +e
+          failed=0
+          rm -rf docs/spec-lock config || failed=1
+          cp -a "$BACKUP/spec-lock" docs/spec-lock || failed=1
+          cp -a "$BACKUP/config" config || failed=1
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$BACKUP/$file" "$file" || failed=1
+          done
+          if [ -f "$BACKUP/requested.sha" ]; then
+            install -m 0600 "$BACKUP/requested.sha" requested.sha || failed=1
+          elif [ -f "$BACKUP/requested.absent" ]; then
+            rm -f requested.sha || failed=1
+          else
+            failed=1
+          fi
+          docker compose -f runtime-compose.yml --env-file release.env config >/dev/null || failed=1
+          docker compose -f runtime-compose.yml --env-file release.env pull || failed=1
+          docker compose -f runtime-compose.yml --env-file release.env up -d || failed=1
+          if [ "$failed" -ne 0 ]; then
+            echo "Rollback recovery failed; preserving $BACKUP for governed recovery" >&2
+            exit 1
+          fi
+          rm -rf "$INCOMING" "$BACKUP"
           SSH
 
       - name: Verify requested/current/header invariant

@@ -1,60 +1,27 @@
 name: 🚀 Release Compliance Gate
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SOLO VELOCITY MODE - Full compliance pack for RELEASES ONLY
-# ═══════════════════════════════════════════════════════════════════════════════
-# Trigger: v* tags only (e.g., v1.0.0, v1.2.3-beta)
-# Required: YES (for releases)
-#
-# What's included:
-#   ✅ Full test suite (unit + integration + E2E)
-#   ✅ SBOM generation (SPDX + CycloneDX)
-#   ✅ Container scanning
-#   ✅ License compliance check
-#   ✅ Security deep scan
-#   ✅ SLSA provenance attestation
-#   ✅ Compliance metrics (for vendor due diligence)
-#
-# Why release-only:
-#   - This is what you show to big vendors during diligence
-#   - Takes 30-60 minutes (unacceptable for daily iteration)
-#   - Only runs when you explicitly cut a release
-#
-# Enterprise Governance Mode (future):
-#   When you have a team or buyer evaluating, flip TF_ENTERPRISE_MODE=true
-#   This enables: required reviews, CODEOWNERS, merge queue, enforce_admins
-# ═══════════════════════════════════════════════════════════════════════════════
-
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to validate (e.g., v1.0.0)'
-        required: true
-        type: string
 
 permissions:
   contents: read
-  security-events: write
-  id-token: write # For SLSA provenance
-  attestations: write
 
 env:
   NODE_VERSION: '20'
   DOTNET_VERSION: '8.0.x'
+  SYFT_VERSION: 'v1.51.0'
+  GRYPE_VERSION: 'v0.99.1'
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Full Test Suite
-  # ═══════════════════════════════════════════════════════════════════════════
   full-tests:
     name: 🧪 Full Test Suite
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
+    permissions:
+      contents: read
     services:
       postgres:
         image: postgres:15
@@ -68,180 +35,212 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
           dotnet restore backend/TerraFusion.sln
-
       - name: Build
         run: |
           pnpm run build
           dotnet build backend/TerraFusion.sln -c Release --no-restore
-
       - name: Frontend unit tests
-        run: pnpm run test:unit || pnpm test -- --passWithNoTests
-
+        run: pnpm run test:unit
       - name: Backend tests (all)
-        run: |
-          dotnet test backend/TerraFusion.sln -c Release --no-build -v:normal
+        run: dotnet test backend/TerraFusion.sln -c Release --no-build -v:normal
         env:
           ConnectionStrings__DefaultConnection: 'Host=localhost;Database=terrafusion_test;Username=postgres;Password=terrafusion_test'
-
-      - name: E2E tests
+      - name: Authenticated property Workbench release smoke
         run: |
           pnpm exec playwright install --with-deps chromium
-          pnpm run test:e2e || pnpm exec playwright test
-        continue-on-error: true
+          pnpm run smoke:workbench
         env:
           CI: true
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # SBOM + Vulnerability Scan
-  # ═══════════════════════════════════════════════════════════════════════════
   sbom-compliance:
-    name: 📦 SBOM & Vulnerability Scan
+    name: 📦 Publish Once, SBOM & Vulnerability Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend-image: ${{ steps.publish-refs.outputs.backend_image }}
+      backend-digest: ${{ steps.publish-refs.outputs.backend_digest }}
+      backend-ref: ${{ steps.publish-refs.outputs.backend_ref }}
+      frontend-image: ${{ steps.publish-refs.outputs.frontend_image }}
+      frontend-digest: ${{ steps.publish-refs.outputs.frontend_digest }}
+      frontend-ref: ${{ steps.publish-refs.outputs.frontend_ref }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Build backend release image
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Resolve canonical image names
+        id: images
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "backend=ghcr.io/${OWNER}/terrafusion-os-backend-internal" >> "$GITHUB_OUTPUT"
+          echo "frontend=ghcr.io/${OWNER}/terrafusion-os-frontend-internal" >> "$GITHUB_OUTPUT"
+      - name: Publish backend runtime image
+        id: backend-build
         uses: docker/build-push-action@v5
         with:
           context: backend
           file: backend/Dockerfile
           target: runtime
-          push: false
-          load: true
-          tags: terrafusion-backend:release
+          push: true
+          tags: ${{ steps.images.outputs.backend }}:${{ github.sha }}
           build-args: |
             GIT_SHA=${{ github.sha }}
-
-      - name: Build frontend release image
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+      - name: Publish frontend production image
+        id: frontend-build
         uses: docker/build-push-action@v5
         with:
           context: .
           file: frontend/Dockerfile
           target: production
-          push: false
-          load: true
-          tags: terrafusion-frontend:release
+          push: true
+          tags: ${{ steps.images.outputs.frontend }}:${{ github.sha }}
           build-args: |
             VITE_BUILD_SHA=${{ github.sha }}
-
-      - name: Install Syft
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+      - name: Build frontend dependency-evidence image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: frontend/Dockerfile
+          target: build
+          push: false
+          load: true
+          tags: terrafusion-frontend-build:${{ github.sha }}
+          build-args: |
+            VITE_BUILD_SHA=${{ github.sha }}
+      - name: Bind published digest references
+        id: publish-refs
+        shell: bash
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-
-      - name: Install Grype
+          set -euo pipefail
+          BACKEND_IMAGE="${{ steps.images.outputs.backend }}"
+          FRONTEND_IMAGE="${{ steps.images.outputs.frontend }}"
+          BACKEND_DIGEST="${{ steps.backend-build.outputs.digest }}"
+          FRONTEND_DIGEST="${{ steps.frontend-build.outputs.digest }}"
+          [[ "$BACKEND_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$FRONTEND_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          {
+            echo "backend_image=$BACKEND_IMAGE"
+            echo "backend_digest=$BACKEND_DIGEST"
+            echo "backend_ref=$BACKEND_IMAGE@$BACKEND_DIGEST"
+            echo "frontend_image=$FRONTEND_IMAGE"
+            echo "frontend_digest=$FRONTEND_DIGEST"
+            echo "frontend_ref=$FRONTEND_IMAGE@$FRONTEND_DIGEST"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "BACKEND_IMAGE_REF=$BACKEND_IMAGE@$BACKEND_DIGEST"
+            echo "FRONTEND_IMAGE_REF=$FRONTEND_IMAGE@$FRONTEND_DIGEST"
+          } >> "$GITHUB_ENV"
+      - name: Install pinned Syft
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-
-      - name: Generate release image SBOMs (SPDX)
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/2293641e3bd628a01bb37639318d62c0ebe89b39/install.sh | sh -s -- -b /usr/local/bin "${SYFT_VERSION}"
+          syft version
+      - name: Install pinned Grype
         run: |
-          syft terrafusion-backend:release -o spdx-json=sbom-backend-spdx.json
-          syft terrafusion-frontend:release -o spdx-json=sbom-frontend-spdx.json
-
-      - name: Generate release image SBOMs (CycloneDX)
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/6e1807dd7130c9eff23c1bad19a96cc6afef33aa/install.sh | sh -s -- -b /usr/local/bin "${GRYPE_VERSION}"
+          grype version
+      - name: Generate exact artifact SBOMs
         run: |
-          syft terrafusion-backend:release -o cyclonedx-json=sbom-backend-cyclonedx.json
-          syft terrafusion-frontend:release -o cyclonedx-json=sbom-frontend-cyclonedx.json
-
-      - name: Vulnerability scan (release image SBOMs)
+          set -euo pipefail
+          syft "registry:$BACKEND_IMAGE_REF" -o spdx-json=sbom-backend-runtime-spdx.json -o cyclonedx-json=sbom-backend-runtime-cyclonedx.json
+          syft "registry:$FRONTEND_IMAGE_REF" -o spdx-json=sbom-frontend-runtime-spdx.json -o cyclonedx-json=sbom-frontend-runtime-cyclonedx.json
+          syft "terrafusion-frontend-build:${GITHUB_SHA}" -o spdx-json=sbom-frontend-build-spdx.json -o cyclonedx-json=sbom-frontend-build-cyclonedx.json
+      - name: Blocking vulnerability policy
         run: |
-          grype sbom:sbom-backend-spdx.json -o table --fail-on critical
-          grype sbom:sbom-frontend-spdx.json -o table --fail-on critical
-
-      - name: License compliance check
+          set -euo pipefail
+          grype sbom:sbom-backend-runtime-spdx.json -o table --fail-on critical
+          grype sbom:sbom-frontend-runtime-spdx.json -o table --fail-on critical
+          grype sbom:sbom-frontend-build-spdx.json -o table --fail-on high
+      - name: Blocking license policy
+        run: node scripts/ci/release_sbom_policy.mjs sbom-backend-runtime-spdx.json sbom-frontend-runtime-spdx.json sbom-frontend-build-spdx.json
+      - name: Create immutable release image manifest
         run: |
-          # Check for prohibited licenses (GPL, AGPL in proprietary context)
-          jq -r '.packages[] | select((.licenseConcluded // "") | test("GPL|AGPL"; "i")) | .name' sbom-*-spdx.json > prohibited.txt || true
-          if [ -s prohibited.txt ]; then
-            echo "⚠️ WARNING: Packages with potentially prohibited licenses:"
-            cat prohibited.txt
-          else
-            echo "✅ No prohibited licenses detected"
-          fi
-
-      - name: Upload SBOM artifacts
+          node scripts/ci/release_image_manifest.mjs create \
+            --release-sha "${GITHUB_SHA}" \
+            --backend-image "${{ steps.publish-refs.outputs.backend_image }}" \
+            --backend-digest "${{ steps.publish-refs.outputs.backend_digest }}" \
+            --frontend-image "${{ steps.publish-refs.outputs.frontend_image }}" \
+            --frontend-digest "${{ steps.publish-refs.outputs.frontend_digest }}" \
+            --out release-images.json
+      - name: Upload full SBOM evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: release-sbom
+          path: sbom-*.json
+          retention-days: 365
+      - name: Upload release image inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-image-inputs
           path: |
-            sbom-*.json
+            release-images.json
+            sbom-frontend-build-spdx.json
+            sbom-frontend-build-cyclonedx.json
           retention-days: 365
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Container Security
-  # ═══════════════════════════════════════════════════════════════════════════
   container-security:
     name: 🐳 Container Security
+    needs: [sbom-compliance]
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
     strategy:
       fail-fast: false
       matrix:
         include:
           - component: backend
-            context: backend
-            dockerfile: backend/Dockerfile
-            target: runtime
-            image: terrafusion-backend:release
-            build_args: GIT_SHA=${{ github.sha }}
+            image: ${{ needs.sbom-compliance.outputs.backend-ref }}
           - component: frontend
-            context: .
-            dockerfile: frontend/Dockerfile
-            target: production
-            image: terrafusion-frontend:release
-            build_args: VITE_BUILD_SHA=${{ github.sha }}
-
+            image: ${{ needs.sbom-compliance.outputs.frontend-ref }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build release container (${{ matrix.component }})
-        uses: docker/build-push-action@v5
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          target: ${{ matrix.target }}
-          push: false
-          load: true
-          tags: ${{ matrix.image }}
-          build-args: ${{ matrix.build_args }}
-
-      - name: Trivy release container scan (${{ matrix.component }})
-        uses: aquasecurity/trivy-action@master
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Trivy exact release image scan (${{ matrix.component }})
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ matrix.image }}
           format: 'sarif'
           output: 'container-trivy-${{ matrix.component }}.sarif'
           severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
           exit-code: '1'
-
+          version: 'v0.70.0'
       - name: Upload container security results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
@@ -249,42 +248,37 @@ jobs:
           sarif_file: 'container-trivy-${{ matrix.component }}.sarif'
           category: 'release-container-${{ matrix.component }}'
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Security Deep Scan
-  # ═══════════════════════════════════════════════════════════════════════════
   security-deep-scan:
     name: 🔒 Security Deep Scan
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript, typescript, csharp
+          languages: javascript-typescript,csharp
           config-file: ./.github/codeql/codeql-config.yml
-
       - name: Autobuild for CodeQL
         uses: github/codeql-action/autobuild@v3
-        continue-on-error: true
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-
-      - name: Trivy canonical source scan
-        uses: aquasecurity/trivy-action@master
+      - name: Trivy canonical backend source scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'backend'
           format: 'sarif'
           output: 'trivy-fs-backend.sarif'
           severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
           exit-code: '1'
-
+          version: 'v0.70.0'
       - name: Upload backend Trivy results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
@@ -292,106 +286,85 @@ jobs:
           sarif_file: 'trivy-fs-backend.sarif'
           category: 'release-source-backend'
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # SLSA Provenance (supply chain attestation)
-  # ═══════════════════════════════════════════════════════════════════════════
   provenance:
-    name: 🔏 SLSA Provenance
+    name: 🔏 Image Digest Provenance
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [full-tests, sbom-compliance]
-
+    needs: [full-tests, sbom-compliance, container-security, security-deep-scan]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Download SBOM
-        uses: actions/download-artifact@v4
+      - name: Attest backend image digest
+        uses: actions/attest-build-provenance@v3
         with:
-          name: release-sbom
-          path: ./sbom
-
-      - name: Generate provenance attestation
-        uses: actions/attest-build-provenance@v1
+          subject-name: ${{ needs.sbom-compliance.outputs.backend-image }}
+          subject-digest: ${{ needs.sbom-compliance.outputs.backend-digest }}
+          push-to-registry: true
+      - name: Attest frontend image digest
+        uses: actions/attest-build-provenance@v3
         with:
-          subject-path: './sbom/sbom-*-spdx.json'
-        continue-on-error: true
-
-      - name: Create release summary
+          subject-name: ${{ needs.sbom-compliance.outputs.frontend-image }}
+          subject-digest: ${{ needs.sbom-compliance.outputs.frontend-digest }}
+          push-to-registry: true
+      - name: Create truthful release summary
         run: |
-          VERSION="${{ github.ref_name }}"
-          if [ -z "$VERSION" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-          fi
+          echo "# 🚀 Release Compliance Summary: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Unit, backend, and authenticated property Workbench release smoke passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Runtime and frontend dependency SBOM policies passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Exact images passed blocking vulnerability scans" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Backend: ${{ needs.sbom-compliance.outputs.backend-ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Frontend: ${{ needs.sbom-compliance.outputs.frontend-ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Image-digest provenance published" >> "$GITHUB_STEP_SUMMARY"
 
-          echo "# 🚀 Release Compliance Summary: $VERSION" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ SBOM (SPDX)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ SBOM (CycloneDX)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ SLSA Provenance" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Compliance" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Full test suite passed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Vulnerability scan completed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ License compliance checked" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Security deep scan completed" >> $GITHUB_STEP_SUMMARY
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Release Gate (all must pass)
-  # ═══════════════════════════════════════════════════════════════════════════
   release-gate:
     name: 🚀 Release Gate
     runs-on: ubuntu-latest
     if: always()
     needs: [full-tests, sbom-compliance, container-security, security-deep-scan, provenance]
-
+    permissions:
+      contents: read
     steps:
-      - name: Check all gates
+      - name: Check all blocking gates
         run: |
-          echo "🚀 Release Compliance Gate - Results"
-          echo "===================================="
-
+          set -euo pipefail
           FAILED=0
-
-          # Check each job
-          if [ "${{ needs.full-tests.result }}" != "success" ]; then
-            echo "❌ Full Tests: FAILED"
-            FAILED=1
-          else
-            echo "✅ Full Tests: passed"
-          fi
-
-          if [ "${{ needs.sbom-compliance.result }}" != "success" ]; then
-            echo "❌ SBOM Compliance: FAILED"
-            FAILED=1
-          else
-            echo "✅ SBOM Compliance: passed"
-          fi
-
-          if [ "${{ needs.container-security.result }}" != "success" ]; then
-            echo "❌ Container Security: FAILED"
-            FAILED=1
-          else
-            echo "✅ Container Security: passed"
-          fi
-
-          if [ "${{ needs.security-deep-scan.result }}" != "success" ]; then
-            echo "❌ Security Deep Scan: FAILED"
-            FAILED=1
-          else
-            echo "✅ Security Deep Scan: passed"
-          fi
-
-          if [ "${{ needs.provenance.result }}" != "success" ]; then
-            echo "⚠️ Provenance: FAILED (non-blocking)"
-          else
-            echo "✅ Provenance: passed"
-          fi
-
-          echo ""
-          if [ $FAILED -eq 0 ]; then
-            echo "🎉 RELEASE GATE PASSED - Safe to publish"
-          else
-            echo "🚫 RELEASE GATE FAILED - Fix issues before releasing"
-            exit 1
-          fi
+          for gate in \
+            "Full Tests:${{ needs.full-tests.result }}" \
+            "SBOM Compliance:${{ needs.sbom-compliance.result }}" \
+            "Container Security:${{ needs.container-security.result }}" \
+            "Security Deep Scan:${{ needs.security-deep-scan.result }}" \
+            "Provenance:${{ needs.provenance.result }}"; do
+            NAME="${gate%%:*}"
+            RESULT="${gate#*:}"
+            if [ "$RESULT" != success ]; then
+              echo "❌ $NAME: $RESULT"
+              FAILED=1
+            else
+              echo "✅ $NAME: passed"
+            fi
+          done
+          test "$FAILED" -eq 0
+      - uses: actions/checkout@v4
+      - name: Download release image inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: release-image-inputs
+          path: approved-inputs
+      - name: Verify approved manifest against job outputs
+        run: |
+          node scripts/ci/release_image_manifest.mjs verify \
+            --manifest approved-inputs/release-images.json \
+            --release-sha "${GITHUB_SHA}" \
+            --backend-image "${{ needs.sbom-compliance.outputs.backend-image }}" \
+            --backend-digest "${{ needs.sbom-compliance.outputs.backend-digest }}" \
+            --frontend-image "${{ needs.sbom-compliance.outputs.frontend-image }}" \
+            --frontend-digest "${{ needs.sbom-compliance.outputs.frontend-digest }}"
+      - name: Publish approved release image manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-release-images
+          path: approved-inputs/release-images.json
+          retention-days: 365

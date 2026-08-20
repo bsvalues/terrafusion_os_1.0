@@ -14,13 +14,18 @@ on:
         description: Full git SHA to deploy
         required: true
         type: string
+      compliance_run_id:
+        description: Successful release-compliance run that approved this exact SHA
+        required: true
+        type: string
 
 permissions:
+  actions: read
   contents: read
-  packages: write
+  packages: read
 
 concurrency:
-  group: release-${{ inputs.target_env }}
+  group: terrafusion-runtime-${{ inputs.target_env }}
   cancel-in-progress: false
 
 jobs:
@@ -36,10 +41,6 @@ jobs:
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       APP_ROOT: ${{ vars.APP_ROOT }}
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
-      TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
-      TF_AUTH_BOOTSTRAP_ROLES: ${{ secrets.TF_AUTH_BOOTSTRAP_ROLES }}
     steps:
       - name: Checkout requested SHA
         uses: actions/checkout@v5
@@ -51,6 +52,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "release-lane must be dispatched from the protected main workflow definition"
+            exit 1
+          fi
 
           if [[ ! "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
             echo "release_sha must be a full lowercase 40-character git SHA"
@@ -77,7 +83,7 @@ jobs:
             exit 1
           fi
 
-          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml ops/edge-proxy/Caddyfile ops/edge-proxy/docker-compose.yml frontend/Dockerfile backend/Dockerfile; do
+          for path in ops/proxy/Caddyfile ops/prod/runtime-compose.template.yml frontend/Dockerfile backend/Dockerfile; do
             test -f "$path" || {
               echo "Candidate is missing required release asset: $path"
               exit 1
@@ -90,8 +96,64 @@ jobs:
             printf 'TRUSTED_MAIN_SHA=%s\n' "$TRUSTED_MAIN_SHA"
           } >> "$GITHUB_ENV"
 
+      - name: Resolve approved compliance manifest
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMPLIANCE_RUN_ID: ${{ inputs.compliance_run_id }}
+        run: |
+          set -euo pipefail
+          [[ "$COMPLIANCE_RUN_ID" =~ ^[0-9]+$ ]]
+          RUN_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$COMPLIANCE_RUN_ID")"
+          RUN_JSON="$RUN_JSON" RELEASE_SHA="$RELEASE_SHA" node <<'NODE'
+          const run = JSON.parse(process.env.RUN_JSON);
+          if (run.status !== 'completed' || run.conclusion !== 'success') {
+            throw new Error('Compliance run is not successfully completed');
+          }
+          if (run.head_sha !== process.env.RELEASE_SHA) {
+            throw new Error('Compliance run head SHA does not match release_sha');
+          }
+          if (run.path !== '.github/workflows/release-compliance.yml') {
+            throw new Error('Run is not the canonical release-compliance workflow');
+          }
+          NODE
+
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$COMPLIANCE_RUN_ID/artifacts")"
+          ARTIFACT_ID="$(ARTIFACTS_JSON="$ARTIFACTS_JSON" node <<'NODE'
+          const payload = JSON.parse(process.env.ARTIFACTS_JSON);
+          const matches = payload.artifacts.filter(
+            (artifact) => artifact.name === 'approved-release-images' && !artifact.expired
+          );
+          if (matches.length !== 1) {
+            throw new Error('Compliance run must contain exactly one unexpired approved-release-images artifact');
+          }
+          process.stdout.write(String(matches[0].id));
+          NODE
+          )"
+
+          APPROVED_DIR="$RUNNER_TEMP/approved-release-images"
+          install -d "$APPROVED_DIR"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$RUNNER_TEMP/approved-release-images.zip"
+          unzip -q "$RUNNER_TEMP/approved-release-images.zip" -d "$APPROVED_DIR"
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          node scripts/ci/release_image_manifest.mjs verify \
+            --manifest "$APPROVED_DIR/release-images.json" \
+            --release-sha "$RELEASE_SHA" \
+            --backend-image "ghcr.io/$OWNER/terrafusion-os-backend-internal" \
+            --frontend-image "ghcr.io/$OWNER/terrafusion-os-frontend-internal" \
+            --github-env "$GITHUB_ENV"
+          {
+            echo "COMPLIANCE_RUN_ID=$COMPLIANCE_RUN_ID"
+            echo "COMPLIANCE_RUN_URL=https://github.com/$GITHUB_REPOSITORY/actions/runs/$COMPLIANCE_RUN_ID"
+          } >> "$GITHUB_ENV"
+
       - name: Validate environment configuration
         shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+          TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
+          TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
         run: |
           set -euo pipefail
 
@@ -99,19 +161,14 @@ jobs:
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/${TARGET_ENV}}"
           PUBLIC_URL="${PUBLIC_URL%/}"
 
-          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY TF_AUTH_BOOTSTRAP_EMAIL TF_AUTH_BOOTSTRAP_PASSWORD; do
+          for required in DEPLOY_HOST DEPLOY_USER PUBLIC_URL DEPLOY_SSH_KEY DEPLOY_SSH_KNOWN_HOSTS TF_AUTH_BOOTSTRAP_EMAIL TF_AUTH_BOOTSTRAP_PASSWORD; do
             if [ -z "${!required:-}" ]; then
               echo "Missing required environment configuration: ${required}"
               exit 1
             fi
           done
 
-          TF_AUTH_BOOTSTRAP_ROLES="${TF_AUTH_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}"
-
           PUBLIC_HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
-          OWNER="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
-          BACKEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-backend-internal:${RELEASE_SHA}"
-          FRONTEND_IMAGE="ghcr.io/${OWNER}/terrafusion-os-frontend-internal:${RELEASE_SHA}"
           DEPLOYED_AT="$(date -u +%FT%TZ)"
           case "$TARGET_ENV" in
             staging) ASPNETCORE_ENV_LABEL="Staging" ;;
@@ -127,43 +184,35 @@ jobs:
             printf 'APP_ROOT=%s\n' "$APP_ROOT"
             printf 'PUBLIC_URL=%s\n' "$PUBLIC_URL"
             printf 'PUBLIC_HOST=%s\n' "$PUBLIC_HOST"
-            printf 'OWNER=%s\n' "$OWNER"
-            printf 'BACKEND_IMAGE=%s\n' "$BACKEND_IMAGE"
-            printf 'FRONTEND_IMAGE=%s\n' "$FRONTEND_IMAGE"
             printf 'DEPLOYED_AT=%s\n' "$DEPLOYED_AT"
             printf 'ASPNETCORE_ENV_LABEL=%s\n' "$ASPNETCORE_ENV_LABEL"
-            printf 'TF_AUTH_BOOTSTRAP_ROLES=%s\n' "$TF_AUTH_BOOTSTRAP_ROLES"
           } >> "$GITHUB_ENV"
 
-      - name: Configure SSH key
+      - name: Configure pinned SSH host trust
         shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
         run: |
-          set -euo pipefail
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
 
-          # Keyscan with retries — GitHub Actions runners sometimes need
-          # longer to reach Hostinger VPS (NAT, firewalls, transient DNS).
-          for i in 1 2 3; do
-            ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
-            echo "ssh-keyscan attempt $i failed, retrying in 5s..."
-            sleep 5
-          done
+          if ! ssh-keygen -F "[$DEPLOY_HOST]:$DEPLOY_PORT" -f ~/.ssh/known_hosts >/dev/null &&
+             ! ssh-keygen -F "$DEPLOY_HOST" -f ~/.ssh/known_hosts >/dev/null; then
+            echo "Protected DEPLOY_SSH_KNOWN_HOSTS does not contain the deployment host"
+            exit 1
+          fi
 
-          # Global SSH options: faster timeout + keepalive for Hostinger VPS
           cat > ~/.ssh/config <<SSHCFG
           Host $DEPLOY_HOST
             ConnectTimeout 30
             ServerAliveInterval 15
             ServerAliveCountMax 3
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
           SSHCFG
-
-          # Fallback: if keyscan still failed, accept new keys on first connect
-          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
-            echo "WARNING: ssh-keyscan returned no keys; using StrictHostKeyChecking=accept-new"
-            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
-          fi
           chmod 600 ~/.ssh/config
 
       - name: Preflight - public DNS resolution
@@ -244,14 +293,7 @@ jobs:
           echo "ERROR: SSH preflight failed after 3 attempts"
           exit 1
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Reverify immutable candidate before image builds
+      - name: Reverify immutable candidate before packaging
         shell: bash
         run: |
           set -euo pipefail
@@ -261,66 +303,11 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=all)"
 
-      - name: Build and push backend image
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker build --pull --target runtime \
-            --build-arg GIT_SHA="$RELEASE_SHA" \
-            --label "org.opencontainers.image.revision=$CHECKED_OUT_SHA" \
-            --label "org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA" \
-            -f backend/Dockerfile -t "$BACKEND_IMAGE" backend
-          docker push "$BACKEND_IMAGE"
-          BACKEND_IMAGE_DIGEST="$(docker image inspect --format '{{index .RepoDigests 0}}' "$BACKEND_IMAGE")"
-          BACKEND_IMAGE_DIGEST="${BACKEND_IMAGE_DIGEST##*@}"
-          [[ "$BACKEND_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          BACKEND_IMAGE_REF="${BACKEND_IMAGE}@${BACKEND_IMAGE_DIGEST}"
-          {
-            printf 'BACKEND_IMAGE_DIGEST=%s\n' "$BACKEND_IMAGE_DIGEST"
-            printf 'BACKEND_IMAGE_REF=%s\n' "$BACKEND_IMAGE_REF"
-          } >> "$GITHUB_ENV"
-
-      - name: Reclaim runner disk before frontend image
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Docker disk usage before cleanup:"
-          docker system df || true
-
-          # The backend image is already pushed to GHCR. Hosted runners can run
-          # out of disk when the frontend install/build starts with backend
-          # layers and BuildKit cache still resident.
-          docker image rm "$BACKEND_IMAGE" || true
-          docker builder prune -af || true
-          docker image prune -af || true
-
-          echo "Docker disk usage after cleanup:"
-          docker system df || true
-
-      - name: Build and push frontend image
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker build --pull --target production \
-            --build-arg VITE_BUILD_SHA="$RELEASE_SHA" \
-            --label "org.opencontainers.image.revision=$CHECKED_OUT_SHA" \
-            --label "org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA" \
-            -f frontend/Dockerfile -t "$FRONTEND_IMAGE" .
-          docker push "$FRONTEND_IMAGE"
-          FRONTEND_IMAGE_DIGEST="$(docker image inspect --format '{{index .RepoDigests 0}}' "$FRONTEND_IMAGE")"
-          FRONTEND_IMAGE_DIGEST="${FRONTEND_IMAGE_DIGEST##*@}"
-          [[ "$FRONTEND_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          FRONTEND_IMAGE_REF="${FRONTEND_IMAGE}@${FRONTEND_IMAGE_DIGEST}"
-          {
-            printf 'FRONTEND_IMAGE_DIGEST=%s\n' "$FRONTEND_IMAGE_DIGEST"
-            printf 'FRONTEND_IMAGE_REF=%s\n' "$FRONTEND_IMAGE_REF"
-          } >> "$GITHUB_ENV"
-
       - name: Prepare runtime bundle
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf runtime edge-proxy evidence curl_headers.txt
+          rm -rf runtime evidence curl_headers.txt
           mkdir -p runtime/docs/spec-lock runtime/config
           cp ops/proxy/Caddyfile runtime/Caddyfile
           cp ops/prod/runtime-compose.template.yml runtime/runtime-compose.yml
@@ -337,10 +324,6 @@ jobs:
             sed -i '/- \.\/docs\/spec-lock:\/app\/docs\/spec-lock:ro/a\      - ./config/appsettings.Staging.json:/app/appsettings.Staging.json:ro' runtime/runtime-compose.yml
           fi
 
-          # Edge proxy bundle (shared across environments)
-          mkdir -p edge-proxy
-          cp ops/edge-proxy/Caddyfile edge-proxy/Caddyfile
-          cp ops/edge-proxy/docker-compose.yml edge-proxy/docker-compose.yml
 
           cat > runtime/release.env <<EOF
           COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
@@ -351,100 +334,145 @@ jobs:
           TF_PUBLIC_HOST=${PUBLIC_HOST}
           TF_BACKEND_IMAGE=${BACKEND_IMAGE_REF}
           TF_FRONTEND_IMAGE=${FRONTEND_IMAGE_REF}
-          TERRAFUSION_BOOTSTRAP_EMAIL=${TF_AUTH_BOOTSTRAP_EMAIL}
-          TERRAFUSION_BOOTSTRAP_PASSWORD=${TF_AUTH_BOOTSTRAP_PASSWORD}
-          TERRAFUSION_BOOTSTRAP_ROLES=${TF_AUTH_BOOTSTRAP_ROLES}
           EOF
 
-      - name: Preserve exact current release bundle for rollback
+      - name: Preserve exact current artifact bundle for rollback
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' BACKEND_IMAGE_REF='$BACKEND_IMAGE_REF' FRONTEND_IMAGE_REF='$FRONTEND_IMAGE_REF' RUN_ID='$GITHUB_RUN_ID' bash -s" <<'SSH'
           set -euo pipefail
+
+          validate_artifact_env() {
+            local env_file="$1"
+            local expected_sha="$2"
+            local backend frontend
+            test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$env_file")" = "$expected_sha"
+            backend="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$env_file")"
+            frontend="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$env_file")"
+            [[ "$backend" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
+            [[ "$frontend" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+            ! grep -qE '^(TERRAFUSION_BOOTSTRAP_|.*PASSWORD|.*TOKEN|.*SECRET)' "$env_file"
+          }
+
+          resolve_running_ref() {
+            local service="$1"
+            local configured_ref="$2"
+            if [[ "$configured_ref" =~ @sha256:[0-9a-f]{64}$ ]]; then
+              printf '%s\n' "$configured_ref"
+              return
+            fi
+            local image_base container_id image_id resolved
+            image_base="${configured_ref%:*}"
+            container_id="$(docker compose -f "$APP_ROOT/runtime-compose.yml" --env-file "$APP_ROOT/release.env" ps -q "$service")"
+            test -n "$container_id"
+            image_id="$(docker inspect --format '{{.Image}}' "$container_id")"
+            resolved="$(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image_id" | grep -F "${image_base}@sha256:" | grep -E '@sha256:[0-9a-f]{64}$' | head -n1)"
+            test -n "$resolved"
+            printf '%s\n' "$resolved"
+          }
+
+          validate_snapshot() {
+            local snapshot="$1"
+            local sha="$2"
+            for file in release.sha artifact.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              test -f "$snapshot/$file"
+            done
+            test -d "$snapshot/docs/spec-lock"
+            test -d "$snapshot/config"
+            test "$(cat "$snapshot/release.sha")" = "$sha"
+            validate_artifact_env "$snapshot/artifact.env" "$sha"
+          }
+
+          TARGET_SNAPSHOT="$APP_ROOT/releases/$RELEASE_SHA"
+          if [ -e "$TARGET_SNAPSHOT" ]; then
+            validate_snapshot "$TARGET_SNAPSHOT" "$RELEASE_SHA"
+            test "$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$TARGET_SNAPSHOT/artifact.env")" = "$BACKEND_IMAGE_REF"
+            test "$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$TARGET_SNAPSHOT/artifact.env")" = "$FRONTEND_IMAGE_REF"
+          fi
+
           if [ ! -f "$APP_ROOT/current.sha" ]; then
             exit 0
           fi
-
           CURRENT_SHA="$(cat "$APP_ROOT/current.sha")"
           [[ "$CURRENT_SHA" =~ ^[0-9a-f]{40}$ ]]
           SNAPSHOT_ROOT="$APP_ROOT/releases/$CURRENT_SHA"
           if [ -e "$SNAPSHOT_ROOT" ]; then
-            test -d "$SNAPSHOT_ROOT"
-            for file in release.sha release.env runtime-compose.yml Caddyfile sovereign.yaml; do
-              test -f "$SNAPSHOT_ROOT/$file"
-            done
-            test -d "$SNAPSHOT_ROOT/docs/spec-lock"
-            test -d "$SNAPSHOT_ROOT/config"
-            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
-              cmp -s "$APP_ROOT/$file" "$SNAPSHOT_ROOT/$file"
-            done
-            diff -qr "$APP_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/docs/spec-lock" >/dev/null
-            if [ -d "$APP_ROOT/config" ]; then
-              diff -qr "$APP_ROOT/config" "$SNAPSHOT_ROOT/config" >/dev/null
-            fi
-            test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$CURRENT_SHA"
-            test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$CURRENT_SHA"
-            BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
-            FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")"
-            [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
-            [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+            validate_snapshot "$SNAPSHOT_ROOT" "$CURRENT_SHA"
             exit 0
           fi
 
           for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
             test -f "$APP_ROOT/$file"
           done
-          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$APP_ROOT/release.env")" = "$CURRENT_SHA"
-          BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$APP_ROOT/release.env")"
-          FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$APP_ROOT/release.env")"
-          [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
-          [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
-          install -d -m 0700 "$SNAPSHOT_ROOT"
-          printf '%s\n' "$CURRENT_SHA" > "$SNAPSHOT_ROOT/release.sha"
-          chmod 0600 "$SNAPSHOT_ROOT/release.sha"
-          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
-            install -m 0600 "$APP_ROOT/$file" "$SNAPSHOT_ROOT/$file"
-          done
-          install -d -m 0700 "$SNAPSHOT_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/config"
           test -d "$APP_ROOT/docs/spec-lock"
-          cp -a "$APP_ROOT/docs/spec-lock/." "$SNAPSHOT_ROOT/docs/spec-lock/"
+          CURRENT_BACKEND="$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$APP_ROOT/release.env")"
+          CURRENT_FRONTEND="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$APP_ROOT/release.env")"
+          RESOLVED_BACKEND="$(resolve_running_ref backend "$CURRENT_BACKEND")"
+          RESOLVED_FRONTEND="$(resolve_running_ref frontend "$CURRENT_FRONTEND")"
+          if [ "$CURRENT_SHA" = "$RELEASE_SHA" ]; then
+            test "$RESOLVED_BACKEND" = "$BACKEND_IMAGE_REF"
+            test "$RESOLVED_FRONTEND" = "$FRONTEND_IMAGE_REF"
+          fi
+
+          INCOMING="$APP_ROOT/releases/.incoming-$CURRENT_SHA-$RUN_ID"
+          test ! -e "$INCOMING"
+          install -d -m 0700 "$INCOMING/docs/spec-lock" "$INCOMING/config"
+          printf '%s\n' "$CURRENT_SHA" > "$INCOMING/release.sha"
+          awk -F= '/^(COMPOSE_PROJECT_NAME|TF_RELEASE_SHA|TF_RELEASE_ENV|TF_RELEASE_DEPLOYED_AT|TF_PUBLIC_URL|TF_PUBLIC_HOST)=/ { print }' \
+            "$APP_ROOT/release.env" > "$INCOMING/artifact.env"
+          printf 'TF_BACKEND_IMAGE=%s\nTF_FRONTEND_IMAGE=%s\n' "$RESOLVED_BACKEND" "$RESOLVED_FRONTEND" >> "$INCOMING/artifact.env"
+          for file in runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$APP_ROOT/$file" "$INCOMING/$file"
+          done
+          cp -a "$APP_ROOT/docs/spec-lock/." "$INCOMING/docs/spec-lock/"
           if [ -d "$APP_ROOT/config" ]; then
-            cp -a "$APP_ROOT/config/." "$SNAPSHOT_ROOT/config/"
+            cp -a "$APP_ROOT/config/." "$INCOMING/config/"
           fi
+          chmod 0600 "$INCOMING/release.sha" "$INCOMING/artifact.env"
+          validate_snapshot "$INCOMING" "$CURRENT_SHA"
+          mv "$INCOMING" "$SNAPSHOT_ROOT"
           SSH
 
-      - name: Upload runtime bundle to VPS
+      - name: Stage and validate exact runtime bundle
         shell: bash
         run: |
           set -euo pipefail
-          scp -P "$DEPLOY_PORT" -r runtime/* "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/"
+          RUN_TOKEN="$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          INCOMING="$APP_ROOT/.release-incoming-$RUN_TOKEN"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "test ! -e '$INCOMING' && install -d -m 0700 '$INCOMING'"
+          scp -P "$DEPLOY_PORT" -r runtime/. "$DEPLOY_USER@$DEPLOY_HOST:$INCOMING/"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' INCOMING='$INCOMING' bash -s" <<'SSH'
+          set -euo pipefail
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$INCOMING/$file"
+          done
+          test -d "$INCOMING/docs/spec-lock"
+          test -d "$INCOMING/config"
+          ln -s "$APP_ROOT/app.env" "$INCOMING/app.env"
+          trap 'rm -f "$INCOMING/app.env"' EXIT
+          docker compose -f "$INCOMING/runtime-compose.yml" --env-file "$INCOMING/release.env" config >/dev/null
+          SSH
+          {
+            echo "RUNTIME_MUTATION_ARMED=true"
+            echo "RUNTIME_RUN_TOKEN=$RUN_TOKEN"
+          } >> "$GITHUB_ENV"
 
-      - name: Bootstrap shared edge proxy
+      - name: Verify shared edge proxy is already governed
         shell: bash
         run: |
           set -euo pipefail
-          # Ensure shared Docker network exists
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "docker network inspect terrafusion-edge >/dev/null 2>&1 || docker network create terrafusion-edge"
-
-          # Stop the current per-env stack gracefully so the edge proxy can
-          # claim host ports 80/443.  On the very first edge-proxy deploy the
-          # old stack still has host port bindings; after that this is a no-op
-          # because per-env stacks no longer bind host ports.
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
           set -euo pipefail
-          cd "$APP_ROOT"
-          if [ -f runtime-compose.yml ] && [ -f release.env ]; then
-            docker compose -f runtime-compose.yml --env-file release.env down --timeout 30 || true
-          fi
+          test -f /opt/terrafusion/edge-proxy/docker-compose.yml
+          test -f /opt/terrafusion/edge-proxy/Caddyfile
+          docker network inspect terrafusion-edge >/dev/null 2>&1 || docker network create terrafusion-edge
+          cd /opt/terrafusion/edge-proxy
+          docker compose up -d
           SSH
-
-          # Deploy/update edge proxy (owns host 80/443, routes by hostname)
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p /opt/terrafusion/edge-proxy"
-          scp -P "$DEPLOY_PORT" edge-proxy/* "$DEPLOY_USER@$DEPLOY_HOST:/opt/terrafusion/edge-proxy/"
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd /opt/terrafusion/edge-proxy && docker compose up -d && docker compose exec -T edge caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || true"
 
       - name: Preflight - GHCR pull on VPS
         shell: bash
@@ -520,7 +548,6 @@ jobs:
           # cache, dangling layers, and unused images older than 24h. It does
           # not prune Docker volumes or application data.
           docker container prune -f || true
-          docker builder prune -af || true
           docker image prune -f || true
           docker image prune -af --filter "until=24h" || true
 
@@ -534,32 +561,106 @@ jobs:
           docker pull "$FRONTEND_IMAGE_REF"
           SSH
 
-      - name: Deploy runtime bundle on VPS
+      - name: Deploy staged runtime bundle transactionally
+        id: deploy-runtime
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' bash -s" <<'SSH'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' RUN_TOKEN='$RUNTIME_RUN_TOKEN' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
-          install -d data docs/spec-lock
-          printf '%s\n' "$RELEASE_SHA" > requested.sha
-          if [ -f current.sha ]; then
-            cp current.sha previous.sha
+          INCOMING="$APP_ROOT/.release-incoming-$RUN_TOKEN"
+          BACKUP="$APP_ROOT/.release-backup-$RUN_TOKEN"
+          test -d "$INCOMING"
+          test ! -e "$BACKUP"
+          install -d -m 0700 "$BACKUP"
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$file"
+            install -m 0600 "$file" "$BACKUP/$file"
+          done
+          test -d docs/spec-lock
+          test -d config
+          cp -a docs/spec-lock "$BACKUP/spec-lock"
+          cp -a config "$BACKUP/config"
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            test -f "$BACKUP/$file"
+          done
+          test -d "$BACKUP/spec-lock"
+          test -d "$BACKUP/config"
+          if [ -f requested.sha ]; then
+            install -m 0600 requested.sha "$BACKUP/requested.sha"
+          else
+            touch "$BACKUP/requested.absent"
           fi
+          test -f "$BACKUP/requested.sha" || test -f "$BACKUP/requested.absent"
+          touch "$BACKUP/backup.ready"
 
+          restore_previous() {
+            trap - ERR
+            set +e
+            failed=0
+            rm -rf docs/spec-lock config || failed=1
+            cp -a "$BACKUP/spec-lock" docs/spec-lock || failed=1
+            cp -a "$BACKUP/config" config || failed=1
+            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+              install -m 0600 "$BACKUP/$file" "$file" || failed=1
+            done
+            if [ -f "$BACKUP/requested.sha" ]; then
+              install -m 0600 "$BACKUP/requested.sha" requested.sha || failed=1
+            elif [ -f "$BACKUP/requested.absent" ]; then
+              rm -f requested.sha || failed=1
+            else
+              failed=1
+            fi
+            docker compose -f runtime-compose.yml --env-file release.env config >/dev/null || failed=1
+            docker compose -f runtime-compose.yml --env-file release.env pull || failed=1
+            docker compose -f runtime-compose.yml --env-file release.env up -d || failed=1
+            if [ "$failed" -ne 0 ]; then
+              echo "Automatic restore failed; preserving $BACKUP for governed recovery" >&2
+              exit 1
+            fi
+            rm -rf "$INCOMING" "$BACKUP"
+            exit 1
+          }
+          trap restore_previous ERR
+
+          rm -rf docs/spec-lock config
+          mv "$INCOMING/docs/spec-lock" docs/spec-lock
+          mv "$INCOMING/config" config
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$INCOMING/$file" "$file"
+          done
+          printf '%s\n' "$RELEASE_SHA" > requested.sha
           docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
+          trap - ERR
           SSH
 
       - name: Provision DB-backed operator account
         shell: bash
+        env:
+          TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
+          TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
+          TF_AUTH_BOOTSTRAP_ROLES: ${{ secrets.TF_AUTH_BOOTSTRAP_ROLES }}
         run: |
           set -euo pipefail
-          PROVISION_OUTPUT="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'SSH'
+          BOOTSTRAP_FILE="$RUNNER_TEMP/terrafusion-bootstrap-$GITHUB_RUN_ID.env"
+          REMOTE_BOOTSTRAP="$APP_ROOT/.bootstrap-$GITHUB_RUN_ID.env"
+          umask 077
+          TF_AUTH_BOOTSTRAP_ROLES="${TF_AUTH_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}"
+          printf 'TERRAFUSION_BOOTSTRAP_EMAIL=%s\nTERRAFUSION_BOOTSTRAP_PASSWORD=%s\nTERRAFUSION_BOOTSTRAP_ROLES=%s\n' \
+            "$TF_AUTH_BOOTSTRAP_EMAIL" "$TF_AUTH_BOOTSTRAP_PASSWORD" "$TF_AUTH_BOOTSTRAP_ROLES" > "$BOOTSTRAP_FILE"
+          trap 'rm -f "$BOOTSTRAP_FILE"' EXIT
+          scp -P "$DEPLOY_PORT" "$BOOTSTRAP_FILE" "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BOOTSTRAP"
+          PROVISION_OUTPUT="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' REMOTE_BOOTSTRAP='$REMOTE_BOOTSTRAP' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
+          trap 'rm -f "$REMOTE_BOOTSTRAP"' EXIT
+          chmod 0600 "$REMOTE_BOOTSTRAP"
           docker compose -f runtime-compose.yml --env-file release.env run --rm --no-deps \
+            --env-from-file "$REMOTE_BOOTSTRAP" \
             --entrypoint sh \
             backend \
             -c 'set -eu
@@ -587,6 +688,14 @@ jobs:
           }
           console.log(`DB-backed operator account ${receipt.result}; password hash stored; county bound.`);
           NODE
+
+      - name: Remove ephemeral bootstrap material
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/terrafusion-bootstrap-$GITHUB_RUN_ID.env"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "rm -f '$APP_ROOT/.bootstrap-$GITHUB_RUN_ID.env'" || true
 
       - name: Verify public health and release header
         shell: bash
@@ -649,6 +758,9 @@ jobs:
 
       - name: Provisioned auth contract smoke
         shell: bash
+        env:
+          TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
+          TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
         run: |
           set -euo pipefail
           echo "=== Provisioned auth contract smoke ==="
@@ -736,48 +848,90 @@ jobs:
           console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
           NODE
 
-      - name: Finalize current SHA on VPS
+      - name: Finalize immutable artifact snapshot and current SHA
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' bash -s" <<'SSH'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' BACKEND_IMAGE_REF='$BACKEND_IMAGE_REF' FRONTEND_IMAGE_REF='$FRONTEND_IMAGE_REF' RUN_ID='$GITHUB_RUN_ID' RUN_TOKEN='$RUNTIME_RUN_TOKEN' bash -s" <<'SSH'
           set -euo pipefail
           cd "$APP_ROOT"
           test "$(cat requested.sha)" = "$RELEASE_SHA"
           test "$(sed -n 's/^TF_RELEASE_SHA=//p' release.env)" = "$RELEASE_SHA"
-          BACKEND_IMAGE_REF="$(sed -n 's/^TF_BACKEND_IMAGE=//p' release.env)"
-          FRONTEND_IMAGE_REF="$(sed -n 's/^TF_FRONTEND_IMAGE=//p' release.env)"
-          [[ "$BACKEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-backend-internal@sha256:[0-9a-f]{64}$ ]]
-          [[ "$FRONTEND_IMAGE_REF" =~ ^ghcr\.io/[a-z0-9_.-]+/terrafusion-os-frontend-internal@sha256:[0-9a-f]{64}$ ]]
+          test "$(sed -n 's/^TF_BACKEND_IMAGE=//p' release.env)" = "$BACKEND_IMAGE_REF"
+          test "$(sed -n 's/^TF_FRONTEND_IMAGE=//p' release.env)" = "$FRONTEND_IMAGE_REF"
+          ! grep -qE '^(TERRAFUSION_BOOTSTRAP_|.*PASSWORD|.*TOKEN|.*SECRET)' release.env
 
           SNAPSHOT_ROOT="$APP_ROOT/releases/$RELEASE_SHA"
           if [ ! -e "$SNAPSHOT_ROOT" ]; then
-            install -d -m 0700 "$SNAPSHOT_ROOT/docs/spec-lock" "$SNAPSHOT_ROOT/config"
-            printf '%s\n' "$RELEASE_SHA" > "$SNAPSHOT_ROOT/release.sha"
-            chmod 0600 "$SNAPSHOT_ROOT/release.sha"
-            for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
-              install -m 0600 "$file" "$SNAPSHOT_ROOT/$file"
+            INCOMING="$APP_ROOT/releases/.incoming-$RELEASE_SHA-$RUN_ID"
+            test ! -e "$INCOMING"
+            install -d -m 0700 "$INCOMING/docs/spec-lock" "$INCOMING/config"
+            printf '%s\n' "$RELEASE_SHA" > "$INCOMING/release.sha"
+            install -m 0600 release.env "$INCOMING/artifact.env"
+            for file in runtime-compose.yml Caddyfile sovereign.yaml; do
+              install -m 0600 "$file" "$INCOMING/$file"
             done
-            cp -a docs/spec-lock/. "$SNAPSHOT_ROOT/docs/spec-lock/"
-            cp -a config/. "$SNAPSHOT_ROOT/config/"
+            cp -a docs/spec-lock/. "$INCOMING/docs/spec-lock/"
+            cp -a config/. "$INCOMING/config/"
+            chmod 0600 "$INCOMING/release.sha"
+            mv "$INCOMING" "$SNAPSHOT_ROOT"
           fi
-          for file in release.sha release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+          for file in release.sha artifact.env runtime-compose.yml Caddyfile sovereign.yaml; do
             test -f "$SNAPSHOT_ROOT/$file"
           done
-          test -d "$SNAPSHOT_ROOT/docs/spec-lock"
-          test -d "$SNAPSHOT_ROOT/config"
-          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
-            cmp -s "$file" "$SNAPSHOT_ROOT/$file"
-          done
-          diff -qr docs/spec-lock "$SNAPSHOT_ROOT/docs/spec-lock" >/dev/null
-          diff -qr config "$SNAPSHOT_ROOT/config" >/dev/null
           test "$(cat "$SNAPSHOT_ROOT/release.sha")" = "$RELEASE_SHA"
-          test "$(sed -n 's/^TF_RELEASE_SHA=//p' "$SNAPSHOT_ROOT/release.env")" = "$RELEASE_SHA"
-          test "$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")" = "$BACKEND_IMAGE_REF"
-          test "$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/release.env")" = "$FRONTEND_IMAGE_REF"
+          test "$(sed -n 's/^TF_BACKEND_IMAGE=//p' "$SNAPSHOT_ROOT/artifact.env")" = "$BACKEND_IMAGE_REF"
+          test "$(sed -n 's/^TF_FRONTEND_IMAGE=//p' "$SNAPSHOT_ROOT/artifact.env")" = "$FRONTEND_IMAGE_REF"
           printf '%s\n' "$RELEASE_SHA" > current.sha
+          rm -rf "$APP_ROOT/.release-incoming-$RUN_TOKEN" "$APP_ROOT/.release-backup-$RUN_TOKEN"
           SSH
 
+      - name: Restore prior runtime if deployment did not commit
+        if: failure() && env.RUNTIME_MUTATION_ARMED == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' RELEASE_SHA='$RELEASE_SHA' RUN_TOKEN='$RUNTIME_RUN_TOKEN' bash -s" <<'SSH'
+          set -euo pipefail
+          cd "$APP_ROOT"
+          if [ -f current.sha ] && [ "$(cat current.sha)" = "$RELEASE_SHA" ]; then
+            exit 0
+          fi
+          BACKUP="$APP_ROOT/.release-backup-$RUN_TOKEN"
+          INCOMING="$APP_ROOT/.release-incoming-$RUN_TOKEN"
+          if [ ! -e "$BACKUP" ]; then
+            exit 0
+          fi
+          if [ ! -f "$BACKUP/backup.ready" ]; then
+            echo "Incomplete release backup retained at $BACKUP; live state was not mutated" >&2
+            exit 1
+          fi
+          set +e
+          failed=0
+          rm -rf docs/spec-lock config || failed=1
+          cp -a "$BACKUP/spec-lock" docs/spec-lock || failed=1
+          cp -a "$BACKUP/config" config || failed=1
+          for file in release.env runtime-compose.yml Caddyfile sovereign.yaml; do
+            install -m 0600 "$BACKUP/$file" "$file" || failed=1
+          done
+          if [ -f "$BACKUP/requested.sha" ]; then
+            install -m 0600 "$BACKUP/requested.sha" requested.sha || failed=1
+          elif [ -f "$BACKUP/requested.absent" ]; then
+            rm -f requested.sha || failed=1
+          else
+            failed=1
+          fi
+          docker compose -f runtime-compose.yml --env-file release.env config >/dev/null || failed=1
+          docker compose -f runtime-compose.yml --env-file release.env pull || failed=1
+          docker compose -f runtime-compose.yml --env-file release.env up -d || failed=1
+          if [ "$failed" -ne 0 ]; then
+            echo "Release recovery failed; preserving $BACKUP for governed recovery" >&2
+            exit 1
+          fi
+          rm -rf "$INCOMING" "$BACKUP"
+          SSH
       - name: Verify requested/current/header invariant
         shell: bash
         run: |
@@ -817,6 +971,8 @@ jobs:
           checked_out_sha=${CHECKED_OUT_SHA}
           candidate_tree_sha=${CANDIDATE_TREE_SHA}
           trusted_main_sha=${TRUSTED_MAIN_SHA}
+          compliance_run_id=${COMPLIANCE_RUN_ID}
+          compliance_run_url=${COMPLIANCE_RUN_URL}
           requested_sha=${REQUESTED_SHA}
           current_sha=${CURRENT_SHA}
           header_sha=${HEADER_SHA}
@@ -841,6 +997,8 @@ jobs:
             "checkedOutSha": "${CHECKED_OUT_SHA}",
             "candidateTreeSha": "${CANDIDATE_TREE_SHA}",
             "trustedMainSha": "${TRUSTED_MAIN_SHA}",
+            "complianceRunId": "${COMPLIANCE_RUN_ID}",
+            "complianceRunUrl": "${COMPLIANCE_RUN_URL}",
             "requestedSha": "${REQUESTED_SHA}",
             "currentSha": "${CURRENT_SHA}",
             "headerSha": "${HEADER_SHA}",
@@ -883,6 +1041,14 @@ jobs:
           }
           if (!shaPattern.test(evidence.trustedMainSha)) {
             throw new Error('trustedMainSha is not a full git SHA');
+          }
+          if (!/^[0-9]+$/.test(evidence.complianceRunId)) {
+            throw new Error('complianceRunId is not numeric');
+          }
+          const expectedComplianceUrl =
+            `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${evidence.complianceRunId}`;
+          if (evidence.complianceRunUrl !== expectedComplianceUrl) {
+            throw new Error('complianceRunUrl is not bound to complianceRunId');
           }
           for (const [imageField, digestField, refField] of [
             ['backendImage', 'backendImageDigest', 'backendImageRef'],
