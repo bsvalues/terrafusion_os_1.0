@@ -1,6 +1,6 @@
 # WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption
 
-**Status:** Active / R3 bounded implementation
+**Status:** Complete / R3 bounded / authority consumed
 **Program:** Five-Suite Federated Repository Buildout
 **Goal:** `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES`
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
@@ -48,3 +48,7 @@ credentials, secrets, workflows, deployment, production, publication, source ret
 ## Terminal Condition
 
 `DOSSIER_COUNTY_SCOPED_CANONICAL_EVIDENCE_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_CUSTODY_MUTATION_OR_LIVE_DATA`
+
+## Terminal Closeout
+
+PR #1427 delivered exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` and merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. All 19 recorded workflow runs succeeded, all 10 substantive review threads are resolved, and current main `ffd2fa35f5152de2b95e7f63b220050d18193d7a` contains the product merge. The terminal condition is satisfied through authenticated same-county frozen-contract rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest Workbench states, and disposable synthetic proof. No write, custody mutation, frozen-contract change, live data, deployment, or cutover occurred. The bounded authority is completed and consumed; no successor is inferred.

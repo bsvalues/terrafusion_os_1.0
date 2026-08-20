@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-009D",
-      "status": "active",
+      "status": "completed",
       "authority_class": "R3-bounded-dossier-workbench-canonical-evidence-read-adoption",
       "effective_base_sha": "6622ca14e93d6a853c9629308e37a42620c0e08f",
       "scope_source": "Owner approval recorded directly on Issue #1426 on 2026-08-07. The authorization covers Stages 0 through 4, exact allowlisted product, test, governance, and evidence files, disposable synthetic proof, in-scope remediation, eligible Mode B merge, post-merge verification, and one terminal closeout without per-stage owner relay.",
@@ -49,11 +49,17 @@
         "missing or invalid authenticated county context does not fail closed, foreign-only records disclose existence, canonical and synthesized evidence are mixed, stale navigation renders a prior parcel, or disposable proof leaves residue",
         "required-check bypass, force push, unresolved substantive review, exact-head assurance failure, destructive cleanup, or conflicting authority"
       ],
-      "decision_basis": "WO-SR-009C completed and portfolio reconciliation selected the frozen Dossier evidence registry read as the highest-value bounded successor. The existing adapter is pure and fail-closed, and the approved route must derive county strictly from authenticated context without the controller's Development-only Benton fallback.",
+      "decision_basis": "WO-SR-009C completed and portfolio reconciliation selected the frozen Dossier evidence registry read as the highest-value bounded successor. The existing adapter is pure and fail-closed, and the approved route must derive county strictly from authenticated context without the controller's Development-only Benton fallback. PR #1427 delivered exact assured head 85818a749d4268f84cf8638d991d9cef657a0d19 and merged as c7f2d78619a9eb19186c2c724876fb4d11c81b00 after all recorded required checks passed and all ten substantive review threads were resolved. Current main contains the merge; this governance-only closeout consumes the authority.",
       "current_execution": {
-        "state": "ACTIVE",
+        "state": "COMPLETED_AND_CONSUMED",
         "issue": 1426,
-        "owner_action_required": false
+        "owner_action_required": false,
+        "implementation_pr": 1427,
+        "implementation_head": "85818a749d4268f84cf8638d991d9cef657a0d19",
+        "implementation_merge": "c7f2d78619a9eb19186c2c724876fb4d11c81b00",
+        "post_merge_main": "ffd2fa35f5152de2b95e7f63b220050d18193d7a",
+        "terminal_proof": "Authenticated same-county frozen Dossier evidence read, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest Workbench states, and no write, custody mutation, or live data.",
+        "completion_evidence": "docs/brain/workorders/evidence/WO-SR-009D-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-ADOPTION.md"
       }
     },
     {
