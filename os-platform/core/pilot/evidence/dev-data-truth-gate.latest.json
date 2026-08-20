@@ -1766,13 +1766,10 @@
       "verified": "partial",
       "notes": "Development API points at postgres DefaultConnection and keeps BentonCountyLegacy as a sync bridge. This proves configuration posture, not source truth.",
       "evidence": {
-        "defaultConnection": "Host=localhost;Database=terrafusion;Username=postgres;Password=[REDACTED];Port=5432",
+        "defaultConnection": "Host=localhost;Database=terrafusion;Username=postgres;Password=[REDACTED]",
         "defaultConnectionKind": "postgres",
         "bentonLegacy": "Data Source=../../county-data/wa-benton/county.db",
-        "localOverrides": [
-          "PacsConnection",
-          "PacsSalesConnection"
-        ],
+        "localOverrides": ["PacsConnection", "PacsSalesConnection"],
         "defaultCounty": {
           "Id": "19190019-1919-1919-1919-191919191919",
           "Code": "benton"
@@ -3448,9 +3445,7 @@
     "status": "sanitized",
     "replacement": "[REDACTED]",
     "originalValuesRemoved": true,
-    "categories": [
-      "sensitive-text"
-    ],
+    "categories": ["sensitive-text"],
     "occurrenceCount": 1
   }
 }

@@ -5,7 +5,7 @@ const AUTHORIZATION_HEADER_PATTERN = /(\bAuthorization\s*:\s*)(?:Bearer|Basic)\s
 const COOKIE_HEADER_PATTERN = /(\b(?:Set-Cookie|Cookie)\s*:\s*)[^\r\n]+/gi;
 const BEARER_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/gi;
 const SENSITIVE_ASSIGNMENT_PATTERN =
-  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b["']?\s*[:=]\s*)("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\r\n,;}]+)/gi;
+  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b["']?\s*[:=]\s*)("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\r\n]+)/gi;
 
 const SENSITIVE_KEYS = new Set([
   "token",

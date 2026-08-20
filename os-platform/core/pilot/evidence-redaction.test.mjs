@@ -55,12 +55,21 @@ test("assignment redaction consumes complete quoted and whitespace-bearing value
   const input = [
     'password="correct horse battery staple"',
     "client_secret='alpha,beta;gamma'",
-    'token=unquoted value with spaces,next=safe',
+    'token=unquoted value with spaces',
+    'password=correct,horse;still-secret}',
     'password=[REDACTED]',
+    'next=safe',
   ].join('\n');
   const redacted = redactEvidenceText(input);
 
-  for (const exposed of ['correct horse', 'alpha,beta', 'gamma', 'unquoted value']) {
+  for (const exposed of [
+    'correct horse',
+    'alpha,beta',
+    'gamma',
+    'unquoted value',
+    'correct,horse',
+    'still-secret',
+  ]) {
     assert.ok(!redacted.includes(exposed));
   }
   assert.match(redacted, /next=safe/);
