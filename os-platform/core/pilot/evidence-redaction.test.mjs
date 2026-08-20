@@ -51,6 +51,29 @@ test("text redaction handles bearer and assignment representations", () => {
   assert.match(redacted, /\[REDACTED\]/);
 });
 
+test("assignment redaction consumes complete quoted and whitespace-bearing values", () => {
+  const input = [
+    'password="correct horse battery staple"',
+    "client_secret='alpha,beta;gamma'",
+    'token=unquoted value with spaces,next=safe',
+    'password=[REDACTED]',
+  ].join('\n');
+  const redacted = redactEvidenceText(input);
+
+  for (const exposed of ['correct horse', 'alpha,beta', 'gamma', 'unquoted value']) {
+    assert.ok(!redacted.includes(exposed));
+  }
+  assert.match(redacted, /next=safe/);
+  assert.match(redacted, /password=\[REDACTED\]/);
+  assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+});
+
+test("dev-data truth evidence uses the shared redaction boundary for JSON and Markdown", async () => {
+  const source = await fs.readFile(path.join(PILOT_DIRECTORY, "dev-data-truth-gate.mjs"), "utf8");
+  assert.match(source, /writeFileSync\(jsonOut, stringifyEvidence\(report\)\)/);
+  assert.match(source, /writeFileSync\(mdOut, buildMarkdown\(redactEvidence\(report\)\)\)/);
+});
+
 test("text redaction handles generic compact tokens, Basic auth, and cookies", () => {
   const alternateCompactToken =
     "IHsiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.c2lnbmF0dXJlLWZpeHR1cmU";

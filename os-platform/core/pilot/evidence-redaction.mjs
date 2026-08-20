@@ -5,7 +5,7 @@ const AUTHORIZATION_HEADER_PATTERN = /(\bAuthorization\s*:\s*)(?:Bearer|Basic)\s
 const COOKIE_HEADER_PATTERN = /(\b(?:Set-Cookie|Cookie)\s*:\s*)[^\r\n]+/gi;
 const BEARER_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/gi;
 const SENSITIVE_ASSIGNMENT_PATTERN =
-  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b["']?\s*[:=]\s*["']?)([^"',\s;}]+)/gi;
+  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b["']?\s*[:=]\s*)("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\r\n,;}]+)/gi;
 
 const SENSITIVE_KEYS = new Set([
   "token",
@@ -37,6 +37,17 @@ function isAlreadySafeSensitiveValue(value) {
     value === "" ||
     value === REDACTION_MARKER
   );
+}
+
+function isAlreadyRedactedAssignmentValue(value) {
+  const trimmed = String(value).trim();
+  const unquoted =
+    trimmed.length >= 2 &&
+    ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'")))
+      ? trimmed.slice(1, -1)
+      : trimmed;
+  return unquoted === REDACTION_MARKER;
 }
 
 function patternMatches(pattern, value) {
@@ -75,7 +86,9 @@ export function redactEvidenceText(value) {
     .replace(AUTHORIZATION_HEADER_PATTERN, `$1${REDACTION_MARKER}`)
     .replace(COOKIE_HEADER_PATTERN, `$1${REDACTION_MARKER}`)
     .replace(BEARER_PATTERN, `Bearer ${REDACTION_MARKER}`)
-    .replace(SENSITIVE_ASSIGNMENT_PATTERN, `$1${REDACTION_MARKER}`);
+    .replace(SENSITIVE_ASSIGNMENT_PATTERN, (match, prefix, assignmentValue) =>
+      isAlreadyRedactedAssignmentValue(assignmentValue) ? match : `${prefix}${REDACTION_MARKER}`
+    );
 }
 
 export function redactEvidence(value) {

@@ -2,6 +2,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { redactEvidence, stringifyEvidence } from './evidence-redaction.mjs';
+
 const repoRoot = process.cwd();
 const evidenceDir = path.join(repoRoot, 'os-platform/core/pilot/evidence');
 const jsonOut = path.join(evidenceDir, 'dev-data-truth-gate.latest.json');
@@ -875,8 +877,8 @@ function writeReport(study, studies, segmentSets, activeSet, health, segments, c
     checks,
     matrix,
   };
-  writeFileSync(jsonOut, `${JSON.stringify(report, null, 2)}\n`);
-  writeFileSync(mdOut, buildMarkdown(report));
+  writeFileSync(jsonOut, stringifyEvidence(report));
+  writeFileSync(mdOut, buildMarkdown(redactEvidence(report)));
   console.log(JSON.stringify({
     status: report.status,
     failures: report.failures.length,
