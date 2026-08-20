@@ -421,6 +421,130 @@ describe('D. CI release gate coverage', () => {
       );
     }
   });
+
+  it('D15: release-lane builds only from an immutable exact candidate checkout', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+
+    for (const forbidden of [
+      'Overlay deploy infrastructure from default branch',
+      'git fetch origin main',
+      'git show "origin/main:',
+      "sed -i 's|dotnet restore TerraFusion",
+      "sed -i 's|RUN npx vite build",
+    ]) {
+      assert.ok(
+        !content.includes(forbidden),
+        `Release lane must not mutate candidates via: ${forbidden}`
+      );
+    }
+
+    for (const required of [
+      'Verify immutable candidate checkout',
+      'CHECKED_OUT_SHA="$(git rev-parse HEAD)"',
+      'CANDIDATE_TREE_SHA="$(git rev-parse \'HEAD^{tree}\')"',
+      'test "$CHECKED_OUT_SHA" = "$RELEASE_SHA"',
+      'git status --porcelain --untracked-files=all',
+      'Reverify immutable candidate before image builds',
+      'git diff --cached --quiet',
+    ]) {
+      assert.ok(
+        content.includes(required),
+        `Release lane is missing immutable-candidate guard: ${required}`
+      );
+    }
+  });
+
+  it('D16: release evidence binds the candidate tree and pushed image digests', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+
+    for (const required of [
+      'org.opencontainers.image.revision=$CHECKED_OUT_SHA',
+      'org.terrafusion.candidate.tree=$CANDIDATE_TREE_SHA',
+      'BACKEND_IMAGE_DIGEST=',
+      'FRONTEND_IMAGE_DIGEST=',
+      'TF_BACKEND_IMAGE=${BACKEND_IMAGE_REF}',
+      'TF_FRONTEND_IMAGE=${FRONTEND_IMAGE_REF}',
+      'docker pull "$BACKEND_IMAGE_REF"',
+      'docker pull "$FRONTEND_IMAGE_REF"',
+      '"checkedOutSha": "${CHECKED_OUT_SHA}"',
+      '"candidateTreeSha": "${CANDIDATE_TREE_SHA}"',
+      '"backendImageDigest": "${BACKEND_IMAGE_DIGEST}"',
+      '"frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}"',
+      '"backendImageRef": "${BACKEND_IMAGE_REF}"',
+      '"frontendImageRef": "${FRONTEND_IMAGE_REF}"',
+      'evidence[refField] !== `${evidence[imageField]}@${evidence[digestField]}`',
+      'const digestPattern = /^sha256:[0-9a-f]{64}$/;',
+    ]) {
+      assert.ok(
+        content.includes(required),
+        `Release evidence is missing provenance binding: ${required}`
+      );
+    }
+  });
+
+  it('D17: provenance hardening preserves protected environment deployment boundaries', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+
+    assert.ok(
+      content.includes('workflow_dispatch'),
+      'Release lane must remain manually dispatched'
+    );
+    assert.ok(
+      content.includes('environment: ${{ inputs.target_env }}'),
+      'Release lane must retain the selected protected environment boundary'
+    );
+    assert.ok(
+      content.includes('cancel-in-progress: false'),
+      'Release lane must retain serialized, non-cancelling environment deployments'
+    );
+  });
+
+  it('D18: protected deployments accept only candidates contained in trusted main', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const trustCheck = content.indexOf(
+      'git merge-base --is-ancestor "$RELEASE_SHA" "$TRUSTED_MAIN_SHA"'
+    );
+    const firstPrivilegedUpload = content.indexOf('Upload runtime bundle to VPS');
+
+    assert.ok(content.includes('+refs/heads/main:refs/remotes/origin/main'));
+    assert.ok(content.includes('TRUSTED_MAIN_SHA="$(git rev-parse refs/remotes/origin/main)"'));
+    assert.ok(trustCheck >= 0, 'Release lane must prove candidate ancestry against canonical main');
+    assert.ok(
+      trustCheck < firstPrivilegedUpload,
+      'Trusted-main proof must occur before any candidate-controlled runtime asset reaches a host'
+    );
+  });
+
+  it('D19: release and rollback workflows preserve and restore exact digest-pinned bundles', () => {
+    const releaseLane = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const preserve = releaseLane.indexOf('Preserve exact current release bundle for rollback');
+    const upload = releaseLane.indexOf('Upload runtime bundle to VPS');
+    assert.ok(
+      preserve >= 0 && preserve < upload,
+      'Current bundle must be snapshotted before overwrite'
+    );
+    assert.ok(releaseLane.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$CURRENT_SHA"'));
+    assert.ok(releaseLane.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$RELEASE_SHA"'));
+    assert.ok(releaseLane.includes('"trustedMainSha": "${TRUSTED_MAIN_SHA}"'));
+
+    for (const workflow of ['rollback-production.yml', 'rollback-staging.yml']) {
+      const content = readFileSync(join(WORKFLOWS, workflow), 'utf8');
+      assert.ok(content.includes('SNAPSHOT_ROOT="$APP_ROOT/releases/$ROLLBACK_SHA"'));
+      assert.ok(content.includes("sed -n 's/^TF_BACKEND_IMAGE=//p'"));
+      assert.ok(content.includes("sed -n 's/^TF_FRONTEND_IMAGE=//p'"));
+      assert.ok(content.includes('backend-internal@sha256:[0-9a-f]{64}'));
+      assert.ok(content.includes('frontend-internal@sha256:[0-9a-f]{64}'));
+      assert.ok(content.includes('install -m 0600 "$SNAPSHOT_ROOT/release.env" release.env'));
+      assert.ok(
+        !content.includes('internal:${ROLLBACK_SHA}'),
+        workflow + ' must not reconstruct mutable tags'
+      );
+      assert.ok(
+        !content.includes('cat > release.env'),
+        workflow + ' must restore the recorded environment'
+      );
+    }
+  });
 });
 
 // ============================================================================
