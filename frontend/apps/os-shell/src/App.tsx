@@ -29,7 +29,7 @@ import './styles/terrafusion-os.css';
 import './App.css';
 // ============================================================================
 
-import { MODULES, PRODUCTION_VISIBLE_MODULES } from './config/modules';
+import { PRODUCTION_VISIBLE_MODULES, REGISTERED_MODULES } from './config/modules';
 import { useSyncIntegration } from './hooks/useSyncIntegration';
 import { installShellIpcBridge } from './ipc/shellIpcBridge';
 import { DesktopWithErrorBoundary } from './shell/desktop';
@@ -69,7 +69,7 @@ function App() {
     const cleanupIpc = installShellIpcBridge();
 
     // Register all modules
-    registerModules(MODULES);
+    registerModules([...REGISTERED_MODULES]);
 
     // Configure Start Menu (include entryType for wiring status badges)
     const startMenuApps = PRODUCTION_VISIBLE_MODULES.map((m) => ({

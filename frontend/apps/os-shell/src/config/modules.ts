@@ -121,6 +121,14 @@ export function isProductionLaunchEntry(entry: Entry): boolean {
   }
 }
 
+export function isProductionGeneratedEntryRendererResolvable(
+  entry: Entry
+): entry is Extract<Entry, { type: 'url' }> {
+  // Generated modules fall back to GenericModuleHost, whose production-capable renderer is the
+  // sandboxed URL host. Route and module-federation entries require an explicit in-shell contract.
+  return entry.type === 'url';
+}
+
 export function isProductionVisibleGeneratedModule(
   module: ManifestModuleDefinition
 ): module is ManifestModuleDefinition & { runnable: true } {
@@ -129,7 +137,8 @@ export function isProductionVisibleGeneratedModule(
     module.runnable === true &&
     !RETIRED_STANDALONE_MODULE_IDS.has(module.id) &&
     !CANONICAL_SUITE_ALIASES.has(module.id) &&
-    isProductionLaunchEntry(module.entry)
+    isProductionLaunchEntry(module.entry) &&
+    isProductionGeneratedEntryRendererResolvable(module.entry)
   );
 }
 
@@ -158,6 +167,14 @@ export const CANONICAL_SUITE_MODULES: readonly ProductionModuleDefinition[] =
 // Internal Gen2 registry. IPC and module resolution depend on this complete operational catalog.
 export const MODULES: readonly ModuleDefinition[] = ALL_MODULES.filter(
   (module) => module.intent === 'gen2' && !RETIRED_STANDALONE_MODULE_IDS.has(module.id)
+);
+
+// Runtime registration includes the complete operational Gen2 catalog plus canonical suite homes.
+// Canonical definitions win on any future ID collision while insertion order remains deterministic.
+export const REGISTERED_MODULES: readonly ModuleDefinition[] = Array.from(
+  new Map(
+    [...MODULES, ...CANONICAL_SUITE_MODULES].map((module) => [module.id, module] as const)
+  ).values()
 );
 
 // Production launch surfaces: governed suite homes plus generated entries with truthful wiring.

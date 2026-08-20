@@ -3,12 +3,16 @@ import { getModuleEntry, isModuleRegistered } from '../moduleComponents';
 import {
   ALL_MODULES,
   CANONICAL_SUITE_MODULES,
+  isProductionGeneratedEntryRendererResolvable,
   isProductionLaunchEntry,
   isProductionVisibleGeneratedModule,
   MODULES,
   PRODUCTION_VISIBLE_MODULES,
+  REGISTERED_MODULES,
 } from '../modules';
 import { CONSTITUTIONAL_SUITES } from '../suiteRegistry';
+import { useDesktopStore } from '../../stores/desktopStore';
+import { useModuleRegistryStore } from '../../stores/moduleRegistryStore';
 
 describe('production launcher registry', () => {
   it('derives every live constitutional suite from the canonical in-shell registry', () => {
@@ -67,6 +71,66 @@ describe('production launcher registry', () => {
       expect(module.runnable).toBe(true);
       expect(isProductionLaunchEntry(module.entry)).toBe(true);
       expect(isModuleRegistered(module.id)).toBe(true);
+    }
+  });
+
+  it.each([
+    { type: 'route', route: '/operational-but-unregistered' },
+    { type: 'mf', remote: 'unknownRemote', module: './UnknownModule' },
+  ] satisfies Entry[])('rejects generated entries without a real renderer contract', (entry) => {
+    const candidate = {
+      ...ALL_MODULES[0],
+      id: `adversarial-${entry.type}`,
+      intent: 'gen2' as const,
+      runnable: true,
+      entry,
+    };
+
+    expect(isProductionLaunchEntry(entry)).toBe(true);
+    expect(isProductionGeneratedEntryRendererResolvable(entry)).toBe(false);
+    expect(isProductionVisibleGeneratedModule(candidate)).toBe(false);
+  });
+
+  it('registers canonical suites for close-then-relaunch error recovery', async () => {
+    const originalRegistryState = useModuleRegistryStore.getState();
+    const originalDesktopState = useDesktopStore.getState();
+
+    try {
+      useModuleRegistryStore.setState({
+        modules: new Map(),
+        loadStates: new Map(),
+        isInitialized: false,
+        initError: null,
+      });
+      useDesktopStore.setState({ windows: [], activeWindowId: null });
+
+      useModuleRegistryStore.getState().registerModules([...REGISTERED_MODULES]);
+
+      expect(new Set(REGISTERED_MODULES.map((module) => module.id)).size).toBe(
+        REGISTERED_MODULES.length
+      );
+
+      for (const suite of CANONICAL_SUITE_MODULES) {
+        expect(useModuleRegistryStore.getState().getModuleById(suite.id)).toMatchObject({
+          id: suite.id,
+          launchPath: suite.launchPath,
+        });
+
+        const firstWindowId = await useModuleRegistryStore.getState().launchModule(suite.id);
+        expect(firstWindowId).toBeTruthy();
+
+        useDesktopStore.getState().closeWindow(firstWindowId!);
+
+        const recoveredWindowId = await useModuleRegistryStore.getState().launchModule(suite.id);
+        expect(recoveredWindowId).toBeTruthy();
+        expect(recoveredWindowId).not.toBe(firstWindowId);
+
+        useDesktopStore.getState().closeWindow(recoveredWindowId!);
+        useModuleRegistryStore.getState().closeModule(suite.id);
+      }
+    } finally {
+      useModuleRegistryStore.setState(originalRegistryState, true);
+      useDesktopStore.setState(originalDesktopState, true);
     }
   });
 
