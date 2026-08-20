@@ -80,8 +80,18 @@ test("assignment redaction consumes complete quoted and whitespace-bearing value
   assert.equal(firstPass, '{"token":"[REDACTED]","next":"safe"}');
   assert.equal(redactEvidenceText(firstPass), firstPass);
 
+  const escapedJsonLike = String.raw`response={\"token\":\"opaque-secret\",\"next\":\"safe\"}`;
+  const escapedFirstPass = redactEvidenceText(escapedJsonLike);
+  assert.equal(
+    escapedFirstPass,
+    String.raw`response={\"token\":\"[REDACTED]\",\"next\":\"safe\"}`
+  );
+  assert.equal(redactEvidenceText(escapedFirstPass), escapedFirstPass);
+  assert.ok(!escapedFirstPass.includes("opaque-secret"));
+
   assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
   assert.equal(findEvidenceCredentialFindings(firstPass).length, 0);
+  assert.equal(findEvidenceCredentialFindings(escapedFirstPass).length, 0);
 });
 
 test("dev-data truth evidence uses the shared redaction boundary for JSON and Markdown", async () => {
