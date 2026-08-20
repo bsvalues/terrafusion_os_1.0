@@ -7,6 +7,8 @@ import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
+import { redactEvidenceText, stringifyEvidence } from "./evidence-redaction.mjs";
+
 const LOCAL_DB_PATH = "backend/src/TerraFusion.API/terrafusion-dev.db";
 const STAGING_DB_PATH = "/opt/terrafusion/staging/data/terrafusion.db";
 const PRODUCTION_DB_PATH = "/opt/terrafusion/production/data/terrafusion.db";
@@ -55,13 +57,15 @@ function runCommand(command, args, options = {}) {
     let stderr = "";
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
-      process.stdout.write(chunk);
     });
     child.stderr.on("data", (chunk) => {
       stderr += String(chunk);
-      process.stderr.write(chunk);
     });
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on("close", (code) => {
+      if (stdout) process.stdout.write(redactEvidenceText(stdout));
+      if (stderr) process.stderr.write(redactEvidenceText(stderr));
+      resolve({ code: code ?? 1, stdout, stderr });
+    });
   });
 }
 
@@ -597,7 +601,7 @@ async function main() {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
 
   if (decision !== "GO") {
     process.exitCode = 1;
@@ -631,7 +635,7 @@ main().catch(async (error) => {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
-  console.error(error);
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
+  console.error(redactEvidenceText(error instanceof Error ? error.stack ?? error.message : String(error)));
   process.exitCode = 1;
 });

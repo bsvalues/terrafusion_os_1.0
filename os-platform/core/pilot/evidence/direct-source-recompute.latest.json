@@ -16,7 +16,7 @@
     "port": "5432",
     "database": "terrafusion",
     "user": "postgres",
-    "password": "<redacted>"
+    "password": "[REDACTED]"
   },
   "sourceTables": [
     "Properties",
@@ -739,5 +739,15 @@
         }
       ]
     }
-  ]
+  ],
+  "redaction": {
+    "schemaVersion": 1,
+    "status": "sanitized",
+    "replacement": "[REDACTED]",
+    "originalValuesRemoved": true,
+    "categories": [
+      "sensitive-field"
+    ],
+    "occurrenceCount": 1
+  }
 }

@@ -16,7 +16,7 @@
     "port": "5432",
     "database": "terrafusion",
     "user": "postgres",
-    "password": "<redacted>"
+    "password": "[REDACTED]"
   },
   "apiChecks": {
     "countyStudioHealth": {
@@ -103,7 +103,10 @@
     "terraForgeRatioStudy": {
       "populationConcept": "County-wide effective qualified sale ratio study",
       "countLabel": "countWithRatio",
-      "sourceTables": ["ComparableSales", "Properties"],
+      "sourceTables": [
+        "ComparableSales",
+        "Properties"
+      ],
       "codePath": "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs"
     }
   },
@@ -168,5 +171,15 @@
     "Define a shared comparison contract: county, study/tax year, qualification pool, sale window, active segment/cohort scope, identifier join, suppression/no-calc policy, and outlier policy.",
     "Run TerraForge ratio-study with a County Studio-compatible scoped population, or add a dedicated County Studio parity endpoint that exposes the exact same population definition.",
     "Keep Statistics Studio visible and keep the County Studio statistics superset claim provisional until the shared-population parity check passes."
-  ]
+  ],
+  "redaction": {
+    "schemaVersion": 1,
+    "status": "sanitized",
+    "replacement": "[REDACTED]",
+    "originalValuesRemoved": true,
+    "categories": [
+      "sensitive-field"
+    ],
+    "occurrenceCount": 1
+  }
 }

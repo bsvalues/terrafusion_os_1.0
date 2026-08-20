@@ -5,6 +5,8 @@ import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
+import { redactEvidenceText, stringifyEvidence } from "./evidence-redaction.mjs";
+
 import { chromium } from "@playwright/test";
 
 const DEFAULT_OUT_PATH = path.resolve(
@@ -17,7 +19,7 @@ const PRODUCTION_BASE_URL = "https://terrafusionmarket.com";
 const PRODUCTION_EDGE_IP = "72.60.126.11";
 const WORKBENCH_PATH = "/property/10001/forge";
 const LOGIN_EMAIL = process.env.TF_PHASE6_EMAIL || "admin@terrafusionmarket.com";
-const LOGIN_PASSWORD = process.env.TF_PHASE6_PASSWORD || "TerraFusion2026!";
+const LOGIN_PASSWORD = process.env.TF_PHASE6_PASSWORD || "";
 
 function parseArgs(argv) {
   const args = argv.slice(2);
@@ -58,15 +60,15 @@ function runCommand(command, args, options = {}) {
 
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
-      process.stdout.write(chunk);
     });
-
     child.stderr.on("data", (chunk) => {
       stderr += String(chunk);
-      process.stderr.write(chunk);
     });
-
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on("close", (code) => {
+      if (stdout) process.stdout.write(redactEvidenceText(stdout));
+      if (stderr) process.stderr.write(redactEvidenceText(stderr));
+      resolve({ code: code ?? 1, stdout, stderr });
+    });
   });
 }
 
@@ -536,7 +538,7 @@ async function main() {
   }
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(evidence), "utf8");
   process.stdout.write(`Evidence written to ${outPath}\n`);
   process.exitCode = evidence.summary.ok ? 0 : 1;
 }
