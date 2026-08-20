@@ -46,6 +46,13 @@ function countBackslashesBefore(value, index) {
   return count;
 }
 
+function isClosingAssignmentDelimiter(value, index, openingSlashCount) {
+  const runLength = countBackslashesBefore(value, index);
+  const serializationUnit = openingSlashCount + 1;
+  const quotient = (runLength + 1) / serializationUnit;
+  return Number.isInteger(quotient) && quotient % 2 === 1;
+}
+
 function assignmentValueSpan(value, start) {
   const relativeLineEnd = value.slice(start).search(/[\r\n]/);
   const lineEnd = relativeLineEnd === -1 ? value.length : start + relativeLineEnd;
@@ -59,7 +66,12 @@ function assignmentValueSpan(value, start) {
     const delimiter = "\\".repeat(slashCount) + quote;
     const contentStart = start + delimiter.length;
     for (let cursor = contentStart; cursor < lineEnd; cursor += 1) {
-      if (value[cursor] !== quote || countBackslashesBefore(value, cursor) !== slashCount) continue;
+      if (
+        value[cursor] !== quote ||
+        !isClosingAssignmentDelimiter(value, cursor, slashCount)
+      ) {
+        continue;
+      }
       return {
         delimiter,
         end: cursor + 1,

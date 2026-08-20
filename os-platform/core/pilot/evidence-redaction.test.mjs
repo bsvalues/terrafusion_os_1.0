@@ -136,6 +136,24 @@ test("assignment redaction consumes complete quoted and whitespace-bearing value
     )
   );
   assert.equal(findEvidenceCredentialFindings(escapedContentFirstPass).length, 0);
+
+  let trailingBackslash = JSON.stringify({ token: "secret\\", next: "safe" });
+  let trailingBackslashExpected = JSON.stringify({ token: REDACTION_MARKER, next: "safe" });
+  for (let serializationDepth = 0; serializationDepth <= 3; serializationDepth += 1) {
+    const trailingBackslashFirstPass = redactEvidenceText(trailingBackslash);
+    assert.equal(trailingBackslashFirstPass, trailingBackslashExpected);
+    assert.equal(redactEvidenceText(trailingBackslashFirstPass), trailingBackslashFirstPass);
+    assert.ok(!trailingBackslashFirstPass.includes("secret"));
+    assert.ok(trailingBackslashFirstPass.includes("safe"));
+    assert.ok(
+      findEvidenceCredentialFindings(trailingBackslash).some(
+        (finding) => finding.kind === "sensitive-text"
+      )
+    );
+    assert.equal(findEvidenceCredentialFindings(trailingBackslashFirstPass).length, 0);
+    trailingBackslash = JSON.stringify(trailingBackslash);
+    trailingBackslashExpected = JSON.stringify(trailingBackslashExpected);
+  }
 });
 
 test("credential findings use an independent assignment detector", async () => {
