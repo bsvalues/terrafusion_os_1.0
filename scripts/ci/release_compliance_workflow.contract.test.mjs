@@ -340,7 +340,16 @@ test('Forge valuation payload is digest-bound, embedded, validated, and carried 
   assert.match(sbom, /release-forge-accepted[\s\S]*release-forge-rejected/);
   assert.match(
     sbom,
-    /EMBEDDED_FORGE_ROOT="backend-runtime-root\/\.terrafusion\/runtime\/forge\/valuation"[\s\S]*cmp forge-valuation-kernel-producer-manifest\.json/
+    /EMBEDDED_FORGE_ROOT="backend-runtime-root\/\.terrafusion\/runtime\/forge\/valuation"[\s\S]*cmp forge-valuation-kernel-producer-manifest\.json[\s\S]*release-embedded-accepted[\s\S]*release-embedded-rejected/
+  );
+  const embeddedExecution = sbom.indexOf('release-embedded-accepted');
+  const processHostProof = sbom.indexOf(
+    'ValuationKernel_AdmittedReleasePayload_InvokesThroughProcessHost'
+  );
+  assert.ok(embeddedExecution >= 0 && processHostProof > embeddedExecution);
+  assert.match(
+    sbom,
+    /TF_TEST_FORGE_VALUATION_KERNEL_PATH:[\s\S]*TF_TEST_FORGE_VALUATION_KERNEL_MANIFEST_PATH:/
   );
   assert.match(
     backendDockerfile,
